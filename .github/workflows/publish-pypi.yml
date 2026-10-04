@@ -108,6 +108,9 @@ jobs:
   review:
     needs: [core, wheels, python-compatibility]
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -129,7 +132,6 @@ jobs:
         run: |
           python -c "import os,tomllib; assert os.environ['REQUESTED_VERSION'] == tomllib.load(open('python/pyproject.toml','rb'))['project']['version'], 'Explicit version must match the package'"
       - name: Require an existing human approval gate
-        if: github.event_name == 'workflow_dispatch' && inputs.publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

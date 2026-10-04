@@ -76,6 +76,6 @@ class AssertionGateTests(unittest.TestCase):
   fixture.write_text('{"alpha":1}');self.failed(self.result())
 
  def test_same_python_module_class_method_from_another_file_fails(self):
-  self.failed(self.result(python=self.python_log.replace(str(self.python),str(self.root/'another/tests/test_contract.py'))))
+  self.failed(self.result(python=self.python_log.replace(json.dumps(str(self.python)),json.dumps(str(self.root/'another/tests/test_contract.py')))))
  def test_missing_python_file_identity_fails(self):
   self.failed(self.result(python='\n'.join(line for line in self.python_log.splitlines() if not line.startswith('LAYMESH_PYTHON_TEST_SOURCES '))))

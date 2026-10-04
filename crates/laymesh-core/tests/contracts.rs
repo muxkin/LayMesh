@@ -75,7 +75,8 @@ fn unsafe_calls_and_execution_limits_have_diagnostics() {
 #[test]
 fn recursive_calls_report_limits_on_a_small_stack() {
     std::thread::Builder::new()
-        .stack_size(512 * 1024)
+        // Half Rust's usual test stack, with room for native ABI differences.
+        .stack_size(1024 * 1024)
         .spawn(|| {
             for function in [
                 "function f(){return f()}",

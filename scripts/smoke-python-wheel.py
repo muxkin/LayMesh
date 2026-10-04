@@ -2,14 +2,26 @@
 """Exercise an installed wheel from outside the checkout, without Node/npm on PATH."""
 from __future__ import annotations
 import argparse
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import sys
+import sysconfig
 import tempfile
 import xml.etree.ElementTree as ET
+
+
+@contextmanager
+def working_directory(path):
+    previous = Path.cwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(previous)
 
 
 def main():
@@ -25,9 +37,7 @@ def main():
     manifest = json.loads((vendor / "manifest.json").read_text(encoding="utf-8"))
     assert subprocess.check_output([command[0], "--version"], text=True).strip() == "laymesh " + manifest["rust_version"]
     examples = args.examples.resolve() if args.examples else None
-    previous_directory = Path.cwd()
-    with tempfile.TemporaryDirectory(prefix="laymesh-installed-test-") as tmp:
-        os.chdir(tmp)
+    with tempfile.TemporaryDirectory(prefix="laymesh-installed-test-") as tmp, working_directory(tmp):
         # These changes are process-local. Pip installation happens before this test.
         for name in ("LAYMESH_CLI", "PYTHONPATH", "NODE_PATH", "NODE_OPTIONS"):
             os.environ.pop(name, None)
@@ -45,7 +55,7 @@ page.add(text("中文 $E=mc^2$ $\\mathbb{R} \\alpha \\sum_{i=1}^n i$", font_size
         for ext, magic in [("pdf", b"%PDF"), ("png", b"\x89PNG\r\n\x1a\n")]:
             render_file("figure.lay", output=f"figure.{ext}", **({"dpi": 150} if ext == "png" else {}))
             assert Path(f"figure.{ext}").read_bytes().startswith(magic)
-        scripts = Path(sys.executable).parent
+        scripts = Path(sysconfig.get_path("scripts"))
         cli = scripts / ("laymesh.exe" if os.name == "nt" else "laymesh")
         subprocess.run([str(cli), "validate", "figure.lay"], check=True)
         result = subprocess.run([sys.executable, "-m", "laymesh", "inspect", "figure.lay", "--json"], check=True, capture_output=True, text=True)
@@ -90,7 +100,6 @@ page.add(p,offset=(5,5))'''
                 subprocess.run([str(cli), "validate", str(entry)], check=True, stdout=subprocess.DEVNULL)
             print(f"Validated {len(entries)} native example entry points with bundled runtime")
         print(json.dumps({"wheel_version": manifest["version"], "target": manifest["target"], "engine": "rust", "exports": ["SVG", "PDF", "PNG"], "system_node": False, "saved_data": True, "matplotlib": True, "notebook_magics": True}))
-        os.chdir(previous_directory)
 
 
 if __name__ == "__main__":
