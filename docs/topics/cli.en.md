@@ -14,7 +14,7 @@ The CLI has three commands:
 ```text
 laymesh validate <file.lay>
 laymesh inspect <file.lay> --json
-laymesh render <file.lay> -o <output.svg|pdf|png> [--dpi <number>]
+laymesh render <file.lay> -o <output.svg|pdf|png|jpg|tif|webp|bmp|gif|ico|pnm|tga> [--dpi <number>]
 ```
 
 `python -m laymesh` invokes the same CLI. Source developers build with `cargo build --release --locked -p laymesh-cli` and invoke `target/release/laymesh` (`laymesh.exe` on Windows), or prefix commands with `cargo run --release --locked -p laymesh-cli --`. `validate` checks source and assets without writing an output file. `render` performs the same checks and then writes the requested file. Errors return a nonzero status and include the source file, line, column, and reason.

@@ -18,6 +18,8 @@ The candidate list and selected item's details stay available while typing, whet
 
 ## VS Code
 
+Install the [LayMesh extension](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) or a platform VSIX. Windows x64 and Linux x64 packages bundle the engine and need no Python, Rust or npm; Remote SSH packages match the remote host. Variable hover shows inferred types, Shift+F12 finds workspace references and F2 safely renames bindings, prioritizing unsaved buffers. Explicit import aliases rename locally; exported-name changes update import source names and unaliased uses. Incomplete affected code and name conflicts prevent rename. The following commands build packages for source developers.
+
 Run from the repository root:
 
 ```sh
@@ -107,3 +109,16 @@ Complete sources and executable verification fixtures for this workflow are list
 Completion after `anchor=` suggests nine bounds names and `self.`; legacy start/end apply to line endpoints and plot_* names to charts. Named and positional option values insert bare variables; completion inside quotes preserves the string. Hover `round` shows only `round: string = "round"`. Hover `start_cap` explains butt/round/square and the inherited line_cap default. User variables remain expression candidates.
 
 The web computes necessary colors locally during input events and coalesces complete DOM commits by animation frame. Hidden spaces are evaluated on demand and alpha changes reuse chromatic results. RGB and HSV tracks use piecewise sRGB gradients; OKLCH tracks retain gamut-mapping precision. Inputs keep their identity and focus during dragging, and gradients do not wait for a pause. Closing validates/formats through Rust and makes one undoable replacement; invalid drafts and concurrent document edits cannot overwrite source.
+
+
+## VS Code figure preview
+
+The preview supports English and Simplified Chinese. `laymesh.language: "auto"` follows VS Code; select `"en"` or `"zh-CN"` to override it. An open preview changes labels immediately without compiling or resetting its view. Command titles and Settings descriptions follow VS Code's display language. Native compiler details and figure text retain their original language.
+
+Use the editor title preview icon, context menu, or **LayMesh: Open Preview** on a saved `.lay` file. Each entry has its own panel beside the editor. Edits refresh after 250 ms, including unsaved modules, LCSS and text data; local resource changes refresh it too. Preview uses an independent Rust process in a trusted workspace.
+
+Rulers and canvas X/Y follow `canvas(unit=...)`; px uses `layout_dpi`. Hovering a plot also shows all named data axes, including log, symlog, reversed and broken scales. Gaps show `—`. Polar plots show θ/r without an angle at the center; radar charts show dimension values near their spokes.
+
+Ctrl/Command + wheel zooms about the pointer; Space + drag or middle drag pans. The toolbar offers refresh, fit, 100%, zoom and rulers. 100% uses layout pixels. Errors retain the last figure and mark it stale; click the error to open its source location. Configure `laymesh.preview.debounceMs`, `laymesh.preview.renderTimeoutMs`, and `laymesh.preview.showRulers` for refresh delay, timeout and default rulers.
+
+Run **LayMesh: Export Figure** from a `.lay` editor or click **Export** in preview, then choose format, DPI, encoding options and destination. Unsaved entry and opened imported buffers are used; remote windows save on the extension host. [Export formats and encoding options](export.en.md)

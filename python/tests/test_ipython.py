@@ -41,6 +41,14 @@ class MagicTest(unittest.TestCase):
                     self.assertIn("array(src=", Path("native.lay").read_text())
                     shell.run_line_magic("laymesh", "native.lay")
                     self.assertEqual(display.call_count, 4)
+                    shell.run_cell_magic('laymesh', '-o quality.jpg --dpi 144 --quality 91 --background "#ffffff"', 'page=canvas(size=(25.4mm,12.7mm))')
+                    shell.run_line_magic('laymesh', 'existing.lay -o compressed.tif --dpi 144 --compression lzw')
+                    shell.run_cell_magic('laymesh', '-o compressed.webp --dpi 144 --webp-lossless false --quality 83 --webp-method 5 --webp-alpha-quality 100', 'page=canvas(size=(25.4mm,12.7mm))')
+                    from PIL import Image
+                    for filename in ['quality.jpg', 'compressed.webp']:
+                        with Image.open(filename) as image:self.assertEqual(image.size,(144,72))
+                    with Image.open('compressed.tif') as image:self.assertEqual(image.tag_v2[259],5)
+                    self.assertEqual(display.call_count, 7)
             finally:
                 os.chdir(previous)
 

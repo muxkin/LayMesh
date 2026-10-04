@@ -58,6 +58,18 @@ pub fn tokens(s: &str) -> Vec<Token> {
     }
     out
 }
+
+#[cfg(test)]
+mod scope_tests {
+    use super::*;
+    #[test]
+    fn nested_control_blocks_leave_function_locals_inside_the_body() {
+        let source = "value=1\nif true { value=2 secret=3 }\nfunction f(value) {\n local=value\n for value in [1,2] { loop=value }\n while false { hidden=1 }\n return value\n}\nlast=value";
+        let idx = index("test.lay", source, true);
+        let local = idx.symbols.iter().find(|s| s.name == "local").unwrap();
+        assert!(local.scope_to < source.len(), "{:#?}", idx.symbols);
+    }
+}
 #[derive(Clone, Default, Debug)]
 pub struct Doc {
     pub body: String,
@@ -192,6 +204,7 @@ pub struct Symbol {
     pub doc: Doc,
     pub typ: String,
     pub alias: String,
+    pub value: Option<laymesh_core::parser::Expr>,
 }
 #[derive(Clone, Debug)]
 pub struct Import {
@@ -200,8 +213,13 @@ pub struct Import {
     pub source: String,
     pub scope_from: usize,
     pub scope_to: usize,
+    pub from: usize,
+    pub to: usize,
+    pub alias_from: usize,
+    pub alias_to: usize,
+    pub explicit_alias: bool,
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Index {
     pub symbols: Vec<Symbol>,
     pub imports: Vec<Import>,
@@ -431,6 +449,41 @@ pub fn index(uri: &str, source: &str, en: bool) -> Index {
         }
     }
     let mut out = Index::default();
+    // Complete ASTs identify assignments even when several statements share a line.
+    // The token index remains available while the user is typing incomplete code.
+    let mut values = BTreeMap::new();
+    fn bindings(
+        stmts: &[laymesh_core::parser::Stmt],
+        ts: &[Token],
+        values: &mut BTreeMap<usize, laymesh_core::parser::Expr>,
+    ) {
+        use laymesh_core::parser::StmtKind;
+        for stmt in stmts {
+            match &stmt.kind {
+                StmtKind::Bind(name, value, _) => {
+                    if let Some(t) = ts
+                        .iter()
+                        .find(|t| t.from >= stmt.loc.offset && t.text == *name)
+                    {
+                        values.insert(t.from, value.clone());
+                    }
+                }
+                StmtKind::Function(_, _, body, _)
+                | StmtKind::For(_, _, body)
+                | StmtKind::While(_, body) => bindings(body, ts, values),
+                StmtKind::If(branches, other) => {
+                    for (_, body) in branches {
+                        bindings(body, ts, values);
+                    }
+                    bindings(other, ts, values);
+                }
+                _ => {}
+            }
+        }
+    }
+    if let Ok(stmts) = laymesh_core::parser::parse(source, uri) {
+        bindings(&stmts, &ts, &mut values);
+    }
     let mut scopes = vec![(0, source.len())];
     let mut i = 0;
     while i < ts.len() {
@@ -488,6 +541,7 @@ pub fn index(uri: &str, source: &str, en: bool) -> Index {
                 doc: doc.clone(),
                 typ: String::new(),
                 alias: String::new(),
+                value: None,
             });
             let body = end + 1;
             if ts.get(body).is_some_and(|t| t.text == "{") {
@@ -521,6 +575,9 @@ pub fn index(uri: &str, source: &str, en: bool) -> Index {
                         doc: pd,
                         typ: String::new(),
                         alias: String::new(),
+                        value: p["default"]
+                            .as_str()
+                            .and_then(|s| laymesh_core::parser::expression(s, uri).ok()),
                     });
                 }
                 i = body + 1;
@@ -528,25 +585,78 @@ pub fn index(uri: &str, source: &str, en: bool) -> Index {
             }
             i = end.min(ts.len());
         } else if t.text == "for" {
-            let header_end = (i+1..ts.len()).find(|&j|ts[j].text=="in");
-            if let Some(header_end)=header_end {
-                let body = (header_end+1..ts.len()).find(|&j|ts[j].text=="{" && laymesh_core::parser::expression(&source[ts[header_end].to..ts[j].from],uri).is_ok());
-                if let Some(body)=body {
-                    let body_end=pairs.get(&body).map(|&k|ts[k].to).unwrap_or(source.len());
-                    for name in ts[i+1..header_end].iter().filter(|t|t.kind=="name" && t.text!="_") {
-                        out.symbols.push(Symbol {name:name.text.clone(),kind:"variable".into(),uri:uri.into(),from:name.from,to:name.to,scope_from:ts[body].from,scope_to:body_end,exported:false,parameters:vec![],doc:Doc::default(),typ:String::new(),alias:String::new()});
+            let header_end = (i + 1..ts.len()).find(|&j| ts[j].text == "in");
+            if let Some(header_end) = header_end {
+                let body = (header_end + 1..ts.len()).find(|&j| {
+                    ts[j].text == "{"
+                        && laymesh_core::parser::expression(
+                            &source[ts[header_end].to..ts[j].from],
+                            uri,
+                        )
+                        .is_ok()
+                });
+                if let Some(body) = body {
+                    let body_end = pairs.get(&body).map(|&k| ts[k].to).unwrap_or(source.len());
+                    for name in ts[i + 1..header_end]
+                        .iter()
+                        .filter(|t| t.kind == "name" && t.text != "_")
+                    {
+                        out.symbols.push(Symbol {
+                            name: name.text.clone(),
+                            kind: "variable".into(),
+                            uri: uri.into(),
+                            from: name.from,
+                            to: name.to,
+                            scope_from: ts[body].from,
+                            scope_to: body_end,
+                            exported: false,
+                            parameters: vec![],
+                            doc: Doc::default(),
+                            typ: String::new(),
+                            alias: String::new(),
+                            value: None,
+                        });
                     }
+                    scopes.push((ts[body].from, body_end));
+                    i = body + 1;
+                    continue;
                 }
+            }
+        } else if matches!(t.text.as_str(), "if" | "while" | "else") {
+            let body = if t.text == "else" && ts.get(i + 1).is_some_and(|t| t.text == "{") {
+                Some(i + 1)
+            } else if t.text == "else" {
+                None
+            } else {
+                (i + 1..ts.len()).find(|&j| {
+                    ts[j].text == "{"
+                        && laymesh_core::parser::expression(&source[t.to..ts[j].from], uri).is_ok()
+                })
+            };
+            if let Some(body) = body {
+                let end = pairs.get(&body).map(|&k| ts[k].to).unwrap_or(source.len());
+                scopes.push((ts[body].from, end));
+                i = body + 1;
+                continue;
             }
         } else if t.text == "import" && ts.get(i + 1).is_some_and(|t| t.text == "{") {
             let end = pairs.get(&(i + 1)).copied().unwrap_or(i + 1);
             if let Some(path) = ts.get(end + 2).filter(|t| t.kind == "string") {
-                let source = path.text.trim_matches(['\'', '"']).to_string();
+                let source = match laymesh_core::parser::expression(&path.text, uri)
+                    .ok()
+                    .map(|e| e.kind)
+                {
+                    Some(laymesh_core::parser::ExprKind::String(path, _, _)) => path,
+                    _ => path.text.trim_matches(['\'', '"']).to_string(),
+                };
                 let mut j = i + 2;
                 while j < end {
+                    let from = ts[j].from;
+                    let to = ts[j].to;
                     let name = ts[j].text.clone();
                     let mut alias = name.clone();
-                    if ts.get(j + 1).is_some_and(|t| t.text == "as") {
+                    let explicit_alias = ts.get(j + 1).is_some_and(|t| t.text == "as");
+                    if explicit_alias {
                         alias = ts[j + 2].text.clone();
                         j += 2
                     }
@@ -556,6 +666,11 @@ pub fn index(uri: &str, source: &str, en: bool) -> Index {
                         source: source.clone(),
                         scope_from,
                         scope_to,
+                        from,
+                        to,
+                        alias_from: ts[j].from,
+                        alias_to: ts[j].to,
+                        explicit_alias,
                     });
                     j += 1;
                     if j < end && ts[j].text == "," {
@@ -568,6 +683,7 @@ pub fn index(uri: &str, source: &str, en: bool) -> Index {
         } else if t.kind == "name"
             && ts.get(i + 1).is_some_and(|t| t.text == "=")
             && (i == 0
+                || values.contains_key(&t.from)
                 || ts[i - 1].text == "export"
                 || ts[i - 1].text == "{"
                 || ts[i - 1].text == "}"
@@ -579,7 +695,7 @@ pub fn index(uri: &str, source: &str, en: bool) -> Index {
                 && ts.get(i + 4).is_some_and(|t| t.text == "add");
             let typ = if add {
                 "instance".into()
-            } else if value.is_some_and(|v|v.text=="{") {
+            } else if value.is_some_and(|v| v.text == "{") {
                 "dict".into()
             } else if call {
                 value.map(|v| v.text.clone()).unwrap_or_default()
@@ -616,6 +732,29 @@ pub fn index(uri: &str, source: &str, en: bool) -> Index {
                 doc,
                 typ,
                 alias,
+                value: values.get(&t.from).cloned().or_else(|| {
+                    let start = i + 2;
+                    let mut end = start;
+                    while end < ts.len() && ts[end].text != "}" {
+                        if end > start && source[ts[end - 1].to..ts[end].from].contains('\n') {
+                            break;
+                        }
+                        if let Some(&close) = pairs.get(&end) {
+                            end = close + 1;
+                        } else {
+                            end += 1;
+                        }
+                    }
+                    (end > start)
+                        .then(|| {
+                            laymesh_core::parser::expression(
+                                &source[ts[start].from..ts[end - 1].to],
+                                uri,
+                            )
+                            .ok()
+                        })
+                        .flatten()
+                }),
             });
         }
         i += 1;

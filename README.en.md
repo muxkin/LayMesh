@@ -1,6 +1,6 @@
 # LayMesh
 
-**Plot data and compose precise, reproducible scientific figures in readable code.** Combine native plots, images, vector shapes, text and formulas in one `.lay` file, then export the same layout as SVG, PDF or PNG at your chosen DPI.
+**Plot data and compose precise, reproducible scientific figures in readable code.** Combine native plots, images, vector shapes, text and formulas in one `.lay` file, then export SVG, PDF, or PNG, JPEG, TIFF, WebP and other images at your chosen DPI.
 
 [Documentation](https://muxkin.github.io/LayMesh/en/) · [中文](README.md) · [Feature gallery](docs/sections/examples.en.md) · [Installation](docs/topics/install.en.md)
 
@@ -8,9 +8,23 @@
 
 [Showcase source](examples/showcase.lay) · [Scientific plot examples](docs/gallery/plots.en.md)
 
-## Install
+## VS Code (recommended)
 
-Requires **Python 3.10+**. The stable release is **`0.3.0`**, shared by the Python package and Rust engine. Install from [PyPI](https://pypi.org/project/laymesh/):
+Install [LayMesh by Hyacine](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) from Extensions, or use **Extensions: Install from VSIX** with a platform package. **Windows x64 and Linux x64 packages include the native engine: no Python, Rust or npm installation is needed.** With Remote SSH, install the package matching the remote extension host.
+
+Open a trusted local or Remote SSH folder and save this as `figure.lay`:
+
+```lay
+page = canvas(size=(15cm, 10cm), unit="cm", background="#ffffff")
+rec = rect(size=(2cm, 2cm), fill="#888888")
+page.add(rec, offset=(0.1cm, 0.1cm))
+```
+
+Click the preview icon or run **LayMesh: Open Preview** for a live figure beside the source. Ctrl+Space completes variables and members; hover shows types; F12 goes to a definition; Shift+F12 finds workspace references and F2 renames a binding. Unsaved edits refresh the preview. See the [extension guide](extensions/vscode/README.md) for rulers, navigation and platform packages.
+
+## Python and CLI installation
+
+Requires **Python 3.10+**. This workspace prepares **`0.3.1`**, shared by Python and Rust; the published PyPI release is **`0.3.0`**. New export options require the local 0.3.1 wheel or the updated extension. Install from [PyPI](https://pypi.org/project/laymesh/):
 
 ```sh
 python -m pip install laymesh
@@ -21,7 +35,7 @@ Platform wheels bundle the native Rust engine and formula fonts for the CLI, Pyt
 
 The standard installation includes NumPy, pandas, Matplotlib and IPython. Data bindings, Matplotlib Figure import and Jupyter magics are ready to use.
 
-Supported wheel platforms are Windows x64, macOS 14+ on Intel / Apple Silicon, and Linux x64 / arm64. This release's Linux wheels require glibc 2.35+. All five platforms passed installation and usage checks on Python 3.10, 3.13 and 3.14; see the [release procedure](release/README.en.md). Body fonts come from the system or user-provided files; missing glyphs warn and display vector boxes. Supply the fonts with your figure for reproducible rendering across machines.
+Supported wheel platforms are Windows x64, macOS 14+ on Intel / Apple Silicon, and Linux x64 / arm64. The local Linux x64 wheel requires glibc 2.35+. All five published 0.3.0 platforms passed checks on Python 3.10, 3.13 and 3.14; other 0.3.1 platforms still require release-workflow verification; see the [release procedure](release/README.en.md). Body fonts come from the system or user-provided files; missing glyphs warn and display vector boxes. Supply the fonts with your figure for reproducible rendering across machines.
 
 ## First figure
 
@@ -42,9 +56,15 @@ laymesh inspect figure.lay --json
 laymesh render figure.lay -o figure.svg
 laymesh render figure.lay -o figure.pdf
 laymesh render figure.lay -o figure.png --dpi 300
+laymesh render figure.lay -o figure.jpg --dpi 300 --quality 95
+laymesh render figure.lay -o figure.tif --dpi 600 --compression lzw
+laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quality 90 --webp-method 6
 ```
 
-`python -m laymesh` invokes the same CLI and works when the command is absent from PATH. `--dpi` changes PNG pixel dimensions while preserving physical page size. `.lay` is a restricted standalone language that does not execute arbitrary Python or JavaScript code.
+`python -m laymesh` invokes the same CLI and works when the command is absent from PATH. `--dpi` changes raster pixel dimensions while preserving physical page size. `.lay` is a restricted standalone language that does not execute arbitrary Python or JavaScript code.
+
+
+The VS Code preview **Export** button and **LayMesh: Export Figure** command support the same formats and options, using unsaved buffers. [Formats, transparency and all options](docs/topics/export.en.md).
 
 ## Python and Jupyter
 
@@ -91,7 +111,7 @@ page.add(p, offset=(5 mm, 5 mm))
 
 ![Native lines, error bars and heatmap](site/media/plot-scientific-1920.webp)
 
-Finish chart layers and decorations before the first placement; panels use explicit positioning. Each layout produces one page. Fixed plot areas retain their physical dimensions; insufficient decoration space warns. Image inputs include PNG/JPEG/SVG and single-page 8-bit TIFF; SVG supports a safe subset. Native RaTeX typesets formulas without a TeX installation. See the [feature coverage map](docs/topics/feature-map.en.md) for detailed scope.
+Finish chart layers and decorations before the first placement; panels use explicit positioning. Each layout produces one page. Fixed plot areas retain their physical dimensions; insufficient decoration space warns. Image inputs include PNG, JPEG, BMP, WebP, GIF, ICO, PNM, TGA, safe SVG and single-page unsigned 8/16-bit grayscale/RGB TIFF, including alpha. GIF and animated WebP use the first frame; 16-bit inputs retain their intensity range without automatic contrast stretching. Native RaTeX typesets formulas without a TeX installation. See the [feature coverage map](docs/topics/feature-map.en.md) for detailed scope.
 
 ## Documentation and development
 

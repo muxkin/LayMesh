@@ -1,0 +1,100 @@
+// Exercise the real VS Code providers with a bundled engine and an empty PATH.
+const vscode=require('vscode');
+const assert=require('assert/strict');
+const fs=require('fs');
+const path=require('path');
+const {spawn}=require('child_process');
+const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+exports.run=async function(){
+ const root=process.env.LAYMESH_BINDINGS_ROOT;
+ const evidence={host:'VS Code extension host',empty_path:true,tests:[]};
+ const extension=vscode.extensions.getExtension('Hyacine.laymesh-language');assert(extension);
+ await extension.activate();
+ const mainUri=vscode.Uri.file(path.join(root,'main.lay'));
+ const doc=await vscode.workspace.openTextDocument(mainUri);await vscode.window.showTextDocument(doc);
+ const source=doc.getText(),pos=offset=>doc.positionAt(offset);
+ const variableAt=pos(source.indexOf('add(img1')+5);
+ let complete;
+ for(let i=0;i<50;i++){
+  complete=await vscode.commands.executeCommand('vscode.executeCompletionItemProvider',mainUri,pos(source.indexOf('add(img1')+4));
+  if(complete?.items.some(c=>c.label==='img1'))break;await pause(100);
+ }
+ assert(complete.items.some(c=>c.label==='img1'&&c.detail==='image'));
+ assert(complete.items.some(c=>c.label==='rec'&&c.detail==='rect'));
+ const members=await vscode.commands.executeCommand('vscode.executeCompletionItemProvider',mainUri,pos(source.indexOf('page.add')+5));
+ assert(members.items.some(c=>c.label==='add'));
+ evidence.tests.push('Variable completion inside page.add has inferred image/rect types');
+ const hover=await vscode.commands.executeCommand('vscode.executeHoverProvider',mainUri,variableAt);
+ assert(hover.some(h=>h.contents.some(c=>(c.value||'').includes('img1: image'))));
+ evidence.tests.push('Variable hover contains its inferred type');
+ const copyUse=pos(source.lastIndexOf('copy')+1);
+ const definitions=await vscode.commands.executeCommand('vscode.executeDefinitionProvider',mainUri,copyUse);
+ assert(definitions.some(d=>d.uri.toString()===mainUri.toString()&&d.range.start.isEqual(pos(source.indexOf('copy=')))));
+ evidence.tests.push('Ordinary value alias navigates to its own declaration');
+ const libraryUri=vscode.Uri.file(path.join(root,'lib.lay'));
+ const library=await vscode.workspace.openTextDocument(libraryUri);const amount=new vscode.Position(0,8);
+ const refs=await vscode.commands.executeCommand('vscode.executeReferenceProvider',libraryUri,amount);
+ const files=new Set(refs.map(r=>path.basename(r.uri.fsPath)));
+ assert(files.has('alias.lay')&&files.has('caller.lay')&&files.has('lib.lay'));
+ assert(!files.has('ignored.lay'));
+ assert(!vscode.workspace.textDocuments.some(d=>['alias.lay','caller.lay'].includes(path.basename(d.uri.fsPath))));
+ evidence.tests.push('Workspace references include unopened callers and explicit aliases, excluding target');
+ const highlights=await vscode.commands.executeCommand('vscode.executeDocumentHighlights',mainUri,variableAt);
+ assert(highlights.some(h=>h.kind===vscode.DocumentHighlightKind.Write));assert(highlights.some(h=>h.kind===vscode.DocumentHighlightKind.Read));
+ evidence.tests.push('Registered provider reports read/write occurrence highlights');
+ const edits=await vscode.commands.executeCommand('vscode.executeDocumentRenameProvider',libraryUri,amount,'extent');
+ assert(edits instanceof vscode.WorkspaceEdit);
+ assert(edits.entries().some(([uri,edits])=>path.basename(uri.fsPath)==='alias.lay'&&edits.length===1));
+ assert(edits.entries().some(([uri,edits])=>path.basename(uri.fsPath)==='caller.lay'&&edits.length===2));
+ assert(await vscode.workspace.applyEdit(edits));
+ const aliasUri=vscode.Uri.file(path.join(root,'alias.lay'));const alias=await vscode.workspace.openTextDocument(aliasUri);
+ assert(alias.getText().includes('{extent as w}'));assert(alias.getText().includes('{w}'));
+ const caller=await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(root,'caller.lay')));
+ assert(caller.getText().endsWith('result=extent'));
+ assert(library.getText().includes('export extent=10'));
+ evidence.tests.push('Real workspace rename updates unopened files and preserves an explicit alias');
+ const aliasRename=await vscode.commands.executeCommand('vscode.executeDocumentRenameProvider',aliasUri,alias.positionAt(alias.getText().lastIndexOf('{w}')+1),'panel_width');
+ assert.equal(aliasRename.entries().length,1);assert.equal(aliasRename.entries()[0][0].toString(),aliasUri.toString());
+ assert(await vscode.workspace.applyEdit(aliasRename));assert(alias.getText().includes('{extent as panel_width}'));
+ assert(alias.getText().includes('{panel_width}'));assert(library.getText().includes('export extent=10'));
+ evidence.tests.push('Explicit import alias rename is local and updates formatted-string expressions');
+ const consumerRefs=await vscode.commands.executeCommand('vscode.executeReferenceProvider',aliasUri,alias.positionAt(alias.getText().lastIndexOf('panel_width')+1));
+ assert.equal(consumerRefs.length,2);
+ evidence.tests.push('References refresh immediately from unsaved renamed buffers');
+ let rejected=false;
+ try{await vscode.commands.executeCommand('vscode.executeDocumentRenameProvider',libraryUri,amount,'if');}catch{rejected=true;}
+ assert(rejected);
+ evidence.tests.push('The real rename provider rejects an invalid keyword');
+ // Preview stdio uses the same executable shipped in the extension, with no runtime tools.
+ const binary=path.join(extension.extensionPath,'bin','laymesh');
+ const result=await new Promise((resolve,reject)=>{
+  const child=spawn(binary,['preview','--stdio'],{stdio:['pipe','pipe','pipe']});let buffer='';
+  const timeout=setTimeout(()=>{child.kill();reject(new Error('Native BMP preview timed out'));},20000);
+  child.on('error',reject);child.stdout.on('data',data=>{buffer+=data;let end;while((end=buffer.indexOf('\n'))>=0){const line=buffer.slice(0,end);buffer=buffer.slice(end+1);const msg=JSON.parse(line);if(msg.id===1){clearTimeout(timeout);child.stdin.end();resolve(msg);}}});
+  child.stdin.write(JSON.stringify({id:1,file:mainUri.fsPath,source})+'\n');
+ });
+ assert(result.svg?.includes('data:image/png;base64,'),JSON.stringify(result.error));
+ assert(result.dependencies.some(p=>p.includes('中文 # assets')&&p.endsWith('.bmp')));
+ evidence.tests.push('Bundled native engine renders a BMP from a Chinese/space/hash path with an empty PATH');
+ const exportDir=path.join(root,'中文 # 导出');fs.mkdirSync(exportDir);
+ const exportUri=vscode.Uri.file(path.join(exportDir,'figure.lay')),colorUri=vscode.Uri.file(path.join(exportDir,'color.lay'));
+ fs.writeFileSync(exportUri.fsPath,'page=canvas(size=(1,1))');fs.writeFileSync(colorUri.fsPath,'export shade="#000000"');
+ const layout=await vscode.workspace.openTextDocument(exportUri),color=await vscode.workspace.openTextDocument(colorUri);
+ const bufferEdit=new vscode.WorkspaceEdit();
+ bufferEdit.replace(exportUri,new vscode.Range(layout.positionAt(0),layout.positionAt(layout.getText().length)),'import {shade} from "./color.lay"\npage=canvas(size=(25.4mm,12.7mm),background=shade)');
+ bufferEdit.replace(colorUri,new vscode.Range(color.positionAt(0),color.positionAt(color.getText().length)),'export shade="#12ab34"');
+ assert(await vscode.workspace.applyEdit(bufferEdit));assert(layout.isDirty&&color.isDirty);
+ const exports=[['png',{compression:'best'}],['jpg',{quality:95}],['tif',{compression:'deflate'}],['webp',{webp_lossless:false,quality:95,webp_method:6,webp_alpha_quality:100}],['bmp',{}],['gif',{}],['ico',{}],['pam',{}],['ppm',{}],['pgm',{}],['pbm',{}],['tga',{}],['svg',{}],['pdf',{}]];
+ for(const [extension,options] of exports){
+  const destination=path.join(exportDir,'图形.'+extension),vector=['svg','pdf'].includes(extension);
+  const result=await vscode.commands.executeCommand('laymesh.exportFigure',exportUri,{output:destination,options:{...(vector?{}:{dpi:144}),...options}});
+  assert.equal(result.exported,destination);assert.equal(result.bytes,fs.statSync(destination).size);assert(result.dependencies.includes(colorUri.fsPath));
+ }
+ evidence.tests.push('Registered export command writes 14 formats from unsaved entry and import buffers with an empty PATH');
+ const destination=path.join(exportDir,'图形.png'),existing=fs.readFileSync(destination);
+ await assert.rejects(vscode.commands.executeCommand('laymesh.exportFigure',exportUri,{output:destination,options:{quality:95}}));
+ assert.deepEqual(fs.readFileSync(destination),existing);
+ evidence.tests.push('Export validation rejects inapplicable parameters and preserves existing output');
+ evidence.exports=exports.map(([extension])=>({extension,file:path.join(exportDir,'图形.'+extension)}));
+ fs.writeFileSync(process.env.LAYMESH_BINDINGS_EVIDENCE,JSON.stringify(evidence,null,2)+'\n');
+};

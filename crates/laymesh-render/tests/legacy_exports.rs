@@ -178,11 +178,14 @@ fn legacy_svg_input_and_body_text_stay_vector_and_all_image_formats_load() {
 }
 #[test]
 fn legacy_asset_and_syntax_failures_keep_diagnostics() {
+    // The original 16-bit TIFF rejection is superseded by lossless single-page import.
+    let accepted = scene("1044526", 16);
+    close(accepted.width, 20.);
+    close(accepted.height, 20.);
     located(
         "1044526",
         &[
             (15, "E_TIFF"),
-            (16, "E_TIFF"),
             (17, "E_ASSET"),
             (18, "E_UNIT"),
             (19, "E_NAME"),

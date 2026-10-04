@@ -43,17 +43,28 @@ fn tree(scene: &Scene) -> Result<usvg::Tree> {
 }
 /// Render transparent RGBA PNG at the requested physical resolution and write a pHYs chunk.
 pub fn render_png(scene: &Scene, dpi: f64) -> Result<Vec<u8>> {
+    super::export::render_export(
+        scene,
+        "png",
+        &super::export::ExportOptions {
+            dpi: Some(dpi),
+            ..Default::default()
+        },
+    )
+}
+
+pub(crate) fn rasterize(scene: &Scene, dpi: f64) -> Result<(u32, u32, Vec<u8>)> {
     if !dpi.is_finite() || dpi <= 0. || dpi > 25_400. {
         return Err(error("DPI 必须为 0–25400 之间的正数"));
     }
     let w = (scene.width * dpi / 25.4).round().max(1.);
     let h = (scene.height * dpi / 25.4).round().max(1.);
     if w * h > 100_000_000. || w > u32::MAX as f64 || h > u32::MAX as f64 {
-        return Err(error("PNG 像素数超过上限"));
+        return Err(error("导出像素数超过 100000000 上限"));
     }
     let tree = tree(scene)?;
     let mut pixmap = tiny_skia::Pixmap::new(w as u32, h as u32)
-        .ok_or_else(|| error("无法分配 PNG 像素缓冲区"))?;
+        .ok_or_else(|| error("无法分配导出像素缓冲区"))?;
     let transform = tiny_skia::Transform::from_scale(
         w as f32 / tree.size().width(),
         h as f32 / tree.size().height(),
@@ -64,23 +75,7 @@ pub fn render_png(scene: &Scene, dpi: f64) -> Result<Vec<u8>> {
         let p = p.demultiply();
         rgba.extend_from_slice(&[p.red(), p.green(), p.blue(), p.alpha()]);
     }
-    let mut out = vec![];
-    {
-        let mut enc = png::Encoder::new(&mut out, w as u32, h as u32);
-        enc.set_color(png::ColorType::Rgba);
-        enc.set_depth(png::BitDepth::Eight);
-        enc.set_pixel_dims(Some(png::PixelDimensions {
-            xppu: (dpi / 0.0254).round() as u32,
-            yppu: (dpi / 0.0254).round() as u32,
-            unit: png::Unit::Meter,
-        }));
-        enc.set_source_srgb(png::SrgbRenderingIntent::Perceptual);
-        let mut writer = enc.write_header().map_err(|e| error(e.to_string()))?;
-        writer
-            .write_image_data(&rgba)
-            .map_err(|e| error(e.to_string()))?;
-    }
-    Ok(out)
+    Ok((w as u32, h as u32, rgba))
 }
 fn formula_semantics(
     node: &Json,
@@ -224,6 +219,7 @@ mod tests {
             height: 12.7,
             background: json!("none"),
             layout_dpi: 96.,
+            canvas_unit: "mm".into(),
             export_dpi: 300.,
             nodes: vec![],
             warnings: vec![],
@@ -311,6 +307,7 @@ mod extraction_tests {
             height: 30.,
             background: json!("none"),
             layout_dpi: 96.,
+            canvas_unit: "mm".into(),
             export_dpi: 96.,
             nodes: vec![text, formula],
             fonts: fs.assets,

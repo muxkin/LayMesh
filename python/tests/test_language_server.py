@@ -3,7 +3,7 @@ import json,queue,subprocess,tempfile,threading,unittest
 from pathlib import Path
 from laymesh.bridge import _command
 class NativeLanguageServer(unittest.TestCase):
- def setUp(self):
+ def setUp(self,initialization=None):
   self.process=subprocess.Popen([*_command(),'lsp','--stdio'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE);self.messages=queue.Queue();self.ident=0;self.configuration={};self.configuration_requests=0;self.configuration_registrations=0;self.published=[]
   def read():
    while True:
@@ -15,12 +15,14 @@ class NativeLanguageServer(unittest.TestCase):
      key,value=line.decode().split(':',1);header[key.lower()]=value.strip()
     data=self.process.stdout.read(int(header['content-length']));self.messages.put(json.loads(data))
   threading.Thread(target=read,daemon=True).start()
-  result=self.request('initialize',{'locale':'en','capabilities':{'textDocument':{'completion':{'completionItem':{'documentationFormat':['markdown']}},'hover':{'contentFormat':['markdown']},'signatureHelp':{'signatureInformation':{'documentationFormat':['markdown'],'parameterInformation':{'labelOffsetSupport':True}}}}}})
+  parameters={'locale':'en','capabilities':{'textDocument':{'completion':{'completionItem':{'documentationFormat':['markdown']}},'hover':{'contentFormat':['markdown']},'signatureHelp':{'signatureInformation':{'documentationFormat':['markdown'],'parameterInformation':{'labelOffsetSupport':True}}}}}}
+  if initialization:parameters.update(initialization)
+  result=self.request('initialize',parameters)
   self.assertEqual(result['capabilities']['positionEncoding'],'utf-16');self.notify('initialized',{})
  def send(self,message):
   body=json.dumps({'jsonrpc':'2.0',**message},ensure_ascii=False).encode();self.process.stdin.write(f'Content-Length: {len(body)}\r\n\r\n'.encode()+body);self.process.stdin.flush()
  def notify(self,method,params):self.send({'method':method,'params':params})
- def request(self,method,params):
+ def request(self,method,params,expected_error=False):
   self.ident+=1;ident=self.ident;self.send({'id':ident,'method':method,'params':params})
   while True:
    message=self.messages.get(timeout=15)
@@ -30,6 +32,8 @@ class NativeLanguageServer(unittest.TestCase):
     self.assertTrue(any(r['method']=='workspace/didChangeConfiguration' for r in message['params']['registrations']));self.configuration_registrations+=1;self.send({'id':message['id'],'result':None});continue
    if message.get('method')=='textDocument/publishDiagnostics':self.published.append(message['params'])
    if message.get('id')==ident:
+    if expected_error:
+     self.assertIn('error',message);return message['error']
     self.assertNotIn('error',message);return message.get('result')
  def tearDown(self):
   if self.process.poll() is None:
@@ -38,6 +42,48 @@ class NativeLanguageServer(unittest.TestCase):
    except subprocess.TimeoutExpired:self.process.kill();self.process.wait()
   for stream in [self.process.stdin,self.process.stdout,self.process.stderr]:stream.close()
  def open(self,uri,text):self.notify('textDocument/didOpen',{'textDocument':{'uri':uri,'text':text,'version':1,'languageId':'laymesh'}})
+ def test_workspace_references_rename_aliases_and_utf16_buffers(self):
+  with tempfile.TemporaryDirectory(prefix='laymesh workspace 中文 ') as tmp:
+   root=Path(tmp);library=root/'lib.lay';library.write_text('export width=10',encoding='utf-8')
+   alias=root/'alias.lay';alias.write_text('import {width as w} from "./lib.lay"\nlabel=f"中文 😀 {w}"',encoding='utf-8')
+   caller=root/'caller.lay';caller.write_text('import {width} from "./lib.lay"\nvalue=width',encoding='utf-8')
+   ignored=root/'target';ignored.mkdir();(ignored/'ignored.lay').write_text('import {width} from "../lib.lay"\nx=width')
+   self.notify('workspace/didChangeWorkspaceFolders',{'event':{'added':[{'uri':root.as_uri(),'name':'test'}],'removed':[]}})
+   uri=library.as_uri();self.open(uri,library.read_text(encoding='utf-8'))
+   params={'textDocument':{'uri':uri},'position':{'line':0,'character':8}}
+   refs=self.request('textDocument/references',{**params,'context':{'includeDeclaration':True}})
+   self.assertEqual(len(refs),6);self.assertEqual({r['uri'] for r in refs},{uri,alias.as_uri(),caller.as_uri()})
+   usage=next(r for r in refs if r['uri']==alias.as_uri() and r['range']['start']['line']==1)
+   self.assertEqual(usage['range'],{'start':{'line':1,'character':15},'end':{'line':1,'character':16}})
+   highlight=self.request('textDocument/documentHighlight',params);self.assertEqual(highlight[0]['kind'],3)
+   prepared=self.request('textDocument/prepareRename',params);self.assertEqual(prepared['placeholder'],'width')
+   renamed=self.request('textDocument/rename',{**params,'newName':'extent'})
+   self.assertEqual(len(renamed['changes'][alias.as_uri()]),1);self.assertEqual(len(renamed['changes'][caller.as_uri()]),2)
+   self.open(alias.as_uri(),'import {width as w} from "./lib.lay"\nlabel=f"{w} {w}"')
+   alias_params={'textDocument':{'uri':alias.as_uri()},'position':{'line':1,'character':9}}
+   refs=self.request('textDocument/references',{**alias_params,'context':{'includeDeclaration':True}});self.assertEqual(len(refs),3)
+   local=self.request('textDocument/rename',{**alias_params,'newName':'panel_width'});self.assertEqual(set(local['changes']),{alias.as_uri()})
+   alias.write_text('import {width as w} from "./lib.lay"\nlabel=f"{w}"',encoding='utf-8')
+   self.notify('workspace/didChangeWatchedFiles',{'changes':[{'uri':alias.as_uri(),'type':2}]})
+   self.assertEqual(len(self.request('textDocument/references',{**alias_params,'context':{'includeDeclaration':True}})),3)
+   self.notify('textDocument/didClose',{'textDocument':{'uri':alias.as_uri()}})
+   self.assertEqual(len(self.request('textDocument/references',{**alias_params,'context':{'includeDeclaration':True}})),2)
+   self.assertEqual(self.request('textDocument/rename',{**params,'newName':'if'},expected_error=True)['code'],-32602)
+   self.assertEqual(self.request('textDocument/rename',{**params,'textDocument':{'uri':uri,'version':0},'newName':'extent'},expected_error=True)['code'],-32801)
+   caller.unlink();self.notify('workspace/didChangeWatchedFiles',{'changes':[{'uri':caller.as_uri(),'type':3}]})
+   self.assertEqual(len(self.request('textDocument/references',{**params,'context':{'includeDeclaration':True}})),4)
+   self.notify('workspace/didChangeWorkspaceFolders',{'event':{'added':[],'removed':[{'uri':root.as_uri(),'name':'test'}]}})
+   self.assertEqual(len(self.request('textDocument/references',{**params,'context':{'includeDeclaration':True}})),1)
+ def test_multi_root_initialization_and_versioned_rename_edits(self):
+  with tempfile.TemporaryDirectory() as first,tempfile.TemporaryDirectory() as second:
+   root1=Path(first);root2=Path(second);library=root1/'lib.lay';library.write_text('export amount=10')
+   consumer=root2/'caller.lay';consumer.write_text(f'import {{amount}} from "{library.as_posix()}"\nresult=amount')
+   # Start a fresh server with both roots in its initial handshake.
+   self.tearDown();self.setUp({'locale':'en','workspaceFolders':[{'uri':root1.as_uri(),'name':'one'},{'uri':root2.as_uri(),'name':'two'}],'capabilities':{'workspace':{'workspaceFolders':True,'workspaceEdit':{'documentChanges':True}}}})
+   self.open(library.as_uri(),library.read_text());params={'textDocument':{'uri':library.as_uri()},'position':{'line':0,'character':8}}
+   refs=self.request('textDocument/references',{**params,'context':{'includeDeclaration':False}});self.assertEqual(len(refs),2)
+   edit=self.request('textDocument/rename',{**params,'newName':'quantity'});changes={c['textDocument']['uri']:c for c in edit['documentChanges']}
+   self.assertEqual(changes[library.as_uri()]['textDocument']['version'],1);self.assertIsNone(changes[consumer.as_uri()]['textDocument']['version'])
  def test_completion_hover_and_named_signature(self):
   uri='file:///test.lay';source='page=canvas(size=(100,80))\np=plot(size=(80,60))\np.line(x=[0,1],y=[1,2], line_';self.open(uri,source)
   result=self.request('textDocument/completion',{'textDocument':{'uri':uri},'position':{'line':2,'character':len(source.splitlines()[2])}})
@@ -55,8 +101,10 @@ class NativeLanguageServer(unittest.TestCase):
   sig=self.request('textDocument/signatureHelp',{'textDocument':{'uri':uri},'position':{'line':2,'character':9}});self.assertTrue(sig['signatures'][0]['label'].startswith('add('))
  def test_percent_encoded_imports_read_disk(self):
   with tempfile.TemporaryDirectory(prefix='laymesh URI 中文 ') as tmp:
-   root=Path(tmp);module=root/'模块 #%.lay';module.write_text('## Encoded module documentation.\nexport function card(title){return title}\n',encoding='utf-8');uri=(root/'main.lay').as_uri();self.open(uri,'import {card} from "./模块 #%.lay"\ncard(')
-   signature=self.request('textDocument/signatureHelp',{'textDocument':{'uri':uri},'position':{'line':1,'character':5}});self.assertIn('Encoded module documentation',signature['signatures'][0]['documentation']['value'])
+   root=Path(tmp);module=root/'模块 #%.lay';module.write_text('## Encoded module documentation.\nexport function card(title){return title}\n',encoding='utf-8')
+   for escaped in [False,True]:
+    uri=(root/f'main{escaped}.lay').as_uri();source=json.dumps('./'+module.name,ensure_ascii=escaped);self.open(uri,'import {card} from '+source+'\ncard(')
+    signature=self.request('textDocument/signatureHelp',{'textDocument':{'uri':uri},'position':{'line':1,'character':5}});self.assertIn('Encoded module documentation',signature['signatures'][0]['documentation']['value'])
    definition=self.request('textDocument/definition',{'textDocument':{'uri':uri},'position':{'line':1,'character':2}});self.assertEqual(definition['uri'],module.as_uri())
  def test_located_diagnostic_quick_fix(self):
   uri='file:///fix.lay';source='page=canvas(size=(40,30))\nr=rect(size=(3,2),stroke_width=1pt)';self.open(uri,source)

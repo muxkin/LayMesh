@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value as Json, json};
 use std::{
     cell::RefCell,
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     path::{Component, Path, PathBuf},
     rc::Rc,
 };
@@ -314,9 +314,15 @@ pub fn resolve(file: &str, relative: &str) -> String {
 pub struct Host {
     pub files: BTreeMap<String, Vec<u8>>,
     pub native: bool,
+    /// Optional preview resource journal, shared by cloned hosts. Failed reads
+    /// are included so creating a missing resource can refresh the preview.
+    pub dependencies: Option<Rc<RefCell<BTreeSet<String>>>>,
 }
 impl Host {
     pub fn read(&self, path: &str, file: &str, loc: Loc) -> Result<Vec<u8>> {
+        if let Some(dependencies) = &self.dependencies {
+            dependencies.borrow_mut().insert(path.to_owned());
+        }
         self.files
             .get(path)
             .cloned()
@@ -344,11 +350,16 @@ pub struct Scene {
     pub height: f64,
     pub background: Json,
     pub layout_dpi: f64,
+    #[serde(default = "default_canvas_unit")]
+    pub canvas_unit: String,
     pub export_dpi: f64,
     pub nodes: Vec<Json>,
     pub warnings: Vec<Diagnostic>,
     #[serde(default)]
     pub fonts: BTreeMap<String, FontAsset>,
+}
+fn default_canvas_unit() -> String {
+    "mm".into()
 }
 pub fn base(kind: &str, w: f64, h: f64) -> Json {
     json!({"kind":kind,"id":"","x":0.0,"y":0.0,"width":w,"height":h,"rotation":0.0,"opacity":1.0})

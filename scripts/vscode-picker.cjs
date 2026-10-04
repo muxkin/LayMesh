@@ -7,7 +7,7 @@ exports.run=async()=>{
  const source='page=canvas(size=(80,60),background="#0072b290")';
  const file=path.join(directory,'main.lay');fs.writeFileSync(file,source);
  const doc=await vscode.workspace.openTextDocument(file);await vscode.window.showTextDocument(doc);
- const extension=vscode.extensions.getExtension('laymesh.laymesh-language');
+ const extension=vscode.extensions.getExtension(require('../extensions/vscode/package.json').publisher+'.laymesh-language');
  const api=require('module')._load('vscode',{filename:path.join(extension.extensionPath,'dist/client.cjs')});
  const create=api.window.createWebviewPanel;
  api.window.createWebviewPanel=(...args)=>{const panel=create(...args);if(args[0]==='laymeshColor'){const listen=panel.webview.onDidReceiveMessage;panel.webview.onDidReceiveMessage=(handler,...rest)=>listen.call(panel.webview,(message)=>{if(message.method==='convert')conversionRequests++;return handler(message)},...rest)}return panel};

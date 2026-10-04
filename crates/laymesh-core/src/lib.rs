@@ -1,7 +1,7 @@
 pub mod assets;
+mod collections;
 pub mod color;
 pub mod colormap;
-mod collections;
 mod data;
 pub mod endpoints;
 pub mod engine;

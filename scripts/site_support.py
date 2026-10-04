@@ -22,8 +22,8 @@ def dependencies(source,seen=None):
  seen.add(source);p=ROOT/source
  if p.suffix.lower() not in ('.lay','.lcss','.py','.ipynb','.svg'):return sorted(seen)
  text=p.read_text();text=re.sub(r'url\(\s*([^\'"()\s]+)\s*\)',r'url("\1")',text)
- for value in re.findall(r'''["']([^"'\n]+\.(?:lay|lcss|png|jpg|jpeg|tif|tiff|svg|json|csv|ttf|otf|ttc|otc)(?:#[^"'\n]*)?)["']''',text):
-  value=value.split('#')[0];target=posixpath.normpath(posixpath.join(posixpath.dirname(source),value))
+ for value in re.findall(r'''["']([^"'\n]+\.(?:lay|lcss|png|jpg|jpeg|tif|tiff|bmp|webp|gif|ico|pnm|pbm|pgm|ppm|pam|tga|svg|json|csv|ttf|otf|ttc|otc)(?:#[^"'\n]*)?)["']''',text):
+  value=re.sub(r'(\.(?:ttf|otf|ttc|otc))#[^/]*$',r'\1',value);target=posixpath.normpath(posixpath.join(posixpath.dirname(source),value))
   if target.startswith('../') or value.startswith('/'):continue
   if (ROOT/target).is_file():dependencies(target,seen)
  return sorted(seen)

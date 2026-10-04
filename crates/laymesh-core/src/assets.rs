@@ -279,6 +279,151 @@ fn tiff_page_count(bytes: &[u8]) -> Option<usize> {
     }
     Some(count)
 }
+// tiff 0.11 exposes gray+alpha as Multiband, which image's TIFF adapter rejects.
+// Decode those two channels directly, retaining the same pixel/allocation limits.
+fn gray_alpha_tiff(
+    bytes: &[u8],
+    mut decoder: tiff::decoder::Decoder<Cursor<&[u8]>>,
+    white_is_zero: bool,
+    associated_alpha: bool,
+    file: &str,
+    loc: Loc,
+) -> Result<Json> {
+    use tiff::tags::Tag;
+    let fail = |e| error("E_TIFF", format!("TIFF 无法读取：{e}"), file, loc);
+    let (width, height) = decoder.dimensions().map_err(fail)?;
+    if u64::from(width) * u64::from(height) > 100_000_000 {
+        return Err(error("E_ASSET", "图片像素数超过上限", file, loc));
+    }
+    let orientation = decoder
+        .find_tag(Tag::Orientation)
+        .map_err(fail)?
+        .and_then(|v| image::metadata::Orientation::from_exif(v.into_u16().ok()?.min(255) as u8))
+        .unwrap_or(image::metadata::Orientation::NoTransforms);
+    let profile = decoder
+        .find_tag(Tag::IccProfile)
+        .map_err(fail)?
+        .map(|v| v.into_u8_vec().map_err(fail))
+        .transpose()?;
+    // The TIFF decoder cannot invert Multiband. Normalize only the photometric
+    // tag in our private copy, then invert gray samples (never alpha) ourselves.
+    let mut normalized = vec![];
+    if white_is_zero {
+        normalized.extend_from_slice(bytes);
+        let le = &bytes[..2] == b"II";
+        let read16 = |p| {
+            if le {
+                u16::from_le_bytes([bytes[p], bytes[p + 1]])
+            } else {
+                u16::from_be_bytes([bytes[p], bytes[p + 1]])
+            }
+        };
+        let offset = if le {
+            u32::from_le_bytes(bytes[4..8].try_into().unwrap())
+        } else {
+            u32::from_be_bytes(bytes[4..8].try_into().unwrap())
+        } as usize;
+        for p in (offset + 2..offset + 2 + usize::from(read16(offset)) * 12).step_by(12) {
+            if read16(p) == 262 {
+                if read16(p + 2) != 3
+                    || &bytes[p + 4..p + 8]
+                        != &if le {
+                            1u32.to_le_bytes()
+                        } else {
+                            1u32.to_be_bytes()
+                        }
+                {
+                    return Err(error("E_TIFF", "TIFF 灰度类型标签无效", file, loc));
+                }
+                normalized[p + 8..p + 10].copy_from_slice(&if le {
+                    1u16.to_le_bytes()
+                } else {
+                    1u16.to_be_bytes()
+                });
+                break;
+            }
+        }
+    }
+    let mut decoder = if white_is_zero {
+        tiff::decoder::Decoder::new(Cursor::new(normalized.as_slice())).map_err(fail)?
+    } else {
+        decoder
+    };
+    let mut buffer = tiff::decoder::DecodingResult::U8(vec![]);
+    let layout = decoder.read_image_to_buffer(&mut buffer).map_err(fail)?;
+    let sample_bytes = match &buffer {
+        tiff::decoder::DecodingResult::U8(_) => 1,
+        tiff::decoder::DecodingResult::U16(_) => 2,
+        _ => return Err(error("E_TIFF", "TIFF 仅支持无符号 8/16 位样本", file, loc)),
+    };
+    let raw = buffer.as_buffer(0);
+    let raw = raw.as_bytes();
+    if raw.len() < layout.complete_len {
+        return Err(error("E_ASSET", "图片解码超过内存上限", file, loc));
+    }
+    let mut interleaved = vec![];
+    let raw = if layout.planes > 1 {
+        let stride = layout.plane_stride.unwrap().get();
+        interleaved.reserve(raw.len());
+        for i in (0..stride).step_by(sample_bytes) {
+            interleaved.extend_from_slice(&raw[i..i + sample_bytes]);
+            interleaved.extend_from_slice(&raw[stride + i..stride + i + sample_bytes]);
+        }
+        interleaved.as_slice()
+    } else {
+        raw
+    };
+    let mut image = match sample_bytes {
+        1 => {
+            let mut pixels = raw.to_vec();
+            if white_is_zero {
+                for p in pixels.chunks_exact_mut(2) {
+                    p[0] = 255 - p[0];
+                }
+            }
+            image::DynamicImage::ImageLumaA8(
+                image::ImageBuffer::from_raw(width, height, pixels)
+                    .ok_or_else(|| error("E_TIFF", "TIFF 灰度 Alpha 数据长度错误", file, loc))?,
+            )
+        }
+        2 => {
+            let mut pixels = raw
+                .chunks_exact(2)
+                .map(|v| u16::from_ne_bytes([v[0], v[1]]))
+                .collect::<Vec<_>>();
+            if white_is_zero {
+                for p in pixels.chunks_exact_mut(2) {
+                    p[0] = 65535 - p[0];
+                }
+            }
+            image::DynamicImage::ImageLumaA16(
+                image::ImageBuffer::from_raw(width, height, pixels)
+                    .ok_or_else(|| error("E_TIFF", "TIFF 灰度 Alpha 数据长度错误", file, loc))?,
+            )
+        }
+        _ => return Err(error("E_TIFF", "TIFF 仅支持无符号 8/16 位样本", file, loc)),
+    };
+    if associated_alpha {
+        straighten_alpha(&mut image);
+    }
+    if let Some(profile) = profile {
+        let profile = moxcms::ColorProfile::new_from_slice(&profile)
+            .map_err(|e| error("E_ASSET", format!("ICC 无效：{e}"), file, loc))?;
+        image = convert_icc(image, &profile, file, loc)?;
+    }
+    image.apply_orientation(orientation);
+    raster_asset(image, file, loc)
+}
+fn raster_asset(image: image::DynamicImage, file: &str, loc: Loc) -> Result<Json> {
+    let (w, h) = (image.width(), image.height());
+    let mut out = Cursor::new(vec![]);
+    image
+        .write_to(&mut out, ImageFormat::Png)
+        .map_err(|e| error("E_ASSET", e.to_string(), file, loc))?;
+    Ok(
+        json!({"mime":"image/png","data":base64::engine::general_purpose::STANDARD.encode(out.into_inner()),"width":w,"height":h}),
+    )
+}
 fn convert_icc(
     image: image::DynamicImage,
     profile: &moxcms::ColorProfile,
@@ -287,6 +432,34 @@ fn convert_icc(
 ) -> Result<image::DynamicImage> {
     use moxcms::{DataColorSpace, Layout};
     let (width, height) = (image.width(), image.height());
+    if matches!(
+        image.color(),
+        image::ColorType::L16
+            | image::ColorType::La16
+            | image::ColorType::Rgb16
+            | image::ColorType::Rgba16
+    ) {
+        let (layout, pixels) = match profile.color_space {
+            DataColorSpace::Rgb => (Layout::Rgba, image.into_rgba16().into_raw()),
+            DataColorSpace::Gray => (Layout::GrayAlpha, image.into_luma_alpha16().into_raw()),
+            _ => return Err(error("E_ASSET", "ICC 色彩空间与解码像素不匹配", file, loc)),
+        };
+        let transform = profile
+            .create_transform_16bit(
+                layout,
+                &moxcms::ColorProfile::new_srgb(),
+                Layout::Rgba,
+                moxcms::TransformOptions::default(),
+            )
+            .map_err(|e| error("E_ASSET", format!("ICC 转换无法创建：{e}"), file, loc))?;
+        let mut converted = vec![0u16; (width as usize) * (height as usize) * 4];
+        transform
+            .transform(&pixels, &mut converted)
+            .map_err(|e| error("E_ASSET", format!("ICC 转换失败：{e}"), file, loc))?;
+        return Ok(image::DynamicImage::ImageRgba16(
+            image::ImageBuffer::from_raw(width, height, converted).unwrap(),
+        ));
+    }
     let (layout, pixels) = match profile.color_space {
         DataColorSpace::Rgb => (Layout::Rgba, image.into_rgba8().into_raw()),
         DataColorSpace::Gray => (Layout::GrayAlpha, image.into_luma_alpha8().into_raw()),
@@ -296,6 +469,29 @@ fn convert_icc(
     Ok(image::DynamicImage::ImageRgba8(
         image::RgbaImage::from_raw(width, height, converted).unwrap(),
     ))
+}
+/// TIFF associated alpha is stored premultiplied; PNG and ICC expect straight samples.
+fn straighten_alpha(image: &mut image::DynamicImage) {
+    fn straighten<T: Copy + Into<u64> + TryFrom<u64>>(pixels: &mut [T], channels: usize, max: u64) {
+        for pixel in pixels.chunks_exact_mut(channels) {
+            let alpha = pixel[channels - 1].into();
+            for value in &mut pixel[..channels - 1] {
+                let result = if alpha == 0 {
+                    0
+                } else {
+                    ((*value).into() * max + alpha / 2) / alpha
+                };
+                *value = T::try_from(result.min(max)).ok().unwrap();
+            }
+        }
+    }
+    match image {
+        image::DynamicImage::ImageLumaA8(p) => straighten(p.as_mut(), 2, 255),
+        image::DynamicImage::ImageRgba8(p) => straighten(p.as_mut(), 4, 255),
+        image::DynamicImage::ImageLumaA16(p) => straighten(p.as_mut(), 2, 65535),
+        image::DynamicImage::ImageRgba16(p) => straighten(p.as_mut(), 4, 65535),
+        _ => {}
+    }
 }
 fn transform_icc(
     pixels: &[u8],
@@ -418,6 +614,12 @@ pub fn load(bytes: &[u8], path: &str, file: &str, loc: Loc) -> Result<Json> {
         "png" => ImageFormat::Png,
         "jpg" | "jpeg" => ImageFormat::Jpeg,
         "tif" | "tiff" => ImageFormat::Tiff,
+        "bmp" => ImageFormat::Bmp,
+        "webp" => ImageFormat::WebP,
+        "gif" => ImageFormat::Gif,
+        "ico" => ImageFormat::Ico,
+        "pnm" | "pbm" | "pgm" | "ppm" | "pam" => ImageFormat::Pnm,
+        "tga" => ImageFormat::Tga,
         _ => {
             return Err(error(
                 "E_ASSET",
@@ -427,17 +629,84 @@ pub fn load(bytes: &[u8], path: &str, file: &str, loc: Loc) -> Result<Json> {
             ));
         }
     };
+    let mut associated_alpha = false;
     let mut decoder: Box<dyn ImageDecoder + '_> = if format == ImageFormat::Tiff {
+        if tiff_page_count(bytes) != Some(1) {
+            return Err(error("E_TIFF", "仅支持单页 TIFF", file, loc));
+        }
+        let mut metadata = tiff::decoder::Decoder::new(Cursor::new(bytes))
+            .map_err(|e| error("E_TIFF", format!("TIFF 无法读取：{e}"), file, loc))?;
+        let samples = metadata
+            .find_tag_unsigned_vec::<u16>(tiff::tags::Tag::SampleFormat)
+            .map_err(|e| error("E_TIFF", format!("TIFF 样本类型无法读取：{e}"), file, loc))?;
+        if samples.is_some_and(|samples| samples.iter().any(|&sample| sample != 1)) {
+            return Err(error("E_TIFF", "TIFF 仅支持无符号 8/16 位样本", file, loc));
+        }
+        let alpha = metadata
+            .find_tag_unsigned_vec::<u16>(tiff::tags::Tag::ExtraSamples)
+            .map_err(|e| error("E_TIFF", format!("TIFF Alpha 无法读取：{e}"), file, loc))?;
+        associated_alpha = alpha
+            .as_ref()
+            .is_some_and(|samples| samples.first() == Some(&1));
+        let color = metadata
+            .colortype()
+            .map_err(|e| error("E_TIFF", format!("TIFF 色彩类型无法读取：{e}"), file, loc))?;
+        if matches!(
+            color,
+            tiff::ColorType::Multiband {
+                bit_depth: 8 | 16,
+                num_samples: 2
+            }
+        ) && alpha
+            .as_ref()
+            .is_some_and(|samples| matches!(samples.as_slice(), [1] | [2]))
+        {
+            let photometric = metadata
+                .get_tag_unsigned::<u16>(tiff::tags::Tag::PhotometricInterpretation)
+                .map_err(|e| error("E_TIFF", format!("TIFF 灰度类型无法读取：{e}"), file, loc))?;
+            if matches!(photometric, 0 | 1) {
+                return gray_alpha_tiff(
+                    bytes,
+                    metadata,
+                    photometric == 0,
+                    associated_alpha,
+                    file,
+                    loc,
+                );
+            }
+        }
+        if !matches!(
+            color,
+            tiff::ColorType::Gray(8 | 16)
+                | tiff::ColorType::RGB(8 | 16)
+                | tiff::ColorType::RGBA(8 | 16)
+        ) {
+            return Err(error(
+                "E_TIFF",
+                "TIFF 仅支持 8/16 位灰度或 RGB，可带 Alpha",
+                file,
+                loc,
+            ));
+        }
         let decoder = image::codecs::tiff::TiffDecoder::new(Cursor::new(bytes))
             .map_err(|e| error("E_TIFF", format!("TIFF 无法读取：{e}"), file, loc))?;
         if !matches!(
             decoder.color_type(),
-            image::ColorType::L8 | image::ColorType::Rgb8
+            image::ColorType::L8
+                | image::ColorType::La8
+                | image::ColorType::Rgb8
+                | image::ColorType::Rgba8
+                | image::ColorType::L16
+                | image::ColorType::La16
+                | image::ColorType::Rgb16
+                | image::ColorType::Rgba16
         ) {
-            return Err(error("E_TIFF", "首版只支持 8 位灰度或 RGB TIFF", file, loc));
-        }
-        if tiff_page_count(bytes) != Some(1) {
-            return Err(error("E_TIFF", "首版只支持单页 TIFF", file, loc));
+            return Err(error(
+                "E_TIFF",
+                "TIFF 仅支持 8/16 位灰度或 RGB，可带 Alpha",
+                file,
+                loc,
+            ));
         }
         // Read TIFF tags before image 0.25's set_limits adjustment, which can
         // otherwise make a valid ICC tag unavailable on small images.
@@ -476,8 +745,11 @@ pub fn load(bytes: &[u8], path: &str, file: &str, loc: Loc) -> Result<Json> {
     {
         cmyk_jpeg(bytes, profile.as_ref().unwrap(), file, loc)?
     } else {
-        let image = image::DynamicImage::from_decoder(decoder)
+        let mut image = image::DynamicImage::from_decoder(decoder)
             .map_err(|e| error("E_ASSET", format!("图片无法解码：{path}: {e}"), file, loc))?;
+        if associated_alpha {
+            straighten_alpha(&mut image);
+        }
         if let Some(profile) = &profile {
             convert_icc(image, profile, file, loc)?
         } else {
@@ -485,14 +757,7 @@ pub fn load(bytes: &[u8], path: &str, file: &str, loc: Loc) -> Result<Json> {
         }
     };
     image.apply_orientation(orientation);
-    let (w, h) = (image.width(), image.height());
-    let mut out = Cursor::new(vec![]);
-    image
-        .write_to(&mut out, ImageFormat::Png)
-        .map_err(|e| error("E_ASSET", e.to_string(), file, loc))?;
-    Ok(
-        json!({"mime":"image/png","data":base64::engine::general_purpose::STANDARD.encode(out.into_inner()),"width":w,"height":h}),
-    )
+    raster_asset(image, file, loc)
 }
 #[cfg(test)]
 mod tests {
@@ -526,13 +791,11 @@ mod tests {
         for bytes in [
             include_bytes!("../../../tests/assets/gray8.tiff").as_slice(),
             include_bytes!("../../../tests/assets/rgb8.tiff").as_slice(),
+            include_bytes!("../../../tests/assets/gray16.tiff").as_slice(),
         ] {
             assert!(load(bytes, "image.tiff", "x", Loc::default()).is_ok());
         }
-        for bytes in [
-            include_bytes!("../../../tests/assets/gray16.tiff").as_slice(),
-            include_bytes!("../../../tests/assets/multipage.tiff").as_slice(),
-        ] {
+        for bytes in [include_bytes!("../../../tests/assets/multipage.tiff").as_slice()] {
             assert_eq!(
                 load(bytes, "image.tiff", "x", Loc::default())
                     .unwrap_err()

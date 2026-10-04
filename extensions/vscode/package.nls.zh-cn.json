@@ -1,0 +1,20 @@
+{
+  "extension.description": "LayMesh DSL 与 LCSS：实时图形预览、可配置图片导出、单位标尺、画布和绘图坐标、语言提示与颜色编辑。",
+  "command.editColor": "LayMesh：编辑颜色",
+  "command.openPreview": "LayMesh：打开预览",
+  "config.language": "预览器、导出参数、选色器、补全、悬停和参数说明的语言；`auto` 跟随 VS Code 显示语言。命令名称和设置说明始终跟随 VS Code 显示语言。",
+  "language.auto": "跟随 VS Code 显示语言",
+  "language.zh-CN": "简体中文",
+  "language.en": "英文",
+  "config.executable": "原生 LayMesh Rust 可执行文件路径。留空时使用扩展内置的程序。",
+  "config.preview.debounceMs": "编辑图形源码后刷新预览的延迟（毫秒）。",
+  "config.preview.renderTimeoutMs": "单次预览渲染的最长时间（毫秒）。",
+  "config.preview.showRulers": "默认显示画布标尺。",
+  "capability.untrustedWorkspaces": "可使用静态语言提示；图形预览需要受信任的工作区。",
+  "capability.virtualWorkspaces": "LayMesh 在扩展宿主中使用原生可执行文件和本地资源。",
+  "command.exportFigure": "LayMesh：导出图形",
+  "config.export.dpi": "位图导出的默认分辨率（DPI）。",
+  "config.export.quality": "JPEG 和有损 WebP 的默认图像质量。",
+  "config.export.tiffCompression": "TIFF 导出的默认无损压缩方式。",
+  "config.export.webpLossless": "默认使用无损 WebP 导出。"
+}

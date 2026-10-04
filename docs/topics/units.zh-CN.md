@@ -3,7 +3,7 @@
 <!-- walkthrough:start -->
 ## 用途与概念
 
-几何裸值采用 canvas.unit，初始为 mm；字号和线宽裸值采用 pt。显式单位最便于阅读和跨主题复现。布局 px 使用 layout_dpi，PNG 输出 DPI 则只决定最终像素数。
+几何裸值采用 canvas.unit，初始为 mm；字号和线宽裸值采用 pt。显式单位最便于阅读和跨主题复现。布局 px 使用 layout_dpi，位图输出 DPI 则决定最终像素数。
 
 ## 最小完整示例
 

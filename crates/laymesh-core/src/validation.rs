@@ -86,8 +86,10 @@ impl Engine {
                 return Err(self.error("E_ARG", format!("无效 {key}"), l));
             }
             if typ == "color[]" {
-                if !matches!(value,V::List(v) if !v.is_empty()) { return Err(self.error("E_COLOR","需要非空颜色列表",l)); }
-                self.validate_color(value,l,"E_COLOR")?;
+                if !matches!(value,V::List(v) if !v.is_empty()) {
+                    return Err(self.error("E_COLOR", "需要非空颜色列表", l));
+                }
+                self.validate_color(value, l, "E_COLOR")?;
             }
             if typ == "color" || (typ == "paint" && matches!(value, V::Text(..) | V::Color(_))) {
                 self.validate_color(value, l, if plot { "E_PLOT" } else { "E_COLOR" })?;

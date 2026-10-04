@@ -14,7 +14,7 @@ CLI 提供三个命令：
 ```text
 laymesh validate <file.lay>
 laymesh inspect <file.lay> --json
-laymesh render <file.lay> -o <output.svg|pdf|png> [--dpi <number>]
+laymesh render <file.lay> -o <output.svg|pdf|png|jpg|tif|webp|bmp|gif|ico|pnm|tga> [--dpi <number>]
 ```
 
 `python -m laymesh` 与 `laymesh` 等价。源码开发时先运行 `cargo build --release --locked -p laymesh-cli`，再调用 `target/release/laymesh`（Windows 为 `laymesh.exe`），或用 `cargo run --release --locked -p laymesh-cli --` 作为命令开头。`validate` 只检查源文件和素材；`render` 在检查通过后生成文件。出错时命令返回非零状态，并给出文件、行、列及原因。

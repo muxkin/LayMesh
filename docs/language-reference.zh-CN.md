@@ -41,7 +41,7 @@ page = canvas(name="Figure 1", size=(180 mm, 120 mm),
 
 | 函数 | 必填参数 | 可选参数及行为 | 示例 |
 | --- | --- | --- | --- |
-| `image` | `src="..."` | PNG、JPEG、SVG、单页 8 位灰度/RGB TIFF；素材先读取并规范化 | [basic](../examples/basic.lay) |
+| `image` | `src="..."` | PNG、JPEG、BMP、WebP、GIF、ICO、PNM、TGA、安全 SVG、单页无符号 8/16 位灰度/RGB TIFF（可带 Alpha）；素材先读取并规范化 | [basic](../examples/basic.lay) |
 | `text` | `content="..."` **或** `spans=[...]`，二选一；`font_size=10 pt` | `font_family`、`font_weight=400`、`font_style="normal"`、`color="#000000"`、`line_height`、`size=(80, auto)`、`align=left` | [typography](../examples/typography.lay) |
 | `span` | 第一个位置参数为字符串 | 仅在 `text(spans=[...])` 中使用；可覆盖 `font_family`、`font_size`、`font_weight`、`font_style`、`color` | [typography](../examples/typography.lay) |
 | `formula` | `source=r"..."`、`font_size=10pt` | `style=inline|display`、`math_font="ratex-katex"`；可独立放置或作为 text 的一个 span | [typography](../examples/typography.lay) |

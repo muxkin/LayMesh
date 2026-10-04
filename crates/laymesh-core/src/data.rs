@@ -1,6 +1,6 @@
 use crate::{Diagnostic, Loc, Result, model::V};
-use serde_json::Value as Json;
 use indexmap::IndexMap;
+use serde_json::Value as Json;
 
 // Keep user JSON object order without changing Scene JSON representation.
 #[derive(serde::Deserialize)]
@@ -20,19 +20,37 @@ pub fn load(kind: &str, path: &str, bytes: &[u8], file: &str, loc: Loc) -> Resul
     let valid_number =
         |n: f64| n.is_finite() && (n.fract() != 0. || n.abs() <= 9_007_199_254_740_991.);
     if kind == "dict" {
-        let value: OrderedJson = serde_json::from_slice(bytes).map_err(|e| error(format!("无效 JSON：{e}")))?;
-        if !matches!(value,OrderedJson::Object(_)) { return Err(error("dict JSON 需要对象 / dict JSON requires an object".into())); }
+        let value: OrderedJson =
+            serde_json::from_slice(bytes).map_err(|e| error(format!("无效 JSON：{e}")))?;
+        if !matches!(value, OrderedJson::Object(_)) {
+            return Err(error(
+                "dict JSON 需要对象 / dict JSON requires an object".into(),
+            ));
+        }
         fn convert(v: OrderedJson) -> std::result::Result<V, String> {
             Ok(match v {
                 OrderedJson::Null => V::Null,
                 OrderedJson::Bool(v) => V::Bool(v),
                 OrderedJson::String(v) => V::text(v),
                 OrderedJson::Number(v) => {
-                    let n = v.as_f64().filter(|n| n.is_finite() && (n.fract()!=0. || n.abs()<=9_007_199_254_740_991.)).ok_or("字典数值必须有限且能精确表示")?;
+                    let n = v
+                        .as_f64()
+                        .filter(|n| {
+                            n.is_finite() && (n.fract() != 0. || n.abs() <= 9_007_199_254_740_991.)
+                        })
+                        .ok_or("字典数值必须有限且能精确表示")?;
                     V::num(n)
                 }
-                OrderedJson::Array(v) => V::List(v.into_iter().map(convert).collect::<std::result::Result<_,_>>()?),
-                OrderedJson::Object(v) => V::Dict(v.into_iter().map(|(k,v)|Ok((k,convert(v)?))).collect::<std::result::Result<_,String>>()?),
+                OrderedJson::Array(v) => V::List(
+                    v.into_iter()
+                        .map(convert)
+                        .collect::<std::result::Result<_, _>>()?,
+                ),
+                OrderedJson::Object(v) => V::Dict(
+                    v.into_iter()
+                        .map(|(k, v)| Ok((k, convert(v)?)))
+                        .collect::<std::result::Result<_, String>>()?,
+                ),
             })
         }
         return convert(value).map_err(error);
@@ -85,7 +103,8 @@ pub fn load(kind: &str, path: &str, bytes: &[u8], file: &str, loc: Loc) -> Resul
         ));
     }
     if kind == "array" {
-        let value: Json = serde_json::from_slice(bytes).map_err(|e| error(format!("无效 JSON：{e}")))?;
+        let value: Json =
+            serde_json::from_slice(bytes).map_err(|e| error(format!("无效 JSON：{e}")))?;
         let values = value
             .as_array()
             .filter(|a| !a.is_empty())
@@ -117,8 +136,11 @@ pub fn load(kind: &str, path: &str, bytes: &[u8], file: &str, loc: Loc) -> Resul
                 .collect::<Result<_>>()?,
         ));
     }
-    let object: IndexMap<String, Json> = serde_json::from_slice(bytes).map_err(|e|error(format!("table JSON 需要列对象：{e}")))?;
-    if object.is_empty() { return Err(error("table JSON 需要非空的列对象".into())); }
+    let object: IndexMap<String, Json> =
+        serde_json::from_slice(bytes).map_err(|e| error(format!("table JSON 需要列对象：{e}")))?;
+    if object.is_empty() {
+        return Err(error("table JSON 需要非空的列对象".into()));
+    }
     let mut length = None;
     let mut columns = IndexMap::new();
     for (name, values) in &object {

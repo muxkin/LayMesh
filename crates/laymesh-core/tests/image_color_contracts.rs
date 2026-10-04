@@ -208,3 +208,57 @@ fn malformed_icc_produces_a_located_diagnostic_instead_of_wrong_colors() {
     assert_eq!(e.file, "test.lay");
     assert!(e.message.contains("ICC"));
 }
+
+#[test]
+fn sixteen_bit_icc_orientation_and_crop_preserve_depth_and_alpha() {
+    let mut bytes = vec![];
+    let mut encoder = image::codecs::png::PngEncoder::new(&mut bytes);
+    encoder
+        .set_icc_profile(swap_profile().encode().unwrap())
+        .unwrap();
+    encoder
+        .set_exif_metadata(vec![
+            b'I', b'I', 42, 0, 8, 0, 0, 0, 1, 0, 0x12, 1, 3, 0, 1, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0,
+        ])
+        .unwrap();
+    let samples = [65535u16, 0, 0, 32768, 0, 65535, 0, 12345];
+    let pixels: Vec<_> = samples.iter().flat_map(|n| n.to_ne_bytes()).collect();
+    encoder
+        .write_image(&pixels, 2, 1, ExtendedColorType::Rgba16)
+        .unwrap();
+    let asset = load(&bytes, "16bit.png", "figure.lay", Loc::default()).unwrap();
+    let raw = base64::engine::general_purpose::STANDARD
+        .decode(asset["data"].as_str().unwrap())
+        .unwrap();
+    let decoded = image::load_from_memory(&raw).unwrap();
+    assert_eq!(decoded.color(), image::ColorType::Rgba16);
+    let pixels = decoded.into_rgba16();
+    assert_eq!(pixels.dimensions(), (1, 2));
+    // Encoded ICC matrix coefficients have finite precision (26/65535 cross-channel error).
+    assert!(
+        pixels[(0, 0)][1] >= 65500 && pixels[(0, 0)][0] <= 64,
+        "{:?}",
+        pixels[(0, 0)]
+    );
+    assert_eq!(pixels[(0, 0)][3], 32768);
+    assert!(
+        pixels[(0, 1)][0] >= 65500 && pixels[(0, 1)][1] <= 64,
+        "{:?}",
+        pixels[(0, 1)]
+    );
+    assert_eq!(pixels[(0, 1)][3], 12345);
+    let crop = crop_raster(
+        asset["data"].as_str().unwrap(),
+        [0., 1., 1., 1.],
+        "figure.lay",
+        Loc::default(),
+    )
+    .unwrap();
+    let raw = base64::engine::general_purpose::STANDARD
+        .decode(crop["data"].as_str().unwrap())
+        .unwrap();
+    assert_eq!(
+        image::load_from_memory(&raw).unwrap().into_rgba16()[(0, 0)],
+        pixels[(0, 1)]
+    );
+}

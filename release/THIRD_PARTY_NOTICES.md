@@ -19,6 +19,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | bytemuck | 1.25.2 | Zlib OR Apache-2.0 OR MIT |
 | bytemuck_derive | 1.12.1 | Zlib OR Apache-2.0 OR MIT |
 | byteorder-lite | 0.1.0 | Unlicense OR MIT |
+| cc | 1.6.0 | MIT OR Apache-2.0 |
 | cfg-if | 1.0.5 | MIT OR Apache-2.0 |
 | color_quant | 1.1.0 | MIT |
 | const-oid | 0.10.2 | Apache-2.0 OR MIT |
@@ -37,13 +38,16 @@ The native executable and WebAssembly module contain the following locked Rust d
 | fancy-regex | 0.14.0 | MIT |
 | fax | 0.2.7 | MIT |
 | fdeflate | 0.3.7 | MIT OR Apache-2.0 |
+| find-msvc-tools | 0.1.14 | MIT OR Apache-2.0 |
 | flate2 | 1.1.10 | MIT OR Apache-2.0 |
 | float-cmp | 0.9.0 | MIT |
 | font-types | 0.11.3 | MIT OR Apache-2.0 |
 | fontconfig-parser | 0.5.8 | MIT |
 | fontdb | 0.23.0 | MIT |
 | geo-types | 0.7.20 | MIT OR Apache-2.0 |
+| getrandom | 0.4.3 | MIT OR Apache-2.0 |
 | gif | 0.14.2 | MIT OR Apache-2.0 |
+| glob | 0.3.4 | MIT OR Apache-2.0 |
 | half | 2.7.1 | MIT OR Apache-2.0 |
 | hashbrown | 0.17.1 | MIT OR Apache-2.0 |
 | hybrid-array | 0.4.15 | MIT OR Apache-2.0 |
@@ -57,12 +61,14 @@ The native executable and WebAssembly module contain the following locked Rust d
 | imagesize | 0.14.0 | MIT |
 | indexmap | 2.14.2 | Apache-2.0 OR MIT |
 | itoa | 1.0.18 | MIT OR Apache-2.0 |
+| jobserver | 0.1.35 | MIT OR Apache-2.0 |
 | krilla | 0.8.2 | MIT OR Apache-2.0 |
 | krilla-svg | 0.8.1 | MIT OR Apache-2.0 |
 | kurbo | 0.13.1 | Apache-2.0 OR MIT |
 | lazy_static | 1.5.1 | MIT OR Apache-2.0 |
 | libc | 0.2.190 | MIT OR Apache-2.0 |
 | libm | 0.2.16 | MIT |
+| libwebp-sys | 0.9.6 | MIT AND BSD-3-Clause |
 | log | 0.4.34 | MIT OR Apache-2.0 |
 | memchr | 2.8.3 | Unlicense OR MIT |
 | memmap2 | 0.9.11 | MIT OR Apache-2.0 |
@@ -85,6 +91,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | pxfm | 0.1.30 | BSD-3-Clause OR Apache-2.0 |
 | quick-error | 2.0.1 | MIT/Apache-2.0 |
 | quote | 1.0.47 | MIT OR Apache-2.0 |
+| r-efi | 6.0.0 | MIT OR Apache-2.0 OR LGPL-2.1-or-later |
 | rand | 0.8.8 | MIT OR Apache-2.0 |
 | rand_core | 0.6.4 | MIT OR Apache-2.0 |
 | ratex-font | 0.1.14 | MIT |
@@ -116,6 +123,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | serde_derive | 1.0.229 | MIT OR Apache-2.0 |
 | serde_json | 1.0.151 | MIT OR Apache-2.0 |
 | sha2 | 0.11.0 | MIT OR Apache-2.0 |
+| shlex | 2.0.1 | MIT OR Apache-2.0 |
 | simd-adler32 | 0.3.10 | MIT |
 | simplecss | 0.2.2 | Apache-2.0 OR MIT |
 | siphasher | 1.0.4 | MIT OR Apache-2.0 |
@@ -158,6 +166,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | wasm-bindgen-macro | 0.2.129 | MIT OR Apache-2.0 |
 | wasm-bindgen-macro-support | 0.2.129 | MIT OR Apache-2.0 |
 | wasm-bindgen-shared | 0.2.129 | MIT OR Apache-2.0 |
+| webp | 0.3.1 | MIT OR Apache-2.0 |
 | weezl | 0.1.12 | MIT OR Apache-2.0 |
 | winapi-util | 0.1.11 | Unlicense OR MIT |
 | windows-link | 0.2.1 | MIT OR Apache-2.0 |

@@ -1,9 +1,30 @@
 {
   "name": "laymesh-language",
   "displayName": "LayMesh",
-  "version": "0.3.0-alpha.3",
-  "publisher": "laymesh",
-  "description": "LayMesh DSL and LCSS: parameter help, predefined string variables and smooth local HEX/RGB/HSV/OKLCH color editing.",
+  "version": "0.3.6",
+  "publisher": "Hyacine",
+  "description": "%extension.description%",
+  "preview": true,
+  "icon": "icon.png",
+  "keywords": [
+    "LayMesh",
+    "LCSS",
+    "scientific figures",
+    "plot",
+    "preview",
+    "rulers"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/muxkin/LayMesh.git"
+  },
+  "homepage": "https://muxkin.github.io/LayMesh/",
+  "bugs": {
+    "url": "https://github.com/muxkin/LayMesh/issues"
+  },
+  "extensionKind": [
+    "workspace"
+  ],
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -63,20 +84,84 @@
           ],
           "default": "auto",
           "scope": "window",
-          "markdownDescription": "Language for completion, hover and signature documentation. `auto` follows the editor display language. 补全、悬停和参数说明的语言；`auto` 跟随编辑器界面。"
+          "markdownDescription": "%config.language%",
+          "enumDescriptions": [
+            "%language.auto%",
+            "%language.zh-CN%",
+            "%language.en%"
+          ]
         },
         "laymesh.executable": {
           "type": "string",
           "default": "",
           "scope": "machine",
-          "description": "Path to the native LayMesh Rust executable. Empty uses the extension bundled binary."
+          "description": "%config.executable%"
+        },
+        "laymesh.preview.debounceMs": {
+          "type": "number",
+          "default": 250,
+          "minimum": 0,
+          "maximum": 5000,
+          "description": "%config.preview.debounceMs%"
+        },
+        "laymesh.preview.renderTimeoutMs": {
+          "type": "number",
+          "default": 30000,
+          "minimum": 100,
+          "maximum": 300000,
+          "description": "%config.preview.renderTimeoutMs%"
+        },
+        "laymesh.preview.showRulers": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.preview.showRulers%"
+        },
+        "laymesh.export.dpi": {
+          "type": "number",
+          "default": 300,
+          "minimum": 0.01,
+          "maximum": 25400,
+          "description": "%config.export.dpi%"
+        },
+        "laymesh.export.quality": {
+          "type": "integer",
+          "default": 90,
+          "minimum": 1,
+          "maximum": 100,
+          "description": "%config.export.quality%"
+        },
+        "laymesh.export.tiffCompression": {
+          "type": "string",
+          "default": "lzw",
+          "enum": [
+            "none",
+            "lzw",
+            "deflate",
+            "packbits"
+          ],
+          "description": "%config.export.tiffCompression%"
+        },
+        "laymesh.export.webpLossless": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.export.webpLossless%"
         }
       }
     },
     "commands": [
       {
         "command": "laymesh.editColor",
-        "title": "LayMesh: Edit Color / 编辑颜色"
+        "title": "%command.editColor%"
+      },
+      {
+        "command": "laymesh.openPreview",
+        "title": "%command.openPreview%",
+        "icon": "$(preview)"
+      },
+      {
+        "command": "laymesh.exportFigure",
+        "title": "%command.exportFigure%",
+        "icon": "$(export)"
       }
     ],
     "menus": {
@@ -85,8 +170,43 @@
           "command": "laymesh.editColor",
           "when": "editorLangId == laymesh || editorLangId == lcss",
           "group": "navigation"
+        },
+        {
+          "command": "laymesh.openPreview",
+          "when": "editorLangId == laymesh && resourceScheme == file && isWorkspaceTrusted",
+          "group": "navigation"
+        },
+        {
+          "command": "laymesh.exportFigure",
+          "when": "editorLangId == laymesh && resourceScheme == file && isWorkspaceTrusted",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "laymesh.openPreview",
+          "when": "editorLangId == laymesh && resourceScheme == file && isWorkspaceTrusted",
+          "group": "navigation"
+        },
+        {
+          "command": "laymesh.exportFigure",
+          "when": "editorLangId == laymesh && resourceScheme == file && isWorkspaceTrusted",
+          "group": "navigation"
         }
       ]
+    }
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "%capability.untrustedWorkspaces%",
+      "restrictedConfigurations": [
+        "laymesh.executable"
+      ]
+    },
+    "virtualWorkspaces": {
+      "supported": false,
+      "description": "%capability.virtualWorkspaces%"
     }
   }
 }

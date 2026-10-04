@@ -1,0 +1,27 @@
+# Changelog
+
+## 0.3.6
+
+- Export SVG/PDF and PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA from the preview toolbar and editor commands.
+- Configure DPI, JPEG quality and matte, TIFF compression, PNG compression, and WebP mode, quality, method, alpha quality and near-lossless fidelity.
+- Export the current unsaved entry and imported buffers with the bundled 0.3.1 engine; retain options by workspace and format.
+- Rebuild Windows x64 and Linux x64 packages with a statically linked WebP encoder.
+
+## 0.3.5 — Marketplace prerelease
+
+- Import BMP, WebP, GIF, ICO, PNM and TGA; use the first GIF/animated WebP frame.
+- Support single-page unsigned 8/16-bit grayscale/RGB TIFF with alpha, preserve intensity range and crop precision, and normalize associated alpha before 16-bit ICC conversion.
+- Show inferred variable types and correct binding definitions; add workspace references, read/write highlights and version-checked rename, including import aliases and user function parameters.
+- Index unopened files across workspace folders while preserving unsaved buffers and excluding generated/dependency directories.
+- Put the standalone VS Code workflow first in both repository READMEs.
+
+## 0.3.4 — Marketplace prerelease
+
+- Add a live SVG preview beside the editor with unit-aware rulers, crosshairs, canvas coordinates, and Cartesian, polar and radar data coordinates.
+- Preserve zoom and pan while refreshing unsaved sources and dependencies; retain the last successful figure on errors and restart the isolated renderer on timeout.
+- Support English and Simplified Chinese preview controls, coordinate labels, status, commands and Settings descriptions.
+- Retain native language completion, hover, signature help, diagnostics, source navigation and color editing.
+- Provide Windows x64 and Linux x64 Marketplace packages under the `Hyacine` publisher with bundled native services, a PNG icon, documentation links and dependency licenses.
+- Package the extension license as `LICENSE.txt` and audit asset content types to fix Marketplace upload validation.
+
+本次预发布提供实时预览、标尺、鼠标坐标、中英文界面及错误恢复，沿用原有语言服务和选色器；商店包支持 Windows x64 和 Linux x64。

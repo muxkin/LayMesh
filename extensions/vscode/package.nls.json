@@ -1,0 +1,20 @@
+{
+  "extension.description": "LayMesh DSL and LCSS: live figure preview, configurable image export, unit-aware rulers, canvas and plot coordinates, language help and color editing.",
+  "command.editColor": "LayMesh: Edit Color",
+  "command.openPreview": "LayMesh: Open Preview",
+  "config.language": "Language for the preview, export options, color editor, completion, hover and signature documentation. `auto` follows the VS Code display language. Command titles and Settings descriptions always follow the VS Code display language.",
+  "language.auto": "Follow the VS Code display language",
+  "language.zh-CN": "Simplified Chinese",
+  "language.en": "English",
+  "config.executable": "Path to the native LayMesh Rust executable. Empty uses the extension bundled binary.",
+  "config.preview.debounceMs": "Delay before refreshing edited figure sources (milliseconds).",
+  "config.preview.renderTimeoutMs": "Maximum time for one preview render (milliseconds).",
+  "config.preview.showRulers": "Show canvas rulers by default.",
+  "capability.untrustedWorkspaces": "Static language help is available; figure preview requires workspace trust.",
+  "capability.virtualWorkspaces": "LayMesh uses a native executable and local resources in the extension host.",
+  "command.exportFigure": "LayMesh: Export Figure",
+  "config.export.dpi": "Default raster export resolution in DPI.",
+  "config.export.quality": "Default JPEG and lossy WebP quality.",
+  "config.export.tiffCompression": "Default lossless TIFF compression.",
+  "config.export.webpLossless": "Use lossless WebP export by default."
+}

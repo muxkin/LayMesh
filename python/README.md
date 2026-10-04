@@ -1,12 +1,12 @@
 # LayMesh
 
-**Reproducible scientific figures and precise physical layouts from readable code.** Compose native plots, images, vector shapes, text and formulas in one editable `.lay` source; export SVG, PDF and PNG with a native Rust engine.
+**Reproducible scientific figures and precise physical layouts from readable code.** Compose native plots, images, vector shapes, text and formulas in one editable `.lay` source; export SVG, PDF and PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA with a native Rust engine.
 
 [中文文档](https://muxkin.github.io/LayMesh/) · [English documentation](https://muxkin.github.io/LayMesh/en/) · [Examples](https://github.com/muxkin/LayMesh/tree/main/examples) · [Source](https://github.com/muxkin/LayMesh)
 
 ## Install
 
-Requires **Python 3.10+**. Version `0.3.0` is a stable release:
+Requires **Python 3.10+**. Version `0.3.1` adds configurable raster export. Install an uploaded release or a reviewed local platform wheel:
 
 ```sh
 python -m pip install laymesh
@@ -40,7 +40,17 @@ laymesh render figure.lay -o figure.pdf
 laymesh render figure.lay -o figure.png --dpi 300
 ```
 
-`python -m laymesh` invokes the same CLI. Geometry defaults to mm; typography and line widths default to pt. PNG DPI changes output pixels while preserving physical dimensions. `.lay` is a restricted standalone language, separate from Python.
+`python -m laymesh` invokes the same CLI. Geometry defaults to mm; typography and line widths default to pt. Raster DPI changes output pixels while preserving physical dimensions. `.lay` is a restricted standalone language, separate from Python.
+
+## Image export options (0.3.1)
+
+```sh
+laymesh render figure.lay -o figure.jpg --dpi 300 --quality 95 --background "#ffffff"
+laymesh render figure.lay -o figure.tif --dpi 600 --compression deflate
+laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quality 90 --webp-method 6
+```
+
+`render_file` and `render_source` accept `dpi`, `quality`, `compression`, `background`, `webp_lossless`, `webp_method`, `webp_alpha_quality` and `webp_near_lossless`. Notebook magics accept the corresponding CLI flags. Raster exports use 8-bit sRGB; PNG/JPEG/TIFF/BMP record DPI metadata. JPEG uses a matte; GIF has binary alpha; RGBA formats retain partial transparency. [Export options](https://muxkin.github.io/LayMesh/en/docs/topics/export.html).
 
 ## Python API
 

@@ -240,6 +240,22 @@
     ]
   },
   {
+    "name": "cc",
+    "version": "1.6.0",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/rust-lang/cc-rs",
+    "texts": [
+      {
+        "file": "cc-1.6.0-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "cc-1.6.0-LICENSE-MIT",
+        "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    ]
+  },
+  {
     "name": "cfg-if",
     "version": "1.0.5",
     "license": "MIT OR Apache-2.0",
@@ -508,6 +524,22 @@
     ]
   },
   {
+    "name": "find-msvc-tools",
+    "version": "0.1.14",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/rust-lang/cc-rs",
+    "texts": [
+      {
+        "file": "find-msvc-tools-0.1.14-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "find-msvc-tools-0.1.14-LICENSE-MIT",
+        "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    ]
+  },
+  {
     "name": "flate2",
     "version": "1.1.10",
     "license": "MIT OR Apache-2.0",
@@ -592,6 +624,22 @@
     ]
   },
   {
+    "name": "getrandom",
+    "version": "0.4.3",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/rust-random/getrandom",
+    "texts": [
+      {
+        "file": "getrandom-0.4.3-LICENSE-APACHE",
+        "sha256": "aaff376532ea30a0cd5330b9502ad4a4c8bf769c539c87ffe78819d188a18ebf"
+      },
+      {
+        "file": "getrandom-0.4.3-LICENSE-MIT",
+        "sha256": "523a42c25d245dde9c015f882cec7f4555aad883382a6cf19b4b7d9b2cd5419b"
+      }
+    ]
+  },
+  {
     "name": "gif",
     "version": "0.14.2",
     "license": "MIT OR Apache-2.0",
@@ -604,6 +652,22 @@
       {
         "file": "gif-0.14.2-LICENSE-MIT",
         "sha256": "77257f3d2181236b1aee78920238062ae64efe13c5d858b2db126e79c9e1b14f"
+      }
+    ]
+  },
+  {
+    "name": "glob",
+    "version": "0.3.4",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/rust-lang/glob",
+    "texts": [
+      {
+        "file": "glob-0.3.4-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "glob-0.3.4-LICENSE-MIT",
+        "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
       }
     ]
   },
@@ -799,6 +863,22 @@
     ]
   },
   {
+    "name": "jobserver",
+    "version": "0.1.35",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/rust-lang/jobserver-rs",
+    "texts": [
+      {
+        "file": "jobserver-0.1.35-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "jobserver-0.1.35-LICENSE-MIT",
+        "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    ]
+  },
+  {
     "name": "krilla",
     "version": "0.8.2",
     "license": "MIT OR Apache-2.0",
@@ -891,6 +971,22 @@
       {
         "file": "libm-0.2.16-LICENSE.txt",
         "sha256": "3823dda7cf046602f4b4e77ec8e227863dc4736037cc85bb33d9f19febe16bb7"
+      }
+    ]
+  },
+  {
+    "name": "libwebp-sys",
+    "version": "0.9.6",
+    "license": "MIT AND BSD-3-Clause",
+    "repository": "https://github.com/NoXF/libwebp-sys",
+    "texts": [
+      {
+        "file": "libwebp-sys-0.9.6-COPYING",
+        "sha256": "5aec868f669e384a22372a4e8a1a6cd7d44c64cd451f960ca69cc170d1e13acf"
+      },
+      {
+        "file": "libwebp-sys-0.9.6-PATENTS",
+        "sha256": "cc3273e0694ea5896145e0677699b53471b03ea43021ddc50e7923fbb9f5023c"
       }
     ]
   },
@@ -1235,6 +1331,18 @@
       {
         "file": "quote-1.0.47-LICENSE-MIT",
         "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "name": "r-efi",
+    "version": "6.0.0",
+    "license": "MIT OR Apache-2.0 OR LGPL-2.1-or-later",
+    "repository": "https://github.com/r-efi/r-efi",
+    "texts": [
+      {
+        "file": "r-efi-6.0.0-AUTHORS",
+        "sha256": "d027e91dbc9cdbb2f1190068e498bd6b61cff022b6a032b191021ba658d96111"
       }
     ]
   },
@@ -1696,6 +1804,22 @@
       {
         "file": "sha2-0.11.0-LICENSE-MIT",
         "sha256": "831e0f43ad0bf014c1c4fec5767aae470434c1d66d6e671be2d823e729063e25"
+      }
+    ]
+  },
+  {
+    "name": "shlex",
+    "version": "2.0.1",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/comex/rust-shlex",
+    "texts": [
+      {
+        "file": "shlex-2.0.1-LICENSE-APACHE",
+        "sha256": "553fffcd9b1cb158bc3e9edc35da85ca5c3b3d7d2e61c883ebcfa8a65814b583"
+      },
+      {
+        "file": "shlex-2.0.1-LICENSE-MIT",
+        "sha256": "4455bf75a91154108304cb283e0fea9948c14f13e20d60887cf2552449dea3b1"
       }
     ]
   },
@@ -2352,6 +2476,22 @@
       {
         "file": "wasm-bindgen-shared-0.2.129-LICENSE-MIT",
         "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    ]
+  },
+  {
+    "name": "webp",
+    "version": "0.3.1",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/jaredforth/webp.git",
+    "texts": [
+      {
+        "file": "webp-0.3.1-LICENSE-APACHE",
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+      },
+      {
+        "file": "webp-0.3.1-LICENSE-MIT",
+        "sha256": "0a75c93d6d6dddddf0cfe796cd4f4e18e5c68fde52b054ce4c3dd1c652a37144"
       }
     ]
   },

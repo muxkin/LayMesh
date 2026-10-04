@@ -181,6 +181,7 @@ impl Engine {
                 .map(V::json)
                 .unwrap_or(json!("none")),
             layout_dpi: self.dpi,
+            canvas_unit: self.unit.clone(),
             export_dpi: 96.,
             nodes: c.nodes.clone(),
             warnings: self.warnings.clone(),
@@ -248,7 +249,13 @@ impl Engine {
         }
     }
     #[inline(never)]
-    fn run_binding(&mut self, name: &str, expression: &Expr, scope: &Scope, loc: Loc) -> Result<()> {
+    fn run_binding(
+        &mut self,
+        name: &str,
+        expression: &Expr,
+        scope: &Scope,
+        loc: Loc,
+    ) -> Result<()> {
         let value = self.eval(expression, scope)?;
         self.bind_value(name, value, scope, loc)
     }
@@ -270,7 +277,12 @@ impl Engine {
         }
     }
     #[inline(never)]
-    fn run_if(&mut self, branches: &[(Expr, Vec<Stmt>)], other: &[Stmt], scope: &Scope) -> Result<Flow> {
+    fn run_if(
+        &mut self,
+        branches: &[(Expr, Vec<Stmt>)],
+        other: &[Stmt],
+        scope: &Scope,
+    ) -> Result<Flow> {
         let mut branch = other;
         for (condition, body) in branches {
             if self.truth(condition, scope)? {
@@ -295,8 +307,7 @@ impl Engine {
                     ));
                 }
                 let value = self.eval(e, scope)?;
-                if let Some(instance) = value.object().filter(|o| o.borrow().kind == "instance")
-                {
+                if let Some(instance) = value.object().filter(|o| o.borrow().kind == "instance") {
                     self.unnamed_instances += 1;
                     let name = json!(format!("@{}", self.unnamed_instances));
                     let mut instance = instance.borrow_mut();
@@ -328,12 +339,9 @@ impl Engine {
                     scope.borrow_mut().readonly.push(a.clone());
                 }
             }
-            StmtKind::Style(css) => self.stylesheet_scoped(
-                css,
-                &self.file.clone(),
-                stmt.loc,
-                Some(&self.file.clone()),
-            )?,
+            StmtKind::Style(css) => {
+                self.stylesheet_scoped(css, &self.file.clone(), stmt.loc, Some(&self.file.clone()))?
+            }
             StmtKind::For(n, seq, body) => {
                 let v = self.eval(seq, scope)?;
                 let vs = self.sequence(v, stmt.loc)?;
@@ -537,42 +545,47 @@ impl Engine {
     // Drop argument provenance temporaries before entering a user function.
     // This keeps the 64-call budget safe on ordinary native/WASM stacks.
     #[inline(never)]
-    fn eval_call_arguments(&mut self, args: &[(Option<String>, Expr)], s: &Scope, l: Loc) -> Result<(Vec<V>, Args)> {
-                let mut pos = vec![];
-                let mut named = Args::new();
-                let mut origins = Args::new();
-                let mut saw_named = false;
-                for (n, e) in args {
-                    let v = self.eval(e, s)?;
-                    let mut loc = e.loc;
-                    if let ExprKind::String(_, raw, formatted) = &e.kind {
-                        let prefix = 1 + usize::from(*raw) + usize::from(*formatted);
-                        loc.column += prefix;
-                        loc.offset += prefix;
-                    }
-                    origins.insert(
-                        n.clone().unwrap_or_else(|| format!("_{}", pos.len())),
-                        V::from_json(&json!({"file":self.file,"loc":loc})),
-                    );
-                    if let Some(n) = n {
-                        if named.insert(n.clone(), v).is_some() {
-                            return Err(self.error("E_ARG", format!("重复参数 {n}"), l));
-                        }
-                        saw_named = true;
-                    } else {
-                        if saw_named {
-                            return Err(self.error("E_ARG", "位置参数必须位于命名参数之前", l));
-                        }
-                        pos.push(v);
-                    }
+    fn eval_call_arguments(
+        &mut self,
+        args: &[(Option<String>, Expr)],
+        s: &Scope,
+        l: Loc,
+    ) -> Result<(Vec<V>, Args)> {
+        let mut pos = vec![];
+        let mut named = Args::new();
+        let mut origins = Args::new();
+        let mut saw_named = false;
+        for (n, e) in args {
+            let v = self.eval(e, s)?;
+            let mut loc = e.loc;
+            if let ExprKind::String(_, raw, formatted) = &e.kind {
+                let prefix = 1 + usize::from(*raw) + usize::from(*formatted);
+                loc.column += prefix;
+                loc.offset += prefix;
+            }
+            origins.insert(
+                n.clone().unwrap_or_else(|| format!("_{}", pos.len())),
+                V::from_json(&json!({"file":self.file,"loc":loc})),
+            );
+            if let Some(n) = n {
+                if named.insert(n.clone(), v).is_some() {
+                    return Err(self.error("E_ARG", format!("重复参数 {n}"), l));
                 }
-                if !origins.is_empty() {
-                    named.insert("__arg_locations".into(), V::Map(origins));
+                saw_named = true;
+            } else {
+                if saw_named {
+                    return Err(self.error("E_ARG", "位置参数必须位于命名参数之前", l));
                 }
-                named.insert(
-                    "__call_origin".into(),
-                    V::from_json(&json!({"file":self.file,"loc":l})),
-                );
+                pos.push(v);
+            }
+        }
+        if !origins.is_empty() {
+            named.insert("__arg_locations".into(), V::Map(origins));
+        }
+        named.insert(
+            "__call_origin".into(),
+            V::from_json(&json!({"file":self.file,"loc":l})),
+        );
         Ok((pos, named))
     }
     fn binary(&self, op: &str, a: V, b: V, l: Loc) -> Result<V> {
@@ -590,7 +603,9 @@ impl Engine {
             return Err(self.error("E_TYPE", "逻辑运算需要布尔值", l));
         }
         if op == "in" || op == "not in" {
-            let V::Dict(d) = &b else { return Err(self.error("E_TYPE", "in 需要字典", l)); };
+            let V::Dict(d) = &b else {
+                return Err(self.error("E_TYPE", "in 需要字典", l));
+            };
             let contains = d.contains_key(&self.key(&a, l)?);
             return Ok(V::Bool(if op == "in" { contains } else { !contains }));
         }
@@ -667,7 +682,11 @@ impl Engine {
     }
     pub(crate) fn member(&self, v: V, p: &str, l: Loc) -> Result<V> {
         if let V::Cmap(cm) = &v {
-            return match p { "name"=>Ok(V::text(cm.name())), "category"=>Ok(V::text(cm.category())), _=>Err(self.error("E_NAME",format!("未知 cmap 属性 {p}"),l)) };
+            return match p {
+                "name" => Ok(V::text(cm.name())),
+                "category" => Ok(V::text(cm.category())),
+                _ => Err(self.error("E_NAME", format!("未知 cmap 属性 {p}"), l)),
+            };
         }
         if let V::Geometry(q) = &v {
             return self.geometry_step(q, crate::geometry_query::Step::Member(p.into()), l);
@@ -795,7 +814,14 @@ impl Engine {
         self.call_builtin(parts, pos, a, s, l)
     }
     #[inline(never)]
-    fn bind_call_arguments(&mut self, params: &[(String, Option<Expr>)], pos: Vec<V>, mut a: Args, scope: &Scope, l: Loc) -> Result<Scope> {
+    fn bind_call_arguments(
+        &mut self,
+        params: &[(String, Option<Expr>)],
+        pos: Vec<V>,
+        mut a: Args,
+        scope: &Scope,
+        l: Loc,
+    ) -> Result<Scope> {
         a.remove("__arg_locations");
         a.remove("__call_origin");
         if pos.len() > params.len() {
@@ -853,7 +879,9 @@ impl Engine {
         }
         if parts.len() > 1 {
             if let Some(receiver @ (V::Dict(_) | V::Cmap(_))) = Environment::get(s, &parts[0]) {
-                if parts.len() != 2 { return Err(self.error("E_CALL", "字典方法通过索引选择嵌套值", l)); }
+                if parts.len() != 2 {
+                    return Err(self.error("E_CALL", "字典方法通过索引选择嵌套值", l));
+                }
                 return self.value_method(receiver, parts.last().unwrap(), pos, a, l);
             }
             if parts.len() > 2 {
@@ -909,7 +937,9 @@ impl Engine {
             }
         }
         let name = parts[0].as_str();
-        if let Some(result) = self.collection_builtin(name, &pos, a.clone(), l) { return result; }
+        if let Some(result) = self.collection_builtin(name, &pos, a.clone(), l) {
+            return result;
+        }
         if name == "arrow" {
             return Err(self.error(
                 "E_API_MIGRATION",

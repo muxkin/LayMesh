@@ -85,6 +85,7 @@ fn scene(nodes: Vec<Json>) -> Scene {
         height: 25.4,
         background: json!("#ffffff"),
         layout_dpi: 96.,
+        canvas_unit: "mm".into(),
         export_dpi: 144.,
         nodes,
         warnings: vec![],
@@ -332,5 +333,82 @@ fn normalized_icc_pixels_have_the_same_colors_in_svg_png_and_pdf() {
             !correct_color(&image),
             "PNG and PDF must both reject discarded ICC conversion"
         );
+    }
+}
+
+#[test]
+fn image_alpha_crop_and_paint_composite_consistently_in_svg_png_and_pdf() {
+    use base64::Engine as _;
+    use image::{DynamicImage, ImageBuffer, ImageFormat};
+    // Wide constant-color interiors avoid confusing resampling at boundaries with alpha loss.
+    let rgba = DynamicImage::ImageRgba8(ImageBuffer::from_fn(60, 20, |x, _| {
+        image::Rgba([
+            255,
+            0,
+            0,
+            if x < 20 {
+                0
+            } else if x < 40 {
+                128
+            } else {
+                255
+            },
+        ])
+    }));
+    let rgba16 = DynamicImage::ImageRgba16(rgba.to_rgba16());
+    for (extension, format) in [
+        ("png", ImageFormat::Png),
+        ("webp", ImageFormat::WebP),
+        ("ico", ImageFormat::Ico),
+        ("tga", ImageFormat::Tga),
+        ("tif", ImageFormat::Tiff),
+    ] {
+        let mut bytes = Cursor::new(vec![]);
+        if format == ImageFormat::Tiff {
+            rgba16.write_to(&mut bytes, format).unwrap();
+        } else {
+            rgba.write_to(&mut bytes, format).unwrap();
+        }
+        let filename = format!("/中文 # assets/picture.{extension}");
+        let mut host = laymesh_core::model::Host::default();
+        host.files.insert(filename.clone(), bytes.into_inner());
+        let prelude = "page=canvas(size=(50.8mm,25.4mm),background=\"#ffffff\")\npage.add(rect(size=(30mm,10mm),fill=\"#00ff00\"))\n";
+        let src = serde_json::to_string(&filename).unwrap();
+        for command in [
+            format!("page.add(image(src={src}),size=(30mm,10mm),fit=\"stretch\")"),
+            format!("page.add(rect(size=(30mm,10mm),fill=image_fill(src={src},fit=\"stretch\")))"),
+        ] {
+            let scene = laymesh_core::engine::compile_source(
+                &format!("{prelude}{command}"),
+                "/figure.lay",
+                host.clone(),
+            )
+            .unwrap();
+            let svg = render_svg(&scene).unwrap();
+            assert!(svg.contains("data:image/png;base64,"));
+            for raster in all_rasters(&scene) {
+                close(raster.at(5., 5.), [0, 255, 0], 2);
+                close(raster.at(15., 5.), [128, 127, 0], 3);
+                close(raster.at(25., 5.), [255, 0, 0], 2);
+            }
+        }
+        let command = format!(
+            "page.add(image(src={src}),size=(30mm,10mm),crop=box(offset=(0.3333333333333333,0),size=(0.3333333333333333,1)),opacity=0.5)"
+        );
+        let scene = laymesh_core::engine::compile_source(
+            &format!("{prelude}{command}"),
+            "/figure.lay",
+            host,
+        )
+        .unwrap();
+        for raster in all_rasters(&scene) {
+            close(raster.at(15., 5.), [64, 191, 0], 3);
+        }
+        // The intermediate image really contains alpha, rather than an opaque color match.
+        let bytes = base64::engine::general_purpose::STANDARD
+            .decode(scene.nodes[1]["data"].as_str().unwrap())
+            .unwrap();
+        let pixels = image::load_from_memory(&bytes).unwrap().into_rgba8();
+        assert_eq!(pixels[(0, 0)][3], 128);
     }
 }

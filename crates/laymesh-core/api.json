@@ -169,8 +169,8 @@
     },
     {
       "name": "image",
-      "description": "从本地文件定义可重复放置的图片素材。尺寸、crop 与 contain/cover/stretch 适配在 add 中确定，路径相对于素材定义文件。",
-      "descriptionEn": "Define reusable image material from a local file. add controls size, crop and contain/cover/stretch fitting; paths resolve relative to the defining file.",
+      "description": "从本地文件定义可重复放置的图片素材。尺寸、crop 与 contain/cover/stretch 适配在 add 中确定，路径相对于素材定义文件。 支持 PNG、JPEG、BMP、WebP、GIF、ICO、PNM、TGA、安全 SVG，以及单页无符号 8/16 位灰度/RGB TIFF（可带 Alpha）。GIF 和动态 WebP 取首帧；16 位强度不自动拉伸。",
+      "descriptionEn": "Define reusable image material from a local file. add controls size, crop and contain/cover/stretch fitting; paths resolve relative to the defining file. Accepts PNG, JPEG, BMP, WebP, GIF, ICO, PNM, TGA, safe SVG, and single-page unsigned 8/16-bit grayscale/RGB TIFF with optional alpha. GIF and animated WebP use the first frame; 16-bit intensities are not stretched.",
       "required": [
         "src"
       ],

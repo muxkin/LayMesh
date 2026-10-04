@@ -14,7 +14,7 @@ class CliProtocol(unittest.TestCase):
  def test_inspection_json_and_warning_precedence(self):
   with tempfile.TemporaryDirectory() as tmp:
    source=Path(tmp)/'main.lay';source.write_text('page=canvas(size=(40,30))\npage.add(text("missing",font_family="missing-font-that-cannot-exist"))')
-   result=subprocess.run([*_command(),'inspect',str(source),'--json','--warnings','hide'],capture_output=True,text=True);self.assertEqual(result.returncode,0,result.stderr);value=json.loads(result.stdout);self.assertEqual(set(value),{'schema_version','units','page','plots','warnings'});self.assertEqual(value['schema_version'],8);self.assertEqual(value['units'],'mm');self.assertEqual(value['page'],{'width':40.0,'height':30.0});self.assertTrue(any(w['code']=='W_FONT' for w in value['warnings']));self.assertEqual(result.stderr,'')
+   result=subprocess.run([*_command(),'inspect',str(source),'--json','--warnings','hide'],capture_output=True,text=True);self.assertEqual(result.returncode,0,result.stderr);value=json.loads(result.stdout);self.assertEqual(set(value),{'schema_version','units','page','plots','warnings'});self.assertEqual(value['schema_version'],8);self.assertEqual(value['units'],'mm');self.assertEqual(value['page'],{'width':40.0,'height':30.0,'unit':'mm','layout_dpi':96.0});self.assertTrue(any(w['code']=='W_FONT' for w in value['warnings']));self.assertEqual(result.stderr,'')
  def test_warning_switches_and_env_precedence(self):
   import os
   with tempfile.TemporaryDirectory() as tmp:

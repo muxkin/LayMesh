@@ -55,6 +55,17 @@ page.add(text("中文 $E=mc^2$ $\\mathbb{R} \\alpha \\sum_{i=1}^n i$", font_size
         for ext, magic in [("pdf", b"%PDF"), ("png", b"\x89PNG\r\n\x1a\n")]:
             render_file("figure.lay", output=f"figure.{ext}", **({"dpi": 150} if ext == "png" else {}))
             assert Path(f"figure.{ext}").read_bytes().startswith(magic)
+        from PIL import Image
+        raster_source='page=canvas(size=(25.4mm,12.7mm),background="none")\npage.add(rect(size=(10mm,10mm),fill="#ff000080",border_width=0),offset=(1mm,1mm))'
+        for ext, options in [('png',{'compression':'best'}),('jpg',{'quality':93,'background':'#0000ff'}),('tif',{'compression':'deflate'}),('webp',{'webp_lossless':False,'quality':90,'webp_method':6,'webp_alpha_quality':100}),('bmp',{}),('gif',{}),('ico',{}),('tga',{}),('ppm',{}),('pgm',{}),('pbm',{})]:
+            render_source(raster_source,output='中文 # export.'+ext,dpi=144,**options)
+            with Image.open('中文 # export.'+ext) as image:
+                assert image.size==(144,72)
+                if ext in ('png','tif','bmp','ico','tga'):
+                    assert image.convert('RGBA').getpixel((25,25))==(255,0,0,128)
+                if ext=='tif':assert image.tag_v2[259]==8
+        render_source(raster_source,output='rgba.pam',dpi=144)
+        assert Path('rgba.pam').read_bytes().startswith(b'P7\n')
         scripts = Path(sysconfig.get_path("scripts"))
         cli = scripts / ("laymesh.exe" if os.name == "nt" else "laymesh")
         subprocess.run([str(cli), "validate", "figure.lay"], check=True)
@@ -99,7 +110,7 @@ page.add(p,offset=(5,5))'''
             for entry in entries:
                 subprocess.run([str(cli), "validate", str(entry)], check=True, stdout=subprocess.DEVNULL)
             print(f"Validated {len(entries)} native example entry points with bundled runtime")
-        print(json.dumps({"wheel_version": manifest["version"], "target": manifest["target"], "engine": "rust", "exports": ["SVG", "PDF", "PNG"], "system_node": False, "saved_data": True, "matplotlib": True, "notebook_magics": True}))
+        print(json.dumps({"wheel_version": manifest["version"], "target": manifest["target"], "engine": "rust", "exports": ["SVG", "PDF", "PNG", "JPEG", "TIFF", "WebP", "BMP", "GIF", "ICO", "TGA", "PAM", "PPM", "PGM", "PBM"], "system_node": False, "empty_path":True, "saved_data": True, "matplotlib": True, "notebook_magics": True}))
 
 
 if __name__ == "__main__":

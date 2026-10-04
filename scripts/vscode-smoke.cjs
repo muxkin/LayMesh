@@ -14,7 +14,7 @@ exports.run = async function () {
   const uri = vscode.Uri.file(file);
   const document = await vscode.workspace.openTextDocument(uri);
   await vscode.window.showTextDocument(document);
-  const extension = vscode.extensions.getExtension('laymesh.laymesh-language');
+  const extension = vscode.extensions.getExtension(require('../extensions/vscode/package.json').publisher+'.laymesh-language');
   assert(extension, 'LayMesh extension discovered');
   // Capture the real webview's bridge while retaining normal VS Code panels.
   // The shared DOM controls are exercised separately in the browser suite.

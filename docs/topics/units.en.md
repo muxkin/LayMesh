@@ -3,7 +3,7 @@
 <!-- walkthrough:start -->
 ## Purpose and concepts
 
-Unitless geometry uses canvas.unit, initially mm; unitless font sizes and stroke widths use pt. Explicit units are easiest to read and reproduce across themes. Layout px uses layout_dpi; PNG output DPI only determines final pixel count.
+Unitless geometry uses canvas.unit, initially mm; unitless font sizes and stroke widths use pt. Explicit units are easiest to read and reproduce across themes. Layout px uses layout_dpi; Raster output DPI determines final pixel count.
 
 ## Minimal complete example
 

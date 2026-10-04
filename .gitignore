@@ -5,6 +5,7 @@ packages/*/dist/
 coverage/
 *.pdf
 *.png
+!extensions/vscode/icon.png
 *.svg
 !site/logo.svg
 !examples/assets/*.svg
@@ -35,5 +36,6 @@ python/build/
 python/dist/
 python/laymesh/_vendor/
 release/dist/
+release/staging/
 release/history/
 release/verification/

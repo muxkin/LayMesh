@@ -27,7 +27,10 @@ fn path(uri: &str) -> String {
     let mut i = 0;
     while i < raw.len() {
         if raw.as_bytes()[i] == b'%' && i + 2 < raw.len() {
-            if let Some(v) = std::str::from_utf8(&raw.as_bytes()[i + 1..i + 3]).ok().and_then(|hex| u8::from_str_radix(hex, 16).ok()) {
+            if let Some(v) = std::str::from_utf8(&raw.as_bytes()[i + 1..i + 3])
+                .ok()
+                .and_then(|hex| u8::from_str_radix(hex, 16).ok())
+            {
                 bytes.push(v);
                 i += 3;
                 continue;
@@ -46,6 +49,139 @@ fn path(uri: &str) -> String {
 fn range(service: &LanguageService, uri: &str, a: usize, b: usize) -> J {
     let s = service.documents.get(uri).map(String::as_str).unwrap_or("");
     json!({"start":position(s,a),"end":position(s,b)})
+}
+fn roots(params: &J) -> BTreeSet<String> {
+    let mut roots: BTreeSet<_> = params["workspaceFolders"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|folder| folder["uri"].as_str())
+        .filter(|uri| uri.starts_with("file://"))
+        .map(str::to_string)
+        .collect();
+    if roots.is_empty() {
+        if let Some(uri) = params["rootUri"]
+            .as_str()
+            .filter(|uri| uri.starts_with("file://"))
+        {
+            roots.insert(uri.into());
+        }
+    }
+    roots
+}
+fn workspace_files(root_uri: &str) -> Vec<(String, String)> {
+    fn walk(
+        root: &std::path::Path,
+        directory: &std::path::Path,
+        root_uri: &str,
+        files: &mut Vec<(String, String)>,
+    ) {
+        let Ok(entries) = std::fs::read_dir(directory) else {
+            return;
+        };
+        for entry in entries.flatten() {
+            let Ok(kind) = entry.file_type() else {
+                continue;
+            };
+            if kind.is_symlink() {
+                continue;
+            }
+            let filename = entry.file_name();
+            let name = filename.to_string_lossy();
+            let path = entry.path();
+            if kind.is_dir() {
+                if [
+                    ".git",
+                    "target",
+                    "node_modules",
+                    ".venv",
+                    "venv",
+                    "dist",
+                    "build",
+                    "bin",
+                    "licenses",
+                    "__pycache__",
+                    ".ipynb_checkpoints",
+                    "coverage",
+                ]
+                .contains(&name.as_ref())
+                {
+                    continue;
+                }
+                if directory.file_name().is_some_and(|n| n == "release")
+                    && ["staging", "history", "comparison", "verification"].contains(&name.as_ref())
+                {
+                    continue;
+                }
+                walk(root, &path, root_uri, files);
+            } else if kind.is_file()
+                && path
+                    .extension()
+                    .is_some_and(|ext| ext == "lay" || ext == "lcss")
+            {
+                if let (Ok(relative), Ok(source)) =
+                    (path.strip_prefix(root), std::fs::read_to_string(&path))
+                {
+                    let relative = relative.to_string_lossy().replace('\\', "/");
+                    let uri = crate::resolve(
+                        &format!("{}/.laymesh-index.lay", root_uri.trim_end_matches('/')),
+                        &relative,
+                    );
+                    files.push((uri, source));
+                }
+            }
+        }
+    }
+    let root = std::path::PathBuf::from(path(root_uri));
+    let mut files = vec![];
+    if std::fs::symlink_metadata(&root).is_ok_and(|meta| !meta.file_type().is_symlink()) {
+        walk(&root, &root, root_uri, &mut files);
+    }
+    files
+}
+fn workspace(
+    service: &mut LanguageService,
+    roots: &BTreeSet<String>,
+    opened: &BTreeMap<String, J>,
+    indexed: &mut BTreeSet<String>,
+) {
+    let mut current = BTreeSet::new();
+    for root in roots {
+        for (uri, source) in workspace_files(root) {
+            if !opened.contains_key(&uri) {
+                service.update(&uri, &source);
+            }
+            current.insert(uri);
+        }
+    }
+    for uri in indexed.difference(&current) {
+        if !opened.contains_key(uri) {
+            service.remove(uri);
+        }
+    }
+    *indexed = current;
+}
+fn locations(service: &LanguageService, items: J, highlight: bool) -> J {
+    json!(
+        items
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|o| {
+                let r = range(
+                    service,
+                    o["uri"].as_str().unwrap(),
+                    o["from"].as_u64().unwrap() as usize,
+                    o["to"].as_u64().unwrap() as usize,
+                );
+                if highlight {
+                    json!({"range":r,"kind":o["kind"]})
+                } else {
+                    json!({"uri":o["uri"],"range":r})
+                }
+            })
+            .collect::<Vec<_>>()
+    )
 }
 fn dependencies(
     service: &mut LanguageService,
@@ -67,9 +203,20 @@ fn dependencies(
     let Some(text) = service.documents.get(uri).cloned() else {
         return;
     };
-    let re = regex::Regex::new(r#"["']([^"'\n]+\.(?:lay|lcss))["']"#).unwrap();
-    for c in re.captures_iter(&text) {
-        let target = crate::resolve(uri, &c[1]);
+    for token in crate::index::tokens(&text)
+        .into_iter()
+        .filter(|t| t.kind == "string")
+    {
+        let Ok(expr) = laymesh_core::parser::expression(&token.text, uri) else {
+            continue;
+        };
+        let laymesh_core::parser::ExprKind::String(source, _, false) = expr.kind else {
+            continue;
+        };
+        if !source.ends_with(".lay") && !source.ends_with(".lcss") {
+            continue;
+        }
+        let target = crate::resolve(uri, &source);
         dependencies(service, &target, opened, seen)
     }
 }
@@ -136,6 +283,9 @@ pub fn serve() -> io::Result<()> {
     let mut output = stdout.lock();
     let mut service = LanguageService::new("en");
     let mut opened = BTreeMap::<String, J>::new();
+    let mut workspace_roots = BTreeSet::new();
+    let mut workspace_documents = BTreeSet::new();
+    let mut versioned_edits = false;
     let mut closed = false;
     let mut ui = "en".to_string();
     let mut initial = String::new();
@@ -205,19 +355,40 @@ pub fn serve() -> io::Result<()> {
         let method = msg["method"].as_str().unwrap_or("");
         let p = &msg["params"];
         let uri = p["textDocument"]["uri"].as_str().unwrap_or("");
+        if matches!(
+            method,
+            "textDocument/references"
+                | "textDocument/documentHighlight"
+                | "textDocument/prepareRename"
+                | "textDocument/rename"
+        ) {
+            workspace(
+                &mut service,
+                &workspace_roots,
+                &opened,
+                &mut workspace_documents,
+            );
+            let documents: Vec<_> = service.documents.keys().cloned().collect();
+            let mut seen = BTreeSet::new();
+            for document in documents {
+                dependencies(&mut service, &document, &opened, &mut seen);
+            }
+        }
         let at = offset(
             service.documents.get(uri).map(String::as_str).unwrap_or(""),
             &p["position"],
         );
         let mut result = J::Null;
         let mut unknown = false;
-        match method{"initialize"=>{pull_configuration=p["capabilities"]["workspace"]["configuration"].as_bool().unwrap_or(false);register_configuration=p["capabilities"]["workspace"]["didChangeConfiguration"]["dynamicRegistration"].as_bool().unwrap_or(false);ui=p["locale"].as_str().unwrap_or("en").into();initial=p["initializationOptions"]["language"].as_str().unwrap_or("").into();service.locale=chosen_locale(&ui,&initial,"");for(i,v)in ["completion","hover","signatureHelp"].iter().enumerate(){let options=if *v=="completion"{&p["capabilities"]["textDocument"][v]["completionItem"]["documentationFormat"]}else if *v=="signatureHelp"{&p["capabilities"]["textDocument"][v]["signatureInformation"]["documentationFormat"]}else{&p["capabilities"]["textDocument"][v]["contentFormat"]};markdown[i]=options.as_array().and_then(|a|a.iter().find(|v|*v=="markdown"||*v=="plaintext")).is_some_and(|v|v=="markdown");}labels=p["capabilities"]["textDocument"]["signatureHelp"]["signatureInformation"]["parameterInformation"]["labelOffsetSupport"].as_bool().unwrap_or(false);result=json!({"capabilities":{"positionEncoding":"utf-16","textDocumentSync":{"openClose":true,"change":2,"save":true},"completionProvider":{"triggerCharacters":[".","(",":","_","\"","'","=",","]},"hoverProvider":true,"colorProvider":true,"signatureHelpProvider":{"triggerCharacters":["(",",","="]},"definitionProvider":true,"codeActionProvider":{"codeActionKinds":["quickfix"]}},"serverInfo":{"name":"LayMesh Rust","version":env!("CARGO_PKG_VERSION")}})},
+        let mut response_error = None;
+        match method{"initialize"=>{workspace_roots=roots(p);workspace(&mut service,&workspace_roots,&opened,&mut workspace_documents);versioned_edits=p["capabilities"]["workspace"]["workspaceEdit"]["documentChanges"].as_bool().unwrap_or(false);pull_configuration=p["capabilities"]["workspace"]["configuration"].as_bool().unwrap_or(false);register_configuration=p["capabilities"]["workspace"]["didChangeConfiguration"]["dynamicRegistration"].as_bool().unwrap_or(false);ui=p["locale"].as_str().unwrap_or("en").into();initial=p["initializationOptions"]["language"].as_str().unwrap_or("").into();service.locale=chosen_locale(&ui,&initial,"");for(i,v)in ["completion","hover","signatureHelp"].iter().enumerate(){let options=if *v=="completion"{&p["capabilities"]["textDocument"][v]["completionItem"]["documentationFormat"]}else if *v=="signatureHelp"{&p["capabilities"]["textDocument"][v]["signatureInformation"]["documentationFormat"]}else{&p["capabilities"]["textDocument"][v]["contentFormat"]};markdown[i]=options.as_array().and_then(|a|a.iter().find(|v|*v=="markdown"||*v=="plaintext")).is_some_and(|v|v=="markdown");}labels=p["capabilities"]["textDocument"]["signatureHelp"]["signatureInformation"]["parameterInformation"]["labelOffsetSupport"].as_bool().unwrap_or(false);result=json!({"capabilities":{"positionEncoding":"utf-16","textDocumentSync":{"openClose":true,"change":2,"save":true},"completionProvider":{"triggerCharacters":[".","(",":","_","\"","'","=",","]},"hoverProvider":true,"colorProvider":true,"signatureHelpProvider":{"triggerCharacters":["(",",","="]},"definitionProvider":true,"referencesProvider":true,"documentHighlightProvider":true,"renameProvider":{"prepareProvider":true},"workspace":{"workspaceFolders":{"supported":true,"changeNotifications":true}},"codeActionProvider":{"codeActionKinds":["quickfix"]}},"serverInfo":{"name":"LayMesh Rust","version":env!("CARGO_PKG_VERSION")}})},
  "shutdown"=>{closed=true},"exit"=>return if closed{Ok(())}else{Err(io::Error::new(io::ErrorKind::Other,"exit without shutdown"))},"initialized"=>{if register_configuration{send(&mut output,json!({"jsonrpc":"2.0","id":"laymesh/register","method":"client/registerCapability","params":{"registrations":[{"id":"laymesh-configuration","method":"workspace/didChangeConfiguration"}]}}))?;}if pull_configuration{waiting_configuration=true;send(&mut output,json!({"jsonrpc":"2.0","id":"laymesh/configuration","method":"workspace/configuration","params":{"items":[{"section":"laymesh"}]}}))?;}},"$/cancelRequest"|"$/setTrace"=>{},
  "workspace/didChangeConfiguration"=>{if pull_configuration{waiting_configuration=true;send(&mut output,json!({"jsonrpc":"2.0","id":"laymesh/configuration","method":"workspace/configuration","params":{"items":[{"section":"laymesh"}]}}))?;}service.locale=chosen_locale(&ui,&initial,p["settings"]["laymesh"]["language"].as_str().unwrap_or(""));refresh(&mut service, &opened, &mut output)?;},
  "textDocument/didOpen"=>{opened.insert(uri.into(),p["textDocument"]["version"].clone());service.update(uri,p["textDocument"]["text"].as_str().unwrap_or(""));refresh(&mut service,&opened,&mut output)?;},
  "textDocument/didChange"=>{let mut text=service.documents.get(uri).cloned().unwrap_or_default();if let Some(changes)=p["contentChanges"].as_array(){for change in changes{let value=change["text"].as_str().unwrap_or("");if change["range"].is_object(){let a=offset(&text,&change["range"]["start"]);let b=offset(&text,&change["range"]["end"]);if a<=b{text.replace_range(a..b,value)}}else{text=value.into()}}}opened.insert(uri.into(),p["textDocument"]["version"].clone());service.update(uri,&text);refresh(&mut service,&opened,&mut output)?;},
  "textDocument/didClose"=>{opened.remove(uri);service.remove(uri);dependencies(&mut service,uri,&opened,&mut BTreeSet::new());send(&mut output,json!({"jsonrpc":"2.0","method":"textDocument/publishDiagnostics","params":{"uri":uri,"diagnostics":[]}}))?;refresh(&mut service,&opened,&mut output)?;},"textDocument/didSave"=>{refresh(&mut service,&opened,&mut output)?;},
- "workspace/didChangeWatchedFiles"=>{if let Some(changes)=p["changes"].as_array(){for c in changes{if let Some(uri)=c["uri"].as_str(){dependencies(&mut service,uri,&opened,&mut BTreeSet::new());}}}refresh(&mut service,&opened,&mut output)?;},
+ "workspace/didChangeWorkspaceFolders"=>{if let Some(removed)=p["event"]["removed"].as_array(){for folder in removed{if let Some(uri)=folder["uri"].as_str(){workspace_roots.remove(uri);}}}if let Some(added)=p["event"]["added"].as_array(){for folder in added{if let Some(uri)=folder["uri"].as_str().filter(|uri|uri.starts_with("file://")){workspace_roots.insert(uri.into());}}}workspace(&mut service,&workspace_roots,&opened,&mut workspace_documents);refresh(&mut service,&opened,&mut output)?;},
+ "workspace/didChangeWatchedFiles"=>{if let Some(changes)=p["changes"].as_array(){for c in changes{if let Some(uri)=c["uri"].as_str(){if !opened.contains_key(uri){if let Ok(source)=std::fs::read_to_string(path(uri)){service.update(uri,&source);}else{service.remove(uri);workspace_documents.remove(uri);}}dependencies(&mut service,uri,&opened,&mut BTreeSet::new());}}}refresh(&mut service,&opened,&mut output)?;},
  "textDocument/completion"=>{dependencies(&mut service,uri,&opened,&mut BTreeSet::new());result=json!(service.completions(uri,at).as_array().unwrap().iter().map(|c|json!({"label":c["label"],"detail":c["detail"],"kind":match c["type"].as_str().unwrap_or(""){"function"=>3,"property"=>10,"variable"=>6,"keyword"=>14,"class"=>7,_=>1},"documentation":docs(c["info"].as_str().unwrap_or(""),markdown[0]),"textEdit":{"range":range(&service,uri,c["from"].as_u64().unwrap_or(0)as usize,c["to"].as_u64().map(|n| n as usize).unwrap_or(at)),"newText":c["apply"]}})).collect::<Vec<_>>())},
  "textDocument/documentColor"=>{result=json!(service.document_colors(uri).as_array().unwrap().iter().map(|c|json!({"range":range(&service,uri,c["from"].as_u64().unwrap()as usize,c["to"].as_u64().unwrap()as usize),"color":{"red":c["rgba"][0],"green":c["rgba"][1],"blue":c["rgba"][2],"alpha":c["rgba"][3]}})).collect::<Vec<_>>())},
  "textDocument/colorPresentation"=>{let source=service.documents.get(uri).map(String::as_str).unwrap_or("");let from=offset(source,&p["range"]["start"]);let to=offset(source,&p["range"]["end"]);let c=&p["color"];let rgba=[c["red"].as_f64().unwrap_or(0.),c["green"].as_f64().unwrap_or(0.),c["blue"].as_f64().unwrap_or(0.),c["alpha"].as_f64().unwrap_or(1.)];result=json!(service.color_presentations(uri,from,to,rgba).as_array().unwrap().iter().map(|c|json!({"label":c["label"],"textEdit":{"range":p["range"],"newText":c["text"]}})).collect::<Vec<_>>())},
@@ -226,11 +397,27 @@ pub fn serve() -> io::Result<()> {
  "textDocument/hover"=>{dependencies(&mut service,uri,&opened,&mut BTreeSet::new());let h=service.hover(uri,at);if !h.is_null(){result=json!({"contents":docs(h["contents"].as_str().unwrap_or(""),markdown[1]),"range":range(&service,uri,h["from"].as_u64().unwrap_or(0)as usize,h["to"].as_u64().unwrap_or(0)as usize)})}},
  "textDocument/signatureHelp"=>{dependencies(&mut service,uri,&opened,&mut BTreeSet::new());let s=service.signature(uri,at);if !s.is_null(){let label=s["label"].as_str().unwrap();let params:Vec<J>=s["parameters"].as_array().unwrap().iter().map(|v|{let label=if labels{v["label"].clone()}else{let a=crate::byte_offset(label,v["label"][0].as_u64().unwrap()as usize);let b=crate::byte_offset(label,v["label"][1].as_u64().unwrap()as usize);json!(&label[a..b])};json!({"label":label,"documentation":docs(v["documentation"].as_str().unwrap_or(""),markdown[2])})}).collect();result=json!({"signatures":[{"label":label,"documentation":docs(s["documentation"].as_str().unwrap_or(""),markdown[2]),"parameters":params}],"activeSignature":0,"activeParameter":s["activeParameter"]})}},
  "textDocument/definition"=>{dependencies(&mut service,uri,&opened,&mut BTreeSet::new());let d=service.definition(uri,at);if !d.is_null(){result=json!({"uri":d["uri"],"range":range(&service,d["uri"].as_str().unwrap(),d["from"].as_u64().unwrap()as usize,d["to"].as_u64().unwrap()as usize)})}},
+ "textDocument/references"=>{result=locations(&service,service.references(uri,at,p["context"]["includeDeclaration"].as_bool().unwrap_or(false)),false)},
+ "textDocument/documentHighlight"=>{result=locations(&service,service.highlights(uri,at),true)},
+ "textDocument/prepareRename"=>{let prepared=service.prepare_rename(uri,at);if !prepared.is_null(){result=json!({"range":range(&service,uri,prepared["from"].as_u64().unwrap()as usize,prepared["to"].as_u64().unwrap()as usize),"placeholder":prepared["placeholder"]})}},
+ "textDocument/rename"=>{
+  if p["textDocument"]["version"].is_number()&&opened.get(uri)!=Some(&p["textDocument"]["version"]){response_error=Some(json!({"code":-32801,"message":"Document changed; request rename again"}));}
+  else {match service.rename(uri,at,p["newName"].as_str().unwrap_or("")){
+   Err(message)=>response_error=Some(json!({"code":-32602,"message":message})),
+   Ok(edits)=>{
+    let mut changes=BTreeMap::<String,Vec<J>>::new();
+    for edit in edits.as_array().unwrap(){let file=edit["uri"].as_str().unwrap();changes.entry(file.into()).or_default().push(json!({"range":range(&service,file,edit["from"].as_u64().unwrap()as usize,edit["to"].as_u64().unwrap()as usize),"newText":p["newName"]}));}
+    result=if versioned_edits {json!({"documentChanges":changes.into_iter().map(|(uri,edits)|json!({"textDocument":{"version":opened.get(&uri).cloned().unwrap_or(J::Null),"uri":uri},"edits":edits})).collect::<Vec<_>>()})}else{json!({"changes":changes})};
+   }
+  }}
+ },
  "textDocument/codeAction"=>{result=json!(p["context"]["diagnostics"].as_array().map(|a|a.iter().filter(|d|d["data"]["replacement"].is_string()).map(|d|json!({"title":d["message"],"kind":"quickfix","diagnostics":[d],"edit":{"changes":{uri:[{"range":d["range"],"newText":d["data"]["replacement"]}]}}})).collect::<Vec<_>>()).unwrap_or_default())},_=>unknown=true}
         if let Some(id) = id {
             send(
                 &mut output,
-                if unknown {
+                if let Some(error) = response_error {
+                    json!({"jsonrpc":"2.0","id":id,"error":error})
+                } else if unknown {
                     json!({"jsonrpc":"2.0","id":id,"error":{"code":-32601,"message":"Method not found"}})
                 } else {
                     json!({"jsonrpc":"2.0","id":id,"result":result})
@@ -247,18 +434,47 @@ mod tests {
     fn file_uris_preserve_import_identity_and_decode_native_paths() {
         for (base, relative, expected) in [
             ("file:///tmp/main.lay", "./card.lay", "file:///tmp/card.lay"),
-            ("file:///C:/work/main.lay", "../lib/card.lay", "file:///C:/lib/card.lay"),
-            ("file:///C:/main.lay", "../../card.lay", "file:///C:/card.lay"),
-            ("file://server/share/main.lay", "./card.lay", "file://server/share/card.lay"),
-            ("file:///tmp/my%20project/main.lay", "./中文 #%.lay", "file:///tmp/my%20project/%E4%B8%AD%E6%96%87%20%23%25.lay"),
+            (
+                "file:///C:/work/main.lay",
+                "../lib/card.lay",
+                "file:///C:/lib/card.lay",
+            ),
+            (
+                "file:///C:/main.lay",
+                "../../card.lay",
+                "file:///C:/card.lay",
+            ),
+            (
+                "file://server/share/main.lay",
+                "./card.lay",
+                "file://server/share/card.lay",
+            ),
+            (
+                "file:///tmp/my%20project/main.lay",
+                "./中文 #%.lay",
+                "file:///tmp/my%20project/%E4%B8%AD%E6%96%87%20%23%25.lay",
+            ),
         ] {
             assert_eq!(crate::resolve(base, relative), expected);
         }
-        assert_eq!(path("file:///tmp/%E4%B8%AD%E6%96%87%20%23%25.lay"), "/tmp/中文 #%.lay");
+        assert_eq!(
+            path("file:///tmp/%E4%B8%AD%E6%96%87%20%23%25.lay"),
+            "/tmp/中文 #%.lay"
+        );
         assert_eq!(path("file://localhost/tmp/main.lay"), "/tmp/main.lay");
-        assert_eq!(path("file://server/share/main.lay"), "//server/share/main.lay");
+        assert_eq!(
+            path("file://server/share/main.lay"),
+            "//server/share/main.lay"
+        );
         assert_eq!(path("file:///tmp/%中文.lay"), "/tmp/%中文.lay");
-        assert_eq!(path("file:///C:/work/main.lay"), if cfg!(windows) { "C:/work/main.lay" } else { "/C:/work/main.lay" });
+        assert_eq!(
+            path("file:///C:/work/main.lay"),
+            if cfg!(windows) {
+                "C:/work/main.lay"
+            } else {
+                "/C:/work/main.lay"
+            }
+        );
     }
     #[test]
     fn locale_precedence_legacy() {

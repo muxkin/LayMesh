@@ -27,8 +27,8 @@
     "minimalApi": "plot"
   },
   "units": {
-    "conceptZh": "几何裸值采用 canvas.unit，初始为 mm；字号和线宽裸值采用 pt。显式单位最便于阅读和跨主题复现。布局 px 使用 layout_dpi，PNG 输出 DPI 则只决定最终像素数。",
-    "conceptEn": "Unitless geometry uses canvas.unit, initially mm; unitless font sizes and stroke widths use pt. Explicit units are easiest to read and reproduce across themes. Layout px uses layout_dpi; PNG output DPI only determines final pixel count.",
+    "conceptZh": "几何裸值采用 canvas.unit，初始为 mm；字号和线宽裸值采用 pt。显式单位最便于阅读和跨主题复现。布局 px 使用 layout_dpi，位图输出 DPI 则决定最终像素数。",
+    "conceptEn": "Unitless geometry uses canvas.unit, initially mm; unitless font sizes and stroke widths use pt. Explicit units are easiest to read and reproduce across themes. Layout px uses layout_dpi; Raster output DPI determines final pixel count.",
     "compositionZh": "长度乘无单位数仍是长度；两个同类长度相除得到比例。size=(40mm,auto) 常用于图片保留比例与文本自然高度，是否支持 auto 由素材决定。",
     "compositionEn": "Multiplying a length by a scalar retains length; dividing compatible lengths yields a ratio. size=(40mm,auto) often preserves image aspect or natural text height; auto support depends on material.",
     "errorsZh": "页面尺寸必须为正且不接受 auto。不能把角度与长度相加。line(angle=...) 支持 deg/rad，裸角度按度；极坐标数据角度由 angle_unit 指定。",
@@ -58,8 +58,8 @@
     "conceptEn": "image defines external picture material; add determines size, crop and fit. A crop box uses normalized 0–1 image coordinates. Cropping occurs before fitting to size.",
     "compositionZh": "同一图片分别放置完整版本和局部细节。contain 保留全部内容，cover 覆盖目标框并裁掉溢出，stretch 直接拉伸；单边 size 配 auto 可保持裁剪后的比例。",
     "compositionEn": "Place a full image and a detail from the same definition. contain keeps all content, cover fills the box and clips overflow, and stretch changes aspect ratio. One size dimension plus auto preserves the cropped aspect.",
-    "errorsZh": "SVG 内容先经过安全白名单；不支持 SVG crop。TIFF 仅支持单页 8 位灰度或 RGB。图片只有布局框，不根据像素提取 path 或 ink。",
-    "errorsEn": "SVG input is allowlisted, and SVG crop is unsupported. TIFF supports single-page 8-bit grayscale or RGB only. Pictures provide bounds without pixel-derived path or ink.",
+    "errorsZh": "SVG 内容先经过安全白名单；不支持 SVG crop。TIFF 支持单页无符号 8/16 位灰度或 RGB，可带 Alpha；多页、带符号和浮点 TIFF 不支持。GIF 和动态 WebP 取首帧；16 位强度不自动拉伸。图片只有布局框，不根据像素提取 path 或 ink。",
+    "errorsEn": "SVG input is allowlisted, and SVG crop is unsupported. TIFF accepts single-page unsigned 8/16-bit grayscale or RGB, with optional alpha; multipage, signed and floating-point TIFF are unsupported. GIF and animated WebP use the first frame; 16-bit intensities are not stretched. Pictures provide bounds without pixel-derived path or ink.",
     "minimalApi": "image"
   },
   "fonts": {

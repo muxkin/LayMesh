@@ -12,7 +12,10 @@ fn multiply(a: [f64; 6], b: [f64; 6]) -> [f64; 6] {
     ]
 }
 pub fn inspect_scene(scene: &Scene) -> J {
-    fn visit(n: &J, parent: [f64; 6], path: String, plots: &mut Vec<J>) {
+    fn visit(n: &J, parent: [f64; 6], path: String, inherited_clips: &[J], plots: &mut Vec<J>) {
+        if jnum(n, "opacity", 1.) <= 0. {
+            return;
+        }
         let angle = jnum(n, "rotation", 0.).to_radians();
         let (c, s) = (angle.cos(), angle.sin());
         let (cx, cy) = (jnum(n, "width", 0.) / 2., jnum(n, "height", 0.) / 2.);
@@ -42,6 +45,12 @@ pub fn inspect_scene(scene: &Scene) -> J {
             ],
         );
         let children = n["children"].as_array().cloned().unwrap_or_default();
+        let mut clips = inherited_clips.to_vec();
+        if n["clipPath"].is_object() {
+            clips.push(json!({"transform":m,"path":n["clipPath"]}));
+        } else if n["clip"].is_object() {
+            clips.push(json!({"transform":m,"rect":{"x":jnum(&n["clip"],"x",0.),"y":jnum(&n["clip"],"y",0.),"width":jnum(&n["clip"],"width",jnum(n,"width",0.)),"height":jnum(&n["clip"],"height",jnum(n,"height",0.))}}));
+        }
         let b = &n["plotBounds"];
         if b.is_object() {
             let mut axes = serde_json::Map::new();
@@ -98,7 +107,7 @@ pub fn inspect_scene(scene: &Scene) -> J {
                     axes.insert(name.clone(), a);
                 }
             }
-            let mut plot = json!({"id":n["id"],"path":path,"plot_area":b,"axes":axes,"decorations":n.get("plotDecorations").cloned().unwrap_or(json!([])),"page_transform":m});
+            let mut plot = json!({"id":n["id"],"path":path,"plot_area":b,"axes":axes,"decorations":n.get("plotDecorations").cloned().unwrap_or(json!([])),"page_transform":m,"clips":clips});
             if n["plotProjection"].is_object() {
                 plot["projection"] = n["plotProjection"].clone();
                 if let Some(boundary) = children
@@ -112,12 +121,12 @@ pub fn inspect_scene(scene: &Scene) -> J {
             plots.push(plot);
         }
         for (i, child) in children.iter().enumerate() {
-            visit(child, m, format!("{path}/{i}"), plots)
+            visit(child, m, format!("{path}/{i}"), &clips, plots)
         }
     }
     let mut plots = vec![];
     for (i, n) in scene.nodes.iter().enumerate() {
-        visit(n, [1., 0., 0., 1., 0., 0.], i.to_string(), &mut plots)
+        visit(n, [1., 0., 0., 1., 0., 0.], i.to_string(), &[], &mut plots)
     }
-    json!({"schema_version":scene.schema_version,"units":"mm","page":{"width":scene.width,"height":scene.height},"plots":plots,"warnings":scene.warnings})
+    json!({"schema_version":scene.schema_version,"units":"mm","page":{"width":scene.width,"height":scene.height,"unit":scene.canvas_unit,"layout_dpi":scene.layout_dpi},"plots":plots,"warnings":scene.warnings})
 }

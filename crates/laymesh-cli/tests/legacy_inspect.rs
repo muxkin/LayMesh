@@ -20,7 +20,11 @@ fn rotated_broken_plots_inspect_cli_matches_scene() {
     {
         source = source.replace(
             name,
-            &root.join("tests/fonts/DejaVuSans.ttf").to_str().unwrap().replace('\\', "/"),
+            &root
+                .join("tests/fonts/DejaVuSans.ttf")
+                .to_str()
+                .unwrap()
+                .replace('\\', "/"),
         );
     }
     let file = std::env::temp_dir().join(format!(

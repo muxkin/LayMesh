@@ -53,3 +53,5 @@ console.log(help);
 ```
 
 render 返回 JSON，并非单独 SVG 字符串；资源参数是资源名到文本或字节数组的 JSON 映射。渲染文字前需注册实际字体字节；需要分开计时可用 prepare_render 返回的 job.svg()/inspection()。language_query 使用 UTF-16 偏移，静态分析不执行源码；失败时抛出包含诊断的 JS 异常。
+
+原生 `laymesh_render::render_export(&scene, extension, &ExportOptions)` 提供与 CLI 相同的导出参数；`ExportOptions::validate` 可先校验。此接口仅启用 native 功能；浏览器 WASM 继续提供 SVG。[导出格式与编码参数](export.zh-CN.md)

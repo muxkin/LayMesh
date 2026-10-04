@@ -2,7 +2,7 @@
 
 ## 安装平台 wheel
 
-要求 Python 3.10+。稳定版本为 `0.3.0`，从 [PyPI](https://pypi.org/project/laymesh/) 安装：
+要求 Python 3.10+。PyPI 已发布版本为 `0.3.0`；当前工作区正在准备 `0.3.1`，从 [PyPI](https://pypi.org/project/laymesh/) 安装：
 
 ```sh
 python -m pip install laymesh

@@ -1,4 +1,5 @@
 //! Static, non-evaluating language services shared by native LSP and WebAssembly.
+mod bindings;
 mod colors;
 mod index;
 pub mod inspect;
@@ -11,10 +12,16 @@ use laymesh_core::{
 use regex::Regex;
 use serde_json::{Value as J, json};
 use std::collections::{BTreeMap, BTreeSet};
+use std::{
+    cell::RefCell,
+    hash::{Hash, Hasher},
+};
 #[derive(Default)]
 pub struct LanguageService {
     pub documents: BTreeMap<String, String>,
     pub locale: String,
+    indexes: RefCell<BTreeMap<String, (u64, bool, index::Index)>>,
+    bindings: RefCell<Option<(u64, bindings::Graph)>>,
 }
 #[derive(Default)]
 struct Context {
@@ -33,7 +40,11 @@ pub(crate) fn resolve(uri: &str, relative: &str) -> String {
         } else {
             path.split_once('/').unwrap_or((path, ""))
         };
-        let relative = if cfg!(windows) { relative.replace('\\', "/") } else { relative.to_owned() };
+        let relative = if cfg!(windows) {
+            relative.replace('\\', "/")
+        } else {
+            relative.to_owned()
+        };
         let mut encoded = String::new();
         for byte in relative.bytes() {
             if byte.is_ascii_alphanumeric() || b"-._~/:".contains(&byte) {
@@ -42,10 +53,22 @@ pub(crate) fn resolve(uri: &str, relative: &str) -> String {
                 encoded.push_str(&format!("%{byte:02X}"));
             }
         }
-        let joined = if encoded.starts_with('/') {
+        let drive_path = relative.as_bytes().get(1) == Some(&b':')
+            && relative
+                .as_bytes()
+                .first()
+                .is_some_and(u8::is_ascii_alphabetic);
+        let joined = if drive_path {
+            format!("/{encoded}")
+        } else if encoded.starts_with('/') {
             encoded
         } else {
-            format!("{}/{encoded}", path.rsplit_once('/').map(|(parent, _)| parent).unwrap_or(""))
+            format!(
+                "{}/{encoded}",
+                path.rsplit_once('/')
+                    .map(|(parent, _)| parent)
+                    .unwrap_or("")
+            )
         };
         let mut parts: Vec<&str> = Vec::new();
         for part in joined.split('/') {
@@ -241,12 +264,14 @@ fn expression(source: &str) -> Option<Expr> {
 }
 fn type_info(typ: &str) -> &'static J {
     let typ = if typ == "table" { "dict" } else { typ };
-    if API["valueTypes"].get(typ).is_some() { &API["valueTypes"][typ] } else { &API["geometryTypes"][typ] }
+    if API["valueTypes"].get(typ).is_some() {
+        &API["valueTypes"][typ]
+    } else {
+        &API["geometryTypes"][typ]
+    }
 }
 fn geometry_member_type(typ: &str, name: &str) -> Option<String> {
-    type_info(typ)["members"][name]
-        .as_str()
-        .map(str::to_string)
+    type_info(typ)["members"][name].as_str().map(str::to_string)
 }
 fn geometry_surface(name: &str) -> Option<String> {
     entries()
@@ -259,6 +284,25 @@ fn geometry_surface(name: &str) -> Option<String> {
 }
 fn expression_type(e: &Expr, lookup: &impl Fn(&str) -> Option<String>) -> Option<String> {
     match &e.kind {
+        ExprKind::Number(_, _) => Some("number".into()),
+        ExprKind::String(_, _, _) => Some("string".into()),
+        ExprKind::Bool(_) => Some("bool".into()),
+        ExprKind::Unary(op, value) => {
+            if op == "not" {
+                Some("bool".into())
+            } else {
+                expression_type(value, lookup)
+            }
+        }
+        ExprKind::Binary(op, a, b) => {
+            if ["==", "!=", "<", ">", "<=", ">=", "and", "or"].contains(&op.as_str()) {
+                Some("bool".into())
+            } else {
+                let a = expression_type(a, lookup)?;
+                let b = expression_type(b, lookup)?;
+                (a == b).then_some(a)
+            }
+        }
         ExprKind::Dict(_) => Some("dict".into()),
         ExprKind::List(_) => Some("list".into()),
         ExprKind::Ref(ps) => {
@@ -275,17 +319,21 @@ fn expression_type(e: &Expr, lookup: &impl Fn(&str) -> Option<String>) -> Option
         ExprKind::Member(receiver, name) => {
             geometry_member_type(&expression_type(receiver, lookup)?, name)
         }
-        ExprKind::Index(receiver, _) => {
-            type_info(&expression_type(receiver, lookup)?)["index"]
+        ExprKind::Index(receiver, _) => type_info(&expression_type(receiver, lookup)?)["index"]
+            .as_str()
+            .map(str::to_string),
+        ExprKind::Method(receiver, name, _) => {
+            type_info(&expression_type(receiver, lookup)?)["methods"][name]
                 .as_str()
                 .map(str::to_string)
         }
-        ExprKind::Method(receiver, name, _) => type_info(&expression_type(receiver, lookup)?)["methods"][name]
-            .as_str()
-            .map(str::to_string),
         ExprKind::Call(ps, _) => {
             if ps.len() == 1 {
-                return Some(entry(&ps[0]).and_then(|a|a["returnType"].as_str().map(str::to_string)).unwrap_or_else(||ps[0].clone()));
+                return Some(
+                    entry(&ps[0])
+                        .and_then(|a| a["returnType"].as_str().map(str::to_string))
+                        .unwrap_or_else(|| ps[0].clone()),
+                );
             }
             let mut typ = if ps[0] == "self" {
                 "instance".into()
@@ -304,7 +352,6 @@ fn expression_type(e: &Expr, lookup: &impl Fn(&str) -> Option<String>) -> Option
                 .map(str::to_string)
                 .or_else(|| matches!(method.as_str(), "data" | "axis").then(|| "anchor".into()))
         }
-        _ => None,
     }
 }
 fn context(source: &str, offset: usize) -> Option<Context> {
@@ -372,6 +419,7 @@ impl LanguageService {
         Self {
             documents: BTreeMap::new(),
             locale: locale.into(),
+            ..Self::default()
         }
     }
     pub fn update(&mut self, uri: &str, text: &str) {
@@ -386,9 +434,44 @@ impl LanguageService {
     fn source(&self, uri: &str) -> &str {
         self.documents.get(uri).map(String::as_str).unwrap_or("")
     }
+    fn document_index(&self, uri: &str) -> index::Index {
+        let source = self.source(uri);
+        let mut hasher = std::collections::hash_map::DefaultHasher::new();
+        source.hash(&mut hasher);
+        let hash = hasher.finish();
+        let en = self.en();
+        let mut cached = self.indexes.borrow_mut();
+        if !cached
+            .get(uri)
+            .is_some_and(|(h, e, _)| *h == hash && *e == en)
+        {
+            cached.insert(uri.into(), (hash, en, index(uri, source, en)));
+        }
+        cached[uri].2.clone()
+    }
+    fn binding_graph(&self) -> bindings::Graph {
+        let mut hasher = std::collections::hash_map::DefaultHasher::new();
+        self.documents.hash(&mut hasher);
+        self.locale.hash(&mut hasher);
+        let hash = hasher.finish();
+        if self
+            .bindings
+            .borrow()
+            .as_ref()
+            .is_none_or(|(old, _)| *old != hash)
+        {
+            let graph = bindings::Graph::build(self);
+            *self.bindings.borrow_mut() = Some((hash, graph));
+        }
+        self.bindings.borrow().as_ref().unwrap().1.clone()
+    }
     fn visible(&self, uri: &str, offset: usize) -> Vec<Symbol> {
-        let mut symbols = index(uri, self.source(uri), self.en()).symbols;
-        symbols.retain(|s| s.scope_from <= offset && s.scope_to >= offset);
+        let mut symbols = self.document_index(uri).symbols;
+        symbols.retain(|s| {
+            s.scope_from <= offset
+                && s.scope_to >= offset
+                && (s.from <= offset || s.kind == "function")
+        });
         symbols.sort_by_key(|s| (usize::MAX - (s.scope_to - s.scope_from), s.from));
         let mut out = BTreeMap::new();
         for s in symbols {
@@ -412,19 +495,30 @@ impl LanguageService {
             .find(|s| s.name == name)
         {
             if !s.alias.is_empty() && s.doc.body.is_empty() && s.doc.variants.is_empty() {
-                return self.resolve(uri, &s.alias, s.from, seen).or(Some(s));
+                if let Some(target) = self.resolve(uri, &s.alias, s.from.saturating_sub(1), seen) {
+                    if target.kind == "function" {
+                        return Some(target);
+                    }
+                }
             }
             return Some(s);
         }
-        for imp in index(uri, self.source(uri), self.en()).imports {
-            if imp.alias == name && imp.scope_from <= offset && imp.scope_to >= offset {
+        for imp in self.document_index(uri).imports {
+            if imp.alias == name
+                && imp.scope_from <= offset
+                && imp.scope_to >= offset
+                && imp.alias_from <= offset
+            {
                 let target = resolve(uri, &imp.source);
-                let s = index(&target, self.source(&target), self.en())
+                let s = self
+                    .document_index(&target)
                     .symbols
                     .into_iter()
                     .find(|s| s.exported && s.scope_from == 0 && s.name == imp.name)?;
                 return if !s.alias.is_empty() {
-                    self.resolve(&target, &s.alias, s.from, seen).or(Some(s))
+                    self.resolve(&target, &s.alias, s.from.saturating_sub(1), seen)
+                        .filter(|target| target.kind == "function")
+                        .or(Some(s))
                 } else {
                     Some(s)
                 };
@@ -438,7 +532,7 @@ impl LanguageService {
             .into_iter()
             .map(|s| (s.name.clone(), s))
             .collect();
-        for imp in index(uri, self.source(uri), self.en()).imports {
+        for imp in self.document_index(uri).imports {
             if !out.contains_key(&imp.alias) {
                 if let Some(s) = self.resolve(uri, &imp.alias, offset, &mut BTreeSet::new()) {
                     out.insert(imp.alias, s);
@@ -472,6 +566,18 @@ impl LanguageService {
                 if let Some(typ) = returns["type"].as_str() {
                     return Some(typ.into());
                 }
+            }
+        }
+        if let Some(value) = &symbol.value {
+            if let Some(inferred) = expression_type(value, &|other| {
+                self.type_of_inner(
+                    &symbol.uri,
+                    other,
+                    symbol.from.saturating_sub(1),
+                    &mut active.clone(),
+                )
+            }) {
+                return Some(inferred);
             }
         }
         if symbol.typ.is_empty() {
@@ -629,7 +735,20 @@ impl LanguageService {
                 return json!({"from":from,"to":to,"contents":parameter_doc(p,en,"")});
             }
         }
-        if let Some(s) = self.resolve(uri, &w, offset, &mut BTreeSet::new()) {
+        let graph = self.binding_graph();
+        let binding = graph.at(uri, offset);
+        if let Some(s) = binding.and_then(|o| {
+            self.resolve(uri, &w, offset, &mut BTreeSet::new())
+                .or_else(|| {
+                    graph
+                        .indexes
+                        .get(&o.key.uri)?
+                        .symbols
+                        .iter()
+                        .find(|s| s.from == o.key.from)
+                        .cloned()
+                })
+        }) {
             let contents = if s.kind == "function" {
                 let e = authored(&s, &w, en);
                 format!(
@@ -643,7 +762,12 @@ impl LanguageService {
                     e["documentation"].as_str().unwrap()
                 )
             } else {
-                format!("**{w}** {}\n\n{}", s.doc.select(en).typ, s.doc.markdown(en))
+                let typ = self
+                    .type_of(uri, &w, offset)
+                    .filter(|t| !t.is_empty())
+                    .or_else(|| (!s.doc.select(en).typ.is_empty()).then(|| s.doc.select(en).typ))
+                    .unwrap_or_else(|| "value".into());
+                format!("```lay\n{w}: {typ}\n```\n\n{}", s.doc.markdown(en))
             };
             return json!({"from":from,"to":to,"contents":contents});
         }
@@ -677,8 +801,17 @@ impl LanguageService {
     pub fn definition(&self, uri: &str, offset: usize) -> J {
         let source = self.source(uri);
         let (_, _, w) = word(source, offset);
-        if let Some(s) = self.resolve(uri, &w, offset, &mut BTreeSet::new()) {
-            return json!({"uri":s.uri,"from":s.from,"to":s.to});
+        let graph = self.binding_graph();
+        if let Some(o) = graph.at(uri, offset) {
+            if let Some(s) = self
+                .resolve(uri, &w, offset, &mut BTreeSet::new())
+                .filter(|s| s.kind == "function")
+            {
+                return json!({"uri":s.uri,"from":s.from,"to":s.to});
+            }
+            if let Some(definition) = graph.definition(&o.key) {
+                return definition;
+            }
         }
         if let Some(t) = tokens(source)
             .iter()
@@ -830,14 +963,33 @@ impl LanguageService {
             return json!([]);
         }
         if let Some(c) = context(source, offset) {
-            let preset_name = c.receiver.is_empty() && ["cmap","palette"].contains(&c.name.as_str())
+            let preset_name = c.receiver.is_empty()
+                && ["cmap", "palette"].contains(&c.name.as_str())
                 && (c.parameter == "name" || c.parameter.is_empty() && c.positional == 0)
-                && self.resolve(uri,&c.name,offset,&mut BTreeSet::new()).is_none();
-            if preset_name || c.parameter == "cmap" && self.callable(uri,offset,&c).is_some() {
-                let quoted = source[..from].trim_end().ends_with(['\'','"']);
-                return json!(laymesh_core::colormap::names(None,true).unwrap().into_iter().map(|name| {
-                    option(&name,"value",format!("Matplotlib {}",laymesh_core::colormap::VERSION),if quoted {name.clone()} else {json!(name).to_string()},"cmap")
-                }).collect::<Vec<_>>());
+                && self
+                    .resolve(uri, &c.name, offset, &mut BTreeSet::new())
+                    .is_none();
+            if preset_name || c.parameter == "cmap" && self.callable(uri, offset, &c).is_some() {
+                let quoted = source[..from].trim_end().ends_with(['\'', '"']);
+                return json!(
+                    laymesh_core::colormap::names(None, true)
+                        .unwrap()
+                        .into_iter()
+                        .map(|name| {
+                            option(
+                                &name,
+                                "value",
+                                format!("Matplotlib {}", laymesh_core::colormap::VERSION),
+                                if quoted {
+                                    name.clone()
+                                } else {
+                                    json!(name).to_string()
+                                },
+                                "cmap",
+                            )
+                        })
+                        .collect::<Vec<_>>()
+                );
             }
         }
         let css = if uri.ends_with(".lcss") {
@@ -998,12 +1150,7 @@ impl LanguageService {
             } else if let Some(members) = type_info(&typ)["members"].as_object() {
                 members
                     .keys()
-                    .chain(
-                        type_info(&typ)["methods"]
-                            .as_object()
-                            .unwrap()
-                            .keys(),
-                    )
+                    .chain(type_info(&typ)["methods"].as_object().unwrap().keys())
                     .cloned()
                     .chain((typ == "instance").then_some("data".into()))
                     .chain((typ == "instance").then_some("axis".into()))
@@ -1081,7 +1228,9 @@ impl LanguageService {
                     } else {
                         name.clone()
                     },
-                    &s.typ,
+                    &self
+                        .type_of(uri, name, offset)
+                        .unwrap_or_else(|| s.typ.clone()),
                 )
             })
             .collect();
@@ -1252,12 +1401,51 @@ impl LanguageService {
     pub fn diagnostics(&self, uri: &str) -> J {
         diagnostics(self, uri)
     }
+    pub fn references(&self, uri: &str, offset: usize, include_declaration: bool) -> J {
+        let graph = self.binding_graph();
+        json!(
+            graph
+                .at(uri, offset)
+                .map(|o| graph
+                    .related_references(&o.key, include_declaration)
+                    .into_iter()
+                    .map(|o| o.json())
+                    .collect::<Vec<_>>())
+                .unwrap_or_default()
+        )
+    }
+    pub fn highlights(&self, uri: &str, offset: usize) -> J {
+        json!(
+            self.references(uri, offset, true)
+                .as_array()
+                .unwrap()
+                .iter()
+                .filter(|o| o["uri"] == uri)
+                .cloned()
+                .collect::<Vec<_>>()
+        )
+    }
+    pub fn prepare_rename(&self, uri: &str, offset: usize) -> J {
+        let graph = self.binding_graph();
+        let Some(o) = graph.at(uri, offset).filter(|o| graph.can_rename(&o.key)) else {
+            return J::Null;
+        };
+        json!({"from":o.from,"to":o.to,"placeholder":&self.source(uri)[o.from..o.to]})
+    }
+    pub fn rename(&self, uri: &str, offset: usize, new_name: &str) -> Result<J, String> {
+        self.binding_graph()
+            .rename(uri, offset, new_name)
+            .map(|edits| json!(edits))
+    }
     pub fn query(&self, method: &str, uri: &str, offset: usize) -> J {
         match method {
             "completions" => self.completions(uri, offset),
             "hover" => self.hover(uri, offset),
             "signature" => self.signature(uri, offset),
             "definition" => self.definition(uri, offset),
+            "references" => self.references(uri, offset, true),
+            "highlights" => self.highlights(uri, offset),
+            "prepareRename" => self.prepare_rename(uri, offset),
             "diagnostics" => self.diagnostics(uri),
             "colors" => self.document_colors(uri),
             _ => J::Null,
@@ -1520,8 +1708,8 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                     && ["data", "axis"].contains(&last.as_str())
                 {
                     format!("instance.{last}")
-                } else if ps.len() > 1 && ["dict","table","cmap"].contains(&typ) {
-                    format!("{}.{last}", if typ=="table" {"dict"} else {typ})
+                } else if ps.len() > 1 && ["dict", "table", "cmap"].contains(&typ) {
+                    format!("{}.{last}", if typ == "table" { "dict" } else { typ })
                 } else if ps.len() > 1 {
                     geometry_surface(last).unwrap_or_else(|| last.clone())
                 } else {
@@ -1757,7 +1945,10 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                 }
             }
             ExprKind::Dict(es) => {
-                for (key,value) in es { walk(key,out,names,inferred,source,en); walk(value,out,names,inferred,source,en); }
+                for (key, value) in es {
+                    walk(key, out, names, inferred, source, en);
+                    walk(value, out, names, inferred, source, en);
+                }
             }
             ExprKind::List(vs) => {
                 for v in vs {
@@ -1794,7 +1985,10 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                 StmtKind::Bind(_, e, _) | StmtKind::Expr(e) | StmtKind::Return(e) => {
                     walk(e, out, names, inferred, source, en)
                 }
-                StmtKind::SetIndex(target,value) => { walk(target,out,names,inferred,source,en); walk(value,out,names,inferred,source,en); }
+                StmtKind::SetIndex(target, value) => {
+                    walk(target, out, names, inferred, source, en);
+                    walk(value, out, names, inferred, source, en);
+                }
                 StmtKind::Function(_, ps, b, _) => {
                     for (_, e) in ps {
                         if let Some(e) = e {

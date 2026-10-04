@@ -41,7 +41,7 @@ Asset paths below resolve relative to the `.lay` file **that defines the materia
 
 | Function | Required | Options and behavior | Example |
 | --- | --- | --- | --- |
-| `image` | `src="..."` | PNG, JPEG, safe SVG, single-page 8-bit grayscale/RGB TIFF; normalized when loaded | [basic](../examples/basic.lay) |
+| `image` | `src="..."` | PNG, JPEG, BMP, WebP, GIF, ICO, PNM, TGA, safe SVG, single-page unsigned 8/16-bit grayscale/RGB TIFF (optional alpha); normalized when loaded | [basic](../examples/basic.lay) |
 | `text` | Either `content="..."` or `spans=[...]`; `font_size=10 pt` | `font_family`, `font_weight=400`, `font_style="normal"`, `color="#000000"`, `line_height`, `size=(80, auto)`, `align=left` | [typography](../examples/typography.lay) |
 | `span` | First positional argument is text | Only inside `text(spans=[...])`; may override `font_family`, `font_size`, `font_weight`, `font_style`, `color` | [typography](../examples/typography.lay) |
 | `formula` | `source=r"..."`, `font_size=10pt` | `style=inline|display`, `math_font="ratex-katex"`; standalone or text span | [typography](../examples/typography.lay) |

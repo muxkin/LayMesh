@@ -26,7 +26,8 @@ kurbo = "0.13"
 i_overlay = "4.0"
 contour = { version = "=0.13.1", default-features = false }
 svgtypes = "0.16"
-image = { version = "0.25", default-features = false, features = ["png", "jpeg", "tiff"] }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "tiff", "bmp", "webp", "gif", "ico", "pnm", "tga"] }
+tiff = "=0.11.3"
 moxcms = "=0.8.1"
 zune-core = "=0.5.3"
 zune-jpeg = "=0.5.15"

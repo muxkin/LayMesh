@@ -157,7 +157,7 @@ page.add(text("Physical page",font_size=12pt),offset=(5mm,5mm))
 
 ## image
 
-Define reusable image material from a local file. add controls size, crop and contain/cover/stretch fitting; paths resolve relative to the defining file.
+Define reusable image material from a local file. add controls size, crop and contain/cover/stretch fitting; paths resolve relative to the defining file. Accepts PNG, JPEG, BMP, WebP, GIF, ICO, PNM, TGA, safe SVG, and single-page unsigned 8/16-bit grayscale/RGB TIFF with optional alpha. GIF and animated WebP use the first frame; 16-bit intensities are not stretched.
 
 Returns: material
 

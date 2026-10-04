@@ -139,7 +139,7 @@
           "test": "legacy_asset_and_syntax_failures_keep_diagnostics"
         }
       ],
-      "note": "All seven original cases: multipageTIFF,16-bitTIFF,missingasset,unsupportedunit,unknownname,unsafehostcall,invalidescape. Err Diagnostic code/file/line2/positivecolumn."
+      "note": "Original single-page 16-bit TIFF rejection is intentionally superseded by accepted import with physical canvas dimensions checked. Multipage TIFF, missing asset, unsupported unit, unknown name, unsafe host call and invalid escape retain located diagnostics."
     },
     {
       "ids": [

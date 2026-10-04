@@ -2,7 +2,7 @@
 
 ## Install a platform wheel
 
-Requires Python 3.10+. The stable release is `0.3.0`. Install from [PyPI](https://pypi.org/project/laymesh/):
+Requires Python 3.10+. The published release is `0.3.0`; this workspace prepares `0.3.1`. Install from [PyPI](https://pypi.org/project/laymesh/):
 
 ```sh
 python -m pip install laymesh

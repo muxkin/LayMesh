@@ -363,10 +363,14 @@ impl<'a> Parser<'a> {
         Ok(r)
     }
     fn pattern(&mut self, depth: usize) -> Result<Pattern> {
-        if depth > 256 { return Err(self.err("Pattern nesting exceeds 256")); }
+        if depth > 256 {
+            return Err(self.err("Pattern nesting exceeds 256"));
+        }
         if self.eat("(") {
             let mut ps = vec![self.pattern(depth + 1)?];
-            while self.eat(",") && self.peek() != ")" { ps.push(self.pattern(depth + 1)?); }
+            while self.eat(",") && self.peek() != ")" {
+                ps.push(self.pattern(depth + 1)?);
+            }
             self.need(")")?;
             Ok(Pattern::Tuple(ps))
         } else {
@@ -449,11 +453,17 @@ impl<'a> Parser<'a> {
                 let mut n = self.pattern(0)?;
                 if self.eat(",") {
                     let mut ps = vec![n, self.pattern(0)?];
-                    while self.eat(",") { ps.push(self.pattern(0)?); }
+                    while self.eat(",") {
+                        ps.push(self.pattern(0)?);
+                    }
                     n = Pattern::Tuple(ps);
                 }
                 let mut names = std::collections::BTreeSet::new();
-                if n.names().iter().filter(|n| n.as_str() != "_").any(|n| !names.insert(n.clone())) {
+                if n.names()
+                    .iter()
+                    .filter(|n| n.as_str() != "_")
+                    .any(|n| !names.insert(n.clone()))
+                {
                     return Err(self.err("Duplicate loop binding"));
                 }
                 self.need("in")?;
@@ -490,8 +500,10 @@ impl<'a> Parser<'a> {
                         return Err(self.err("Assignment needs a dictionary index"));
                     }
                     StmtKind::SetIndex(e, self.expr(0)?)
-                } else { StmtKind::Expr(e) }
-            },
+                } else {
+                    StmtKind::Expr(e)
+                }
+            }
         };
         Ok(Stmt { kind, loc: at })
     }
@@ -516,7 +528,9 @@ impl<'a> Parser<'a> {
                         let key = self.expr(0)?;
                         self.need(":")?;
                         es.push((key, self.expr(0)?));
-                        if !self.eat(",") { break; }
+                        if !self.eat(",") {
+                            break;
+                        }
                     }
                     self.need("}")?;
                     ExprKind::Dict(es)
@@ -548,10 +562,17 @@ impl<'a> Parser<'a> {
                             self.peek(),
                             "and" | "or" | "not" | "else" | "return" | "break" | "continue"
                         )
-                        && (self.peek() != "in" || self.ts[self.i].loc.offset == t.end
-                            || self.ts.get(self.i + 1).is_none_or(|next|
-                                next.text.is_empty() || next.loc.line > at.line
-                                || [",", ")", "]", "}", "+", "-", "*", "/", "==", "!=", "<", ">", "<=", ">="].contains(&next.text.as_str())))
+                        && (self.peek() != "in"
+                            || self.ts[self.i].loc.offset == t.end
+                            || self.ts.get(self.i + 1).is_none_or(|next| {
+                                next.text.is_empty()
+                                    || next.loc.line > at.line
+                                    || [
+                                        ",", ")", "]", "}", "+", "-", "*", "/", "==", "!=", "<",
+                                        ">", "<=", ">=",
+                                    ]
+                                    .contains(&next.text.as_str())
+                            }))
                         && !self.ts.get(self.i + 1).is_some_and(|t| t.text == "=")
                     {
                         unit = self.take().text;
@@ -654,7 +675,10 @@ impl<'a> Parser<'a> {
                 break;
             }
             let mut op = self.take();
-            if op.text == "not" { self.need("in")?; op.text = "not in".into(); }
+            if op.text == "not" {
+                self.need("in")?;
+                op.text = "not in".into();
+            }
             let right = self.expr(p + 1)?;
             left = Expr {
                 kind: ExprKind::Binary(op.text, Box::new(left), Box::new(right)),

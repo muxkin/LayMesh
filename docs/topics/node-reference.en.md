@@ -53,3 +53,5 @@ console.log(help);
 ```
 
 render returns JSON, not a bare SVG string. Resources are a JSON name→text/byte-array map. Register actual font bytes before rendering text; prepare_render returns a job with svg()/inspection() when layout/render timing needs separation. language_query accepts UTF-16 offsets and analyzes source without evaluation. Error results throw JS exceptions containing diagnostics.
+
+Native `laymesh_render::render_export(&scene, extension, &ExportOptions)` exposes the same options as the CLI; `ExportOptions::validate` supports preflight validation. This interface requires the native feature; browser WASM continues to provide SVG. [Export formats and encoding options](export.en.md)

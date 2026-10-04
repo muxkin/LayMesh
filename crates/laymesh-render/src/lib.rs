@@ -691,7 +691,11 @@ fn svg(scene: &Scene, embed_fonts: bool) -> Result<String> {
 }
 
 #[cfg(feature = "native")]
+mod export;
+#[cfg(feature = "native")]
 mod native;
+#[cfg(feature = "native")]
+pub use export::{ExportOptions, export_format, render_export};
 #[cfg(feature = "native")]
 pub use native::{render_pdf, render_png};
 
@@ -705,6 +709,7 @@ mod tests {
             height: 12.7,
             background: json!("none"),
             layout_dpi: 96.,
+            canvas_unit: "mm".into(),
             export_dpi: 300.,
             nodes: vec![],
             warnings: vec![],

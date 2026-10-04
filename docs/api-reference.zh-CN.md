@@ -157,7 +157,7 @@ page.add(text("Physical page",font_size=12pt),offset=(5mm,5mm))
 
 ## image
 
-从本地文件定义可重复放置的图片素材。尺寸、crop 与 contain/cover/stretch 适配在 add 中确定，路径相对于素材定义文件。
+从本地文件定义可重复放置的图片素材。尺寸、crop 与 contain/cover/stretch 适配在 add 中确定，路径相对于素材定义文件。 支持 PNG、JPEG、BMP、WebP、GIF、ICO、PNM、TGA、安全 SVG，以及单页无符号 8/16 位灰度/RGB TIFF（可带 Alpha）。GIF 和动态 WebP 取首帧；16 位强度不自动拉伸。
 
 返回：material
 

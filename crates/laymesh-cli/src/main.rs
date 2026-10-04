@@ -1,8 +1,10 @@
 use laymesh_core::engine::compile_file;
-use std::{env, fs, path::Path, process};
+use std::{env, path::Path, process};
+mod export;
+mod preview;
 
 fn usage(status: i32) -> ! {
-    let help = "用法:\n  laymesh validate <file.lay>\n  laymesh inspect <file.lay> --json\n  laymesh render <file.lay> -o <output.svg|pdf|png> [--dpi <number>]\n  laymesh lsp --stdio\n所有命令支持 --warnings show|hide（默认读取 LAYMESH_WARNINGS）\n几何默认 mm；字号与线宽默认 pt；样式表使用 .lcss";
+    let help = "用法:\n  laymesh validate <file.lay>\n  laymesh inspect <file.lay> --json\n  laymesh render <file.lay> -o <output.svg|pdf|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga>\n    [--dpi <number>] [--quality <1–100 (JPEG) / 0–100 (WebP)>]\n    [--compression <fast|default|best (PNG) / none|lzw|deflate|packbits (TIFF)>]\n    [--background <#RRGGBB>] [--webp-lossless <true|false>]\n    [--webp-method <0–6>] [--webp-alpha-quality <0–100>] [--webp-near-lossless <0–100>]\n  laymesh lsp --stdio\n  laymesh preview --stdio\n所有命令支持 --warnings show|hide（默认读取 LAYMESH_WARNINGS）\n几何默认 mm；字号与线宽默认 pt；样式表使用 .lcss";
     if status == 0 {
         println!("{help}")
     } else {
@@ -21,6 +23,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
     if args == ["lsp", "--stdio"] {
         laymesh_language::lsp::serve()?;
+        return Ok(());
+    }
+    if args == ["preview", "--stdio"] {
+        preview::serve()?;
         return Ok(());
     }
     if args.len() < 2 || args.iter().any(|s| s == "--help" || s == "-h") {
@@ -76,7 +82,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
     let mut output = None;
-    let mut dpi = None;
+    let mut options = laymesh_render::ExportOptions::default();
     i = 0;
     while i < rest.len() {
         match rest[i] {
@@ -84,13 +90,39 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 i += 1;
                 output = rest.get(i).copied()
             }
-            "--dpi" => {
+            flag @ ("--dpi"
+            | "--quality"
+            | "--compression"
+            | "--background"
+            | "--webp-lossless"
+            | "--webp-method"
+            | "--webp-alpha-quality"
+            | "--webp-near-lossless") => {
                 i += 1;
-                dpi = Some(
-                    rest.get(i)
-                        .and_then(|value| value.parse::<f64>().ok())
-                        .unwrap_or_else(|| usage(2)),
-                )
+                let value = rest.get(i).unwrap_or_else(|| usage(2));
+                match flag {
+                    "--dpi" => options.dpi = Some(value.parse().unwrap_or_else(|_| usage(2))),
+                    "--quality" => {
+                        options.quality = Some(value.parse().unwrap_or_else(|_| usage(2)))
+                    }
+                    "--compression" => options.compression = Some(value.to_string()),
+                    "--background" => options.background = Some(value.to_string()),
+                    "--webp-lossless" => {
+                        options.webp_lossless = Some(value.parse().unwrap_or_else(|_| usage(2)))
+                    }
+                    "--webp-method" => {
+                        options.webp_method = Some(value.parse().unwrap_or_else(|_| usage(2)))
+                    }
+                    "--webp-alpha-quality" => {
+                        options.webp_alpha_quality =
+                            Some(value.parse().unwrap_or_else(|_| usage(2)))
+                    }
+                    "--webp-near-lossless" => {
+                        options.webp_near_lossless =
+                            Some(value.parse().unwrap_or_else(|_| usage(2)))
+                    }
+                    _ => unreachable!(),
+                }
             }
             _ => usage(2),
         }
@@ -102,9 +134,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .and_then(|s| s.to_str())
         .unwrap_or("")
         .to_ascii_lowercase();
-    if !["svg", "pdf", "png"].contains(&format.as_str())
-        || dpi.is_some_and(|v| !v.is_finite() || v <= 0. || format != "png")
-    {
+    if let Err(error) = options.validate(&format) {
+        eprintln!("{error}");
         usage(2)
     }
     let scene = compile_file(file)?;
@@ -113,21 +144,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             eprintln!("{w}")
         }
     }
-    let data = match format.as_str() {
-        "svg" => laymesh_render::render_svg(&scene)?.into_bytes(),
-        "png" => laymesh_render::render_png(&scene, dpi.unwrap_or(scene.export_dpi))?,
-        "pdf" => laymesh_render::render_pdf(&scene)?,
-        _ => unreachable!(),
-    };
-    let temporary = format!("{output}.laymesh-{}.tmp", process::id());
-    let result = (|| {
-        fs::write(&temporary, data)?;
-        fs::rename(&temporary, output)
-    })();
-    if result.is_err() {
-        let _ = fs::remove_file(&temporary);
-    }
-    result?;
+    let data = laymesh_render::render_export(&scene, &format, &options)?;
+    export::write_atomic(Path::new(output), &data)?;
     println!("已导出：{output}");
     Ok(())
 }

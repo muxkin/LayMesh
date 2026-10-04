@@ -19,8 +19,8 @@ print(result.preview_svg.startswith('<svg'), result.output, result.saved_source)
 
 | Export | Arguments | Behavior |
 | --- | --- | --- |
-| `render_source(source, *, namespace=None, base_dir=None, output=None, dpi=None, plot_dpi=300, save_source=None, show_warnings=None)` | `.lay` source; `{{name}}` variables; asset/module base; optional SVG/PDF/PNG path; final PNG DPI; fallback plot DPI; saved expanded `.lay` name | Returns an SVG preview and optionally writes an export and expanded source. Temporary source files are cleaned up; saved assets use a sibling `.assets/` folder. |
-| `render_file(file, *, namespace=None, output=None, dpi=None, plot_dpi=300, save_source=None, show_warnings=None)` | Reads an existing `.lay`; asset paths resolve beside it | Uses the same binding and rendering path without modifying the original. |
+| `render_source(source, *, namespace=None, base_dir=None, output=None, dpi=None, plot_dpi=300, save_source=None, show_warnings=None, quality=None, compression=None, background=None, webp_lossless=None, webp_method=None, webp_alpha_quality=None, webp_near_lossless=None)` | `.lay` source; `{{name}}` variables; asset/module base; optional SVG/PDF or raster export path; final raster DPI; fallback plot DPI; saved expanded `.lay` name | Returns an SVG preview and optionally writes an export and expanded source. Temporary source files are cleaned up; saved assets use a sibling `.assets/` folder. |
+| `render_file(file, *, namespace=None, output=None, dpi=None, plot_dpi=300, save_source=None, show_warnings=None, quality=None, compression=None, background=None, webp_lossless=None, webp_method=None, webp_alpha_quality=None, webp_near_lossless=None)` | Reads an existing `.lay`; asset paths resolve beside it | Uses the same binding and rendering path without modifying the original. |
 | `RenderResult` | `preview_svg: str`, `output: Path\|None`, `saved_source: Path\|None` | Immutable dataclass. A preview is available even without `output`. |
 | `LayMeshBridgeError` | Exception | Raised for binding, asset, CLI startup, or CLI result failures. |
 
@@ -45,3 +45,5 @@ Both magics display an SVG preview. Line magic reads a file; cell magic reads ce
 ## workflow
 
 Complete sources and executable verification fixtures for this workflow are listed in the [feature coverage map](feature-map.en.md). Follow this page’s input conditions and limits when composing features.
+
+`render_source` and `render_file` also accept `quality=None`, `compression=None`, `background=None`, `webp_lossless=None`, `webp_method=None`, `webp_alpha_quality=None`, and `webp_near_lossless=None`. Magics accept the corresponding `--quality`, `--compression`, `--background` and `--webp-*` flags. [Export formats and encoding options](export.en.md)

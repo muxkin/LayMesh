@@ -119,7 +119,7 @@ impl FontSystem {
         loc: Loc,
         warnings: &mut Vec<Diagnostic>,
     ) {
-        self.host.native = host.native;
+        self.host = host.clone();
         let requests = match v {
             V::Text(s, _) => vec![s.clone()],
             V::List(v) => v.iter().map(V::as_str).collect(),

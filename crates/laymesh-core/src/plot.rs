@@ -1950,11 +1950,7 @@ pub fn validate_definition(e: &Engine, name: &str, a: &Args, l: Loc) -> Result<(
             Some(V::Text(name, _)) => crate::colormap::Colormap::get(name).is_some(),
             _ => false,
         } {
-            return Err(e.error(
-                "E_PLOT",
-                "未知配色；需要预设名称、颜色序列或 cmap 对象",
-                l,
-            ));
+            return Err(e.error("E_PLOT", "未知配色；需要预设名称、颜色序列或 cmap 对象", l));
         }
     }
     if name == "color_scale" {
