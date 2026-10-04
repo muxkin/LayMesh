@@ -1,0 +1,937 @@
+{
+  "mappings": [
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:13:23"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "rich_labels_keep_module_fonts_formula_sizes_and_pdf_sources"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_offset_labels_preserve_domains_and_physical_anchors"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "multiline_colorbar_labels_and_pixels_match_heatmap_normalization"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "plot_labels_and_manual_colorbar_follow_nested_rotation_and_scale"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_and_colorbar_errors_are_located_and_overflow_keeps_geometry"
+        }
+      ],
+      "note": "Original assertion: assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:30:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "hollow_points_retain_outer_size_and_individual_opacity_in_png_pdf"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "polygon_marker_ink_stays_within_size_and_errorbar_directions"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "legacy_solid_point_defaults_match_all_three_exports"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "multiline_colorbar_labels_and_pixels_match_heatmap_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.equal(run.status,0,run.stderr); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:35:31"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "hollow_points_retain_outer_size_and_individual_opacity_in_png_pdf"
+        }
+      ],
+      "note": "Original assertion: assert.equal(scene.schemaVersion,8); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:39:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "hollow_points_retain_outer_size_and_individual_opacity_in_png_pdf"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(pixel(40,40),[255,0,0]); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:41:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "hollow_points_retain_outer_size_and_individual_opacity_in_png_pdf"
+        }
+      ],
+      "note": "Original assertion: assert.ok(single.every(c=>c>=126&&c<=129),single.toString()); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:42:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "hollow_points_retain_outer_size_and_individual_opacity_in_png_pdf"
+        }
+      ],
+      "note": "Original assertion: assert.ok(twice.every(c=>c>=62&&c<=65),twice.toString()); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:43:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "hollow_points_retain_outer_size_and_individual_opacity_in_png_pdf"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(pixel(40,34.8),[255,255,255]); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:52:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "line_errorbar_legend_samples_share_marker_paint_and_order"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(batches.map(n=>n.marker),['diamond','triangle_down','square']); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:53:127"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "line_errorbar_legend_samples_share_marker_paint_and_order"
+        }
+      ],
+      "note": "Original assertion: assert.equal(batches[i][k],samples[i][k],k); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:54:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "line_errorbar_legend_samples_share_marker_paint_and_order"
+        }
+      ],
+      "note": "Original assertion: assert.equal(p.children.filter(n=>n.kind==='text'&&n.content==='Same').length,2); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:56:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "line_errorbar_legend_samples_share_marker_paint_and_order"
+        }
+      ],
+      "note": "Original assertion: assert.equal((p.children[errorIndex-1].d.match(/M/g)||[]).length,6); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:57:36"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "line_errorbar_legend_samples_share_marker_paint_and_order"
+        }
+      ],
+      "note": "Original assertion: assert.match(svg,/stroke-linejoin=\"round\"/); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:65:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "polygon_marker_ink_stays_within_size_and_errorbar_directions"
+        }
+      ],
+      "note": "Original assertion: assert.equal(samples.length,2); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:65:34"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "polygon_marker_ink_stays_within_size_and_errorbar_directions"
+        }
+      ],
+      "note": "Original assertion: assert.equal(p.children.filter(n=>n.kind==='points').length,0); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:71:7"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "polygon_marker_ink_stays_within_size_and_errorbar_directions"
+        }
+      ],
+      "note": "Original assertion: assert.ok(points.length>100); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:72:33"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "polygon_marker_ink_stays_within_size_and_errorbar_directions"
+        }
+      ],
+      "note": "Original assertion: assert.ok(Math.min(...points.map(q=>q[axis]))>=-50); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:72:85"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "polygon_marker_ink_stays_within_size_and_errorbar_directions"
+        }
+      ],
+      "note": "Original assertion: assert.ok(Math.max(...points.map(q=>q[axis]))<=50); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:73:7"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "polygon_marker_ink_stays_within_size_and_errorbar_directions"
+        }
+      ],
+      "note": "Original assertion: assert.equal(raw[(cy*info.width+cx)*3],255); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:85:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "legacy_solid_point_defaults_match_all_three_exports"
+        }
+      ],
+      "note": "Original assertion: assert.equal(await renderSvg(current),await renderSvg(legacy)); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:86:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "legacy_solid_point_defaults_match_all_three_exports"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(await renderPng(current,120),await renderPng(legacy,120)); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:88:11"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "legacy_solid_point_defaults_match_all_three_exports"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(await sharp(a).raw().toBuffer(),await sharp(b).raw().toBuffer()); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:95:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "rich_labels_keep_module_fonts_formula_sizes_and_pdf_sources"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(a.plotBounds,b.plotBounds); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:95:47"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "rich_labels_keep_module_fonts_formula_sizes_and_pdf_sources"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(data(a),data(b)); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:97:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "rich_labels_keep_module_fonts_formula_sizes_and_pdf_sources"
+        }
+      ],
+      "note": "Original assertion: assert.equal(rich.length,3); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:98:53"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "rich_labels_keep_module_fonts_formula_sizes_and_pdf_sources"
+        }
+      ],
+      "note": "Original assertion: assert.ok(n.runs.some(r=>r.kind==='formula'&&r.source==='\\\\alpha_2')); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:99:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "rich_labels_keep_module_fonts_formula_sizes_and_pdf_sources"
+        }
+      ],
+      "note": "Original assertion: assert.ok(formulas(a).includes('\\\\beta^2')); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:100:36"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "rich_labels_keep_module_fonts_formula_sizes_and_pdf_sources"
+        }
+      ],
+      "note": "Original assertion: assert.match(svg,/data-latex-source/); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:103:22"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "rich_labels_keep_module_fonts_formula_sizes_and_pdf_sources"
+        }
+      ],
+      "note": "Original assertion: assert.equal(extract.status,0); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:103:53"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "rich_labels_keep_module_fonts_formula_sizes_and_pdf_sources"
+        }
+      ],
+      "note": "Original assertion: assert.match(extract.stdout,/Signal/); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:103:91"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "rich_labels_keep_module_fonts_formula_sizes_and_pdf_sources"
+        }
+      ],
+      "note": "Original assertion: assert.match(extract.stdout,/\\\\alpha_2/); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:103:132"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "rich_labels_keep_module_fonts_formula_sizes_and_pdf_sources"
+        }
+      ],
+      "note": "Original assertion: assert.match(extract.stdout,/\\\\beta\\^2/); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:117:73"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_offset_labels_preserve_domains_and_physical_anchors"
+        }
+      ],
+      "note": "Original assertion: assert.ok(content.includes(label),label); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:118:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_offset_labels_preserve_domains_and_physical_anchors"
+        }
+      ],
+      "note": "Original assertion: assert.ok(formulas(p).includes('\\\\times 10^{6}')); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:118:55"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_offset_labels_preserve_domains_and_physical_anchors"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(p.plotAxes.y.domain,[0,2000000]); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:122:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_offset_labels_preserve_domains_and_physical_anchors"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(scenes[0].nodes[0].plotBounds,scenes[1].nodes[0].plotBounds); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:123:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_offset_labels_preserve_domains_and_physical_anchors"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(scenes[0].nodes[1],scenes[1].nodes[1]); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:135:33"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "extreme_finite_scientific_ticks_and_explicit_exponents"
+        }
+      ],
+      "note": "Original assertion: assert.ok(formulas(scene.nodes[0]).includes(`\\\\times 10^{${exponent}}`)); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:136:38"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "extreme_finite_scientific_ticks_and_explicit_exponents"
+        }
+      ],
+      "note": "Original assertion: assert.doesNotMatch(svg,/NaN|Infinity/); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:143:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_format_preserves_accounting_and_exponent_padding"
+        }
+      ],
+      "note": "Original assertion: assert.ok(content.includes('(1.00×10^0)')); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:143:47"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_format_preserves_accounting_and_exponent_padding"
+        }
+      ],
+      "note": "Original assertion: assert.ok(content.includes('1.00×10^000000')); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:144:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_format_preserves_accounting_and_exponent_padding"
+        }
+      ],
+      "note": "Original assertion: assert.ok(formulas(p).every(source=>source==='\\\\times 10^{0}')); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:157:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(a.plotBounds,{x:40,y:30,width:60,height:50}); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:157:67"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(a.plotBounds,b.plotBounds); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:158:18"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(data(a),reference); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:159:20"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.equal(c.width,horizontal?30:4); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:159:58"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.equal(c.height,horizontal?4:30); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:160:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.equal(c.fill.stops[0].color,horizontal?'#000000':'#ffffff'); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:160:72"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.equal(c.fill.stops.at(-1).color,horizontal?'#ffffff':'#000000'); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:161:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(c,bar(b)); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:163:28"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.ok(c.x+4<40); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:164:27"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.ok(c.y+4<30); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:165:30"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.ok(c.y>80); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:168:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "every_colorbar_side_keeps_fixed_data_and_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.equal(scene.warnings.length,0); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:184:7"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "side_colorbars_reserve_margins_manual_bars_warn_per_instance"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(p.plotBounds,unadorned); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:186:7"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "side_colorbars_reserve_margins_manual_bars_warn_per_instance"
+        }
+      ],
+      "note": "Original assertion: assert.equal(warnings.length,2); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:186:39"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "side_colorbars_reserve_margins_manual_bars_warn_per_instance"
+        }
+      ],
+      "note": "Original assertion: assert.notEqual(warnings[0].loc.line,warnings[1].loc.line); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:188:7"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "side_colorbars_reserve_margins_manual_bars_warn_per_instance"
+        }
+      ],
+      "note": "Original assertion: assert.equal(scene.warnings.length,0); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:189:60"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "side_colorbars_reserve_margins_manual_bars_warn_per_instance"
+        }
+      ],
+      "note": "Original assertion: assert.ok(n.x+n.width/2>=0&&n.y+n.height/2>=0); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:190:30"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "side_colorbars_reserve_margins_manual_bars_warn_per_instance"
+        }
+      ],
+      "note": "Original assertion: assert.ok(p.plotBounds.x>unadorned.x); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:191:32"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "side_colorbars_reserve_margins_manual_bars_warn_per_instance"
+        }
+      ],
+      "note": "Original assertion: assert.ok(p.plotBounds.height<unadorned.height); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:205:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "multiline_colorbar_labels_and_pixels_match_heatmap_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(p.plotBounds,{x:30,y:20,width:70,height:50}); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:206:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "multiline_colorbar_labels_and_pixels_match_heatmap_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.ok(formulas(p).includes('\\\\times 10^{6}')); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:207:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "multiline_colorbar_labels_and_pixels_match_heatmap_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.ok(p.children.some(n=>n.kind==='text'&&n.content==='−1.0')); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:209:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "multiline_colorbar_labels_and_pixels_match_heatmap_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.equal(labels.length,2); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:213:7"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "multiline_colorbar_labels_and_pixels_match_heatmap_normalization"
+        }
+      ],
+      "note": "Original assertion: assert.ok(Math.abs(pixel(b.x+b.width/2,b.y+b.height/2)-pixel(82.5,32.5))<=3); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:222:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "plot_labels_and_manual_colorbar_follow_nested_rotation_and_scale"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(p.plotBounds,{x:20,y:20,width:60,height:40}); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:225:73"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "plot_labels_and_manual_colorbar_follow_nested_rotation_and_scale"
+        }
+      ],
+      "note": "Original assertion: assert.equal(g.rotation,10); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:226:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "plot_labels_and_manual_colorbar_follow_nested_rotation_and_scale"
+        }
+      ],
+      "note": "Original assertion: assert.match(await renderSvg(scene),/rotate\\(90\\)/); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:245:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "decorations_leave_fixed_adjacent_panels_and_anchors_unchanged"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(scenes[0].nodes[i][key],scenes[1].nodes[i][key],key); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:246:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "decorations_leave_fixed_adjacent_panels_and_anchors_unchanged"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(scenes[0].nodes.slice(2),scenes[1].nodes.slice(2)); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:253:11"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_and_colorbar_errors_are_located_and_overflow_keeps_geometry"
+        }
+      ],
+      "note": "Original assertion: assert.rejects(f.scene(),e=>e instanceof LayError&&e.loc.line===3&&e.file===f.file,option); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:259:11"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_and_colorbar_errors_are_located_and_overflow_keeps_geometry"
+        }
+      ],
+      "note": "Original assertion: assert.rejects(f.scene(),e=>e instanceof LayError&&e.loc.line===5&&e.file===f.file,options); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:262:31"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_and_colorbar_errors_are_located_and_overflow_keeps_geometry"
+        }
+      ],
+      "note": "Original assertion: assert.deepEqual(scene.nodes[0].plotBounds,{x:10,y:10,width:50,height:35}); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:263:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_and_colorbar_errors_are_located_and_overflow_keeps_geometry"
+        }
+      ],
+      "note": "Original assertion: assert.ok(scene.warnings.some(w=>w.code==='W_PLOT_LAYOUT')); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    },
+    {
+      "ids": [
+        "tests/plot-scientific.test.mjs:263:63"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_scientific.rs",
+          "test": "scientific_and_colorbar_errors_are_located_and_overflow_keeps_geometry"
+        }
+      ],
+      "note": "Original assertion: assert.equal(bar(scene.nodes[0]).width,150); original capture inputs and parameter loops retained. Traversal resolves nested layer/decoration groups and physical translations; glyph run sizes replace the old text-wide fontSize field. PNG and Poppler PDF pixel checks both execute."
+    }
+  ],
+  "unmapped": []
+}

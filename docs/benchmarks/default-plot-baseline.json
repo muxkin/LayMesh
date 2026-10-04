@@ -1,0 +1,41 @@
+{
+  "dpi": 180,
+  "examples": [
+    {
+      "name": "scientific",
+      "svg_sha256": "b7c390e5c530519df88f66968b467d7530c37b2d093b74585bd2ff8f453d10dc",
+      "png_180dpi_sha256": "a16cca45ae1cc78e7b804e89644bc7b301cc54335c9339a6e0efc1fdc454d357",
+      "pdf_180dpi_rgba_sha256": "40df96a26de4feb0a9a156737ddda6dc0327f633ba9686fa8e87c789939ef6f9"
+    },
+    {
+      "name": "annotations",
+      "svg_sha256": "d0620056a961ce780bae1d078d6948d4820357d6ebef1e06f831371397bdd524",
+      "png_180dpi_sha256": "342c3f40b8f3867cebc089bc8a1c5095036d25fd1a637d681fd01723929d50d2",
+      "pdf_180dpi_rgba_sha256": "f56e341a05cd8513e4be35984d83863bd27bca33134cc095918507dd810f78da"
+    },
+    {
+      "name": "publication",
+      "svg_sha256": "9c6bab11fd8ef7cd313ddcede72ad58748410c84faf353f8b1e24d6987d0aab0",
+      "png_180dpi_sha256": "278b16b946da5af60eb78db5efb951f26ac86bf3afe80cc3f41a5a5e4bb259c1",
+      "pdf_180dpi_rgba_sha256": "ff928630f0f969d1451e608346043c59b886f9f732a4884e88b0a8fd5693dd4b"
+    },
+    {
+      "name": "markers",
+      "svg_sha256": "a21b5b987a171a547d9c02dd152532fb51406f49a6b72f7047ffbf0a8bcd3437",
+      "png_180dpi_sha256": "bd24860515328959158649cb710fff9bcbbe227a8ca49333cac8a33294854766",
+      "pdf_180dpi_rgba_sha256": "229c6534b2c3709ce45120d3dec4e73b4e70ee2c26fd64c9bf1c26e3b3dae7a7"
+    },
+    {
+      "name": "scientific-labels",
+      "svg_sha256": "50a9af49121fe1bffcfda4eb8a71d62f94bb42fce6da988daac0b289deea19f6",
+      "png_180dpi_sha256": "94abfb1091a0898af93c846ad0ac869dceabadf4e033d32067066a94c9ef3be1",
+      "pdf_180dpi_rgba_sha256": "24e278deba58494b0b1b532451e9fd1ab0814ddd2d8c6976c1278bdc3eaac812"
+    },
+    {
+      "name": "colorbars",
+      "svg_sha256": "d0456c693d5d0e6e7d06fb88ac59f821c50081f241060dc0230a40e1eebc55dc",
+      "png_180dpi_sha256": "533be0484aa5533de6aa367c06e9cb6c4cd8f42fdc1cc1bb495082d131a7b8bd",
+      "pdf_180dpi_rgba_sha256": "e254841024170e42c599faf96e0ec57287f49a96a26ffe1e48e45c1ca79d5571"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+# Minimal complete example: plot_style
+page=canvas(size=(100mm,75mm),background="#ffffff")
+s=plot_style(font_size=9pt,line_width=1pt)
+p=plot(size=(86mm,62mm),style=s)
+p.line(x=[0,1,2,3],y=[1,2,4,3])
+page.add(p,offset=(7mm,6mm))

@@ -1,0 +1,16 @@
+# Gallery: shapes / fuse-outline-corner
+page = canvas(name="Hollow corner seam", size=(120 mm, 80 mm), background="#202020")
+font = "DejaVu Sans"
+heading = text(content="Hollow corner seam", font_family=font, font_size=14 pt, color="#f7f9fc")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+frame = rect(size=(46 mm, 38 mm), fill="none",
+             border_color="#ffffff", border_width=2 mm)
+box = page.add(frame, target=page.top_left, offset=(16 mm, 34 mm))
+stem = page.add(line(dx=28 mm, dy=-28 mm, line_color="#ffffff",
+                     line_width=2 mm, line_cap=round),
+                target=page.top_left, offset=(62 mm, 6 mm))
+joined = page.fuse(box, stem, points=(box.top_right, stem.start),
+                   junction=round, radius=1.5 mm,
+                   fill="#ffffff", border_color="none")
+# END DEMO

@@ -1,0 +1,4 @@
+# Minimal complete example: radial_gradient
+page=canvas(size=(100mm,75mm),background="#ffffff")
+paint=radial_gradient(stops=[(0,"#ffffff"),(1,"#087f8c")])
+page.add(ellipse(size=(60mm,35mm),fill=paint),offset=(10mm,10mm))

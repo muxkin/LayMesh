@@ -1,0 +1,11 @@
+# Gallery: positioning / relative
+page = canvas(name="Relative placement", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Relative placement", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+tile = rect(size=(25 mm, 20 mm), fill="#087f8c")
+a = page.add(tile, target=page.top_left, offset=(9 mm, 28 mm))
+b = page.add(tile, target=a.top_right, offset=(7 mm, 0 mm))
+page.add(tile, target=b.bottom_right, anchor=top_right, offset=(0 mm, 7 mm))
+# END DEMO

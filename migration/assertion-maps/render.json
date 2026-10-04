@@ -1,0 +1,591 @@
+{
+  "baseline_commit": "78db22d",
+  "scope": "acceptance, font-stack, typography, vector, outline: 195 original assertion callsites; original capture resources are input fixtures, not expected answers.",
+  "mappings": [
+    {
+      "ids": [
+        "tests/acceptance.test.mjs:35:3",
+        "tests/acceptance.test.mjs:36:3",
+        "tests/acceptance.test.mjs:38:3",
+        "tests/acceptance.test.mjs:39:3",
+        "tests/acceptance.test.mjs:40:3",
+        "tests/acceptance.test.mjs:41:3",
+        "tests/acceptance.test.mjs:42:3",
+        "tests/acceptance.test.mjs:43:3",
+        "tests/acceptance.test.mjs:44:3",
+        "tests/acceptance.test.mjs:45:3",
+        "tests/acceptance.test.mjs:46:3",
+        "tests/acceptance.test.mjs:47:3",
+        "tests/acceptance.test.mjs:48:3",
+        "tests/acceptance.test.mjs:50:3",
+        "tests/acceptance.test.mjs:52:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_reused_images_preserve_crop_size_anchors_order_and_opacity"
+        }
+      ],
+      "note": "Both placements preserve all x/y/width/height/intrinsicWidth values, source order and PDF ca=0.5."
+    },
+    {
+      "ids": [
+        "tests/acceptance.test.mjs:58:3",
+        "tests/acceptance.test.mjs:59:3",
+        "tests/acceptance.test.mjs:60:3",
+        "tests/acceptance.test.mjs:61:3",
+        "tests/acceptance.test.mjs:63:9"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_bare_placements_and_group_anchors"
+        }
+      ],
+      "note": "Bare IDs @1/named/@2/@4 and nested @3, x/y and invalid bare expression E_STATEMENT line2."
+    },
+    {
+      "ids": [
+        "tests/acceptance.test.mjs:69:3",
+        "tests/acceptance.test.mjs:70:3",
+        "tests/acceptance.test.mjs:72:3",
+        "tests/acceptance.test.mjs:74:3",
+        "tests/acceptance.test.mjs:75:3",
+        "tests/acceptance.test.mjs:77:9"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_canvas_background_and_physical_output_dimensions"
+        }
+      ],
+      "note": "White default empty canvas, physical SVG background rectangle and opaque white PNG pixel, PDF page box, invalid background E_COLOR line1. SVG equivalent origin defaults omit x=0/y=0."
+    },
+    {
+      "ids": [
+        "tests/acceptance.test.mjs:93:3",
+        "tests/acceptance.test.mjs:94:3",
+        "tests/acceptance.test.mjs:95:3",
+        "tests/acceptance.test.mjs:96:3",
+        "tests/acceptance.test.mjs:97:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_bare_placements_and_group_anchors"
+        }
+      ],
+      "note": "Both original width20/30 parameter instances: downstream x22/32, group width23/x77 and child x13."
+    },
+    {
+      "ids": [
+        "tests/acceptance.test.mjs:103:3",
+        "tests/acceptance.test.mjs:105:3",
+        "tests/acceptance.test.mjs:107:3",
+        "tests/acceptance.test.mjs:110:3",
+        "tests/acceptance.test.mjs:111:3",
+        "tests/acceptance.test.mjs:112:3",
+        "tests/acceptance.test.mjs:115:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_canvas_background_and_physical_output_dimensions"
+        }
+      ],
+      "note": "25.4mm inch; SVG180x120mm; parsed PDF MediaBox510.236x340.157pt; 300DPI2126x1417PNG metadata; unchanged scene width; narrow1x3mm produces4x11px. PDF whitespace is representation-independent."
+    },
+    {
+      "ids": [
+        "tests/acceptance.test.mjs:130:3",
+        "tests/acceptance.test.mjs:131:3",
+        "tests/acceptance.test.mjs:132:3",
+        "tests/acceptance.test.mjs:135:3",
+        "tests/acceptance.test.mjs:136:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_svg_input_and_body_text_stay_vector_and_all_image_formats_load"
+        }
+      ],
+      "note": "Selectable Select me SVG text, nested SVG retained as vector paths, PDF FontFile2 and no raster images. Imported SVG rect is normalized to path."
+    },
+    {
+      "ids": [
+        "tests/acceptance.test.mjs:148:5",
+        "tests/acceptance.test.mjs:149:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_svg_input_and_body_text_stay_vector_and_all_image_formats_load"
+        }
+      ],
+      "note": "All five original input fixtures PNG/JPEG/SVG/8-bit-grayTIFF/8-bit-RGBTIFF produce nonempty image nodes."
+    },
+    {
+      "ids": [
+        "tests/acceptance.test.mjs:165:11",
+        "tests/acceptance.test.mjs:166:7",
+        "tests/acceptance.test.mjs:167:7",
+        "tests/acceptance.test.mjs:168:7",
+        "tests/acceptance.test.mjs:169:7",
+        "tests/acceptance.test.mjs:170:7"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_asset_and_syntax_failures_keep_diagnostics"
+        }
+      ],
+      "note": "All seven original cases: multipageTIFF,16-bitTIFF,missingasset,unsupportedunit,unknownname,unsafehostcall,invalidescape. Err Diagnostic code/file/line2/positivecolumn."
+    },
+    {
+      "ids": [
+        "tests/acceptance.test.mjs:179:9",
+        "tests/acceptance.test.mjs:181:9"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_asset_and_syntax_failures_keep_diagnostics"
+        }
+      ],
+      "note": "Both unsafe SVG script and external href inputs fail E_SVG at original file/line2."
+    },
+    {
+      "ids": [
+        "tests/acceptance.test.mjs:187:3",
+        "tests/acceptance.test.mjs:191:3",
+        "tests/acceptance.test.mjs:193:9",
+        "tests/acceptance.test.mjs:194:5",
+        "tests/acceptance.test.mjs:195:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-cli/tests/legacy_cli.rs",
+          "test": "legacy_cli_chinese_paths_exports_and_nonzero_located_failures"
+        }
+      ],
+      "note": "Execute native CLI in Chinese path; validate stdout; 300DPI118x118PNG; illegal call exits1 and stderr layout.lay:2:5:E_CALL."
+    },
+    {
+      "ids": [
+        "tests/font-stack.test.mjs:14:2",
+        "tests/font-stack.test.mjs:14:52",
+        "tests/font-stack.test.mjs:14:144",
+        "tests/font-stack.test.mjs:14:228"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_ordered_font_stacks_cover_chinese_and_combining_graphemes"
+        }
+      ],
+      "note": "Original fixed DejaVu and Noto fixture list: Latin and combining e-acute use DejaVu; Chinese uses Noto; no W_FONT. Fonts are test resources only."
+    },
+    {
+      "ids": [
+        "tests/font-stack.test.mjs:20:40",
+        "tests/font-stack.test.mjs:20:106",
+        "tests/font-stack.test.mjs:20:144",
+        "tests/font-stack.test.mjs:20:207",
+        "tests/font-stack.test.mjs:20:250",
+        "tests/font-stack.test.mjs:21:54"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_missing_glyphs_are_vector_boxes_and_import_paths_and_lists_are_checked"
+        }
+      ],
+      "note": "Original missing sequence gives A plus three font-independent boxes, one warning with both Unicode codes at line2, positive width and successful SVG/PNG/PDF."
+    },
+    {
+      "ids": [
+        "tests/font-stack.test.mjs:24:374",
+        "tests/font-stack.test.mjs:25:148"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_missing_glyphs_are_vector_boxes_and_import_paths_and_lists_are_checked"
+        }
+      ],
+      "note": "Relative font resolves to defining module parts/font.ttf; all three invalid font list parameter inputs retain E_FONT."
+    },
+    {
+      "ids": [
+        "tests/font-stack.test.mjs:28:263",
+        "tests/font-stack.test.mjs:28:361"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_missing_glyphs_are_vector_boxes_and_import_paths_and_lists_are_checked"
+        }
+      ],
+      "note": "Original plot font stack warns for unavailable name and renders Chinese title in SVG."
+    },
+    {
+      "ids": [
+        "tests/outline.test.mjs:23:3",
+        "tests/outline.test.mjs:24:3",
+        "tests/outline.test.mjs:25:3",
+        "tests/outline.test.mjs:26:3",
+        "tests/outline.test.mjs:27:3",
+        "tests/outline.test.mjs:28:3",
+        "tests/outline.test.mjs:30:3",
+        "tests/outline.test.mjs:31:3",
+        "tests/outline.test.mjs:32:3",
+        "tests/outline.test.mjs:34:3",
+        "tests/outline.test.mjs:35:3",
+        "tests/outline.test.mjs:37:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_reusable_compound_outlines_keep_opacity_paths_and_dpi"
+        }
+      ],
+      "note": "Four nodes, double/double/triple,opacity0.7,equal reused outlined geometry,nonempty paths,single has no outline. SVG sevenpaths/evenodd/fillopacity; vectorPDF;709x325PNG. outlineD is resolved on export to maintain final physical tolerance, so tests call that same helper."
+    },
+    {
+      "ids": [
+        "tests/outline.test.mjs:45:3",
+        "tests/outline.test.mjs:46:3",
+        "tests/outline.test.mjs:47:3",
+        "tests/outline.test.mjs:48:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_double_outline_has_a_transparent_gap"
+        }
+      ],
+      "note": "All four original pixel assertions at(20,7),(20,7.8),(20,9),(20,11):red/white/red/blue."
+    },
+    {
+      "ids": [
+        "tests/outline.test.mjs:53:3",
+        "tests/outline.test.mjs:54:3",
+        "tests/outline.test.mjs:55:3",
+        "tests/outline.test.mjs:56:3",
+        "tests/outline.test.mjs:58:3",
+        "tests/outline.test.mjs:59:3",
+        "tests/outline.test.mjs:60:3",
+        "tests/outline.test.mjs:61:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_dashes_and_compound_outlines_survive_fusion"
+        }
+      ],
+      "note": "IDs @1/@2/spare/merged, dot dash and cap/opacity, arrow dashdot recipe [4,2,.01,2], sparepath, nonempty fused compound outline and PNG/PDF. Arrow final fill consumes shaft stroke; its resolved geometryRecipe retains dash specification instead of applying a second stroke."
+    },
+    {
+      "ids": [
+        "tests/outline.test.mjs:57:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_dashes_and_compound_outlines_survive_fusion"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_geometry.rs",
+          "test": "capped_dashed_and_compound_arrow_ink_stops_behind_heads"
+        }
+      ],
+      "note": "IDs @1/@2/spare/merged, dot dash and cap/opacity, arrow dashdot recipe [4,2,.01,2], sparepath, nonempty fused compound outline and PNG/PDF. Arrow final fill consumes shaft stroke; its resolved geometryRecipe retains dash specification instead of applying a second stroke."
+    },
+    {
+      "ids": [
+        "tests/outline.test.mjs:68:3",
+        "tests/outline.test.mjs:70:158",
+        "tests/outline.test.mjs:71:170"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_module_borders_and_invalid_styles_keep_diagnostics"
+        }
+      ],
+      "note": "Imported border remains double; all five invalid stroke/argument/name cases retain code/file/line2; both obsolete outline APIs fail E_API_MIGRATION."
+    },
+    {
+      "ids": [
+        "tests/typography.test.mjs:34:3",
+        "tests/typography.test.mjs:36:3",
+        "tests/typography.test.mjs:37:3",
+        "tests/typography.test.mjs:38:3",
+        "tests/typography.test.mjs:39:3",
+        "tests/typography.test.mjs:40:3",
+        "tests/typography.test.mjs:41:3",
+        "tests/typography.test.mjs:43:3",
+        "tests/typography.test.mjs:44:3",
+        "tests/typography.test.mjs:47:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_rich_spans_reflow_with_color_and_measured_alignment"
+        }
+      ],
+      "note": "Exact widths22/55, narrow taller, y follows measured bottom+2, red/blue spans,x offsets, SVGtext/color and510x397PNG."
+    },
+    {
+      "ids": [
+        "tests/typography.test.mjs:53:3",
+        "tests/typography.test.mjs:54:3",
+        "tests/typography.test.mjs:56:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_unavailable_fonts_warn_and_ttc_otc_faces_are_embedded_correctly"
+        }
+      ],
+      "note": "System discovery yields glyph/fontPath; missing-family warning retains file,line5 and family; PDF>1000 bytes. CLI callsites map separately."
+    },
+    {
+      "ids": [
+        "tests/typography.test.mjs:58:3",
+        "tests/typography.test.mjs:59:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-cli/tests/legacy_cli.rs",
+          "test": "legacy_cli_font_warning_location_and_warning_controls"
+        }
+      ],
+      "note": "Native CLI succeeds and stderr retains main.lay:5:3:W_FONT; additional warning hiding controls are exercised."
+    },
+    {
+      "ids": [
+        "tests/typography.test.mjs:71:3",
+        "tests/typography.test.mjs:74:3",
+        "tests/typography.test.mjs:77:3",
+        "tests/typography.test.mjs:78:3",
+        "tests/typography.test.mjs:79:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_rich_spans_reflow_with_color_and_measured_alignment"
+        }
+      ],
+      "note": "Right first glyph x>0; justified paragraph multiline with expanded first-line spaces; last line x0 and final x<20."
+    },
+    {
+      "ids": [
+        "tests/typography.test.mjs:90:3",
+        "tests/typography.test.mjs:91:3",
+        "tests/typography.test.mjs:92:3",
+        "tests/typography.test.mjs:94:3",
+        "tests/typography.test.mjs:95:3",
+        "tests/typography.test.mjs:102:3",
+        "tests/typography.test.mjs:105:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_unavailable_fonts_warn_and_ttc_otc_faces_are_embedded_correctly"
+        }
+      ],
+      "note": "TTC named second face/family and selected font bytes; SVG TTF embedding; PDF; first-vs-second144DPI PNG differs and has expected nonwhite glyph pixels."
+    },
+    {
+      "ids": [
+        "tests/typography.test.mjs:114:3",
+        "tests/typography.test.mjs:115:3",
+        "tests/typography.test.mjs:117:3",
+        "tests/typography.test.mjs:124:3",
+        "tests/typography.test.mjs:125:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_unavailable_fonts_warn_and_ttc_otc_faces_are_embedded_correctly"
+        }
+      ],
+      "note": "OTC chosen CFF face, OTTO signature, SVG OTF embedding, first-vs-second raster differs and PDF succeeds."
+    },
+    {
+      "ids": [
+        "tests/typography.test.mjs:139:3",
+        "tests/typography.test.mjs:140:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_unavailable_fonts_warn_and_ttc_otc_faces_are_embedded_correctly"
+        }
+      ],
+      "note": "Imported component span resolves Chinese module/fonts/local.ttc and has zero warnings."
+    },
+    {
+      "ids": [
+        "tests/typography.test.mjs:152:3",
+        "tests/typography.test.mjs:153:3",
+        "tests/typography.test.mjs:155:3",
+        "tests/typography.test.mjs:156:3",
+        "tests/typography.test.mjs:164:5",
+        "tests/typography.test.mjs:171:5",
+        "tests/typography.test.mjs:172:5",
+        "tests/typography.test.mjs:173:5",
+        "tests/typography.test.mjs:174:5",
+        "tests/typography.test.mjs:178:5",
+        "tests/typography.test.mjs:181:5",
+        "tests/typography.test.mjs:184:7",
+        "tests/typography.test.mjs:188:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_formulas_keep_vectors_source_selection_and_following_terms"
+        }
+      ],
+      "note": "Inline and standalone formula nodes; SVG LaTeX source and vectors; PDF extracts every character of both full LaTeX sources plus follows; mutool selects exactly two formula runs spanning more than5 x positions; PNG width425. pdftotext and mutool are required: missing executables fail this test instead of skipping extraction. krilla ActualText replaces MathJax/Helvetica hex-Tj internals; extraction and selection are asserted."
+    },
+    {
+      "ids": [
+        "tests/typography.test.mjs:198:3",
+        "tests/typography.test.mjs:199:3",
+        "tests/typography.test.mjs:200:3",
+        "tests/typography.test.mjs:201:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-core/tests/font_render_contracts.rs",
+          "test": "ratex_operator_subscript_and_spaced_unit_keep_every_glyph_and_exact_scale"
+        }
+      ],
+      "note": "Authorized RaTeX migration: exact width equals direct RaTeX DisplayList em width times12pt; glyph sequence I−I0 and t(s); every MoveTo/LineTo/QuadTo/CurveTo/ClosePath command and all endpoints/control points equal the directly transformed KaTeX outline within1e-9mm, in addition to matching bounds; subscript0 smaller and lower. Perturbing an internal curve control point by0.01mm is rejected by that same comparison. MathJax SVG data-mml-node attributes and old inflated >10mm cutoff no longer apply."
+    },
+    {
+      "ids": [
+        "tests/typography.test.mjs:202:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_formulas_keep_vectors_source_selection_and_following_terms"
+        }
+      ],
+      "note": "Both I-I_0 and spaced t;(s) survive SVG/PNG/PDF with source metadata. Exact RaTeX glyph/size tests replace MathJax DOM and >10mm metric assumptions, as authorized."
+    },
+    {
+      "ids": [
+        "tests/typography.test.mjs:208:9",
+        "tests/typography.test.mjs:211:3",
+        "tests/typography.test.mjs:212:3",
+        "tests/typography.test.mjs:218:3",
+        "tests/typography.test.mjs:219:3",
+        "tests/typography.test.mjs:221:9"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_formula_failures_and_math_font_mapping_are_located"
+        }
+      ],
+      "note": "Unknown command and require fail E_FORMULA line2; legacy math font maps to ratex-katex with located W_FONT; aligned equation renders. New font identifier and W_FONT are explicit migration policy."
+    },
+    {
+      "ids": [
+        "tests/vector.test.mjs:23:9",
+        "tests/vector.test.mjs:24:5",
+        "tests/vector.test.mjs:25:5",
+        "tests/vector.test.mjs:26:5",
+        "tests/vector.test.mjs:27:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_fuse_and_path_errors_keep_codes_files_and_locations"
+        }
+      ],
+      "note": "Port fails helper across every original invalid invocation: bridgewidth missing/zero,reversedanchors,radius99,consumedanchor,badpath,baddasharray,imagefuse. Typed Err plus exact code/file/positive line,column."
+    },
+    {
+      "ids": [
+        "tests/vector.test.mjs:50:3",
+        "tests/vector.test.mjs:51:3",
+        "tests/vector.test.mjs:52:3",
+        "tests/vector.test.mjs:53:3",
+        "tests/vector.test.mjs:54:3",
+        "tests/vector.test.mjs:55:3",
+        "tests/vector.test.mjs:57:3",
+        "tests/vector.test.mjs:58:3",
+        "tests/vector.test.mjs:59:3",
+        "tests/vector.test.mjs:60:3",
+        "tests/vector.test.mjs:61:3",
+        "tests/vector.test.mjs:63:3",
+        "tests/vector.test.mjs:64:3",
+        "tests/vector.test.mjs:67:3",
+        "tests/vector.test.mjs:69:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_vector_presets_holes_gradients_dashes_and_selectable_spans"
+        }
+      ],
+      "note": "Nine nodes/eight vector presets, evenodd/dasharray/colored selectable text, both gradient types, embedded PDF font and no images,567x454PNG and white hole pixel."
+    },
+    {
+      "ids": [
+        "tests/vector.test.mjs:85:3",
+        "tests/vector.test.mjs:86:3",
+        "tests/vector.test.mjs:87:3",
+        "tests/vector.test.mjs:88:3",
+        "tests/vector.test.mjs:89:3",
+        "tests/vector.test.mjs:90:3",
+        "tests/vector.test.mjs:91:3",
+        "tests/vector.test.mjs:93:5",
+        "tests/vector.test.mjs:94:5",
+        "tests/vector.test.mjs:95:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_fuse_replaces_only_selected_instances_and_remains_reusable"
+        }
+      ],
+      "note": "Original miter/bevel/round cases retain spare/merged/after order; geometry differs and miter/round rasters differ; all three export. Spare rectangle is now a path carrying analytic rect geometryRecipe, with equivalent geometry."
+    },
+    {
+      "ids": [
+        "tests/vector.test.mjs:105:3",
+        "tests/vector.test.mjs:106:3",
+        "tests/vector.test.mjs:107:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_fuse_replaces_only_selected_instances_and_remains_reusable"
+        }
+      ],
+      "note": "Both imported reusable groups retain a single joint child and raster render."
+    },
+    {
+      "ids": [
+        "tests/vector.test.mjs:112:3",
+        "tests/vector.test.mjs:113:3",
+        "tests/vector.test.mjs:114:3",
+        "tests/vector.test.mjs:116:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_exports.rs",
+          "test": "legacy_fuse_replaces_only_selected_instances_and_remains_reusable"
+        }
+      ],
+      "note": "Both nearest and explicit endpoint curved dashed fusions each produce one filled path and valid PNG."
+    }
+  ],
+  "unmapped": []
+}

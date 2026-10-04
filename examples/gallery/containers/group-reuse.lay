@@ -1,0 +1,15 @@
+# Gallery: containers / group-reuse
+page = canvas(name="Reusable group", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Reusable group", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+card = group()
+base = card.add(rect(size=(38 mm, 28 mm), border_radius=3 mm, fill="#d8f0ec",
+                     border_color="#087f8c", border_width=0.5 mm), target=card.top_left)
+card.add(ellipse(size=(10 mm, 10 mm), fill="#f2ab47"),
+         anchor=center, target=base.center)
+first = page.add(card, target=page.top_left, offset=(8 mm, 30 mm))
+page.add(card,size=(52 mm, 38 mm), target=first.top_right,
+         offset=(11 mm, -3 mm))
+# END DEMO

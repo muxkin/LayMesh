@@ -1,0 +1,15 @@
+# Gallery: shapes / colors-alpha
+page=canvas(name="Color spaces and alpha",size=(145mm,95mm),background="#fff")
+page.add(text("Color spaces and alpha",font_family="DejaVu Sans",font_size=16pt,color="#203864"),offset=(8mm,6mm))
+# BEGIN DEMO
+colors=["#0072b290",rgb(0,114,178,alpha=0.56),hsv(202deg,1,0.7,alpha=0.56),oklch(0.55,0.12,240deg,alpha=0.56)]
+labels=["HEX + alpha","RGB + alpha","HSV + alpha","OKLCH + alpha"]
+for i in range(4) {
+    x=8mm+i*34mm
+    page.add(rect(size=(27mm,43mm),fill="#e6f2f3"),offset=(x,25mm))
+    page.add(rect(size=(27mm,14mm),fill="#bbbbbb"),offset=(x,39mm))
+    page.add(ellipse(size=(25mm,36mm),fill=colors[i]),offset=(x+1mm,28mm))
+    page.add(text(labels[i],font_family="DejaVu Sans",font_size=7pt,color="#425466"),offset=(x,72mm))
+}
+# END DEMO
+page.add(text("One color model across shapes, text, gradients and plots.",font_family="DejaVu Sans",font_size=8pt,color=oklch(0.45,0.1,200deg)),offset=(8mm,84mm))

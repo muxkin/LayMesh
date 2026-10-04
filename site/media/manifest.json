@@ -1,0 +1,4451 @@
+{
+  "recipe": {
+    "widths": [
+      960,
+      1920,
+      3840
+    ],
+    "format": "webp",
+    "lossless": true,
+    "version": 2,
+    "engine": "rust-ratex"
+  },
+  "engine": "27b5686f671c55779c04197b3d468020c1c8b530b7d66c72e4b184af9240a96c",
+  "items": {
+    "examples/gallery/images/png.lay": {
+      "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
+      "dependencies": [
+        "examples/gallery/assets/sample.png",
+        "examples/gallery/images/png.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-images-png-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "29a6edb88393b7bb114c44f2e7a9d368b5a9f2eba310074892d346c9fd8d09e8"
+        },
+        {
+          "file": "site/media/gallery-images-png-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "cc69088347e12aaf6bde6bd6fd81409cfec73715dbc169f53446f8f290e7eb5c"
+        },
+        {
+          "file": "site/media/gallery-images-png-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "502e17a24d98928cc8a5f6efba368a2944ddb20edbc88761f2b008d6207642a9"
+        }
+      ]
+    },
+    "examples/gallery/images/jpeg.lay": {
+      "fingerprint": "59e047fcdbf0358cb55e3162af15b13b5b5e067ee452a9067fb479f54e4e7a50",
+      "dependencies": [
+        "examples/gallery/assets/sample.jpg",
+        "examples/gallery/images/jpeg.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-images-jpeg-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "3d3a95060798583621a90f91b0aaf981f5177806a5ce62060cd03a36688cf078"
+        },
+        {
+          "file": "site/media/gallery-images-jpeg-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "f08fa3b7d9143d814ad5ccee4e15e81e096ac3c1d456ae0e0e9d6659c8fe3dc4"
+        },
+        {
+          "file": "site/media/gallery-images-jpeg-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "dba4ea9310b3732b6c618d80792c611aa49f292ac5cd90e54febb55e886f5547"
+        }
+      ]
+    },
+    "examples/gallery/images/svg.lay": {
+      "fingerprint": "739f4039d0f4a326fa7171db5b265e37d82ad953a8351d2e5ed3af6e7223c1d4",
+      "dependencies": [
+        "examples/gallery/assets/sample.svg",
+        "examples/gallery/images/svg.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-images-svg-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "38a135bd3f154a7317afc18c4f02b536edefb362a7e5d0f12aed71825f3694bf"
+        },
+        {
+          "file": "site/media/gallery-images-svg-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "ad103166bb0cc1a97a49f5737f698d7927cd2e40768bc231a93e9e6a7bd455c3"
+        },
+        {
+          "file": "site/media/gallery-images-svg-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "3a1e04e337b6590c8462aed0172119e6a903a910f961d20df0a446a5f1dfeb1a"
+        }
+      ]
+    },
+    "examples/gallery/images/tiff-gray.lay": {
+      "fingerprint": "db5a2a18ae0e6f54b18c62b5412464585559ec0e38a6b22c0e1fddf29ac6518a",
+      "dependencies": [
+        "examples/gallery/assets/gray8.tiff",
+        "examples/gallery/images/tiff-gray.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-images-tiff-gray-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "3dfe516a0509abacc00c97e62b68a8d37842c9fade156fbf2b1b9b70bf35e67d"
+        },
+        {
+          "file": "site/media/gallery-images-tiff-gray-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "73c5456ab1f84b738f620a6f2feab7033909d7b85dfd6472a67ddcecfd944cde"
+        },
+        {
+          "file": "site/media/gallery-images-tiff-gray-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "5b61637a72d4f06200d97d56bb225ac8f85f9f66dadff18e7514f340d9282c39"
+        }
+      ]
+    },
+    "examples/gallery/images/tiff-rgb.lay": {
+      "fingerprint": "03f532320a22fefdb401b9f2aa62cf552b96f6a7c70f4c698e2f6c2cc1bfd6f2",
+      "dependencies": [
+        "examples/gallery/assets/rgb8.tiff",
+        "examples/gallery/images/tiff-rgb.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-images-tiff-rgb-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "285307dcc8fca21a16f38baec4d24d28a90bb91ac6115b1595d55e9e4c9c21fb"
+        },
+        {
+          "file": "site/media/gallery-images-tiff-rgb-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "eb234c0f522d4bb1d3ce6f7979693f1402a0eb4aed9697653674b6c15d72f107"
+        },
+        {
+          "file": "site/media/gallery-images-tiff-rgb-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "7175987cd62ce480b1d3010ed7a3e2e3aafc673f54cb7d185d0ef6ee6450e336"
+        }
+      ]
+    },
+    "examples/gallery/images/reuse.lay": {
+      "fingerprint": "9ff1661a04e8ffea8aa6db36cd85aece2df23e0acd3b4132370c2658e3e08062",
+      "dependencies": [
+        "examples/gallery/assets/sample.png",
+        "examples/gallery/images/reuse.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-images-reuse-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "0153bc1917540ca43f1ae0ed3aa844111ebe9d2cb754e7eda850b53bc7b92649"
+        },
+        {
+          "file": "site/media/gallery-images-reuse-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "8221444e14c307059fdea8f70fd23b7b524a1e8533da21e47c00bbb218cfa74b"
+        },
+        {
+          "file": "site/media/gallery-images-reuse-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "104e7a02cd3971e1d12b97443abe53b5dba01a4d4cbe885d1c9f415698e482c9"
+        }
+      ]
+    },
+    "examples/gallery/images/crop.lay": {
+      "fingerprint": "e167099679501d4e32323c9a5c0e2f9cbf1f6dd46f9aefda87eaefa5deb4b97e",
+      "dependencies": [
+        "examples/gallery/assets/sample.png",
+        "examples/gallery/images/crop.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-images-crop-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "165921188a894523b63d45aa7f5a85673501c1f70f211de4fb674b4c11ffadf5"
+        },
+        {
+          "file": "site/media/gallery-images-crop-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "7d30fbbf3e363e90bb20fc198734705c59fd6a7398b137de099f082b0456eda6"
+        },
+        {
+          "file": "site/media/gallery-images-crop-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "6e4b208dcb4db230610f72338c34fc8beff36f28e43455215ed383b8bdad61ec"
+        }
+      ]
+    },
+    "examples/gallery/images/fit-contain.lay": {
+      "fingerprint": "cfa91ec60014ddcc74f80d1b7360ad55b38d09925edc9d9e0a6ca3f7e051521e",
+      "dependencies": [
+        "examples/gallery/assets/sample.png",
+        "examples/gallery/images/fit-contain.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-images-fit-contain-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "d98dcf7465584ddcb4309734970ed3fca9c32e300e63f24e551bd4c4b1d295e0"
+        },
+        {
+          "file": "site/media/gallery-images-fit-contain-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "162f5793ddfc5ae5c4f640bd1f7e3aabf563d2c9d51c03c793abd590b752b7fc"
+        },
+        {
+          "file": "site/media/gallery-images-fit-contain-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "2e2a7e37c601b722b05b73ac70ad093913e851d2a519f53a785103dfbbc4693f"
+        }
+      ]
+    },
+    "examples/gallery/images/fit-cover.lay": {
+      "fingerprint": "9d05441a2dd04278e9233de35aa4a4e3f143b202229502d29ad76834360ab94f",
+      "dependencies": [
+        "examples/gallery/assets/sample.png",
+        "examples/gallery/images/fit-cover.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-images-fit-cover-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "c97b706c3485b13c7b117a36ba5f5bd5e2cd361f65beb9b87040e2c064483039"
+        },
+        {
+          "file": "site/media/gallery-images-fit-cover-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "18d6fb995443170af059a9fd77574772f96c31a36f8b8538fcb0ad703d185991"
+        },
+        {
+          "file": "site/media/gallery-images-fit-cover-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "c50b9813be773e2b93cf3938fad35b478f9aafca8e6c53941b794c2e1c7dea59"
+        }
+      ]
+    },
+    "examples/gallery/images/fit-stretch.lay": {
+      "fingerprint": "047ea2bc47d6a57cc4e2b0bbc1bb855e2d54edeac3ff65777ffff5adcca69e7d",
+      "dependencies": [
+        "examples/gallery/assets/sample.png",
+        "examples/gallery/images/fit-stretch.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-images-fit-stretch-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "9691c1696a448ee5ce2e63c207c535c5e68a99c2bd480b40df36ef963d3fa159"
+        },
+        {
+          "file": "site/media/gallery-images-fit-stretch-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "230b7ae522eef0f5f3113ab1a79e6f1ae3fc8eb4d5a938a14b17facdfc260075"
+        },
+        {
+          "file": "site/media/gallery-images-fit-stretch-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "27cccfcfa46305723ae79eef77e03bfc800de186fda1556fed48b01e4c531e1e"
+        }
+      ]
+    },
+    "examples/gallery/positioning/anchors.lay": {
+      "fingerprint": "e1f1fe5810c32432f2a86d03caeb8fc0726e6cf2a3ce6b7790ff5c9ce009ce28",
+      "dependencies": [
+        "examples/gallery/positioning/anchors.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-positioning-anchors-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "55194f50a05c9d48ba617f2a9a35bee8ee10cfa2ee7d9dd57800a7ef7f088154"
+        },
+        {
+          "file": "site/media/gallery-positioning-anchors-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "844bf2a2c56b18a94732fb7aa13522478826d59789e96df3258a1b5bbcbf1ca4"
+        },
+        {
+          "file": "site/media/gallery-positioning-anchors-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "684102e97fd5efa45755a4ae3d6b3718b1b07922d8c242740e284a192ca3c225"
+        }
+      ]
+    },
+    "examples/gallery/positioning/relative.lay": {
+      "fingerprint": "e53be42dd5ff78ea6ceb80884df1b2e0d5145fb55eea87ebe4749ae84a7cbfcc",
+      "dependencies": [
+        "examples/gallery/positioning/relative.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-positioning-relative-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "a2982e2c839605e20ab7392041a70d5ca702cc94128a8cee45da0f93662ca542"
+        },
+        {
+          "file": "site/media/gallery-positioning-relative-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "3e4eddb85581f9ae4eb751eeb6d3007310972dc37757fe3fb00574bc2fc573d1"
+        },
+        {
+          "file": "site/media/gallery-positioning-relative-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "0e3ba362ad924fb63b03bc6a49cc401c72358a9ddb7a788c7cb841b8d370ed87"
+        }
+      ]
+    },
+    "examples/gallery/positioning/dependent-size.lay": {
+      "fingerprint": "c8a4b7a6af03ceae98b62a1ff7aff048c384c3479839d58e2a1a2c847f7c28b8",
+      "dependencies": [
+        "examples/gallery/positioning/dependent-size.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-positioning-dependent-size-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "a67edf4f206d77001627a1ef1ac0818378f34e7e975501319093ef269c15702f"
+        },
+        {
+          "file": "site/media/gallery-positioning-dependent-size-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "445df88c7eff1c4f490333f22172c81e88c740cb0be878a3ce225f501005681d"
+        },
+        {
+          "file": "site/media/gallery-positioning-dependent-size-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "739d74e6ee0d4a135e23844cdc263ff1583e1c63fff783033c5a2513c1b9505a"
+        }
+      ]
+    },
+    "examples/gallery/positioning/rotation.lay": {
+      "fingerprint": "b29bc68adb1c228c07575e6d8489eaae29dcabd260ef6539c2fea1024d241eb1",
+      "dependencies": [
+        "examples/gallery/positioning/rotation.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-positioning-rotation-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "cf6ac72e0d30b03bc3b5c1126a8f2ed283479ac9faa330bf4c5b9c617908f42e"
+        },
+        {
+          "file": "site/media/gallery-positioning-rotation-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "3538d625fcb1bc3f47d14ab1d418683c457d5f6516864c30b90cbff5ceef6750"
+        },
+        {
+          "file": "site/media/gallery-positioning-rotation-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "6188d545d53a4b1ad02248747eec9a17ce68c42fbbac32dccba1d45d3f9a3a13"
+        }
+      ]
+    },
+    "examples/gallery/positioning/opacity.lay": {
+      "fingerprint": "1a29b66867d14803fc1ae8fd2a54223e18adf9d9d509cc69434854e34ddef6ba",
+      "dependencies": [
+        "examples/gallery/positioning/opacity.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-positioning-opacity-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "9777dbc5c4bbb82c04dd640a565907249e76107a717a677d94868d9e56f6b7b7"
+        },
+        {
+          "file": "site/media/gallery-positioning-opacity-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "794e6bf7f745ed6484ddcc1e66dbdcccb0127ee134a870eeec47a6e2d4e7ac9e"
+        },
+        {
+          "file": "site/media/gallery-positioning-opacity-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "8e70764d483ba3caa46612edb9d8c4d087720ba11c878f1368203218b6db3a3c"
+        }
+      ]
+    },
+    "examples/gallery/positioning/drawing-order.lay": {
+      "fingerprint": "2eb3864952970c4ef72c11b800c7d6983c1d03d8a601ced1fd308f745d2645df",
+      "dependencies": [
+        "examples/gallery/positioning/drawing-order.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-positioning-drawing-order-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "3531ac8a726b26e63b2d0cac9814a701e8b50daeaca66f890f669d32d6f8928a"
+        },
+        {
+          "file": "site/media/gallery-positioning-drawing-order-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "5ad1a1ecb7974c0dc91bc9d8b4747e2bc1b8e5263e988fe001dd7d04b54be3bc"
+        },
+        {
+          "file": "site/media/gallery-positioning-drawing-order-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "7dfbd0a61dd348bba128b003f42d2b236f99bf6c45bdcb897e7586c0fa7f5fb7"
+        }
+      ]
+    },
+    "examples/gallery/positioning/geometry-anchors.lay": {
+      "fingerprint": "da1077e402a2ea6d8fa34682bbd9c41f708ffc5e0ebaf4cfeff8a9fda7182db7",
+      "dependencies": [
+        "examples/gallery/positioning/geometry-anchors.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-positioning-geometry-anchors-960.webp",
+          "width": 960,
+          "height": 672,
+          "sha256": "afd74d877b0c3930c92415dcb3ef8b8ed0c43edb57348328baba5633677f624f"
+        },
+        {
+          "file": "site/media/gallery-positioning-geometry-anchors-1920.webp",
+          "width": 1920,
+          "height": 1344,
+          "sha256": "d24dac12b2b7552043407b31d374ec49ee655c77adc755b1fcf353dff10556a3"
+        },
+        {
+          "file": "site/media/gallery-positioning-geometry-anchors-3840.webp",
+          "width": 3840,
+          "height": 2688,
+          "sha256": "4a726614c3e246449670235fa239fb9b06a926036eb2c12ace797f3e60d75243"
+        }
+      ]
+    },
+    "examples/gallery/positioning/path-locations.lay": {
+      "fingerprint": "7ea7f40eba2f572cc69841f4d56903398bdabf1ac660c645a7e4895f7f5f0232",
+      "dependencies": [
+        "examples/gallery/positioning/path-locations.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-positioning-path-locations-960.webp",
+          "width": 960,
+          "height": 704,
+          "sha256": "dec63912b321705ca0dc19cd7a5eae693aa2232c83bfef901e0ea0e5484600d9"
+        },
+        {
+          "file": "site/media/gallery-positioning-path-locations-1920.webp",
+          "width": 1920,
+          "height": 1408,
+          "sha256": "e6c0c7b5806645b9170d1ec4fe4c3bf9dee8ac32eb7d5d3a27d313c3de37fa9a"
+        },
+        {
+          "file": "site/media/gallery-positioning-path-locations-3840.webp",
+          "width": 3840,
+          "height": 2816,
+          "sha256": "8f0b2b4d768b8922b0f778e43cb578ab31a7c2e6c932f99b33e234260ab6ad7d"
+        }
+      ]
+    },
+    "examples/gallery/positioning/chart-parts.lay": {
+      "fingerprint": "9fa7b995ee0cd5606cf60e066ba8d07e460f5223b82419d2be794b58e67d93f8",
+      "dependencies": [
+        "examples/gallery/positioning/chart-parts.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-positioning-chart-parts-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "96c7efa29a56132df56d619d4a397ccf6538bbd56d01d049cf76f9b6dba07704"
+        },
+        {
+          "file": "site/media/gallery-positioning-chart-parts-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "68df3986d91d81809ba1d9459039dd20fe1b6cf76bcb155a8485cfbc6bf399e2"
+        },
+        {
+          "file": "site/media/gallery-positioning-chart-parts-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "3133c2e1d34847a4991dff06444604d61842d45f66991d858acde07b0792e8ee"
+        }
+      ]
+    },
+    "examples/gallery/containers/group-local.lay": {
+      "fingerprint": "088b73075671a4c0e65f8826b865bd4c8c4a2b70daa1a5d94f48963f8291314e",
+      "dependencies": [
+        "examples/gallery/containers/group-local.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-containers-group-local-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "2c14465c3f054d27f6c95670d4bb52be3c085bbbd2880cd8278f2f78a2bdfced"
+        },
+        {
+          "file": "site/media/gallery-containers-group-local-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "ad182618e6a5fb3fa563ec54bc1f34197c63d36912f24a8790a5ed8196c1e00f"
+        },
+        {
+          "file": "site/media/gallery-containers-group-local-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "caa9e8910fe3847576cf57f1fa5aea051f1966a980428337cb58c9df643b7b99"
+        }
+      ]
+    },
+    "examples/gallery/containers/group-nested.lay": {
+      "fingerprint": "1f817028b220d299d2d5a7bc4e5d8833150fb054a19d424407187d7ee9b4b22f",
+      "dependencies": [
+        "examples/gallery/containers/group-nested.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-containers-group-nested-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "a57a7bbaf56b72ff5bd7d99b2afa2d3440059fce44004b1e35eb02be45d1c055"
+        },
+        {
+          "file": "site/media/gallery-containers-group-nested-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "9c06abe66b776b24f8981a6d3382fc0b9222ff1cb7b3165fb141068345129e8e"
+        },
+        {
+          "file": "site/media/gallery-containers-group-nested-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "f24cde19e9adf7051866123097348ab4910e0e393e0181a7220fceefd873d012"
+        }
+      ]
+    },
+    "examples/gallery/containers/group-reuse.lay": {
+      "fingerprint": "ae739cf1235ff4b4dbbea342e35777ea6b3ec2129e875528b503a2888a01e6c1",
+      "dependencies": [
+        "examples/gallery/containers/group-reuse.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-containers-group-reuse-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "8a093c8c4d4ec1c2d66165c594d34c275a238a39500a9a394ede6fe51234830c"
+        },
+        {
+          "file": "site/media/gallery-containers-group-reuse-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "e7bab96153b46f63c42258a5e23507744958028d6c11599a2dabd8a53656f7bc"
+        },
+        {
+          "file": "site/media/gallery-containers-group-reuse-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "dbd97e044b366b5190480e3ca0353aab55dd057fb90e21c2623b313dcb95674f"
+        }
+      ]
+    },
+    "examples/gallery/containers/module-import.lay": {
+      "fingerprint": "364e5ebdcc79ffd3581ad799b59be64023241b6ee67fb3848560f1f6331f3e8d",
+      "dependencies": [
+        "examples/gallery/containers/card-component.lay",
+        "examples/gallery/containers/module-import.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-containers-module-import-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "f2e33f9a6f2be5d4b7d3b58d3ebca514f28598b45fc059235872ef13a540fe31"
+        },
+        {
+          "file": "site/media/gallery-containers-module-import-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "6d00fa520e76dd595f13bdac38edbaad2d1d508a655c19548114c4fd5c5e652f"
+        },
+        {
+          "file": "site/media/gallery-containers-module-import-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "f5ef6e5522e0b7a4e4695f8cc6a5ef2d9026c83ebc310ac9871b690a240e3ac3"
+        }
+      ]
+    },
+    "examples/gallery/shapes/rect.lay": {
+      "fingerprint": "3b0aa8203435dc87501f361896bf1fe26e30c945c6b6b02b20a6839a60dbc664",
+      "dependencies": [
+        "examples/gallery/shapes/rect.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-rect-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "676f98a9cceabedb9553ebde0fe46e6902cf0bc0150127982f2b66f916bfc133"
+        },
+        {
+          "file": "site/media/gallery-shapes-rect-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "8cd6cca984be4a1d4fefce9c196e38775789e4dda538be2e1362a8403cb9e1d1"
+        },
+        {
+          "file": "site/media/gallery-shapes-rect-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "26e2bac429e41fe74f936fefa36dbf2e90f9f468466115db49af889aaa0932dd"
+        }
+      ]
+    },
+    "examples/gallery/shapes/ellipse.lay": {
+      "fingerprint": "76999438c53ffbe20268aa6adb6560cf8a6e563b6986dcf7eedda8acc751c08c",
+      "dependencies": [
+        "examples/gallery/shapes/ellipse.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-ellipse-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "8d9884ac53c24eabb5f3afe70465dae43a2d7af2890c24f450fc6d61e9777d52"
+        },
+        {
+          "file": "site/media/gallery-shapes-ellipse-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "7a202e65ec85c8386bd3e0e21a54db2c315888d97d61ef94a4a823cefcc2758b"
+        },
+        {
+          "file": "site/media/gallery-shapes-ellipse-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "28766dfe0c58194f0ea64f5d969f229c4ee6470fcf053c642b236a7dff694444"
+        }
+      ]
+    },
+    "examples/gallery/shapes/line-arrow.lay": {
+      "fingerprint": "18d34e183d6d4c6f6289ce3596fb66569345e90f4ba82a0797e7790315ecd38c",
+      "dependencies": [
+        "examples/gallery/shapes/line-arrow.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-line-arrow-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "e28a423fae65b53800fb3fa5913320daba8e668582ddebb95acbdb02bb3bbc3e"
+        },
+        {
+          "file": "site/media/gallery-shapes-line-arrow-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "f37ffb803a1f8710ef6315c408dc0f25d8dcd79154a747dd8ee73bba39044e0e"
+        },
+        {
+          "file": "site/media/gallery-shapes-line-arrow-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "8adb011c904da7629c35857255db92105e8bf85fa2346f8e82452b1d7738ffd9"
+        }
+      ]
+    },
+    "examples/gallery/shapes/polygon-polyline.lay": {
+      "fingerprint": "c0f4d68c3a81f9e45e922828d1f5a12d0e8ef74aeff484e775c4fe6b26f52afe",
+      "dependencies": [
+        "examples/gallery/shapes/polygon-polyline.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-polygon-polyline-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "da1583ec534e4a9d7068cddf582a5decbddc966f38a86b662321cf8d95c7d39f"
+        },
+        {
+          "file": "site/media/gallery-shapes-polygon-polyline-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "17dabf42ddaa67553c1752d30276b8970d1a6cf1e55ccb82db8d512415210a81"
+        },
+        {
+          "file": "site/media/gallery-shapes-polygon-polyline-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "2265a73e433429e965f424a477ab70e1d6ac93c5e9f17590a2a53cc6014eeb6c"
+        }
+      ]
+    },
+    "examples/gallery/shapes/arc-sector.lay": {
+      "fingerprint": "decd5cfc0a2cbdbc9ffb7081eac4b272df93b00bd52f6bac5b3980cd3bc45d59",
+      "dependencies": [
+        "examples/gallery/shapes/arc-sector.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-arc-sector-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "b866470aaf60a1e2b3f824cd14e646ec393f83c313f6a1c9d64b9d97bac5dec0"
+        },
+        {
+          "file": "site/media/gallery-shapes-arc-sector-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "30cfea28cb51cb4d8573728db5377ef6c06fb1db1913475181ddf0f0119ceafe"
+        },
+        {
+          "file": "site/media/gallery-shapes-arc-sector-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "32156a62da996f1d3e388d9fc3f65fef739fb576a1e809981f9625fc27e48fbc"
+        }
+      ]
+    },
+    "examples/gallery/shapes/star-ring.lay": {
+      "fingerprint": "447885d2bb353af622771803d02d735fff371636988bcb87a0d1e88e0dbc67f3",
+      "dependencies": [
+        "examples/gallery/shapes/star-ring.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-star-ring-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "94a85cc72e572228a0a430814ad5a6b4997fbdc7eb439ca288b0c373011c8732"
+        },
+        {
+          "file": "site/media/gallery-shapes-star-ring-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "c02c3f709bb627b7d892fcd3db351dd7aa44a33e3f4d2e66da8b83e9ff88d581"
+        },
+        {
+          "file": "site/media/gallery-shapes-star-ring-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "e685c91708f1a9cb56686d6860e7e30dc81e603d070360a94c1dd716ee55d84f"
+        }
+      ]
+    },
+    "examples/gallery/shapes/path-commands.lay": {
+      "fingerprint": "aa2d6583876fb3e32a026a9927601fb4aaa3c3dda937c2555e3572bc570b8e4d",
+      "dependencies": [
+        "examples/gallery/shapes/path-commands.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-path-commands-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "6bd2e864ec50f1ffdcec366c8f3b23dd330b39f121faf0ba26ac4b4cfb191027"
+        },
+        {
+          "file": "site/media/gallery-shapes-path-commands-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "22ed111d06decad3aab3803d2bba4dfecf1f2d46fc738c8bb11a8b956a83c974"
+        },
+        {
+          "file": "site/media/gallery-shapes-path-commands-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "c5161c862f5d2665c5868a8c8c0ea35b1a0ffb0ecae1d4ca66f66017bf34a1d4"
+        }
+      ]
+    },
+    "examples/gallery/shapes/evenodd-hole.lay": {
+      "fingerprint": "85502611c3f8f6949aa8e98d51ec23cad6e748518414c599bab1ed94c6d299b4",
+      "dependencies": [
+        "examples/gallery/shapes/evenodd-hole.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-evenodd-hole-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "651192539843a4667d7cb576519c109181553e6cf5a1ad49ea83b802bba6d06b"
+        },
+        {
+          "file": "site/media/gallery-shapes-evenodd-hole-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "a7cb2f7e8930ca416042122a37342fd4143276b8b0398d99563264bf8a4e8cc8"
+        },
+        {
+          "file": "site/media/gallery-shapes-evenodd-hole-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "5ed5cdfc850943ec7ffaf9e8e5af5ce807f67a3f4c9256ee1bfa3e731d8efe2f"
+        }
+      ]
+    },
+    "examples/gallery/shapes/linear-gradient.lay": {
+      "fingerprint": "3d8d512f4dc23c87e8017231378cb42e2dd51b6916b09507cad3eca3607f59a4",
+      "dependencies": [
+        "examples/gallery/shapes/linear-gradient.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-linear-gradient-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "c0aee618c91f9ebdaa1d4d22bed2da152731853eeed0c888989ca687908679e2"
+        },
+        {
+          "file": "site/media/gallery-shapes-linear-gradient-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "a747db455fe54dd4854ef9d3efd216f785d9ccc70634606919e274cfcfebac69"
+        },
+        {
+          "file": "site/media/gallery-shapes-linear-gradient-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "6ed4609bfff92cd2c3bb3611914b318a3c4dfad224b2a0ef713f8a6e70fc2158"
+        }
+      ]
+    },
+    "examples/gallery/shapes/radial-gradient.lay": {
+      "fingerprint": "e61f721af7655b98744ec77a893a4e46c617e1d626345a017ba51ee538909ca3",
+      "dependencies": [
+        "examples/gallery/shapes/radial-gradient.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-radial-gradient-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "91a22a390067bf2142c2b9dc3c88e7e73c49d0c4b87d89637d89570bb75d2915"
+        },
+        {
+          "file": "site/media/gallery-shapes-radial-gradient-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "4f5e699aeb0b35820902d9e9214cd7a23ae0b31d0fe942f44f61a5927d862cc4"
+        },
+        {
+          "file": "site/media/gallery-shapes-radial-gradient-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "27d3e3e8f11d1fc211512b5859ca867dcd7615c94a2538b5a3e65acd3d98a1f6"
+        }
+      ]
+    },
+    "examples/gallery/shapes/dashes.lay": {
+      "fingerprint": "1d579bf5a4016f604da1af5291faf9aaa0923433c1cf8ed81a19cdc0953809bb",
+      "dependencies": [
+        "examples/gallery/shapes/dashes.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-dashes-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "4371caee9fe1c98c8c6a6e5e291eec6fc27e256aabdae61f0362e9fa0f2d6c77"
+        },
+        {
+          "file": "site/media/gallery-shapes-dashes-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "6e5fe07b025ff7d16a33dd51c8ac1a45eaeb368fd35e8d675ee6b29a0cabe1a8"
+        },
+        {
+          "file": "site/media/gallery-shapes-dashes-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "ae3ad20d9b3291b29083fe3c427ffff204002c557979d572e8287a74fba0689c"
+        }
+      ]
+    },
+    "examples/gallery/shapes/outlines.lay": {
+      "fingerprint": "a33686c8569ff5c55a30f624b6febb48178f023fe29d4170fb11ad12693296e3",
+      "dependencies": [
+        "examples/gallery/shapes/outlines.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-outlines-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "5ccac499a1b170af29be85eb675f541bad2cfd0b289954743ff68956606fc3a3"
+        },
+        {
+          "file": "site/media/gallery-shapes-outlines-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "1208cbe21f9f9acbea956b8c18633e1ee1a5ec0625aeba95cd675d7a0aabbd26"
+        },
+        {
+          "file": "site/media/gallery-shapes-outlines-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "63253dce86476f97aa613f2a1ad58e7960f8a04bdfb8f1446d91d693fb39d67a"
+        }
+      ]
+    },
+    "examples/gallery/shapes/fuse.lay": {
+      "fingerprint": "3261f0e1c5c0352aaa59c3b208860f0eda16e52bd59cc84059423c1edfb1dd67",
+      "dependencies": [
+        "examples/gallery/shapes/fuse.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-fuse-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "42c690d0ba6555d83d86237d15b2cf874019475ee2baab0ce269764e2392b0f0"
+        },
+        {
+          "file": "site/media/gallery-shapes-fuse-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "ca0da2ca8e4b76337f8f03042f989ecc8754f62b104595f7845e8a4ce96b8f49"
+        },
+        {
+          "file": "site/media/gallery-shapes-fuse-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "d5892be9a14a684514804b4dc7b1f0ef1431047eddde725f8833082897fcb32e"
+        }
+      ]
+    },
+    "examples/gallery/shapes/fuse-angled.lay": {
+      "fingerprint": "640ba4d019e34fbdf3a9c9e65e39dd29f82e6dea2a33d9b30db84125ec3b3051",
+      "dependencies": [
+        "examples/gallery/shapes/fuse-angled.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-fuse-angled-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "91aedb27981033a8532e823f36ff5cb72bc206c5e10c6c5835610177bc4cb9a0"
+        },
+        {
+          "file": "site/media/gallery-shapes-fuse-angled-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "11bb83a03698f3b607841f5280516ae7e41b12f04c564d9d4653a46f21d426a3"
+        },
+        {
+          "file": "site/media/gallery-shapes-fuse-angled-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "6529d0ca1ffc39db5096b89f24c6a891d765190ff8dd3e5a468bd53d69a73aea"
+        }
+      ]
+    },
+    "examples/gallery/shapes/fuse-curved.lay": {
+      "fingerprint": "014623446da325f00fb61d0391c9b113f0f7c5c4b7d6000d02f6ba9fd386b8db",
+      "dependencies": [
+        "examples/gallery/shapes/fuse-curved.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-fuse-curved-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "463a7a7aeb36003436b5098932edbd2fba7accbd8c456ab6a99de6f493d3f9ad"
+        },
+        {
+          "file": "site/media/gallery-shapes-fuse-curved-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "6af8f6ef1af0dcd674bf008477526216b20107a5ba51b73780fcb922c91063d8"
+        },
+        {
+          "file": "site/media/gallery-shapes-fuse-curved-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "7e0d18b6c7e3eb558fe03674adebee4a3cf9ca8db2b8b4bd1f28b5bb7308cc3d"
+        }
+      ]
+    },
+    "examples/gallery/shapes/fuse-outline-edge.lay": {
+      "fingerprint": "a4972a7de4e70e81a0db3050772ff4622d8640cd9126ba3a11468d83330496ec",
+      "dependencies": [
+        "examples/gallery/shapes/fuse-outline-edge.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-fuse-outline-edge-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "8a5163273e906aece4c0cfafd5c7d169e8a7e1f13837e4251637d14637f9bc0d"
+        },
+        {
+          "file": "site/media/gallery-shapes-fuse-outline-edge-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "d375e5be648e23fd8a8419eae7fd0f219a7dace151a8f9189fc6fe69a2e43269"
+        },
+        {
+          "file": "site/media/gallery-shapes-fuse-outline-edge-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "dc8f84ce9215e2b388e140a419c6d8df276221ae4b0c0b6e357f72bd0a7c3a3c"
+        }
+      ]
+    },
+    "examples/gallery/shapes/fuse-outline-corner.lay": {
+      "fingerprint": "21a1965e228813c915f43ce85e96f73345c7b8ad5e8ac42e99bf8c931e03e8e9",
+      "dependencies": [
+        "examples/gallery/shapes/fuse-outline-corner.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-fuse-outline-corner-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "a18ccec6748823a412260b6bbea42c575d5d042e3459f3ba2f298e0ed3ffc40b"
+        },
+        {
+          "file": "site/media/gallery-shapes-fuse-outline-corner-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "2970b149c1edbb634cc498f6ef6e5ac9517747d6e81beaed1703b2fbf813aaa9"
+        },
+        {
+          "file": "site/media/gallery-shapes-fuse-outline-corner-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "44e3bf74d9f960c81dca454ecd35e5d2be6f554cd39892808be0f71e2ab1c1a0"
+        }
+      ]
+    },
+    "examples/gallery/shapes/line-endpoints.lay": {
+      "fingerprint": "9b695bc8f6de6c469c2bde05422bddac20f73c31990644c7f638032c76ea2f13",
+      "dependencies": [
+        "examples/gallery/shapes/line-endpoints.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-line-endpoints-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "a42fc6a0286e1f8338ea6d2dc04f57ef4387aa3bc4389c8387d397d55561f98c"
+        },
+        {
+          "file": "site/media/gallery-shapes-line-endpoints-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "49be3e33ac9c23cd277cf19827e0b54d7fa76f83476454f5e6f5bd2b0f5210c4"
+        },
+        {
+          "file": "site/media/gallery-shapes-line-endpoints-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "edc5abd72d8f7098e489d0c02813f0b169d8e462b65d2b6ab37803ac0413edf9"
+        }
+      ]
+    },
+    "examples/gallery/shapes/colors-alpha.lay": {
+      "fingerprint": "85641fe4d140dd4b0326565a4a1b76b07cfb71859c19f35348308bd7d81d60f7",
+      "dependencies": [
+        "examples/gallery/shapes/colors-alpha.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-colors-alpha-960.webp",
+          "width": 960,
+          "height": 629,
+          "sha256": "1fe5cf603ee6d0aae24cfc142c73ce85b3727261a197b5d0057525db330ea995"
+        },
+        {
+          "file": "site/media/gallery-shapes-colors-alpha-1920.webp",
+          "width": 1920,
+          "height": 1258,
+          "sha256": "708825aa61d24b2bfd1e15adbca291205f3403e4eb24352da24e37c9b191805b"
+        },
+        {
+          "file": "site/media/gallery-shapes-colors-alpha-3840.webp",
+          "width": 3840,
+          "height": 2516,
+          "sha256": "6b04dd020cae1a2fc62e895f44424f0733e1a985e888549aa7e53c7690eea3f5"
+        }
+      ]
+    },
+    "examples/gallery/typography/font.lay": {
+      "fingerprint": "1e05a4cc8cc8e70e52898260b3c9b663b7a6096dfc0a6aa0ea85cfa5388988fe",
+      "dependencies": [
+        "examples/gallery/typography/font.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-typography-font-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "21e1e9069b66dd46be3689dd74def3ad23eff01f60efa13af2892126d274fa11"
+        },
+        {
+          "file": "site/media/gallery-typography-font-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "aa3ebea50cc78edc448ddd120fe947db6ff7d18353bf9f6e75eb45096976c552"
+        },
+        {
+          "file": "site/media/gallery-typography-font-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "20806408ddd8c1fd5f0c31e1451927e2b0a471b2880801def3f25f54148719d9"
+        }
+      ]
+    },
+    "examples/gallery/typography/wrap-align.lay": {
+      "fingerprint": "49bd18b22cea62a6892f52022c6f641add051daef12c6c80a5139e5863d01838",
+      "dependencies": [
+        "examples/gallery/typography/wrap-align.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-typography-wrap-align-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "5a59a7274052f7bb6c2485a101f1aefb2aabc619b4a466bfbe58fbafcee2119b"
+        },
+        {
+          "file": "site/media/gallery-typography-wrap-align-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "7f28edea552f382298b7f6d50df6146a7efc58715be34838534b4948a8f1e3b4"
+        },
+        {
+          "file": "site/media/gallery-typography-wrap-align-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "a9ecdaf93d3d6c950256cb914ec73373c2cd6d750c75fb01d1759c8b8ae7b232"
+        }
+      ]
+    },
+    "examples/gallery/typography/spans.lay": {
+      "fingerprint": "13d76cbc060287b4742d47fcc891054aa5cee237aeed3ee91ec0d2eba92c15ab",
+      "dependencies": [
+        "examples/gallery/typography/spans.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-typography-spans-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "5559e7726a07d9221a0b6ea7c4023909abe0b85b90ae3b8800f2c5faad2a532b"
+        },
+        {
+          "file": "site/media/gallery-typography-spans-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "05ee44f1f569615be355766b3a918dceedd232b7946d8b5f1089e3e0229789c5"
+        },
+        {
+          "file": "site/media/gallery-typography-spans-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "674b81cd5aae1ef545b9ba2535940a4aab0e55eb503d205a21079bfd23b05f91"
+        }
+      ]
+    },
+    "examples/gallery/typography/inline-formula.lay": {
+      "fingerprint": "a0afc2d05c4a9daf5c8dbd47aa8e7e700c4655f746d9cce40682d4e5cf81cde7",
+      "dependencies": [
+        "examples/gallery/typography/inline-formula.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-typography-inline-formula-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "e68f15bc2db8171bfe8d6918616df56192c7202fa9ac4e16bd2b2dfd3e26de27"
+        },
+        {
+          "file": "site/media/gallery-typography-inline-formula-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "83b876f2774e0a0140610786281427956c95b8bbb78a4ff21abc03367efdb59c"
+        },
+        {
+          "file": "site/media/gallery-typography-inline-formula-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "2d27085ca8a0812408a7868de6c7cde5cde4f4d75af9def0b42b7a0af2a98599"
+        }
+      ]
+    },
+    "examples/gallery/typography/display-formula.lay": {
+      "fingerprint": "7259fddd352fad39d21d4d75472a1ff04ab6c017bab7c27c59c8fa71b9782ff8",
+      "dependencies": [
+        "examples/gallery/typography/display-formula.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-typography-display-formula-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "c0c70ad1b1f81523aad66705b9522f4aa4bdf263f5c37509db7ccf52e61de8f5"
+        },
+        {
+          "file": "site/media/gallery-typography-display-formula-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "0dfaa3ba5d3c65c45e2220a6070dbbd8002338666ec63d0831b959fccc5d2345"
+        },
+        {
+          "file": "site/media/gallery-typography-display-formula-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "41e11a90f5ad2c00b45ce627fb21dcc562a6c12129d4aa860af83fdbacc7c044"
+        }
+      ]
+    },
+    "examples/gallery/scripting/units-builtins.lay": {
+      "fingerprint": "baa5dac2fbebe55bc929325219560fb74fd28140cbb263448a9f6c9a09b09c59",
+      "dependencies": [
+        "examples/gallery/scripting/units-builtins.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-scripting-units-builtins-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "7c9aef8a9f72417c299661a092ceed28c946ebf69fe9062d8005124b46c7425e"
+        },
+        {
+          "file": "site/media/gallery-scripting-units-builtins-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "53fb704b44ec59c70e6467c7c7634cbc0c5530c1bd0596acc04a2e095221771b"
+        },
+        {
+          "file": "site/media/gallery-scripting-units-builtins-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "2db3b93ab0c8afb0744125dc1ba8b39e39239fdd1e3ac63973951702804d2b4b"
+        }
+      ]
+    },
+    "examples/gallery/scripting/control-flow.lay": {
+      "fingerprint": "e5d29d8b0426094c611eb822abcdd9b76ccc96fd37878a037fc0ad7e667dd64c",
+      "dependencies": [
+        "examples/gallery/scripting/control-flow.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-scripting-control-flow-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "8d874acd54dd71b95d16264ca6cd4812731483b65bb266452f5bf208ce2fa6e1"
+        },
+        {
+          "file": "site/media/gallery-scripting-control-flow-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "529ef5b71e3b63b2b142acf42fc224ed0975e68a8c55a40176ffa9b8a52894ff"
+        },
+        {
+          "file": "site/media/gallery-scripting-control-flow-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "444540650a378b7a638b8bca84fecfb72e07c6842938e361180b78693c3dcc55"
+        }
+      ]
+    },
+    "examples/gallery/scripting/dictionaries.lay": {
+      "fingerprint": "07aba3eb0fef11306997864cc05d7ad437a1ca7e4b0fba0d81403709f0e7abb2",
+      "dependencies": [
+        "examples/gallery/scripting/dictionaries.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-scripting-dictionaries-960.webp",
+          "width": 960,
+          "height": 576,
+          "sha256": "a996e0350617ea228b0435a0bfaa8b8d90af0082824e7336ce04aad6092b5a2d"
+        },
+        {
+          "file": "site/media/gallery-scripting-dictionaries-1920.webp",
+          "width": 1920,
+          "height": 1152,
+          "sha256": "8b3c189bd32172b3541e692eddafc913caa0b20b060b0dd1bfa68588d203f1b7"
+        },
+        {
+          "file": "site/media/gallery-scripting-dictionaries-3840.webp",
+          "width": 3840,
+          "height": 2304,
+          "sha256": "a746cc69a5797e0c3f0a37bca22aafbba585f410690233b5d57d03ddc061c2bc"
+        }
+      ]
+    },
+    "examples/plot/multi-axes-breaks.lay": {
+      "fingerprint": "2718bc9454d19a360252b7b0dd209af5b880224021168946eb1c588cbfaf388f",
+      "dependencies": [
+        "examples/plot/multi-axes-breaks.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-multi-axes-breaks-960.webp",
+          "width": 960,
+          "height": 585,
+          "sha256": "d96d0a6f62511ca4bfd296e740d3c610453e8f273d511ca4eb90c7e87201f2a9"
+        },
+        {
+          "file": "site/media/plot-multi-axes-breaks-1920.webp",
+          "width": 1920,
+          "height": 1170,
+          "sha256": "f062bea631f4292092e306d643303d804a701769432e41a86ef39f6be5b283f1"
+        },
+        {
+          "file": "site/media/plot-multi-axes-breaks-3840.webp",
+          "width": 3840,
+          "height": 2341,
+          "sha256": "53b6f60198aee23be49babb831ee094115ec416d668e32f788c01db1b5e82241"
+        }
+      ]
+    },
+    "examples/plot/statistics.lay": {
+      "fingerprint": "418d274ecf600c91ba12473b6f320d0eef01ecced8bb1bf01d36f0d5730f7889",
+      "dependencies": [
+        "examples/plot/statistics.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-statistics-960.webp",
+          "width": 960,
+          "height": 448,
+          "sha256": "003e51a124d3f2163db507f67ea439505b8ab4074e93b4cb566162db019cd802"
+        },
+        {
+          "file": "site/media/plot-statistics-1920.webp",
+          "width": 1920,
+          "height": 897,
+          "sha256": "bae4c6b46ab09cc54e1c36e46e4d495babd0695c49414cc42c5e2a0d7bad648f"
+        },
+        {
+          "file": "site/media/plot-statistics-3840.webp",
+          "width": 3840,
+          "height": 1794,
+          "sha256": "6af017c9a68ed8f9bf581794292fb62981e4d51fcc46e4b073c260342099fba6"
+        }
+      ]
+    },
+    "examples/plot/shared-colors.lay": {
+      "fingerprint": "9a429a60bad23d8065ab00d248b1592f270b485420f59befec697007af607e9d",
+      "dependencies": [
+        "examples/plot/shared-colors.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-shared-colors-960.webp",
+          "width": 960,
+          "height": 495,
+          "sha256": "e4d3eb2fb7b0007a5f876385d9c1a1b5a056b03045c739f652e3216abfffab7f"
+        },
+        {
+          "file": "site/media/plot-shared-colors-1920.webp",
+          "width": 1920,
+          "height": 990,
+          "sha256": "94f12acb3619b34f68feba24321472094fe032f35b17d04357bd0246cd57f9e6"
+        },
+        {
+          "file": "site/media/plot-shared-colors-3840.webp",
+          "width": 3840,
+          "height": 1980,
+          "sha256": "8bd10b0cbf263cb260ecf34508ef8e79a9507d327d6765ba9521e4156ca9c87b"
+        }
+      ]
+    },
+    "examples/plot/inset.lay": {
+      "fingerprint": "b06e969b1d7d689523dbb5bcdc86343d59591c6ceceb1857744bd54aff480f43",
+      "dependencies": [
+        "examples/plot/inset.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-inset-960.webp",
+          "width": 960,
+          "height": 698,
+          "sha256": "8e6216d207c8ad09ee3e9f06903375546319f059badeb82e0273218315727488"
+        },
+        {
+          "file": "site/media/plot-inset-1920.webp",
+          "width": 1920,
+          "height": 1396,
+          "sha256": "04bc71330bfa51c493a07af5776cbff7080ce27d30c35d1767d90fa16983e12b"
+        },
+        {
+          "file": "site/media/plot-inset-3840.webp",
+          "width": 3840,
+          "height": 2793,
+          "sha256": "a2023f81eaae6fc6ce9a7b2b45189af8fad406b5dcdd98ea9873f0fe1433bc05"
+        }
+      ]
+    },
+    "examples/plot/polar-directions.lay": {
+      "fingerprint": "a26accf8232e49525201a27eb5a3625a0bdc0151549b2f4fb9a922b64f8c4919",
+      "dependencies": [
+        "examples/plot/polar-directions.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-polar-directions-960.webp",
+          "width": 960,
+          "height": 562,
+          "sha256": "7da25801b7251e8f918cc5d13279663c9288db4efbeef014066f520fa8477351"
+        },
+        {
+          "file": "site/media/plot-polar-directions-1920.webp",
+          "width": 1920,
+          "height": 1124,
+          "sha256": "253a10d4c4b61a4f30cb9d98326a758755a7644c35b5c59bcba61b4424b8f4e4"
+        },
+        {
+          "file": "site/media/plot-polar-directions-3840.webp",
+          "width": 3840,
+          "height": 2248,
+          "sha256": "8353748bec1b79b50a756a73dfb7ec5f6f11cc87ac9057c9a43f0421b0ef6de9"
+        }
+      ]
+    },
+    "examples/plot/polar-errors.lay": {
+      "fingerprint": "ce4d32238731bfc02f3bbc4a4f76de5e29ab4771bf470514e6a0205984134ad3",
+      "dependencies": [
+        "examples/plot/polar-errors.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-polar-errors-960.webp",
+          "width": 960,
+          "height": 840,
+          "sha256": "25cbcf8fe150915118f5272c82bcee74aa664b5ea55c9d2ec0fa8e0c202e9627"
+        },
+        {
+          "file": "site/media/plot-polar-errors-1920.webp",
+          "width": 1920,
+          "height": 1680,
+          "sha256": "01b1cba706dee2b11b188ad6ca87225e937a39daed3bc9cd82414b8571790388"
+        },
+        {
+          "file": "site/media/plot-polar-errors-3840.webp",
+          "width": 3840,
+          "height": 3360,
+          "sha256": "aa209aad6f9c4df0fb4d8bafe271fb296a9c5a4124bbe5c9fa9bc0e8172017c3"
+        }
+      ]
+    },
+    "examples/plot/polar-rose.lay": {
+      "fingerprint": "a48fe751281dc23de5ce292f527dedbdcf46b0b87866e2800b876e48f825af5c",
+      "dependencies": [
+        "examples/plot/polar-rose.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-polar-rose-960.webp",
+          "width": 960,
+          "height": 536,
+          "sha256": "bbdec042c917abd02188e8ed92a14d901652ddc22a48b19c749ee41a1534c111"
+        },
+        {
+          "file": "site/media/plot-polar-rose-1920.webp",
+          "width": 1920,
+          "height": 1071,
+          "sha256": "7e2d405db13fbc9425a3ad6a2e71b94fc0eaac11a9cb2f644efc72717100c244"
+        },
+        {
+          "file": "site/media/plot-polar-rose-3840.webp",
+          "width": 3840,
+          "height": 2142,
+          "sha256": "1d5a7fc428f8e00f993831b9658d10dfe5de7587241b374189e63e2816ffe1cc"
+        }
+      ]
+    },
+    "examples/plot/polar-field.lay": {
+      "fingerprint": "1b6c484903a0fedaf1cda4d7d6fca58bb0fab71564ab75fe27d01822cf67e9ef",
+      "dependencies": [
+        "examples/plot/polar-field.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-polar-field-960.webp",
+          "width": 960,
+          "height": 559,
+          "sha256": "5e89b898ecc2fb47e1aedc91df69b54d2fff03ab53c011e2b7c878acf7b143be"
+        },
+        {
+          "file": "site/media/plot-polar-field-1920.webp",
+          "width": 1920,
+          "height": 1118,
+          "sha256": "6b95e8cc13bdd2091f5b3b15a7c0516b236172f6a5c52b43b62893e85dd551a8"
+        },
+        {
+          "file": "site/media/plot-polar-field-3840.webp",
+          "width": 3840,
+          "height": 2237,
+          "sha256": "793a4660359e926450e0d28ccded78c0955823582b201591fa4d014ae38de675"
+        }
+      ]
+    },
+    "examples/plot/radar.lay": {
+      "fingerprint": "3a8400880900756b864671a2476ae0231e4c00d3576c5f9a7291e2d1d5141e30",
+      "dependencies": [
+        "examples/plot/radar.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-radar-960.webp",
+          "width": 960,
+          "height": 508,
+          "sha256": "a48641f46276785074a6136cd2cabcdd5559b31f3bfca8a9342f1087474dd4ea"
+        },
+        {
+          "file": "site/media/plot-radar-1920.webp",
+          "width": 1920,
+          "height": 1016,
+          "sha256": "09e0a9f99aa4c80e25772c3e1aaf41a87e50ed56d4d6e771180f43e82693bb0c"
+        },
+        {
+          "file": "site/media/plot-radar-3840.webp",
+          "width": 3840,
+          "height": 2033,
+          "sha256": "33d6048ffa32397b126234f251189a050318c4a8d7a5834a89bda5024ba7587b"
+        }
+      ]
+    },
+    "examples/plot/polar-data.lay": {
+      "fingerprint": "f7c7934590fce7e21d756b14428d4d304a1110f46201374c4b8300a9eb757a09",
+      "dependencies": [
+        "examples/plot/polar-data.assets/field-1f0c1f4eca6acc4d.json",
+        "examples/plot/polar-data.assets/radius-c2faeb8428cb0845.json",
+        "examples/plot/polar-data.assets/theta-a1a6d05666acec02.json",
+        "examples/plot/polar-data.assets/values-24bfdcd1baba759e.json",
+        "examples/plot/polar-data.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-polar-data-960.webp",
+          "width": 960,
+          "height": 556,
+          "sha256": "61a625e0624725df3883f29cbedd1b46ca38c5bb5ed0950d1e50aa2952838391"
+        },
+        {
+          "file": "site/media/plot-polar-data-1920.webp",
+          "width": 1920,
+          "height": 1112,
+          "sha256": "8c61aa828fe6e23f39d71adee63fbec95a5cb179c0f6a042efa8f7d524c12054"
+        },
+        {
+          "file": "site/media/plot-polar-data-3840.webp",
+          "width": 3840,
+          "height": 2223,
+          "sha256": "87b22d5b27a020b44808871ea86cbbd00ed4c6bb8fc4c0858c9dfe05d290c661"
+        }
+      ]
+    },
+    "examples/plot/dictionary-series.lay": {
+      "fingerprint": "ba42513ce519981ab4184b1679d96a674726d10f55d3e3566d87dd91f372fc65",
+      "dependencies": [
+        "examples/plot/dictionary-series.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-dictionary-series-960.webp",
+          "width": 960,
+          "height": 664,
+          "sha256": "a1107c388b0642adb579fdac39848c303d3c56d37cc17a74486346d7dce2446c"
+        },
+        {
+          "file": "site/media/plot-dictionary-series-1920.webp",
+          "width": 1920,
+          "height": 1329,
+          "sha256": "dd483a891e4691e8f482d8a0187360e767044dc52982e162455ee89e175bda35"
+        },
+        {
+          "file": "site/media/plot-dictionary-series-3840.webp",
+          "width": 3840,
+          "height": 2658,
+          "sha256": "eae7569bc6811c43b279a553f5a4b39e4d911d179dd7ce37b1f21a1d83f7a132"
+        }
+      ]
+    },
+    "examples/plot/cmap-presets.lay": {
+      "fingerprint": "8ede0641ad94fa54dc826189348d2e1acf09b51097607eb0feb54400045ae113",
+      "dependencies": [
+        "examples/plot/cmap-presets.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-cmap-presets-960.webp",
+          "width": 960,
+          "height": 1692,
+          "sha256": "4f43874645f90edad3c2879348e98218664d78311eb2d1ba02267cde378ecb91"
+        },
+        {
+          "file": "site/media/plot-cmap-presets-1920.webp",
+          "width": 1920,
+          "height": 3383,
+          "sha256": "b69c30b1568826d3c3b67a29f46387cd0210737e1b771efafad8e8f2b54e623b"
+        },
+        {
+          "file": "site/media/plot-cmap-presets-3840.webp",
+          "width": 3840,
+          "height": 6766,
+          "sha256": "ae5a56df09f0d847fb6a0d843cca34c2b993d0bce8b57028d1f73b7c7488632c"
+        }
+      ]
+    },
+    "examples/plot/cmap-scales.lay": {
+      "fingerprint": "78135059cd683aa8ea69b8765082ea31f43f1442cb9f0ddf29d9794d7747f012",
+      "dependencies": [
+        "examples/plot/cmap-scales.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-cmap-scales-960.webp",
+          "width": 960,
+          "height": 494,
+          "sha256": "ca5d6103564567c75c29ef3912fca791685d991ea71e215ae38abe8172f74220"
+        },
+        {
+          "file": "site/media/plot-cmap-scales-1920.webp",
+          "width": 1920,
+          "height": 988,
+          "sha256": "6e7a5b5c4a9593918e463074fb9a1e498f0c5525b1a99a9515a1b00d2326bc0e"
+        },
+        {
+          "file": "site/media/plot-cmap-scales-3840.webp",
+          "width": 3840,
+          "height": 1975,
+          "sha256": "7eecf2ea30ce2b1ea0626643e30c4de630d8ead6352813edfde5020aa91c56c3"
+        }
+      ]
+    },
+    "examples/basic.lay": {
+      "fingerprint": "85019d05b7c0079c5c9700b7459d45e7c90bfbfae25a4cf13f0d271d09c05601",
+      "dependencies": [
+        "examples/assets/icon.svg",
+        "examples/assets/photo.png",
+        "examples/basic.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/basic-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "ebf6949bf64840a8ea8e7a2600ff6dd9d50892fea5e0493ad904533f6b037614"
+        },
+        {
+          "file": "site/media/basic-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "c4ad51e1de2da360e5b7cfb1d9f22616b2e976c3c14a912b02475951b93aeaaf"
+        },
+        {
+          "file": "site/media/basic-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "1285019493621c0a895f48d72f559bbf803174cd43c5f297c335dfed93eae3e3"
+        }
+      ]
+    },
+    "examples/functions.lay": {
+      "fingerprint": "499e7b84dbdb67412afbca3b692db5de44b6479216f0e5cde22c5cd652fe88dd",
+      "dependencies": [
+        "examples/functions.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/functions-960.webp",
+          "width": 960,
+          "height": 440,
+          "sha256": "46ecb5546362e7f517484458cd588bf64123b332bd357a0b6821aedfd625e732"
+        },
+        {
+          "file": "site/media/functions-1920.webp",
+          "width": 1920,
+          "height": 880,
+          "sha256": "f250a222159456d7674d84df9e77deb6ffc12e2d9fc4c1578e585ebea4638f5d"
+        },
+        {
+          "file": "site/media/functions-3840.webp",
+          "width": 3840,
+          "height": 1760,
+          "sha256": "3cc00dd6196658c5d1f9eef1ace5f29d6673456c8450ec7d3eb88b7101d3cc0a"
+        }
+      ]
+    },
+    "examples/gallery/notebook/heatmap.lay": {
+      "fingerprint": "bd1161fc567e2da0284a494c711f0c95e5bbaa7f1121036f349c1de42244a549",
+      "dependencies": [
+        "examples/gallery/notebook/heatmap.assets/fig-be7ca6af9345e8f0.png",
+        "examples/gallery/notebook/heatmap.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-notebook-heatmap-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "be452d45e7fb8ac4c2339cd8c27f1e5f20fdcc262fa86f66ab35be4eb021870c"
+        },
+        {
+          "file": "site/media/gallery-notebook-heatmap-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "5158e48a7bda752898407a2ffc358ae03da6dbd9fd17aa22ce7e1a30ba8cca91"
+        },
+        {
+          "file": "site/media/gallery-notebook-heatmap-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "4fd8bfe38adab92736e651bc1e5eb2fbe1fcba37ef6f257f137c5b6fc9dec3a5"
+        }
+      ]
+    },
+    "examples/gallery/notebook/vector.lay": {
+      "fingerprint": "51ed81dfeddc17327cc6a6cfa4c3535e5eac51ada66e5dad415135a30bc12699",
+      "dependencies": [
+        "examples/gallery/notebook/vector.assets/fig-db872339bf178acf.svg",
+        "examples/gallery/notebook/vector.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-notebook-vector-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "6994274ae1c4c825b662a2814fc4a3c7c2fa47f053080d0c4edf4014c1fd7b21"
+        },
+        {
+          "file": "site/media/gallery-notebook-vector-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "fc04ecef46e8c7fefbcce29ae407eeb995e7745d0e06fd4765995ce56f427a29"
+        },
+        {
+          "file": "site/media/gallery-notebook-vector-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "c401e902b5ee25e7fcd83050eef7bad97658ec104896b9ad59bfb82dea2c36b0"
+        }
+      ]
+    },
+    "examples/hello.lay": {
+      "fingerprint": "88a9f8222eeae6abdf25792a21876a61df58505f664f38349d6b24a23f074a89",
+      "dependencies": [
+        "examples/hello.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/hello-960.webp",
+          "width": 960,
+          "height": 600,
+          "sha256": "2b24a4a04ded4039340b2f2bda86f986f07b0cb595d2dbafd214497b8b987a28"
+        },
+        {
+          "file": "site/media/hello-1920.webp",
+          "width": 1920,
+          "height": 1200,
+          "sha256": "8b13b3ec038d9f2b7d46379b80bb59b878d012877b6fc678aca0277063cd0f8c"
+        },
+        {
+          "file": "site/media/hello-3840.webp",
+          "width": 3840,
+          "height": 2400,
+          "sha256": "514129d3f931ea126a999afd4b305be40a4588739601960e70d2dc73287afef7"
+        }
+      ]
+    },
+    "examples/manual/abs.lay": {
+      "fingerprint": "4d6367c486e1c7021d2b98577be532c409330fb0e2fe7dcdb8acb7b67ad7a417",
+      "dependencies": [
+        "examples/manual/abs.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-abs-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "07d75b8c4290b1849c225a3a8932cb44c9eb0dc64fdc316417f97bc776974d75"
+        },
+        {
+          "file": "site/media/manual-abs-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "6acceb5439e44c025b804d3fa3b8b1721e658aae2207562473ead3ab292e9476"
+        },
+        {
+          "file": "site/media/manual-abs-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "110bab5f133866c51b6c6324692c8ef5ac4af2dd7558624f89caa7c8aead9ceb"
+        }
+      ]
+    },
+    "examples/manual/add.lay": {
+      "fingerprint": "c9a13f10acdf6c30463b954e1b4432fdf906157e1e4c4f372dc68e61c338a17e",
+      "dependencies": [
+        "examples/manual/add.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-add-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "5c28434c1ac4103543d69f7bcacff1fa9de5382115416cd94d6c0b6c5cb17483"
+        },
+        {
+          "file": "site/media/manual-add-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "2628512fe31cdda33ddaf11b5a90d3ec5c0063b0f1839b38ce9485356b05e597"
+        },
+        {
+          "file": "site/media/manual-add-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "ebae8a5040cde51a3380a85d862a790cc632b827442001fcc71d6136728ca611"
+        }
+      ]
+    },
+    "examples/manual/anchor-with_side.lay": {
+      "fingerprint": "72dcb14883ad0972544f34557d39b75100a9b685c776a26b5ed0429338223b72",
+      "dependencies": [
+        "examples/manual/anchor-with_side.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-anchor-with_side-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "2e5943f7c4fe596773b9c673a457e220f5e5af66c9a99115829131fdb6cd30cb"
+        },
+        {
+          "file": "site/media/manual-anchor-with_side-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "0a37a45b6304e9b2182119d0042c82ccbd4f18ec348c24164da077be0d367f05"
+        },
+        {
+          "file": "site/media/manual-anchor-with_side-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "31e3e47fb4dba53b53256057bb698ae4f1bfa63006c7459706d48cef83617fe6"
+        }
+      ]
+    },
+    "examples/manual/append.lay": {
+      "fingerprint": "f5e8d22dd122e2be5684557136bce8082d4ce864e3f08649f24df8b73256a647",
+      "dependencies": [
+        "examples/manual/append.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-append-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "3388b1e39a46b1e5c4982bcd659ec83ee67385215fe7eba651e6886fe62f0965"
+        },
+        {
+          "file": "site/media/manual-append-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "8718cc7c927fed3b69fa34a62987977e2837529c985f8c3ac06a96f5d53e2a8f"
+        },
+        {
+          "file": "site/media/manual-append-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "a96999fe259d80e4f65024c74fa384d12e43508540e6a95300791908da4f5662"
+        }
+      ]
+    },
+    "examples/manual/arc.lay": {
+      "fingerprint": "574db4525236e2d9aa6274deee6a12befafc040eb11787bc123f4d1c10849c51",
+      "dependencies": [
+        "examples/manual/arc.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-arc-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "ef84a910188a53dba94cb21681dca7798653abf39b12b154adf358af50bcb205"
+        },
+        {
+          "file": "site/media/manual-arc-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "7bd4af124be6eacad3632d6f3521f928e312f3685339461dfe84bb1cbed4517f"
+        },
+        {
+          "file": "site/media/manual-arc-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "dd76c2108469914202c266601dee093b2ce9571dea1b6442895ce8733bbc03d9"
+        }
+      ]
+    },
+    "examples/manual/arc_to.lay": {
+      "fingerprint": "c4076e60c998f61be904ba3a027943f7b2232a46111424c4b887b51203bddf68",
+      "dependencies": [
+        "examples/manual/arc_to.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-arc_to-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "9ecb76470c783b9bd456c7739aa206349e8915b312887f5c271f9f7d9b1a6894"
+        },
+        {
+          "file": "site/media/manual-arc_to-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "a11f0e24d4eb0bc4f75ee887119ad6bd831a4eea505ebca306e210cd9ea79275"
+        },
+        {
+          "file": "site/media/manual-arc_to-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "2cc6bb284bbc187d49c60b7a1687e6735aa096303961f4c6dbf3d0a69e9297d5"
+        }
+      ]
+    },
+    "examples/manual/array.lay": {
+      "fingerprint": "431c9bb00db9a1e96083c3361f0fcd02c6d7fc88b00e702ad0b2bf49bb86d28b",
+      "dependencies": [
+        "examples/manual/array.lay",
+        "examples/manual/observations.json"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-array-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "d435f78429588cc97d8ffdefbdb69bb55a235697d29809e5be2468bec5992fdc"
+        },
+        {
+          "file": "site/media/manual-array-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "a548cc59e224dccf59bdbadb63809d92499acdbb21d2ee26c6f15f7d07aacbe4"
+        },
+        {
+          "file": "site/media/manual-array-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "759b56dfa3caf3b49e7ff114d9bd7f291742b275dfdda1cfe025585011122b35"
+        }
+      ]
+    },
+    "examples/manual/axis.lay": {
+      "fingerprint": "d8b2ee27510b94668869881ad91a5c281ac7a00de1b68bf10e5b6d84e2587ee2",
+      "dependencies": [
+        "examples/manual/axis.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-axis-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "d33d5d11bb59a9d16d87ebadee07352e7357676cb5b0852b6a64c85d9afeae4e"
+        },
+        {
+          "file": "site/media/manual-axis-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "61932d353c18f857657573f837b2e93850b28d4f417fa9ca473233cf29047b04"
+        },
+        {
+          "file": "site/media/manual-axis-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "84ced8e88dc0dcdbb0fee5bffcad4d6b6bf493a7f6bc21ec68d07b47e6ba85c5"
+        }
+      ]
+    },
+    "examples/manual/box.lay": {
+      "fingerprint": "43d42f6ea05cfe49e2b9f55636a1f59469d4d64eb8b3cb3a18a82fc8518db4de",
+      "dependencies": [
+        "examples/assets/photo.png",
+        "examples/manual/box.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-box-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "5dae4bbdeddce84f386a99500d090d2c429299da703ccf0dbe58757b8cf272bf"
+        },
+        {
+          "file": "site/media/manual-box-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "ff4c827a2ff3da3d2d49237dab2659b8c133725d01804d997e077b17983a933b"
+        },
+        {
+          "file": "site/media/manual-box-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "ffa30823b3ec7aaf630da4fa1b6aa861caac6d30a39046c0c61689a19b30c990"
+        }
+      ]
+    },
+    "examples/manual/canvas.lay": {
+      "fingerprint": "dddf9bd0c98bb45e5b74f175a4f3b1ecd71a544fc90e8170bbd200f5a8bdbafd",
+      "dependencies": [
+        "examples/manual/canvas.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-canvas-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "7948e828e0857a15e6630cfe49aa39ce38ad2b0badd825ef6670d7379acaac59"
+        },
+        {
+          "file": "site/media/manual-canvas-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "cd971eb662b7b5b65ea8675a37fd5ae73d428cd9925ed2eff5846348a25a3663"
+        },
+        {
+          "file": "site/media/manual-canvas-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "a0bbb94b066e22eaadfefe20b364f6f95fe29f488666e95cc3754bdb42a69e0f"
+        }
+      ]
+    },
+    "examples/manual/close.lay": {
+      "fingerprint": "4511602c8c62b70c8f5eb2d428776ee56869b7d99fa913619e03fc8d709ea691",
+      "dependencies": [
+        "examples/manual/close.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-close-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "de282073d52eebe1784c166bd30806bb23fc75ee03fb0a8ef033fb8e17b2445f"
+        },
+        {
+          "file": "site/media/manual-close-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "f760a8028b99ba19f28d87e923bcb5a34a0ebfd2a4337aeada55fb8823b35550"
+        },
+        {
+          "file": "site/media/manual-close-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "e91e12a379a0a043eb2c7549fd0b3b209a3abbdccc0d86f35f4412943e2a2506"
+        }
+      ]
+    },
+    "examples/manual/cmaps.lay": {
+      "fingerprint": "5826a7c62fdbd96b6a22bfc0e94a17053e9d306142056b4b7462bfddac9f154e",
+      "dependencies": [
+        "examples/manual/cmaps.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-cmaps-960.webp",
+          "width": 960,
+          "height": 576,
+          "sha256": "130f36ad5d5ceb73a5b365d7c951e6d47c49a78332cbf6aa69b5433548a1591c"
+        },
+        {
+          "file": "site/media/manual-cmaps-1920.webp",
+          "width": 1920,
+          "height": 1152,
+          "sha256": "b77f7aca814e3cca44bbbed1a8c3037524f58c133d4d8fd34ebd268306e1fcd1"
+        },
+        {
+          "file": "site/media/manual-cmaps-3840.webp",
+          "width": 3840,
+          "height": 2304,
+          "sha256": "570f655fa097855bfdfb45a86ff96ae6b4b165042815b98a28535979c0d09d3e"
+        }
+      ]
+    },
+    "examples/manual/color_scale.lay": {
+      "fingerprint": "a2dd8f9be26619f38a3c42b063907b02453812f0c299733812885e377d0866cc",
+      "dependencies": [
+        "examples/manual/color_scale.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-color_scale-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "e9403b53b53846618c537311600b11fba11fb77929d0cb0c8e654a6001cb69bc"
+        },
+        {
+          "file": "site/media/manual-color_scale-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "1ae511bfcfe604ddfc9fd845da1d632a0dfafdcbfce4d937005334a167cff2d9"
+        },
+        {
+          "file": "site/media/manual-color_scale-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "704e3d290a0524f3280436ccaaa384d936b5a42d0460cc20a177550e886bab77"
+        }
+      ]
+    },
+    "examples/manual/colorbar.lay": {
+      "fingerprint": "4bd835b4c071fbad4ca8f00b7cdc9ee95051243a1d017cdd76bd0f8124d29533",
+      "dependencies": [
+        "examples/manual/colorbar.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-colorbar-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "c021c93bbbba8bfb6aba144aa49c6f163d042a520014e69fa79b6606bd40957b"
+        },
+        {
+          "file": "site/media/manual-colorbar-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "8b6aa34846dbc1a59804670fcf3a90a048c6bf59ea0e8dae7b8040b61a6ab92c"
+        },
+        {
+          "file": "site/media/manual-colorbar-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "f6b389aa7f9bfc536956b06f7e87a5e01467c5e87f5dae3c8e4703e92b93d8e4"
+        }
+      ]
+    },
+    "examples/manual/cubic_to.lay": {
+      "fingerprint": "2685c8c097f2307d39d7af39e0204e07eb9848989960c0a267316bee0b81f919",
+      "dependencies": [
+        "examples/manual/cubic_to.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-cubic_to-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "34839f9409858be994e69edb1c5831f19387456e358b40c1b1c7b5d10fbaa7cf"
+        },
+        {
+          "file": "site/media/manual-cubic_to-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "28dbee4a20df1fabc4e753af8f684f37c07b3f9fa39929af72fd20dbd660d882"
+        },
+        {
+          "file": "site/media/manual-cubic_to-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "8faaa4576579395bc0690a9f9a4f03ceed58be64c00512deb113e181447f8787"
+        }
+      ]
+    },
+    "examples/manual/dictionaries.lay": {
+      "fingerprint": "509024493b5df2ac6c98fa3f017bb04bc92f9f089115858b2f30bceb1f3b6458",
+      "dependencies": [
+        "examples/manual/dictionaries.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-dictionaries-960.webp",
+          "width": 960,
+          "height": 672,
+          "sha256": "a95d90f7193b3dd49f59a13a079b10906907d2579fd34f00ac8bd1dad62bb32a"
+        },
+        {
+          "file": "site/media/manual-dictionaries-1920.webp",
+          "width": 1920,
+          "height": 1344,
+          "sha256": "b59e5d7df244da62d2a18205c567a24042dbb8937d895fcc01b2c2b1e07c2d49"
+        },
+        {
+          "file": "site/media/manual-dictionaries-3840.webp",
+          "width": 3840,
+          "height": 2688,
+          "sha256": "5261dc3e68dfba2a10cfde2c0ec55dece6ad67613c53eafe7120571e79eda098"
+        }
+      ]
+    },
+    "examples/manual/ellipse.lay": {
+      "fingerprint": "f89842f1c0184fff7b2b714378606ecd4b16843306eda18ca2c576155f674d1e",
+      "dependencies": [
+        "examples/manual/ellipse.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-ellipse-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "36b98fc5a4765a4e603bdf20d0e8e2b78a295187c5da50b6a0096e24cea5f11d"
+        },
+        {
+          "file": "site/media/manual-ellipse-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "d385d3dec83c6e8fbcf022de956b5e44032299dca5ec66035da683481a5ded2f"
+        },
+        {
+          "file": "site/media/manual-ellipse-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "a1fd8041baf2095bcb69c320c1d905c10356861fa3add136b4fd8ae1a0fc00e7"
+        }
+      ]
+    },
+    "examples/manual/formula.lay": {
+      "fingerprint": "8d851410dc5feb5fbf8fb2a5e3bd92771db71ddac1373eb75800f04c0f9de8bc",
+      "dependencies": [
+        "examples/manual/formula.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-formula-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "67308500925c0dadc9e4e0382c6ce0ab3266c4810803d4c4b08d9e2637793ff2"
+        },
+        {
+          "file": "site/media/manual-formula-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "d40b78ff7618e49ea8dcc7b165c722fdcf91670b67ca2045e141c85a85a4c7cd"
+        },
+        {
+          "file": "site/media/manual-formula-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "38e19b2a788f451a90887110cbb303a0df60840fc3d9a7f6746275d103a616fb"
+        }
+      ]
+    },
+    "examples/manual/fuse.lay": {
+      "fingerprint": "af42e595eef322458c2087fd68691e0ea53774a2c67797c041845f4f061528b1",
+      "dependencies": [
+        "examples/manual/fuse.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-fuse-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "e3a3263e8a83ef6ba6bb995dc983e2213345c185318f6d5d15e5f0a93dcba3e1"
+        },
+        {
+          "file": "site/media/manual-fuse-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "cff0215edc2601c0a977edaa235c9f9bfa07a5880df5ce55e102ebd72ce4bbc9"
+        },
+        {
+          "file": "site/media/manual-fuse-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "ce2d38c8c07e3b9f05f9b328042a78a7d137329e9b78c4662d59cc3cde1e1b3d"
+        }
+      ]
+    },
+    "examples/manual/geometry-composition.lay": {
+      "fingerprint": "94503c6f7989437931588647fee5e3a4a099053d29e0027351d8514c339150b8",
+      "dependencies": [
+        "examples/manual/geometry-composition.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-geometry-composition-960.webp",
+          "width": 960,
+          "height": 760,
+          "sha256": "51df7c867548db3a4e48d9b333eab1bec4beb0003a3c47a07dd6601ae0ce7700"
+        },
+        {
+          "file": "site/media/manual-geometry-composition-1920.webp",
+          "width": 1920,
+          "height": 1520,
+          "sha256": "a9badda3e0487403b36989c6f62c17e09e02bef9ec7fcde44954bcc2e73d933b"
+        },
+        {
+          "file": "site/media/manual-geometry-composition-3840.webp",
+          "width": 3840,
+          "height": 3040,
+          "sha256": "2ed3b7697a9a9b7f336f996089c041f870eb61ad360033f11b1c65d44feea8e0"
+        }
+      ]
+    },
+    "examples/manual/geometry-members.lay": {
+      "fingerprint": "0cb9903b290f3906d281913c81cadb76b6cbbede25d4e074972bf46535735bb2",
+      "dependencies": [
+        "examples/manual/geometry-members.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-geometry-members-960.webp",
+          "width": 960,
+          "height": 794,
+          "sha256": "79b1c72e703421c2a44a130c3bdfedb47c0bb1a4ea885b966ffca3db5cba6d77"
+        },
+        {
+          "file": "site/media/manual-geometry-members-1920.webp",
+          "width": 1920,
+          "height": 1589,
+          "sha256": "75ebba0630eca97fcb48d6d80ce7f1f8ae5e8e4a4ea99f8d6e284300e01bbf93"
+        },
+        {
+          "file": "site/media/manual-geometry-members-3840.webp",
+          "width": 3840,
+          "height": 3178,
+          "sha256": "084ba42f962261d60d762883fbe6c1b868b5251dfa119c1470acac3638772fac"
+        }
+      ]
+    },
+    "examples/manual/group.lay": {
+      "fingerprint": "62dab5df7bce04cf2efe3349e5cb768400af9094d40ad7a4b73b632b8db07da5",
+      "dependencies": [
+        "examples/manual/group.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-group-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "24b3deb050f149c127e69b25d352b06f298025cfd264110fc82fa811b989c893"
+        },
+        {
+          "file": "site/media/manual-group-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "46d7110f21d1569c1ea9467d1bfea096b8f38f9fe1d2a7f9f56215ca63790abd"
+        },
+        {
+          "file": "site/media/manual-group-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "aa4ea0afade26a53cfb0f0c02e7562dff2444699aea7ab7332e27d85eed240c5"
+        }
+      ]
+    },
+    "examples/manual/hatch.lay": {
+      "fingerprint": "912b9202468e797443993a7c3409ae63ddf50f079cbd3707ddab5ea1e80fd169",
+      "dependencies": [
+        "examples/manual/hatch.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-hatch-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "ae596924bcb8bb810bcaa643f5f3a84a67408a72cffc387b73a067aa3d9d98ab"
+        },
+        {
+          "file": "site/media/manual-hatch-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "1a53238dbc1d786231d78b72bab700cfd0bfbff2020863fef396d0e83b576115"
+        },
+        {
+          "file": "site/media/manual-hatch-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "23268d16229db643bf160d3fe92cf741ce4aa824371b1a6b4f24395a769ba426"
+        }
+      ]
+    },
+    "examples/manual/head.lay": {
+      "fingerprint": "09398b0e30e7ae5284444c851c49752be87f5884ff1d0bbcf8e1c21f5e35bf53",
+      "dependencies": [
+        "examples/manual/head.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-head-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "feeb93da0001103f8b9220f9c6453f9199719bbec38b265238523d24a6a1968f"
+        },
+        {
+          "file": "site/media/manual-head-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "a37296387fdd610334692c570742a8a33fd9015ad71b11b4ad6f34a5bd85c7df"
+        },
+        {
+          "file": "site/media/manual-head-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "007efe2ad19225d1d3f59e358433965056bb948d353a71cdcc41a0944ffa3245"
+        }
+      ]
+    },
+    "examples/manual/hsv.lay": {
+      "fingerprint": "19be04763b1b251186ef8bd350e833ddd18f6b90d78caa2fcc9f7940b9350e0c",
+      "dependencies": [
+        "examples/manual/hsv.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-hsv-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "9da1acad3bebf6bd3f51d480ccfffc9c98e19624be7650052f7759429080dce3"
+        },
+        {
+          "file": "site/media/manual-hsv-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "dd5e016e75c52b1b4ba5711946ccd218103a78a45c6d3cf83c630a40ab54c66d"
+        },
+        {
+          "file": "site/media/manual-hsv-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "d81e08376231b501fd26c78d82db25b89171a20627932907719358952d384ef3"
+        }
+      ]
+    },
+    "examples/manual/image.lay": {
+      "fingerprint": "0bdaa70b4e7f92f7cb3ebc45abbcdd959281b8623bbf2ed6e79c5ef885ea02a8",
+      "dependencies": [
+        "examples/assets/photo.png",
+        "examples/manual/image.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-image-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "9d80253cd8da01d9a8eb9d23f85332bd236e91217f3a9404bb49d6ccc1c95040"
+        },
+        {
+          "file": "site/media/manual-image-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "77c2cee4398a757f7caf6b18f92fbe9fe80ed4d79fa3de42ccb92cff8abc5148"
+        },
+        {
+          "file": "site/media/manual-image-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "8b0bd61e1222513f52d011463fe3985e22e14da3478fe9c9b03a313cb8ee4fd8"
+        }
+      ]
+    },
+    "examples/manual/image_fill.lay": {
+      "fingerprint": "043cad99420932e9d53a6792637da54c9a6c0ecdb5bb8ee635893a9a7dc40190",
+      "dependencies": [
+        "examples/assets/photo.png",
+        "examples/manual/image_fill.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-image_fill-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "5e4773148096b85623ae1b011d4fca5b69bac6dcabddd533b261520f2e0d23bc"
+        },
+        {
+          "file": "site/media/manual-image_fill-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "9c43558c532a939e375b8d4fc9555fbccffd3204d5323981d424297c1014be9d"
+        },
+        {
+          "file": "site/media/manual-image_fill-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "f82bc248b2f0d078f930de4107a7e7883771dac966d344e0565b00a2755f975c"
+        }
+      ]
+    },
+    "examples/manual/instance-axis.lay": {
+      "fingerprint": "b87dccc42b0d0cc3dddcd84a0ed0a03d59411180b9ed3703d12864e225c4bfe6",
+      "dependencies": [
+        "examples/manual/instance-axis.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-instance-axis-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "44d1f401b0a03e7c882b0da3acf11a68e92b47853a928abb67efc480864f6b2c"
+        },
+        {
+          "file": "site/media/manual-instance-axis-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "02075329c1f54c6d8d46830a355eabd8a4a23dffcf69eb5753f80a1d32cf0634"
+        },
+        {
+          "file": "site/media/manual-instance-axis-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "2b93d4d5d4e109a466bb8a66b73fc649f6e551d8f8c86dc3b3258802d4278ea7"
+        }
+      ]
+    },
+    "examples/manual/instance-data.lay": {
+      "fingerprint": "708f1fb86199c9c812a85978717d4014462a1c983fcf629e6ffef41cb72d036c",
+      "dependencies": [
+        "examples/manual/instance-data.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-instance-data-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "3eba46c3fcf39c1ef4f2ffe431913cbe1fb6ba0eff3ef531f564c5ee9527deaa"
+        },
+        {
+          "file": "site/media/manual-instance-data-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "1177ae0fa80ae16997102091917f6ff6242fcdb014cd7a9bd977c1461d406d70"
+        },
+        {
+          "file": "site/media/manual-instance-data-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "d26864bb75ce8ea9f1663e7f6bf481c269ba58f8e7ed1a86e7175e303dd2ca4b"
+        }
+      ]
+    },
+    "examples/manual/legend.lay": {
+      "fingerprint": "6e9ff3d66a4096e26fe9c08c2ca58afcce7ee16abf40a7e12e5230de3be1407d",
+      "dependencies": [
+        "examples/manual/legend.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-legend-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "3764a4ac09871d0d6f69b70775f2f37b1500243bf89ceeae2adb24caaa3c3fdc"
+        },
+        {
+          "file": "site/media/manual-legend-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "66190e334971883cca4991ad71f0b8c7463c8dc8d3bf9f37ed4a4e1f2ff48edd"
+        },
+        {
+          "file": "site/media/manual-legend-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "3f3c0f1d0e696a5e1179b8320fb3c42517b8959a65f4a87f0b3c6e8c4c34a90d"
+        }
+      ]
+    },
+    "examples/manual/len.lay": {
+      "fingerprint": "dd9af3ccbe32b032f7dea804eb65f087cfdf63efe928454f02482775bbf40b97",
+      "dependencies": [
+        "examples/manual/len.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-len-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "c189004c73d6afcbb122ab92d66f63c027c9f52be5a857efbefdb4f67c34137b"
+        },
+        {
+          "file": "site/media/manual-len-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "b9134354749a6d548f13ee4e0a533deced79f133ca6c96a48f2bb6b7460f8c78"
+        },
+        {
+          "file": "site/media/manual-len-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "5eaed26421c129876d0a2d1fa90e34df7e3601e8b359c250a99262157a099c30"
+        }
+      ]
+    },
+    "examples/manual/line.lay": {
+      "fingerprint": "b21b3dfbcffe3f37f2ba96f4c62258e0a6529b0dc0a1100a164e5af9fbdbbcb0",
+      "dependencies": [
+        "examples/manual/line.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-line-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "e5d208c1ba876dc72906c7b1f1d8d5fff6a2b2902240e61ec15e26094744e18d"
+        },
+        {
+          "file": "site/media/manual-line-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "83626e84b05f2bb549d8d5e1fd65601f9d93df970dfa9a4b63af80408c2fa106"
+        },
+        {
+          "file": "site/media/manual-line-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "3df02eca8cb62afac30986116e1cbfa5776195d5c31f99d9fac77fa26d945716"
+        }
+      ]
+    },
+    "examples/manual/line_to.lay": {
+      "fingerprint": "5adaf81c8e16ba6e0f79fbb50020cdc3eb9a8234f976f1d6e04a78ea7282ca21",
+      "dependencies": [
+        "examples/manual/line_to.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-line_to-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "f7dcfda08235a9c2d42473117d959eb941adbc7175124f2c324a843343c27ca8"
+        },
+        {
+          "file": "site/media/manual-line_to-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "0cd89ef25db94179152e23f4d66d6ced1ae14ebf0fbad00fc26d9545e681aa78"
+        },
+        {
+          "file": "site/media/manual-line_to-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "6424497e1df3a47e3867347592c835eedbddfb9841757e167c9ffcf783f88c5f"
+        }
+      ]
+    },
+    "examples/manual/linear_gradient.lay": {
+      "fingerprint": "9f2d19e5c7d70f49935b9cc22e43328e3a6af565cf612a9d88749641413f4d01",
+      "dependencies": [
+        "examples/manual/linear_gradient.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-linear_gradient-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "c433f1e4977e459b6e3bc04259884a996b1e8406857657006469ff643dec92ef"
+        },
+        {
+          "file": "site/media/manual-linear_gradient-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "ccce3ea08685437fa5aebe7685c9c8e169ff8040f4e90fa5870733b74588a51b"
+        },
+        {
+          "file": "site/media/manual-linear_gradient-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "a03630a2906f08e4349ba50ca2b621346f104b76ff91f8ce23f2445cb941f781"
+        }
+      ]
+    },
+    "examples/manual/max.lay": {
+      "fingerprint": "efdcf592ccc5d0ebf5fc76f3a5937159681420475ee30689d91823a6d609a24d",
+      "dependencies": [
+        "examples/manual/max.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-max-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "e3a3263e8a83ef6ba6bb995dc983e2213345c185318f6d5d15e5f0a93dcba3e1"
+        },
+        {
+          "file": "site/media/manual-max-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "cff0215edc2601c0a977edaa235c9f9bfa07a5880df5ce55e102ebd72ce4bbc9"
+        },
+        {
+          "file": "site/media/manual-max-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "ce2d38c8c07e3b9f05f9b328042a78a7d137329e9b78c4662d59cc3cde1e1b3d"
+        }
+      ]
+    },
+    "examples/manual/min.lay": {
+      "fingerprint": "6ba94d77fd809da7fd9126af5d2a5210ba5665fcdbbaa2eec286793bcda4aa4f",
+      "dependencies": [
+        "examples/manual/min.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-min-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "07d75b8c4290b1849c225a3a8932cb44c9eb0dc64fdc316417f97bc776974d75"
+        },
+        {
+          "file": "site/media/manual-min-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "6acceb5439e44c025b804d3fa3b8b1721e658aae2207562473ead3ab292e9476"
+        },
+        {
+          "file": "site/media/manual-min-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "110bab5f133866c51b6c6324692c8ef5ac4af2dd7558624f89caa7c8aead9ceb"
+        }
+      ]
+    },
+    "examples/manual/move_to.lay": {
+      "fingerprint": "0d5244586f6830b46fb2e3a4e8406f108f689dbfb06224dc6a66c613d33b1a5f",
+      "dependencies": [
+        "examples/manual/move_to.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-move_to-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "f7dcfda08235a9c2d42473117d959eb941adbc7175124f2c324a843343c27ca8"
+        },
+        {
+          "file": "site/media/manual-move_to-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "0cd89ef25db94179152e23f4d66d6ced1ae14ebf0fbad00fc26d9545e681aa78"
+        },
+        {
+          "file": "site/media/manual-move_to-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "6424497e1df3a47e3867347592c835eedbddfb9841757e167c9ffcf783f88c5f"
+        }
+      ]
+    },
+    "examples/manual/oklch.lay": {
+      "fingerprint": "6265f40683ae7ed36109d74ef640b74365f68a85518ff97c4821813085ac04e7",
+      "dependencies": [
+        "examples/manual/oklch.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-oklch-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "fbe433a9da59b86310f2254d5629e2dbdb8f8b47148a4af184cc7c187e22855f"
+        },
+        {
+          "file": "site/media/manual-oklch-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "87bc11a8bc1999695cf62223349d7d35873227ad4a29f4cf48bf62a274b41be7"
+        },
+        {
+          "file": "site/media/manual-oklch-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "b7cbd6956f3767649d73fcd9ea454d27712e6f1ac63b05decac01e78513cd3af"
+        }
+      ]
+    },
+    "examples/manual/paint-composition.lay": {
+      "fingerprint": "171bc53b7af846c7a956f7940c47909fba98ce09924e3e9641d2fe5da31be8df",
+      "dependencies": [
+        "examples/assets/photo.png",
+        "examples/manual/paint-composition.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-paint-composition-960.webp",
+          "width": 960,
+          "height": 653,
+          "sha256": "3da691c5c4364f815a7fae0be3dd7039372a13a5d71fbebd82823181df2b2d9e"
+        },
+        {
+          "file": "site/media/manual-paint-composition-1920.webp",
+          "width": 1920,
+          "height": 1306,
+          "sha256": "00c3bf774cad3f21b27b3638f44f251d7f9178d2529034a734346e833929cd5e"
+        },
+        {
+          "file": "site/media/manual-paint-composition-3840.webp",
+          "width": 3840,
+          "height": 2611,
+          "sha256": "ae92ec6857bf27ab3f9b6eeeed7d7680ef4bbfc38d8eb6ab92171318430b5dbb"
+        }
+      ]
+    },
+    "examples/manual/path-at.lay": {
+      "fingerprint": "a6d296d4a0c1cb0a0584cd7e1f6889b6882c3da6ec0b7e0c8a801150c38b40ca",
+      "dependencies": [
+        "examples/manual/path-at.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-path-at-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "1f0a47f4f561559d37db47a1589176f0dea789d3dbb139dc9820d3967a1a4110"
+        },
+        {
+          "file": "site/media/manual-path-at-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "e165004d39b7714b6b75d0bb913dd3a44f0c6133c3ffa24380236cbc896b47ac"
+        },
+        {
+          "file": "site/media/manual-path-at-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "83d66d7cec1f7b50eaf4e8f52b43f25bc4b0f043186a2bf9b5b0a121156f2dbd"
+        }
+      ]
+    },
+    "examples/manual/path-between.lay": {
+      "fingerprint": "1fbca110c41fb393ed4b9be738eec5526fc38a82e31dba9d0601753aba96340b",
+      "dependencies": [
+        "examples/manual/path-between.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-path-between-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "b1a68747671c3726c621c8bd05ef4a0fdb47e3783d95c44555262c30088c4ded"
+        },
+        {
+          "file": "site/media/manual-path-between-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "b4fada548227d0d0e6b938aa863050c11b2d1f8a4e95db1c94d05555d04bca43"
+        },
+        {
+          "file": "site/media/manual-path-between-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "1db0da4a4077acf3ad73cfaa0ee3d1aa722d69d3ff6079021eec5c0405c8ff27"
+        }
+      ]
+    },
+    "examples/manual/path-corners.lay": {
+      "fingerprint": "c66308a297657ef31143e2ee14002cc8ee56c84b7dc53e68295670b0609296f8",
+      "dependencies": [
+        "examples/manual/path-corners.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-path-corners-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "4df72f7b7bf6d5b06a9234d34932c3d7a1d1470370c448495585291f29642ea6"
+        },
+        {
+          "file": "site/media/manual-path-corners-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "f5e45c91db74290d600f37df864061b14172a66f256152937693022f3611193e"
+        },
+        {
+          "file": "site/media/manual-path-corners-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "3f3c1046bae156094c9d6ad76eac1c8e4950e9a28392c7ac76715555852ed6dd"
+        }
+      ]
+    },
+    "examples/manual/path-extrema.lay": {
+      "fingerprint": "43a81ac7cedadc5a47cf288aa7846b39a3396afd5136e49d8848e668e8b0e9d4",
+      "dependencies": [
+        "examples/manual/path-extrema.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-path-extrema-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "5016007232dfcbe14fad221c302b9f08cf3c88a59e077ca77d91aa8be057d657"
+        },
+        {
+          "file": "site/media/manual-path-extrema-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "7af299f61257f44d53a41065c543c542f37171fd0cf571eb5da991b00aa07c32"
+        },
+        {
+          "file": "site/media/manual-path-extrema-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "18a2e6fc039cb14a3b4d21cc0f009428811d19f53e7c3f226177c9bf269b9ff1"
+        }
+      ]
+    },
+    "examples/manual/path-in_space.lay": {
+      "fingerprint": "e26e1a261a6461237f0d567b1ae6de7fb6b6a1259f0eaaf9eaab6e20b82d24e4",
+      "dependencies": [
+        "examples/manual/path-in_space.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-path-in_space-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "1f0a47f4f561559d37db47a1589176f0dea789d3dbb139dc9820d3967a1a4110"
+        },
+        {
+          "file": "site/media/manual-path-in_space-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "e165004d39b7714b6b75d0bb913dd3a44f0c6133c3ffa24380236cbc896b47ac"
+        },
+        {
+          "file": "site/media/manual-path-in_space-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "83d66d7cec1f7b50eaf4e8f52b43f25bc4b0f043186a2bf9b5b0a121156f2dbd"
+        }
+      ]
+    },
+    "examples/manual/path-inflections.lay": {
+      "fingerprint": "551f28bfcb78f4747a6c247b63279c86c2a20fd8fc4b2c502806c2268c60f10b",
+      "dependencies": [
+        "examples/manual/path-inflections.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-path-inflections-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "6b2927193fa12a27303c22558b6e00aad5baee6f0a5a376a7aa326b35d087ec1"
+        },
+        {
+          "file": "site/media/manual-path-inflections-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "65e956fc155601bc658760146bfcc3e8472bbb8fb42a11b2ff0d18b868114fcb"
+        },
+        {
+          "file": "site/media/manual-path-inflections-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "d2d9ef2c28b0a0b1f5e3f0a672adbb698517c1f3e5924214cdc42fce0c13c408"
+        }
+      ]
+    },
+    "examples/manual/path-intersections.lay": {
+      "fingerprint": "8c5a29a7cc99fbf82bd7a59038d7d55271f61bdc2c5cda844ff5ad603bae91b8",
+      "dependencies": [
+        "examples/manual/path-intersections.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-path-intersections-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "82c0e964ecc65439938d9dd05914f056df4ff906034ce238d9678dca2d3a2696"
+        },
+        {
+          "file": "site/media/manual-path-intersections-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "bc30d253ce76aa694b34ee1db7b4847ec2b5203a77f921924d5dec558b1fa4d1"
+        },
+        {
+          "file": "site/media/manual-path-intersections-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "79418abc0ee31c32c991c415543030bc7cf79a1ba0b395241448da977758b412"
+        }
+      ]
+    },
+    "examples/manual/path-nearest.lay": {
+      "fingerprint": "80d456d00b56b0c78cb0efbccf43c9ba869d9612c08144b29225a99de9355cde",
+      "dependencies": [
+        "examples/manual/path-nearest.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-path-nearest-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "75a2cda13deea21624f317d80fed7625e8b2f0fb8c1d1f397a727c62b201d2ed"
+        },
+        {
+          "file": "site/media/manual-path-nearest-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "5eb71e4268ac4affdb632c0b9714d2227c689b41b94c626b341a568cdb7d6ef2"
+        },
+        {
+          "file": "site/media/manual-path-nearest-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "7265bcaa46df3c91d6798098afef71ad2d1e6e70643431e155c680ff3ccf31d6"
+        }
+      ]
+    },
+    "examples/manual/path.lay": {
+      "fingerprint": "d26b3dec0c400f09dbd374bfa69818405afeeedcc4ed41b034bfa24c2bbdc361",
+      "dependencies": [
+        "examples/manual/path.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-path-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "3902a406735d5033ba077e397edab0dd57ec74ccdd47031b83f5cc7ba334c6a7"
+        },
+        {
+          "file": "site/media/manual-path-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "fb6a694ee4e501af9b05d5059da30064c5a2bd2893875b8f13249dd02157954e"
+        },
+        {
+          "file": "site/media/manual-path-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "6476bbda6306f1d522e9d10cb74e921555f043ca7824ddc93c17a6ceedf4fb66"
+        }
+      ]
+    },
+    "examples/manual/plot-add_axis.lay": {
+      "fingerprint": "e411eab220a38e0874cc53cae7df25b033ff21dee3bdc99e6f5a30d50adf2355",
+      "dependencies": [
+        "examples/manual/plot-add_axis.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-add_axis-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "3f52119028df59b90387d7eb45a8cb1f298a90c1e076f4748df1faee6cc2b606"
+        },
+        {
+          "file": "site/media/manual-plot-add_axis-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "c734cb8b7b94fc029ab5e6ba65360a05cff20cba8a2d9dd3bd9a311431712b5f"
+        },
+        {
+          "file": "site/media/manual-plot-add_axis-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "b3f54bff5226d10ad4e3f096727aec30fb14639c86293f4f5116d637a4ba1337"
+        }
+      ]
+    },
+    "examples/manual/plot-area.lay": {
+      "fingerprint": "21f35e2e982c10409afdd8d83934cb498efc6155b08bc52fbe3021990e803fa6",
+      "dependencies": [
+        "examples/manual/plot-area.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-area-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "75730a9521aa80c9f1d568f518175e4903ad6aff33857a321815eed07fe7afee"
+        },
+        {
+          "file": "site/media/manual-plot-area-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "d07e98e626f4c3066091b88d138393734943a2d6328e7cc7ffbed3ab33351dd2"
+        },
+        {
+          "file": "site/media/manual-plot-area-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "7b8642455926823871ca9e2acdbe35a3fe549c1d4d2b07f178ecd32fd8f712b8"
+        }
+      ]
+    },
+    "examples/manual/plot-band.lay": {
+      "fingerprint": "eadd500644c1f71742d4a4dd7eb1726cc395ce5853e40d97945632091abd1d66",
+      "dependencies": [
+        "examples/manual/plot-band.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-band-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "2a329372fcace63eaa8687b64b4bcb3276f76c84bb0b9497ee4f6726be0c2538"
+        },
+        {
+          "file": "site/media/manual-plot-band-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "6f5cc06a83a50797d70d5f6daefe612aa026b5055760c3246f308b47c1948c75"
+        },
+        {
+          "file": "site/media/manual-plot-band-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "2a8d814e1fc41a8a25b8a85a90b5da042bdaf735fbfe86041b93d21935a5c65c"
+        }
+      ]
+    },
+    "examples/manual/plot-bar.lay": {
+      "fingerprint": "2b6519e282e523f182d1a5301e1863db463058f7ded367c11144675e70939bbc",
+      "dependencies": [
+        "examples/manual/plot-bar.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-bar-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "2a6a9ce1c13c01b1474e69b402816ae2236ec633b24d540e4dce79434d067067"
+        },
+        {
+          "file": "site/media/manual-plot-bar-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "aa6eee05df77072fd2b509e26aec277cb7154668dc3d4de799d14cc125ddfa2d"
+        },
+        {
+          "file": "site/media/manual-plot-bar-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "10bcd77d49e68a7a6ba9ad7d73948367960d14551f2387c487193483ee4013a0"
+        }
+      ]
+    },
+    "examples/manual/plot-boxplot.lay": {
+      "fingerprint": "d3ed2b7e27131e267500a1b377dbbfb0de7e83466814b852a854c55a3c5e38ee",
+      "dependencies": [
+        "examples/manual/plot-boxplot.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-boxplot-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "784fec076a6b6fd030d7fbac3833c3fa495cba093c28c343c1931e637c45c78c"
+        },
+        {
+          "file": "site/media/manual-plot-boxplot-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "412901046ce11acb66461eb2f917144e626cd51f0e3bdeedd02a07a152b246a8"
+        },
+        {
+          "file": "site/media/manual-plot-boxplot-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "6645acbc34e689e7fbcb5c1c3e249559af4cc386a4e50967ae29d696c553e4d8"
+        }
+      ]
+    },
+    "examples/manual/plot-colorbar.lay": {
+      "fingerprint": "35dc97eff3b3a77aff453f46f7c1878cb97f5a982d15bc95a2fd9c7cbda02a12",
+      "dependencies": [
+        "examples/manual/plot-colorbar.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-colorbar-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "b018ce5f383a39709f118ffa3a6c5603627e7b162fc0b545682f8b433f8d7812"
+        },
+        {
+          "file": "site/media/manual-plot-colorbar-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "a3c7a813456ee75eb831942d0d72286d6d2736196745c9a21f4830bbe6f44aa2"
+        },
+        {
+          "file": "site/media/manual-plot-colorbar-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "422f0ae1911dc421d260a87282fea0a1330b49ac992e0b057348d3ff529034db"
+        }
+      ]
+    },
+    "examples/manual/plot-contour.lay": {
+      "fingerprint": "ca76ab25d400def2c69b953361401d3cf1e125347c67075cd61f7d774dff4b75",
+      "dependencies": [
+        "examples/manual/plot-contour.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-contour-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "f7a396dc7242613eb9e2e27881d75cfb1753321882a2c0da376a132b46b0caea"
+        },
+        {
+          "file": "site/media/manual-plot-contour-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "134bf099322f47317e8d56ab81d587fa7d24169d54bb99971e95f07af0ade159"
+        },
+        {
+          "file": "site/media/manual-plot-contour-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "25a020d7296b84f461e5f5398a0be0c4b17484f12a062e91aaa3a9f1d1cf6c15"
+        }
+      ]
+    },
+    "examples/manual/plot-contourf.lay": {
+      "fingerprint": "646fd67d4edf6207506dc32ebc8419278b342f99127986efc6f63487ca71e19a",
+      "dependencies": [
+        "examples/manual/plot-contourf.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-contourf-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "cb240c4d8970247cd915cf6b944481a264e2d1cdb325744dd63d37e476bd09d6"
+        },
+        {
+          "file": "site/media/manual-plot-contourf-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "06597a953007d9d10b277be92457e4c4b61121f0e605fc446dcb3df130dd02c6"
+        },
+        {
+          "file": "site/media/manual-plot-contourf-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "50b0d41d113759ce2052089e54ae06202c026128fd65b16632fb8a01260b321b"
+        }
+      ]
+    },
+    "examples/manual/plot-ecdf.lay": {
+      "fingerprint": "f909616b42de8268c63e2723881517126a1f5ee7af77c9f6acb72a10fb97a561",
+      "dependencies": [
+        "examples/manual/plot-ecdf.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-ecdf-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "711427526bf84447aafcd46268341f7963168989d948f1f15947193da35289a6"
+        },
+        {
+          "file": "site/media/manual-plot-ecdf-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "a97519ae12c4570e274e39ba80f2576139254f4231add5f2bd6bc33025f27b73"
+        },
+        {
+          "file": "site/media/manual-plot-ecdf-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "7b354a10be28f545b5c42a0c234b67e3a7946698da273500a5cb236c26342925"
+        }
+      ]
+    },
+    "examples/manual/plot-errorbar.lay": {
+      "fingerprint": "5df25bcf5b7448f86366c9266ae2be16d66905168efd7865862e014498495188",
+      "dependencies": [
+        "examples/manual/plot-errorbar.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-errorbar-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "ccd4969239c65af6f5cb09a3bceee6fc6b1add63d1d194c6b405091c1a1a8469"
+        },
+        {
+          "file": "site/media/manual-plot-errorbar-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "b7f5ffe8e8e06cdebebfe93ca7affa1c1fc6ff6f9bb67a638ddde2f9a200cc80"
+        },
+        {
+          "file": "site/media/manual-plot-errorbar-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "7853449e24215cc3dede3186a80caec574cddbc30722062c1c82ee5321bd6360"
+        }
+      ]
+    },
+    "examples/manual/plot-heatmap.lay": {
+      "fingerprint": "46f3de05a964b7df53c6c5f700bcf0a635fab3fcb674c11d0931bfd049accde5",
+      "dependencies": [
+        "examples/manual/plot-heatmap.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-heatmap-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "52afc38eeacbc2c15c58ac621981fc609099790d5539f99383c07906c8b98b12"
+        },
+        {
+          "file": "site/media/manual-plot-heatmap-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "7c3e9ec3d4020dae85cab456c493d1de3c8d5ea4e87cfc8c900bfc0245d5508a"
+        },
+        {
+          "file": "site/media/manual-plot-heatmap-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "7152424192b3dd69012d1dcd7a843f3e729f9f4c93b056bd20df1f06ea973a12"
+        }
+      ]
+    },
+    "examples/manual/plot-hist.lay": {
+      "fingerprint": "74b30996313f06e071a8fcf3ea65ba2a69173064c4ca2ae8f496d6295474cb28",
+      "dependencies": [
+        "examples/manual/plot-hist.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-hist-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "a5b6e9e4ed44ce9af81cb5f76ec05a39d043fb6b5ea11c6735259e15cd993c1e"
+        },
+        {
+          "file": "site/media/manual-plot-hist-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "7574a888f8193ff6ad334639d823168b4c28100cf21c5fe33fe75eedab7f9589"
+        },
+        {
+          "file": "site/media/manual-plot-hist-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "c1c66ba9e61b20427e3868d8cb0560afa903184a366dc0ab803239392ce8df55"
+        }
+      ]
+    },
+    "examples/manual/plot-hline.lay": {
+      "fingerprint": "d252f8e8b3de6b11ce0ec9985c2b1c5850359795858a99d3b8cb8309853d6792",
+      "dependencies": [
+        "examples/manual/plot-hline.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-hline-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "ea208e4d1ee302200cafcce61d205c8b431bdddef0e7167ddd3170be1495faee"
+        },
+        {
+          "file": "site/media/manual-plot-hline-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "d4c0359319dcc4cc8454a5f62ae9ef7e77f8620ec7def4a496abe31b875191bb"
+        },
+        {
+          "file": "site/media/manual-plot-hline-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "cceed367018acd9c5ded6b8fad301ce6e8aba6d5594cd62fe6c8f1ee62e7510b"
+        }
+      ]
+    },
+    "examples/manual/plot-legend.lay": {
+      "fingerprint": "89bbd807cb7b11168d7e0feb5d5df5ae05aa726ae24a38070f86834263ee442a",
+      "dependencies": [
+        "examples/manual/plot-legend.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-legend-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "d385d7c2f9e4ce296d84c9ee98ba83c2ff643f85be6aeb6f77eb12079849e836"
+        },
+        {
+          "file": "site/media/manual-plot-legend-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "a538844bc163b991601094940ac60546d91b0016900e144804321c8609ef4915"
+        },
+        {
+          "file": "site/media/manual-plot-legend-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "e4626c8ea6ad166c4dee4f64738fc085d335d4779b2a8bffa0ac97592d394a28"
+        }
+      ]
+    },
+    "examples/manual/plot-line.lay": {
+      "fingerprint": "e4c03e6611e6af985af4e54cfcf6e1a01976e1393b8e613febeba7dff788fcf1",
+      "dependencies": [
+        "examples/manual/plot-line.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-line-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "a6a6005f462b601599bff36a2ef7259dc2acfb35be8d3c0b035eb64ca65eb182"
+        },
+        {
+          "file": "site/media/manual-plot-line-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "a89e01a5f48a03829d60e424bffa4849f0203e702897022b572cdbf65803c258"
+        },
+        {
+          "file": "site/media/manual-plot-line-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "dfa247eb1fcec3d946d96fca0ad1e61526bfec02edbdaea57e26a192b71c4d8d"
+        }
+      ]
+    },
+    "examples/manual/plot-scatter.lay": {
+      "fingerprint": "4109fbc3a9dbe4d510dd38ffef0c8551abcbfab20a44a68bf9835fd22ec0e45c",
+      "dependencies": [
+        "examples/manual/plot-scatter.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-scatter-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "d87da53c676fa687466b5abd4aacd30da9788a20ec07055c8d745bf969aef571"
+        },
+        {
+          "file": "site/media/manual-plot-scatter-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "db555a7b966e421ba0be56ab8751386a48054cf096fd0059699ac2a3afcc9939"
+        },
+        {
+          "file": "site/media/manual-plot-scatter-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "f04f29556bb4ebb072ae337ad47fe5ef7718e50b15e60cae832c6acf4110411f"
+        }
+      ]
+    },
+    "examples/manual/plot-step.lay": {
+      "fingerprint": "c05e1e5a2e045512823759a3e5823d8c07d1dd2da45fa49fd46157dae14654dd",
+      "dependencies": [
+        "examples/manual/plot-step.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-step-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "b62e1c66b989c36889932b2f90d05e069de180e92ab9d78f1dfb8a8a3ad12147"
+        },
+        {
+          "file": "site/media/manual-plot-step-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "51a74d13612268e2b186d7040eb90ad2323464a3d520cb03ce3e003e9d889320"
+        },
+        {
+          "file": "site/media/manual-plot-step-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "d33385f516f43560ef7124cfca2beb7331e9fbbb9c6c247b60d2abea1ae14cc9"
+        }
+      ]
+    },
+    "examples/manual/plot-violin.lay": {
+      "fingerprint": "2c32640d132741f4b09458b3d300b0ee136a991eca92323e47cf707c28d481b0",
+      "dependencies": [
+        "examples/manual/plot-violin.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-violin-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "53dc2ea2c346c42e7eea06400cb254b1a767d9a9feabbd98bfefe0340ea6e171"
+        },
+        {
+          "file": "site/media/manual-plot-violin-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "696e662cddb2256c7041b4113074cc25e5491a58709639ad59d4f48ad87817d4"
+        },
+        {
+          "file": "site/media/manual-plot-violin-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "66dfab67ed11172100c25343e8b52c9c7c599b65a6ad41942b2e09531e1d3570"
+        }
+      ]
+    },
+    "examples/manual/plot-vline.lay": {
+      "fingerprint": "d3780eff33b79e4a0aea25244f5ea93fccbad169a494871987787124d40b4df9",
+      "dependencies": [
+        "examples/manual/plot-vline.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-vline-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "70c88c6de2c7c8137a5582c8caf983c129b7b1eb3af2eaf5941dbe7416362e47"
+        },
+        {
+          "file": "site/media/manual-plot-vline-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "0e801413b3f22217f33dfa5371b4939470d4b9a54c8a6ee023cd8a585207adb2"
+        },
+        {
+          "file": "site/media/manual-plot-vline-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "0c54eb2c429611044f749921da55647bdba4c560a415235693e8e28a00693c56"
+        }
+      ]
+    },
+    "examples/manual/plot.lay": {
+      "fingerprint": "86cd5d8a6e4f382b521652e2a11dbdeaef6e774bc28b35457195997f0d981b5e",
+      "dependencies": [
+        "examples/manual/plot.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "18f1177b7f840951b871f54597704af1de2d8160bd76e2faa854d571cdd357d6"
+        },
+        {
+          "file": "site/media/manual-plot-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "b69c68747b1a2733b94e141cb6e21141d5587ffdb02aca128e429940b46f0cf4"
+        },
+        {
+          "file": "site/media/manual-plot-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "32120219dc2eaca9a04d52e9f9df38c0813869dc7557e546035956771b43b0e5"
+        }
+      ]
+    },
+    "examples/manual/plot_style.lay": {
+      "fingerprint": "c3a43dea93161bd97e965f93835f18613f562c96cde8aa9c4ef49854eb432808",
+      "dependencies": [
+        "examples/manual/plot_style.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-plot_style-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "48744d9baadcd73a2e9d0e68d6b7f0c10d94c3ab0f894459472b3108fcde3ad3"
+        },
+        {
+          "file": "site/media/manual-plot_style-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "140e7bea5b4c1ff534d637d426e647e276962bfb66b1b67730ae0485fb688145"
+        },
+        {
+          "file": "site/media/manual-plot_style-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "febcc66f666422dade77a40b42932cca28900fd8d71d58957a7709dd0eb501cf"
+        }
+      ]
+    },
+    "examples/manual/polygon.lay": {
+      "fingerprint": "0c304212279c88b839df8e7a46088e059be38a5d5dc809488e148e03af822d22",
+      "dependencies": [
+        "examples/manual/polygon.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-polygon-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "531e7d765d739d8f9b818fbe28ab3b39a5ecb185097a0e412a20b318d336f924"
+        },
+        {
+          "file": "site/media/manual-polygon-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "38bb465adea0c85ae87d3497a63285f7a26cf77bba181245a531b2733692a70f"
+        },
+        {
+          "file": "site/media/manual-polygon-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "9b143ae6c05fbde8af10e444e02fa546d364b65a4d1ccd6d7d7b13d002cd638f"
+        }
+      ]
+    },
+    "examples/manual/polyline.lay": {
+      "fingerprint": "fc3a1c0cdfbb2ab2326185b6945b9e153d4e103ae44c3ef70dc1b6adfa23839d",
+      "dependencies": [
+        "examples/manual/polyline.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-polyline-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "8830d2f29b4d473f03e71c97c8e6ac6e6258c0b9c2eae008b8cbd109f6477c69"
+        },
+        {
+          "file": "site/media/manual-polyline-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "94b1c37729560fbc7ae57bfe6fae0c81e793a961fa6e86beaa025786b106e638"
+        },
+        {
+          "file": "site/media/manual-polyline-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "20510432eae94f07a1b6d6f47a6cdf74257ef856279c3a734e8e3155df5d0fd5"
+        }
+      ]
+    },
+    "examples/manual/quad_to.lay": {
+      "fingerprint": "0135b91e2289d9689f6fcf89b5f5dc6aefd227812fa85c03f1568f31b52058a3",
+      "dependencies": [
+        "examples/manual/quad_to.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-quad_to-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "2040b273a64131ab6c70ff55535792aa3100b7045fe18d3601c4570f69fbef0b"
+        },
+        {
+          "file": "site/media/manual-quad_to-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "a58b30b603969ba205a281c6496db205d76d890038afe85652e92a5d547bb702"
+        },
+        {
+          "file": "site/media/manual-quad_to-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "4322c67166fc52e007b6c36b6f8542ce107426509b7525f54f6593f187738f0f"
+        }
+      ]
+    },
+    "examples/manual/radial_gradient.lay": {
+      "fingerprint": "95f5fed7676b18e2f1ebf58b4aa95dc141f51590a49db47e02cdab1d9bec63d2",
+      "dependencies": [
+        "examples/manual/radial_gradient.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-radial_gradient-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "ecf5d913f6a2b0dedd5a892c26967d7c8d08e3709603bc80a8cfc32794fa3627"
+        },
+        {
+          "file": "site/media/manual-radial_gradient-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "929eb266ce1712b2c306a6dc91aca3c14e120ee7fabf5a73fa454989d93b9ccf"
+        },
+        {
+          "file": "site/media/manual-radial_gradient-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "b374e6dfcdd8e4c7361cbbf12cd347a04a627b1fc38f459ec0e6ba1d4ad465de"
+        }
+      ]
+    },
+    "examples/manual/range.lay": {
+      "fingerprint": "214d4482e3d6334134d4104ef56949f4b8a24f6296b395b643c194be5a5b78a6",
+      "dependencies": [
+        "examples/manual/range.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-range-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "b2dda0a36ae1812f5d07e27d419659a973216a2706fa52cc4d529cbfb8bb73fb"
+        },
+        {
+          "file": "site/media/manual-range-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "d2be7ac667ceb7b294b2fe37401a6ddc7d471cd3d1a26bc92d6cf07e7617e0ce"
+        },
+        {
+          "file": "site/media/manual-range-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "1cd5eb8bbb5c4a0e9837f92a22e31ef5b0869d48ca083e805b914037542b79df"
+        }
+      ]
+    },
+    "examples/manual/ray.lay": {
+      "fingerprint": "aa0a147483c4165db3fb3f4707a3dde56eef1c7524a53fc86fcf11de9f4e3e35",
+      "dependencies": [
+        "examples/manual/ray.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-ray-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "82c0e964ecc65439938d9dd05914f056df4ff906034ce238d9678dca2d3a2696"
+        },
+        {
+          "file": "site/media/manual-ray-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "bc30d253ce76aa694b34ee1db7b4847ec2b5203a77f921924d5dec558b1fa4d1"
+        },
+        {
+          "file": "site/media/manual-ray-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "79418abc0ee31c32c991c415543030bc7cf79a1ba0b395241448da977758b412"
+        }
+      ]
+    },
+    "examples/manual/rect.lay": {
+      "fingerprint": "2a833404d9d72985575b06a84095ec70c4206dbad0d1a8fb59f340b5ca6d6186",
+      "dependencies": [
+        "examples/manual/rect.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-rect-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "6da3f75a6440c483be2cfa654ac51dcdf5f2614372f6b6362c842a3e990d9a34"
+        },
+        {
+          "file": "site/media/manual-rect-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "b7304563944d59591935fe4daf9dfa880467ef2545093821f5b1d105b4387b31"
+        },
+        {
+          "file": "site/media/manual-rect-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "8c1aaf0def199b9a2caed9f3dcef9ca4e77de06e2d54cfb46cf9a7b4568c5394"
+        }
+      ]
+    },
+    "examples/manual/reference-lines-composition.lay": {
+      "fingerprint": "107b26fcb8a7c3718a1cf6267324431c72f3686f78d158bd0646a570279009fc",
+      "dependencies": [
+        "examples/manual/reference-lines-composition.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-reference-lines-composition-960.webp",
+          "width": 960,
+          "height": 698,
+          "sha256": "f13738985a475248585e7ffb07d2207ea96f2ddfef6c55e82b55dec8000f16c3"
+        },
+        {
+          "file": "site/media/manual-reference-lines-composition-1920.webp",
+          "width": 1920,
+          "height": 1396,
+          "sha256": "2f9109344523e95fa59c5c8a7b5de03c6b32a39e4aab5066c0342be05ffce97a"
+        },
+        {
+          "file": "site/media/manual-reference-lines-composition-3840.webp",
+          "width": 3840,
+          "height": 2793,
+          "sha256": "f0c6b65fb7097827bf14072bf23647cca192e6b39154aebbc375e61b6f1b3c33"
+        }
+      ]
+    },
+    "examples/manual/rgb.lay": {
+      "fingerprint": "7f724e0d742c728e799ef185385d341c7114db9f35e0c30ee90d1b399c3340d6",
+      "dependencies": [
+        "examples/manual/rgb.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-rgb-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "d7fcb574207338c1e7b491d467914b95f929ca4095aaf0bbccea07c54b718ea8"
+        },
+        {
+          "file": "site/media/manual-rgb-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "c289a34ddd3355b921d409f79f4474cb935bc41d6be6e87e2970727b7fd59916"
+        },
+        {
+          "file": "site/media/manual-rgb-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "5be315f8d80c5e3ba4b594ad18d382a652cf9e21f3fd19a34dc0503fffd60ce1"
+        }
+      ]
+    },
+    "examples/manual/ring.lay": {
+      "fingerprint": "b17617639fe0a201b6d49708c0240c47afef19298a048517dd9ed98897ca7009",
+      "dependencies": [
+        "examples/manual/ring.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-ring-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "adca07faa0dbeff1a2beb4c5d559e1385625718f4387ba39e5d609a6e6bd6e05"
+        },
+        {
+          "file": "site/media/manual-ring-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "1acc2e210bc9cd7e5dcddf47ad4f484c015f69921fb26fad6d0e5b4d9ea815c4"
+        },
+        {
+          "file": "site/media/manual-ring-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "28577b6ecb7b19b18a4fc0683c97891ab6770f6cc33143c3966e2878d4425639"
+        }
+      ]
+    },
+    "examples/manual/sector.lay": {
+      "fingerprint": "44338cff44987f826bc80af494d4e1a5866f1c72b7deee535c039173931902bb",
+      "dependencies": [
+        "examples/manual/sector.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-sector-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "10e920e260b7b3c31ec5d1d27ad39bd99ae271627cd8b88cbc29f5bb5b1f25ad"
+        },
+        {
+          "file": "site/media/manual-sector-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "5c6e27f220c3c21424d063864bab73ae748c26f4bf91569ff4753c57d0f86dd0"
+        },
+        {
+          "file": "site/media/manual-sector-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "1d34b0d57ac6228a126884cb95c730e31ce06069e351b04ee69c943ecb7391fe"
+        }
+      ]
+    },
+    "examples/manual/span.lay": {
+      "fingerprint": "daa576b93df1aeac5ab34e0ba90cde7af34e4c505b9fe1616edac7507f3ab55f",
+      "dependencies": [
+        "examples/manual/span.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-span-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "ac6abdcb039445bbcdc069174c513bd7fa36c3df4c9e811893f373a230263dd3"
+        },
+        {
+          "file": "site/media/manual-span-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "4f98fec6b65437705457f4713462eda1a869f2ccbf223ffdaf204bb3ad381ffd"
+        },
+        {
+          "file": "site/media/manual-span-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "a93382bf17ae9e8e5f1925ec6ee485bf96ac07eedf03cd01cc6c8ae5c38609c8"
+        }
+      ]
+    },
+    "examples/manual/star.lay": {
+      "fingerprint": "2056232c537ed888306403f730bdf0e56199cd26eaf55072a0ac69a02480c758",
+      "dependencies": [
+        "examples/manual/star.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-star-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "3f41709c8a482b1465cf6301f42054158cdab9397aba3c1e94849ff46271ae4a"
+        },
+        {
+          "file": "site/media/manual-star-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "7214cf2459a4e6b86e37f67760ce9f9ae4c9ec5809e2897fcc510273326112af"
+        },
+        {
+          "file": "site/media/manual-star-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "793534034d071a20b1f92b0aa6956c6656690d0806c4d902d19c27967850741a"
+        }
+      ]
+    },
+    "examples/manual/str.lay": {
+      "fingerprint": "c2238458489561d23d48e22cf10dbfbee4c76b8c467427274b61a5ebda3f61e6",
+      "dependencies": [
+        "examples/manual/str.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-str-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "5b898d1df61e7a9cdc0bfca82d0a3fda7602a1f43a33118e279a49979818c425"
+        },
+        {
+          "file": "site/media/manual-str-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "75f279c617aa64f4c75822851c962ce800c7c75f2d7fffb0fda0193d49fe0fae"
+        },
+        {
+          "file": "site/media/manual-str-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "b761bae504514a4d9d8c73d2d6a43200e0d8d4d46dd5f735f304261c1b8ac120"
+        }
+      ]
+    },
+    "examples/manual/table.lay": {
+      "fingerprint": "0e8a7a72a0d5360284ef4be16c386a8bd9d65593093db12213cb4a9a6b1aea55",
+      "dependencies": [
+        "examples/manual/table.lay",
+        "examples/plot/first-plot.csv"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-table-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "b1798df9863a19c456579bb5551fab624ebcec0afee7d53d3686f183db50b58a"
+        },
+        {
+          "file": "site/media/manual-table-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "007ebfe7a9862bd46046e62d8664c86db2d9a1dbe4a9cb27f2cab8cc5b5be783"
+        },
+        {
+          "file": "site/media/manual-table-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "620cd676add0dc986a0a233afcf2415e184ff682d32b043bd879ae2afaa24fc1"
+        }
+      ]
+    },
+    "examples/manual/text.lay": {
+      "fingerprint": "3e640855f6037861cb102f1ec5ab859c990f5e1632353543516dea9e622be64b",
+      "dependencies": [
+        "examples/manual/text.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-text-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "b25555afe1ef801ebd2a334f1fcbe14019736ed912e9c32cc380ee2f2eba74fa"
+        },
+        {
+          "file": "site/media/manual-text-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "412c0df640d81b5e19324c3e32564bf66f9d701876fb45da0f816b29c23f4f77"
+        },
+        {
+          "file": "site/media/manual-text-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "5aa12c59ba19917deb1ed9bfd4d1b613e852efaed2c7b59c5a2d1d308e393027"
+        }
+      ]
+    },
+    "examples/manual/variables-strings.lay": {
+      "fingerprint": "e2aba9346f284d3929517a26f3ce44374d4655e7490023f8a7002c3a3081ae4a",
+      "dependencies": [
+        "examples/manual/variables-strings.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-variables-strings-960.webp",
+          "width": 960,
+          "height": 698,
+          "sha256": "5aa613527d59b53fd1abb031d5b9a0d4b8e30753e57098996b7a990c7f51d5d1"
+        },
+        {
+          "file": "site/media/manual-variables-strings-1920.webp",
+          "width": 1920,
+          "height": 1396,
+          "sha256": "dabff22003546b4f4d891a6dfa3a85270dd69d1c266b8b0584dd936473edb6fb"
+        },
+        {
+          "file": "site/media/manual-variables-strings-3840.webp",
+          "width": 3840,
+          "height": 2793,
+          "sha256": "3feb9ebeb72cf7326e38c00873d32a809fe8583884b2ae55b57dbfd5df623cd6"
+        }
+      ]
+    },
+    "examples/outlines.lay": {
+      "fingerprint": "3a843845dfa91f5a0f88f000fde042750d648cc43b60d7db58e9262bd2f1dbc3",
+      "dependencies": [
+        "examples/outlines.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/outlines-960.webp",
+          "width": 960,
+          "height": 587,
+          "sha256": "14fc0ceb9fea14c373760873ba2dc004a70ad8fd27b8afba80d4c828ff628187"
+        },
+        {
+          "file": "site/media/outlines-1920.webp",
+          "width": 1920,
+          "height": 1174,
+          "sha256": "f8b8dc8d85aa792cbf2b1b8c759bffbeb94e7a45cabe5f4e3d2b70ffe8815004"
+        },
+        {
+          "file": "site/media/outlines-3840.webp",
+          "width": 3840,
+          "height": 2347,
+          "sha256": "b80ceee0867a35ab2e8ef69f200eba1e1a6adc3a7e8f4cd8063cfbc2de8b423a"
+        }
+      ]
+    },
+    "examples/plot/annotations.lay": {
+      "fingerprint": "11256bf70ef6f9f293fd4f354ebba865039093774c596d0940ea72e5a737c014",
+      "dependencies": [
+        "examples/plot/annotations.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-annotations-960.webp",
+          "width": 960,
+          "height": 711,
+          "sha256": "8699a483d9b84f53fec92ea64e2d549027c19ac001ef4950776de22c482fa5ae"
+        },
+        {
+          "file": "site/media/plot-annotations-1920.webp",
+          "width": 1920,
+          "height": 1422,
+          "sha256": "3aed30d94c81fc73cbdad6c0ef3164b7d618a22f93affcc365c0445dfa6340f9"
+        },
+        {
+          "file": "site/media/plot-annotations-3840.webp",
+          "width": 3840,
+          "height": 2844,
+          "sha256": "5d71616145fdaf6440843c6dba42347c5e8423a60838e8460e88a3d23b3539bf"
+        }
+      ]
+    },
+    "examples/plot/colorbars.lay": {
+      "fingerprint": "3c344d9a01d53a6ee324ddd3287f5abab43a898958accf534c1e41f1910f51d1",
+      "dependencies": [
+        "examples/plot/colorbars.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-colorbars-960.webp",
+          "width": 960,
+          "height": 890,
+          "sha256": "75c18e3209732b7189aecd0458d49ab6c0f7023f07d4863dd56750065352553e"
+        },
+        {
+          "file": "site/media/plot-colorbars-1920.webp",
+          "width": 1920,
+          "height": 1780,
+          "sha256": "5333235556de2d126c81240edd6361938c8f4a2a745e8908e55d29203f6c9a0e"
+        },
+        {
+          "file": "site/media/plot-colorbars-3840.webp",
+          "width": 3840,
+          "height": 3561,
+          "sha256": "c624eb49b04632d295b4fb8373157314a1bf36d367dce4a415212af219169cdd"
+        }
+      ]
+    },
+    "examples/plot/complete-data.lay": {
+      "fingerprint": "a71a8c20ce77b3fd9ff6eb353aa7022f73d8203aa2e98c7c5e629f077d6cc7c1",
+      "dependencies": [
+        "examples/plot/complete-data.assets/observations-ea3efc3a935c7f1b.json",
+        "examples/plot/complete-data.assets/weights-8015886fcb30d42d.json",
+        "examples/plot/complete-data.assets/x-f410ec07f4f84954.json",
+        "examples/plot/complete-data.assets/y-fedd4f44d6e9ea24.json",
+        "examples/plot/complete-data.assets/z-c08fbeeb158d700c.json",
+        "examples/plot/complete-data.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-complete-data-960.webp",
+          "width": 960,
+          "height": 530,
+          "sha256": "5aa4ab06508be09d1cd627bf97785887b1ad0f48f4aeba9181fd18b18eda99cc"
+        },
+        {
+          "file": "site/media/plot-complete-data-1920.webp",
+          "width": 1920,
+          "height": 1061,
+          "sha256": "2d698370103907a9bbff03103f04518e048564abfd2fa13cca2b305e0e2dce0a"
+        },
+        {
+          "file": "site/media/plot-complete-data-3840.webp",
+          "width": 3840,
+          "height": 2122,
+          "sha256": "5f4811be2b0ef747b059a1e6697f4493813f6eed337d9d781e6ab957945c4174"
+        }
+      ]
+    },
+    "examples/plot/first-plot.lay": {
+      "fingerprint": "6606d9aa240f527fbe68f353abe80465537a7c5864f7f38d99731f312d1ac5c0",
+      "dependencies": [
+        "examples/plot/first-plot.csv",
+        "examples/plot/first-plot.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-first-plot-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "55b02f1765e7b5fe5e58c0587ee25d7f180bde05b7ad57b82053bc26b9d8603d"
+        },
+        {
+          "file": "site/media/plot-first-plot-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "543a11bf8c4355121087c12415d40296c930a78162bfcf8f54238cfc15663794"
+        },
+        {
+          "file": "site/media/plot-first-plot-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "8268663c750cbe17cff4c144f9d9ff7b9efcc6e8ade7dd062d93a33946a2dcae"
+        }
+      ]
+    },
+    "examples/plot/line-scatter.lay": {
+      "fingerprint": "8ba322b5e28fefa9a8a364668847bb9e22e443e5c02960f4b0fab9e68530a100",
+      "dependencies": [
+        "examples/plot/line-scatter.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-line-scatter-960.webp",
+          "width": 960,
+          "height": 297,
+          "sha256": "8fbfead4a053e01e8fbb1be293562f5785c191083a3b3441738fe2da0c7bc8b2"
+        },
+        {
+          "file": "site/media/plot-line-scatter-1920.webp",
+          "width": 1920,
+          "height": 594,
+          "sha256": "4bb63baf2c22aaa1d6a33b72186563a5889982f3292b188d3af1ccbac11c14c0"
+        },
+        {
+          "file": "site/media/plot-line-scatter-3840.webp",
+          "width": 3840,
+          "height": 1187,
+          "sha256": "70a3c137a78fd6c77b589a331f442c46cf6421af6856904998dafe17206a1a8e"
+        }
+      ]
+    },
+    "examples/plot/markers.lay": {
+      "fingerprint": "ac8c8eac2dfcbb3e7b15887b0cbdb132bcba7fd293314871b47395aa8e5f384f",
+      "dependencies": [
+        "examples/plot/markers.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-markers-960.webp",
+          "width": 960,
+          "height": 614,
+          "sha256": "33e9e438e79415c664c06888c0c9d0e1543ec9fc90489e7cdbef4a5138457408"
+        },
+        {
+          "file": "site/media/plot-markers-1920.webp",
+          "width": 1920,
+          "height": 1229,
+          "sha256": "1624101591ab0350eb808ff8ca48e15530c4eba9d652b06a432df0d0c9534a81"
+        },
+        {
+          "file": "site/media/plot-markers-3840.webp",
+          "width": 3840,
+          "height": 2458,
+          "sha256": "371f2551503f77c1e13cb6898571cebaad32e0aa5b47b4067fdd68bcb22cca13"
+        }
+      ]
+    },
+    "examples/plot/publication.lay": {
+      "fingerprint": "de3a170437f555eb60c6f09469234e628e8f872b0fc8a49ffa29aec859323336",
+      "dependencies": [
+        "examples/plot/publication.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-publication-960.webp",
+          "width": 960,
+          "height": 480,
+          "sha256": "c4fb0ba2ae84c5036c2211747ef276aa35fe69ff668686c95f1279237022b621"
+        },
+        {
+          "file": "site/media/plot-publication-1920.webp",
+          "width": 1920,
+          "height": 960,
+          "sha256": "0b9215389e340177509b0f18734816f98e39b28f7aca564003dbd5a5bdc43c94"
+        },
+        {
+          "file": "site/media/plot-publication-3840.webp",
+          "width": 3840,
+          "height": 1920,
+          "sha256": "c7d444ee366881ef023d6c7238100bac39bded1a43b93b0e10fb5f186dadef42"
+        }
+      ]
+    },
+    "examples/plot/scientific-labels.lay": {
+      "fingerprint": "6c3214e83c196672c50113b1c8c0cf9399694c42bc8313674806de5bc8a3516a",
+      "dependencies": [
+        "examples/plot/scientific-labels.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-scientific-labels-960.webp",
+          "width": 960,
+          "height": 502,
+          "sha256": "f72b30de467b541a212f0191edced55055ce8150f3cadb7d0b7b7ebf26beaa61"
+        },
+        {
+          "file": "site/media/plot-scientific-labels-1920.webp",
+          "width": 1920,
+          "height": 1004,
+          "sha256": "cd0f79a75525aa9b91f40d9e0a23a0208a16c92668ac07e1adb0ddaa0a4e11a3"
+        },
+        {
+          "file": "site/media/plot-scientific-labels-3840.webp",
+          "width": 3840,
+          "height": 2007,
+          "sha256": "b118e35ba847872f1a00a6120045b10c9fc0c97ca3e76bdd6807e8e49155a2e0"
+        }
+      ]
+    },
+    "examples/plot/scientific.lay": {
+      "fingerprint": "92f33ec9877b1ab4701a22abd08d6c5c77c9324cc707b7c90f349d924ce15273",
+      "dependencies": [
+        "examples/plot/results.csv",
+        "examples/plot/scientific.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/plot-scientific-960.webp",
+          "width": 960,
+          "height": 437,
+          "sha256": "161ebce830bdaa31699430b487e3e5a3ed1d7df9537d541f43f304d9f4bfb209"
+        },
+        {
+          "file": "site/media/plot-scientific-1920.webp",
+          "width": 1920,
+          "height": 874,
+          "sha256": "762069e58503c6b6e7ee758479a48cda3452980f2b53980b08b99b0dc482eac0"
+        },
+        {
+          "file": "site/media/plot-scientific-3840.webp",
+          "width": 3840,
+          "height": 1749,
+          "sha256": "43736ec23ca306879d19857808c00ed48a31cfbfd3940f0fd5658b94eea02ae2"
+        }
+      ]
+    },
+    "examples/scripted.lay": {
+      "fingerprint": "979e07f692139ad92c87549d4833bb06bc7c86cb389a01f57ae2b88af7e97595",
+      "dependencies": [
+        "examples/assets/icon.svg",
+        "examples/assets/photo.png",
+        "examples/components/card.lay",
+        "examples/components/materials.lay",
+        "examples/scripted.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/scripted-960.webp",
+          "width": 960,
+          "height": 480,
+          "sha256": "a025cc4673bce355f3d6c747895adf1cd3d097734fd1cd3c91806b69baca15a6"
+        },
+        {
+          "file": "site/media/scripted-1920.webp",
+          "width": 1920,
+          "height": 960,
+          "sha256": "d854d17408eb8a3ccf9438fc7dea785528a30f08e006e3935248c34bc5583c5b"
+        },
+        {
+          "file": "site/media/scripted-3840.webp",
+          "width": 3840,
+          "height": 1920,
+          "sha256": "322271f3afb3755ed7167f5f2bee3a6ba8e068b6dd4c95f34762f5188df92ecd"
+        }
+      ]
+    },
+    "examples/showcase.lay": {
+      "fingerprint": "7c1df8434bd15cd06f2b9497e126831fa85f6665dcb3dfc09e9194399d7f01f9",
+      "dependencies": [
+        "examples/assets/icon.svg",
+        "examples/assets/photo.png",
+        "examples/components/card.lay",
+        "examples/components/materials.lay",
+        "examples/showcase.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/showcase-960.webp",
+          "width": 960,
+          "height": 1358,
+          "sha256": "8d85bc5879e0558c739a11440f13df985fbb619fe114ca26a43b8bab5fb505e5"
+        },
+        {
+          "file": "site/media/showcase-1920.webp",
+          "width": 1920,
+          "height": 2715,
+          "sha256": "d1d0c03efa9e5deb8d1835e47a8113d2c402d59e61a5aa27f41aee4002ddf0a0"
+        },
+        {
+          "file": "site/media/showcase-3840.webp",
+          "width": 3840,
+          "height": 5430,
+          "sha256": "1a6edd501b3a0a160e520d4209dd8e0b08fd4904827d2b010967b622848ebd43"
+        }
+      ]
+    },
+    "examples/typography.lay": {
+      "fingerprint": "2b2b32beb0d93b814b97ecca263de7eed236ebc3b39d2f2ce58a40a86f9ef436",
+      "dependencies": [
+        "examples/typography.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/typography-960.webp",
+          "width": 960,
+          "height": 600,
+          "sha256": "ce29a568c32b53ddc3ee3a7716fe2a16f2a1fcea7f68208b03553ffc79b6b5d9"
+        },
+        {
+          "file": "site/media/typography-1920.webp",
+          "width": 1920,
+          "height": 1200,
+          "sha256": "e37813541ccaf7b9e5a996f1927fa668ef59608c6fdfa7dda63ae1e7faa1edcc"
+        },
+        {
+          "file": "site/media/typography-3840.webp",
+          "width": 3840,
+          "height": 2400,
+          "sha256": "3231e7a8c52d803d1201d7e00545fd74180e745b0fb4ecb910aacedef25232cc"
+        }
+      ]
+    },
+    "examples/unified.lay": {
+      "fingerprint": "55c5ce70b3706e33074a7de3dffe28b56d845b7f22dac278424dd38fc2cb9467",
+      "dependencies": [
+        "examples/language/paper.lcss",
+        "examples/unified.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/unified-960.webp",
+          "width": 960,
+          "height": 704,
+          "sha256": "a569f835fb62daa7086b5127300dded78ab2f6df345e8f19f9f0424051397d06"
+        },
+        {
+          "file": "site/media/unified-1920.webp",
+          "width": 1920,
+          "height": 1408,
+          "sha256": "b83d79cf8c876e2731d551414462688f41c8b10b6c7859b6d76739c7a8a6cc08"
+        },
+        {
+          "file": "site/media/unified-3840.webp",
+          "width": 3840,
+          "height": 2816,
+          "sha256": "71cf96f6c6cafd139b4ed01156b281ef3dba47f6eccdab36a8f89859f41e3159"
+        }
+      ]
+    },
+    "examples/vector.lay": {
+      "fingerprint": "78b4f5cf9704aefd5ccc317e8f364b6af04a9702fdfabe95afff7764077771b9",
+      "dependencies": [
+        "examples/vector.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/vector-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "2e7764cd9aab00c3d31e1cd2c19688158c4496f8e67674c885de5db61ebcda35"
+        },
+        {
+          "file": "site/media/vector-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "fd88df219b57cfe78730e9fb2aab1a04498a5dad29036ee05a55f72685539d00"
+        },
+        {
+          "file": "site/media/vector-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "3ef2e8ab2b4b1f9d9a5996f315e6ef90aae6d365e0de93bc908b9978e2488a65"
+        }
+      ]
+    }
+  }
+}

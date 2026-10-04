@@ -1,0 +1,11 @@
+# Gallery: positioning / opacity
+page = canvas(name="Instance opacity", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Instance opacity", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+back = rect(size=(50 mm, 36 mm), fill="#087f8c")
+front = rect(size=(50 mm, 36 mm), fill="#ef755f")
+page.add(back, target=page.top_left, offset=(19 mm, 27 mm))
+page.add(front, target=page.top_left, offset=(43 mm, 34 mm), opacity=0.55)
+# END DEMO

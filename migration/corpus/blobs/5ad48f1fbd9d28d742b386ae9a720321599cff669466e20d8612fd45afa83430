@@ -1,0 +1,1 @@
+export function make() { d=table(src="d.csv") a=array(src="v.json") p=plot(size=(90 mm,60 mm)) p.line(x=d["x, axis"],y=d["signal"]) p.hline(y=a[0][1]) return p }

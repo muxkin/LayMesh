@@ -1,0 +1,13 @@
+# Gallery: shapes / arc-sector
+page = canvas(name="Arc and sector", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Arc and sector", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+page.add(arc(radius=18 mm, start=-45 deg, end=220 deg,
+             line_color="#087f8c", line_width=1.5 mm, line_cap=round),
+         target=page.top_left, offset=(16 mm, 32 mm))
+page.add(sector(radius=18 mm, start=-40 deg, end=160 deg,
+                fill="#f3be6b", border_color="#a66435", border_width=0.5 mm),
+         target=page.top_left, offset=(68 mm, 32 mm))
+# END DEMO

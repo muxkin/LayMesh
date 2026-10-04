@@ -1,0 +1,23 @@
+# Insertion order controls the layout; assigning a dictionary copies its values.
+page=canvas(size=(150mm,90mm),background="#ffffff")
+labels=dict()
+labels["B"]="Baseline"
+labels["A"]="Annealed"
+copy=labels
+copy["B"]="Changed copy"
+labels=labels.update({"C":"Cold worked"})
+keys=labels.keys()
+values=labels.values()
+items=labels.items()
+default=labels.get("missing","No data")
+colors=["#0072b2","#d55e00","#009e73"]
+for i,(key,value) in enumerate(items) {
+ card=group()
+ card.add(rect(size=(42mm,55mm),fill=colors[i]))
+ card.add(text(content=key,font_family="DejaVu Sans",font_size=20pt,color="#ffffff"),offset=(5mm,7mm))
+ card.add(text(content=value,font_family="DejaVu Sans",font_size=8pt,color="#ffffff"),offset=(5mm,35mm))
+ page.add(card,offset=(5mm+i*48mm,10mm))
+}
+for i,(key,value) in enumerate(zip(keys,values)) {
+ page.add(text(content=f"{i+1}. {key} = {value}",font_family="DejaVu Sans",font_size=8pt),offset=(5mm+i*48mm,72mm))
+}

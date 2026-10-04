@@ -1,0 +1,171 @@
+{
+  "scopeName": "source.laymesh",
+  "patterns": [
+    {
+      "name": "comment.line.number-sign",
+      "match": "#.*$"
+    },
+    {
+      "name": "meta.embedded.lcss",
+      "begin": "\\bstyle\\s*\\{",
+      "end": "\\}",
+      "patterns": [
+        {
+          "include": "source.lcss"
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.laymesh",
+      "begin": "(?i:(r|f|rf|fr))?\"\"\"",
+      "end": "\"\"\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape",
+          "match": "\\\\."
+        },
+        {
+          "name": "meta.interpolation",
+          "begin": "\\{(?!\\{)",
+          "end": "\\}",
+          "patterns": [
+            {
+              "include": "source.laymesh"
+            }
+          ]
+        },
+        {
+          "name": "meta.math",
+          "begin": "\\$\\$?",
+          "end": "\\$\\$?",
+          "patterns": [
+            {
+              "name": "support.function",
+              "match": "\\\\[a-zA-Z]+"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.laymesh",
+      "begin": "(?i:(r|f|rf|fr))?'''",
+      "end": "'''",
+      "patterns": [
+        {
+          "name": "constant.character.escape",
+          "match": "\\\\."
+        },
+        {
+          "name": "meta.interpolation",
+          "begin": "\\{(?!\\{)",
+          "end": "\\}",
+          "patterns": [
+            {
+              "include": "source.laymesh"
+            }
+          ]
+        },
+        {
+          "name": "meta.math",
+          "begin": "\\$\\$?",
+          "end": "\\$\\$?",
+          "patterns": [
+            {
+              "name": "support.function",
+              "match": "\\\\[a-zA-Z]+"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.laymesh",
+      "begin": "(?i:(r|f|rf|fr))?\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape",
+          "match": "\\\\."
+        },
+        {
+          "name": "meta.interpolation",
+          "begin": "\\{(?!\\{)",
+          "end": "\\}",
+          "patterns": [
+            {
+              "include": "source.laymesh"
+            }
+          ]
+        },
+        {
+          "name": "meta.math",
+          "begin": "\\$\\$?",
+          "end": "\\$\\$?",
+          "patterns": [
+            {
+              "name": "support.function",
+              "match": "\\\\[a-zA-Z]+"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.laymesh",
+      "begin": "(?i:(r|f|rf|fr))?'",
+      "end": "'",
+      "patterns": [
+        {
+          "name": "constant.character.escape",
+          "match": "\\\\."
+        },
+        {
+          "name": "meta.interpolation",
+          "begin": "\\{(?!\\{)",
+          "end": "\\}",
+          "patterns": [
+            {
+              "include": "source.laymesh"
+            }
+          ]
+        },
+        {
+          "name": "meta.math",
+          "begin": "\\$\\$?",
+          "end": "\\$\\$?",
+          "patterns": [
+            {
+              "name": "support.function",
+              "match": "\\\\[a-zA-Z]+"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "support.function",
+      "match": "\\b(?:abs|add|add_axis|append|arc|arc_to|area|array|at|axis|band|bar|between|box|boxplot|canvas|close|cmap|cmap_names|color_scale|colorbar|colors|contour|contourf|corners|cubic_to|data|dict|ecdf|ellipse|enumerate|errorbar|extrema|formula|fuse|get|group|hatch|head|heatmap|hist|hline|hsv|image|image_fill|in_space|inflections|intersections|items|keys|legend|len|line|line_to|linear_gradient|max|min|move_to|nearest|oklch|palette|path|plot|plot_style|polygon|polyline|quad_to|radial_gradient|range|ray|rect|reversed|rgb|ring|sample|scatter|sector|span|star|step|str|table|text|update|values|violin|vline|with_side|zip)(?=\\s*\\()"
+    },
+    {
+      "name": "keyword.control",
+      "match": "\\b(?:if|else|for|in|not|and|or|while|function|return|import|export|from|break|continue|style)\\b"
+    },
+    {
+      "name": "constant.language",
+      "match": "\\b(?:true|false|null|auto|mm|cm|in|inch|pt|px|deg|rad)\\b"
+    },
+    {
+      "name": "variable.parameter",
+      "match": "\\b[a-zA-Z_]\\w*(?=\\s*=)"
+    },
+    {
+      "name": "constant.numeric",
+      "match": "\\b[0-9]+(?:\\.[0-9]*)?(?:[eE][+-]?[0-9]+)?"
+    },
+    {
+      "name": "variable.other.readwrite.laymesh",
+      "match": "\\b[a-zA-Z_]\\w*\\b"
+    }
+  ]
+}

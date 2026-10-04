@@ -1,0 +1,17 @@
+# Paths belong to this module, even when another module imports these values.
+## Reusable photograph shared by card components.
+## @type {image}
+export photo = image(src="../assets/photo.png")
+## Reusable vector icon for card captions.
+## @type {image}
+export icon = image(src="../assets/icon.svg")
+## Physical spacing between the photograph and its caption.
+## @type {length}
+export gap = 3 mm
+## @lang zh-CN
+## 标题默认强调色。
+## @type {color}
+## @lang en
+## Default caption accent color.
+## @type {color}
+export accent = "#087f8c"

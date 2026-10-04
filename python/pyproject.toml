@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "laymesh"
+version = "0.3.0a2"
+description = "Reproducible scientific figures and precise physical layouts with a native Rust engine"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["plotting", "scientific-visualization", "layout", "jupyter"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Rust",
+  "Environment :: Console",
+  "Framework :: Jupyter",
+  "Topic :: Scientific/Engineering :: Visualization",
+]
+requires-python = ">=3.10"
+dependencies = ["ipython>=8"]
+
+[project.urls]
+Homepage = "https://muxkin.github.io/LayMesh/"
+Documentation = "https://muxkin.github.io/LayMesh/"
+Repository = "https://github.com/muxkin/LayMesh"
+Issues = "https://github.com/muxkin/LayMesh/issues"
+
+[project.scripts]
+laymesh = "laymesh._runtime:main"
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.7"]
+data = ["numpy>=1.24", "pandas>=2"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["laymesh*"]

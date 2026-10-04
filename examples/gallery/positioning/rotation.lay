@@ -1,0 +1,11 @@
+# Gallery: positioning / rotation
+page = canvas(name="Rotated instance", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Rotated instance", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+tile = rect(size=(47 mm, 24 mm), fill="#e4b65f", border_color="#965f32", border_width=0.6 mm)
+page.add(tile, anchor=center, target=page.center, rotation=27 deg)
+marker = ellipse(size=(3 mm, 3 mm), fill="#203864")
+page.add(marker, anchor=center, target=page.center)
+# END DEMO

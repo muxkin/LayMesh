@@ -1,0 +1,18 @@
+canvas {
+  --ink: #245447;
+  --soft: #eef5f2;
+  font-family: "DejaVu Sans", "Noto Sans CJK SC";
+  color: var(--ink);
+}
+.title { font-size: 13pt; }
+.annotation {
+  font-size: 10pt;
+  background: #ffffff;
+  border: 0.5pt solid #b9d5cb;
+  border-radius: 1mm;
+  padding: 2mm;
+}
+plot::area { background: linear-gradient(to bottom, #ffffff, #eef5f2); }
+plot::axis { line-color: #445c53; line-width: 0.6pt; }
+plot::axis(x) { background: #eef5f2; }
+plot::legend { background: #ffffff; }

@@ -1,0 +1,1693 @@
+{
+  "baseline": "78db22d",
+  "mappings": [
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:40:43"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/src/lsp.rs",
+          "test": "locale_precedence_legacy"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(resolveLanguage(ui,initial,configuration),expected); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:45:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(zh.summary,'创建带标题的面板。'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:45:57"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(zh.parameters[0].description,'面板标题。'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:46:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(zh.parameters[1].description,'Default dimensions.'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:46:67"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(zh.documentation,/card\\(\"结果\"\\)/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:46:117"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(zh.documentation,/https:\\/\\/example.com/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:47:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(s.completions(file,caller.length).find(c=>c.label==='accent').info,/面板强调色/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:48:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(s.hover('library.lay',library.indexOf('return title')+8).contents,/面板标题/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:49:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.deepEqual(s.diagnostics('library.lay'),[]); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:51:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(en.summary,'Create a titled panel.'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:51:52"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(en.parameters[1].description,'Panel dimensions.'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:51:115"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(en.documentation,/card\\(\"Shared\"\\)/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:52:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(en.label,zh.label); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:52:34"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.deepEqual(en.parameters.map(p=>p.type),zh.parameters.map(p=>p.type)); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:52:110"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.documents.get(file),caller); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:53:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(s.hover('library.lay',library.indexOf('return title')+8).contents,/Panel title/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:54:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(s.completions(file,caller.length).find(c=>c.label==='accent').info,/Panel accent/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:55:20"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.signature(file,caller.length).summary,zh.summary); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:57:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_selects_fields_preserves_types_and_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.signature(file,caller.length).parameters[0].description,'更新后的标题。'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:62:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_fallback_and_transitive_aliases"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.signature(file,caller.length).summary,'Un panneau.'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:64:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_fallback_and_transitive_aliases"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.signature(file,caller.length).summary,'A panel.'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:64:67"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_fallback_and_transitive_aliases"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.signature(file,caller.length).parameters[0].description,'Un titre.'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:70:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_fallback_and_transitive_aliases"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.signature(file,text.length).summary,'创建带标题的面板。'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:70:102"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_fallback_and_transitive_aliases"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.signature(file,text.length).summary,'Create a titled panel.'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:76:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "localized_warning_ranges_and_conflicting_types"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(warnings.length,5); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:76:34"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "localized_warning_ranges_and_conflicting_types"
+        }
+      ],
+      "note": "Direct behavioral port: assert(warnings.every(w=>w.severity==='warning'&&source.slice(w.from,w.to).startsWith('## @'))); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:77:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "localized_warning_ranges_and_conflicting_types"
+        }
+      ],
+      "note": "Direct behavioral port: assert(warnings.some(w=>w.message.includes('类型冲突'))); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:77:105"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "localized_warning_ranges_and_conflicting_types"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(sig.parameters[0].type,'string'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:78:85"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "localized_warning_ranges_and_conflicting_types"
+        }
+      ],
+      "note": "Direct behavioral port: assert(translated.some(w=>w.message.includes('Conflicting'))); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:79:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "localized_warning_ranges_and_conflicting_types"
+        }
+      ],
+      "note": "Direct behavioral port: assert.deepEqual(translated.map(w=>[w.from,w.to,w.code]),warnings.map(w=>[w.from,w.to,w.code])); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:80:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "localized_warning_ranges_and_conflicting_types"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.signature(file,source.length).parameters[0].type,'string'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:85:67"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_documentation_completion_sections"
+        }
+      ],
+      "note": "Direct behavioral port: assert(completions.some(c=>c.label==='title')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:85:114"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_documentation_completion_sections"
+        }
+      ],
+      "note": "Direct behavioral port: assert(completions.some(c=>c.label==='size')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:86:144"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_documentation_completion_sections"
+        }
+      ],
+      "note": "Direct behavioral port: assert.deepEqual(completions.map(c=>c.label),['zh-CN','en']); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:87:60"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "locale_documentation_completion_sections"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(s.completions(file,3).find(c=>c.label==='双语文档模板').apply,/@lang en/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:92:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/src/lsp.rs",
+          "test": "plaintext_documentation_legacy"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(plain,/Title\\n\\nA paragraph with code/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:92:55"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/src/lsp.rs",
+          "test": "plaintext_documentation_legacy"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(plain,/• Guide \\(https:\\/\\/example.com\\)/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:92:113"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/src/lsp.rs",
+          "test": "plaintext_documentation_legacy"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(plain,/rect\\(size=/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:92:147"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/src/lsp.rs",
+          "test": "plaintext_documentation_legacy"
+        }
+      ],
+      "note": "Direct behavioral port: assert(!plain.includes('```')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-locale.test.mjs:92:178"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/src/lsp.rs",
+          "test": "plaintext_documentation_legacy"
+        }
+      ],
+      "note": "Direct behavioral port: assert(!plain.includes('<img')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:12:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "incomplete_dsl_and_embedded_lcss"
+        }
+      ],
+      "note": "Direct behavioral port: assert.ok(service.completions(file,source.length).some(c=>c.label==='line_width')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:13:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "incomplete_dsl_and_embedded_lcss"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.signature(file,source.length).label.startsWith('plot.line('),true); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:14:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "incomplete_dsl_and_embedded_lcss"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.diagnostics(file)[0].severity,'error'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:16:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "incomplete_dsl_and_embedded_lcss"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(cssRegion(css,css.indexOf('line-width'))?.source.includes('#ffffff'),true); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:17:27"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "incomplete_dsl_and_embedded_lcss"
+        }
+      ],
+      "note": "Direct behavioral port: assert.ok(service.hover(file,css.indexOf('line-width')+3)?.contents.includes('pt')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:22:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "parameter_migration_fix_and_definition"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(issue.replacement,'border_width'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:22:49"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "parameter_migration_fix_and_definition"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(source.slice(issue.from,issue.to),'stroke_width'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:24:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "parameter_migration_fix_and_definition"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(service.hover(file,source.indexOf('stroke_width')+3).contents,/pt/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:25:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "parameter_migration_fix_and_definition"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.diagnostics(file).length,0); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:26:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "parameter_migration_fix_and_definition"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.definition(file,source.indexOf('r=')).from,source.indexOf('r=')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:32:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/service.rs",
+          "test": "shipped_examples_static_diagnostics"
+        }
+      ],
+      "note": "Direct behavioral port: assert.deepEqual(problems,[]); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:60:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "placement_signatures_and_ranges"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(p.name,name); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:60:29"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "placement_signatures_and_ranges"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.label.slice(...p.label).startsWith(name),true); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:61:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "placement_signatures_and_ranges"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(s.documentation,/重复放置/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:61:48"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "placement_signatures_and_ranges"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(s.parameters[0].documentation,/素材/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:64:74"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "placement_signatures_and_ranges"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(nested.name,'rect'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:64:107"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "placement_signatures_and_ranges"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(nested.parameters[nested.activeParameter].name,'size'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:66:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "placement_signatures_and_ranges"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.signature(file,service.documents.get(file).length).activeParameter,undefined); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:72:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_markdown_defaults_and_parameters"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(sig.documentation,/Create a titled panel/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:72:58"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_markdown_defaults_and_parameters"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(sig.documentation,/Returns/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:72:100"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_markdown_defaults_and_parameters"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(sig.documentation,/```lay/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:73:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_markdown_defaults_and_parameters"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(sig.parameters[sig.activeParameter].name,'size'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:73:64"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_markdown_defaults_and_parameters"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(sig.parameters[1].default,'(40, 25)'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:73:115"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_markdown_defaults_and_parameters"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(sig.parameters[1].required,false); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:74:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_markdown_defaults_and_parameters"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(sig.parameters[1].documentation,/Physical size/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:75:42"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_markdown_defaults_and_parameters"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(service.hover(file,pos).contents,/A reusable panel/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:76:41"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_markdown_defaults_and_parameters"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(service.hover(file,accent+2).contents,/Accent for panels/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:76:113"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_markdown_defaults_and_parameters"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(service.hover(file,accent+2).contents,/color/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:77:45"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_markdown_defaults_and_parameters"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(service.hover(file,body).contents,/Title supporting/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:84:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "imports_transitive_edits_and_removal"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.signature(main,source.length).parameters[1].name,'size'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:85:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "imports_transitive_edits_and_removal"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(service.completions(main,source.length).find(c=>c.label==='size').info,/Physical size/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:86:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "imports_transitive_edits_and_removal"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.definition(main,source.lastIndexOf('tile')+1).uri,module); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:87:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "imports_transitive_edits_and_removal"
+        }
+      ],
+      "note": "Direct behavioral port: assert.ok(service.completions(main,source.length).some(c=>c.label==='accent'&&c.info.includes('Accent'))); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:89:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "imports_transitive_edits_and_removal"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(service.signature(main,source.length).parameters[1].documentation,/Panel dimensions/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:90:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "imports_transitive_edits_and_removal"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.signature(main,source.length).parameters[1].default,'(50, 30)'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:92:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "imports_transitive_edits_and_removal"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(service.hover(wrapper,service.documents.get(wrapper).lastIndexOf('card(')+1).contents,/Create a titled panel/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:93:25"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "imports_transitive_edits_and_removal"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.signature(main,source.length),undefined); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:99:50"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "incomplete_bodies_do_not_invent_symbols"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(sig.name,'unfinished'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:99:86"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "incomplete_bodies_do_not_invent_symbols"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(sig.parameters[1].default,'rect(size=(3, 4))'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:100:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "incomplete_bodies_do_not_invent_symbols"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(sig.parameters[sig.activeParameter].name,'second'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:101:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "incomplete_bodies_do_not_invent_symbols"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.completions(file,source.length).filter(c=>c.type==='variable'&&c.label==='size').length,0); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:103:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "incomplete_bodies_do_not_invent_symbols"
+        }
+      ],
+      "note": "Direct behavioral port: assert(!service.completions(file,service.documents.get(file).length).some(c=>['fake','ghost'].includes(c.label))); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:108:62"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "lexical_shadowing_and_scope"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.signature(file,source.length).parameters[0].name,'inside'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:109:70"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "lexical_shadowing_and_scope"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.signature(file,service.documents.get(file).length).parameters[0].name,'custom'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:111:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "lexical_shadowing_and_scope"
+        }
+      ],
+      "note": "Direct behavioral port: assert(!service.completions(file,service.documents.get(file).length).some(c=>c.label==='secret')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:117:43"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "doc_warnings_and_detached_comments"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(warnings.length,5); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:117:75"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "doc_warnings_and_detached_comments"
+        }
+      ],
+      "note": "Direct behavioral port: assert(warnings.every(d=>d.severity==='warning'&&d.code==='W_DOC')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:118:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "doc_warnings_and_detached_comments"
+        }
+      ],
+      "note": "Direct behavioral port: assert(warnings.every(d=>source.slice(d.from,d.to).startsWith('## @'))); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:120:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "doc_warnings_and_detached_comments"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.signature(file,service.documents.get(file).length).documentation,''); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:126:79"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "doc_templates_follow_declaration"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(template.apply,/@param title/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:126:123"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "doc_templates_follow_declaration"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(template.apply,/@param size/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:128:54"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "doc_templates_follow_declaration"
+        }
+      ],
+      "note": "Direct behavioral port: assert(service.completions(file,end).some(c=>c.label==='size'&&c.apply==='size - ')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:129:54"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "doc_templates_follow_declaration"
+        }
+      ],
+      "note": "Direct behavioral port: assert(service.completions(file,6).some(c=>c.label==='@returns')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:134:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "builtin_and_lcss_markdown"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(service.completions(file,source.length).find(c=>c.label==='add').info,/重复放置/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:136:98"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "builtin_and_lcss_markdown"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(c.info,/默认/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:136:128"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "builtin_and_lcss_markdown"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(c.info,/空格分隔/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:136:164"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "builtin_and_lcss_markdown"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(c.info,/#add/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:137:49"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "builtin_and_lcss_markdown"
+        }
+      ],
+      "note": "Direct behavioral port: assert(service.completions('theme.lcss',15).some(c=>c.label==='border-width'&&c.info.includes('pt'))); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:143:67"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "partial_parameters_and_aliases"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.parameters[s.activeParameter].name,'class'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:145:63"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "partial_parameters_and_aliases"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.activeParameter,undefined); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:151:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "partial_parameters_and_aliases"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(service.signature(file,source.length).documentation,/Create a titled panel/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:152:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "partial_parameters_and_aliases"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(service.definition(file,source.lastIndexOf('panel')+1).uri,'card.lay'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:157:69"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "end_of_source_diagnostics_are_finite"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(error.from,source.length); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:157:108"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "end_of_source_diagnostics_are_finite"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(error.to,source.length); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:165:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_doc_errors_do_not_change_compilation"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(scene.width,100); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:165:32"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_doc_errors_do_not_change_compilation"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(scene.height,80); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/language-service.test.mjs:165:62"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-language/tests/legacy_service.rs",
+          "test": "authored_doc_errors_do_not_change_compilation"
+        }
+      ],
+      "note": "Direct behavioral port: assert(!(scene.warnings??[]).some(w=>w.code==='W_DOC')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:14:51"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_pull_configuration_formats_and_diagnostic_locale"
+        }
+      ],
+      "note": "Direct behavioral port: assert(m.params.registrations.some(r=>r.method==='workspace/didChangeConfiguration')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:32:48"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_plaintext_defaults_and_parameter_strings"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.signatures[0].documentation.kind,'plaintext'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:32:109"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_plaintext_defaults_and_parameter_strings"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(s.signatures[0].documentation.value,/Create a panel/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:32:176"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_plaintext_defaults_and_parameter_strings"
+        }
+      ],
+      "note": "Direct behavioral port: assert(!s.signatures[0].documentation.value.includes('**')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:32:236"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_plaintext_defaults_and_parameter_strings"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(s.signatures[0].parameters[0].label,'title'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:33:2"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_plaintext_defaults_and_parameter_strings"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match((await c.hover()).contents.value,/panel/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:33:57"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_plaintext_defaults_and_parameter_strings"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match((await c.completion()).find(v=>v.label==='title').documentation.value,/Panel title/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:33:155"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_plaintext_defaults_and_parameter_strings"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(c.configurationRequests(),0); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:37:81"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_push_configuration_preserves_documents"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match((await c.signature()).signatures[0].documentation.value,/创建面板/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:38:31"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_push_configuration_preserves_documents"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match((await c.hover()).contents.value,/Create a panel/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:39:33"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_push_configuration_preserves_documents"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match((await c.signature()).signatures[0].documentation.value,/Create a panel/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:40:18"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_push_configuration_preserves_documents"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match((await c.signature()).signatures[0].documentation.value,/创建面板/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:42:2"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_push_configuration_preserves_documents"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match((await c.signature()).signatures[0].parameters[0].documentation.value,/更新后的标题/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:48:28"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_pull_configuration_formats_and_diagnostic_locale"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(s.signatures[0].documentation.value,/\\*\\*panel\\*\\*/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:48:94"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_pull_configuration_formats_and_diagnostic_locale"
+        }
+      ],
+      "note": "Direct behavioral port: assert(Array.isArray(s.signatures[0].parameters[0].label)); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:48:153"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_pull_configuration_formats_and_diagnostic_locale"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal((await c.completion()).find(v=>v.label==='title').documentation.kind,'plaintext'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:48:248"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_pull_configuration_formats_and_diagnostic_locale"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal((await c.hover()).contents.kind,'markdown'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:49:55"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_pull_configuration_formats_and_diagnostic_locale"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(s.signatures[0].documentation.value,/创建面板/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:49:120"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_pull_configuration_formats_and_diagnostic_locale"
+        }
+      ],
+      "note": "Direct behavioral port: assert(c.configurationRequests()>=2); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:49:157"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_pull_configuration_formats_and_diagnostic_locale"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(c.configurationRegistrations(),1); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:52:61"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_pull_configuration_formats_and_diagnostic_locale"
+        }
+      ],
+      "note": "Direct behavioral port: assert(c.diagnostics.some(d=>d.diagnostics.some(w=>w.code==='W_DOC'&&w.message.includes('不在函数')))); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp-language.test.mjs:53:90"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_pull_configuration_formats_and_diagnostic_locale"
+        }
+      ],
+      "note": "Direct behavioral port: assert(c.diagnostics.some(d=>d.diagnostics.some(w=>w.code==='W_DOC'&&w.message.includes('not in the declaration')))); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp.test.mjs:17:101"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_packaged_protocol_and_imported_doc_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.ok(hover.contents.value.includes('rect')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp.test.mjs:18:111"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_packaged_protocol_and_imported_doc_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.ok(completion.some(c=>c.label==='size')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp.test.mjs:19:113"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_packaged_protocol_and_imported_doc_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.ok(signature.signatures[0].label.startsWith('rect(')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp.test.mjs:20:70"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_packaged_protocol_and_imported_doc_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.ok(diagnostics.diagnostics.some(d=>d.code==='E_API_MIGRATION')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp.test.mjs:21:186"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_packaged_protocol_and_imported_doc_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.ok(actions.some(a=>a.edit.changes[uri][0].newText==='border_width')); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp.test.mjs:28:2"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_packaged_protocol_and_imported_doc_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(documented.signatures[0].documentation.value,/Build a library panel/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp.test.mjs:29:2"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_packaged_protocol_and_imported_doc_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(documented.signatures[0].parameters[1].documentation.value,/Physical dimensions/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp.test.mjs:30:2"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_packaged_protocol_and_imported_doc_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(documented.activeParameter,1); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp.test.mjs:30:45"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_packaged_protocol_and_imported_doc_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.equal(documented.signatures[0].label.slice(...documented.signatures[0].parameters[1].label),'size=(40,25)'); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp.test.mjs:33:2"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_packaged_protocol_and_imported_doc_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(refreshed.signatures[0].parameters[1].documentation.value,/Updated physical dimensions/); all baseline parameter-loop cases retained."
+    },
+    {
+      "ids": [
+        "tests/lsp.test.mjs:33:104"
+      ],
+      "checks": [
+        {
+          "file": "python/tests/test_language_server.py",
+          "test": "test_legacy_packaged_protocol_and_imported_doc_updates"
+        }
+      ],
+      "note": "Direct behavioral port: assert.match(refreshed.signatures[0].label,/50,30/); all baseline parameter-loop cases retained."
+    }
+  ],
+  "unmapped": [],
+  "additional_contract_tests": [
+    "static_lcss_and_literal_types_match_runtime_boundaries",
+    "units_classes_and_factory_return_type_completion",
+    "test_closed_module_disk_refresh_and_open_buffer_priority",
+    "test_lcss_and_utf16_typed_diagnostics",
+    "test_invalid_dpi_is_usage_and_preserves_destination"
+  ]
+}

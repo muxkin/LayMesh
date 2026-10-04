@@ -1,0 +1,11 @@
+# Gallery: images / fit-contain
+page = canvas(name="Image fit: contain", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Image fit: contain", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+picture = image(src="../assets/sample.png")
+frame = rect(size=(49 mm, 44 mm), fill="#e1e8ef", border_color="#39546b", border_width=0.4 mm)
+placed = page.add(frame, target=page.top_left, offset=(13 mm, 26 mm))
+page.add(picture,size=(49 mm, 44 mm), fit=contain, target=placed.top_left)
+# END DEMO

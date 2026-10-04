@@ -1,0 +1,8 @@
+{
+  "scopeName": "source.lcss",
+  "patterns": [
+    {
+      "include": "source.css"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+page = canvas(size=(150, 110), unit= mm, stylesheet="language/paper.lcss", background="#ffffff")
+# BEGIN DEMO
+score = 0.975
+page.add(text(f"Energy: $E=mc^2$ · fit $R^2={score:.3f}$", class="title"), offset=(8, 5))
+p = plot(size=(134, 72), plot_area=box(offset=(20, 8), size=(100, 48)),
+         x=axis(label="$t$ (s)", range=(0, 4)), y=axis(label="$E$ (eV)", range=(0, 5)))
+p.line(x=[0, 1, 2, 3, 4], y=[1, 2.2, 3.8, 2.6, 3.2], label="Experiment",
+       color="#0072b2", line_width=1, marker= circle)
+p.legend(position= top_left)
+chart = page.add(p, offset=(8, 20))
+page.add(text(r"Raw: $E=mc^2$", class="annotation"), offset=(8, 93))
+page.add(rect(size=(30, 8), fill=hatch(pattern= cross, color="#245447", spacing=2)), offset=(100, 94))
+# END DEMO

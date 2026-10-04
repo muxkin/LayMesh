@@ -1,0 +1,15 @@
+# Gallery: shapes / polygon-polyline
+page = canvas(name="Polygon and polyline", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Polygon and polyline", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+area = polygon(points=[(0 mm, 26 mm), (20 mm, 0 mm), (41 mm, 9 mm),
+                       (50 mm, 28 mm), (12 mm, 35 mm)],
+               fill="#a4dcd7", border_color="#087f8c", border_width=0.6 mm)
+page.add(area, target=page.top_left, offset=(8 mm, 30 mm))
+route = polyline(points=[(0 mm, 28 mm), (13 mm, 6 mm), (28 mm, 25 mm),
+                         (43 mm, 0 mm)],
+                 line_color="#e67563", line_width=1.4 mm, line_cap=round)
+page.add(route, target=page.top_left, offset=(66 mm, 33 mm))
+# END DEMO

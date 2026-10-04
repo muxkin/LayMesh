@@ -1,0 +1,42 @@
+page = canvas(size=(160 mm, 100 mm), background="#f7f9fc")
+
+header = text(size=(148 mm, auto),
+  spans=[
+    span("文字排版", font_family="Noto Sans CJK SC", color="#203864", font_size=18 pt),
+    span("  /  Typography", font_family="DejaVu Sans", color="#526f96", font_size=12 pt)
+  ],
+  font_size=12 pt)
+page.add(header, target=page.top_left, offset=(7 mm, 6 mm))
+
+rule = rect(size=(146 mm, 0.4 mm), fill="#cfdae8")
+page.add(rule, target=page.top_left, offset=(7 mm, 20 mm))
+
+intro = text(size=(66 mm, auto),
+  spans=[
+    span("同一段文字可以", font_family="Noto Sans CJK SC"),
+    span("混用字体、字号和颜色", font_family="Noto Sans CJK SC", color="#d94b55"),
+    span("，并按放置实例的宽度自动换行。", font_family="Noto Sans CJK SC")
+  ],
+  font_size=10 pt, line_height=5.8 mm)
+page.add(intro, target=page.top_left, offset=(8 mm, 27 mm))
+
+math_line = text(size=(66 mm, auto),
+  spans=[
+    span("行内公式：", font_family="Noto Sans CJK SC"),
+    formula(source=r"\frac{a+b}{\sqrt{x}}", font_size=11 pt),
+    span(" 与文字共用基线。", font_family="Noto Sans CJK SC")
+  ],
+  font_size=10 pt, line_height=6.2 mm)
+page.add(math_line, target=page.top_left, offset=(8 mm, 55 mm))
+
+panel = rect(size=(65 mm, 60 mm), fill="#ffffff", border_color="#d8e0ed", border_width=0.3 mm, border_radius=2 mm)
+page.add(panel, target=page.top_left, offset=(86 mm, 27 mm))
+
+panel_title = text(spans=[span("独立公式 / ", font_family="Noto Sans CJK SC"), span("Display equation", font_family="DejaVu Sans")], font_size=9 pt, color="#526f96")
+page.add(panel_title, target=page.top_left, offset=(91 mm, 32 mm))
+
+equation = formula(source=r"\int_0^1 x^2\,dx = \frac{1}{3}", font_size=18 pt, style=display)
+page.add(equation, anchor=center, target=page.top_left, offset=(118 mm, 62 mm))
+
+footer = text(content="MathJax vector math · reusable text materials · SVG / PDF / PNG", font_family="DejaVu Sans", font_size=7 pt, color="#7186a3")
+page.add(footer, target=page.top_left, offset=(8 mm, 92 mm))

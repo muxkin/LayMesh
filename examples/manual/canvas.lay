@@ -1,0 +1,3 @@
+# Minimal complete example: canvas
+page=canvas(size=(100mm,75mm),background="#ffffff")
+page.add(text("Physical page",font_size=12pt),offset=(5mm,5mm))

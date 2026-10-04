@@ -1,0 +1,20 @@
+# BEGIN DEMO
+page=canvas(size=(238 mm,126 mm),background="#ffffff")
+s=plot_style(font_family="DejaVu Sans",font_size=7 pt)
+p=plot(projection= radar,size=(115 mm,110 mm),plot_area=box(offset=(25 mm, 25 mm), size=(64 mm, 64 mm)),style=s,
+       categories=["Strength","Density","Cost","Temperature","Life"],
+       category_labels=["Strength (MPa)","Density", "Cost", "Temperature (C)","Life"],
+       ranges=[(0,1000),(0,10),(0,100),(-50,150),(0,100)],r=axis(ticks=[0.5,1],grid= major,tick_font_size=5 pt))
+a=p.area(values=[800,6,40,70,80],fill="#264b69",color="#264b69",opacity=0.18,label="Material A")
+b=p.area(values=[600,4,70,120,65],fill="#b46c50",color="#b46c50",opacity=0.18,label="Material B")
+p.line(values=[800,6,40,70,80],marker= diamond,marker_size=1.5 mm,color="#264b69")
+p.line(values=[600,4,70,120,65],marker= triangle,marker_size=1.5 mm,color="#b46c50")
+c=page.add(p,offset=(2 mm,0 mm))
+page.add(text(content="(a) Explicit ranges, original units",font_family="DejaVu Sans",font_size=9 pt),offset=(12 mm,5 mm))
+q=plot(projection= radar,size=(115 mm,110 mm),plot_area=box(offset=(25 mm, 25 mm), size=(64 mm, 64 mm)),style=s,categories=["A","B","C","D","E"],radar_frame="circle",r=axis(range=(0,1),ticks=[0.5,1],grid= major,tick_font_size=5 pt))
+q.area(values=[0.8,0.6,0.4,0.6,0.8],fill="#264b69",opacity=0.18)
+q.line(values=[0.8,0.6,0.4,0.6,0.8],marker= diamond,marker_size=1.5 mm,color="#264b69")
+d=page.add(q,offset=(120 mm,0 mm))
+page.add(text(content="(b) Common scale / circular frame",font_family="DejaVu Sans",font_size=9 pt),offset=(128 mm,5 mm))
+page.add(legend(layers=[a,b],columns=2,style=s),offset=(78 mm,108 mm))
+# END DEMO

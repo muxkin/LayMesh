@@ -1,0 +1,116 @@
+{
+  "@codemirror/lang-json": {
+    "version": "6.0.2",
+    "entry": "@codemirror/lang-json/index.js",
+    "sha256": "5472a597498460db724d830a6852ed643eec267bfac3aab1498e8fd83cfd4e60",
+    "license": "@codemirror/lang-json/LICENSE"
+  },
+  "@codemirror/language": {
+    "version": "6.12.4",
+    "entry": "@codemirror/language/index.js",
+    "sha256": "875ce988fbbed53c47cf4b2aad962afe1d6b23c15ecc40466cdc6be5b59d647e",
+    "license": "@codemirror/language/LICENSE"
+  },
+  "style-mod": {
+    "version": "4.1.4",
+    "entry": "style-mod/index.js",
+    "sha256": "4bd6b34edda52f362553d33df7e3a10f31fbdc0c95125aabec89c4de6be80b0a",
+    "license": "style-mod/LICENSE"
+  },
+  "@lezer/common": {
+    "version": "1.5.3",
+    "entry": "@lezer/common/index.js",
+    "sha256": "4f08d3cc772b63930aa424b5f75f41c244f2de98da43cd0d72e157a6cbff2dd5",
+    "license": "@lezer/common/LICENSE"
+  },
+  "@codemirror/view": {
+    "version": "6.43.13",
+    "entry": "@codemirror/view/index.js",
+    "sha256": "5626b4f31cdf55fd6a92be66d28cd40e9446d2caeb10a5b3f3e6c1c02be42950",
+    "license": "@codemirror/view/LICENSE"
+  },
+  "@codemirror/state": {
+    "version": "6.7.6",
+    "entry": "@codemirror/state/index.js",
+    "sha256": "cf4ffe7d177bf2c7c5da66c49be0811cc79a29e12cb658238876bbdcef12939c",
+    "license": "@codemirror/state/LICENSE"
+  },
+  "@marijn/find-cluster-break": {
+    "version": "1.0.4",
+    "entry": "@marijn/find-cluster-break/index.js",
+    "sha256": "4e9e441fac9db54e09e4e3b1cb0b0393da207ebe943f2ff9efc577821fc03751",
+    "license": "@marijn/find-cluster-break/LICENSE"
+  },
+  "w3c-keyname": {
+    "version": "2.2.8",
+    "entry": "w3c-keyname/index.js",
+    "sha256": "b649dec4f01c7c5eb05be4641b5b698c6938231ee50b38e17a2f0f822ca3df2e",
+    "license": "w3c-keyname/LICENSE"
+  },
+  "crelt": {
+    "version": "1.0.7",
+    "entry": "crelt/index.js",
+    "sha256": "924800defa2bf95a0bfd16dde589ecebbcd9e36b03635274da84968c77a3721e",
+    "license": "crelt/LICENSE"
+  },
+  "@lezer/highlight": {
+    "version": "1.2.5",
+    "entry": "@lezer/highlight/index.js",
+    "sha256": "8984bb2887a6354d3e5ac79bdd7e522948f1cee1dda16aac77d9473f10696d7c",
+    "license": "@lezer/highlight/LICENSE"
+  },
+  "@lezer/json": {
+    "version": "1.0.3",
+    "entry": "@lezer/json/index.js",
+    "sha256": "3310e7216620dc17c6bdfb1665f774e7b0b29918e761ccc74a7e2a83f039a735",
+    "license": "@lezer/json/LICENSE"
+  },
+  "@lezer/lr": {
+    "version": "1.4.10",
+    "entry": "@lezer/lr/index.js",
+    "sha256": "8d9b94f7c47b5226914e60613ec8bb49c3c3043df4e8d78ee7d19852fe34d582",
+    "license": "@lezer/lr/LICENSE"
+  },
+  "@codemirror/commands": {
+    "version": "6.11.1",
+    "entry": "@codemirror/commands/index.js",
+    "sha256": "395c41fb17d4966162e8d29106e438278123bc3a3fa1b11825debdf1523594a4",
+    "license": "@codemirror/commands/LICENSE"
+  },
+  "@codemirror/autocomplete": {
+    "version": "6.20.3",
+    "entry": "@codemirror/autocomplete/index.js",
+    "sha256": "2796fb2771a559ee9fbaa65367b96105368dd9ded1bb686df0e005be48801dcd",
+    "license": "@codemirror/autocomplete/LICENSE"
+  },
+  "@codemirror/lang-css": {
+    "version": "6.3.1",
+    "entry": "@codemirror/lang-css/index.js",
+    "sha256": "0a7e271ad65f99f43f34a7169acf67ec3ad016f4c7818904b3e34a5c89f40916",
+    "license": "@codemirror/lang-css/LICENSE"
+  },
+  "@lezer/css": {
+    "version": "1.3.8",
+    "entry": "@lezer/css/index.js",
+    "sha256": "649dfba8d9879e065d60330b4b1d7d7335cfb31977203c2dab4c8cad564b3c2f",
+    "license": "@lezer/css/LICENSE"
+  },
+  "@codemirror/lint": {
+    "version": "6.9.7",
+    "entry": "@codemirror/lint/index.js",
+    "sha256": "199bd59387f9fdc9b7ce6d833153552c4cc2356621d16a2067f79c6887cc4b1d",
+    "license": "@codemirror/lint/LICENSE"
+  },
+  "@codemirror/search": {
+    "version": "6.7.2",
+    "entry": "@codemirror/search/index.js",
+    "sha256": "1155a69fb8d6f56c1d644e3e93222348481d6b2df78d6bebcf3293fe209f3fd7",
+    "license": "@codemirror/search/LICENSE"
+  },
+  "marked": {
+    "version": "16.4.2",
+    "entry": "marked/index.js",
+    "sha256": "6540aa2544be84b3abdd9424fa287120e9ed7c7600512dd92c097493121a5951",
+    "license": "marked/LICENSE"
+  }
+}

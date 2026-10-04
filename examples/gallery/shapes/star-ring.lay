@@ -1,0 +1,13 @@
+# Gallery: shapes / star-ring
+page = canvas(name="Star and ring", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Star and ring", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+page.add(star(points=7, outer_radius=20 mm, inner_radius=9 mm,
+              fill="#f3be6b", border_color="#a66435", border_width=0.6 mm),
+         target=page.top_left, offset=(15 mm, 31 mm))
+page.add(ring(outer_radius=20 mm, inner_radius=9 mm,
+              fill="#70c4be", border_color="#087f8c", border_width=0.6 mm),
+         target=page.top_left, offset=(65 mm, 31 mm))
+# END DEMO

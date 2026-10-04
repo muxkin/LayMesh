@@ -1,0 +1,16 @@
+# BEGIN DEMO
+page=canvas(size=(208 mm,116 mm),background="#ffffff")
+s=plot_style(font_family="DejaVu Sans",font_size=7 pt)
+p=plot(projection= polar,size=(100 mm,100 mm),plot_area=box(offset=(18 mm, 20 mm), size=(64 mm, 64 mm)),style=s,theta_zero=90 deg,theta_direction="cw",
+       theta=axis(ticks=[0,90,180,270],grid= major),r=axis(range=(0,8),ticks=[2,4,6,8],grid= major,tick_font_size=6 pt))
+p.hist(values=[-5,0,10,15,20,40,50,80,90,100,130,160,180,190,195,200,205,230,260,280,315,350,360],bins=8,fill="#8da9b9",border_color="#ffffff",border_width=0.25 mm)
+a=page.add(p,offset=(2 mm,2 mm))
+page.add(text(content="(a) Angular counts",font_family="DejaVu Sans",font_size=9 pt),target=a.plot_top_left,offset=(-3 mm,-15 mm))
+q=plot(projection= polar,size=(100 mm,100 mm),plot_area=box(offset=(18 mm, 20 mm), size=(64 mm, 64 mm)),style=s,inner_radius=7 mm,
+       theta=axis(ticks=[0,90,180,270],grid= major),r=axis(range=(0,8),ticks=[2,4,6,8],grid= major,tick_font_size=6 pt))
+u=q.bar(positions=[0,60,120,180,240,300],values=[3,4,2,5,3,4],angle_width=40,fill="#264b69",border_color="none",label="Series A")
+v=q.bar(positions=[0,60,120,180,240,300],values=[2,1,3,1,2,2],baseline=[3,4,2,5,3,4],angle_width=40,fill="#b46c50",border_color="none",label="Series B")
+b=page.add(q,offset=(105 mm,2 mm))
+page.add(text(content="(b) Explicit stacking / inner hole",font_family="DejaVu Sans",font_size=9 pt),target=b.plot_top_left,offset=(-8 mm,-15 mm))
+page.add(legend(layers=[u,v],columns=2,style=s),offset=(66 mm,102 mm))
+# END DEMO

@@ -1,0 +1,6 @@
+# Minimal complete example: plot.colorbar
+page=canvas(size=(100mm,75mm),background="#ffffff")
+p=plot(size=(86mm,62mm),x=axis(range=(0,4)),y=axis(range=(0,5)))
+layer=p.heatmap(z=[[1,2],[3,4]],extent=(0,4,0,5))
+p.colorbar(layer,label="Value")
+page.add(p,offset=(7mm,6mm))

@@ -1,0 +1,4 @@
+# Minimal complete example: colorbar
+page=canvas(size=(100mm,75mm),background="#ffffff")
+s=color_scale(vmin=0,vmax=5,cmap="viridis")
+page.add(colorbar(scale=s,length=45mm,label="Value"),offset=(20mm,12mm))

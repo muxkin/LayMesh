@@ -1,0 +1,27 @@
+# Built-in functions, units, loops, conditions and a user function.
+page = canvas(name="LayMesh functions", size=(120 mm, 55 mm), background="#ffffff")
+font = "DejaVu Sans"
+
+function twice(value) { return value * 2 }
+values = [2, 4]
+values = append(values, 6)
+count = 0
+for value in values { count = count + value }
+for index in range(3) { count = count + index }
+while count < 18 { count = count + 1 }
+status = "pending"
+if count == 18 { status = "ready" } else { status = "error" }
+
+small = min(5 mm, 3 mm, 8 mm)
+large = max(5 mm, 3 mm, 8 mm)
+distance = abs(-4 mm)
+
+title = text(content="Functions and control flow", font_family=font, font_size=13 pt, color="#087f8c")
+page.add(title, target=page.top_left, offset=(7 mm, 6 mm))
+summary = text(content="len=" + str(len(values)) + "  total=" + str(count) + "  " + status,
+               font_family=font, font_size=10 pt)
+page.add(summary, target=page.top_left, offset=(7 mm, 24 mm))
+units = text(content="min=" + str(small) + "  max=" + str(large) +
+                     "  abs=" + str(distance) + "  twice=" + str(twice(2 mm)),
+             font_family=font, font_size=8 pt)
+page.add(units, target=page.top_left, offset=(7 mm, 36 mm))

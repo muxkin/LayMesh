@@ -1,0 +1,13 @@
+# Preset discovery, sampling, colors and immutable reversal.
+page=canvas(size=(100mm,60mm),background="#ffffff")
+cm=cmap("viridis")
+names=cmap_names(category="sequential")
+colors=cm.colors(8)
+reverse=cm.reversed()
+accent=cm.sample(0.5)
+cycle=palette("tab10",8)
+for i,color in enumerate(colors) {
+ page.add(rect(size=(10mm,12mm),fill=color),offset=(10mm+i*10mm,8mm))
+ page.add(rect(size=(10mm,12mm),fill=reverse.sample(i/7)),offset=(10mm+i*10mm,24mm))
+ page.add(rect(size=(10mm,8mm),fill=cycle[i]),offset=(10mm+i*10mm,40mm))
+}

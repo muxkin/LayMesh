@@ -1,0 +1,30 @@
+import { photo, icon, gap, accent } from "./materials.lay"
+
+## @lang zh-CN
+## 创建带有标题和图标的可复用照片卡片。
+## @param {string} label - 标题，可包含行内公式。
+## @param {length} width - 照片宽度；显式单位固定其物理尺寸。
+## @returns {group} 带有测量边界和定位锚点的可复用卡片。
+## @example
+## item = card("结果", width=34mm)
+## @lang en
+## Build a reusable photo card with a caption and icon.
+## @param {string} label - Caption, including optional inline mathematics.
+## @param {length} width - Photo width; an explicit unit fixes its physical size.
+## @returns {group} A reusable card with measured bounds and placement anchors.
+## @example
+## item = card("Result", width=34mm)
+export function card(label, width=34 mm) {
+  picture = group()
+  picture.add(photo,size=(width, auto), target=picture.top_left)
+
+  caption = group()
+  title = text(content=label, font_family="DejaVu Sans", font_size=9 pt, color=accent)
+  caption.add(title, target=caption.top_left)
+  caption.add(icon,size=(7 mm, auto), target=caption.top_left, offset=(0 mm, 6 mm))
+
+  content = group()
+  placed = content.add(picture, target=content.top_left)
+  content.add(caption, target=placed.bottom_left, offset=(0 mm, gap))
+  return content
+}

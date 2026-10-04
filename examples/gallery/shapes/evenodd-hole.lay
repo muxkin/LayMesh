@@ -1,0 +1,15 @@
+# Gallery: shapes / evenodd-hole
+page = canvas(name="Even-odd hole", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Even-odd hole", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+frame = path(commands=[
+  move_to(0 mm, 0 mm), line_to(62 mm, 0 mm),
+  line_to(62 mm, 42 mm), line_to(0 mm, 42 mm), close(),
+  move_to(19 mm, 12 mm), line_to(43 mm, 12 mm),
+  line_to(43 mm, 30 mm), line_to(19 mm, 30 mm), close()
+], fill="#087f8c", fill_rule=evenodd,
+   border_color="#203864", border_width=0.5 mm)
+page.add(frame, target=page.top_left, offset=(27 mm, 27 mm))
+# END DEMO

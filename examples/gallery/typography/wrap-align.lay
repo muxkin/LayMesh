@@ -1,0 +1,12 @@
+# Gallery: typography / wrap-align
+page = canvas(name="Wrapping and alignment", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Wrapping and alignment", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+body = text(size=(45 mm, auto),content="One reusable sentence wraps at different widths.",
+            font_family=font, font_size=10 pt, align=center,
+            line_height=6 mm, color="#203864")
+page.add(body, target=page.top_left, offset=(8 mm, 29 mm))
+page.add(body,size=(57 mm, auto), target=page.top_left, offset=(61 mm, 29 mm))
+# END DEMO

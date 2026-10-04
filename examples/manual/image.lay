@@ -1,0 +1,3 @@
+# Minimal complete example: image
+page=canvas(size=(100mm,75mm),background="#ffffff")
+page.add(image(src="../assets/photo.png"),size=(55mm,auto),offset=(8mm,8mm))

@@ -1,0 +1,11 @@
+# BEGIN DEMO
+page=canvas(size=(128 mm,112 mm),background="#ffffff")
+s=plot_style(font_family="DejaVu Sans",font_size=8 pt)
+p=plot(projection= polar,size=(118 mm,100 mm),plot_area=box(offset=(23 mm, 20 mm), size=(72 mm, 72 mm)),style=s,
+       theta=axis(range=(0,240),ticks=[0,60,120,180,240],grid= major),r=axis(range=(0,8),ticks=[2,4,6,8],grid= major,tick_font_size=6 pt))
+b=p.band(theta=[10,45,90,135,180,225],lower=[3,4,3,2,3,2],upper=[5,6,5,4,5,4],fill="#b3c5ce",hatch="slash",hatch_spacing=2 mm,hatch_width=0.1 mm,opacity=0.45,label="Uncertainty")
+e=p.errorbar(theta=[10,45,90,135,180,225],r=[4,5,4,3,4,3],thetaerr=6,rerr=0.5,marker= diamond,marker_size=2 mm,marker_fill="none",marker_border_color="#264b69",color="#264b69",cap_size=2 mm,label="Measurements")
+c=page.add(p,offset=(4 mm,2 mm))
+page.add(text(spans=[span("Signal "),formula(source=r"I(\theta)",font_size=10 pt)],font_family="DejaVu Sans",font_size=10 pt),offset=(30 mm,5 mm))
+page.add(legend(layers=[b,e],columns=2,style=s),offset=(20 mm,99 mm))
+# END DEMO

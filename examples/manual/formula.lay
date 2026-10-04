@@ -1,0 +1,3 @@
+# Minimal complete example: formula
+page=canvas(size=(100mm,75mm),background="#ffffff")
+page.add(formula(r"E=mc^2",style=display,font_size=16pt,math_font=ratex_katex),offset=(8mm,8mm))

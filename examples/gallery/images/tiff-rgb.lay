@@ -1,0 +1,11 @@
+# Gallery: images / tiff-rgb
+page = canvas(name="8-bit RGB TIFF", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="8-bit RGB TIFF", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+picture = image(src="../assets/rgb8.tiff")
+placed = page.add(picture,size=(76 mm, auto), target=page.top_left, offset=(7 mm, 24 mm))
+frame = rect(size=(76 mm, 47.5 mm), fill="none", border_color="#435b72", border_width=0.35 mm)
+page.add(frame, target=placed.top_left)
+# END DEMO

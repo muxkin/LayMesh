@@ -1,0 +1,8 @@
+page=canvas(size=(110mm,80mm),background="#ffffff")
+p=plot(size=(95mm,65mm),x=axis(range=(0,4)),y=axis(range=(0,5)))
+p.line(x=[0,1,2,3],y=[1,2,4,3],label="Signal")
+p.vline(x=2,color="#e36b70",line_style=dashed)
+p.hline(y=3,color="#087f8c",line_style=dotted)
+p.legend(position=top_left)
+chart=page.add(p,offset=(5mm,5mm))
+page.add(text("Crossing"),target=chart.data(x=2,y=3),anchor=bottom_left)

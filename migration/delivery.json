@@ -1,0 +1,932 @@
+{
+  "version": "0.3.0a2",
+  "date_utc": "2026-10-03T07:21:55.648904+00:00",
+  "branch": "codex/rust-ratex",
+  "baseline_branch": "codex/node-baseline",
+  "baseline_commit": "78db22d",
+  "engine_commit": "282638a074727b58bb7b13d4714179dd4d3f2c20",
+  "evidence_tooling_commit": "4ddac634a1728ff7da8dfb648fa6763288a07987",
+  "scope": "Local experimental artifacts; no remote push or publication. All four distributions share the frozen engine source snapshot; later audit/report commits do not change engine inputs.",
+  "platform": "Linux-6.12.73+deb13-amd64-x86_64-with-glibc2.41",
+  "machine": "x86_64",
+  "python": "3.13.11",
+  "artifacts": [
+    {
+      "path": "release/dist/laymesh-linux-x64",
+      "bytes": 12257128,
+      "sha256": "0df6e43c3383ecfb119481cf8168f52d8e76b811264a17cb35d4061a96593833"
+    },
+    {
+      "path": "release/dist/laymesh-0.3.0a2-py3-none-manylinux_2_35_x86_64.whl",
+      "bytes": 5898541,
+      "sha256": "d1e4ef163cf2960c477c399d8701380ea5ac779b53f3d5bc8a5dd9637765b824",
+      "installed_bytes": 13899605
+    },
+    {
+      "path": "release/dist/laymesh-rust-linux-x64.vsix",
+      "bytes": 5862416,
+      "sha256": "f720b436a278f28a8ae1accca5419c899d8363c87f9b1703b184dc544121a629",
+      "installed_bytes": 13841857
+    },
+    {
+      "path": "release/dist/laymesh-wasm.zip",
+      "bytes": 3109146,
+      "sha256": "c25ecd235b599cee4c00f23d7041be872b98ce4d0442aca5739ff5828fdfe984",
+      "installed_bytes": 8870887
+    },
+    {
+      "path": "site/dist/site/live/wasm/laymesh_wasm_bg.wasm",
+      "bytes": 7287011,
+      "sha256": "ea62c61bcf70cca06125418c38979515ed01d77fa8e14a37043e170af8e9b2a3"
+    }
+  ],
+  "baseline": {
+    "wheel": "laymesh-0.2.0-py3-none-manylinux_2_28_x86_64.whl",
+    "sha256": "8c73cdb44da0cfbfe31fe650df49cba666f68456f0f8354fdc88873d1866f3ee",
+    "compressed_bytes": 101662824,
+    "installed_bytes": 247617382
+  },
+  "previous_rust_artifacts": [
+    {
+      "path": "release/dist/laymesh-linux-x64",
+      "bytes": 11700840,
+      "sha256": "b54137da51154646d66f8105943e0a2b6fe7e05471d5cb6c778ef2e2dba6e47f"
+    },
+    {
+      "path": "release/dist/laymesh-0.3.0a1-py3-none-manylinux_2_35_x86_64.whl",
+      "bytes": 5605810,
+      "sha256": "10f4931fc9a86a637dffe7caabe4d0f198bac9bcaa29d2d817c7e5258bcf28fd",
+      "installed_bytes": 13255357
+    },
+    {
+      "path": "release/dist/laymesh-rust-linux-x64.vsix",
+      "bytes": 5570948,
+      "sha256": "09c95ffbe31a8ea2d27a636b2dfbc58da44da35ec5dd99418057eb269e844290",
+      "installed_bytes": 13199569
+    },
+    {
+      "path": "release/dist/laymesh-wasm.zip",
+      "bytes": 2905193,
+      "sha256": "d7414f41a1ed8dc51d925a3021762e51b5ff36cdd6488c7234d1b4474fa71594",
+      "installed_bytes": 8297485
+    },
+    {
+      "path": "site/dist/site/live/wasm/laymesh_wasm_bg.wasm",
+      "bytes": 6804501,
+      "sha256": "b97195a96708ad04fc8800cc680b39b99d9ffa38fc4ff3f2a93714260d3c9557"
+    }
+  ],
+  "wheel_compressed_reduction_fraction": 0.9419793709448795,
+  "delta_from_alpha1": {
+    "laymesh-linux-x64": {
+      "bytes": 556288
+    },
+    "laymesh-0.3.0a2-py3-none-manylinux_2_35_x86_64.whl": {
+      "bytes": 292731,
+      "installed_bytes": 644248
+    },
+    "laymesh-rust-linux-x64.vsix": {
+      "bytes": 291468,
+      "installed_bytes": 642288
+    },
+    "laymesh-wasm.zip": {
+      "bytes": 203953,
+      "installed_bytes": 573402
+    },
+    "laymesh_wasm_bg.wasm": {
+      "bytes": 482510
+    }
+  },
+  "delta_boundary": "Total effect of dependency integration plus semantic repairs; not an isolated per-library ablation.",
+  "startup_median_seconds": {
+    "node": 0.331251118,
+    "rust": 0.001351319,
+    "runs": 3,
+    "command": "--help"
+  },
+  "render_benchmarks": [
+    "node-benchmark.json",
+    "rust-benchmark.json"
+  ],
+  "measurement": {
+    "method": "isolated minimal C posix_spawnp/wait4 helper",
+    "helper_sha256": "5abe74021145f7cee9c2608039f864dd8a4e086d77838cfae4288e294e25996b",
+    "clock": "CLOCK_MONOTONIC from child spawn until wait4 return; helper startup excluded",
+    "memory": "child ru_maxrss, including CLI startup; Python report writer high-water mark excluded"
+  },
+  "verification": {
+    "rust": {
+      "passed": 284,
+      "failed": 0,
+      "ignored": 1
+    },
+    "ignored_microbenchmark_separately_passed": true,
+    "python": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0
+    },
+    "legacy_assertions": {
+      "baseline_commit": "78db22d",
+      "baseline_tests": 183,
+      "assertion_call_sites": 891,
+      "mapped_sites": 891,
+      "unmapped_sites": 0,
+      "referenced_tests": 156,
+      "execution_verified": true,
+      "status": "passed",
+      "unmapped_by_file": {},
+      "unmapped": [],
+      "errors": [],
+      "boundary": "Source-qualified assertion mapping and passing test execution; baseline parameter loops remain explicit test responsibilities. Compiler replay is separate."
+    },
+    "compiler_replay": {
+      "accepted_success": 297,
+      "cases": 461,
+      "expected_errors": 164,
+      "expected_success": 297,
+      "matched_error": 164,
+      "mismatches": 0
+    },
+    "plot_comparison": {
+      "automatic_margin_change_cases": 3,
+      "cases": 158,
+      "cases_with_mismatches": 0,
+      "coverage": "Coordinates, axes, projection metadata, clips and all ordinary text paints (including standalone legends). Full geometry and drawing semantics are checked by the mapped assertion suites; this report alone is not full visual parity.",
+      "plots_compared": 217,
+      "tolerance_mm": 0.001
+    },
+    "geometry_comparison": {
+      "cases": 139,
+      "cases_with_layout_changes": 19,
+      "tolerance_mm": 0.001
+    },
+    "no_node_build_and_test": {
+      "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+      "offline": true,
+      "commands": [
+        {
+          "label": "tests",
+          "command": [
+            "scripts/test-contracts.py",
+            "--offline",
+            "--log",
+            "/workspace/LayMesh/release/comparison/no-node/cargo-tests.log"
+          ],
+          "status": 0,
+          "elapsed_s": 354.45968547603115
+        },
+        {
+          "label": "release",
+          "command": [
+            "build",
+            "--offline",
+            "--locked",
+            "--release",
+            "-p",
+            "laymesh-cli"
+          ],
+          "status": 0,
+          "elapsed_s": 46.36683807591908
+        },
+        {
+          "label": "wasm",
+          "command": [
+            "build",
+            "--offline",
+            "--locked",
+            "--release",
+            "--target",
+            "wasm32-unknown-unknown",
+            "-p",
+            "laymesh-wasm",
+            "--no-default-features"
+          ],
+          "status": 0,
+          "elapsed_s": 0.1213595608714968
+        }
+      ],
+      "path_tools": [
+        "ar",
+        "as",
+        "c++",
+        "cargo",
+        "cc",
+        "cmake",
+        "g++",
+        "gcc",
+        "ld",
+        "make",
+        "mutool",
+        "pdfimages",
+        "pdftoppm",
+        "pdftotext",
+        "pkg-config",
+        "python3",
+        "ranlib",
+        "rustc",
+        "rustdoc"
+      ],
+      "node_available": null,
+      "npm_available": null
+    },
+    "installed_wheel": {
+      "status": "passed",
+      "wheel": "laymesh-0.3.0a2-py3-none-manylinux_2_35_x86_64.whl",
+      "sha256": "d1e4ef163cf2960c477c399d8701380ea5ac779b53f3d5bc8a5dd9637765b824",
+      "python_tests": 38,
+      "skipped": 0,
+      "node_on_path": false,
+      "npm_on_path": false,
+      "examples": 77,
+      "notebook_magics": [
+        "line",
+        "cell"
+      ],
+      "exports": [
+        "svg",
+        "png",
+        "pdf"
+      ],
+      "python_test_sources": {
+        "python/tests/test_bridge.py": "4259cde90d99bb5aaf1fa3f1710c3270ec11e3f41740962008c9dfc1a02f73e7",
+        "python/tests/test_cli_protocol.py": "d9ee2d6de97c0ac2ff4e75a1d9b6a81bc1826c63d8ac2283b664e2682b756412",
+        "python/tests/test_ipython.py": "3632f2a6571dad7dcd65ca52561f5a51a5b77fe7cd80a6507ae6b99ece8000d9",
+        "python/tests/test_language_server.py": "7e512efe75945c9daf11087e778918d59de037512023ef8f473413bf312be91a",
+        "python/tests/test_native_plot.py": "b1bfd18c53a52428b3da6a0cff3c22989567e243334dbb4a94aadbf237ccaff4",
+        "python/tests/test_polar_warnings.py": "3b21154e84e6a0555348b963294dc420f4e98d5f2f06d4ddab6dfe38e71d3a62",
+        "python/tests/test_runtime.py": "1af61f70dbf4872a142d178581ef76acd14904b38a78acf7543dad5faf371fb3"
+      }
+    },
+    "integration": {
+      "status": "passed",
+      "verified_utc": "2026-10-03T07:06:16.310910+00:00",
+      "reports": {
+        "browser": {
+          "report": "release/comparison/revision-browser/verification.json",
+          "sha256": "cc339055b55e796d75c1b00dd8f1bc0843caf52afb955f1a7687fe43f6ebe120",
+          "checks": 74,
+          "artifact_hashes_match": true
+        },
+        "editor": {
+          "report": "release/comparison/revision-editor/verification.json",
+          "sha256": "cc42df190510a0e212d0263f59ca7bc08ffdc8ffc8a34a7584a81f061ebae23f",
+          "checks": 7,
+          "artifact_hashes_match": true
+        },
+        "contours": {
+          "report": "release/comparison/revision-contours-browser/verification.json",
+          "sha256": "2d4c028d8d58a6ebe07a22eadff15123de4100be11679ca671a54adb75349fc6",
+          "checks": 8,
+          "artifact_hashes_match": true
+        },
+        "language": {
+          "report": "release/comparison/revision-language-browser/verification.json",
+          "sha256": "54cb6cb1da7542bc2db5295c1c539ebf2c7a6ec45fcb609728f275299cfb9eb5",
+          "checks": 7,
+          "artifact_hashes_match": true
+        },
+        "vscode": {
+          "report": "release/comparison/revision-vscode-verification.json",
+          "sha256": "1081d987d3d43e2861d8518b1bc80ce99a54041cc8da2ca6eac429205102f97e",
+          "checks": 10,
+          "artifact_hashes_match": true
+        }
+      },
+      "wasm_sha256": "ea62c61bcf70cca06125418c38979515ed01d77fa8e14a37043e170af8e9b2a3",
+      "native_sha256": "0df6e43c3383ecfb119481cf8168f52d8e76b811264a17cb35d4061a96593833",
+      "scope": {
+        "browser_examples": 74,
+        "editor_transitions": 7,
+        "contour_cases": 8,
+        "language_ui": 7,
+        "language_wasm_protocol": 7,
+        "vscode_host_flows": 10
+      },
+      "fault_injection": {
+        "language_output_mutations_rejected": 11,
+        "contour_output_mutations_rejected": 2,
+        "product_code_mutation": false,
+        "invalid_input_recovery": "Worker imports/resources and language-module state changes are input-state recovery tests, not product-code mutations."
+      }
+    },
+    "shared_contour_fixtures": {
+      "cases": 8,
+      "sha256": "e8249b0a6d47e1c5fb423a3d5292e033745ed44f450650a7757c8dbbc8ed6cbf",
+      "native_and_browser_wasm": "passed"
+    },
+    "fault_injection": {
+      "production_core_mutants": 7,
+      "plot_output_mutants": 17,
+      "render_output_mutants": 5,
+      "language_output_mutants": 11,
+      "contour_output_mutants": 2,
+      "assertion_gate_mutants": 19,
+      "release_font_mutants": 3,
+      "additional_checks": [
+        "formula control points",
+        "physical recipe bypass",
+        "missing or changed Scene fields",
+        "benchmark parent memory allocation"
+      ]
+    },
+    "fonts": {
+      "embedded_fonts": 20,
+      "embedded_font_bytes": 513664,
+      "families": "KaTeX formula fonts only",
+      "bundled_body_fonts": false,
+      "runtime_font_downloads": false
+    },
+    "docs": {
+      "pages": 356,
+      "media_sources": 74,
+      "gallery_renders": 54
+    },
+    "comparison_page": {
+      "status": "passed",
+      "page_sha256": "1b056512adc872bba4c27a69c59eb42f05248d9b36b8b9a724f96f71a6d84031",
+      "non_content_requests": [
+        {
+          "method": "Log.entryAdded",
+          "params": {
+            "entry": {
+              "source": "network",
+              "level": "error",
+              "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+              "timestamp": 1791011921925.491,
+              "url": "http://TAILSCALE_IP:8767/favicon.ico",
+              "networkRequestId": "1473227.32"
+            }
+          }
+        }
+      ],
+      "url": "http://TAILSCALE_IP:8767/migration-comparison/",
+      "provenance_url": "http://TAILSCALE_IP:8767/migration-comparison/provenance.json",
+      "provenance_sha256": "2e7da298a45c21bc647f349307c82c78792fdea20136cf9cf9d85e1f4766f387",
+      "script_sha256": "9202e8f25c886a56f83ada4da37f0746455e6b35767196c7b462c072842cc3d9",
+      "rust_commit": "4ddac634a1728ff7da8dfb648fa6763288a07987",
+      "baseline_commit": "78db22d",
+      "viewport": [
+        1920,
+        1200
+      ],
+      "node_on_path": false,
+      "npm_on_path": false,
+      "sections": [
+        {
+          "name": "typography",
+          "images": [
+            {
+              "src": "http://TAILSCALE_IP:8767/migration-comparison/node/typography.svg",
+              "currentSrc": "http://TAILSCALE_IP:8767/migration-comparison/node/typography.svg",
+              "naturalWidth": 605,
+              "naturalHeight": 378,
+              "displayWidth": 772,
+              "displayHeight": 483.25,
+              "widthMm": 160,
+              "height": "100mm",
+              "viewBox": "0 0 160 100",
+              "loaded": true
+            },
+            {
+              "src": "http://TAILSCALE_IP:8767/migration-comparison/rust/typography.svg",
+              "currentSrc": "http://TAILSCALE_IP:8767/migration-comparison/rust/typography.svg",
+              "naturalWidth": 605,
+              "naturalHeight": 378,
+              "displayWidth": 772,
+              "displayHeight": 483.25,
+              "widthMm": 160,
+              "height": "100mm",
+              "viewBox": "0 0 160 100",
+              "loaded": true
+            }
+          ],
+          "links": [
+            {
+              "label": "examples/typography.lay",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/sources/typography.lay"
+            },
+            {
+              "label": "SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/typography.svg"
+            },
+            {
+              "label": "PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/typography.pdf"
+            },
+            {
+              "label": "PNG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/typography.png"
+            },
+            {
+              "label": "SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/typography.svg"
+            },
+            {
+              "label": "PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/typography.pdf"
+            },
+            {
+              "label": "PNG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/typography.png"
+            },
+            {
+              "label": "原 SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/typography.svg"
+            },
+            {
+              "label": "原 PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/typography.pdf"
+            }
+          ],
+          "source_sha256": "db6d2f6e0fc902f201249f8ce696ce0f18b2c9625da889918a30767212d24dc1",
+          "same_baseline_source_bytes": true,
+          "links_verified": [
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/typography.svg",
+              "bytes": 22942838,
+              "sha256": "79bbf6b38e7a82ca99a07bfdb14d4a4b90b0f3372db264b5e23a0e52e08f2c55",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/typography.pdf",
+              "bytes": 77448,
+              "sha256": "1ca38f698a32266350fb0405aa95bb3d5b047c5549a952f02a98613348b7555c",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/typography.png",
+              "bytes": 32685,
+              "sha256": "251fa854b34b1bce1ad2f1ab633e78a95cac30129bb2c22c47bdaee80ac3c1e5",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/typography.svg",
+              "bytes": 22972420,
+              "sha256": "417647dca2e719f1593f2affab6f6cbf0dcfbe38b5d615f1a0aec72d9aac7e3d",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/typography.pdf",
+              "bytes": 43030,
+              "sha256": "6ebbdfe8af06cb58bd606126e2497425530d795772889657732f09c48afd830b",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/typography.png",
+              "bytes": 33608,
+              "sha256": "9fb0d8560fad23239a37cdc9b0f35cd3eee3aa511a0bca092813e0e007195001",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/typography.svg",
+              "sha256": "9171d09d2c5e75b5ea93f3b671fa02480762e58ca6cee13c656eb4ccb1babf8f",
+              "historical_artifact_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/typography.pdf",
+              "sha256": "b57e725a1894ba9323dcac13f53c0eee721928871d006d895d78888cdaaf2284",
+              "historical_artifact_match": true
+            }
+          ],
+          "physical_width_match": true,
+          "display_width_match": true,
+          "screenshot": "release/comparison/revision-comparison-page/typography.png",
+          "screenshot_sha256": "e0a9988c9dd46d253c2560298b33656c7b79952d9d2012964ff9b9aa86971a77"
+        },
+        {
+          "name": "plot-multi-axes-breaks",
+          "images": [
+            {
+              "src": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-multi-axes-breaks.svg",
+              "currentSrc": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-multi-axes-breaks.svg",
+              "naturalWidth": 794,
+              "naturalHeight": 484,
+              "displayWidth": 772,
+              "displayHeight": 471.328125,
+              "widthMm": 210,
+              "height": "128mm",
+              "viewBox": "0 0 210 128",
+              "loaded": true
+            },
+            {
+              "src": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-multi-axes-breaks.svg",
+              "currentSrc": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-multi-axes-breaks.svg",
+              "naturalWidth": 794,
+              "naturalHeight": 484,
+              "displayWidth": 772,
+              "displayHeight": 471.328125,
+              "widthMm": 210,
+              "height": "128mm",
+              "viewBox": "0 0 210 128",
+              "loaded": true
+            }
+          ],
+          "links": [
+            {
+              "label": "examples/plot/multi-axes-breaks.lay",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/sources/plot-multi-axes-breaks.lay"
+            },
+            {
+              "label": "SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-multi-axes-breaks.svg"
+            },
+            {
+              "label": "PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-multi-axes-breaks.pdf"
+            },
+            {
+              "label": "PNG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-multi-axes-breaks.png"
+            },
+            {
+              "label": "SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-multi-axes-breaks.svg"
+            },
+            {
+              "label": "PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-multi-axes-breaks.pdf"
+            },
+            {
+              "label": "PNG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-multi-axes-breaks.png"
+            },
+            {
+              "label": "原 SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-multi-axes-breaks.svg"
+            },
+            {
+              "label": "原 PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-multi-axes-breaks.pdf"
+            }
+          ],
+          "source_sha256": "338e2511b4f2605272d3533ac513b545686503fd7973888ad224cc166c94b6ed",
+          "same_baseline_source_bytes": true,
+          "links_verified": [
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-multi-axes-breaks.svg",
+              "bytes": 1038057,
+              "sha256": "2351d60fb562614be7da409445c4be6bfd3abee7ab4f7ddbaa5d4cc8be82baa2",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-multi-axes-breaks.pdf",
+              "bytes": 12276,
+              "sha256": "63999fc34aaf6524eb5e0669b9c919e1ec2d7e8a7322406e72409f89d16da537",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-multi-axes-breaks.png",
+              "bytes": 34175,
+              "sha256": "be8c9823e6fa5eea5146e4e95f148f55a0dba6610527e52f0ea45ba40a33b804",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-multi-axes-breaks.svg",
+              "bytes": 1054215,
+              "sha256": "4ea3cbff312517e61bb6e7b1d93426ccff6d9e60a15ba54abe9b04d6ef5518bf",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-multi-axes-breaks.pdf",
+              "bytes": 16220,
+              "sha256": "4aa6281ef9d81112395642884e3f568b3b9f6e5709a08c51b5e9b160969da46d",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-multi-axes-breaks.png",
+              "bytes": 40248,
+              "sha256": "af2cb480e59c6d5a0d5ec73bc3d2a8831ebebe0cc387857e48300d46a5ad3af8",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-multi-axes-breaks.svg",
+              "sha256": "c4d790f92c4608db4757a22086d57526d471820ec608fd3641cfca20ce4dc0fe",
+              "historical_artifact_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-multi-axes-breaks.pdf",
+              "sha256": "b71324b214412e71f8ac1ec91a15c1e6233805571809117df2099f7b5650fea1",
+              "historical_artifact_match": true
+            }
+          ],
+          "physical_width_match": true,
+          "display_width_match": true,
+          "screenshot": "release/comparison/revision-comparison-page/plot-multi-axes-breaks.png",
+          "screenshot_sha256": "b9f5726b84f115a92b90600ad26f7a77f51ccc0aa94ce41840263ddce0ba2ec1"
+        },
+        {
+          "name": "plot-statistics",
+          "images": [
+            {
+              "src": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-statistics.svg",
+              "currentSrc": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-statistics.svg",
+              "naturalWidth": 1036,
+              "naturalHeight": 484,
+              "displayWidth": 772,
+              "displayHeight": 361.703125,
+              "widthMm": 274,
+              "height": "128mm",
+              "viewBox": "0 0 274 128",
+              "loaded": true
+            },
+            {
+              "src": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-statistics.svg",
+              "currentSrc": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-statistics.svg",
+              "naturalWidth": 1036,
+              "naturalHeight": 484,
+              "displayWidth": 772,
+              "displayHeight": 361.703125,
+              "widthMm": 274,
+              "height": "128mm",
+              "viewBox": "0 0 274 128",
+              "loaded": true
+            }
+          ],
+          "links": [
+            {
+              "label": "examples/plot/statistics.lay",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/sources/plot-statistics.lay"
+            },
+            {
+              "label": "SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-statistics.svg"
+            },
+            {
+              "label": "PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-statistics.pdf"
+            },
+            {
+              "label": "PNG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-statistics.png"
+            },
+            {
+              "label": "SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-statistics.svg"
+            },
+            {
+              "label": "PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-statistics.pdf"
+            },
+            {
+              "label": "PNG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-statistics.png"
+            },
+            {
+              "label": "原 SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-statistics.svg"
+            },
+            {
+              "label": "原 PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-statistics.pdf"
+            }
+          ],
+          "source_sha256": "7c80eaa5dea2fec06cb566b635cb44ef5f5688eadee22716798245d1d77d9ed1",
+          "same_baseline_source_bytes": true,
+          "links_verified": [
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-statistics.svg",
+              "bytes": 1054310,
+              "sha256": "9d327f52082e038ec1aa0aae602d9510ba3654b7ec862a8bc2cfc079a88b74e2",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-statistics.pdf",
+              "bytes": 16551,
+              "sha256": "965e1976c4b61fafc4312e80211b4a7b4a27ca71ec5ee6e825d2ececae40a411",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-statistics.png",
+              "bytes": 42814,
+              "sha256": "58515ff5118310de09723104a1e3e9bb7daae79471db678b1f745d106806cd43",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-statistics.svg",
+              "bytes": 1071968,
+              "sha256": "98e0cef3c951fd06e3c7977ba6087f6872e1d126f1360a930c891393fe369240",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-statistics.pdf",
+              "bytes": 20715,
+              "sha256": "4b9d0fefd0d63a1f7ae19743db5262ca9c434afa6fbec9e01926847355e28cdc",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-statistics.png",
+              "bytes": 49895,
+              "sha256": "3fbe0b5ab22a46d0115650163d66fcbe4a4cef1a0d939b9390f18692835c09b1",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-statistics.svg",
+              "sha256": "f243ef66844dc20c953b0f75c6c9c2d47dda0692e5c84d75e5c6f6977b2de667",
+              "historical_artifact_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-statistics.pdf",
+              "sha256": "df2c8aca9cd890badd7a406689edc00859f9402300bf67792c4523b464ab450a",
+              "historical_artifact_match": true
+            }
+          ],
+          "physical_width_match": true,
+          "display_width_match": true,
+          "screenshot": "release/comparison/revision-comparison-page/plot-statistics.png",
+          "screenshot_sha256": "6cff80bc00853f168edba019a2d6b7775e008a723b958e7a2ac319fa5e26d5d0"
+        },
+        {
+          "name": "plot-polar-field",
+          "images": [
+            {
+              "src": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-polar-field.svg",
+              "currentSrc": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-polar-field.svg",
+              "naturalWidth": 824,
+              "naturalHeight": 480,
+              "displayWidth": 772,
+              "displayHeight": 450.5625,
+              "widthMm": 218,
+              "height": "127mm",
+              "viewBox": "0 0 218 127",
+              "loaded": true
+            },
+            {
+              "src": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-polar-field.svg",
+              "currentSrc": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-polar-field.svg",
+              "naturalWidth": 824,
+              "naturalHeight": 480,
+              "displayWidth": 772,
+              "displayHeight": 450.5625,
+              "widthMm": 218,
+              "height": "127mm",
+              "viewBox": "0 0 218 127",
+              "loaded": true
+            }
+          ],
+          "links": [
+            {
+              "label": "examples/plot/polar-field.lay",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/sources/plot-polar-field.lay"
+            },
+            {
+              "label": "SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-polar-field.svg"
+            },
+            {
+              "label": "PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-polar-field.pdf"
+            },
+            {
+              "label": "PNG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-polar-field.png"
+            },
+            {
+              "label": "SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-polar-field.svg"
+            },
+            {
+              "label": "PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-polar-field.pdf"
+            },
+            {
+              "label": "PNG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-polar-field.png"
+            },
+            {
+              "label": "原 SVG",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-polar-field.svg"
+            },
+            {
+              "label": "原 PDF",
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-polar-field.pdf"
+            }
+          ],
+          "source_sha256": "2d16596ab7bd8670177c385795dd849dc2889f24711f58582cb0b983372103f0",
+          "same_baseline_source_bytes": true,
+          "links_verified": [
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-polar-field.svg",
+              "bytes": 1574213,
+              "sha256": "dbbca9c7d547ee18ee412094eead85b7622fee810d27a87b9264d984786deed4",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-polar-field.pdf",
+              "bytes": 175398,
+              "sha256": "9446ec13d8204394ec87e72272332399714ae74ec13c0f1703f16ac19426dacc",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/node/plot-polar-field.png",
+              "bytes": 63115,
+              "sha256": "aaf76ca882e635a1855721cf6bb8a321060177402ad48d04681e94a9beb65ceb",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-polar-field.svg",
+              "bytes": 1709444,
+              "sha256": "285be8b7d52ffe9f3a1b30b2c67c4d7803fe65193b9f96d4f0f4915ba239670c",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-polar-field.pdf",
+              "bytes": 109603,
+              "sha256": "fa437e40046ec8f8f79dd9edb899d717f7926b6e0351ca2b6339c1ca378d28a0",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/rust/plot-polar-field.png",
+              "bytes": 71202,
+              "sha256": "28e7e0d7e0fb49a2f0d2a8049c63633c3fa1a4fd73971be58a742b0bc9a2b1aa",
+              "provenance_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-polar-field.svg",
+              "sha256": "951d1c8a7ef2b4f1cb3d1a785901adb7d94e7abdc3fa94e64a56e677c795beeb",
+              "historical_artifact_match": true
+            },
+            {
+              "url": "http://TAILSCALE_IP:8767/migration-comparison/before-fix/plot-polar-field.pdf",
+              "sha256": "918cf7f63878bdcfc4a8591119cec4abc17b60f9024ed6ba754ddffa26fd8199",
+              "historical_artifact_match": true
+            }
+          ],
+          "physical_width_match": true,
+          "display_width_match": true,
+          "screenshot": "release/comparison/revision-comparison-page/plot-polar-field.png",
+          "screenshot_sha256": "d612cb747145c8bc6bf59ec4e94956fc6d383343cbe448ee840ff1b38ca15779"
+        }
+      ],
+      "console_errors": []
+    },
+    "png_descriptive_comparison": "rust-render-comparison.json"
+  },
+  "evidence": [
+    {
+      "path": "release/comparison/no-node/assertion-coverage.json",
+      "sha256": "7b33938e093ab88e898d3f6a4f72d97522e9a1f0fd6a8caa6e11a14358b63bab"
+    },
+    {
+      "path": "release/comparison/no-node/verification.json",
+      "sha256": "9e0df4d3256d468b30851e4b41cbb6535d39fa5f165357a15cf027ef9505082b"
+    },
+    {
+      "path": "release/verification/packaging/verification.json",
+      "sha256": "3206efbc69b232279084cade3983e477b0885955d832e07e536ce512f93e3239"
+    },
+    {
+      "path": "release/verification/installed-wheel/verification.json",
+      "sha256": "77ba03973bce56bc0d26b905a6be30da33b3d5251855fbe54cf3c84ec2fc0299"
+    },
+    {
+      "path": "release/verification/core-mutants/verification.json",
+      "sha256": "c050c1a0d525bc5b43a05ee3b00748892d1475582b23ea98db654e46429afca1"
+    },
+    {
+      "path": "release/verification/benchmark-profiler.json",
+      "sha256": "4114bf4d926c9db40f60df86ac1df9dc4e03bb95b478bcc1b2db60049ba10c23"
+    },
+    {
+      "path": "release/verification/render-assets/font-and-vector-evidence.json",
+      "sha256": "b797e97b1f36a727406aeaafe64e4a250fe4fa2a1b1998f07d005a4c9c266741"
+    },
+    {
+      "path": "release/verification/render-assets/release-font-policy.json",
+      "sha256": "8efb91d2dfe0ba1d4a765a152f3a4d674c1a1df3ee24b9662d8dcf71252ee790"
+    },
+    {
+      "path": "release/comparison/revision-integration-final.json",
+      "sha256": "e17fe010c4ff4aa9bfbf00114d5806f3455f2d5d690f82ad8007296cd2756fef"
+    },
+    {
+      "path": "release/comparison/provenance.json",
+      "sha256": "2e7da298a45c21bc647f349307c82c78792fdea20136cf9cf9d85e1f4766f387"
+    },
+    {
+      "path": "release/comparison/revision-comparison-page/verification.json",
+      "sha256": "20d2a31ef71392880ea3772f8455bc9fee447ffd4f3ca1e51badf34e214c64d7"
+    }
+  ],
+  "verified_platforms": [
+    "Linux x86_64 (GLIBC >= 2.35)",
+    "browser wasm32-unknown-unknown"
+  ],
+  "unverified_platforms": [
+    "Linux arm64",
+    "macOS x64",
+    "macOS arm64",
+    "Windows x64"
+  ],
+  "python_support_boundary": "Package declares Python >=3.10; this local run used 3.13.11. Other interpreter/platform combinations require CI or host verification.",
+  "allowed_changes": [
+    "Native RaTeX/KaTeX glyph shapes, weight and metrics; no MathJax pixel matching.",
+    "Actual circular cap/fusion boundaries; old PathKit approximation could protrude by 0.089258 mm.",
+    "Default body typography follows the selected system/user font."
+  ],
+  "archives": [
+    "release/history/df2d5b1",
+    "release/history/initial-process-measurement"
+  ],
+  "preview_url": "http://TAILSCALE_IP:8767/migration-comparison/"
+}

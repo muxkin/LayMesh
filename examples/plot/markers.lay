@@ -1,0 +1,22 @@
+# Editable black-and-white series. marker_size includes the outline.
+# All data and legend symbols use the same marker options.
+page = canvas(size=(175 mm, 112 mm), background="#ffffff")
+style = plot_style(font_family="DejaVu Sans", font_size=8 pt,
+                   tick_font_size=8 pt, label_font_size=9 pt, colors=["#222222"])
+p = plot(size=(158 mm, 98 mm), plot_area=box(offset=(20 mm, 24 mm), size=(126 mm, 54 mm)),
+         x=axis(label="Time (s)", range=(0, 10), ticks=[0, 2, 4, 6, 8, 10], tick_direction= in),
+         y=axis(label="Response (a.u.)", range=(0, 1.2), ticks=[0, 0.3, 0.6, 0.9, 1.2], tick_direction= in),
+         frame= box, style=style)
+p.line(x=[1, 3, 5, 7, 9], y=[0.2, 0.48, 0.82, 1.03, 1.1],
+       marker= circle, marker_size=2.3 mm, marker_fill="none",
+       marker_border_color="#222222", marker_border_width=0.5 pt, label="Open circles")
+p.line(x=[1, 3, 5, 7, 9], y=[0.13, 0.3, 0.51, 0.7, 0.82],
+       line_dash=[3 pt, 2 pt], marker= diamond, marker_size=2.3 mm, label="Filled diamonds")
+p.errorbar(x=[1, 3, 5, 7, 9], y=[0.08, 0.17, 0.31, 0.42, 0.51], xerr=0.2, yerr=0.06,
+           cap_size=2 pt, marker= triangle_down, marker_size=2.5 mm,
+           marker_fill="#ffffff", marker_border_color="#222222", marker_border_width=0.5 pt,
+           label="Uncertainty in x/y")
+p.legend(position=(0 mm, -11 mm), columns=3, background="none")
+chart = page.add(p, anchor= plot_top_left, offset=(30 mm, 38 mm))
+page.add(text(content="Markers and uncertainty", font_family="DejaVu Sans", font_size=11 pt),
+         target=chart.plot_top_left, offset=(0 mm, -30 mm))

@@ -1,0 +1,492 @@
+{
+  "docs/user-guide.zh-CN.md": [
+    {
+      "id": "1-安装与运行",
+      "title": "1. 安装与运行",
+      "target": "install"
+    },
+    {
+      "id": "2-第一张图",
+      "title": "2. 第一张图",
+      "target": "first-layout"
+    },
+    {
+      "id": "3-尺寸位置与叠放",
+      "title": "3. 尺寸、位置与叠放",
+      "target": "units"
+    },
+    {
+      "id": "4-素材组与组件",
+      "title": "4. 素材、组与组件",
+      "target": "groups"
+    },
+    {
+      "id": "5-文字排版",
+      "title": "5. 文字排版",
+      "target": "fonts"
+    },
+    {
+      "id": "6-公式与-pdf-复制",
+      "title": "6. 公式与 PDF 复制",
+      "target": "formulas"
+    },
+    {
+      "id": "7-图形边框与脚本",
+      "title": "7. 图形、边框与脚本",
+      "target": "shapes"
+    },
+    {
+      "id": "first-data-plot",
+      "title": "第一张数据图",
+      "target": "first-plot"
+    },
+    {
+      "id": "8-原生科研绘图",
+      "title": "8. 原生科研绘图",
+      "target": "first-plot"
+    },
+    {
+      "id": "第一张数据图",
+      "title": "第一张数据图",
+      "target": "first-plot"
+    },
+    {
+      "id": "9-常见问题",
+      "title": "9. 常见问题",
+      "target": "diagnostics"
+    }
+  ],
+  "docs/user-guide.en.md": [
+    {
+      "id": "1-install-and-run",
+      "title": "1. Install and run",
+      "target": "install"
+    },
+    {
+      "id": "2-your-first-figure",
+      "title": "2. Your first figure",
+      "target": "first-layout"
+    },
+    {
+      "id": "3-size-position-and-stacking",
+      "title": "3. Size, position, and stacking",
+      "target": "units"
+    },
+    {
+      "id": "4-assets-groups-and-components",
+      "title": "4. Assets, groups, and components",
+      "target": "groups"
+    },
+    {
+      "id": "5-text-layout",
+      "title": "5. Text layout",
+      "target": "fonts"
+    },
+    {
+      "id": "6-formulas-and-copying-from-pdf",
+      "title": "6. Formulas and copying from PDF",
+      "target": "formulas"
+    },
+    {
+      "id": "7-drawing-outlines-and-scripting",
+      "title": "7. Drawing, outlines, and scripting",
+      "target": "shapes"
+    },
+    {
+      "id": "first-data-plot",
+      "title": "Your first data plot",
+      "target": "first-plot"
+    },
+    {
+      "id": "8-native-scientific-plots",
+      "title": "8. Native scientific plots",
+      "target": "first-plot"
+    },
+    {
+      "id": "your-first-data-plot",
+      "title": "Your first data plot",
+      "target": "first-plot"
+    },
+    {
+      "id": "9-troubleshooting",
+      "title": "9. Troubleshooting",
+      "target": "diagnostics"
+    }
+  ],
+  "docs/plotting.zh-CN.md": [
+    {
+      "id": "选择绘图路线",
+      "title": "选择绘图路线",
+      "target": "python-data"
+    },
+    {
+      "id": "最小示例",
+      "title": "最小示例",
+      "target": "line-scatter"
+    },
+    {
+      "id": "图表坐标轴与样式",
+      "title": "图表、坐标轴与样式",
+      "target": "plot-area"
+    },
+    {
+      "id": "固定绘图区与数据标注",
+      "title": "固定绘图区与数据标注",
+      "target": "annotations"
+    },
+    {
+      "id": "科研样式与精确排版",
+      "title": "科研样式与精确排版",
+      "target": "plot-area"
+    },
+    {
+      "id": "数据图层",
+      "title": "数据图层",
+      "target": "plot-reference"
+    },
+    {
+      "id": "标记与组合图例",
+      "title": "标记与组合图例",
+      "target": "line-scatter"
+    },
+    {
+      "id": "科学标签与计数法",
+      "title": "科学标签与计数法",
+      "target": "labels"
+    },
+    {
+      "id": "热图与色标",
+      "title": "热图与色标",
+      "target": "heatmaps"
+    },
+    {
+      "id": "色标方向尺寸与定位",
+      "title": "色标方向、尺寸与定位",
+      "target": "legends"
+    },
+    {
+      "id": "csvjson-与缺失值",
+      "title": "CSV、JSON 与缺失值",
+      "target": "data"
+    },
+    {
+      "id": "notebook-只传数据",
+      "title": "Notebook 只传数据",
+      "target": "python-data"
+    },
+    {
+      "id": "实现与验证",
+      "title": "实现与验证",
+      "target": "architecture"
+    }
+  ],
+  "docs/plotting.en.md": [
+    {
+      "id": "choose-a-plotting-workflow",
+      "title": "Choose a plotting workflow",
+      "target": "python-data"
+    },
+    {
+      "id": "minimal-example",
+      "title": "Minimal example",
+      "target": "line-scatter"
+    },
+    {
+      "id": "objects-and-sizing",
+      "title": "Objects and sizing",
+      "target": "plot-area"
+    },
+    {
+      "id": "fixed-data-area-and-annotations",
+      "title": "Fixed data area and annotations",
+      "target": "annotations"
+    },
+    {
+      "id": "scientific-styling-and-precise-placement",
+      "title": "Scientific styling and precise placement",
+      "target": "plot-area"
+    },
+    {
+      "id": "layers",
+      "title": "Layers",
+      "target": "plot-reference"
+    },
+    {
+      "id": "markers-and-combined-legend-samples",
+      "title": "Markers and combined legend samples",
+      "target": "line-scatter"
+    },
+    {
+      "id": "scientific-labels-and-notation",
+      "title": "Scientific labels and notation",
+      "target": "labels"
+    },
+    {
+      "id": "heatmaps",
+      "title": "Heatmaps",
+      "target": "heatmaps"
+    },
+    {
+      "id": "colorbar-direction-size-and-placement",
+      "title": "Colorbar direction, size, and placement",
+      "target": "legends"
+    },
+    {
+      "id": "files-and-missing-values",
+      "title": "Files and missing values",
+      "target": "data"
+    },
+    {
+      "id": "python-and-notebook",
+      "title": "Python and Notebook",
+      "target": "python-data"
+    },
+    {
+      "id": "implementation-and-verification",
+      "title": "Implementation and verification",
+      "target": "architecture"
+    }
+  ],
+  "docs/cartesian-plots.zh-CN.md": [
+    {
+      "id": "命名轴与锚点",
+      "title": "命名轴与锚点",
+      "target": "multi-axes"
+    },
+    {
+      "id": "每条轴独立断开",
+      "title": "每条轴独立断开",
+      "target": "multi-axes"
+    },
+    {
+      "id": "基础图层与描述统计",
+      "title": "基础图层与描述统计",
+      "target": "bars"
+    },
+    {
+      "id": "共享颜色非均匀热图和等高线",
+      "title": "共享颜色、非均匀热图和等高线",
+      "target": "heatmaps"
+    },
+    {
+      "id": "独立图例与色标",
+      "title": "独立图例与色标",
+      "target": "legends"
+    },
+    {
+      "id": "python-数据与验证",
+      "title": "Python 数据与验证",
+      "target": "python-data"
+    },
+    {
+      "id": "对数统计图与箱线样式",
+      "title": "对数统计图与箱线样式",
+      "target": "box-violin"
+    }
+  ],
+  "docs/cartesian-plots.en.md": [
+    {
+      "id": "named-axes-and-anchors",
+      "title": "Named axes and anchors",
+      "target": "multi-axes"
+    },
+    {
+      "id": "independent-breaks",
+      "title": "Independent breaks",
+      "target": "multi-axes"
+    },
+    {
+      "id": "layers-and-descriptive-statistics",
+      "title": "Layers and descriptive statistics",
+      "target": "bars"
+    },
+    {
+      "id": "shared-colors-heatmap-edges-and-contours",
+      "title": "Shared colors, heatmap edges and contours",
+      "target": "heatmaps"
+    },
+    {
+      "id": "independent-legends-and-colorbars",
+      "title": "Independent legends and colorbars",
+      "target": "legends"
+    },
+    {
+      "id": "python-and-validation",
+      "title": "Python and validation",
+      "target": "python-data"
+    },
+    {
+      "id": "log-statistics-and-boxplot-styles",
+      "title": "Log statistics and boxplot styles",
+      "target": "box-violin"
+    }
+  ],
+  "docs/polar-plots.zh-CN.md": [
+    {
+      "id": "最小示例与物理定位",
+      "title": "最小示例与物理定位",
+      "target": "polar-projection"
+    },
+    {
+      "id": "图层与网格",
+      "title": "图层与网格",
+      "target": "polar-layers"
+    },
+    {
+      "id": "雷达图",
+      "title": "雷达图",
+      "target": "radar"
+    },
+    {
+      "id": "警告开关与检查",
+      "title": "警告开关与检查",
+      "target": "diagnostics"
+    }
+  ],
+  "docs/polar-plots.en.md": [
+    {
+      "id": "coordinates-and-placement",
+      "title": "Coordinates and placement",
+      "target": "polar-projection"
+    },
+    {
+      "id": "layers-and-fields",
+      "title": "Layers and fields",
+      "target": "polar-layers"
+    },
+    {
+      "id": "radar-charts",
+      "title": "Radar charts",
+      "target": "radar"
+    },
+    {
+      "id": "warning-controls-and-inspection",
+      "title": "Warning controls and inspection",
+      "target": "diagnostics"
+    }
+  ],
+  "docs/python-jupyter.zh-CN.md": [
+    {
+      "id": "原生数组与-dataframe-绘图",
+      "title": "原生数组与 DataFrame 绘图",
+      "target": "python-data"
+    },
+    {
+      "id": "保存并脱离-python-重渲染",
+      "title": "保存并脱离 Python 重渲染",
+      "target": "python-data"
+    },
+    {
+      "id": "notebook-工作流",
+      "title": "原生数组与 DataFrame 绘图",
+      "target": "matplotlib"
+    },
+    {
+      "id": "native-data",
+      "title": "原生数组与 DataFrame 绘图",
+      "target": "python-data"
+    },
+    {
+      "id": "matplotlib-figure-导入",
+      "title": "Matplotlib Figure 导入",
+      "target": "matplotlib"
+    },
+    {
+      "id": "警告控制",
+      "title": "警告控制",
+      "target": "diagnostics"
+    }
+  ],
+  "docs/python-jupyter.en.md": [
+    {
+      "id": "native-array-and-dataframe-plots",
+      "title": "Native array and DataFrame plots",
+      "target": "python-data"
+    },
+    {
+      "id": "save-and-rerender-without-python",
+      "title": "Save and rerender without Python",
+      "target": "python-data"
+    },
+    {
+      "id": "notebook-workflow",
+      "title": "Native array and DataFrame plots",
+      "target": "matplotlib"
+    },
+    {
+      "id": "native-data",
+      "title": "Native array and DataFrame plots",
+      "target": "python-data"
+    },
+    {
+      "id": "matplotlib-figure-import",
+      "title": "Matplotlib Figure import",
+      "target": "matplotlib"
+    },
+    {
+      "id": "warning-controls",
+      "title": "Warning controls",
+      "target": "diagnostics"
+    }
+  ],
+  "README.md": [
+    {
+      "id": "三分钟上手",
+      "target": "install"
+    },
+    {
+      "id": "可以做什么",
+      "target": "start"
+    },
+    {
+      "id": "文档导航",
+      "target": "start"
+    },
+    {
+      "id": "第一版的边界",
+      "target": "start"
+    },
+    {
+      "id": "english-quick-start",
+      "target": "install"
+    }
+  ],
+  "README.en.md": [
+    {
+      "id": "quick-start",
+      "target": "install"
+    },
+    {
+      "id": "what-you-can-make",
+      "target": "start"
+    },
+    {
+      "id": "image-cropping",
+      "target": "start"
+    },
+    {
+      "id": "anchors",
+      "target": "start"
+    },
+    {
+      "id": "paths-and-fusion",
+      "target": "start"
+    },
+    {
+      "id": "formulas-and-notebook-output",
+      "target": "start"
+    },
+    {
+      "id": "native-scientific-plots",
+      "target": "plotting"
+    },
+    {
+      "id": "documentation-map",
+      "target": "start"
+    },
+    {
+      "id": "current-scope",
+      "target": "start"
+    }
+  ]
+}

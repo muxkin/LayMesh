@@ -1,0 +1,10 @@
+# Gallery: typography / display-formula
+page = canvas(name="Display formula", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Display formula", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+equation = formula(source=r"\int_0^1 x^2\,dx=\frac{1}{3}",
+                   font_size=22 pt, style=display)
+page.add(equation, anchor=center, target=page.center)
+# END DEMO

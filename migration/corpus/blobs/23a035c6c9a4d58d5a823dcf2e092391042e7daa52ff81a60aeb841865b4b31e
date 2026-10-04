@@ -1,0 +1,2 @@
+import { item } from "./second.lay"
+export item=2 mm

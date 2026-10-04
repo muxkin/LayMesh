@@ -1,0 +1,290 @@
+{
+  "concepts": {
+    "conceptZh": "先建立页面，再定义素材，最后用 add 建立实例。素材保存可复用的内容和默认样式；实例保存本次尺寸、变换和位置。仅定义素材不会产生绘制，实例的锚点才具有容器坐标。",
+    "conceptEn": "Create a page, define material, then use add to create instances. Material holds reusable content and default style; an instance holds this placement’s dimensions, transform and position. A definition alone draws nothing. Instance anchors have container coordinates.",
+    "compositionZh": "同一素材可放置多次。保存 add 的返回值，后续实例就能通过它的 bounds 或 path 建立相对定位。改变素材的默认尺寸不会追溯修改已完成的放置。",
+    "compositionEn": "Place one material repeatedly. Save the return from add so later instances can target its bounds or path. Changing a definition does not retroactively edit completed placements.",
+    "errorsZh": "不要把 rect(...) 的结果当作页面实例查询 top_left；先使用 placed=page.add(material)。入口只允许一个 canvas，模块负责提供素材和函数。",
+    "errorsEn": "Do not query page anchors on rect(...) itself: first use placed=page.add(material). An entry has one canvas; modules provide material and functions.",
+    "minimalApi": "canvas"
+  },
+  "first-layout": {
+    "conceptZh": "从一个页面、两个卡片和标题开始，观察绝对偏移与相对定位的差异。页面大小采用物理长度，坐标原点在左上，x 向右、y 向下。",
+    "conceptEn": "Start with a page, cards and a title to see absolute offsets and relative placement. Page size uses physical lengths; the origin is top left, x points right and y points down.",
+    "compositionZh": "使用 target=first.bottom_right 和 offset=(3mm,3mm) 放置第二个实例。标题用 anchor=center 与卡片 center 对齐，因此字体变化时仍保持中心关系。",
+    "compositionEn": "Place the second instance using target=first.bottom_right and offset=(3mm,3mm). Align a title’s center to a card’s center so font changes preserve the relationship.",
+    "errorsZh": "add 的默认 anchor 是 top_left，offset 沿容器方向。页面不会自动增大，超出页面的对象可能在导出时被裁切。",
+    "errorsEn": "The default add anchor is top_left, with offsets along container axes. Pages do not grow automatically; objects outside the page can be clipped during export.",
+    "minimalApi": "add"
+  },
+  "first-plot": {
+    "conceptZh": "图表是原生矢量素材，而不是从其他绘图库导入的图片。先创建 plot，添加图层与图例，再将它放到页面；轴把数据数值映射到绘图区。",
+    "conceptEn": "A native chart is vector material, not an imported image. Create plot, add layers and decorations, then place it. Axes map data values into the plot area.",
+    "compositionZh": "从内联 x/y 列表改成 table 的列即可使用实验数据。保持显式轴范围可以在多个图表之间比较；使用 plot_area 保持相同物理数据区。",
+    "compositionEn": "Replace inline x/y lists with table columns for experimental data. Explicit axis ranges aid comparisons; plot_area keeps equal physical data regions.",
+    "errorsZh": "图表第一次被放置后封存，不能再添加图层。x/y 数量必须匹配；不要把 mm 写在数据数值上，物理样式和数据单位各有用途。",
+    "errorsEn": "A chart is sealed after its first placement. x/y lengths must match. Do not add mm to data values: physical styles and data units serve different purposes.",
+    "minimalApi": "plot"
+  },
+  "units": {
+    "conceptZh": "几何裸值采用 canvas.unit，初始为 mm；字号和线宽裸值采用 pt。显式单位最便于阅读和跨主题复现。布局 px 使用 layout_dpi，PNG 输出 DPI 则只决定最终像素数。",
+    "conceptEn": "Unitless geometry uses canvas.unit, initially mm; unitless font sizes and stroke widths use pt. Explicit units are easiest to read and reproduce across themes. Layout px uses layout_dpi; PNG output DPI only determines final pixel count.",
+    "compositionZh": "长度乘无单位数仍是长度；两个同类长度相除得到比例。size=(40mm,auto) 常用于图片保留比例与文本自然高度，是否支持 auto 由素材决定。",
+    "compositionEn": "Multiplying a length by a scalar retains length; dividing compatible lengths yields a ratio. size=(40mm,auto) often preserves image aspect or natural text height; auto support depends on material.",
+    "errorsZh": "页面尺寸必须为正且不接受 auto。不能把角度与长度相加。line(angle=...) 支持 deg/rad，裸角度按度；极坐标数据角度由 angle_unit 指定。",
+    "errorsEn": "Page dimensions must be positive and cannot use auto. Angles cannot be added to lengths. line(angle=...) accepts deg/rad or unitless degrees; polar data angles use angle_unit.",
+    "minimalApi": "line"
+  },
+  "anchors": {
+    "conceptZh": "定位关系需要明确自身选哪个点、目标选哪个点、额外移动多少。默认九点属于布局框，圆角矩形和椭圆的框角通常不在轮廓上。需要轮廓点时使用 path 或 ink.boundary 查询并显式索引候选。",
+    "conceptEn": "Placement states which source point meets which target point and how much offset to add. Nine-point defaults belong to layout bounds. Rounded-rectangle and ellipse box corners often lie off the outline; use path or ink.boundary queries and explicitly index candidates.",
+    "compositionZh": "将曲线的弧长中点用作文字 target，并将 rotation 设置为该点的 tangent_angle。需要沿线与法线偏移时使用 offset_space=target；尖角先选择 incoming 或 outgoing。",
+    "compositionEn": "Target a curve’s arc-length midpoint with text and use its tangent_angle for rotation. offset_space=target applies tangent/normal offsets; choose incoming or outgoing at a corner first.",
+    "errorsZh": "候选集合不能直接传给 target。空集合索引报错；连续重合和无限个最近点不会被随意抽样。self 只在 anchor 中绑定，未放置的素材不能充当目标实例。",
+    "errorsEn": "A candidate collection cannot be passed directly to target. Indexing an empty collection errors; continuous overlap and infinitely many nearest points are not arbitrarily sampled. self binds only in anchor, and unplaced material cannot serve as a target.",
+    "minimalApi": "path.at"
+  },
+  "groups": {
+    "conceptZh": "group 是带局部坐标的可复用容器。先向组添加实例，再把整个组放入页面。组内 target 引用同一组内已经存在的实例，组的放置会重放这些关系。",
+    "conceptEn": "group is a reusable container with local coordinates. Populate it, then place it on a page. Internal targets refer to existing instances in that group; placement replays these dependencies.",
+    "compositionZh": "用组组合底板、标题和连接线，可以多次放置、旋转或缩放。fuse 是另一项操作：把同容器中已放置的两个矢量实例合并成一个新轮廓，原实例退出绘制和引用。",
+    "compositionEn": "Combine a panel, title and connector in a group, then reuse, rotate or resize it. fuse instead merges two already placed vector instances in the same container into a new outline; the inputs leave drawing and can no longer be referenced.",
+    "errorsZh": "第一次放置封存组，之后不能添加子项。组不能包含自身；不同容器的锚点不能直接混用。fuse 不接受图片、文字或组，也不公开通用布尔运算。",
+    "errorsEn": "First placement seals a group. It cannot contain itself, and anchors from different containers cannot be mixed directly. fuse rejects images, text and groups and is not a public general-purpose Boolean API.",
+    "minimalApi": "group"
+  },
+  "images": {
+    "conceptZh": "image 定义外部图片素材，add 决定实例尺寸、裁剪和适配。crop 的 box 使用 0–1 归一化图片坐标，先裁剪，再按目标 size 适配。",
+    "conceptEn": "image defines external picture material; add determines size, crop and fit. A crop box uses normalized 0–1 image coordinates. Cropping occurs before fitting to size.",
+    "compositionZh": "同一图片分别放置完整版本和局部细节。contain 保留全部内容，cover 覆盖目标框并裁掉溢出，stretch 直接拉伸；单边 size 配 auto 可保持裁剪后的比例。",
+    "compositionEn": "Place a full image and a detail from the same definition. contain keeps all content, cover fills the box and clips overflow, and stretch changes aspect ratio. One size dimension plus auto preserves the cropped aspect.",
+    "errorsZh": "SVG 内容先经过安全白名单；不支持 SVG crop。TIFF 仅支持单页 8 位灰度或 RGB。图片只有布局框，不根据像素提取 path 或 ink。",
+    "errorsEn": "SVG input is allowlisted, and SVG crop is unsupported. TIFF supports single-page 8-bit grayscale or RGB only. Pictures provide bounds without pixel-derived path or ink.",
+    "minimalApi": "image"
+  },
+  "fonts": {
+    "conceptZh": "text 的字号是物理尺寸。宽度约束触发换行，spans 可在同一段中设置不同颜色、字体、字重或公式。文字的度量决定布局框，而不会提供字形轮廓锚点。",
+    "conceptEn": "Text size is physical. A width constraint enables wrapping; spans mix colors, fonts, weights and formulas within a paragraph. Text measurement defines layout bounds, without glyph-outline anchors.",
+    "compositionZh": "复用 text 素材时可给不同实例设置宽度，让每个实例独立换行。font_family 使用名称、字体文件路径或有序回退列表；跨机器复现时随作品保存字体。",
+    "compositionEn": "Reuse text with different placement widths to reflow each instance independently. font_family accepts names, file paths or ordered fallback lists. Include font resources when reproducing work across machines.",
+    "errorsZh": "font_weight 是 100–900 的整数。缺字产生 W_FONT 并显示度量后的方框；普通系统字体不随文档打包。font_style 的固定选项仍可写 normal/italic 或对应字符串。",
+    "errorsEn": "font_weight is an integer from 100 to 900. Missing glyphs emit W_FONT and measured squares. System fonts are not bundled with documents. font_style accepts normal/italic variables or equivalent strings.",
+    "minimalApi": "text"
+  },
+  "formulas": {
+    "conceptZh": "formula 接受不带美元定界符的 LaTeX 源码。使用 raw 字符串保留反斜杠；inline 适合文字行内，display 使用独立公式布局。math_font=ratex_katex 是内置字符串别名。",
+    "conceptEn": "formula accepts LaTeX without dollar delimiters. Raw strings preserve backslashes. inline fits text lines; display uses standalone layout. math_font=ratex_katex is a predefined string alias.",
+    "compositionZh": "text(spans=[...]) 可组合 span 和 formula。普通文本中的 $...$ 与显式 formula 的前提不同：对控制反斜杠或格式化表达式有要求时使用 r/f 字符串，避免源码被二次解释。",
+    "compositionEn": "text(spans=[...]) combines spans and formulas. Embedded $...$ in ordinary text differs from explicit formula input; use raw/formatted strings deliberately when backslashes or substitutions are involved.",
+    "errorsZh": "公式引擎不接受外部资源、require 或自定义宏。旧 mathjax 字体名产生兼容警告，映射到当前默认字体。颜色支持所有当前颜色空间，与普通文字一致。",
+    "errorsEn": "The math engine rejects external resources, require and custom macros. Legacy mathjax font names warn and map to the current default. Formula colors support the same spaces as ordinary text.",
+    "minimalApi": "formula"
+  },
+  "shapes": {
+    "conceptZh": "闭合形状用 fill 填充内部、border_* 描边；开放线条用 line_* 描边。path(commands=...) 保留源码节点和曲线段，不以渲染细分点代替几何身份。线身与头部只影响 ink，完整中心线仍到达逻辑端点。",
+    "conceptEn": "Closed shapes use fill and border_*; open lines use line_*. path(commands=...) preserves source nodes and segments rather than render subdivisions. Shaft and heads affect ink, while the complete centerline reaches logical endpoints.",
+    "compositionZh": "line 可用 dx/dy 或 length/angle 定义，二者互斥。start_head 反向沿起点切线，end_head 沿终点切线；triangle/open/stealth 以尖定位，dot/diamond/bar 以中心定位。零长度显式 angle 可生成独立头部。",
+    "compositionEn": "Define line with dx/dy or length/angle, never both. start_head points opposite the start tangent and end_head along the end tangent. triangle/open/stealth locate their tip; dot/diamond/bar locate their center. Zero length plus an explicit angle creates standalone heads.",
+    "errorsZh": "闭合子路径不接受头部；多条开放子路径各自设置端部。头部不会因短线缩小。零长度布局框沿用端帽或头部尺寸规则，path 弧长仍为零。arrow(...) 已移除，迁移为 line(...,end_head=head(...))。",
+    "errorsEn": "Closed subpaths reject heads; each open subpath receives its own endpoint styles. Short lines do not shrink heads. Zero-length layout retains cap/head dimension rules while path length remains zero. arrow(...) is removed; migrate to line(...,end_head=head(...)).",
+    "minimalApi": "line"
+  },
+  "fills": {
+    "conceptZh": "颜色可以是十六进制字符串或 rgb/hsv/oklch 构造值。HEX 的最后两位是 alpha，#ffffff90 约为 56.47% 不透明度。颜色 alpha 与对象、描边及祖先组的不透明度相乘。",
+    "conceptEn": "Colors are HEX strings or rgb/hsv/oklch values. HEX’s last two digits encode alpha: #ffffff90 is about 56.47% opacity. Color alpha multiplies object, stroke and ancestor-group opacity.",
+    "compositionZh": "将颜色用于填充、文字、描边、渐变 stop 和图表配色。linear_gradient 与 radial_gradient 使用布局框的归一化坐标；hatch 是物理间距图案，image_fill 将图片适配到形状内部。",
+    "compositionEn": "Use colors in fills, text, strokes, gradient stops and chart palettes. linear_gradient and radial_gradient use normalized layout-box coordinates. hatch uses physical spacing; image_fill fits an image inside a shape.",
+    "errorsZh": "RGB 为 0–255，HSV 的 S/V 和 OKLCH 的 L 为 0–1，C 非负，alpha 为 0–1；非法或非有限值报错。OKLCH 超色域压缩色度并提示映射。当前不提供 HSL/CMYK。",
+    "errorsEn": "RGB is 0–255; HSV S/V and OKLCH L are 0–1; C is nonnegative and alpha is 0–1. Invalid or nonfinite values error. Out-of-gamut OKLCH reduces chroma with a mapping notice. HSL/CMYK are not supported.",
+    "minimalApi": "rgb"
+  },
+  "values": {
+    "conceptZh": "变量可以保存数值、字符串、列表、素材和实例。固定选项使用预定义字符串变量，无需声明：round 与 \"round\" 完全等价。它们不是宏，没有参数展开或特殊赋值规则。",
+    "conceptEn": "Variables hold numbers, strings, lists, material and instances. Fixed options have predefined string variables: round and \"round\" are identical values without a declaration. These are not macros and have no special expansion or assignment rules.",
+    "compositionZh": "把 [triangle,open,dot] 放入列表并循环生成头部，或把 round 传入函数默认参数。用户作用域优先，因此 round=\"square\" 会改变该作用域中 round 的值。ratex_katex 对应字符串 \"ratex-katex\"。",
+    "compositionEn": "Put [triangle,open,dot] in a list and loop over heads, or use round as a function default. User scope takes priority, so round=\"square\" changes that scope’s value. ratex_katex represents \"ratex-katex\".",
+    "errorsZh": "字符串写法继续合法且没有弃用警告。未知名称仍报 E_NAME。内置选项变量在悬停中只显示类型和值；允许哪些值以及它们的含义由对应参数说明负责。",
+    "errorsEn": "String spellings remain legal without deprecation warnings. Unknown names still report E_NAME. Hovering an option variable shows only type and value; parameter documentation explains accepted values and their meaning.",
+    "minimalApi": "str"
+  },
+  "control-flow": {
+    "conceptZh": "for 按列表顺序或字典插入顺序遍历。支持键值和嵌套解包；enumerate 提供编号，zip 在最短输入结束时停止。循环开始时固定遍历内容。",
+    "conceptEn": "for follows list order or dictionary insertion order. Pair and nested unpacking are supported; enumerate adds indices and zip stops at the shortest input. Iteration snapshots are fixed at loop entry.",
+    "compositionZh": "把图形尺寸、颜色或偏移保存到列表，用 range(len(items)) 遍历并按索引放置。while、break 和 continue 可以控制循环，但应让退出条件明确且可复现。",
+    "compositionEn": "Store dimensions, colors or offsets in lists and place them using range(len(items)). while, break and continue control iteration, with explicit reproducible exit conditions.",
+    "errorsZh": "循环最多 10,000 次，函数调用深度最多 64，语句总数有限制。新局部变量不会自动泄漏到外层；对已有外层变量的重新赋值遵循当前作用域规则。",
+    "errorsEn": "Loops allow at most 10,000 iterations, function depth is at most 64 and statement execution is bounded. New local bindings do not automatically leak outward; reassigning existing outer bindings follows scope rules.",
+    "minimalApi": "range"
+  },
+  "modules": {
+    "conceptZh": "function 把计算或素材组合封装为可复用逻辑；组件 .lay 文件用 export 暴露变量和函数，入口文件用 import 选择名称并可重命名。",
+    "conceptEn": "function encapsulates computation or material composition. Component .lay files export variables/functions; the entry imports selected names and may rename them.",
+    "compositionZh": "函数可接受尺寸、标题或端帽变量并返回素材或组。预定义变量在模块中同样可用，用户或模块自己的同名变量优先；模块中的资源路径相对于模块文件。",
+    "compositionEn": "Functions may accept sizes, titles or cap variables and return material or groups. Predefined variables also work in modules, with user/module bindings taking priority. Resource paths are relative to the module file.",
+    "errorsZh": "导入名只读，循环导入与缺失导出报错。模块不创建或直接绘制入口 canvas；主文件应先建立 canvas 再使用导入组件。",
+    "errorsEn": "Imports are read-only; cycles and missing exports error. Modules do not create or draw directly on the entry canvas. Create the entry canvas before using imported components.",
+    "minimalApi": "group"
+  },
+  "resources": {
+    "conceptZh": "资源路径相对于定义资源的文件，而不是运行命令时的工作目录。素材定义、模块、独立 LCSS 各保留自己的资源来源；CLI 使用入口路径组织这些依赖。",
+    "conceptEn": "Resource paths are relative to the defining file, not the shell working directory. Material, modules and standalone LCSS retain their own resource origin; the entry path organizes dependencies.",
+    "compositionZh": "将图片、字体和组件放在作品旁，使用相对路径。Python save_source 把绑定数据和图像写进同名 .assets 目录；分享时保留源文件与资源的相对位置。",
+    "compositionEn": "Keep pictures, fonts and components beside the work and use relative paths. Python save_source writes bound data/images to a sibling .assets directory; preserve relative locations when sharing.",
+    "errorsZh": "WASM 的虚拟文件映射需要提供完整依赖；不能依靠浏览器任意读取本机文件。资源加载错误会带定义文件的位置，字体名称的解析依赖运行环境。",
+    "errorsEn": "WASM’s virtual file map must contain every dependency; a browser cannot freely read local files. Resource errors locate the defining file, and font-name resolution depends on the runtime.",
+    "minimalApi": "image"
+  },
+  "data": {
+    "conceptZh": "数据数值与物理尺寸不同：x/y 是轴范围中的无单位数，线宽和 marker_size 是物理长度。内联列表适合小样本，table 读取 CSV/列式 JSON，array 读取 JSON 向量或矩阵。",
+    "conceptEn": "Data values differ from physical dimensions: x/y are scalar axis values, while stroke widths and marker_size are physical lengths. Inline lists suit small samples; table reads CSV/column JSON and array reads JSON vectors/matrices.",
+    "compositionZh": "同一个 table 的列可用于折线、误差棒与填充带。Python 绑定 DataFrame 会生成数据资源，保存源码后可由 CLI 独立读取。null 保留缺失信息，不会自动插值。",
+    "compositionEn": "Reuse table columns for lines, errors and bands. Python DataFrame binding creates data resources that a saved layout can read through the CLI. null retains missingness without automatic interpolation.",
+    "errorsZh": "table 的列名非空且唯一，列长相同；array 不接受 values 参数，内联数据直接写列表。缺失点可能分断曲线或跳过标记，并产生 W_PLOT_MISSING。",
+    "errorsEn": "table requires unique nonempty names and equal column lengths. array does not accept values: write inline lists directly. Missing samples may break curves or skip markers and emit W_PLOT_MISSING.",
+    "minimalApi": "table"
+  },
+  "plot-area": {
+    "conceptZh": "页面 size、图表 size 和绘图区大小是三层不同尺寸。plot_area=box(...) 明确数据区域的物理位置与宽高，适合多个实验图保持相同可比较比例。",
+    "conceptEn": "Page size, chart size and plot-area size are three distinct dimensions. plot_area=box(...) fixes the data region’s physical position and dimensions, useful for comparable experimental panels.",
+    "compositionZh": "显式 plot_area 在图表实例重排时保留数据区域；margins 固定边距，数据区域随外框变化。共享 plot_style 可统一文字与描边默认值，但显式层参数仍优先。",
+    "compositionEn": "An explicit plot_area retains the data region during chart reflow. margins retain edge spacing while the data area follows the frame. Shared plot_style sets text/stroke defaults; explicit layer parameters win.",
+    "errorsZh": "plot_area 与 margins 互斥。内容不会自动扩大页面；放不下的图例或标签产生布局警告。直接调整图表框与缩放外层 group 的语义不同。",
+    "errorsEn": "plot_area and margins are exclusive. Content does not enlarge the page; cramped legends or labels generate layout warnings. Reflowing the chart frame differs from scaling an enclosing group.",
+    "minimalApi": "plot"
+  },
+  "axes": {
+    "conceptZh": "axis 配置数据范围、映射、刻度和标签。默认主轴是 x/y；显式 range 保证不同图表使用同样数值范围。linear、log、symlog 是不同数据映射，不是页面旋转。",
+    "conceptEn": "axis configures domain, mapping, ticks and labels. The default primary axes are x/y. Explicit range makes charts comparable. linear, log and symlog are data transforms, not page rotations.",
+    "compositionZh": "ticks 配 tick_text 可显示分类文字或公式；minor_ticks 和 grid 控制细分刻度与背景网格。通过 chart.axes[\"x\"].spine.path 选轴线，通过完整组件 bounds 对齐标题区域。",
+    "compositionEn": "Pair ticks with tick_text for category strings or formulas. minor_ticks and grid control subdivisions and background grids. Select chart.axes[\"x\"].spine.path for the spine, or component bounds for title alignment.",
+    "errorsZh": "log 范围和有效数据必须为正。刻度文字与显式 ticks 长度要一致。axis.min/max 表示数值范围端点，反向轴也不改变它们的数值含义。",
+    "errorsEn": "log requires positive bounds and valid data. Explicit tick_text must match ticks. axis.min/max mean numerical domain endpoints, including on reversed axes.",
+    "minimalApi": "axis"
+  },
+  "labels": {
+    "conceptZh": "标签和科学计数法只改变显示，不改原始数据。notation、format 和 exponent 决定刻度文本，独立 label_offset 与 exponent_offset 控制物理位置。",
+    "conceptEn": "Labels and scientific notation change display, not source data. notation, format and exponent determine tick text; independent label_offset and exponent_offset control physical position.",
+    "compositionZh": "用 text 或 formula 素材作为 tick_text，可以给不同刻度单独排版。tick_rotation 按标签中心旋转；用固定 plot_area 比较旋转前后的占用空间。",
+    "compositionEn": "Use text or formula material in tick_text for independent formatting. tick_rotation rotates about each label center; a fixed plot_area helps compare the occupied space before and after rotation.",
+    "errorsZh": "显式 text/formula 的样式保留，不会被轴默认字体完全覆盖。科学乘数不应再次乘进输入数据；布局警告说明标签空间不足。",
+    "errorsEn": "Explicit text/formula styles remain intact rather than being fully replaced by axis defaults. Do not multiply a displayed scientific factor into the input again. Layout warnings indicate insufficient label space.",
+    "minimalApi": "axis"
+  },
+  "legends": {
+    "conceptZh": "图例解释离散系列，色标解释数值颜色映射。图层 label 生成图例项目；color_scale 把同一数值规则共享给散点、热图、等高线和独立 colorbar。",
+    "conceptEn": "Legends explain discrete series; colorbars explain numeric color mappings. Layer label supplies legend entries. color_scale shares one numeric rule among scatter, heatmaps, contours and standalone colorbars.",
+    "compositionZh": "p.legend/p.colorbar 是图表内部装饰；legend(layers=...) 和 colorbar(scale=...) 是可独立放置的素材。共享色标需要显式范围与同一配置对象，不能只选同名配色。",
+    "compositionEn": "p.legend/p.colorbar decorate a chart. legend(layers=...) and colorbar(scale=...) are independently placed material. Shared mapping requires an explicit domain and the same configuration object, not merely the same palette name.",
+    "errorsZh": "color_scale 与图层私有 cmap/vmin/vmax 不能同时指定。连续色标按 RGB 插值并处理 alpha。独立图例中的图层应来自当前作品的有效图表。",
+    "errorsEn": "color_scale cannot be combined with a layer’s private cmap/vmin/vmax. Continuous scales interpolate RGB and alpha. Standalone legend layers must belong to valid charts in the current work.",
+    "minimalApi": "color_scale"
+  },
+  "annotations": {
+    "conceptZh": "数据锚点把原始数据数值转换到实例坐标。chart.data(x=...,y=...) 可以定位文字和连接线，跟随轴变换、实例旋转和组缩放。hline/vline 则在数据区内画参考线。",
+    "conceptEn": "Data anchors map original values into instance coordinates. chart.data(x=...,y=...) positions labels and connectors through axis transforms, instance rotation and group resizing. hline/vline draw references inside the data region.",
+    "compositionZh": "把文字自身 bottom_center 对齐数据点，再使用物理 offset 留空。命名轴数据锚点可指定 x_axis/y_axis，适合将副轴曲线与注释一起复用。",
+    "compositionEn": "Align a label’s bottom_center with a data point, then add a physical offset. Named-axis anchors accept x_axis/y_axis, keeping secondary-axis curves and annotations consistent.",
+    "errorsZh": "普通素材 p 不是已放置图表；应使用 chart=page.add(p) 的返回值。断轴隐藏区的数据锚点报错，越界不会被偷偷夹到边缘。",
+    "errorsEn": "The definition p is not a placed chart: use the return from chart=page.add(p). Data anchors in hidden axis intervals error; outside values are not silently clamped to the edge.",
+    "minimalApi": "instance.data"
+  },
+  "line-scatter": {
+    "conceptZh": "line 连续连接有效点，scatter 只绘制标记。二者保留输入顺序，line 的 marker 可同时显示采样点；样式尺寸使用物理单位，与数据范围独立。",
+    "conceptEn": "line connects valid points; scatter draws markers only. Both retain input order. line’s marker can expose samples, and physical style sizes are independent of data domains.",
+    "compositionZh": "同一 x/y 可用浅色线连接并用不同标记强调点。scatter 的 c 配 color_scale 显示第三变量，marker_size 和 opacity 可以是与数据长度相同的列表。",
+    "compositionEn": "Connect x/y with a light line and emphasize points with markers. scatter’s c plus color_scale shows a third variable; marker_size and opacity can be arrays matching data length.",
+    "errorsZh": "不自动排序 x。c 与 marker_fill 互斥，逐点数组长度须匹配；缺失点分断折线或跳过标记。marker 可用 circle/square/triangle/triangle_down/diamond/none。",
+    "errorsEn": "x is not automatically sorted. c and marker_fill are exclusive; per-point arrays must match. Missing samples break lines or skip markers. Supported markers are circle/square/triangle/triangle_down/diamond/none.",
+    "minimalApi": "plot.line"
+  },
+  "uncertainty": {
+    "conceptZh": "errorbar 在采样点绘制 xerr/yerr 不确定度，band 在 x 对应的 lower/upper 之间填充。误差是数据单位，cap_size 和线宽是物理长度。",
+    "conceptEn": "errorbar draws xerr/yerr at samples; band fills between lower/upper at x positions. Errors use data units, while cap_size and stroke width are physical lengths.",
+    "compositionZh": "同一实验数据可组合半透明 band、中心折线及点误差。误差可对称或分别指定上下误差；上下界须与采样位置对应。",
+    "compositionEn": "Combine a translucent band, central line and point errors for one experiment. Errors may be symmetric or separately specify lower/upper sides, with corresponding sample positions.",
+    "errorsZh": "误差不能为负，数组长度必须相同。断轴或投影裁剪不会制造新的误差端帽；缺失输入保留诊断。不要把上下界误传成误差幅度。",
+    "errorsEn": "Errors cannot be negative and arrays must match. Broken-axis/projection clipping does not invent error caps. Missing inputs retain diagnostics. Bounds are not error magnitudes.",
+    "minimalApi": "plot.errorbar"
+  },
+  "bars": {
+    "conceptZh": "bar 的 positions、values、baseline 和 data_width 都是数据单位。step 使用 pre/mid/post 定义阶跃出现的位置；area 把曲线与基线之间的区域填充。",
+    "conceptEn": "bar positions, values, baseline and data_width use data units. step uses pre/mid/post to locate transitions; area fills between a curve and baseline.",
+    "compositionZh": "用不同 positions 手工形成分组柱，使用逐点 baseline 形成堆叠柱。将 hline 的零线、step 曲线和带透明度 area 组合，可比较离散与连续表达。",
+    "compositionEn": "Use explicit positions for grouped bars and per-point baseline for stacked bars. Combine a zero hline, a step curve and translucent area to compare discrete/continuous representations.",
+    "errorsZh": "柱宽不是 mm；不得与物理线宽混淆。不会自动决定类别位置、排序或堆叠。负 values 可以落在基线另一侧，log 轴仍受正值要求约束。",
+    "errorsEn": "Bar width is not mm and differs from physical stroke width. Category positions, sorting and stacking are not inferred. Negative values can fall below baseline; log axes still require positive values.",
+    "minimalApi": "plot.bar"
+  },
+  "heatmaps": {
+    "conceptZh": "heatmap 表示单元格数值，contour 表示采样场等值线，contourf 填充等值区间。它们均要求规则的二维矩阵，但边缘坐标和采样坐标含义不同。",
+    "conceptEn": "heatmap represents cell values, contour represents sampled-field isolines and contourf fills level intervals. All require rectangular matrices, but cell edges differ from sample coordinates.",
+    "compositionZh": "用共享 color_scale 让热图与等高线采用相同颜色规则。x_edges/y_edges 定义热图边缘，contour 的 x/y 定义采样坐标；非均匀轴或断轴采用矢量单元格保证映射。",
+    "compositionEn": "Share color_scale across heatmaps and contours. x_edges/y_edges are heatmap boundaries; contour x/y are sample coordinates. Nonuniform or broken axes use vector cells for accurate mapping.",
+    "errorsZh": "levels 必须递增，等高线至少 2×2。矩阵缺失区域不自动插值，散点不自动变成网格。坐标列表与 extent 互斥；行长不一致报错。",
+    "errorsEn": "levels must increase and contours need at least 2×2 samples. Missing regions are not interpolated and scattered observations do not become a grid automatically. Coordinates and extent are exclusive; ragged rows error.",
+    "minimalApi": "plot.heatmap"
+  },
+  "multi-axes": {
+    "conceptZh": "命名轴允许图层选择自己的数值映射。主轴是 x/y；add_axis 给新增轴唯一名称和 left/right/top/bottom 位置，图层通过 x_axis/y_axis 绑定。",
+    "conceptEn": "Named axes let each layer select its mapping. Primary names are x/y; add_axis gives an extra axis a unique name and left/right/top/bottom position. Layers bind through x_axis/y_axis.",
+    "compositionZh": "一条副轴曲线可与主轴柱图叠放。各轴独立设置 breaks 和 segment_lengths；数据锚点必须使用同一轴名称，才能与相应图层保持一致。",
+    "compositionEn": "Overlay a secondary-axis line with primary-axis bars. Each axis may have independent breaks/segment_lengths. Data anchors must select the matching axis names.",
+    "errorsZh": "不会自动为同侧多个轴留出间距。断轴区间必须在显式范围内递增且不重叠；segment_lengths 加间隙必须等于数据区边长，不会自动缩放。",
+    "errorsEn": "Same-side axes do not automatically make room for one another. Breaks must increase without overlap inside an explicit domain. segment_lengths plus gaps must match the data edge; no automatic rescaling occurs.",
+    "minimalApi": "plot.add_axis"
+  },
+  "hist-ecdf": {
+    "conceptZh": "hist 把原始观测按 bins 分箱；ECDF 在排序观测处计算累计比例。统计基于原始数据，与轴的显示变换无关。stat=count/probability/density 决定柱高含义。",
+    "conceptEn": "hist bins raw observations; ECDF computes cumulative proportions at sorted observations. Statistics use original data, independent of display transforms. stat=count/probability/density determines histogram height.",
+    "compositionZh": "显式 bins 可处理不等宽区间，density 的归一化按区间宽度计算。将 ECDF 绑定到范围为 0–1 的副轴，可以与频数或密度柱图同页比较。",
+    "compositionEn": "Explicit bins support unequal widths; density normalization includes bin width. Bind ECDF to a 0–1 secondary axis to compare it with counts or density.",
+    "errorsZh": "weights 必须非负且与观测数量匹配。密度柱高并非单个区间概率，要乘区间宽度。自动分箱和加权统计规则见详细参数说明。",
+    "errorsEn": "weights must be nonnegative and match observations. Density height is not a bin probability: multiply by width. See detailed parameters for automatic bins and weighted statistics.",
+    "minimalApi": "plot.hist"
+  },
+  "box-violin": {
+    "conceptZh": "boxplot 概括分位数、须和离群点；violin 用核密度估计展示分布。它们读取原始观测而不是已经汇总的五数值。",
+    "conceptEn": "boxplot summarizes quantiles, whiskers and outliers; violin shows a kernel density estimate. Both accept observations rather than an already summarized five-number result.",
+    "compositionZh": "把同一批观测放在相邻位置的 boxplot 和 violin 中，使用显式 data_width 保持可比较宽度。R-7 分位数、1.5 IQR 默认须和 Scott 带宽说明统计口径。",
+    "compositionEn": "Place boxplot and violin for one sample at neighboring positions with explicit data_width. R-7 quantiles, default 1.5 IQR whiskers and Scott bandwidth specify the statistical convention.",
+    "errorsZh": "单点或常量样本的小提琴不能形成常规密度轮廓，会显示中位数并告警。points 是估计采样数，不是原始样本量；不要用它改变数据。",
+    "errorsEn": "Single/constant samples cannot form an ordinary violin density and show a median with a warning. points controls estimate sampling, not the observation count; it does not change data.",
+    "minimalApi": "plot.boxplot"
+  },
+  "polar-projection": {
+    "conceptZh": "polar 用角度 theta 和半径 r 表示数据。它的默认 0° 朝右、正方向逆时针，与页面线段 angle 的顺时针 y 向下约定不同；angle_unit 决定数据角度单位。",
+    "conceptEn": "polar uses theta/r. Its default zero points right and positive direction is counterclockwise, unlike page line angles with downward y. angle_unit determines data-angle units.",
+    "compositionZh": "设置 theta_zero、theta_direction、inner_radius 可形成仪表或环形图。wrap=shortest 跨周期走最短方向，raw 保留角度差；interpolation=polar 与 chord 分别在数据与页面中连接。",
+    "compositionEn": "theta_zero, theta_direction and inner_radius create gauges/rings. wrap=shortest crosses periods along the shortest route, while raw keeps angular differences. interpolation=polar/chord connects in data/page coordinates.",
+    "errorsZh": "负半径按角度加半圈后取绝对值，并发出警告；对数径向轴要求正值。plot_* 仍指投影矩形，实际角度轴线应通过 axes 的 spine 查询。",
+    "errorsEn": "Negative radii add half a turn and use their magnitude with a warning; logarithmic radial axes require positive values. plot_* still denotes the projection rectangle; query an axis spine for its actual curve.",
+    "minimalApi": "plot"
+  },
+  "polar-layers": {
+    "conceptZh": "极坐标图层沿用折线、散点、误差、柱图与场图 API，x/y 对应 theta/r。误差和柱宽仍以角度或半径数据单位解释，描边宽度仍是物理尺寸。",
+    "conceptEn": "Polar layers reuse line, scatter, errors, bars and field APIs, with x/y interpreted as theta/r. Error and bar widths use angular/radial data units; stroke widths remain physical.",
+    "compositionZh": "同页对比极坐标 line 的 polar 插值和 chord 弦连接，再叠加角向误差与径向误差。分扇区色块与等值线可共享色标。",
+    "compositionEn": "Compare polar interpolation and chord lines on one page, then add angular/radial errors. Sector cells and contours can share a color scale.",
+    "errorsZh": "投影在原始几何上处理可见区域；跨零与缺失点会分断路径。数据角度数组不要写带单位长度；仅角度配置参数支持角度单位语法。",
+    "errorsEn": "Projection handles visibility on original geometry; zero crossings and missing points can split paths. Do not use length units in angular data arrays; angle-configuration parameters support angle-unit syntax.",
+    "minimalApi": "plot.line"
+  },
+  "radar": {
+    "conceptZh": "radar 为每个类别指定角度和各自的数值范围，再将各项归一化到共同物理半径。它适合比较多指标形状，不保证不同量纲具有相同意义。",
+    "conceptEn": "radar assigns each category an angle and its own domain, normalizing values into a common physical radius. It compares multi-metric shapes without implying that different units have equal meaning.",
+    "compositionZh": "categories 与 ranges 显式匹配，使用 closed=true 的 line 或 area 连接首尾。原始数据锚点可选 category/value，标签用 categories 或独立文本。",
+    "compositionEn": "Match categories with ranges and use closed=true line or area to join endpoints. Original-data anchors accept category/value; labels use categories or separate text.",
+    "errorsZh": "类别顺序不会自动重排。每条数据数量必须与类别数量一致，范围须有效且值在可见范围内。不要把极坐标连续 theta 查询当作类别索引。",
+    "errorsEn": "Category order is not inferred. Each series must match category count with valid domains and visible values. Continuous polar theta selection is not a category index.",
+    "minimalApi": "plot"
+  },
+  "cmaps": {
+    "conceptZh": "cmap 是不可变命名配色对象，palette 返回可直接用于循环或 plot_style 的颜色列表。预设使用 Matplotlib 3.11.2 原生颜色表，普通运行无需 Matplotlib。",
+    "conceptEn": "cmap is an immutable named colormap; palette returns a color list for loops or plot_style. Presets use Matplotlib 3.11.2 native LUTs without a runtime Matplotlib dependency.",
+    "compositionZh": "按 cmap_names() 遍历全部预设；分类配色按原始顺序取色，连续配色均匀采样，循环配色避开重复端点。共享 color_scale 保持数据图层和色标一致。",
+    "compositionEn": "Iterate over cmap_names() to explore every preset. Categorical colors retain native order, sequential maps sample evenly and cyclic maps omit the repeated endpoint. Shared color_scale keeps layers and colorbars consistent.",
+    "errorsZh": "名称区分大小写，支持原生别名与 _r；rdbu 是 RdBu 的兼容别名。n 为 0–10,000 的整数，位置 t 必须有限，范围外钳制。原有配色已统一为 Matplotlib 颜色，部分旧输出会变化。",
+    "errorsEn": "Names are case-sensitive and support native aliases and _r; rdbu aliases RdBu. n is an integer from 0 to 10,000; t must be finite and is clamped outside the domain. Existing names now use Matplotlib colors, changing some previous output.",
+    "minimalApi": "cmap"
+  }
+}

@@ -1,0 +1,15 @@
+# Gallery: containers / group-nested
+page = canvas(name="Nested groups", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Nested groups", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+inner = group()
+inner.add(ellipse(size=(15 mm, 15 mm), fill="#f2ab47"), target=inner.top_left)
+outer = group()
+plate = outer.add(rect(size=(52 mm, 35 mm), fill="#d8f0ec"),
+                  target=outer.top_left)
+outer.add(inner, anchor=center, target=plate.center)
+page.add(outer,size=(73 mm, 49 mm), target=page.top_left,
+         offset=(21 mm, 25 mm), rotation=-7 deg)
+# END DEMO

@@ -1,0 +1,14 @@
+# Gallery: positioning / dependent-size
+page = canvas(name="Size moves followers", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Size moves followers", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+box = rect(size=(20 mm, 23 mm), fill="#087f8c")
+first = page.add(box,size=(47 mm, auto), target=page.top_left, offset=(10 mm, 28 mm))
+follower = page.add(box, target=first.top_right, offset=(6 mm, 0 mm))
+page.add(text(content="47 mm", font_family=font, font_size=9 pt, color="#ffffff"),
+         anchor=center, target=first.center)
+page.add(text(content="next", font_family=font, font_size=9 pt, color="#ffffff"),
+         anchor=center, target=follower.center)
+# END DEMO

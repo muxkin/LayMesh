@@ -1,0 +1,4 @@
+# Minimal complete example: linear_gradient
+page=canvas(size=(100mm,75mm),background="#ffffff")
+paint=linear_gradient(stops=[(0,"#0072b2"),(1,"#ffffff90")])
+page.add(rect(size=(60mm,30mm),fill=paint),offset=(10mm,10mm))

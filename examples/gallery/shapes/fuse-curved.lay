@@ -1,0 +1,26 @@
+# Gallery: shapes / fuse-curved
+page = canvas(name="Curved seams", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Curved seams", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+disk = ellipse(size=(22 mm, 22 mm), fill="#087f8c")
+round_surface = page.add(disk, target=page.top_left, offset=(12 mm, 24 mm))
+up_line = page.add(line(dx=30 mm, dy=-8 mm, line_width=3 mm),
+                   target=page.top_left, offset=(46 mm, 27 mm))
+round_join = page.fuse(round_surface, up_line,
+                       points=(round_surface.middle_right, up_line.start),
+                       bridge_width=3 mm, junction=round, radius=2 mm,
+                       fill="#087f8c", border_color="none")
+
+freeform = path(commands=[move_to(0 mm,0 mm), line_to(20 mm,0 mm),
+                          cubic_to(25 mm,4 mm,25 mm,16 mm,20 mm,20 mm),
+                          line_to(0 mm,20 mm), close()], fill="#087f8c")
+curved_surface = page.add(freeform, target=page.top_left, offset=(12 mm, 51 mm))
+down_line = page.add(line(dx=30 mm, dy=8 mm, line_width=3 mm),
+                     target=page.top_left, offset=(46 mm, 61 mm))
+curved_join = page.fuse(curved_surface, down_line,
+                        points=(curved_surface.middle_right, down_line.start),
+                        bridge_width=3 mm, junction=round, radius=2 mm,
+                        fill="#087f8c", border_color="none")
+# END DEMO

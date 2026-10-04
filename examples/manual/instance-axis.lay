@@ -1,0 +1,6 @@
+# Minimal complete example: instance.axis
+page=canvas(size=(100mm,75mm),background="#ffffff")
+p=plot(size=(86mm,62mm),x=axis(range=(0,4)),y=axis(range=(0,5)))
+p.line(x=[0,1,2,3],y=[1,2,4,3])
+chart=page.add(p,offset=(7mm,6mm))
+page.add(ellipse(size=(2mm,2mm),fill="#e36b70"),anchor=center,target=chart.axis(name="x",anchor=center))

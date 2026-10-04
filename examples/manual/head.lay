@@ -1,0 +1,4 @@
+# Minimal complete example: head
+page=canvas(size=(100mm,75mm),background="#ffffff")
+h=head(shape=diamond,size=(6mm,5mm),fill="#e36b70")
+page.add(line(length=50mm,end_head=h,line_width=1.5mm),offset=(12mm,25mm))

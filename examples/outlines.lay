@@ -1,0 +1,37 @@
+# Reusable PowerPoint-style outline presets; fill and outline are independent.
+page = canvas(name="LayMesh outlines", size=(180 mm, 110 mm), background="#ffffff")
+font = "DejaVu Sans"
+
+title = text(content="LayMesh  /  outlines", font_family=font, font_size=18 pt, color="#213047")
+page.add(title, target=page.top_left, offset=(10 mm, 7 mm))
+
+
+
+
+card = rect(size=(42 mm, 22 mm), border_radius=3 mm, fill="#e7f6f6", border_color="#087f8c", border_width=1.8 mm, border_style= solid)
+page.add(card, target=page.top_left, offset=(10 mm, 30 mm))
+page.add(rect(size=(42 mm, 22 mm), border_radius=3 mm, fill="#e7f6f6", border_color="#087f8c", border_width=1.8 mm, border_style=double),
+         target=page.top_left, offset=(69 mm, 30 mm))
+page.add(rect(size=(42 mm, 22 mm), border_radius=3 mm, fill="#e7f6f6", border_color="#087f8c", border_width=1.8 mm, border_style=triple),
+         target=page.top_left, offset=(128 mm, 30 mm))
+
+page.add(text(content="SINGLE", font_family=font, font_size=9 pt, color="#46576d"),
+         target=page.top_left, offset=(10 mm, 56 mm))
+page.add(text(content="DOUBLE", font_family=font, font_size=9 pt, color="#46576d"),
+         target=page.top_left, offset=(69 mm, 56 mm))
+page.add(text(content="TRIPLE", font_family=font, font_size=9 pt, color="#46576d"),
+         target=page.top_left, offset=(128 mm, 56 mm))
+
+page.add(rect(size=(42 mm, 20 mm), fill="#fff1df"),
+         target=page.top_left, offset=(10 mm, 74 mm))
+page.add(rect(size=(42 mm, 20 mm), fill="#fff1df"),
+         target=page.top_left, offset=(69 mm, 74 mm))
+page.add(rect(size=(42 mm, 20 mm), fill="#fff1df"),
+         target=page.top_left, offset=(128 mm, 74 mm))
+
+page.add(text(content="DOT + 70%", font_family=font, font_size=9 pt, color="#46576d"),
+         target=page.top_left, offset=(10 mm, 98 mm))
+page.add(text(content="DASH DOT", font_family=font, font_size=9 pt, color="#46576d"),
+         target=page.top_left, offset=(69 mm, 98 mm))
+page.add(text(content="CUSTOM", font_family=font, font_size=9 pt, color="#46576d"),
+         target=page.top_left, offset=(128 mm, 98 mm))

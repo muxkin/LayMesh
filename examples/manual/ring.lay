@@ -1,0 +1,3 @@
+# Minimal complete example: ring
+page=canvas(size=(100mm,75mm),background="#ffffff")
+page.add(ring(outer_radius=20mm,inner_radius=13mm,fill="#087f8c"),offset=(15mm,15mm))

@@ -1,0 +1,772 @@
+{
+  "git_commit": "78db22d",
+  "wheel": "laymesh-0.2.0-py3-none-manylinux_2_28_x86_64.whl",
+  "sha256": "8c73cdb44da0cfbfe31fe650df49cba666f68456f0f8354fdc88873d1866f3ee",
+  "wheel_bytes": 101662824,
+  "groups": {
+    "other": {
+      "compressed_bytes": 8673931,
+      "installed_bytes": 31615287,
+      "files": 2706
+    },
+    "sharp": {
+      "compressed_bytes": 7704006,
+      "installed_bytes": 17686591,
+      "files": 49
+    },
+    "text_fonts": {
+      "compressed_bytes": 29164594,
+      "installed_bytes": 36201256,
+      "files": 9
+    },
+    "mathjax": {
+      "compressed_bytes": 8767355,
+      "installed_bytes": 30932674,
+      "files": 149
+    },
+    "resvg": {
+      "compressed_bytes": 1991285,
+      "installed_bytes": 4428525,
+      "files": 10
+    },
+    "node": {
+      "compressed_bytes": 44590941,
+      "installed_bytes": 126753049,
+      "files": 2
+    }
+  },
+  "tests": [
+    {
+      "source": "tests/acceptance.test.mjs",
+      "name": "reused image instances have independent size, crop, and anchor placement"
+    },
+    {
+      "source": "tests/acceptance.test.mjs",
+      "name": "add may be a bare statement; only referenced instances need names"
+    },
+    {
+      "source": "tests/acceptance.test.mjs",
+      "name": "canvas background replaces a full-page white rectangle across exports"
+    },
+    {
+      "source": "tests/acceptance.test.mjs",
+      "name": "instance resizing moves dependent anchors; group uses local coordinates"
+    },
+    {
+      "source": "tests/acceptance.test.mjs",
+      "name": "physical output dimensions and layout DPI are independent from PNG export DPI"
+    },
+    {
+      "source": "tests/acceptance.test.mjs",
+      "name": "SVG/PDF retain text and self-drawn vectors; SVG input stays vector in PDF"
+    },
+    {
+      "source": "tests/acceptance.test.mjs",
+      "name": "PNG, JPEG, SVG, 8-bit gray and RGB TIFF inputs are accepted"
+    },
+    {
+      "source": "tests/acceptance.test.mjs",
+      "name": "bad TIFF, missing asset, invalid unit, unknown name and forbidden call have located diagnostics"
+    },
+    {
+      "source": "tests/acceptance.test.mjs",
+      "name": "SVG with external resource or script is rejected with source location"
+    },
+    {
+      "source": "tests/acceptance.test.mjs",
+      "name": "CLI validates and renders from a Chinese path with nonzero exit for errors"
+    },
+    {
+      "source": "tests/font-stack.test.mjs",
+      "name": "ordered stacks fall back only for missing graphemes and honor span overrides"
+    },
+    {
+      "source": "tests/font-stack.test.mjs",
+      "name": "missing glyphs produce measured squares and located warnings in every export"
+    },
+    {
+      "source": "tests/font-stack.test.mjs",
+      "name": "font paths in stacks resolve at their defining module and invalid lists fail"
+    },
+    {
+      "source": "tests/font-stack.test.mjs",
+      "name": "plot labels accept font stacks and unavailable named fonts warn without failing"
+    },
+    {
+      "source": "tests/geometry-regression.test.mjs",
+      "name": "arrow shaft ends behind its head in horizontal, diagonal, reverse and vertical directions"
+    },
+    {
+      "source": "tests/geometry-regression.test.mjs",
+      "name": "short arrows draw only a head while the end anchor stays at the requested tip"
+    },
+    {
+      "source": "tests/geometry-regression.test.mjs",
+      "name": "capped, dashed and compound arrow shafts stop before the head in vector and raster exports"
+    },
+    {
+      "source": "tests/geometry-regression.test.mjs",
+      "name": "fused arrows use the same trimmed shaft and intact head"
+    },
+    {
+      "source": "tests/geometry-regression.test.mjs",
+      "name": "round fuse produces symmetric continuous fillets and preserves a uniform bridge"
+    },
+    {
+      "source": "tests/geometry-regression.test.mjs",
+      "name": "round fuse handles angled and touching joins without losing remote holes"
+    },
+    {
+      "source": "tests/geometry-regression.test.mjs",
+      "name": "round fuse keeps sloped lines connected to flat and curved boundaries"
+    },
+    {
+      "source": "tests/geometry-regression.test.mjs",
+      "name": "round fuse rejects a bounding-box anchor detached from a freeform curve"
+    },
+    {
+      "source": "tests/geometry-regression.test.mjs",
+      "name": "hollow rectangle seams keep their hole at the right edge and top-right corner"
+    },
+    {
+      "source": "tests/language-locale.test.mjs",
+      "name": "UI language settings have stable defaults and configuration precedence"
+    },
+    {
+      "source": "tests/language-locale.test.mjs",
+      "name": "language switching selects each field and preserves source, types and aliases"
+    },
+    {
+      "source": "tests/language-locale.test.mjs",
+      "name": "missing translations fall back to English then the first authored language"
+    },
+    {
+      "source": "tests/language-locale.test.mjs",
+      "name": "localized variables and transitive exported aliases retain their documentation"
+    },
+    {
+      "source": "tests/language-locale.test.mjs",
+      "name": "documentation warnings localize without discarding incomplete declarations"
+    },
+    {
+      "source": "tests/language-locale.test.mjs",
+      "name": "language tags and per-language parameter templates complete independently"
+    },
+    {
+      "source": "tests/language-locale.test.mjs",
+      "name": "plain-text clients receive readable documentation rather than Markdown source"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "incomplete DSL and embedded LCSS complete without evaluating code"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "shared parameter documentation and migration fixes cover complete source"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "every shipped native example is recognized by the shared language service"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "signatures explain placement and include its positional material with accurate ranges"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "authored docs combine actual defaults, parameter docs, returns and Markdown"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "import aliases, transitive modules, edits and removals resolve only visible exports"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "incomplete bodies keep signatures; strings, comments and keyword arguments do not declare variables"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "lexical shadowing and undocumented functions use their own declarations"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "doc warnings are located and do not become rendering errors"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "documentation templates and parameter names complete from the following declaration"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "Markdown metadata is consistent for built-in methods, named parameters and LCSS"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "partial named parameters never report an unrelated active parameter"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "function aliases exported through a module preserve their documentation"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "unfinished calls report a finite end-of-source diagnostic"
+    },
+    {
+      "source": "tests/language-service.test.mjs",
+      "name": "documentation and documentation mistakes leave actual compilation unchanged"
+    },
+    {
+      "source": "tests/lsp-language.test.mjs",
+      "name": "generic plain-text LSP client defaults to English and uses parameter strings"
+    },
+    {
+      "source": "tests/lsp-language.test.mjs",
+      "name": "initialization language overrides UI; push configuration switches without losing documents"
+    },
+    {
+      "source": "tests/lsp-language.test.mjs",
+      "name": "pull configuration, Markdown negotiation and offsets support match client capabilities"
+    },
+    {
+      "source": "tests/lsp.test.mjs",
+      "name": "packaged LSP server offers signatures, hover and migration quick fixes without rendering"
+    },
+    {
+      "source": "tests/outline.test.mjs",
+      "name": "reusable outlines support single, double, triple and independent opacity in all exports"
+    },
+    {
+      "source": "tests/outline.test.mjs",
+      "name": "double outline has two colored bands with a transparent gap"
+    },
+    {
+      "source": "tests/outline.test.mjs",
+      "name": "preset and custom dashes work on lines; compound outlines survive fusion"
+    },
+    {
+      "source": "tests/outline.test.mjs",
+      "name": "module-scoped borders and invalid canonical styles have located errors"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "independent axis segments retain exact millimetres, offsets and named data anchors"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "broken-axis rendering keeps other axes visible and does not join across gaps in PNG/PDF"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "errorbar clipping never invents caps at segment boundaries"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "axis reverse/symlog, custom rich ticks, auto minors and spine controls render"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "named auto domains only collect their bound layers; unrelated decoration edits retain maps"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "breaks and axis bindings validate strictly with source diagnostics"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "rotated repeated plots and group scaling expose correct page matrices through inspect CLI"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "histogram endpoints, weighted mass and density integral match hand calculation"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "R7 quartiles, whiskers, duplicate ECDF and Gaussian KDE match reference results without mutation"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "bar/step/area/hist/box/violin/ECDF layers export with clipping, missing diagnostics and hatches"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "color normalizations, boundaries, under/over and inverse maps match reference values"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "shared scales, per-point sizes/opacity and standalone decorations preserve fixed plot bounds"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "contours correct D3 half-cell coordinates on nonuniform grids; missing cells remain transparent"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "translucent filled contours are disjoint and rendered without cumulative darkening"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "schema 4/5 original solid point batches remain renderable"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "bars, bands, heatmap cells and both error directions split at their own Cartesian segment products"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "per-point alpha, independent size and stroke stay inside final bounds in PNG and PDF"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "log break lengths follow transformed spans; reversed axes keep minimum/maximum anchor semantics"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "automatic margins include added axes and rich rotated tick boxes, preserving explicit fixed areas"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "all color norms and local colorbar sides render with identical layer/scale mapping"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "all four named sides, negative offsets and tick colors preserve anchor positions"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "invalid statistics, colors and named-axis edge cases return located errors"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "new standalone decorations retain extractable ordinary text and formula source in PDF"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "missing-grid rectangles merge without changing cell coverage or duplicating overlap"
+    },
+    {
+      "source": "tests/plot-complete.test.mjs",
+      "name": "automatic histogram edges exclude observations whose weights are missing"
+    },
+    {
+      "source": "tests/plot-label-position.test.mjs",
+      "name": "measured short titles share the multiplier row; colliding rich titles get exactly 1.2 mm below it"
+    },
+    {
+      "source": "tests/plot-label-position.test.mjs",
+      "name": "each physical offset moves only its own title or multiplier after default collision placement"
+    },
+    {
+      "source": "tests/plot-label-position.test.mjs",
+      "name": "offset-induced overlap warns at each cached placement without moving either decoration"
+    },
+    {
+      "source": "tests/plot-label-position.test.mjs",
+      "name": "offsets preserve neighboring panels, original-value anchors, repeated rotations and containing-group scaling"
+    },
+    {
+      "source": "tests/plot-label-position.test.mjs",
+      "name": "automatic margins measure shared or stacked rows; fixed areas and margins warn without resizing"
+    },
+    {
+      "source": "tests/plot-label-position.test.mjs",
+      "name": "plain/log axes accept title offsets with unchanged data mappings; malformed offsets fail with source locations"
+    },
+    {
+      "source": "tests/plot-label-position.test.mjs",
+      "name": "independent rich title and exponent positions export consistently in SVG, PNG and PDF"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "polar four directions, negative radius, original data anchors and unchanged rectangle"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "degree/radian equivalence and shortest/raw angular paths"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "negative-radius paths pass through the origin and warnings are per layer"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "sector and annular clipping are identical in SVG PNG and PDF"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "projected errorbars preserve true caps, markers, missing values, fills and physical hatches"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "polar bar and weighted angular histograms wrap and preserve density mass"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "polar contours use exact grid coordinates, missing masks and periodic seams"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "radar explicit scales preserve raw negative values, category order and polygon anchors"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "radar missing values break lines and suppress closed fill"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "polar projection remains stable under decorations, reversal, rotated repeated placement and groups"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "projection parameters, axis restrictions, radar bounds and anchors fail with source diagnostics"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "log histogram, bars, area and ECDF clip only synthetic zero geometry"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "cross-axis colorbar overlap is reported without moving any axis"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "boxplot independent stroke and outlier styles use final marker geometry"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "warning switches obey CLI/environment priority without losing diagnostics or hiding errors"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "mixed zero and positive baselines support log axes but do not admit nonpositive actual endpoints"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "negative radial grid cells reflect by half a turn, and missing cells remain transparent"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "periodic contour bands do not double opacity at the seam or invent fill in missing regions"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "chord interpolation connects original projected endpoints across the seam"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "polar radial log/symlog and explicit label changes preserve fixed geometry and formula extraction"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "angular weighted histogram masses and density integrals match hand calculations in both units"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "periodic contour missing-node masks remove adjacent projected cells in all backends"
+    },
+    {
+      "source": "tests/plot-polar.test.mjs",
+      "name": "independent radar ranges retain their own offset multipliers"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "hollow marker interiors, outer sizes and point opacity agree in PNG and PDF"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "new markers and line/errorbar legend samples share geometry, paint and order"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "polygon strokes stay inside marker_size and errorbar legends retain only their actual directions"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "schema 4 solid point batches remain identical to schema 5 defaults"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "rich labels reuse module-relative fonts and explicit formula sizes in all label positions"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "scientific and offset notation preserve numerical domains and physical data anchors"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "very small and large finite scientific ticks and explicit offset exponents render"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "scientific D3 formatting preserves accounting suffixes and keeps padding out of the exponent"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "all colorbar sides and manual orientations preserve fixed rectangles and heatmap pixels"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "side colorbars reserve automatic margins; manual colorbars only warn without reflow"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "colorbar offsets and multiline labels preserve fixed margins and match heatmap normalization"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "new labels and manual colorbars stay attached through instance rotation and group scaling"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "changing scientific decorations leaves fixed adjacent panels and data anchors exactly in place"
+    },
+    {
+      "source": "tests/plot-scientific.test.mjs",
+      "name": "scientific labels and colorbar validation report source locations and preserve overflow geometry"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "major and minor ticks respect physical direction and log coordinates; grids are clipped behind data"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "scientific styling keeps both panels, fixed data rectangles and annotation coordinates exact"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "manual legends preserve auto margins too, warn on overflow at each placement, and use row-major columns"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "empty ticks and hidden labels keep data intact; out ticks and zero lengths are explicit"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "transparent legends and unpainted shapes leave no paths for later PDF strokes"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "invalid scientific style options report located diagnostics"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "locked plot area preserves data, labels and colorbar when only the outer frame changes"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "locked areas survive changed tick text, fonts, labels and legends"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "data anchors match plotted points for auto ranges, log axes and independently sized placements"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "changing axis range moves an annotation to the same data value"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "plot area placement anchors and data anchors follow rotation; arrows attach by their tip"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "annotated plots remain attached when their containing group is resized and rotated"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "invalid locked regions and annotation targets report source locations"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "insufficient label space warns at each placement, including cached layouts, and CLI exports succeed"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "overflowing and very small positive data rectangles keep requested geometry with warnings"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "crowded explicit ticks, labels, legend and colorbar remain present with layout warnings"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "automatic tick thinning reports only unresolved overlaps in the final layout"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "native data coordinates, reflow, clipping and all output formats"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "missing values break lines and bands without sorting or discarding order"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "log mapping and explicit ticks, format, symmetric and asymmetric errors"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "heatmap cell edges, orientation, transparency, vector mode and colorbar"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "definitions freeze after placement; numeric snapshots and existing names remain compatible"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "CSV quoted names and columns, nested data indexing and relative module data"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "large native paths bypass the DSL command limit without sampling"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "invalid data and layout produce located diagnostics"
+    },
+    {
+      "source": "tests/plot.test.mjs",
+      "name": "clipped data stays inside the frame and coincident scatter opacity accumulates in PNG and PDF"
+    },
+    {
+      "source": "tests/script.test.mjs",
+      "name": "three nested groups scale, rotate, inherit opacity and keep relative anchors"
+    },
+    {
+      "source": "tests/script.test.mjs",
+      "name": "variables, dimension arithmetic, conditions, both for forms, while and functions"
+    },
+    {
+      "source": "tests/script.test.mjs",
+      "name": "component assets resolve from defining module through transitive imports and moved directory"
+    },
+    {
+      "source": "tests/script.test.mjs",
+      "name": "cross-file asset, import, unit, loop, recursion and group errors remain located"
+    },
+    {
+      "source": "tests/typography.test.mjs",
+      "name": "text width is per placement; rich spans, alignment and anchors use measured lines"
+    },
+    {
+      "source": "tests/typography.test.mjs",
+      "name": "system font discovery and missing requested fonts emit located warnings"
+    },
+    {
+      "source": "tests/typography.test.mjs",
+      "name": "right and justified paragraphs position lines without stretching the last line"
+    },
+    {
+      "source": "tests/typography.test.mjs",
+      "name": "TTC face selection remains the same in SVG, PDF and PNG"
+    },
+    {
+      "source": "tests/typography.test.mjs",
+      "name": "OTC face selection extracts the chosen CFF font for raster output"
+    },
+    {
+      "source": "tests/typography.test.mjs",
+      "name": "fonts in imported component spans resolve relative to their module"
+    },
+    {
+      "source": "tests/typography.test.mjs",
+      "name": "MathJax formula is vector in all exports and PDF extracts original LaTeX"
+    },
+    {
+      "source": "tests/typography.test.mjs",
+      "name": "inline formulas retain terms after operators and spaces in one measured asset"
+    },
+    {
+      "source": "tests/typography.test.mjs",
+      "name": "formula failures and unavailable math font are reported with source locations"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "default geometry units are independent of data and typography"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "automatic formulas, raw text and formatted strings keep distinct semantics"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "instance classes, CSS cascade and explicit overrides do not mutate other instances"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "LCSS imports, variables, diagnostics and cycle detection"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "plot part styles preserve the physical data rectangle and render vector math"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "removed public names provide migration diagnostics"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "group instances inherit independent typography and keep anchor relationships"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "formula fragments inherit final text style and display blocks occupy separate lines"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "all region paint types export as vectors and preserve physical data coordinates"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "formula diagnostics point into the label, not the plot constructor"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "nested quotes in interpolation, raw comparisons and CSS shorthand order"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "axis regions, compound lines and independent series colors share output semantics"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "fusion can inherit a fill without requiring a visible border"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "hatch tiles contain continuous diagonals rather than isolated corner dots"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "spans inherit their final parent rather than canvas defaults"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "all shipped native examples compile with the unified API"
+    },
+    {
+      "source": "tests/unified-language.test.mjs",
+      "name": "plot-style line defaults remain independent of text color"
+    },
+    {
+      "source": "tests/vector.test.mjs",
+      "name": "path presets, holes, gradients, dashes and selectable colored spans export in all formats"
+    },
+    {
+      "source": "tests/vector.test.mjs",
+      "name": "fuse replaces only selected placements and yields distinct round seam geometry"
+    },
+    {
+      "source": "tests/vector.test.mjs",
+      "name": "nearest fuse, nested group fuse and module-exported path remain reusable"
+    },
+    {
+      "source": "tests/vector.test.mjs",
+      "name": "multi-segment dashed strokes and curved outlines can be fused"
+    },
+    {
+      "source": "tests/vector.test.mjs",
+      "name": "fuse and path diagnostics point to source"
+    }
+  ]
+}

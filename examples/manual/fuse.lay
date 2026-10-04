@@ -1,0 +1,5 @@
+# Minimal complete example: fuse
+page=canvas(size=(100mm,75mm),background="#ffffff")
+a=page.add(rect(size=(25mm,20mm),fill="#087f8c"),offset=(10mm,10mm))
+b=page.add(rect(size=(25mm,20mm),fill="#087f8c"),offset=(30mm,10mm))
+page.fuse(a,b,fill="#087f8c")

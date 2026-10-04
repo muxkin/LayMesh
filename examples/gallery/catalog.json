@@ -1,0 +1,445 @@
+{
+  "dpi": 150,
+  "categories": [
+    {
+      "slug": "images",
+      "title": "插图与图像",
+      "intro": "输入格式、复用、裁剪与图片框适配。所有素材由仓库内的合成图生成，不依赖外部下载。",
+      "items": [
+        {
+          "group": "输入格式",
+          "slug": "png",
+          "title": "PNG 位图",
+          "description": "导入 PNG 素材并指定物理宽度；输出页内保留完整图片。"
+        },
+        {
+          "group": "输入格式",
+          "slug": "jpeg",
+          "title": "JPEG 位图",
+          "description": "用相同布局导入 JPEG，观察有损编码素材进入页面后的实际效果。"
+        },
+        {
+          "group": "输入格式",
+          "slug": "svg",
+          "title": "SVG 矢量素材",
+          "description": "导入安全 SVG 子集；图形在 SVG 和 PDF 导出时可继续保持矢量。"
+        },
+        {
+          "group": "输入格式",
+          "slug": "tiff-gray",
+          "title": "8 位灰度 TIFF",
+          "description": "演示单页、单通道 8 位 TIFF 输入；源图片由生成脚本确定。"
+        },
+        {
+          "group": "输入格式",
+          "slug": "tiff-rgb",
+          "title": "8 位 RGB TIFF",
+          "description": "演示单页、三通道 8 位 TIFF 输入。"
+        },
+        {
+          "group": "实例与裁剪",
+          "slug": "reuse",
+          "title": "同一素材重复放置",
+          "description": "同一 image 定义放在两个位置并使用不同显示宽度，实例互不影响。"
+        },
+        {
+          "group": "实例与裁剪",
+          "slug": "crop",
+          "title": "独立裁剪",
+          "description": "右侧实例从源图裁取部分区域，左侧仍显示完整源图。"
+        },
+        {
+          "group": "适配模式",
+          "slug": "fit-contain",
+          "title": "contain 完整显示",
+          "description": "图像等比缩放并完整落在框内，框中可能留空。"
+        },
+        {
+          "group": "适配模式",
+          "slug": "fit-cover",
+          "title": "cover 填满并裁切",
+          "description": "图像等比填满目标框，超出的部分由框裁掉。"
+        },
+        {
+          "group": "适配模式",
+          "slug": "fit-stretch",
+          "title": "stretch 拉伸",
+          "description": "图像按框的宽高分别缩放，便于观察非等比变形。"
+        }
+      ]
+    },
+    {
+      "slug": "positioning",
+      "title": "定位与图层",
+      "intro": "以实例锚点建立关系，再用旋转、透明度和调用顺序决定最终画面。",
+      "items": [
+        {
+          "group": "锚点与依赖",
+          "slug": "anchors",
+          "title": "九点锚点",
+          "description": "同一矩形的九个锚点各放一个圆点，直接展示目标位置。"
+        },
+        {
+          "group": "锚点与依赖",
+          "slug": "relative",
+          "title": "相对定位链",
+          "description": "后一个方块以先前实例的锚点为目标，形成可跟随的链。"
+        },
+        {
+          "group": "锚点与依赖",
+          "slug": "dependent-size",
+          "title": "尺寸改变带动定位",
+          "description": "第一个实例的宽度在放置时覆盖；后续对象依据新宽度自动定位。"
+        },
+        {
+          "group": "实例变换",
+          "slug": "rotation",
+          "title": "旋转",
+          "description": "围绕实例中心旋转矩形，中心标记显示旋转基点。"
+        },
+        {
+          "group": "实例变换",
+          "slug": "opacity",
+          "title": "透明度",
+          "description": "两个矩形重叠，前景的实例透明度只影响本次放置。"
+        },
+        {
+          "group": "实例变换",
+          "slug": "drawing-order",
+          "title": "绘制顺序",
+          "description": "后执行的 add 调用绘在前面，用不透明重叠块显示层次。"
+        },
+        {
+          "group": "几何定位",
+          "slug": "geometry-anchors",
+          "title": "框、路径与绘制边界",
+          "description": "在圆角矩形、椭圆和粗箭头上分别选择布局框、几何路径及绘制边缘。"
+        },
+        {
+          "group": "几何定位",
+          "slug": "path-locations",
+          "title": "曲线路径定位",
+          "description": "原始节点与控制点、弧长和参数取点、区间查询与切线法线偏移。"
+        },
+        {
+          "group": "几何定位",
+          "slug": "chart-parts",
+          "title": "图表内部部件",
+          "description": "反向轴的数值端点、纵向轴线、标题布局框及数据坐标锚点。"
+        }
+      ]
+    },
+    {
+      "slug": "containers",
+      "title": "容器与组件",
+      "intro": "使用局部坐标组织多个对象，并通过组和本地模块复用布局。",
+      "items": [
+        {
+          "group": "组坐标",
+          "slug": "group-local",
+          "title": "组内坐标",
+          "description": "子元素围绕组内已有实例的中心定位，再整体放到页面。"
+        },
+        {
+          "group": "组坐标",
+          "slug": "group-nested",
+          "title": "嵌套与缩放",
+          "description": "内层组被外层组包含，外层实例统一缩放并旋转。"
+        },
+        {
+          "group": "复用",
+          "slug": "group-reuse",
+          "title": "同一组放置两次",
+          "description": "同一组以不同尺寸放置两次，不回写组内原始定义。"
+        },
+        {
+          "group": "复用",
+          "slug": "module-import",
+          "title": "本地模块组件",
+          "description": "从同目录 .lay 模块导入卡片函数，产生两个独立实例。"
+        }
+      ]
+    },
+    {
+      "slug": "shapes",
+      "title": "形状与绘制",
+      "intro": "从基础图形到路径、填充、虚线、复合边框和轮廓融合。",
+      "items": [
+        {
+          "group": "基础形状",
+          "slug": "rect",
+          "title": "圆角矩形",
+          "description": "矩形以 radius 设置圆角，并独立设置填充与描边。"
+        },
+        {
+          "group": "基础形状",
+          "slug": "ellipse",
+          "title": "椭圆",
+          "description": "椭圆使用不同的宽和高，展示填充、描边与外接框。"
+        },
+        {
+          "group": "基础形状",
+          "slug": "line-arrow",
+          "title": "线与箭头",
+          "description": "一条直线和一条带箭头的斜线使用同一坐标体系。"
+        },
+        {
+          "group": "预设图形",
+          "slug": "polygon-polyline",
+          "title": "多边形与折线",
+          "description": "多边形自动闭合；折线只沿所给点绘制。"
+        },
+        {
+          "group": "预设图形",
+          "slug": "arc-sector",
+          "title": "圆弧与扇形",
+          "description": "相同半径下对比开放圆弧与闭合扇形。"
+        },
+        {
+          "group": "预设图形",
+          "slug": "star-ring",
+          "title": "星形与环形",
+          "description": "星形由内外半径确定，环形保留透明内孔。"
+        },
+        {
+          "group": "路径与填充",
+          "slug": "path-commands",
+          "title": "路径命令",
+          "description": "直线、二次/三次贝塞尔曲线和椭圆弧连接成单条路径。"
+        },
+        {
+          "group": "路径与填充",
+          "slug": "evenodd-hole",
+          "title": "偶奇填充孔洞",
+          "description": "同一路径中的内外子路径用 evenodd 留出透明孔。"
+        },
+        {
+          "group": "路径与填充",
+          "slug": "linear-gradient",
+          "title": "线性渐变",
+          "description": "用多个色标沿对角线为矩形填充。"
+        },
+        {
+          "group": "路径与填充",
+          "slug": "radial-gradient",
+          "title": "径向渐变",
+          "description": "用中心和半径控制椭圆内的径向色彩过渡。"
+        },
+        {
+          "group": "描边与组合",
+          "slug": "dashes",
+          "title": "自定义虚线",
+          "description": "两条线分别使用一组及多组绘制/间隔长度。"
+        },
+        {
+          "group": "描边与组合",
+          "slug": "outlines",
+          "title": "可复用边框",
+          "description": "同一颜色和线宽生成单线、双线、三线轮廓。"
+        },
+        {
+          "group": "描边与组合",
+          "slug": "fuse",
+          "title": "实例轮廓融合",
+          "description": "连接矩形和线条的可见轮廓，生成一个新的矢量路径。"
+        },
+        {
+          "group": "描边与组合",
+          "slug": "fuse-angled",
+          "title": "斜线接入平面边界",
+          "description": "向上和向下倾斜的线条分别接入矩形边界，检查两侧圆角与连接段连续。"
+        },
+        {
+          "group": "描边与组合",
+          "slug": "fuse-curved",
+          "title": "斜线接入曲线边界",
+          "description": "斜线分别接入椭圆和自由贝塞尔曲线，检查曲线处的圆角接缝。"
+        },
+        {
+          "group": "描边与组合",
+          "slug": "fuse-outline-edge",
+          "title": "空心矩形右边接斜线",
+          "description": "空心矩形的右边中点接入斜线，保持矩形内孔和圆角接点。"
+        },
+        {
+          "group": "描边与组合",
+          "slug": "fuse-outline-corner",
+          "title": "空心矩形右上角接斜线",
+          "description": "空心矩形的右上角接入斜线，检查外轮廓与内孔连续。"
+        },
+        {
+          "group": "线与端点",
+          "slug": "line-endpoints",
+          "title": "线条端点与独立头部",
+          "description": "六种头部、零长度头部、透明接缝和曲线方向。"
+        },
+        {
+          "group": "填充与颜色",
+          "slug": "colors-alpha",
+          "title": "颜色空间与透明度",
+          "description": "HEX、RGB、HSV、OKLCH 颜色共用透明度与导出规则。"
+        }
+      ]
+    },
+    {
+      "slug": "typography",
+      "title": "文字与公式",
+      "intro": "文字、换行、彩色文字段和两种公式排版形式。",
+      "items": [
+        {
+          "group": "文字",
+          "slug": "font",
+          "title": "字体名称与回退",
+          "description": "通过已安装的系统字体或字体文件及有序回退列表排版中英文，保持三个导出后端一致。"
+        },
+        {
+          "group": "文字",
+          "slug": "wrap-align",
+          "title": "宽度、换行和对齐",
+          "description": "同一段文字以两种实例宽度居中排版，行数随宽度改变。"
+        },
+        {
+          "group": "文字",
+          "slug": "spans",
+          "title": "彩色文字段",
+          "description": "同一行内的 span 分别覆盖颜色和字号。"
+        },
+        {
+          "group": "公式",
+          "slug": "inline-formula",
+          "title": "行内公式",
+          "description": "公式作为 text 中的一段与普通文字共用一行。"
+        },
+        {
+          "group": "公式",
+          "slug": "display-formula",
+          "title": "独立公式",
+          "description": "独立公式按页面中心锚点放置，PDF 保留原始 LaTeX 源码。"
+        }
+      ]
+    },
+    {
+      "slug": "scripting",
+      "title": "脚本与计算",
+      "intro": "限定在 .lay 语言中的变量、单位、函数和流程控制。",
+      "items": [
+        {
+          "group": "表达式",
+          "slug": "units-builtins",
+          "title": "单位与内置函数",
+          "description": "append、len、min、max、abs、str 的结果直接写到图片中。"
+        },
+        {
+          "group": "控制流",
+          "slug": "control-flow",
+          "title": "函数与循环",
+          "description": "自定义函数、for、while 和 if 共同计算可见的文字结果。"
+        },
+        {
+          "group": "字典与循环",
+          "slug": "dictionaries",
+          "title": "有序字典与键值解包",
+          "description": "按插入顺序遍历字典、更新副本，并通过 enumerate 和 zip 组合布局。"
+        }
+      ]
+    },
+    {
+      "slug": "plots",
+      "title": "科研数据绘图",
+      "intro": "直角坐标、极坐标与雷达图；物理绘图区保持固定，所有面板和共享装饰手动定位。",
+      "items": [
+        {
+          "group": "精确坐标与统计",
+          "slug": "multi-axes-breaks",
+          "title": "多轴与独立断口",
+          "description": "三条纵轴使用不同的断区和物理间距；横轴也独立断开。固定绘图区的宽高和所有轴间距都可直接编辑。",
+          "source": "examples/plot/multi-axes-breaks.lay"
+        },
+        {
+          "group": "精确坐标与统计",
+          "slug": "statistics",
+          "title": "基础图层与描述统计",
+          "description": "明确的柱位置与堆叠基线、阶梯、加权规则一致的直方图、ECDF、箱线及小提琴图。常量小提琴样本保留中位数并给出预期警告。",
+          "source": "examples/plot/statistics.lay"
+        },
+        {
+          "group": "精确坐标与统计",
+          "slug": "shared-colors",
+          "title": "共享颜色与独立色标",
+          "description": "非均匀热图、规则网格等高线、逐点颜色/大小/透明度共用一个中心发散标尺。独立水平色标手动放置。",
+          "source": "examples/plot/shared-colors.lay"
+        },
+        {
+          "group": "精确坐标与统计",
+          "slug": "inset",
+          "title": "手动局部放大图",
+          "description": "独立绘图区、箭头和文字通过已有锚点组合到组内；主图采用 symlog，局部放大图仍使用自己的线性映射。",
+          "source": "examples/plot/inset.lay"
+        },
+        {
+          "group": "极坐标与雷达图",
+          "slug": "polar-directions",
+          "title": "方向曲线、跨零度与负半径",
+          "description": "比较数学角与北向顺时针；负半径给出可隐藏的预期警告。",
+          "source": "examples/plot/polar-directions.lay"
+        },
+        {
+          "group": "极坐标与雷达图",
+          "slug": "polar-errors",
+          "title": "极坐标误差带与端帽",
+          "description": "局部扇区中的径向/角向误差、空心标记和物理斜线纹理。",
+          "source": "examples/plot/polar-errors.lay"
+        },
+        {
+          "group": "极坐标与雷达图",
+          "slug": "polar-rose",
+          "title": "角度直方图与扇环堆叠",
+          "description": "周期分箱保留原始计数；逐柱基线实现手动堆叠，内孔使用 mm。",
+          "source": "examples/plot/polar-rose.lay"
+        },
+        {
+          "group": "极坐标与雷达图",
+          "slug": "polar-field",
+          "title": "极坐标热图与周期等高线",
+          "description": "非均匀径向网格与周期场共用独立色标，填色接缝不重复叠加。",
+          "source": "examples/plot/polar-field.lay"
+        },
+        {
+          "group": "极坐标与雷达图",
+          "slug": "radar",
+          "title": "原始量纲雷达图",
+          "description": "明确每个指标范围，保留负温度单位和原始数值锚点；提供共同尺度对照。",
+          "source": "examples/plot/radar.lay"
+        },
+        {
+          "group": "极坐标与雷达图",
+          "slug": "polar-data",
+          "title": "Python 极坐标数据与缺失区域",
+          "description": "NumPy 场与雷达数组保存为哈希 JSON，缺失邻接单元格保持空缺。",
+          "source": "examples/plot/polar-data.lay"
+        },
+        {
+          "group": "数据与配色",
+          "slug": "dictionary-series",
+          "title": "字典循环绘图",
+          "description": "用字典保存实验系列，通过循环绘制曲线并自动轮换 tab10 颜色。",
+          "source": "examples/plot/dictionary-series.lay"
+        },
+        {
+          "group": "数据与配色",
+          "slug": "cmap-presets",
+          "title": "87 种预设配色总览",
+          "description": "按类别查看 Matplotlib 3.11.2 完整配色集合，分类配色保留原色。",
+          "source": "examples/plot/cmap-presets.lay"
+        },
+        {
+          "group": "数据与配色",
+          "slug": "cmap-scales",
+          "title": "共享预设颜色标尺",
+          "description": "同一个 cmap 对象用于热图、填充等高线、数值散点和色标。",
+          "source": "examples/plot/cmap-scales.lay"
+        }
+      ]
+    }
+  ]
+}

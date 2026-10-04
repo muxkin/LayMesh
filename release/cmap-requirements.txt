@@ -1,0 +1,2 @@
+# Optional development dependency for scripts/build-cmaps.py; never required at runtime.
+matplotlib==3.11.2

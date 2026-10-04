@@ -1,0 +1,22 @@
+# Gallery: positioning / path-locations
+page=canvas(name="Path locations",size=(150mm,110mm),background="#ffffff")
+page.add(text("Path locations",font_family="DejaVu Sans",font_size=16pt,color="#203864"),offset=(8mm,6mm))
+page.add(text("Source nodes, controls, arc length and tangent frames",font_family="DejaVu Sans",font_size=8pt,color="#425466"),offset=(8mm,17mm))
+# BEGIN DEMO
+curve=page.add(path(commands=[move_to(0mm,0mm),cubic_to(0mm,0mm,0mm,35mm,70mm,35mm),cubic_to(85mm,35mm,100mm,0mm,110mm,0mm),line_to(120mm,12mm)],border_color="#287dc3",border_width=0.6mm),offset=(15mm,36mm))
+route=curve.path.subpaths[0]
+node_dot=ellipse(size=(2mm,2mm),fill="#203864")
+for point in route.nodes {page.add(node_dot,anchor=center,target=point)}
+control=route.segments[0].controls[1]
+page.add(ellipse(size=(2mm,2mm),fill="#9caeb7"),anchor=center,target=control)
+halfway=route.at(fraction=0.5)
+parameter_half=route.segments[0].at(t=0.5)
+page.add(ellipse(size=(3mm,3mm),fill="#009e88"),anchor=center,target=halfway)
+page.add(ellipse(size=(3mm,3mm),fill="#e59b38"),anchor=center,target=parameter_half)
+page.add(text("half length",font_family="DejaVu Sans",font_size=8pt,color="#009e88"),anchor=self.bounds.bottom_left,target=halfway,offset=(0mm,5mm),offset_space= target,rotation=halfway.tangent_angle)
+page.add(line(dx=9mm,dy=0mm,line_color="#203864",line_width=0.4mm),anchor=self.path.start,target=route.end,rotation=route.end.tangent_angle)
+interval=route.between(route.nodes[1],route.nodes[3])
+page.add(node_dot,anchor=center,target=interval.at(fraction=0.5))
+# END DEMO
+page.add(text("Teal: half the full arc length. Orange: first segment t=0.5.",font_family="DejaVu Sans",font_size=8pt,color="#425466"),offset=(8mm,87mm))
+page.add(text("Gray: control point off the curve. Dark: source nodes and interval midpoint.",font_family="DejaVu Sans",font_size=8pt,color="#425466"),offset=(8mm,97mm))

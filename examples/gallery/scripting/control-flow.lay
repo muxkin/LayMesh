@@ -1,0 +1,17 @@
+# Gallery: scripting / control-flow
+page = canvas(name="Functions and loops", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Functions and loops", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+function doubled(value, factor=2) { return value * factor }
+count = 0
+for index in range(3) { count = count + index }
+while count < 5 { count = count + 1 }
+status = "pending"
+if count == 5 { status = "ready" } else { status = "error" }
+label = text(content="count=" + str(count) + "  gap=" +
+                     str(doubled(3 mm)) + "  " + status,
+             font_family=font, font_size=11 pt, color="#087f8c")
+page.add(label, target=page.top_left, offset=(10 mm, 34 mm))
+# END DEMO

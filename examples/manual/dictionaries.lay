@@ -1,0 +1,18 @@
+# Ordered value dictionaries, safe updates and pair unpacking.
+page=canvas(size=(100mm,70mm),background="#ffffff")
+d=dict()
+d["B"]={"label":"Beta","color":"#0072b2"}
+d["A"]={"label":"Alpha","color":"#d55e00"}
+copy=d
+copy["B"]["label"]="Copy"
+d=d.update({"C":{"label":"Gamma","color":"#009e73"}})
+keys=d.keys()
+values=d.values()
+items=d.items()
+fallback=d.get("missing",{"label":"Default"})
+for i,(name,value) in enumerate(items) {
+ if name in d {
+  page.add(rect(size=(18mm,8mm),fill=value["color"]),offset=(8mm,8mm+i*18mm))
+  page.add(text(content=f"{name}: {value['label']}",font_family="DejaVu Sans",font_size=10pt),offset=(30mm,8mm+i*18mm))
+ }
+}
