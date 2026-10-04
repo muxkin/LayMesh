@@ -24,7 +24,7 @@ Click the preview icon or run **LayMesh: Open Preview** for a live figure beside
 
 ## Python and CLI installation
 
-Requires **Python 3.10+**. This workspace prepares **`0.3.1`**, shared by Python and Rust; the published PyPI release is **`0.3.0`**. New export options require the local 0.3.1 wheel or the updated extension. Install from [PyPI](https://pypi.org/project/laymesh/):
+Requires **Python 3.10+**. **`0.3.1`** is published on PyPI, shared by Python and Rust, with the new image formats and configurable export options. Install from [PyPI](https://pypi.org/project/laymesh/):
 
 ```sh
 python -m pip install laymesh
@@ -35,7 +35,7 @@ Platform wheels bundle the native Rust engine and formula fonts for the CLI, Pyt
 
 The standard installation includes NumPy, pandas, Matplotlib and IPython. Data bindings, Matplotlib Figure import and Jupyter magics are ready to use.
 
-Supported wheel platforms are Windows x64, macOS 14+ on Intel / Apple Silicon, and Linux x64 / arm64. The local Linux x64 wheel requires glibc 2.35+. All five published 0.3.0 platforms passed checks on Python 3.10, 3.13 and 3.14; other 0.3.1 platforms still require release-workflow verification; see the [release procedure](release/README.en.md). Body fonts come from the system or user-provided files; missing glyphs warn and display vector boxes. Supply the fonts with your figure for reproducible rendering across machines.
+Supported wheel platforms are Windows x64, macOS 14+ on Intel / Apple Silicon, and Linux x64 / arm64. Published Linux wheels require glibc 2.35+. All five 0.3.1 platforms passed checks on Python 3.10, 3.13 and 3.14. The Windows wheel statically links its runtime and needs no separate Visual C++ Redistributable; see the [release procedure](release/README.en.md). Body fonts come from the system or user-provided files; missing glyphs warn and display vector boxes. Supply the fonts with your figure for reproducible rendering across machines.
 
 ## First figure
 

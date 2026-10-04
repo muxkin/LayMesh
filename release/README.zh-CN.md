@@ -1,6 +1,6 @@
 # 构建与发布到 PyPI
 
-本次候选版本为 **`0.3.1`**（尚未上传 PyPI），Python 包与 Rust 引擎使用同一版本号。默认安装包含 NumPy、pandas、Matplotlib 和 IPython，使用 `pip install laymesh` 即可获得全部 Python 功能。[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)构建和验证五个平台 wheel，并执行包审计、校验和检查与 Trusted Publishing 上传。每个平台 wheel 包含 Python API、CLI 入口、一个 Rust 原生程序、依赖许可及构建清单。公式字体编译进 RaTeX，正文使用系统或用户字体。
+当前版本为 **[`0.3.1`](https://pypi.org/project/laymesh/0.3.1/)**（已发布五个平台 wheel），Python 包与 Rust 引擎使用同一版本号。默认安装包含 NumPy、pandas、Matplotlib 和 IPython，使用 `pip install laymesh` 即可获得全部 Python 功能。[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)构建和验证五个平台 wheel，并执行包审计、校验和检查与 Trusted Publishing 上传。每个平台 wheel 包含 Python API、CLI 入口、一个 Rust 原生程序、依赖许可及构建清单。公式字体编译进 RaTeX，正文使用系统或用户字体。
 
 [runtime.json](runtime.json) 定义五个目标：Linux x64 / arm64、macOS 14+ Intel / Apple Silicon、Windows x64。使用者需要 Python 3.10+；构建脚本需要 Python 3.11+ 和 Rust 1.93.1。本次只发布平台 wheel；`python/` 目录不包含完整的 Rust 引擎源码构建链，不要上传仅从该目录生成的 sdist。
 

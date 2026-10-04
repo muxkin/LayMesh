@@ -24,7 +24,7 @@ page.add(rec, offset=(0.1cm, 0.1cm))
 
 ## Python 与 CLI 安装
 
-需要 **Python 3.10+**。当前工作区准备 **`0.3.1`**，Python 包和 Rust 引擎使用相同版本号；PyPI 已发布版本为 **`0.3.0`**。新增导出参数需使用本地 0.3.1 wheel 或本次扩展包。从 [PyPI](https://pypi.org/project/laymesh/) 安装：
+需要 **Python 3.10+**。PyPI 已发布 **`0.3.1`**，Python 包和 Rust 引擎使用相同版本号，包含新增图片格式和导出参数。从 [PyPI](https://pypi.org/project/laymesh/) 安装：
 
 ```sh
 python -m pip install laymesh
@@ -35,7 +35,7 @@ python -m laymesh --version
 
 默认安装包含 NumPy、pandas、Matplotlib 和 IPython，数据绑定、Matplotlib Figure 导入及 Jupyter Magic 均可直接使用。
 
-构建目标为 Windows x64、macOS 14+ 的 Intel / Apple Silicon、Linux x64 / arm64。本机 Linux x64 wheel 要求 glibc 2.35+。已发布的 0.3.0 五个平台通过 Python 3.10、3.13、3.14 检查；0.3.1 的其他平台需由发布工作流验证，详见[发布说明](release/README.zh-CN.md)。正文使用系统或用户提供的字体；缺字会警告并显示方框。跨机器复现时请随图提供使用的字体文件。
+构建目标为 Windows x64、macOS 14+ 的 Intel / Apple Silicon、Linux x64 / arm64。发布的 Linux wheel 要求 glibc 2.35+。0.3.1 五个平台均已通过 Python 3.10、3.13、3.14 检查；Windows 包静态链接运行库，无需另装 Visual C++ Redistributable。详见[发布说明](release/README.zh-CN.md)。正文使用系统或用户提供的字体；缺字会警告并显示方框。跨机器复现时请随图提供使用的字体文件。
 
 ## 第一张图
 
