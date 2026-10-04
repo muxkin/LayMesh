@@ -1,10 +1,44 @@
 #!/usr/bin/env python3
 """Audit native wheel contents and hashes; never upload."""
-import argparse, hashlib, json, tomllib, zipfile
+import argparse, hashlib, json, struct, tomllib, zipfile
 from email.parser import BytesParser
 from packaging.requirements import Requirement
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
+
+def windows_imports(data):
+ """Read the PE import table, without requiring host-specific inspection tools."""
+ assert data[:2]==b'MZ', 'Expected a Windows executable'
+ pe=struct.unpack_from('<I',data,60)[0]
+ assert data[pe:pe+4]==b'PE\0\0' and struct.unpack_from('<H',data,pe+4)[0]==0x8664
+ optional=pe+24
+ assert struct.unpack_from('<H',data,optional)[0]==0x20b, 'Expected PE32+'
+ section_count=struct.unpack_from('<H',data,pe+6)[0]
+ sections=optional+struct.unpack_from('<H',data,pe+20)[0]
+ def offset(rva):
+  for i in range(section_count):
+   virtual_size,address,raw_size,raw=struct.unpack_from('<IIII',data,sections+i*40+8)
+   if address<=rva<address+max(virtual_size,raw_size):
+    result=raw+rva-address
+    assert 0<=result<len(data), 'Invalid PE import offset'
+    return result
+  raise AssertionError('PE import address has no section')
+ import_rva=struct.unpack_from('<I',data,optional+112+8)[0]
+ assert import_rva, 'Missing PE import table'
+ cursor=offset(import_rva);names=[]
+ while any(data[cursor:cursor+20]):
+  assert cursor+20<=len(data), 'Truncated PE import table'
+  name=offset(struct.unpack_from('<I',data,cursor+12)[0])
+  end=data.index(b'\0',name,min(name+256,len(data)))
+  names.append(data[name:end].decode('ascii').lower());cursor+=20
+ assert names, 'Empty PE import table'
+ return names
+
+def check_windows_runtime(data):
+ names=windows_imports(data)
+ assert not any(n!='msvcrt.dll' and n.startswith(('vcruntime','msvcp','msvcr','libgcc','libstdc++','libwinpthread')) for n in names), f'External compiler runtime required: {names}'
+ return names
+
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('directory',type=Path);p.add_argument('--all-targets',action='store_true');p.add_argument('--checksums',type=Path);a=p.parse_args()
  config=json.loads((ROOT/'release/runtime.json').read_text());project=tomllib.loads((ROOT/'python/pyproject.toml').read_text())['project'];version=project['version'];wheels=sorted(a.directory.glob('*.whl'));assert wheels,'No wheels to review';targets=set();checksums=[]
@@ -24,6 +58,7 @@ def main():
    assert m['cargo_lock_sha256']==hashlib.sha256((ROOT/'Cargo.lock').read_bytes()).hexdigest()
    native=vendor+'bin/'+('laymesh.exe' if target.startswith('win-') else 'laymesh')
    assert hashlib.sha256(z.read(native)).hexdigest()==m['binary_sha256']
+   if target.startswith('win-'):check_windows_runtime(z.read(native))
    assert len([n for n in names if n.startswith(vendor+'bin/')])==1
    assert not any('node_modules' in n or Path(n).suffix.lower() in ('.ttf','.otf','.ttc','.otc','.woff','.woff2','.js','.mjs','.cjs') for n in names),'Runtime or text font leaked into wheel'
    if not target.startswith('win-'):assert z.getinfo(native).external_attr>>16&0o111
