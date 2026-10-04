@@ -5,7 +5,7 @@
 ## 准备环境
 
 ```sh
-python -m pip install --pre "laymesh[data]"
+python -m pip install laymesh
 ```
 
 ## 保存布局和数据

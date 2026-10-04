@@ -10,20 +10,16 @@
 
 ## 安装
 
-需要 **Python 3.10+**。当前版本 **`0.3.0a2`**（Rust 引擎 `0.3.0-alpha.2`）已发布到 [PyPI](https://pypi.org/project/laymesh/0.3.0a2/)，属于 alpha 预发布版本：
+需要 **Python 3.10+**。稳定版本为 **`0.3.0`**，Python 包和 Rust 引擎使用相同版本号。从 [PyPI](https://pypi.org/project/laymesh/) 安装：
 
 ```sh
-python -m pip install --pre laymesh
+python -m pip install laymesh
 python -m laymesh --version
 ```
 
 平台 wheel 内置 Rust 绘图程序和公式字体，安装后即可使用 CLI、Python API 与 Jupyter Magic。使用时无需编译 Rust，也不会下载引擎或字体。也可安装[本地构建的 wheel](release/README.zh-CN.md)。
 
-| 可选功能 | 安装命令 |
-| --- | --- |
-| NumPy / pandas 数据绑定 | `python -m pip install --pre "laymesh[data]"` |
-| 导入 Matplotlib Figure | `python -m pip install --pre "laymesh[plot]"` |
-| 两者都需要 | `python -m pip install --pre "laymesh[data,plot]"` |
+默认安装包含 NumPy、pandas、Matplotlib 和 IPython，数据绑定、Matplotlib Figure 导入及 Jupyter Magic 均可直接使用。
 
 构建目标为 Windows x64、macOS 14+ 的 Intel / Apple Silicon、Linux x64 / arm64。本次发布的 Linux wheel 要求 glibc 2.35+。五个平台已通过 Python 3.10、3.13、3.14 安装与使用检查，详见[发布说明](release/README.zh-CN.md)。正文使用系统或用户提供的字体；缺字会警告并显示方框。跨机器复现时请随图提供使用的字体文件。
 
@@ -105,7 +101,7 @@ page.add(p, offset=(5 mm, 5 mm))
 
 ```sh
 cargo build --release --locked -p laymesh-cli
-python -m pip install -e './python[data,plot]'
+python -m pip install -e './python'
 python -m laymesh render examples/basic.lay -o basic.pdf
 cargo test --workspace --locked
 python -m unittest discover -s python/tests -v

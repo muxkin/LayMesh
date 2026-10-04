@@ -2,23 +2,18 @@
 
 ## Install a platform wheel
 
-Requires Python 3.10+. Alpha prerelease `0.3.0a2` is available on [PyPI](https://pypi.org/project/laymesh/0.3.0a2/):
+Requires Python 3.10+. The stable release is `0.3.0`. Install from [PyPI](https://pypi.org/project/laymesh/):
 
 ```sh
-python -m pip install --pre laymesh
+python -m pip install laymesh
 python -m laymesh --version
 ```
 
 Alternatively, follow the [release procedure](../../release/README.en.md) to build a wheel, then install that exact `.whl` file with `python -m pip install /path/to/laymesh-<version>-<tags>.whl`. Use the wheel matching your OS, architecture and Linux glibc version. Repository examples are available separately in the [gallery](../sections/examples.en.md); they are not installed by pip.
 
-| Usage | Install |
-| --- | --- |
-| CLI, native plots, Python API and IPython magics | `python -m pip install --pre laymesh` |
-| NumPy / pandas bindings | `python -m pip install --pre "laymesh[data]"` |
-| Matplotlib Figure import | `python -m pip install --pre "laymesh[plot]"` |
-| Both extras | `python -m pip install --pre "laymesh[data,plot]"` |
+A single installation provides the CLI, native plots, Python API, Jupyter magics, NumPy/pandas data bindings and Matplotlib Figure import. NumPy, pandas, Matplotlib and IPython are default dependencies.
 
-Install in the same Python environment used by your Notebook kernel. In a Notebook, `%pip install --pre "laymesh[data,plot]"` selects the active kernel's environment. A Notebook application such as JupyterLab is installed separately; native plotting does not require Matplotlib.
+Install in the same Python environment used by your Notebook kernel. In a Notebook, `%pip install laymesh` selects the active kernel's environment. A Notebook application such as JupyterLab is installed separately.
 
 ## Platforms and fonts
 
@@ -28,7 +23,7 @@ Install in the same Python environment used by your Notebook kernel. In a Notebo
 | macOS Intel / Apple Silicon | macOS 14+, matching Python architecture |
 | Linux x64 / arm64 | glibc at least as new as the wheel's `manylinux_2_XX` tag |
 
-This release includes wheels for all five platforms, each verified on Python 3.10, 3.13 and 3.14. The Linux wheels are `manylinux_2_35_x86_64` / `manylinux_2_35_aarch64` and require glibc 2.35+. See the [release workflow](https://github.com/muxkin/LayMesh/actions/runs/37185200630) for validation. Alpine/musl, 32-bit systems and Windows ARM64 have no wheels.
+This release includes wheels for all five platforms, each verified on Python 3.10, 3.13 and 3.14. The Linux wheels are `manylinux_2_35_x86_64` / `manylinux_2_35_aarch64` and require glibc 2.35+. See the [release workflow](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml) for validation. Alpine/musl, 32-bit systems and Windows ARM64 have no wheels.
 
 Wheels contain one Rust native executable, formula fonts and dependency licenses. Rendering downloads no engine or fonts and requires no Rust, Node.js or TeX installation. Body fonts come from the system or user files; missing glyphs warn and display vector boxes. Supply explicit font files when sharing reproducible figures. Documentation browser previews provide their own fonts separately.
 
@@ -60,7 +55,7 @@ Requires Rust 1.93.1 and Python 3.11+ for build scripts. From the repository roo
 
 ```sh
 cargo build --release --locked -p laymesh-cli
-python -m pip install -e './python[data,plot]'
+python -m pip install -e './python'
 python -m laymesh render examples/basic.lay -o basic.pdf
 ```
 

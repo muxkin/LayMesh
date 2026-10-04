@@ -2,7 +2,7 @@
 
 ## Workflow
 
-Install a platform wheel following [installation](install.en.md). The alpha release uses `python -m pip install --pre laymesh`; until the first upload, install a local wheel. Save the complete example in [installation](install.en.md) as `figure.lay`, then run:
+Install a platform wheel following [installation](install.en.md). Run `python -m pip install laymesh` to install all features, or install a local wheel. Save the complete example in [installation](install.en.md) as `figure.lay`, then run:
 
 ```sh
 laymesh validate figure.lay

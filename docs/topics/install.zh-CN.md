@@ -2,23 +2,18 @@
 
 ## 安装平台 wheel
 
-要求 Python 3.10+。alpha 预发布 `0.3.0a2` 已发布到 [PyPI](https://pypi.org/project/laymesh/0.3.0a2/)：
+要求 Python 3.10+。稳定版本为 `0.3.0`，从 [PyPI](https://pypi.org/project/laymesh/) 安装：
 
 ```sh
-python -m pip install --pre laymesh
+python -m pip install laymesh
 python -m laymesh --version
 ```
 
 也可按[发布流程](../../release/README.zh-CN.md)构建 wheel，再使用 `python -m pip install /path/to/laymesh-<version>-<tags>.whl` 安装生成的具体文件。请选择匹配操作系统、架构及 Linux glibc 版本的包。[画廊](../sections/examples.zh-CN.md)中的仓库示例需要另行获取，pip 不安装示例目录。
 
-| 用途 | 安装命令 |
-| --- | --- |
-| CLI、原生图表、Python API 与 IPython Magic | `python -m pip install --pre laymesh` |
-| NumPy / pandas 数据绑定 | `python -m pip install --pre "laymesh[data]"` |
-| 导入 Matplotlib Figure | `python -m pip install --pre "laymesh[plot]"` |
-| 两者都需要 | `python -m pip install --pre "laymesh[data,plot]"` |
+一次安装包含 CLI、原生图表、Python API、Jupyter Magic、NumPy/pandas 数据绑定和 Matplotlib Figure 导入。NumPy、pandas、Matplotlib 与 IPython 都是默认依赖。
 
-请安装到 Notebook 内核使用的 Python 环境。在 Notebook 中可用 `%pip install --pre "laymesh[data,plot]"` 指定当前内核环境。JupyterLab 等 Notebook 应用需另行安装；原生绘图无需 Matplotlib。
+请安装到 Notebook 内核使用的 Python 环境。在 Notebook 中可用 `%pip install laymesh` 指定当前内核环境。JupyterLab 等 Notebook 应用需另行安装。
 
 ## 平台与字体
 
@@ -28,7 +23,7 @@ python -m laymesh --version
 | macOS Intel / Apple Silicon | macOS 14+，Python 架构匹配 |
 | Linux x64 / arm64 | glibc 不低于 wheel 的 `manylinux_2_XX` 标签 |
 
-本次发布包含以上五个平台的 wheel，均已通过 Python 3.10、3.13、3.14 的安装与使用检查。Linux wheel 为 `manylinux_2_35_x86_64` / `manylinux_2_35_aarch64`，要求 glibc 2.35+。完整验证见[发布工作流](https://github.com/muxkin/LayMesh/actions/runs/37185200630)。当前没有 Alpine/musl、32 位系统和 Windows ARM64 wheel。
+本次发布包含以上五个平台的 wheel，均已通过 Python 3.10、3.13、3.14 的安装与使用检查。Linux wheel 为 `manylinux_2_35_x86_64` / `manylinux_2_35_aarch64`，要求 glibc 2.35+。完整验证见[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)。当前没有 Alpine/musl、32 位系统和 Windows ARM64 wheel。
 
 wheel 包含一个 Rust 原生程序、公式字体及依赖许可。绘图时不下载引擎或字体，无需额外安装 Rust、Node.js 或 TeX。正文使用系统或用户字体；缺字会警告并显示方框。共享可复现图件时请提供明确的字体文件。文档网页预览单独提供自己的字体。
 
@@ -60,7 +55,7 @@ python -m laymesh render figure.lay -o figure.png --dpi 300
 
 ```sh
 cargo build --release --locked -p laymesh-cli
-python -m pip install -e './python[data,plot]'
+python -m pip install -e './python'
 python -m laymesh render examples/basic.lay -o basic.pdf
 ```
 

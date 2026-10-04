@@ -513,7 +513,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-cli"
-version = "0.3.0-alpha.2"
+version = "0.3.0"
 dependencies = [
  "laymesh-core",
  "laymesh-language",
@@ -523,7 +523,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-core"
-version = "0.3.0-alpha.2"
+version = "0.3.0"
 dependencies = [
  "base64",
  "contour",
@@ -554,7 +554,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-language"
-version = "0.3.0-alpha.2"
+version = "0.3.0"
 dependencies = [
  "laymesh-core",
  "regex",
@@ -563,7 +563,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-render"
-version = "0.3.0-alpha.2"
+version = "0.3.0"
 dependencies = [
  "base64",
  "krilla",
@@ -582,7 +582,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-wasm"
-version = "0.3.0-alpha.2"
+version = "0.3.0"
 dependencies = [
  "laymesh-core",
  "laymesh-language",

@@ -1,9 +1,9 @@
 # Notebook Magic
 
-平台 wheel 内置一个 Rust 原生程序，无需额外安装运行时。首次 PyPI 发布前，可安装已审核的本地 wheel；正式发布后使用下列命令。原生数据不依赖 Matplotlib，导入 Figure 时增加 `plot` 额外依赖。
+平台 wheel 内置 Rust 引擎。默认安装包含 NumPy、pandas、Matplotlib 和 IPython，数据绑定、Figure 导入及 Notebook Magic 均可直接使用。
 
 ```sh
-python -m pip install --pre "laymesh[data]"
+python -m pip install laymesh
 ```
 
 [安装与源码开发](install.zh-CN.md)

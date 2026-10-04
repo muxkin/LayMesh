@@ -2,7 +2,7 @@
 
 ## Workflow
 
-In the Notebook Python environment, run `python -m pip install --pre laymesh`. Add `[data]` for NumPy/pandas or `[plot]` for Matplotlib Figure import. Before the first PyPI upload, install a local wheel as described in [installation](install.en.md). Omit `[plot]` if you only render existing `.lay` files. Python 3.10+ is required. The bridge invokes the existing CLI rather than implementing another parser. CLI lookup order is `LAYMESH_CLI`, the native executable inside the wheel, the repository's `target/release/laymesh` or `target/debug/laymesh`, and finally `laymesh` in `PATH`. No JavaScript CLI fallback is supported.
+In the Notebook Python environment, run `python -m pip install laymesh` to install all features, including native plots, NumPy/pandas data bindings and Matplotlib Figure import. You can also install a local wheel as described in [installation](install.en.md). Python 3.10+ is required. The bridge invokes the existing CLI rather than implementing another parser. CLI lookup order is `LAYMESH_CLI`, the native executable inside the wheel, the repository's `target/release/laymesh` or `target/debug/laymesh`, and finally `laymesh` in `PATH`. No JavaScript CLI fallback is supported.
 
 ```python
 from laymesh import render_source, render_file, RenderResult, LayMeshBridgeError

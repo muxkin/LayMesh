@@ -48,7 +48,7 @@ For 100,000 line points, repeated native generation took 0.189 s versus 0.109 s 
 ```sh
 npm ci
 npm run build
-python -m pip install -e './python[plot,data]' pillow psutil
+python -m pip install -e './python' pillow psutil
 python scripts/benchmark-plots.py --repeats 3 --output docs/benchmarks/native-plots.json
 ```
 

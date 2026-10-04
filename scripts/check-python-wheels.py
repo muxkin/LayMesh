@@ -2,6 +2,7 @@
 """Audit native wheel contents and hashes; never upload."""
 import argparse, hashlib, json, tomllib, zipfile
 from email.parser import BytesParser
+from packaging.requirements import Requirement
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def main():
@@ -29,7 +30,8 @@ def main():
    meta=BytesParser().parsebytes(z.read(f'laymesh-{version}.dist-info/METADATA'));assert meta['Requires-Python']=='>=3.10';assert meta['Name']=='laymesh'
    assert meta['Version']==version and meta['Summary']==project['description']
    assert meta['Description-Content-Type']=='text/markdown'
-   assert set(meta.get_all('Provides-Extra',[]))==set(project['optional-dependencies'])
+   assert not project.get('optional-dependencies') and not meta.get_all('Provides-Extra',[]),'LayMesh installs all features by default'
+   assert {Requirement(r) for r in meta.get_all('Requires-Dist',[])}=={Requirement(r) for r in project['dependencies']},'Default dependency metadata must match the project'
    assert z.read(f'laymesh-{version}.dist-info/licenses/LICENSE')==(ROOT/'LICENSE').read_bytes()
    wheel_metadata=BytesParser().parsebytes(z.read(f'laymesh-{version}.dist-info/WHEEL'));assert wheel_metadata['Root-Is-Purelib']=='false';assert wheel_metadata['Tag']=='py3-none-'+m['wheel_tag']
    for dependency in json.loads(z.read(vendor+'licenses/manifest.json')):

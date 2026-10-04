@@ -1,6 +1,6 @@
 # Build and publish to PyPI
 
-The current PyPI release is **[`0.3.0a2`](https://pypi.org/project/laymesh/0.3.0a2/)**, corresponding to Rust **`0.3.0-alpha.2`**, an alpha prerelease. The [publishing workflow](https://github.com/muxkin/LayMesh/actions/runs/37185200630) records five platform wheels, Python 3.10/3.13/3.14 checks, wheel audits, checksums and the Trusted Publishing upload. Each platform wheel includes the Python API, CLI entry point, one native Rust executable, dependency licenses and a build manifest. Formula fonts are compiled into RaTeX; body fonts come from the system or user files.
+The stable release is **`0.3.0`**, shared by the Python package and Rust engine. NumPy, pandas, Matplotlib and IPython are default dependencies; `pip install laymesh` installs all Python features. The [publishing workflow](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml) builds and verifies five platform wheels, audits their contents and checksums, and uploads through Trusted Publishing. Each wheel includes the Python API, CLI entry point, one native Rust executable, dependency licenses and a build manifest. Formula fonts are compiled into RaTeX; body fonts come from the system or user files.
 
 [runtime.json](runtime.json) defines five targets: Linux x64 / arm64, macOS 14+ Intel / Apple Silicon, and Windows x64. Python users need 3.10+; build scripts need Python 3.11+ and Rust 1.93.1. This release publishes platform wheels only. The `python/` directory alone is not a complete source distribution with the Rust engine; do not upload an sdist made from that directory.
 
@@ -11,12 +11,12 @@ Use a virtual environment, install the pinned tooling, and run from the reposito
 ```sh
 python -m pip install -r release/build-requirements.txt
 python scripts/check-release.py
-python -m pip install -e "./python[data,plot]" pillow
+python -m pip install -e "./python" pillow
 python scripts/test-contracts.py
 python scripts/collect-licenses.py
-python scripts/build-python-wheel.py --output release/dist/pypi-0.3.0a2
-python scripts/check-python-wheels.py release/dist/pypi-0.3.0a2 --checksums release/dist/pypi-0.3.0a2/SHA256SUMS
-python -m twine check --strict release/dist/pypi-0.3.0a2/*.whl
+python scripts/build-python-wheel.py --output release/dist/pypi-0.3.0
+python scripts/check-python-wheels.py release/dist/pypi-0.3.0 --checksums release/dist/pypi-0.3.0/SHA256SUMS
+python -m twine check --strict release/dist/pypi-0.3.0/*.whl
 ```
 
 The builder checks version alignment, compiles the locked release engine, and stages a wheel outside the source tree. A separate output directory avoids mixing this candidate with earlier wheels. Linux tags reflect the binary's measured GLIBC symbol requirements, with a floor of 2.28; a newer host build must not claim an older baseline. The local Linux x64 wheel requires glibc 2.35+. CI runner builds may require a newer glibc; review the actual filenames and manifests.
@@ -28,7 +28,7 @@ The manifest records Python/Rust versions, target, executable SHA-256 and Cargo.
 Create a **second, clean virtual environment** and install the generated wheel, not an editable checkout. Replace the example filename below with the actual wheel for your machine:
 
 ```sh
-python -m pip install "release/dist/pypi-0.3.0a2/laymesh-0.3.0a2-py3-none-manylinux_2_35_x86_64.whl[data,plot]" pillow
+python -m pip install "release/dist/pypi-0.3.0/laymesh-0.3.0-py3-none-manylinux_2_35_x86_64.whl" pillow
 python -m pip check
 python -m laymesh --version
 python scripts/smoke-python-wheel.py --examples examples
@@ -44,9 +44,9 @@ The existing [publish workflow](../.github/workflows/publish-pypi.yml) uses [PyP
 1. Configure a PyPI pending trusted publisher with project `laymesh`, owner `muxkin`, repository `LayMesh`, workflow `publish-pypi.yml`, and environment `pypi`.
 2. Configure the repository's GitHub environment `pypi` with required reviewers. The workflow checks that this approval gate exists.
 3. Make the final changes available on `main`. Run **Python wheels and PyPI** manually with `publish=false` to verify the candidate. Review all five wheels and checksums in `reviewed-python-release`.
-4. For the actual upload, run the same workflow on `main` with `publish=true` and `version=0.3.0a2`. It builds and tests again, verifies the requested version and checksums, then waits for the configured environment approval. Approve the artifacts from that run.
+4. For the actual upload, run the same workflow on `main` with `publish=true` and `version=0.3.0`. It builds and tests again, verifies the requested version and checksums, then waits for the configured environment approval. Approve the artifacts from that run.
 
-The publishing job downloads the exact reviewed artifacts and uploads them without rebuilding. Pull requests and ordinary build runs do not upload. After publication, verify an index installation outside the checkout with `python -m pip install --pre "laymesh[data,plot]==0.3.0a2"`, then `python -m pip check` and `python -m laymesh --version`. A published version cannot be overwritten; increment the Python/Rust/runtime versions together for a replacement release.
+The publishing job downloads the exact reviewed artifacts and uploads them without rebuilding. Pull requests and ordinary build runs do not upload. After publication, verify an index installation outside the checkout with `python -m pip install "laymesh==0.3.0"`, then `python -m pip check` and `python -m laymesh --version`. A published version cannot be overwritten; increment the Python/Rust/runtime versions together for a replacement release.
 
 ## Verification records
 

@@ -2,7 +2,7 @@
 
 ## 操作流程
 
-按[安装说明](install.zh-CN.md)安装平台 wheel。alpha 版本使用 `python -m pip install --pre laymesh`；首次上传前安装本地 wheel。将[安装页](install.zh-CN.md)的完整示例保存为 `figure.lay` 后运行：
+按[安装说明](install.zh-CN.md)安装平台 wheel。运行 `python -m pip install laymesh` 即可安装全部功能，也可安装本地 wheel。将[安装页](install.zh-CN.md)的完整示例保存为 `figure.lay` 后运行：
 
 ```sh
 laymesh validate figure.lay

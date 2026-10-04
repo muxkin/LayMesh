@@ -2,7 +2,7 @@
 
 ## 操作流程
 
-在 Notebook 所用的 Python 环境安装 `python -m pip install --pre laymesh`；NumPy/pandas 可选 `[data]`，Matplotlib Figure 导入可选 `[plot]`。首次 PyPI 上传前，按[安装说明](install.zh-CN.md)安装本地 wheel。仅使用已有 `.lay` 文件时可省略 `[plot]`。要求 Python 3.10+。桥接层调用现有 CLI，不重新实现 `.lay` 解析器。CLI 查找顺序：`LAYMESH_CLI`、wheel 内原生程序、仓库 `target/release/laymesh` 或 `target/debug/laymesh`，最后是 `PATH` 中的 `laymesh`。不支持 JavaScript CLI 回退。
+在 Notebook 所用的 Python 环境运行 `python -m pip install laymesh`，即可安装原生绘图、NumPy/pandas 数据绑定和 Matplotlib Figure 导入等全部功能。也可按[安装说明](install.zh-CN.md)安装本地 wheel。要求 Python 3.10+。桥接层调用现有 CLI，不重新实现 `.lay` 解析器。CLI 查找顺序：`LAYMESH_CLI`、wheel 内原生程序、仓库 `target/release/laymesh` 或 `target/debug/laymesh`，最后是 `PATH` 中的 `laymesh`。不支持 JavaScript CLI 回退。
 
 ```python
 from laymesh import render_source, render_file, RenderResult, LayMeshBridgeError

@@ -6,22 +6,18 @@
 
 ## Install
 
-Requires **Python 3.10+**. Version `0.3.0a2` is an alpha prerelease:
+Requires **Python 3.10+**. Version `0.3.0` is a stable release:
 
 ```sh
-python -m pip install --pre laymesh
+python -m pip install laymesh
 python -m laymesh --version
 ```
 
 Platform wheels bundle one native Rust executable and formula fonts. Rendering requires no Rust compiler, Node.js or TeX installation and downloads no engine or fonts. Body fonts come from the operating system or user-provided files; missing glyphs warn and display vector boxes. Supply font files with a layout for reproducible text across machines.
 
-| Optional feature | Install |
-| --- | --- |
-| NumPy / pandas data | `python -m pip install --pre "laymesh[data]"` |
-| Matplotlib Figure import | `python -m pip install --pre "laymesh[plot]"` |
-| Both | `python -m pip install --pre "laymesh[data,plot]"` |
+The standard installation includes NumPy, pandas, Matplotlib and IPython. Data bindings, Matplotlib Figure import and Jupyter magics are ready to use.
 
-Wheel targets are Windows x64, macOS 14+ on Intel and Apple Silicon, and Linux x64 / arm64. Linux requires glibc at least as new as the wheel's `manylinux_2_XX` tag. Availability depends on uploaded wheels; Alpine/musl, 32-bit platforms and Windows ARM64 have no wheels. Native plots work without Matplotlib.
+Wheel targets are Windows x64, macOS 14+ on Intel and Apple Silicon, and Linux x64 / arm64. Linux requires glibc at least as new as the wheel's `manylinux_2_XX` tag. Availability depends on uploaded wheels; Alpine/musl, 32-bit platforms and Windows ARM64 have no wheels. Plots are rendered by the native engine.
 
 ## First figure: CLI
 
@@ -94,6 +90,6 @@ LayMesh provides physical units, anchors, cropping, paths, reusable modules, LCS
 
 ## 中文
 
-LayMesh 用一个可编辑的 `.lay` 文件组织科研图表、图片、文字与公式，导出 SVG、PDF、PNG。需要 Python 3.10+；预发布版本使用 `python -m pip install --pre laymesh`，数据和 Matplotlib 支持可选 `laymesh[data,plot]`。平台 wheel 内置原生 Rust 引擎和公式字体，正文使用系统或用户字体。支持 `laymesh` 命令、Python API 和 Jupyter Magic；保存源码与资源后可独立重新导出。[中文入门](https://muxkin.github.io/LayMesh/docs/topics/install.zh-CN.html)。
+LayMesh 用一个可编辑的 `.lay` 文件组织科研图表、图片、文字与公式，导出 SVG、PDF、PNG。需要 Python 3.10+；运行 `python -m pip install laymesh` 即可安装全部功能，包括 NumPy/pandas 数据绑定和 Matplotlib Figure 导入。平台 wheel 内置原生 Rust 引擎和公式字体，正文使用系统或用户字体。支持 `laymesh` 命令、Python API 和 Jupyter Magic；保存源码与资源后可独立重新导出。[中文入门](https://muxkin.github.io/LayMesh/docs/topics/install.zh-CN.html)。
 
 LayMesh is [MIT licensed](https://github.com/muxkin/LayMesh/blob/main/LICENSE). Bundled native dependencies, formula fonts and colormap data retain their own license texts inside the installed package. `_vendor/manifest.json` records engine, platform and build hashes; `_vendor/licenses/manifest.json` records dependency license provenance.

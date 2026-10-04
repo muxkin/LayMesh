@@ -1,4 +1,3 @@
-import importlib.util
 import os
 import tempfile
 import unittest
@@ -6,7 +5,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 
-@unittest.skipUnless(importlib.util.find_spec("IPython"), "IPython is optional outside Notebook environments")
 class MagicTest(unittest.TestCase):
     def test_line_and_cell_magics_display_previews(self):
         from IPython.core.interactiveshell import InteractiveShell

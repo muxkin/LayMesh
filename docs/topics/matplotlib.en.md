@@ -2,10 +2,10 @@
 
 Reuse an existing Matplotlib Figure through the Python bridge and place it as an image.
 
-Platform wheels contain one native Rust engine and require no separate runtime installation. Before the first PyPI release, install a reviewed local wheel; after publication, use the command below. Native data does not require Matplotlib; Figure import additionally needs the `plot` extra.
+Platform wheels contain one native Rust engine. The standard installation includes NumPy, pandas and Matplotlib, so Figure import is ready to use:
 
 ```sh
-python -m pip install --pre "laymesh[plot,data]"
+python -m pip install laymesh
 ```
 
 [Installation and source development](install.en.md)
@@ -22,7 +22,7 @@ python -m pip install --pre "laymesh[plot,data]"
 ## Workflow
 
 
-Install the `plot` extra described above. This workflow keeps an existing Matplotlib figure and places it on a LayMesh page.
+This workflow keeps an existing Matplotlib figure and places it on a LayMesh page.
 
 Compute data and make a Figure in Python:
 

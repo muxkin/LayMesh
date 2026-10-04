@@ -1,9 +1,9 @@
 # Notebook Magic
 
-Platform wheels contain one native Rust engine and require no separate runtime installation. Before the first PyPI release, install a reviewed local wheel; after publication, use the command below. Native data does not require Matplotlib; Figure import additionally needs the `plot` extra.
+Platform wheels bundle the Rust engine. The standard installation includes NumPy, pandas, Matplotlib and IPython, so data bindings, Figure import and Notebook magics are ready to use.
 
 ```sh
-python -m pip install --pre "laymesh[data]"
+python -m pip install laymesh
 ```
 
 [Installation and source development](install.en.md)

@@ -10,20 +10,16 @@
 
 ## Install
 
-Requires **Python 3.10+**. Version **`0.3.0a2`** (Rust engine `0.3.0-alpha.2`) is available on [PyPI](https://pypi.org/project/laymesh/0.3.0a2/) as an alpha prerelease:
+Requires **Python 3.10+**. The stable release is **`0.3.0`**, shared by the Python package and Rust engine. Install from [PyPI](https://pypi.org/project/laymesh/):
 
 ```sh
-python -m pip install --pre laymesh
+python -m pip install laymesh
 python -m laymesh --version
 ```
 
 Platform wheels bundle the native Rust engine and formula fonts for the CLI, Python API and Jupyter magics. Rendering requires no Rust compilation and downloads no engine or fonts. You can also install a [locally built wheel](release/README.en.md).
 
-| Optional feature | Install command |
-| --- | --- |
-| NumPy / pandas data bindings | `python -m pip install --pre "laymesh[data]"` |
-| Matplotlib Figure import | `python -m pip install --pre "laymesh[plot]"` |
-| Both | `python -m pip install --pre "laymesh[data,plot]"` |
+The standard installation includes NumPy, pandas, Matplotlib and IPython. Data bindings, Matplotlib Figure import and Jupyter magics are ready to use.
 
 Supported wheel platforms are Windows x64, macOS 14+ on Intel / Apple Silicon, and Linux x64 / arm64. This release's Linux wheels require glibc 2.35+. All five platforms passed installation and usage checks on Python 3.10, 3.13 and 3.14; see the [release procedure](release/README.en.md). Body fonts come from the system or user-provided files; missing glyphs warn and display vector boxes. Supply the fonts with your figure for reproducible rendering across machines.
 
@@ -105,7 +101,7 @@ Source development requires **Rust 1.93.1**; build and release scripts require P
 
 ```sh
 cargo build --release --locked -p laymesh-cli
-python -m pip install -e './python[data,plot]'
+python -m pip install -e './python'
 python -m laymesh render examples/basic.lay -o basic.pdf
 cargo test --workspace --locked
 python -m unittest discover -s python/tests -v

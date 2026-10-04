@@ -22,7 +22,7 @@ The [navigation manifest](navigation.json) defines areas, groups and topics. The
 
 ```sh
 cargo build --release --locked -p laymesh-cli
-python -m pip install -e './python[plot,data]' pillow
+python -m pip install -e './python' pillow
 python scripts/build-gallery.py --write
 python scripts/build-docs-media.py
 python scripts/build-gallery.py --check

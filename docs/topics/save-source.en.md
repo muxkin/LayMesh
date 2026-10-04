@@ -5,7 +5,7 @@ Save the expanded .lay file and its resource directory to render again without N
 ## Prepare the environment
 
 ```sh
-python -m pip install --pre "laymesh[data]"
+python -m pip install laymesh
 ```
 
 ## Save layout and data

@@ -2,10 +2,10 @@
 
 复用已有 Matplotlib Figure，通过 Python 桥接将它作为图像放入页面。
 
-平台 wheel 内置一个 Rust 原生程序，无需额外安装运行时。首次 PyPI 发布前，可安装已审核的本地 wheel；正式发布后使用下列命令。原生数据不依赖 Matplotlib，导入 Figure 时增加 `plot` 额外依赖。
+平台 wheel 内置 Rust 引擎。默认安装包含 NumPy、pandas、Matplotlib 和 IPython，数据绑定、Figure 导入及 Notebook Magic 均可直接使用。
 
 ```sh
-python -m pip install --pre "laymesh[plot,data]"
+python -m pip install laymesh
 ```
 
 [安装与源码开发](install.zh-CN.md)
@@ -22,7 +22,7 @@ python -m pip install --pre "laymesh[plot,data]"
 ## 使用流程
 
 
-先按前文安装 `plot` 可选依赖。这条路线复用已有 Matplotlib 图形，再放入 LayMesh 页面。
+这条路线复用已有 Matplotlib 图形，再放入 LayMesh 页面。
 
 先在 Python 单元格中处理数据、生成 Figure：
 

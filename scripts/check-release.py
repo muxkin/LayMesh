@@ -24,6 +24,8 @@ def check(root: Path = ROOT) -> str:
         status = {"a": "3 - Alpha", "b": "4 - Beta", "rc": "4 - Beta"}[version.pre[0]]
         if f"Development Status :: {status}" not in project["classifiers"]:
             raise ValueError("Development Status classifier must match the prerelease stage")
+    elif "Development Status :: 5 - Production/Stable" not in project["classifiers"]:
+        raise ValueError("Stable releases must use the Production/Stable classifier")
     readme = root / "python" / project["readme"]
     if not readme.is_file() or not readme.read_text(encoding="utf-8").strip():
         raise ValueError("The PyPI README must exist and contain content")
