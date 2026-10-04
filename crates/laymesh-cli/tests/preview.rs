@@ -28,17 +28,24 @@ fn preview(requests: &[Value]) -> Vec<Value> {
 
 #[test]
 fn preview_units_overlays_failed_dependencies_and_recovery() {
-    let requests: Vec<Value> = ["mm","cm","in","inch","pt","px"].iter().enumerate().map(|(id,unit)|json!({"id":id,"file":"/fixture/main.lay","source":format!("page=canvas(size=(100,80),unit=\"{unit}\",layout_dpi=144)\nimport {{width}} from \"./values.lay\"\npage.add(rect(size=(width,2),fill=\"#ff0000\"))"),"overlays":{"/fixture/values.lay":"export width=3"}})).collect();
+    let root = std::env::temp_dir()
+        .join(format!("laymesh-preview-overlays-{}", std::process::id()))
+        .to_string_lossy()
+        .replace('\\', "/");
+    let file = format!("{root}/main.lay");
+    let values = format!("{root}/values.lay");
+    let missing = format!("{root}/missing.lay");
+    let requests: Vec<Value> = ["mm","cm","in","inch","pt","px"].iter().enumerate().map(|(id,unit)|json!({"id":id,"file":file,"source":format!("page=canvas(size=(100,80),unit=\"{unit}\",layout_dpi=144)\nimport {{width}} from \"./values.lay\"\npage.add(rect(size=(width,2),fill=\"#ff0000\"))"),"overlays":{values.as_str():"export width=3"}})).collect();
     let mut requests = requests;
-    requests.push(json!({"id":6,"file":"/fixture/main.lay","source":"page=canvas(size=(10,10))\nimport {x} from \"./missing.lay\""}));
-    requests.push(json!({"id":7,"file":"/fixture/main.lay","source":"page=canvas(size=(10,10))\nimport {x} from \"./missing.lay\"","overlays":{"/fixture/missing.lay":"export x=1"}}));
+    requests.push(json!({"id":6,"file":file,"source":"page=canvas(size=(10,10))\nimport {x} from \"./missing.lay\""}));
+    requests.push(json!({"id":7,"file":file,"source":"page=canvas(size=(10,10))\nimport {x} from \"./missing.lay\"","overlays":{missing.as_str():"export x=1"}}));
     let results = preview(&requests);
     assert_eq!(results[0]["protocol"], 1);
     for (i, unit) in ["mm", "cm", "in", "inch", "pt", "px"].iter().enumerate() {
         let r = &results[i + 1];
         let factor = [1., 10., 25.4, 25.4, 25.4 / 72., 25.4 / 144.][i];
         assert_eq!(r["id"], i);
-        assert_eq!(r["inspection"]["page"]["unit"], *unit);
+        assert_eq!(r["inspection"]["page"]["unit"], *unit, "{r}");
         assert_eq!(r["inspection"]["page"]["layout_dpi"], 144.);
         assert_eq!(r["inspection"]["units"], "mm");
         assert!((r["inspection"]["page"]["width"].as_f64().unwrap() - 100. * factor).abs() < 1e-8);
@@ -48,7 +55,7 @@ fn preview_units_overlays_failed_dependencies_and_recovery() {
             r["dependencies"]
                 .as_array()
                 .unwrap()
-                .contains(&json!("/fixture/values.lay"))
+                .contains(&json!(values))
         );
     }
     assert_eq!(results[7]["error"]["code"], "E_ASSET");
@@ -56,7 +63,7 @@ fn preview_units_overlays_failed_dependencies_and_recovery() {
         results[7]["dependencies"]
             .as_array()
             .unwrap()
-            .contains(&json!("/fixture/missing.lay"))
+            .contains(&json!(missing))
     );
     assert!(results[8]["svg"].is_string());
 }
