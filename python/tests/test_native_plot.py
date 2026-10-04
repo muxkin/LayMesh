@@ -30,7 +30,7 @@ class NativePlotTest(unittest.TestCase):
         h.colorbar(heat,label="Value")
         page.add(h,target=a.top_right,offset=(5 mm,0 mm))'''
         font = Path(__file__).resolve().parents[2] / "tests/fonts/DejaVuSans.ttf"
-        source = source.replace("plot(size=", f'plot(font_family="{font}",size=')
+        source = source.replace("plot(size=", f'plot(font_family="{font.as_posix()}",size=')
         result = render_source(source, namespace={"df": frame, "xs": np.arange(3), "z": np.arange(9).reshape(3, 3)},
                                base_dir=self.dir, output=self.dir / "native.pdf", save_source="native.lay")
         self.assertIn("<text", result.preview_svg)

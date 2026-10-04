@@ -53,6 +53,8 @@ font_weight 是 100–900 的整数。缺字产生 W_FONT 并显示度量后的�
 
 `font_family` 接受系统字体族名、用户字体文件路径或按优先顺序排列的列表。文件支持 TTF、OTF、TTC 和 OTC；集合字体使用 `文件路径#字面名称`。相对路径以定义资源的 `.lay` 模块为准。省略该参数时由系统解析默认 sans-serif 字体。
 
+Windows 路径可写成 `"C:/Fonts/Example.ttf"` 或 `r"C:\Fonts\Example.ttf"`；普通字符串中的反斜杠需要转义。Python 中的动态路径建议作为字符串通过 `{{font}}` 绑定传入，避免直接拼接 DSL 源码。
+
 ```lay
 page=canvas(size=(100,40))
 page.add(text("My data", font_family="Arial", font_size=12))

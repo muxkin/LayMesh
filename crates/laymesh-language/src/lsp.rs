@@ -12,12 +12,22 @@ fn send(out: &mut impl Write, message: J) -> io::Result<()> {
     out.flush()
 }
 fn path(uri: &str) -> String {
-    let raw = uri.strip_prefix("file://").unwrap_or(uri);
+    let raw = if let Some(raw) = uri.strip_prefix("file://") {
+        if let Some(local) = raw.strip_prefix("localhost/") {
+            format!("/{local}")
+        } else if !raw.starts_with('/') {
+            format!("//{raw}")
+        } else {
+            raw.to_owned()
+        }
+    } else {
+        uri.to_owned()
+    };
     let mut bytes = Vec::new();
     let mut i = 0;
     while i < raw.len() {
         if raw.as_bytes()[i] == b'%' && i + 2 < raw.len() {
-            if let Ok(v) = u8::from_str_radix(&raw[i + 1..i + 3], 16) {
+            if let Some(v) = std::str::from_utf8(&raw.as_bytes()[i + 1..i + 3]).ok().and_then(|hex| u8::from_str_radix(hex, 16).ok()) {
                 bytes.push(v);
                 i += 3;
                 continue;
@@ -233,6 +243,23 @@ pub fn serve() -> io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn file_uris_preserve_import_identity_and_decode_native_paths() {
+        for (base, relative, expected) in [
+            ("file:///tmp/main.lay", "./card.lay", "file:///tmp/card.lay"),
+            ("file:///C:/work/main.lay", "../lib/card.lay", "file:///C:/lib/card.lay"),
+            ("file:///C:/main.lay", "../../card.lay", "file:///C:/card.lay"),
+            ("file://server/share/main.lay", "./card.lay", "file://server/share/card.lay"),
+            ("file:///tmp/my%20project/main.lay", "./中文 #%.lay", "file:///tmp/my%20project/%E4%B8%AD%E6%96%87%20%23%25.lay"),
+        ] {
+            assert_eq!(crate::resolve(base, relative), expected);
+        }
+        assert_eq!(path("file:///tmp/%E4%B8%AD%E6%96%87%20%23%25.lay"), "/tmp/中文 #%.lay");
+        assert_eq!(path("file://localhost/tmp/main.lay"), "/tmp/main.lay");
+        assert_eq!(path("file://server/share/main.lay"), "//server/share/main.lay");
+        assert_eq!(path("file:///tmp/%中文.lay"), "/tmp/%中文.lay");
+        assert_eq!(path("file:///C:/work/main.lay"), if cfg!(windows) { "C:/work/main.lay" } else { "/C:/work/main.lay" });
+    }
     #[test]
     fn locale_precedence_legacy() {
         for (ui, initial, configured, expected) in [

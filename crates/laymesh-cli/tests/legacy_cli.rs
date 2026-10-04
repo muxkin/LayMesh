@@ -107,7 +107,7 @@ fn legacy_cli_plot_layout_warnings_do_not_prevent_any_export() {
     {
         source = source.replace(
             name,
-            root.join("tests/fonts/DejaVuSans.ttf").to_str().unwrap(),
+            &root.join("tests/fonts/DejaVuSans.ttf").to_str().unwrap().replace('\\', "/"),
         );
     }
     let tmp = Temp::new();

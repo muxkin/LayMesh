@@ -287,14 +287,27 @@ pub fn normalize_path(p: &Path) -> PathBuf {
     out
 }
 pub fn resolve(file: &str, relative: &str) -> String {
-    normalize_path(
+    let path = normalize_path(
         &Path::new(file)
             .parent()
             .unwrap_or(Path::new("."))
             .join(relative),
     )
     .to_string_lossy()
-    .into_owned()
+    .into_owned();
+    #[cfg(windows)]
+    {
+        // Virtual Host keys use forward slashes too. Keep real Windows paths
+        // usable after canonicalize() has introduced a verbatim prefix.
+        let path = if let Some(unc) = path.strip_prefix(r"\\?\UNC\") {
+            format!("//{unc}")
+        } else {
+            path.strip_prefix(r"\\?\").unwrap_or(&path).to_owned()
+        };
+        path.replace('\\', "/")
+    }
+    #[cfg(not(windows))]
+    path
 }
 
 #[derive(Clone, Default)]

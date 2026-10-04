@@ -53,6 +53,8 @@ Required inputs: `content`.
 
 `font_family` accepts a system family name, a font-file path, or an ordered list. TTF, OTF, TTC, and OTC files are supported; select collection faces with `path#face name`. Relative paths resolve from the defining `.lay` module. The default is the system sans-serif family.
 
+On Windows, use `"C:/Fonts/Example.ttf"` or `r"C:\Fonts\Example.ttf"`; backslashes in ordinary strings must be escaped. Pass dynamic Python paths as strings through a `{{font}}` binding instead of interpolating them into DSL source.
+
 ```lay
 page=canvas(size=(100,40))
 page.add(text("My data", font_family="Arial", font_size=12))

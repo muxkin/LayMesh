@@ -8,7 +8,7 @@ from unittest.mock import patch
 from laymesh import render_source, render_file, LayMeshBridgeError
 from laymesh.ipython import _options
 
-FONT = Path(__file__).resolve().parents[2] / 'tests/fonts/DejaVuSans.ttf'
+FONT = (Path(__file__).resolve().parents[2] / 'tests/fonts/DejaVuSans.ttf').as_posix()
 SOURCE = f'''page=canvas(size=(100 mm,90 mm))
 p=plot(projection="polar",size=(95 mm,85 mm),plot_area=box(offset=(15 mm, 15 mm), size=(60 mm, 60 mm)),style=plot_style(font_family="{FONT}"),r=axis(range=(0,5)))
 p.line(theta={{{{angles}}}},r={{{{radii}}}})

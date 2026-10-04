@@ -53,6 +53,11 @@ class NativeLanguageServer(unittest.TestCase):
   uri='file:///unicode.lay';self.open(uri,'# 😀 中文\npage=canvas(size=(40,30))\npage.add(')
   self.notify('textDocument/didChange',{'textDocument':{'uri':uri,'version':2},'contentChanges':[{'range':{'start':{'line':0,'character':2},'end':{'line':0,'character':4}},'text':'𐐀'}]})
   sig=self.request('textDocument/signatureHelp',{'textDocument':{'uri':uri},'position':{'line':2,'character':9}});self.assertTrue(sig['signatures'][0]['label'].startswith('add('))
+ def test_percent_encoded_imports_read_disk(self):
+  with tempfile.TemporaryDirectory(prefix='laymesh URI 中文 ') as tmp:
+   root=Path(tmp);module=root/'模块 #%.lay';module.write_text('## Encoded module documentation.\nexport function card(title){return title}\n',encoding='utf-8');uri=(root/'main.lay').as_uri();self.open(uri,'import {card} from "./模块 #%.lay"\ncard(')
+   signature=self.request('textDocument/signatureHelp',{'textDocument':{'uri':uri},'position':{'line':1,'character':5}});self.assertIn('Encoded module documentation',signature['signatures'][0]['documentation']['value'])
+   definition=self.request('textDocument/definition',{'textDocument':{'uri':uri},'position':{'line':1,'character':2}});self.assertEqual(definition['uri'],module.as_uri())
  def test_located_diagnostic_quick_fix(self):
   uri='file:///fix.lay';source='page=canvas(size=(40,30))\nr=rect(size=(3,2),stroke_width=1pt)';self.open(uri,source)
   while True:

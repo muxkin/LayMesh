@@ -16,8 +16,8 @@ class MagicTest(unittest.TestCase):
         self.assertIsNotNone(shell.find_line_magic("laymesh"))
         self.assertIsNotNone(shell.find_cell_magic("laymesh"))
         previous = Path.cwd()
-        try:
-            with tempfile.TemporaryDirectory(prefix="laymesh-magic-test-") as directory:
+        with tempfile.TemporaryDirectory(prefix="laymesh-magic-test-") as directory:
+            try:
                 os.chdir(directory)
                 shell.user_ns["title"] = "Notebook title"
                 with patch("laymesh.ipython.display") as display:
@@ -43,8 +43,8 @@ class MagicTest(unittest.TestCase):
                     self.assertIn("array(src=", Path("native.lay").read_text())
                     shell.run_line_magic("laymesh", "native.lay")
                     self.assertEqual(display.call_count, 4)
-        finally:
-            os.chdir(previous)
+            finally:
+                os.chdir(previous)
 
 
 if __name__ == "__main__":

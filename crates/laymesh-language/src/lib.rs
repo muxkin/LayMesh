@@ -27,7 +27,39 @@ struct Context {
 }
 pub(crate) fn resolve(uri: &str, relative: &str) -> String {
     if let Some(path) = uri.strip_prefix("file://") {
-        format!("file://{}", laymesh_core::model::resolve(path, relative))
+        // URI paths are independent of the host filesystem's separators.
+        let (authority, path) = if path.starts_with('/') {
+            ("", path)
+        } else {
+            path.split_once('/').unwrap_or((path, ""))
+        };
+        let relative = if cfg!(windows) { relative.replace('\\', "/") } else { relative.to_owned() };
+        let mut encoded = String::new();
+        for byte in relative.bytes() {
+            if byte.is_ascii_alphanumeric() || b"-._~/:".contains(&byte) {
+                encoded.push(byte as char);
+            } else {
+                encoded.push_str(&format!("%{byte:02X}"));
+            }
+        }
+        let joined = if encoded.starts_with('/') {
+            encoded
+        } else {
+            format!("{}/{encoded}", path.rsplit_once('/').map(|(parent, _)| parent).unwrap_or(""))
+        };
+        let mut parts: Vec<&str> = Vec::new();
+        for part in joined.split('/') {
+            match part {
+                "" | "." => {}
+                ".." => {
+                    if !(parts.len() == 1 && parts[0].ends_with(':')) {
+                        parts.pop();
+                    }
+                }
+                _ => parts.push(part),
+            }
+        }
+        format!("file://{authority}/{}", parts.join("/"))
     } else {
         laymesh_core::model::resolve(uri, relative)
     }
