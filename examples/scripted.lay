@@ -1,0 +1,10 @@
+import { card } from "./components/card.lay"
+
+page = canvas(name="LayMesh components", size=(180 mm, 90 mm), background="#ffffff")
+spacing = 58 mm
+for index in range(3) {
+  label = "Card " + str(index + 1)
+  tile = card(label)
+  placed = page.add(tile,size=(42 mm, auto), target=page.top_left,
+                    offset=(8 mm + index * spacing, 12 mm), opacity=0.95)
+}

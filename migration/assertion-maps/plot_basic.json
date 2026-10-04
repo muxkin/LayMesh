@@ -1,0 +1,449 @@
+{
+  "baseline_commit": "78db22d",
+  "scope": "All129 original plot.test.mjs assertion callsites and every original parameter-loop case; capture JSON is input fixture only.",
+  "mappings": [
+    {
+      "ids": [
+        "tests/plot.test.mjs:21:31"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_ticks_grids_and_log_coordinates_follow_physical_directions"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_scientific_style_preserves_both_panels_and_annotation_geometry"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_manual_legend_is_row_major_and_warns_for_every_placement"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_auto_log_and_changed_ranges_attach_annotations_to_the_same_data"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_rotations_group_scaling_and_arrow_tip_attachments_preserve_anchors"
+        }
+      ],
+      "note": "Original near helper:1e-8 physical-coordinate tolerance is retained for all parameterized anchor,axis,font-size and legend checks in the mapped tests."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:31:3",
+        "tests/plot.test.mjs:32:3",
+        "tests/plot.test.mjs:33:3",
+        "tests/plot.test.mjs:35:3",
+        "tests/plot.test.mjs:36:3",
+        "tests/plot.test.mjs:37:3",
+        "tests/plot.test.mjs:37:34",
+        "tests/plot.test.mjs:38:3",
+        "tests/plot.test.mjs:38:50",
+        "tests/plot.test.mjs:41:62",
+        "tests/plot.test.mjs:42:3",
+        "tests/plot.test.mjs:43:3",
+        "tests/plot.test.mjs:44:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_ticks_grids_and_log_coordinates_follow_physical_directions"
+        }
+      ],
+      "note": "Original 60x40mm bounds and grid clip/order; coincident minor/major dedup4/6; opacity,width,dash; all8 physical axis segments including log2; no warnings; vector exports. Separate native paths are compared as geometric segments."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:62:27",
+        "tests/plot.test.mjs:65:5",
+        "tests/plot.test.mjs:68:7",
+        "tests/plot.test.mjs:72:7",
+        "tests/plot.test.mjs:72:33",
+        "tests/plot.test.mjs:72:58",
+        "tests/plot.test.mjs:74:66",
+        "tests/plot.test.mjs:75:34",
+        "tests/plot.test.mjs:80:5",
+        "tests/plot.test.mjs:81:5",
+        "tests/plot.test.mjs:83:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_scientific_style_preserves_both_panels_and_annotation_geometry"
+        }
+      ],
+      "note": "Both styled/unstyled original source cases; both placement sizes and annotations; fixed data/axis domains; exact7/11/6pt font sizes from actual glyph runs; transparent legend position and two columns; PNG96/300DPI dimensions. Legend children are grouped in the new scene."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:99:7",
+        "tests/plot.test.mjs:99:39",
+        "tests/plot.test.mjs:102:35",
+        "tests/plot.test.mjs:102:54",
+        "tests/plot.test.mjs:106:3",
+        "tests/plot.test.mjs:107:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_manual_legend_is_row_major_and_warns_for_every_placement"
+        }
+      ],
+      "note": "Both original no-legend/manual-legend cases: warning at each distinct placement, A/B/C row-major positions, offsets -30/-20, same auto bounds and data."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:117:28",
+        "tests/plot.test.mjs:118:5",
+        "tests/plot.test.mjs:120:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_empty_ticks_hidden_labels_zero_lengths_and_outward_minor_ticks"
+        }
+      ],
+      "note": "All3 original options: empty ticks, hidden labels+zero-length ticks,outward minor2mm; no texts; fixed bounds; exact nonzero axis segments. Zero-length butt paths are visually empty."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:137:5",
+        "tests/plot.test.mjs:141:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_unpainted_shapes_and_transparent_legend_do_not_leak_pdf_paths"
+        }
+      ],
+      "note": "Full Poppler144DPI pixel equality after injecting unpainted rect,ellipse,path and retaining transparent native legend versus removing its invisible frame; no leaked PDF path state."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:156:11",
+        "tests/plot.test.mjs:161:11"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_invalid_scientific_options_keep_every_parameter_case_located"
+        }
+      ],
+      "note": "All13 invalid scientific style options and all8 invalid legend options produce typed diagnostics at original file; line>1 and legend line5."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:168:3",
+        "tests/plot.test.mjs:169:27",
+        "tests/plot.test.mjs:170:3",
+        "tests/plot.test.mjs:173:3",
+        "tests/plot.test.mjs:174:3",
+        "tests/plot.test.mjs:176:30",
+        "tests/plot.test.mjs:177:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_locked_area_labels_colorbar_and_style_survive_outer_frame_changes"
+        }
+      ],
+      "note": "All3 placements keep locked50x40mm area; auto height80; identical data, text positions/rotations/actual glyph font sizes and gradient colorbar; output96/300DPI does not mutate bounds."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:189:3",
+        "tests/plot.test.mjs:190:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_locked_area_labels_colorbar_and_style_survive_outer_frame_changes"
+        }
+      ],
+      "note": "Both original font/tick-format/labels/legend variants keep identical locked plot bounds and data path."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:208:5",
+        "tests/plot.test.mjs:209:69",
+        "tests/plot.test.mjs:210:10"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_auto_log_and_changed_ranges_attach_annotations_to_the_same_data"
+        }
+      ],
+      "note": "Both auto and log axis cases, two sizes each; annotations coincide with second plotted point; unchanged axis scale/domain metadata; auto domain[-3.95,104.95],log[1,100],log midpoint. New segment range metadata is placement-specific and excluded from old domain-equivalence comparison."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:222:44",
+        "tests/plot.test.mjs:224:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_auto_log_and_changed_ranges_attach_annotations_to_the_same_data"
+        }
+      ],
+      "note": "Both explicit x maxima2/4 keep annotation y30 and domain[0,max]; x positions50/35."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:240:3",
+        "tests/plot.test.mjs:240:44",
+        "tests/plot.test.mjs:242:3",
+        "tests/plot.test.mjs:243:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_rotations_group_scaling_and_arrow_tip_attachments_preserve_anchors"
+        }
+      ],
+      "note": "Containing group scale1.2 each axis; attached dot remains at plot data center; SVG15deg transform and valid PDF."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:268:11"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_invalid_areas_and_annotation_targets_keep_all_diagnostic_messages"
+        }
+      ],
+      "note": "All16 original invalid locked-region/annotation options retain typed Err,file,positive source line and original required diagnostic phrases."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:276:3",
+        "tests/plot.test.mjs:277:3",
+        "tests/plot.test.mjs:279:5",
+        "tests/plot.test.mjs:279:39",
+        "tests/plot.test.mjs:281:31",
+        "tests/plot.test.mjs:282:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_cached_placements_warn_independently_without_changing_data"
+        }
+      ],
+      "note": "Two cached undersized placements report exactly2 W_PLOT_LAYOUT diagnostics at lines6/7, same original file and numeric lower-side shortfall; third placement keeps bounds and identical data. CLI callsites map separately."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:285:3",
+        "tests/plot.test.mjs:285:55",
+        "tests/plot.test.mjs:289:5",
+        "tests/plot.test.mjs:289:49",
+        "tests/plot.test.mjs:290:37",
+        "tests/plot.test.mjs:291:21",
+        "tests/plot.test.mjs:292:21",
+        "tests/plot.test.mjs:293:21"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-cli/tests/legacy_cli.rs",
+          "test": "legacy_cli_plot_layout_warnings_do_not_prevent_any_export"
+        }
+      ],
+      "note": "Execute actual native CLI validate and allSVG/PDF/PNG exports: success+W_PLOT_LAYOUT stderr for each; nonempty outputs; selectable Time SVG; PDF has no raster objects; PNG680px at default96DPI."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:308:5",
+        "tests/plot.test.mjs:309:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_overflow_tiny_and_crowded_areas_keep_complete_labels_and_geometry"
+        }
+      ],
+      "note": "All4 overflow/changed-frame/zero-margin/tiny1mm cases keep exact requested geometry and corresponding original warning category."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:317:5",
+        "tests/plot.test.mjs:320:119",
+        "tests/plot.test.mjs:321:3",
+        "tests/plot.test.mjs:321:38",
+        "tests/plot.test.mjs:322:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_overflow_tiny_and_crowded_areas_keep_complete_labels_and_geometry"
+        }
+      ],
+      "note": "Crowded explicit ticks retain all4 named labels and0.25/1.75, bounds15x10; exactlyone warning for each of x/y tick overlap,axis-label length,colorbar tick overlap,legend overflow."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:327:31",
+        "tests/plot.test.mjs:328:60"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_overflow_tiny_and_crowded_areas_keep_complete_labels_and_geometry"
+        }
+      ],
+      "note": "Automatic thinning final layout has zero W_PLOT_LAYOUT and fewer than12 tick labels."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:334:3",
+        "tests/plot.test.mjs:334:40",
+        "tests/plot.test.mjs:334:67",
+        "tests/plot.test.mjs:336:3",
+        "tests/plot.test.mjs:336:33",
+        "tests/plot.test.mjs:338:3",
+        "tests/plot.test.mjs:339:3",
+        "tests/plot.test.mjs:340:3",
+        "tests/plot.test.mjs:341:3",
+        "tests/plot.test.mjs:342:37",
+        "tests/plot.test.mjs:342:67",
+        "tests/plot.test.mjs:342:93",
+        "tests/plot.test.mjs:343:36",
+        "tests/plot.test.mjs:345:93",
+        "tests/plot.test.mjs:346:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_native_reflow_keeps_units_clips_marker_size_and_export_dimensions"
+        }
+      ],
+      "note": "Original CSV fixture; second80→100mm width/height60; data expands with same marker/stroke/actual text sizes; exact3 point coordinates; per-layer clip replaces aggregate clip, SVG vector circles replace use instances (6markers asserted), selectable text; PDF vector;96/300DPI bounds stable."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:358:3",
+        "tests/plot.test.mjs:359:3",
+        "tests/plot.test.mjs:360:3",
+        "tests/plot.test.mjs:362:3",
+        "tests/plot.test.mjs:362:37"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_missing_data_preserves_gaps_order_and_log_error_coordinates"
+        }
+      ],
+      "note": "Original missing JSON values:3 warnings,two line subpaths,two closed band parts,three scatter points stay in descending input x order. Subpaths are now separate children of each layer clip."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:372:2",
+        "tests/plot.test.mjs:373:2",
+        "tests/plot.test.mjs:374:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_missing_data_preserves_gaps_order_and_log_error_coordinates"
+        }
+      ],
+      "note": "Log scatter midpoint, symmetric/asymmetric error path presence and explicit formatted10.0 tick text."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:387:2",
+        "tests/plot.test.mjs:387:43",
+        "tests/plot.test.mjs:389:2",
+        "tests/plot.test.mjs:390:2",
+        "tests/plot.test.mjs:390:36",
+        "tests/plot.test.mjs:390:68",
+        "tests/plot.test.mjs:391:2",
+        "tests/plot.test.mjs:391:46",
+        "tests/plot.test.mjs:392:2",
+        "tests/plot.test.mjs:393:36",
+        "tests/plot.test.mjs:397:9",
+        "tests/plot.test.mjs:397:44",
+        "tests/plot.test.mjs:403:4"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_heatmap_pixels_orientation_transparency_and_colorbar_remain_exact"
+        }
+      ],
+      "note": "Raster lower-origin heatmap exact16 RGBA bytes incl missing alpha; upper-origin vector3cells and first cell bbox; nearest SVG image; actual raster PDF object and selectableValue label; all6 original interior pixel samples at254DPI. Filled cell paths replace rect nodes."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:416:30",
+        "tests/plot.test.mjs:416:66",
+        "tests/plot.test.mjs:418:8",
+        "tests/plot.test.mjs:420:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_snapshots_frozen_definitions_shadowing_modules_and_large_paths"
+        }
+      ],
+      "note": "Three output nodes despite numeric-list append; frozen chart cannot mutate; user function namedplot still returns analytic rectangle geometry (path recipe)."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:427:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_snapshots_frozen_definitions_shadowing_modules_and_large_paths"
+        }
+      ],
+      "note": "Quoted CSV header/value,nested JSON indexing and module-relative files from original fixture compile to exactlyone plot."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:434:51"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_snapshots_frozen_definitions_shadowing_modules_and_large_paths"
+        }
+      ],
+      "note": "Original10001-point unsampled native line retains exactly10000 LineTo commands, beyond DSL path-command budget."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:448:9",
+        "tests/plot.test.mjs:458:45"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_invalid_data_layout_and_resources_keep_all_original_error_phrases"
+        }
+      ],
+      "note": "All6 invalid layer inputs and all6 invalid log/layout/CSV/JSON/data-column cases retain original asserted phrases; layer errors also preserve file and line>1."
+    },
+    {
+      "ids": [
+        "tests/plot.test.mjs:469:4",
+        "tests/plot.test.mjs:472:4",
+        "tests/plot.test.mjs:472:56",
+        "tests/plot.test.mjs:472:82",
+        "tests/plot.test.mjs:479:8"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_plot_basic.rs",
+          "test": "basic_clipping_and_coincident_scatter_alpha_match_png_and_pdf"
+        }
+      ],
+      "note": "Both nativePNG and PopplerPDF at254DPI: exterior white, coincident half-opacity black points over red yield62..65 red andzero green/blue."
+    }
+  ],
+  "unmapped": []
+}

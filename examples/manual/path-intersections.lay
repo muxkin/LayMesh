@@ -1,0 +1,8 @@
+# Minimal complete example: path.intersections
+page=canvas(size=(100mm,75mm),background="#ffffff")
+curve=page.add(path(commands=[move_to(0mm,0mm),cubic_to(0mm,0mm,0mm,35mm,50mm,35mm),cubic_to(65mm,35mm,70mm,0mm,75mm,0mm),line_to(82mm,12mm)],border_color="#0072b2",border_width=0.7mm),offset=(8mm,15mm))
+route=curve.path.subpaths[0]
+dot=ellipse(size=(2mm,2mm),fill="#e36b70")
+candidates=route.intersections(ray(origin=(0mm,30mm),direction=(1,0)))
+for point in candidates { page.add(dot,anchor=center,target=point) }
+page.add(text("Candidates: "+str(len(candidates))),offset=(8mm,65mm))

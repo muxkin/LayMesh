@@ -1,0 +1,15 @@
+# Gallery: shapes / fuse
+page = canvas(name="Fused vector seam", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Fused vector seam", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+box = rect(size=(23 mm, 21 mm), fill="#087f8c")
+left = page.add(box, target=page.top_left, offset=(16 mm, 35 mm))
+stem = page.add(line(dx=42 mm, dy=0 mm, line_color="#087f8c",
+                     line_width=4 mm),
+                target=page.top_left, offset=(45 mm, 45.5 mm))
+joined = page.fuse(left, stem, points=(left.middle_right, stem.start),
+                   bridge_width=4 mm, junction=round, radius=2 mm,
+                   fill="#087f8c", border_color="none")
+# END DEMO

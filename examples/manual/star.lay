@@ -1,0 +1,3 @@
+# Minimal complete example: star
+page=canvas(size=(100mm,75mm),background="#ffffff")
+page.add(star(points=5,outer_radius=20mm,inner_radius=9mm,fill="#e6f2f3",border_color="#087f8c"),offset=(15mm,15mm))

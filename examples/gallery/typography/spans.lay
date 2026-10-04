@@ -1,0 +1,13 @@
+# Gallery: typography / spans
+page = canvas(name="Colored text spans", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Colored text spans", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+rich = text(spans=[
+  span("COLOR", color="#087f8c", font_size=16 pt),
+  span(" IN ", color="#203864", font_size=12 pt),
+  span("ONE LINE", color="#e67563", font_size=16 pt)
+], font_family=font, font_size=12 pt)
+page.add(rich, target=page.top_left, offset=(12 mm, 35 mm))
+# END DEMO

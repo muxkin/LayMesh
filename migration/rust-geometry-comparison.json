@@ -1,0 +1,1344 @@
+{
+  "cases": [
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-HQZjSW/layout.lay",
+      "line": 1,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-tQzJsV/layout.lay",
+      "line": 2,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-bcT8Rj/layout.lay",
+      "line": 4,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-HNu5Yu/layout.lay",
+      "line": 6,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-aRfEZ1/layout.lay",
+      "line": 7,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-TyUeJp/layout.lay",
+      "line": 8,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-YQJsuS/layout.lay",
+      "line": 9,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-1IFPTB/layout.lay",
+      "line": 10,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-qR912Y/layout.lay",
+      "line": 11,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-r9eNZ6/layout.lay",
+      "line": 12,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-cEvYNx/layout.lay",
+      "line": 13,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044526.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-中文路径-1ayiCd/layout.lay",
+      "line": 14,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044527.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-font-stack-7igoH2/figure.lay",
+      "line": 1,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044527.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@1",
+          "new": 11.785947265624998,
+          "node": 0,
+          "old": 14.895214843749995
+        }
+      ],
+      "file": "/tmp/laymesh-font-stack-glpFSM/figure.lay",
+      "line": 2,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044527.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-font-stack-dxuuJO/figure.lay",
+      "line": 3,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-oyQPqe/case.lay",
+      "line": 1,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-ImKoW0/case.lay",
+      "line": 2,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-izLitN/case.lay",
+      "line": 3,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-PBviPA/case.lay",
+      "line": 4,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-gczYrE/case.lay",
+      "line": 5,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-YOwtzJ/case.lay",
+      "line": 6,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-Cg6mdn/case.lay",
+      "line": 7,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-XIY2tJ/case.lay",
+      "line": 8,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/fuse.lay",
+      "line": 9,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-WbNKBY/case.lay",
+      "line": 10,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-iaCA2T/case.lay",
+      "line": 11,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-LKFhSU/case.lay",
+      "line": 12,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-H9Nj1P/case.lay",
+      "line": 13,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-ZdAXpu/case.lay",
+      "line": 14,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-ZZvbAb/case.lay",
+      "line": 15,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-s5C4LT/case.lay",
+      "line": 16,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-qoKVjG/case.lay",
+      "line": 17,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-Kw40ZR/case.lay",
+      "line": 18,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-3bPaqI/case.lay",
+      "line": 19,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-QXek3J/case.lay",
+      "line": 20,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-ao3YZG/case.lay",
+      "line": 21,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [
+        {
+          "field": "y",
+          "id": "joined",
+          "new": 23.5,
+          "node": 0,
+          "old": 23.410741806030273
+        },
+        {
+          "field": "height",
+          "id": "joined",
+          "new": 21.5,
+          "node": 0,
+          "old": 21.589258193969727
+        }
+      ],
+      "file": "/tmp/laymesh-geometry-wMQVTT/case.lay",
+      "line": 22,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-3KRZfY/case.lay",
+      "line": 23,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-ZQt56h/case.lay",
+      "line": 26,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-ajzwmW/case.lay",
+      "line": 27,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-qMXoHi/case.lay",
+      "line": 28,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-8XPQhu/case.lay",
+      "line": 29,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-KrwLMO/case.lay",
+      "line": 30,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-unsob4/case.lay",
+      "line": 31,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044528.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-geometry-jGDGRs/case.lay",
+      "line": 32,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044535.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-library-docs-EKZeut/main.lay",
+      "line": 1,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044558.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-outline-giHRPt/main.lay",
+      "line": 1,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044558.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-outline-LPy57E/main.lay",
+      "line": 2,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044558.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-outline-HykfEC/main.lay",
+      "line": 3,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044558.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-outline-GXrJzl/main.lay",
+      "line": 4,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-02nR3Q/test.lay",
+      "line": 69,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044594.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-script-中文-AXetBh/main.lay",
+      "line": 1,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044594.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-script-中文-QnMw8U/main.lay",
+      "line": 2,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044594.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-script-中文-FpnOrD/main.lay",
+      "line": 3,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044594.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-script-中文-V5eMYz/main.lay",
+      "line": 5,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044594.jsonl",
+      "differences": [],
+      "file": "/tmp/LayMesh-script-中文-V5eMYz/moved.lay",
+      "line": 6,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-type-中文-0YsL8y/main.lay",
+      "line": 1,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@1",
+          "new": 7.1402222222222225,
+          "node": 0,
+          "old": 7.234700520833333
+        },
+        {
+          "field": "width",
+          "id": "@2",
+          "new": 12.879916666666665,
+          "node": 1,
+          "old": 14.211018880208332
+        }
+      ],
+      "file": "/tmp/laymesh-type-中文-Wq4PsF/main.lay",
+      "line": 2,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-type-中文-QYTT8M/main.lay",
+      "line": 3,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-type-中文-msQIVK/main.lay",
+      "line": 4,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-type-中文-msQIVK/main.lay",
+      "line": 5,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-type-中文-kmmK4T/main.lay",
+      "line": 6,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-type-中文-kmmK4T/main.lay",
+      "line": 7,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-type-中文-1ADsmp/main.lay",
+      "line": 8,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [
+        {
+          "field": "height",
+          "id": "@1",
+          "new": 5.498853055555555,
+          "node": 0,
+          "old": 5.974997222222222
+        },
+        {
+          "field": "width",
+          "id": "@2",
+          "new": 9.397308555555554,
+          "node": 1,
+          "old": 10.630605555555556
+        },
+        {
+          "field": "height",
+          "id": "@2",
+          "new": 11.006666666666666,
+          "node": 1,
+          "old": 12.451291666666666
+        }
+      ],
+      "file": "/tmp/laymesh-type-中文-xYWveu/main.lay",
+      "line": 9,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@1",
+          "new": 10.921383814814815,
+          "node": 0,
+          "old": 12.431183333333331
+        },
+        {
+          "field": "height",
+          "id": "@1",
+          "new": 3.527763666666666,
+          "node": 0,
+          "old": 4.068233333333333
+        },
+        {
+          "field": "width",
+          "id": "@2",
+          "new": 7.667065259259257,
+          "node": 1,
+          "old": 8.671983333333333
+        },
+        {
+          "field": "height",
+          "id": "@2",
+          "new": 4.2333333333333325,
+          "node": 1,
+          "old": 4.76885
+        }
+      ],
+      "file": "/tmp/laymesh-type-中文-zmIqxX/main.lay",
+      "line": 10,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@1",
+          "new": 2.151990305555555,
+          "node": 0,
+          "old": 3.2490833333333335
+        },
+        {
+          "field": "height",
+          "id": "@1",
+          "new": 3.670271777777778,
+          "node": 0,
+          "old": 4.228041666666666
+        }
+      ],
+      "file": "/tmp/laymesh-type-中文-6cVNNa/main.lay",
+      "line": 12,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044611.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@1",
+          "new": 8.404632654320988,
+          "node": 0,
+          "old": 9.507361111111113
+        },
+        {
+          "field": "height",
+          "id": "@1",
+          "new": 9.525,
+          "node": 0,
+          "old": 9.179277777777775
+        }
+      ],
+      "file": "/tmp/laymesh-type-中文-6cVNNa/main.lay",
+      "line": 13,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@2",
+          "new": 8.4582,
+          "node": 1,
+          "old": 10.229866536458331
+        }
+      ],
+      "file": "/tmp/unified-language.lay",
+      "line": 1,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@1",
+          "new": 21.48397459876543,
+          "node": 0,
+          "old": 23.529823025173613
+        },
+        {
+          "field": "height",
+          "id": "@1",
+          "new": 4.233333333333333,
+          "node": 0,
+          "old": 5.108222222222222
+        },
+        {
+          "field": "width",
+          "id": "@2",
+          "new": 24.384,
+          "node": 1,
+          "old": 28.427205403645836
+        },
+        {
+          "field": "height",
+          "id": "@2",
+          "new": 4.233333333333333,
+          "node": 1,
+          "old": 5.108222222222222
+        },
+        {
+          "field": "width",
+          "id": "@3",
+          "new": 38.42150598765432,
+          "node": 2,
+          "old": 43.12230154079861
+        },
+        {
+          "field": "height",
+          "id": "@3",
+          "new": 4.233333333333333,
+          "node": 2,
+          "old": 5.108222222222222
+        },
+        {
+          "field": "width",
+          "id": "@4",
+          "new": 13.617268083333332,
+          "node": 3,
+          "old": 14.953795247395831
+        },
+        {
+          "field": "height",
+          "id": "@4",
+          "new": 8.837083333333332,
+          "node": 3,
+          "old": 10.608027777777778
+        }
+      ],
+      "file": "/tmp/unified-language.lay",
+      "line": 3,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@1",
+          "new": 30.339799999999993,
+          "node": 0,
+          "old": 35.02446289062499
+        },
+        {
+          "field": "width",
+          "id": "@2",
+          "new": 39.11973333333333,
+          "node": 1,
+          "old": 45.36595052083333
+        },
+        {
+          "field": "width",
+          "id": "@3",
+          "new": 19.754849999999998,
+          "node": 2,
+          "old": 23.26834716796875
+        }
+      ],
+      "file": "/tmp/unified-language.lay",
+      "line": 5,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@1",
+          "new": 7.753349999999999,
+          "node": 0,
+          "old": 9.377377658420135
+        }
+      ],
+      "file": "/tmp/laymesh-lcss-tGwXG4/main.lay",
+      "line": 6,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@2",
+          "new": 15.318066666666667,
+          "node": 0,
+          "old": 17.241102430555554
+        },
+        {
+          "field": "width",
+          "id": "@3",
+          "new": 28.636133333333333,
+          "node": 1,
+          "old": 32.48220486111111
+        }
+      ],
+      "file": "/tmp/unified-language.lay",
+      "line": 15,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@1",
+          "new": 19.76763255,
+          "node": 0,
+          "old": 24.1697123046875
+        },
+        {
+          "field": "height",
+          "id": "@1",
+          "new": 8.28675,
+          "node": 0,
+          "old": 8.62965
+        },
+        {
+          "field": "width",
+          "id": "@2",
+          "new": 10.057694444444444,
+          "node": 1,
+          "old": 11.5341796875
+        },
+        {
+          "field": "height",
+          "id": "@2",
+          "new": 12.7,
+          "node": 1,
+          "old": 12.841111111111111
+        }
+      ],
+      "file": "/tmp/unified-language.lay",
+      "line": 16,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@1",
+          "new": 10.230555555555554,
+          "node": 0,
+          "old": 12.03716362847222
+        }
+      ],
+      "file": "/tmp/unified-language.lay",
+      "line": 19,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/tmp/unified-language.lay",
+      "line": 23,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/tmp/unified-language.lay",
+      "line": 24,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "width",
+          "id": "@1",
+          "new": 50.51425,
+          "node": 0,
+          "old": 58.892529296875
+        }
+      ],
+      "file": "/tmp/unified-language.lay",
+      "line": 25,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/images/png.lay",
+      "line": 26,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/images/jpeg.lay",
+      "line": 27,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/images/svg.lay",
+      "line": 28,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/images/tiff-gray.lay",
+      "line": 29,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/images/tiff-rgb.lay",
+      "line": 30,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/images/reuse.lay",
+      "line": 31,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/images/crop.lay",
+      "line": 32,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/images/fit-contain.lay",
+      "line": 33,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/images/fit-cover.lay",
+      "line": 34,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/images/fit-stretch.lay",
+      "line": 35,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/positioning/anchors.lay",
+      "line": 36,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/positioning/relative.lay",
+      "line": 37,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/positioning/dependent-size.lay",
+      "line": 38,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/positioning/rotation.lay",
+      "line": 39,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/positioning/opacity.lay",
+      "line": 40,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/positioning/drawing-order.lay",
+      "line": 41,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/containers/group-local.lay",
+      "line": 42,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/containers/group-nested.lay",
+      "line": 43,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/containers/group-reuse.lay",
+      "line": 44,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/containers/module-import.lay",
+      "line": 45,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/rect.lay",
+      "line": 46,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/ellipse.lay",
+      "line": 47,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/line-arrow.lay",
+      "line": 48,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/polygon-polyline.lay",
+      "line": 49,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/arc-sector.lay",
+      "line": 50,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/star-ring.lay",
+      "line": 51,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/path-commands.lay",
+      "line": 52,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/evenodd-hole.lay",
+      "line": 53,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/linear-gradient.lay",
+      "line": 54,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/radial-gradient.lay",
+      "line": 55,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/dashes.lay",
+      "line": 56,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/outlines.lay",
+      "line": 57,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/fuse.lay",
+      "line": 58,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/fuse-angled.lay",
+      "line": 59,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/fuse-curved.lay",
+      "line": 60,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/fuse-outline-edge.lay",
+      "line": 61,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/shapes/fuse-outline-corner.lay",
+      "line": 62,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/typography/font.lay",
+      "line": 63,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/typography/wrap-align.lay",
+      "line": 64,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/typography/spans.lay",
+      "line": 65,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "height",
+          "id": "@2",
+          "new": 5.813719922222221,
+          "node": 1,
+          "old": 6.589712499999999
+        }
+      ],
+      "file": "/workspace/LayMesh/examples/gallery/typography/inline-formula.lay",
+      "line": 66,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "x",
+          "id": "@2",
+          "new": 37.220250672839505,
+          "node": 1,
+          "old": 32.741037500000004
+        },
+        {
+          "field": "y",
+          "id": "@2",
+          "new": 30.39190742777778,
+          "node": 1,
+          "old": 29.153847222222225
+        },
+        {
+          "field": "width",
+          "id": "@2",
+          "new": 45.55949865432099,
+          "node": 1,
+          "old": 54.51792499999999
+        },
+        {
+          "field": "height",
+          "id": "@2",
+          "new": 19.21618514444444,
+          "node": 1,
+          "old": 21.692305555555553
+        }
+      ],
+      "file": "/workspace/LayMesh/examples/gallery/typography/display-formula.lay",
+      "line": 67,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/scripting/units-builtins.lay",
+      "line": 68,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/scripting/control-flow.lay",
+      "line": 69,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/basic.lay",
+      "line": 90,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "x",
+          "id": "@2",
+          "new": 26.244944444444446,
+          "node": 2,
+          "old": 24.103762478298613
+        },
+        {
+          "field": "width",
+          "id": "@2",
+          "new": 31.510111111111108,
+          "node": 2,
+          "old": 35.792475043402774
+        }
+      ],
+      "file": "/workspace/LayMesh/examples/hello.lay",
+      "line": 91,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/functions.lay",
+      "line": 92,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/outlines.lay",
+      "line": 93,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/scripted.lay",
+      "line": 94,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/showcase.lay",
+      "line": 95,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [
+        {
+          "field": "height",
+          "id": "@4",
+          "new": 7.072186388888889,
+          "node": 3,
+          "old": 7.548330555555556
+        },
+        {
+          "field": "x",
+          "id": "@7",
+          "new": 99.36202327777778,
+          "node": 6,
+          "old": 95.6972125
+        },
+        {
+          "field": "y",
+          "id": "@7",
+          "new": 54.13883335,
+          "node": 6,
+          "old": 53.125875
+        },
+        {
+          "field": "width",
+          "id": "@7",
+          "new": 37.27595344444445,
+          "node": 6,
+          "old": 44.605574999999995
+        },
+        {
+          "field": "height",
+          "id": "@7",
+          "new": 15.722333299999999,
+          "node": 6,
+          "old": 17.74825
+        }
+      ],
+      "file": "/workspace/LayMesh/examples/typography.lay",
+      "line": 96,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/vector.lay",
+      "line": 97,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/notebook/vector.lay",
+      "line": 98,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/gallery/notebook/heatmap.lay",
+      "line": 99,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044977.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-vector-RWgGrg/main.lay",
+      "line": 1,
+      "text_dependent": true
+    },
+    {
+      "capture": "cases-1044977.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-vector-C0mN6D/main.lay",
+      "line": 2,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044977.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-vector-JsJoB8/main.lay",
+      "line": 3,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044977.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-vector-gpjW9H/main.lay",
+      "line": 4,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044977.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-vector-module-aQeF5M/main.lay",
+      "line": 5,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044977.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-vector-i6454C/main.lay",
+      "line": 6,
+      "text_dependent": false
+    },
+    {
+      "capture": "cases-1044977.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-vector-IeNPvn/main.lay",
+      "line": 7,
+      "text_dependent": false
+    }
+  ],
+  "summary": {
+    "cases": 139,
+    "cases_with_layout_changes": 19,
+    "tolerance_mm": 0.001
+  }
+}

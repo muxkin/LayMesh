@@ -1,0 +1,18 @@
+# Gallery: positioning / chart-parts
+page=canvas(name="Chart parts",size=(160mm,120mm),background="#ffffff")
+page.add(text("Chart parts share the anchor model",font_family="DejaVu Sans",font_size=15pt,color="#203864"),offset=(8mm,6mm))
+# BEGIN DEMO
+p=plot(size=(136mm,88mm),plot_area=box(offset=(18mm,10mm),size=(98mm,58mm)),font_family="DejaVu Sans",x=axis(range=(0,4),reverse=true,label="Time (s)"),y=axis(range=(0,5)))
+p.add_axis(name="signal",side= right,axis=axis(range=(0,5),label="Signal"))
+p.line(y_axis="signal",x=[0,1,2,3,4],y=[1,2.2,1.8,3.5,4.2],marker= circle,color="#287dc3")
+chart=page.add(p,offset=(9mm,21mm))
+dot=ellipse(size=(2.4mm,2.4mm),fill="#df6e70")
+page.add(dot,anchor=center,target=chart.plot_area.bounds.top_left)
+page.add(dot,anchor=center,target=chart.axes["x"].min)
+page.add(dot,anchor=center,target=chart.axes["x"].max)
+page.add(ellipse(size=(2.4mm,2.4mm),fill="#009e88"),anchor=center,target=chart.axes["signal"].spine.path.at(fraction=0.5))
+label=chart.axes["x"].label.bounds
+page.add(rect(size=(label.width,label.height),border_color="#df6e70",border_width=0.2mm),target=label.top_left)
+page.add(line(dx=0mm,dy=-7mm,line_color="#df6e70",line_width=0.4mm),anchor=self.path.end,target=chart.data(x=2,y=1.8,y_axis="signal"))
+# END DEMO
+page.add(text("x.min stays the numeric minimum when the x axis is reversed.",font_family="DejaVu Sans",font_size=8pt,color="#425466"),offset=(8mm,112mm))

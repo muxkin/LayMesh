@@ -1,0 +1,24 @@
+[package]
+name = "laymesh-render"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[features]
+default = ["native"]
+native = ["dep:resvg", "dep:krilla", "dep:krilla-svg", "dep:png", "dep:ratex-katex-fonts", "dep:ttf-parser"]
+[dependencies]
+laymesh-core = { path = "../laymesh-core", default-features = false }
+serde_json.workspace = true
+resvg = { version = "0.47", default-features = false, features = ["text", "raster-images"], optional = true }
+krilla = { version = "0.8.2", default-features = false, features = ["raster-images"], optional = true }
+krilla-svg = { version = "=0.8.1", default-features = false, optional = true }
+png = { version = "0.18", optional = true }
+base64 = "0.22"
+ratex-katex-fonts = { version = "=0.1.14", optional = true }
+ttf-parser = { version = "0.25", optional = true }
+kurbo = "0.13"
+[dev-dependencies]
+roxmltree = "0.21"
+moxcms = "=0.8.1"
+
+laymesh-language = { path = "../laymesh-language" }

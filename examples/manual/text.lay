@@ -1,0 +1,3 @@
+# Minimal complete example: text
+page=canvas(size=(100mm,75mm),background="#ffffff")
+page.add(text("Wrapping preserves physical type size.",size=(45mm,auto),font_size=12pt),offset=(8mm,8mm))

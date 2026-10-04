@@ -1,0 +1,4 @@
+# Minimal complete example: len
+page=canvas(size=(100mm,75mm),background="#ffffff")
+values=[1,2,3]
+page.add(text("Count: "+str(len(values))),offset=(10mm,10mm))

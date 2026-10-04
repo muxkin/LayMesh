@@ -1,0 +1,1 @@
+export function title() { return text(spans=[span("Signal "),formula(source=r"\alpha_2",font_size=12 pt)],font_family="font.ttf",font_size=11 pt) }

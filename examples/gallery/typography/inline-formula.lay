@@ -1,0 +1,13 @@
+# Gallery: typography / inline-formula
+page = canvas(name="Inline formula", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Inline formula", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+sentence = text(size=(98 mm, auto),spans=[
+  span("Energy: ", color="#203864"),
+  formula(source=r"E=mc^2", font_size=17 pt),
+  span("  in one line", color="#087f8c")
+], font_family=font, font_size=11 pt)
+page.add(sentence, target=page.top_left, offset=(10 mm, 34 mm))
+# END DEMO

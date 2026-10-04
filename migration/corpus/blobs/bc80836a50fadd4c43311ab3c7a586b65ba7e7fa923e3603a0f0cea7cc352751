@@ -1,0 +1,6 @@
+
+export photo=image(src="素材/photo.png")
+export icon=image(src="素材/icon.svg")
+export jpeg=image(src="素材/photo.jpg")
+export tiff=image(src="素材/rgb8.tiff")
+export gap=2 mm

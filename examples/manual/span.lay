@@ -1,0 +1,3 @@
+# Minimal complete example: span
+page=canvas(size=(100mm,75mm),background="#ffffff")
+page.add(text(spans=[span("Red ",color="#e36b70"),span("bold",font_weight=700)],font_size=12pt),offset=(8mm,8mm))

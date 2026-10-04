@@ -1,0 +1,22 @@
+## @lang zh-CN
+## 创建圆角卡片，并将标题放在中央。
+## @param {string} label - 标题文字；支持行内公式。
+## @returns {group} 可重复放置的卡片，宽 42mm、高 31mm。
+## @example
+## item = card("结果")
+## @lang en
+## Create a rounded card with a centered caption.
+## @param {string} label - Caption text; supports inline mathematics.
+## @returns {group} Reusable card material, 42mm wide and 31mm high.
+## @example
+## item = card("Result")
+export function card(label) {
+  item = group()
+  plate = item.add(rect(size=(42 mm, 31 mm), border_radius=3 mm,
+                        fill="#d8f0ec", border_color="#087f8c", border_width=0.5 mm),
+                   target=item.top_left)
+  item.add(text(content=label, font_family="DejaVu Sans",
+                font_size=11 pt, color="#203864"),
+           anchor=center, target=plate.center)
+  return item
+}

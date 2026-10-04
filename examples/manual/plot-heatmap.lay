@@ -1,0 +1,5 @@
+# Minimal complete example: plot.heatmap
+page=canvas(size=(100mm,75mm),background="#ffffff")
+p=plot(size=(86mm,62mm),x=axis(range=(0,4)),y=axis(range=(0,5)))
+p.heatmap(z=[[1,2,3],[2,4,2],[1,3,1]],extent=(0,4,0,5),origin=lower)
+page.add(p,offset=(7mm,6mm))

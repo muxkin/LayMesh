@@ -1,0 +1,92 @@
+{
+  "name": "laymesh-language",
+  "displayName": "LayMesh",
+  "version": "0.3.0-alpha.3",
+  "publisher": "laymesh",
+  "description": "LayMesh DSL and LCSS: parameter help, predefined string variables and smooth local HEX/RGB/HSV/OKLCH color editing.",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "license": "MIT",
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./dist/client.cjs",
+  "activationEvents": [
+    "onLanguage:laymesh",
+    "onLanguage:lcss"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "laymesh",
+        "aliases": [
+          "LayMesh"
+        ],
+        "extensions": [
+          ".lay"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "lcss",
+        "aliases": [
+          "LCSS"
+        ],
+        "extensions": [
+          ".lcss"
+        ],
+        "configuration": "./lcss-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "laymesh",
+        "scopeName": "source.laymesh",
+        "path": "./syntaxes/laymesh.tmLanguage.json"
+      },
+      {
+        "language": "lcss",
+        "scopeName": "source.lcss",
+        "path": "./syntaxes/lcss.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "LayMesh",
+      "properties": {
+        "laymesh.language": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "zh-CN",
+            "en"
+          ],
+          "default": "auto",
+          "scope": "window",
+          "markdownDescription": "Language for completion, hover and signature documentation. `auto` follows the editor display language. 补全、悬停和参数说明的语言；`auto` 跟随编辑器界面。"
+        },
+        "laymesh.executable": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "description": "Path to the native LayMesh Rust executable. Empty uses the extension bundled binary."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "laymesh.editColor",
+        "title": "LayMesh: Edit Color / 编辑颜色"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "laymesh.editColor",
+          "when": "editorLangId == laymesh || editorLangId == lcss",
+          "group": "navigation"
+        }
+      ]
+    }
+  }
+}

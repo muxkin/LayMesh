@@ -1,0 +1,490 @@
+{
+  "mappings": [
+    {
+      "ids": [
+        "tests/geometry-regression.test.mjs:63:5",
+        "tests/geometry-regression.test.mjs:64:5",
+        "tests/geometry-regression.test.mjs:66:5",
+        "tests/geometry-regression.test.mjs:68:5",
+        "tests/geometry-regression.test.mjs:71:5",
+        "tests/geometry-regression.test.mjs:72:5",
+        "tests/geometry-regression.test.mjs:73:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_geometry.rs",
+          "test": "arrows_trim_shafts_in_all_five_directions"
+        }
+      ],
+      "note": "Port of arrow shaft ends behind its head in horizontal, diagonal, reverse and vertical directions; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/geometry-regression.test.mjs:80:3",
+        "tests/geometry-regression.test.mjs:81:3",
+        "tests/geometry-regression.test.mjs:82:3",
+        "tests/geometry-regression.test.mjs:83:3",
+        "tests/geometry-regression.test.mjs:85:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_geometry.rs",
+          "test": "short_arrows_keep_the_tip_anchor_without_a_shaft"
+        }
+      ],
+      "note": "Port of short arrows draw only a head while the end anchor stays at the requested tip; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/geometry-regression.test.mjs:91:3",
+        "tests/geometry-regression.test.mjs:92:3",
+        "tests/geometry-regression.test.mjs:93:3",
+        "tests/geometry-regression.test.mjs:94:3",
+        "tests/geometry-regression.test.mjs:96:33",
+        "tests/geometry-regression.test.mjs:97:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_geometry.rs",
+          "test": "capped_dashed_and_compound_arrow_ink_stops_behind_heads"
+        }
+      ],
+      "note": "Port of capped, dashed and compound arrow shafts stop before the head in vector and raster exports; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/geometry-regression.test.mjs:102:3",
+        "tests/geometry-regression.test.mjs:103:3",
+        "tests/geometry-regression.test.mjs:105:3",
+        "tests/geometry-regression.test.mjs:106:3",
+        "tests/geometry-regression.test.mjs:107:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_geometry.rs",
+          "test": "fused_arrows_preserve_trimmed_shafts_and_intact_heads"
+        }
+      ],
+      "note": "Port of fused arrows use the same trimmed shaft and intact head; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/geometry-regression.test.mjs:113:3",
+        "tests/geometry-regression.test.mjs:114:3",
+        "tests/geometry-regression.test.mjs:120:5",
+        "tests/geometry-regression.test.mjs:122:5",
+        "tests/geometry-regression.test.mjs:123:5",
+        "tests/geometry-regression.test.mjs:126:5",
+        "tests/geometry-regression.test.mjs:127:5",
+        "tests/geometry-regression.test.mjs:129:3",
+        "tests/geometry-regression.test.mjs:130:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_geometry.rs",
+          "test": "round_fuse_fillets_are_symmetric_continuous_and_monotone"
+        }
+      ],
+      "note": "Port of round fuse produces symmetric continuous fillets and preserves a uniform bridge; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/geometry-regression.test.mjs:136:3",
+        "tests/geometry-regression.test.mjs:137:3",
+        "tests/geometry-regression.test.mjs:138:3",
+        "tests/geometry-regression.test.mjs:141:3",
+        "tests/geometry-regression.test.mjs:142:3",
+        "tests/geometry-regression.test.mjs:143:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_geometry.rs",
+          "test": "angled_and_touching_round_joins_preserve_remote_holes"
+        }
+      ],
+      "note": "Port of round fuse handles angled and touching joins without losing remote holes; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/geometry-regression.test.mjs:160:5",
+        "tests/geometry-regression.test.mjs:161:5",
+        "tests/geometry-regression.test.mjs:162:5",
+        "tests/geometry-regression.test.mjs:166:7",
+        "tests/geometry-regression.test.mjs:168:5",
+        "tests/geometry-regression.test.mjs:169:25",
+        "tests/geometry-regression.test.mjs:170:5",
+        "tests/geometry-regression.test.mjs:171:5",
+        "tests/geometry-regression.test.mjs:172:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_geometry.rs",
+          "test": "sloped_fusions_remain_connected_for_all_shapes_and_directions"
+        }
+      ],
+      "note": "Port of round fuse keeps sloped lines connected to flat and curved boundaries; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/geometry-regression.test.mjs:177:9",
+        "tests/geometry-regression.test.mjs:178:9",
+        "tests/geometry-regression.test.mjs:180:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_geometry.rs",
+          "test": "detached_bbox_anchors_fail_but_touching_curves_stay_connected"
+        }
+      ],
+      "note": "Port of round fuse rejects a bounding-box anchor detached from a freeform curve; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/geometry-regression.test.mjs:193:7",
+        "tests/geometry-regression.test.mjs:194:7",
+        "tests/geometry-regression.test.mjs:196:7",
+        "tests/geometry-regression.test.mjs:197:7",
+        "tests/geometry-regression.test.mjs:198:7",
+        "tests/geometry-regression.test.mjs:199:7",
+        "tests/geometry-regression.test.mjs:200:7",
+        "tests/geometry-regression.test.mjs:201:7",
+        "tests/geometry-regression.test.mjs:202:7"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_geometry.rs",
+          "test": "hollow_frames_keep_holes_and_connect_both_anchors_for_all_seams"
+        }
+      ],
+      "note": "Port of hollow rectangle seams keep their hole at the right edge and top-right corner; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/script.test.mjs:48:3",
+        "tests/script.test.mjs:49:3",
+        "tests/script.test.mjs:50:3",
+        "tests/script.test.mjs:51:3",
+        "tests/script.test.mjs:53:3",
+        "tests/script.test.mjs:54:3",
+        "tests/script.test.mjs:56:3",
+        "tests/script.test.mjs:61:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "nested_groups_scale_opacity_and_dependent_anchors"
+        }
+      ],
+      "note": "Port of three nested groups scale, rotate, inherit opacity and keep relative anchors; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/script.test.mjs:67:3",
+        "tests/script.test.mjs:68:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "variables_units_branches_loops_functions_and_scope"
+        }
+      ],
+      "note": "Port of variables, dimension arithmetic, conditions, both for forms, while and functions; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/script.test.mjs:95:3",
+        "tests/script.test.mjs:96:3",
+        "tests/script.test.mjs:97:3",
+        "tests/script.test.mjs:98:3",
+        "tests/script.test.mjs:99:3",
+        "tests/script.test.mjs:100:3",
+        "tests/script.test.mjs:101:3",
+        "tests/script.test.mjs:102:3",
+        "tests/script.test.mjs:104:3",
+        "tests/script.test.mjs:105:3",
+        "tests/script.test.mjs:106:3",
+        "tests/script.test.mjs:107:3",
+        "tests/script.test.mjs:109:3",
+        "tests/script.test.mjs:110:3",
+        "tests/script.test.mjs:111:3",
+        "tests/script.test.mjs:116:3"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "transitive_component_assets_and_font_origins_survive_directory_moves"
+        }
+      ],
+      "note": "Port of component assets resolve from defining module through transitive imports and moved directory; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/script.test.mjs:23:9",
+        "tests/script.test.mjs:24:5",
+        "tests/script.test.mjs:25:5",
+        "tests/script.test.mjs:26:5",
+        "tests/script.test.mjs:27:5",
+        "tests/script.test.mjs:28:5"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "variables_units_branches_loops_functions_and_scope"
+        },
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "cross_file_resource_import_unit_execution_and_group_errors_remain_located"
+        }
+      ],
+      "note": "expectError: typed Diagnostic, exact captured code/file/line and positive column, including missing local variable, all cross-file and limit scenarios."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:15:3",
+        "tests/unified-language.test.mjs:15:33",
+        "tests/unified-language.test.mjs:16:3",
+        "tests/unified-language.test.mjs:16:41",
+        "tests/unified-language.test.mjs:17:3",
+        "tests/unified-language.test.mjs:17:39",
+        "tests/unified-language.test.mjs:18:3",
+        "tests/unified-language.test.mjs:19:3",
+        "tests/unified-language.test.mjs:20:9"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "geometry_units_data_units_and_typography_are_independent"
+        }
+      ],
+      "note": "Port of default geometry units are independent of data and typography; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:30:3",
+        "tests/unified-language.test.mjs:31:3",
+        "tests/unified-language.test.mjs:32:3",
+        "tests/unified-language.test.mjs:33:3",
+        "tests/unified-language.test.mjs:34:9"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "automatic_raw_and_formatted_formula_strings_keep_distinct_semantics"
+        }
+      ],
+      "note": "Port of automatic formulas, raw text and formatted strings keep distinct semantics; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:43:3",
+        "tests/unified-language.test.mjs:44:3",
+        "tests/unified-language.test.mjs:45:3",
+        "tests/unified-language.test.mjs:46:3",
+        "tests/unified-language.test.mjs:46:33"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "instance_classes_cascade_and_explicit_overrides_are_independent"
+        }
+      ],
+      "note": "Port of instance classes, CSS cascade and explicit overrides do not mutate other instances; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:53:3",
+        "tests/unified-language.test.mjs:54:9",
+        "tests/unified-language.test.mjs:55:9",
+        "tests/unified-language.test.mjs:57:9"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "lcss_imports_variables_and_cycle_errors"
+        }
+      ],
+      "note": "Port of LCSS imports, variables, diagnostics and cycle detection; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:65:3",
+        "tests/unified-language.test.mjs:66:36",
+        "tests/unified-language.test.mjs:66:72",
+        "tests/unified-language.test.mjs:67:3",
+        "tests/unified-language.test.mjs:67:51"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "plot_part_styles_keep_the_data_rectangle_and_vector_math"
+        }
+      ],
+      "note": "Port of plot part styles preserve the physical data rectangle and render vector math; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:71:11"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "removed_names_keep_migration_diagnostics"
+        }
+      ],
+      "note": "Port of removed public names provide migration diagnostics; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:81:26",
+        "tests/unified-language.test.mjs:82:2",
+        "tests/unified-language.test.mjs:82:49",
+        "tests/unified-language.test.mjs:83:2",
+        "tests/unified-language.test.mjs:83:54"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "independent_group_typography_reflows_named_anchor_dependencies"
+        }
+      ],
+      "note": "Port of group instances inherit independent typography and keep anchor relationships; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:89:64",
+        "tests/unified-language.test.mjs:89:92",
+        "tests/unified-language.test.mjs:90:33"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "formula_fragments_inherit_style_and_display_blocks_get_their_own_line"
+        }
+      ],
+      "note": "Port of formula fragments inherit final text style and display blocks occupy separate lines; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:99:2",
+        "tests/unified-language.test.mjs:100:35",
+        "tests/unified-language.test.mjs:100:64",
+        "tests/unified-language.test.mjs:101:2",
+        "tests/unified-language.test.mjs:101:50"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "all_region_paints_remain_vector_and_keep_physical_coordinates"
+        }
+      ],
+      "note": "Port of all region paint types export as vectors and preserve physical data coordinates; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:105:8"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "formula_error_uses_the_label_location"
+        }
+      ],
+      "note": "Port of formula diagnostics point into the label, not the plot constructor; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:112:2",
+        "tests/unified-language.test.mjs:112:48",
+        "tests/unified-language.test.mjs:113:2",
+        "tests/unified-language.test.mjs:114:8"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "nested_interpolation_quotes_raw_comparisons_and_shorthand_order"
+        }
+      ],
+      "note": "Port of nested quotes in interpolation, raw comparisons and CSS shorthand order; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:122:2",
+        "tests/unified-language.test.mjs:123:2",
+        "tests/unified-language.test.mjs:124:2",
+        "tests/unified-language.test.mjs:125:8"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "axis_background_compound_series_and_text_colors_are_independent"
+        }
+      ],
+      "note": "Port of axis regions, compound lines and independent series colors share output semantics; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:132:2",
+        "tests/unified-language.test.mjs:132:37"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "fusion_fill_does_not_require_a_border"
+        }
+      ],
+      "note": "Port of fusion can inherit a fill without requiring a visible border; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:139:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "cross_hatch_diagonals_cover_tile_interiors"
+        }
+      ],
+      "note": "Port of hatch tiles contain continuous diagonals rather than isolated corner dots; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:146:2",
+        "tests/unified-language.test.mjs:146:44",
+        "tests/unified-language.test.mjs:147:2",
+        "tests/unified-language.test.mjs:148:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "spans_inherit_final_parent_styles_with_class_and_explicit_overrides"
+        }
+      ],
+      "note": "Port of spans inherit their final parent rather than canvas defaults; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:152:79"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "all_original_shipped_examples_compile_with_positive_physical_dimensions"
+        }
+      ],
+      "note": "Port of all shipped native examples compile with the unified API; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    },
+    {
+      "ids": [
+        "tests/unified-language.test.mjs:161:2"
+      ],
+      "checks": [
+        {
+          "file": "crates/laymesh-render/tests/legacy_language.rs",
+          "test": "plot_style_line_defaults_remain_independent_of_text_color"
+        }
+      ],
+      "note": "Port of plot-style line defaults remain independent of text color; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+    }
+  ],
+  "unmapped": []
+}

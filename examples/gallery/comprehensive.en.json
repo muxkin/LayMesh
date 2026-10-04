@@ -1,0 +1,10 @@
+[
+  {"title":"First figure","description":"Build a simple page with rectangles, text, and anchors.","result":"160 × 100 mm, 3 top-level placements; preview 945 × 591 px at 150 DPI."},
+  {"title":"Image composition","description":"Reuse one asset definition at two positions with different widths and crops.","result":"180 × 120 mm, 7 top-level placements; preview 1063 × 709 px at 150 DPI."},
+  {"title":"Functions and control flow","description":"Use lists, units, functions, and loops to compute visible text.","result":"120 × 55 mm, 3 top-level placements; preview 709 × 325 px at 150 DPI."},
+  {"title":"Component cards","description":"Import a local component and place three cards in a loop.","result":"180 × 90 mm, 3 top-level placements; preview 1063 × 531 px at 150 DPI."},
+  {"title":"Vector drawing","description":"Combine paths, gradients, holes, dashes, and visible-outline fusion.","result":"180 × 120 mm, 9 top-level placements; preview 1063 × 709 px at 150 DPI."},
+  {"title":"Compound outlines","description":"Reuse single, double, triple, and dashed outlines.","result":"180 × 110 mm, 13 top-level placements; preview 1063 × 650 px at 150 DPI."},
+  {"title":"Text and formulas","description":"Mix fonts, colored spans, wrapping, and formula layout.","result":"160 × 100 mm, 8 top-level placements; preview 945 × 591 px at 150 DPI."},
+  {"title":"Complete layout atlas","description":"Combine images, vectors, text, groups, and components in a 16 cm wide page.","result":"160 × 226.262626… mm, 1 top-level group; preview 945 × 1336 px at 150 DPI."}
+]

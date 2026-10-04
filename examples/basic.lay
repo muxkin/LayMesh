@@ -1,0 +1,24 @@
+# One reusable image, placed twice with independent size and crop.
+page = canvas(name="LayMesh basic", size=(180 mm, 120 mm), layout_dpi=96, background="#ffffff")
+
+photo = image(src="assets/photo.png")
+left = page.add(photo,size=(76 mm, auto), target=page.top_left, offset=(10 mm, 25 mm))
+right = page.add(photo,size=(55 mm, auto), crop=box(offset=(0.5, 0), size=(0.5, 1)), target=left.top_right, offset=(9 mm, 0 mm))
+
+label = text(content="One image, two placements", font_family="DejaVu Sans", font_size=12 pt)
+page.add(label, target=page.top_left, offset=(10 mm, 8 mm))
+
+frame = rect(size=(76 mm, 38 mm), fill="none", border_color="#202020", border_width=0.4 mm)
+page.add(frame, target=left.top_left)
+
+icon = image(src="assets/icon.svg")
+icon_on_page = page.add(icon,size=(28 mm, auto), target=page.bottom_left, offset=(10 mm, -38 mm))
+
+g = group()
+dot = ellipse(size=(8 mm, 8 mm), fill="#00aa88")
+dot_1 = g.add(dot, target=g.top_left)
+g.add(dot, target=dot_1.top_right, offset=(3 mm, 0 mm))
+page.add(g, target=icon_on_page.top_right, offset=(10 mm, 0 mm))
+
+pointer = line(end_head=head(), dx=18 mm, dy=12 mm, line_width=0.6 mm, line_color="#202020")
+page.add(pointer, target=right.bottom_left, offset=(2 mm, 5 mm))

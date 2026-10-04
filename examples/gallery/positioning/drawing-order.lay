@@ -1,0 +1,11 @@
+# Gallery: positioning / drawing-order
+page = canvas(name="Drawing order", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Drawing order", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+blue = rect(size=(51 mm, 38 mm), fill="#087f8c")
+orange = rect(size=(51 mm, 38 mm), fill="#f2a545")
+page.add(blue, target=page.top_left, offset=(16 mm, 27 mm))
+page.add(orange, target=page.top_left, offset=(48 mm, 34 mm))
+# END DEMO

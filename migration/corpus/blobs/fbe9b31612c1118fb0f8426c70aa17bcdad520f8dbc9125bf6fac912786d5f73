@@ -1,0 +1,50 @@
+[
+  {
+    "file": "DejaVuSans-Bold.ttf",
+    "family": "DejaVu Sans",
+    "style": "Bold",
+    "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890",
+    "source": "DejaVu 2.37",
+    "license": "DejaVuSans.LICENSE"
+  },
+  {
+    "file": "DejaVuSans-BoldOblique.ttf",
+    "family": "DejaVu Sans",
+    "style": "Bold Oblique",
+    "sha256": "c35383d5e56add5cc9cdc9f4e4a899f9e540f7c7e49f1901074c2d03af194eff",
+    "source": "DejaVu 2.37",
+    "license": "DejaVuSans.LICENSE"
+  },
+  {
+    "file": "DejaVuSans-Oblique.ttf",
+    "family": "DejaVu Sans",
+    "style": "Regular Oblique",
+    "sha256": "e2f09289f4276309a36b9a93e5a0ac64957ef3eb7158151b243d41f667151ee4",
+    "source": "DejaVu 2.37",
+    "license": "DejaVuSans.LICENSE"
+  },
+  {
+    "file": "DejaVuSans.ttf",
+    "family": "DejaVu Sans",
+    "style": "Regular",
+    "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e",
+    "source": "DejaVu 2.37",
+    "license": "DejaVuSans.LICENSE"
+  },
+  {
+    "file": "NotoSansCJKsc-Bold.otf",
+    "family": "Noto Sans CJK SC",
+    "style": "Bold",
+    "sha256": "b5f0d1a190a7f9b43c310a8850630af12553df32c4c050543f9059732d9b4c0a",
+    "source": "notofonts/noto-cjk@f8d157532fbfaeda587e826d4cd5b21a49186f7c",
+    "license": "NotoSansCJK.LICENSE"
+  },
+  {
+    "file": "NotoSansCJKsc-Regular.otf",
+    "family": "Noto Sans CJK SC",
+    "style": "Regular",
+    "sha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b",
+    "source": "notofonts/noto-cjk@f8d157532fbfaeda587e826d4cd5b21a49186f7c",
+    "license": "NotoSansCJK.LICENSE"
+  }
+]

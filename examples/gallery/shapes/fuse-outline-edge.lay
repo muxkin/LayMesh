@@ -1,0 +1,16 @@
+# Gallery: shapes / fuse-outline-edge
+page = canvas(name="Hollow edge seam", size=(120 mm, 80 mm), background="#202020")
+font = "DejaVu Sans"
+heading = text(content="Hollow edge seam", font_family=font, font_size=14 pt, color="#f7f9fc")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+frame = rect(size=(46 mm, 42 mm), fill="none",
+             border_color="#ffffff", border_width=2 mm)
+box = page.add(frame, target=page.top_left, offset=(16 mm, 26 mm))
+stem = page.add(line(dx=32 mm, dy=-32 mm, line_color="#ffffff",
+                     line_width=2 mm, line_cap=round),
+                target=page.top_left, offset=(62 mm, 15 mm))
+joined = page.fuse(box, stem, points=(box.middle_right, stem.start),
+                   junction=round, radius=1.5 mm,
+                   fill="#ffffff", border_color="none")
+# END DEMO

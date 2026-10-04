@@ -1,0 +1,10 @@
+# Loop through series in insertion order; style colors rotate automatically.
+page=canvas(size=(130mm,90mm),background="#ffffff")
+series={"Baseline":[1,2,3,3.5],"Annealed":[1.2,2.8,3.1,4],"Cold worked":[2,2.2,2.8,3.1]}
+style=plot_style(colors=palette("tab10"),font_family="DejaVu Sans",font_size=8pt)
+chart=plot(size=(120mm,80mm),style=style,x=axis(label="Time",range=(0,3)),y=axis(label="Response",range=(0,5)))
+for name,ys in series.items() {
+ chart.line(x=[0,1,2,3],y=ys,label=name,marker="circle")
+}
+chart.legend(position="top_left")
+page.add(chart,offset=(5mm,5mm))

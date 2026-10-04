@@ -1,0 +1,6 @@
+# Minimal complete example: table
+page=canvas(size=(100mm,75mm),background="#ffffff")
+d=table(src="../plot/first-plot.csv")
+p=plot(size=(86mm,62mm),x=axis(range=(0,4)),y=axis(range=(0,5)))
+p.line(x=d["time"],y=d["signal"])
+page.add(p,offset=(7mm,6mm))

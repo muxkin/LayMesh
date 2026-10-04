@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
+<defs><linearGradient id="sky" x2="1" y2="1"><stop stop-color="#d7f7f0"/><stop offset="1" stop-color="#b9d2ff"/></linearGradient>
+<linearGradient id="tile"><stop stop-color="#087f8c"/><stop offset="1" stop-color="#394b94"/></linearGradient></defs>
+<rect width="640" height="400" fill="url(#sky)"/>
+<circle cx="508" cy="91" r="53" fill="#f7c363"/>
+<path d="M0 340 Q130 180 274 325 T640 272 L640 400 H0Z" fill="#a8d9d4"/>
+<path d="M0 371 Q150 246 312 360 T640 327 L640 400 H0Z" fill="#70b9b8"/>
+<rect x="58" y="79" width="260" height="178" rx="22" fill="url(#tile)"/>
+<path d="M91 202 L155 128 L206 183 L263 113" fill="none" stroke="#f8fdff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="476" cy="238" r="70" fill="#ffffff" opacity=".85"/><circle cx="476" cy="238" r="42" fill="#e87778"/>
+</svg>

@@ -1,0 +1,11 @@
+# Gallery: shapes / linear-gradient
+page = canvas(name="Linear gradient", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Linear gradient", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+paint = linear_gradient(start=(0, 0), end=(1, 1),
+                        stops=[(0, "#f8cf7b"), (0.5, "#ed8770"), (1, "#8f5fa5")])
+page.add(rect(size=(75 mm, 42 mm), border_radius=5 mm, fill=paint),
+         target=page.top_left, offset=(22 mm, 27 mm))
+# END DEMO

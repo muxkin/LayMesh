@@ -1,0 +1,722 @@
+{
+  "areas": [
+    {
+      "key": "start",
+      "title": [
+        "开始使用",
+        "Getting started"
+      ],
+      "intro": [
+        "从安装到第一张可复现的版面或数据图。",
+        "From installation to your first reproducible layout or data plot."
+      ],
+      "groups": [
+        {
+          "key": "setup",
+          "title": [
+            "环境准备",
+            "Environment"
+          ],
+          "pages": [
+            "install",
+            "concepts",
+            "editors"
+          ]
+        },
+        {
+          "key": "first",
+          "title": [
+            "首次实践",
+            "First steps"
+          ],
+          "pages": [
+            "first-layout",
+            "first-plot"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "layout",
+      "title": [
+        "排版与素材",
+        "Layout and assets"
+      ],
+      "intro": [
+        "定义素材、建立位置关系，再组合为物理尺寸确定的页面。",
+        "Define assets, establish placement relationships, and compose a page with physical dimensions."
+      ],
+      "groups": [
+        {
+          "key": "placement",
+          "title": [
+            "画布与定位",
+            "Canvas and placement"
+          ],
+          "pages": [
+            "units",
+            "anchors",
+            "transforms",
+            "groups"
+          ]
+        },
+        {
+          "key": "assets",
+          "title": [
+            "素材与样式",
+            "Assets and styling"
+          ],
+          "pages": [
+            "images",
+            "fonts",
+            "resources",
+            "formulas",
+            "shapes",
+            "fills",
+            "lcss"
+          ]
+        },
+        {
+          "key": "scripting",
+          "title": [
+            "脚本与组件",
+            "Scripts and components"
+          ],
+          "pages": [
+            "values",
+            "control-flow",
+            "modules",
+            "library-docs"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "plotting",
+      "title": [
+        "数据绘图",
+        "Data plotting"
+      ],
+      "intro": [
+        "在固定物理尺寸中，把数据绘成可复现的科研图。",
+        "Turn data into reproducible scientific figures with fixed physical dimensions."
+      ],
+      "groups": [
+        {
+          "key": "basics",
+          "title": [
+            "绘图基础",
+            "Plotting basics"
+          ],
+          "pages": [
+            "data",
+            "plot-area",
+            "axes",
+            "labels",
+            "legends",
+            "annotations",
+            "cmaps"
+          ]
+        },
+        {
+          "key": "cartesian",
+          "title": [
+            "直角坐标图",
+            "Cartesian plots"
+          ],
+          "pages": [
+            "line-scatter",
+            "uncertainty",
+            "bars",
+            "heatmaps",
+            "multi-axes"
+          ]
+        },
+        {
+          "key": "statistics",
+          "title": [
+            "统计图",
+            "Statistics"
+          ],
+          "pages": [
+            "hist-ecdf",
+            "box-violin"
+          ]
+        },
+        {
+          "key": "polar",
+          "title": [
+            "极坐标与雷达图",
+            "Polar and radar"
+          ],
+          "pages": [
+            "polar-projection",
+            "polar-layers",
+            "radar"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "integration",
+      "title": [
+        "运行与集成",
+        "Running and integration"
+      ],
+      "intro": [
+        "选择 CLI、Python 或 Node 调用方式，完成导出与诊断。",
+        "Choose CLI, Python or Node, then export and inspect your result."
+      ],
+      "groups": [
+        {
+          "key": "output",
+          "title": [
+            "运行与输出",
+            "Run and export"
+          ],
+          "pages": [
+            "cli",
+            "export",
+            "diagnostics"
+          ]
+        },
+        {
+          "key": "python",
+          "title": [
+            "Python/Jupyter",
+            "Python/Jupyter"
+          ],
+          "pages": [
+            "python-data",
+            "notebook",
+            "save-source",
+            "matplotlib"
+          ]
+        },
+        {
+          "key": "node",
+          "title": [
+            "Rust/WASM",
+            "Rust/WASM"
+          ],
+          "pages": [
+            "node"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "examples",
+      "title": [
+        "示例库",
+        "Examples"
+      ],
+      "intro": [
+        "从实际效果进入完整源码，再按相关主题理解每一步。",
+        "Browse actual output, inspect complete source, and follow related topics."
+      ],
+      "groups": [
+        {
+          "key": "layout-examples",
+          "title": [
+            "排版示例",
+            "Layout examples"
+          ],
+          "pages": []
+        },
+        {
+          "key": "plot-examples",
+          "title": [
+            "绘图示例",
+            "Plot examples"
+          ],
+          "pages": []
+        },
+        {
+          "key": "notebook-examples",
+          "title": [
+            "Notebook 示例",
+            "Notebook examples"
+          ],
+          "pages": []
+        },
+        {
+          "key": "applications",
+          "title": [
+            "综合应用",
+            "Complete applications"
+          ],
+          "pages": []
+        }
+      ]
+    },
+    {
+      "key": "reference",
+      "title": [
+        "参考与开发",
+        "Reference and development"
+      ],
+      "intro": [
+        "查询接口、理解实现、维护文档，并核对历史验证背景。",
+        "Look up APIs, understand implementation, maintain documentation, and review historical verification."
+      ],
+      "groups": [
+        {
+          "key": "interfaces",
+          "title": [
+            "语言与接口",
+            "Language and APIs"
+          ],
+          "pages": [
+            "dsl-reference",
+            "plot-reference",
+            "node-reference",
+            "python-reference",
+            "cli-reference",
+            "interface-reference",
+            "migration",
+            "feature-map"
+          ]
+        },
+        {
+          "key": "development",
+          "title": [
+            "项目开发",
+            "Development"
+          ],
+          "pages": [
+            "architecture",
+            "site"
+          ]
+        },
+        {
+          "key": "evidence",
+          "title": [
+            "验证记录",
+            "Verification"
+          ],
+          "pages": [
+            "benchmark",
+            "cartesian-benchmark",
+            "polar-benchmark",
+            "results",
+            "verification"
+          ]
+        }
+      ]
+    }
+  ],
+  "topics": [
+    {
+      "key": "install",
+      "title": [
+        "安装与验证",
+        "Installation and validation"
+      ],
+      "example": null
+    },
+    {
+      "key": "concepts",
+      "title": [
+        "基本概念",
+        "Basic concepts"
+      ],
+      "example": "examples/hello.lay"
+    },
+    {
+      "key": "first-layout",
+      "title": [
+        "第一张版面",
+        "Your first layout"
+      ],
+      "example": "examples/hello.lay"
+    },
+    {
+      "key": "first-plot",
+      "title": [
+        "第一张数据图",
+        "Your first data plot"
+      ],
+      "example": "examples/plot/first-plot.lay"
+    },
+    {
+      "key": "units",
+      "title": [
+        "单位与尺寸",
+        "Units and dimensions"
+      ],
+      "example": "examples/gallery/positioning/dependent-size.lay"
+    },
+    {
+      "key": "anchors",
+      "title": [
+        "放置与锚点",
+        "Placement and anchors"
+      ],
+      "example": "examples/gallery/positioning/anchors.lay"
+    },
+    {
+      "key": "transforms",
+      "title": [
+        "旋转与图层",
+        "Transforms and drawing order"
+      ],
+      "example": "examples/gallery/positioning/rotation.lay"
+    },
+    {
+      "key": "groups",
+      "title": [
+        "组与复用",
+        "Groups and reuse"
+      ],
+      "example": "examples/gallery/containers/group-reuse.lay"
+    },
+    {
+      "key": "images",
+      "title": [
+        "图像导入与裁剪",
+        "Image import and cropping"
+      ],
+      "example": "examples/gallery/images/crop.lay"
+    },
+    {
+      "key": "fonts",
+      "title": [
+        "文字与字体",
+        "Text and fonts"
+      ],
+      "example": "examples/gallery/typography/font.lay"
+    },
+    {
+      "key": "resources",
+      "title": [
+        "资源路径",
+        "Resource paths"
+      ],
+      "example": "examples/gallery/containers/module-import.lay"
+    },
+    {
+      "key": "formulas",
+      "title": [
+        "数学公式",
+        "Mathematical formulas"
+      ],
+      "example": "examples/gallery/typography/display-formula.lay"
+    },
+    {
+      "key": "shapes",
+      "title": [
+        "形状与路径",
+        "Shapes and paths"
+      ],
+      "example": "examples/gallery/shapes/path-commands.lay"
+    },
+    {
+      "key": "fills",
+      "title": [
+        "填充渐变与边框",
+        "Fills, gradients and outlines"
+      ],
+      "example": "examples/gallery/shapes/linear-gradient.lay"
+    },
+    {
+      "key": "values",
+      "title": [
+        "变量与表达式",
+        "Variables and expressions"
+      ],
+      "example": "examples/gallery/scripting/units-builtins.lay"
+    },
+    {
+      "key": "control-flow",
+      "title": [
+        "条件与循环",
+        "Conditions and loops"
+      ],
+      "example": "examples/gallery/scripting/control-flow.lay"
+    },
+    {
+      "key": "modules",
+      "title": [
+        "函数与模块",
+        "Functions and modules"
+      ],
+      "example": "examples/gallery/containers/module-import.lay"
+    },
+    {
+      "key": "data",
+      "title": [
+        "数据输入与缺失值",
+        "Data input and missing values"
+      ],
+      "example": "examples/plot/first-plot.lay"
+    },
+    {
+      "key": "plot-area",
+      "title": [
+        "绘图区与物理尺寸",
+        "Plot area and physical size"
+      ],
+      "example": "examples/plot/publication.lay"
+    },
+    {
+      "key": "axes",
+      "title": [
+        "坐标轴与刻度",
+        "Axes and ticks"
+      ],
+      "example": "examples/plot/multi-axes-breaks.lay"
+    },
+    {
+      "key": "labels",
+      "title": [
+        "标签与科学计数法",
+        "Labels and scientific notation"
+      ],
+      "example": "examples/plot/scientific-labels.lay"
+    },
+    {
+      "key": "legends",
+      "title": [
+        "图例与共享色标",
+        "Legends and shared colorbars"
+      ],
+      "example": "examples/plot/shared-colors.lay"
+    },
+    {
+      "key": "annotations",
+      "title": [
+        "数据锚点与标注",
+        "Data anchors and annotations"
+      ],
+      "example": "examples/plot/annotations.lay"
+    },
+    {
+      "key": "line-scatter",
+      "title": [
+        "折线与散点",
+        "Lines and scatter"
+      ],
+      "example": "examples/plot/line-scatter.lay"
+    },
+    {
+      "key": "uncertainty",
+      "title": [
+        "误差棒与填充带",
+        "Error bars and bands"
+      ],
+      "example": "examples/plot/scientific.lay"
+    },
+    {
+      "key": "bars",
+      "title": [
+        "柱图与阶梯",
+        "Bars and steps"
+      ],
+      "example": "examples/plot/statistics.lay"
+    },
+    {
+      "key": "heatmaps",
+      "title": [
+        "热图与等高线",
+        "Heatmaps and contours"
+      ],
+      "example": "examples/plot/shared-colors.lay"
+    },
+    {
+      "key": "multi-axes",
+      "title": [
+        "多轴与断轴",
+        "Multiple axes and breaks"
+      ],
+      "example": "examples/plot/multi-axes-breaks.lay"
+    },
+    {
+      "key": "hist-ecdf",
+      "title": [
+        "直方图与 ECDF",
+        "Histograms and ECDF"
+      ],
+      "example": "examples/plot/statistics.lay"
+    },
+    {
+      "key": "box-violin",
+      "title": [
+        "箱线图与小提琴图",
+        "Boxplots and violin plots"
+      ],
+      "example": "examples/plot/statistics.lay"
+    },
+    {
+      "key": "polar-projection",
+      "title": [
+        "投影与径向轴",
+        "Projection and radial axes"
+      ],
+      "example": "examples/plot/polar-directions.lay"
+    },
+    {
+      "key": "polar-layers",
+      "title": [
+        "极坐标图层",
+        "Polar layers"
+      ],
+      "example": "examples/plot/polar-errors.lay"
+    },
+    {
+      "key": "radar",
+      "title": [
+        "雷达图",
+        "Radar charts"
+      ],
+      "example": "examples/plot/radar.lay"
+    },
+    {
+      "key": "cli",
+      "title": [
+        "CLI 使用",
+        "Using the CLI"
+      ],
+      "example": null
+    },
+    {
+      "key": "export",
+      "title": [
+        "导出格式与分辨率",
+        "Export formats and resolution"
+      ],
+      "example": null
+    },
+    {
+      "key": "diagnostics",
+      "title": [
+        "检查与警告",
+        "Inspection and warnings"
+      ],
+      "example": null
+    },
+    {
+      "key": "python-data",
+      "title": [
+        "原生数组与 DataFrame",
+        "Native arrays and DataFrames"
+      ],
+      "example": null
+    },
+    {
+      "key": "notebook",
+      "title": [
+        "Notebook Magic",
+        "Notebook Magic"
+      ],
+      "example": null
+    },
+    {
+      "key": "save-source",
+      "title": [
+        "保存源码与独立重渲染",
+        "Save source and render independently"
+      ],
+      "example": null
+    },
+    {
+      "key": "matplotlib",
+      "title": [
+        "Matplotlib 导入",
+        "Matplotlib import"
+      ],
+      "example": "examples/gallery/notebook/vector.lay"
+    },
+    {
+      "key": "node",
+      "title": [
+        "Rust / WASM API",
+        "Rust / WASM API"
+      ],
+      "example": null
+    },
+    {
+      "key": "plot-reference",
+      "title": [
+        "绘图对象与方法",
+        "Plot objects and methods"
+      ],
+      "example": null
+    },
+    {
+      "key": "node-reference",
+      "title": [
+        "Node API",
+        "Node API"
+      ],
+      "example": null
+    },
+    {
+      "key": "python-reference",
+      "title": [
+        "Python API",
+        "Python API"
+      ],
+      "example": null
+    },
+    {
+      "key": "cli-reference",
+      "title": [
+        "CLI 参数",
+        "CLI options"
+      ],
+      "example": null
+    },
+    {
+      "key": "lcss",
+      "title": [
+        "LCSS 主题与填充",
+        "LCSS themes and fills"
+      ]
+    },
+    {
+      "key": "editors",
+      "title": [
+        "编辑器支持",
+        "Editor support"
+      ]
+    },
+    {
+      "key": "interface-reference",
+      "title": [
+        "公开参数参考",
+        "Public parameters"
+      ]
+    },
+    {
+      "key": "migration",
+      "title": [
+        "统一 API 迁移",
+        "API migration"
+      ]
+    },
+    {
+      "key": "library-docs",
+      "title": [
+        "库作者文档注释",
+        "Library documentation comments"
+      ]
+    },
+    {
+      "key": "feature-map",
+      "title": [
+        "功能覆盖清单",
+        "Feature coverage map"
+      ],
+      "example": null
+    },
+    {
+      "key": "cmaps",
+      "title": [
+        "配色预设与循环用色",
+        "Colormap presets and color cycles"
+      ],
+      "example": "examples/manual/cmaps.lay"
+    }
+  ]
+}

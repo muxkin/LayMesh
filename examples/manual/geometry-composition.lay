@@ -1,0 +1,52 @@
+# Composite queries preserve source identity; empty collections are safe to iterate.
+page=canvas(size=(120mm,95mm),background="#ffffff")
+curve=page.add(path(commands=[move_to(0mm,0mm),cubic_to(0mm,0mm,0mm,35mm,50mm,35mm),cubic_to(65mm,35mm,70mm,0mm,75mm,0mm),line_to(82mm,12mm)],border_color="#0072b2",border_width=0.7mm),offset=(15mm,20mm))
+route=curve.path.subpaths[0]
+dot=ellipse(size=(2mm,2mm),fill="#e36b70")
+page.add(dot,anchor=center,target=route.at(fraction=0.5))
+page.add(dot,anchor=center,target=route.between(route.nodes[1],route.nodes[3]).at(fraction=0.5))
+page.add(dot,anchor=center,target=route.in_space(local).at(fraction=0.5))
+for candidates in [route.nearest(to=curve.bounds.top_left),route.extrema(axis=y),route.inflections(),route.corners(),route.intersections(ray(origin=(0mm,35mm),direction=(1,0)))] {
+    for point in candidates { page.add(dot,anchor=center,target=point) }
+}
+corner=route.corners()[0].with_side(outgoing)
+page.add(line(length=8mm,line_color="#e36b70"),anchor=self.path.start,target=corner,rotation=corner.tangent_angle)
+p=plot(size=(65mm,32mm),x=axis(range=(0,4000),notation=offset,exponent=3,label="Time"),y=axis(range=(0,5)))
+p.line(x=[0,1000,2000,3000],y=[1,2,4,3])
+chart=page.add(p,offset=(15mm,61mm))
+page.add(dot,anchor=center,target=chart.axis(name="x",anchor=center))
+page.add(dot,anchor=center,target=chart.data(x=2000,y=4))
+
+# The same nine-point interface applies to instances, boxes and components.
+function frame_points(view) {
+    return [view.top_left,view.top_center,view.top_right,
+            view.middle_left,view.center,view.middle_right,
+            view.bottom_left,view.bottom_center,view.bottom_right]
+}
+area=chart.plot_area
+horizontal=chart.axes["x"]
+for view in [curve,curve.bounds,route,route.bounds,curve.ink.bounds,
+             area,area.bounds,horizontal,horizontal.bounds,
+             horizontal.label,horizontal.exponent,horizontal.ticks[0]] {
+    for point in frame_points(view) {
+        page.add(ellipse(size=(0.8mm,0.8mm),fill="#df6e70"),anchor=center,target=point)
+    }
+}
+same_path=route.path
+control=route.segments[0].controls[0]
+for point in [route.start,route.end,route.nodes[1],control,horizontal.min,
+              horizontal.max,horizontal.spine.path.at(fraction=0.5),
+              curve.ink.boundary.nearest(to=curve.bounds.top_left)[0]] {
+    page.add(dot,anchor=center,target=point)
+}
+local_box=curve.bounds
+page.add(rect(size=(local_box.width,local_box.height),border_color="#009e88",
+              border_width=0.1mm),target=local_box.top_left)
+label_position=local_box.top_left
+page.add(text("Frames share selectors; their geometry differs.",font_size=6pt),
+         offset=(label_position.x,label_position.y-6mm))
+direction=corner.tangent
+left_normal=corner.normal
+page.add(dot,anchor=center,target=corner,
+         offset=(direction[0]*3mm+left_normal[0]*3mm,
+                 direction[1]*3mm+left_normal[1]*3mm))

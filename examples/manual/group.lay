@@ -1,0 +1,7 @@
+# Minimal complete example: group
+page=canvas(size=(100mm,75mm),background="#ffffff")
+g=group()
+a=g.add(rect(size=(35mm,20mm),fill="#e6f2f3"))
+g.add(text("Reused"),target=a.center,anchor=center)
+page.add(g,offset=(8mm,8mm))
+page.add(g,offset=(55mm,38mm),rotation=15deg)

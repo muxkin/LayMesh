@@ -1,0 +1,1 @@
+export function title() { return text(content="Title",font_family=["./font.ttf"],font_size=10 pt) }

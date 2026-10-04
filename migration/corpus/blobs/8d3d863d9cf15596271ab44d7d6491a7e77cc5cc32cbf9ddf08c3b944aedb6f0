@@ -1,0 +1,18 @@
+## Create a titled panel.
+##
+## Keeps **title** above the content.
+## @param {string} misspelled - Title supporting inline math.
+## @param {size} size - Physical size in the figure unit.
+## @returns {group} A reusable panel.
+## @example
+## card("Result", size=(40, 25))
+## @see [Units](units.en.md)
+export function card(title, size=(40, 25)) {
+  panel=group()
+  panel.add(rect(size=size))
+  panel.add(text(title))
+  return panel
+}
+## Accent for panels.
+## @type {color}
+export accent="#245447"

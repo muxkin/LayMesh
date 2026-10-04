@@ -1,0 +1,5 @@
+# Minimal complete example: add
+page=canvas(size=(100mm,75mm),background="#ffffff")
+material=rect(size=(25mm,18mm),fill="#087f8c")
+a=page.add(material,offset=(10mm,10mm))
+page.add(material,anchor=top_left,target=a.bottom_right,offset=(3mm,3mm))

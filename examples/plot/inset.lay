@@ -1,0 +1,18 @@
+# BEGIN DEMO
+# Insets are independent plots; placement stays completely manual and editable.
+page=canvas(size=(154 mm,112 mm),background="#ffffff")
+s=plot_style(font_family="DejaVu Sans",font_size=8 pt)
+p=plot(size=(140 mm,102 mm),plot_area=box(offset=(20 mm, 18 mm), size=(105 mm, 64 mm)),style=s,x=axis(label="Time (s)",range=(0,10)),y=axis(label="Response",scale= symlog,constant=0.5,range=(-1,100),ticks=[-1,0,1,10,100]))
+a=p.line(x=[0,1,2,3,4,5,6,7,8,9,10],y=[-0.5,0,0.4,1,2,4,8,16,32,64,90],marker= circle,color="#264b69",label="Observed")
+g=group()
+chart=g.add(p)
+# Add a white inset background as a separate editable shape.
+g.add(rect(size=(44 mm, 35 mm),fill="#ffffff",border_color="#bbbbbb",border_width=0.3 pt),target=chart.plot_top_left,offset=(4 mm,3 mm))
+zoom=plot(size=(44 mm,35 mm),plot_area=box(offset=(9 mm, 3 mm), size=(31 mm, 23 mm)),style=s,x=axis(range=(0,3),ticks=[0,1,2,3],tick_font_size=6 pt,tick_color="#555555"),y=axis(range=(-0.6,1.2),ticks=[0,1],tick_font_size=6 pt))
+zoom.line(x=[0,1,2,3],y=[-0.5,0,0.4,1],marker= circle,marker_size=1 mm,color="#264b69")
+inset=g.add(zoom,target=chart.plot_top_left,offset=(4 mm,3 mm))
+g.add(line(end_head=head(), dx=7 mm,dy=6 mm,line_color="#777777",line_width=0.4 pt),anchor= end,target=chart.data(x=3,y=1),offset=(0 mm,-1 mm))
+g.add(text(content="Local detail",font_family="DejaVu Sans",font_size=7 pt),target=inset.plot_top_left,offset=(0 mm,-6 mm))
+g.add(legend(layers=[a],background="none"),target=chart.plot_top_right,anchor=top_right,offset=(0 mm,-10 mm))
+page.add(g,offset=(6 mm,4 mm))
+# END DEMO

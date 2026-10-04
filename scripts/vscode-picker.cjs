@@ -1,0 +1,26 @@
+const vscode=require('vscode'),fs=require('fs'),path=require('path'),os=require('os'),assert=require('assert/strict');
+const gate=process.env.LAYMESH_PICKER_GATE;
+let conversionRequests=0;
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+exports.run=async()=>{
+ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'laymesh-color-ui-'));
+ const source='page=canvas(size=(80,60),background="#0072b290")';
+ const file=path.join(directory,'main.lay');fs.writeFileSync(file,source);
+ const doc=await vscode.workspace.openTextDocument(file);await vscode.window.showTextDocument(doc);
+ const extension=vscode.extensions.getExtension('laymesh.laymesh-language');
+ const api=require('module')._load('vscode',{filename:path.join(extension.extensionPath,'dist/client.cjs')});
+ const create=api.window.createWebviewPanel;
+ api.window.createWebviewPanel=(...args)=>{const panel=create(...args);if(args[0]==='laymeshColor'){const listen=panel.webview.onDidReceiveMessage;panel.webview.onDidReceiveMessage=(handler,...rest)=>listen.call(panel.webview,(message)=>{if(message.method==='convert')conversionRequests++;return handler(message)},...rest)}return panel};
+ await extension.activate();
+ const open=async()=>{const editor=await vscode.window.showTextDocument(doc);editor.selection=new vscode.Selection(new vscode.Position(0,source.indexOf('#')+2),new vscode.Position(0,source.indexOf('#')+2));await vscode.commands.executeCommand('laymesh.editColor');};
+ await open();fs.writeFileSync(gate,JSON.stringify({phase:'open'}));
+ const wait=async(expected)=>{for(let i=0;i<2400;i++){let data;try{data=JSON.parse(fs.readFileSync(gate))}catch{}if(data?.phase===expected)return data;await pause(100);}throw Error('UI gate timeout '+expected);};
+ await wait('check-preview');assert.equal(doc.getText(),source);fs.writeFileSync(gate,JSON.stringify({phase:'preview-verified'}));
+ await wait('applied');assert(doc.getText().includes('hsv(')&&doc.getText().includes('/ 0.4'));
+ await vscode.window.showTextDocument(doc);await vscode.commands.executeCommand('undo');assert.equal(doc.getText(),source);
+ await open();fs.writeFileSync(gate,JSON.stringify({phase:'reopened'}));
+ await wait('concurrent');const edit=new vscode.WorkspaceEdit();edit.insert(doc.uri,doc.positionAt(doc.getText().length),'\n# native concurrent edit');await vscode.workspace.applyEdit(edit);fs.writeFileSync(gate,JSON.stringify({phase:'stale-ready'}));
+ await wait('cancelled');assert.equal(doc.getText(),source+'\n# native concurrent edit');
+ assert.equal(conversionRequests,0);fs.writeFileSync(process.env.LAYMESH_PICKER_EVIDENCE,JSON.stringify({status:'passed',conversion_requests:conversionRequests,host:'VS Code actual webview DOM',checks:['SV control and hue update preview without source edits','HSV and alpha percentage apply through native bridge','One-step editor undo restores source','Stale editor prevents applying webview value','Cancel preserves concurrent edit']},null,2));
+ fs.writeFileSync(gate,JSON.stringify({phase:'complete'}));await vscode.commands.executeCommand('workbench.action.closeAllEditors');fs.rmSync(directory,{recursive:true,force:true});
+};

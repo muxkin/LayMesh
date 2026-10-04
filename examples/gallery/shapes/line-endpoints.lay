@@ -1,0 +1,23 @@
+# Gallery: shapes / line-endpoints
+page=canvas(name="Line endpoints",size=(180mm,120mm),background="#fff")
+page.add(text("Line endpoints",font_family="DejaVu Sans",font_size=16pt,color="#203864"),offset=(8mm,6mm))
+# BEGIN DEMO
+shapes=[triangle,open,stealth,dot,diamond,bar]
+for item in [(36mm,"Start"),(77mm,"End"),(118mm,"Both"),(153mm,"Head only")] {
+    page.add(text(item[1],font_family="DejaVu Sans",font_size=8pt,color="#425466"),offset=(item[0],18mm))
+}
+for i in range(6) {
+    y=30mm+i*11mm
+    page.add(text(shapes[i],font_family="DejaVu Sans",font_size=8pt,color="#425466"),offset=(8mm,y-2mm))
+    h=head(shape=shapes[i],size=(6mm,5mm))
+    page.add(line(length=27mm,line_width=1.6mm,line_color="#0072b299",start_head=h,end_cap= round),offset=(35mm,y))
+    page.add(line(length=27mm,line_width=1.6mm,line_color="#0072b299",start_cap= round,end_head=h),offset=(76mm,y))
+    page.add(line(length=27mm,line_width=1.6mm,line_color="#0072b299",start_head=h,end_head=h),offset=(117mm,y))
+    page.add(line(length=0mm,angle=-25deg,line_color="#087f8c",end_head=h),anchor=self.path.end,offset=(162mm,y))
+}
+route=page.add(path(commands=[move_to(0mm,8mm),cubic_to(c1x=12mm,c1y=-4mm,c2x=32mm,c2y=20mm,x=47mm,y=8mm)],border_color="#e67563",border_width=1.5mm,start_head=head(size=(6mm,5mm)),end_head=head(size=(6mm,5mm))),offset=(35mm,95mm))
+for p in [route.path.start,route.path.end] {
+    page.add(ellipse(size=(1mm,1mm),fill="#203864"),anchor=center,target=p)
+}
+# END DEMO
+page.add(text("Dots mark logical endpoints; centerline reaches each arrow tip.",font_family="DejaVu Sans",font_size=8pt,color="#425466"),offset=(35mm,111mm))

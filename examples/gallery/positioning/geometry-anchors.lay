@@ -1,0 +1,23 @@
+# Gallery: positioning / geometry-anchors
+page = canvas(name="Bounds, path and ink", size=(150 mm, 105 mm), background="#ffffff")
+page.add(text("Bounds, path and ink",font_family="DejaVu Sans",font_size=16pt,color="#203864"),offset=(8mm,6mm))
+page.add(text("Red: layout box   Teal: path   Blue: ink boundary",font_family="DejaVu Sans",font_size=8pt,color="#425466"),offset=(8mm,17mm))
+# BEGIN DEMO
+panel = page.add(rect(size=(48mm,32mm),border_radius=9mm,fill="#e6f2f3",border_color="#087f8c",border_width=2mm),offset=(18mm,32mm))
+oval = page.add(ellipse(size=(48mm,32mm),fill="#e6f2f3",border_color="#087f8c",border_width=2mm),offset=(88mm,32mm))
+box_dot = ellipse(size=(2mm,2mm),fill="#df6e70")
+path_dot = ellipse(size=(2mm,2mm),fill="#009e88")
+ink_dot = ellipse(size=(2mm,2mm),fill="#287dc3")
+for placed in [panel,oval] {
+    page.add(rect(size=(placed.bounds.width,placed.bounds.height),border_color="#8396a1",border_width=0.15mm,border_dash=[1mm,1mm]),target=placed.bounds.top_left)
+    page.add(box_dot,anchor=center,target=placed.bounds.top_left)
+    page.add(path_dot,anchor=center,target=placed.path.nearest(to=placed.bounds.top_left)[0])
+    page.add(ink_dot,anchor=center,target=placed.ink.boundary.nearest(to=placed.bounds.top_left)[0])
+}
+shaft = page.add(line(end_head=head(), dx=108mm,dy=0mm,line_width=2mm,line_cap= round),offset=(20mm,84mm))
+page.add(path_dot,anchor=center,target=shaft.path.start)
+page.add(path_dot,anchor=center,target=shaft.path.end)
+page.add(ink_dot,anchor=center,target=shaft.ink.boundary.nearest(to=(18mm,84mm))[0])
+# END DEMO
+page.add(text("Box corners can lie outside the shape.",font_family="DejaVu Sans",font_size=8pt,color="#425466"),offset=(18mm,68mm))
+page.add(text("Arrow path: full centerline. Ink: caps, stroke and head.",font_family="DejaVu Sans",font_size=8pt,color="#425466"),offset=(18mm,93mm))

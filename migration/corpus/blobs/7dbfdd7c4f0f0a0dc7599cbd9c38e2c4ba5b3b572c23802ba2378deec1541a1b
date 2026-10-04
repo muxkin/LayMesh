@@ -1,0 +1,2 @@
+import { item } from "./part.lay"
+export item=2 mm

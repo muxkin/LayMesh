@@ -1,0 +1,19 @@
+# BEGIN DEMO
+page=canvas(size=(205 mm,120 mm),background="#ffffff")
+s=plot_style(font_family="DejaVu Sans",font_size=7 pt,grid_color="#dddddd")
+p=plot(projection= polar,size=(98 mm,100 mm),plot_area=box(offset=(18 mm, 18 mm), size=(62 mm, 62 mm)),style=s,
+       theta=axis(ticks=[0,90,180,270],grid= major),r=axis(range=(0,5),ticks=[1,3,5],grid= major,tick_font_size=6 pt))
+a=p.line(theta=[0,45,90,135,180,225,270,315],r=[4.5,3,1.6,2.5,4,2.8,1.3,3.4],closed=true,marker= diamond,marker_size=1.7 mm,color="#264b69",label="Response")
+p.line(theta=[350,10],r=[4,4],color="#b65337",line_width=0.6 mm,label="350 to 10 degrees")
+p.scatter(theta=[180],r=[-4.5],marker= circle,marker_size=3 mm,marker_fill="none",marker_border_color="#b65337",marker_border_width=0.3 mm)
+c=page.add(p,offset=(3 mm,4 mm))
+page.add(text(content="(a) Directional response",font_family="DejaVu Sans",font_size=9 pt),target=c.plot_top_left,offset=(-4 mm,-15 mm))
+page.add(text(content="Peak",font_family="DejaVu Sans",font_size=7 pt),target=c.data(theta=0,r=4.5),offset=(-12 mm,-6 mm))
+q=plot(projection= polar,size=(98 mm,100 mm),plot_area=box(offset=(18 mm, 18 mm), size=(62 mm, 62 mm)),style=s,theta_zero=90 deg,theta_direction="cw",
+       theta=axis(ticks=[0,90,180,270],tick_text=["N","E","S","W"],grid= major),r=axis(range=(0,5),ticks=[1,3,5],grid= major,tick_font_size=6 pt))
+q.line(theta=[0,45,90,135,180,225,270,315],r=[4.5,3,1.6,2.5,4,2.8,1.3,3.4],closed=true,marker= diamond,marker_size=1.7 mm,color="#264b69")
+d=page.add(q,offset=(103 mm,4 mm))
+page.add(text(content="(b) North / clockwise",font_family="DejaVu Sans",font_size=9 pt),target=d.plot_top_left,offset=(-4 mm,-15 mm))
+page.add(legend(layers=[a],style=s),offset=(12 mm,103 mm))
+page.add(text(content="Negative radius: same point after a half-turn (warning can be hidden).",font_family="DejaVu Sans",font_size=7 pt),offset=(53 mm,107 mm))
+# END DEMO

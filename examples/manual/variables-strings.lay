@@ -1,0 +1,12 @@
+# Predefined variables are ordinary strings; both spellings are supported.
+page=canvas(size=(110mm,80mm),background="#ffffff")
+options=[round,"round",triangle,"triangle"]
+if options[0]==options[1] {
+    for i in range(2) {
+        page.add(line(length=60mm,line_width=1.5mm,start_cap=options[i],end_head=head(shape=options[i+2],size=(6mm,5mm)),line_color="#087f8c"),offset=(15mm,20mm+i*18mm))
+    }
+}
+# This user binding wins over the predefined round value in this scope.
+round="square"
+page.add(line(length=60mm,line_width=1.5mm,start_cap=round,end_cap=square,line_color="#e36b70"),offset=(15mm,58mm))
+page.add(text("Two equivalent heads; then a shadowed square cap",font_size=8pt),offset=(8mm,70mm))

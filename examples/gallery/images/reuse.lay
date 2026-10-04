@@ -1,0 +1,10 @@
+# Gallery: images / reuse
+page = canvas(name="One image, two instances", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="One image, two instances", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+picture = image(src="../assets/sample.png")
+first = page.add(picture,size=(62 mm, auto), target=page.top_left, offset=(7 mm, 26 mm))
+page.add(picture,size=(34 mm, auto), target=first.top_right, offset=(9 mm, 0 mm))
+# END DEMO

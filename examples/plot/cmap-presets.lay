@@ -1,0 +1,18 @@
+# Complete canonical preset catalogue; aliases and _r variants are omitted here.
+names=cmap_names()
+page=canvas(size=(210mm,len(names)*4mm+22mm),background="#ffffff")
+page.add(text(content="Matplotlib 3.11.2 - 87 cmap presets",font_family="DejaVu Sans",font_size=12pt),offset=(8mm,5mm))
+for row,name in enumerate(names) {
+ cm=cmap(name)
+ colors=cm.colors(64)
+ if cm.category=="qualitative" {colors=cm.colors()}
+ width=142mm/len(colors)
+ page.add(text(content=name,font_family="DejaVu Sans",font_size=7pt),offset=(8mm,18mm+row*4mm))
+ for i,color in enumerate(colors) {
+  page.add(rect(size=(width,3mm),fill=color),offset=(57mm+i*width,18mm+row*4mm))
+ }
+}
+# These useful handles can be reused elsewhere without changing the preset.
+reverse=cmap("viridis").reversed()
+accent=reverse.sample(0.5)
+cycle=palette("tab10")

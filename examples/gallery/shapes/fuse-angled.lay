@@ -1,0 +1,21 @@
+# Gallery: shapes / fuse-angled
+page = canvas(name="Angled flat seams", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Angled flat seams", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+box = rect(size=(20 mm, 18 mm), fill="#087f8c")
+upper = page.add(box, target=page.top_left, offset=(12 mm, 24 mm))
+up_line = page.add(line(dx=35 mm, dy=-12 mm, line_width=3 mm),
+                   target=page.top_left, offset=(44 mm, 21 mm))
+up_join = page.fuse(upper, up_line, points=(upper.middle_right, up_line.start),
+                    bridge_width=3 mm, junction=round, radius=2 mm,
+                    fill="#087f8c", border_color="none")
+
+lower = page.add(box, target=page.top_left, offset=(12 mm, 50 mm))
+down_line = page.add(line(dx=35 mm, dy=12 mm, line_width=3 mm),
+                     target=page.top_left, offset=(44 mm, 59 mm))
+down_join = page.fuse(lower, down_line, points=(lower.middle_right, down_line.start),
+                      bridge_width=3 mm, junction=round, radius=2 mm,
+                      fill="#087f8c", border_color="none")
+# END DEMO

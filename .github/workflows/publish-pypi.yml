@@ -1,0 +1,171 @@
+name: Python wheels and PyPI
+
+on:
+  pull_request:
+  push:
+    branches: ['codex/pypi-*']
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish after all checks and pypi environment approval'
+        type: boolean
+        default: false
+      version:
+        description: 'Exact version to publish (required only for publishing)'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r release/build-requirements.txt
+      - run: python scripts/check-release.py
+      - run: sudo apt-get update && sudo apt-get install -y poppler-utils mupdf-tools
+      - run: python -m pip install -e './python[data,plot]' pillow
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.93.1'
+      - run: python scripts/test-contracts.py
+
+  wheels:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-24.04, target: linux-x64}
+          - {os: ubuntu-24.04-arm, target: linux-arm64}
+          - {os: macos-15-intel, target: darwin-x64}
+          - {os: macos-14, target: darwin-arm64}
+          - {os: windows-2022, target: win-x64}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.93.1'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: cargo build --release --locked -p laymesh-cli
+      - run: python -m pip install -r release/build-requirements.txt
+      - run: python scripts/collect-licenses.py
+      - run: python scripts/build-python-wheel.py --output release/dist
+      - run: python scripts/check-python-wheels.py release/dist
+      - run: python -m twine check --strict release/dist/*.whl
+        shell: bash
+      - name: Install the wheel, never the checkout
+        shell: bash
+        run: |
+          python -m pip install "$(python -c "from pathlib import Path; print(next(Path('release/dist').glob('*.whl')))")[data,plot]"
+      - run: python scripts/smoke-python-wheel.py --examples examples
+      - run: python -m unittest discover -s python/tests -v
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-${{ matrix.target }}
+          path: release/dist/*.whl
+          if-no-files-found: error
+          retention-days: 14
+
+  python-compatibility:
+    needs: wheels
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.14']
+        platform:
+          - {os: ubuntu-24.04, target: linux-x64}
+          - {os: ubuntu-24.04-arm, target: linux-arm64}
+          - {os: macos-15-intel, target: darwin-x64}
+          - {os: macos-14, target: darwin-arm64}
+          - {os: windows-2022, target: win-x64}
+    runs-on: ${{ matrix.platform.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheel-${{ matrix.platform.target }}
+          path: release/dist
+      - name: Install the platform wheel
+        shell: bash
+        run: |
+          python -m pip install "$(python -c "from pathlib import Path; print(next(Path('release/dist').glob('*.whl')))")[data,plot]"
+      - run: python scripts/smoke-python-wheel.py
+
+  review:
+    needs: [core, wheels, python-compatibility]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r release/build-requirements.txt
+      - run: python scripts/check-release.py
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          merge-multiple: true
+          path: release/dist
+      - run: python scripts/check-python-wheels.py release/dist --all-targets --checksums release/SHA256SUMS
+      - run: python -m twine check --strict release/dist/*.whl
+      - name: Verify requested release version
+        if: github.event_name == 'workflow_dispatch' && inputs.publish
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          python -c "import os,tomllib; assert os.environ['REQUESTED_VERSION'] == tomllib.load(open('python/pyproject.toml','rb'))['project']['version'], 'Explicit version must match the package'"
+      - name: Require an existing human approval gate
+        if: github.event_name == 'workflow_dispatch' && inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/environments/pypi" > "$RUNNER_TEMP/pypi-environment.json"
+          python -c "import json,os; from pathlib import Path; e=json.loads((Path(os.environ['RUNNER_TEMP'])/'pypi-environment.json').read_text()); assert any(r.get('type')=='required_reviewers' and r.get('reviewers') for r in e.get('protection_rules',[])), 'Configure required reviewers on the pypi environment before publishing'"
+      - name: Review summary
+        run: |
+          echo 'All five wheels passed native installation/export checks on Python 3.10, 3.13 and 3.14.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Review these exact artifacts before approving the pypi environment.' >> "$GITHUB_STEP_SUMMARY"
+          cat release/SHA256SUMS >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-python-release
+          path: |
+            release/dist/*.whl
+            release/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/main'
+    needs: review
+    runs-on: ubuntu-24.04
+    environment:
+      name: pypi
+      url: https://pypi.org/project/laymesh/
+    permissions:
+      id-token: write
+    concurrency:
+      group: pypi-release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: reviewed-python-release
+          path: reviewed
+      - name: Verify reviewed artifacts
+        working-directory: reviewed/dist
+        run: sha256sum --check ../SHA256SUMS
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: reviewed/dist/

@@ -1,0 +1,6 @@
+# Minimal complete example: plot.add_axis
+page=canvas(size=(100mm,75mm),background="#ffffff")
+p=plot(size=(86mm,62mm),x=axis(range=(0,4)),y=axis(range=(0,5)))
+p.add_axis(name="right_y",side=right,axis=axis(range=(0,10),label="Second scale"))
+p.line(x=[0,1,2,3],y=[1,2,4,3],y_axis="right_y")
+page.add(p,offset=(7mm,6mm))

@@ -1,0 +1,19 @@
+# Gallery: positioning / anchors
+page = canvas(name="Nine anchors", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Nine anchors", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+panel = rect(size=(72 mm, 45 mm), fill="#e6f2f3", border_color="#087f8c", border_width=0.5 mm)
+placed = page.add(panel, target=page.top_left, offset=(24 mm, 26 mm))
+dot = ellipse(size=(4 mm, 4 mm), fill="#df6e70")
+page.add(dot, anchor=center, target=placed.top_left)
+page.add(dot, anchor=center, target=placed.top_center)
+page.add(dot, anchor=center, target=placed.top_right)
+page.add(dot, anchor=center, target=placed.middle_left)
+page.add(dot, anchor=center, target=placed.center)
+page.add(dot, anchor=center, target=placed.middle_right)
+page.add(dot, anchor=center, target=placed.bottom_left)
+page.add(dot, anchor=center, target=placed.bottom_center)
+page.add(dot, anchor=center, target=placed.bottom_right)
+# END DEMO

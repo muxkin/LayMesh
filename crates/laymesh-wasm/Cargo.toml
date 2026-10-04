@@ -1,0 +1,14 @@
+[package]
+name = "laymesh-wasm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+[lib]
+crate-type = ["cdylib", "rlib"]
+[dependencies]
+laymesh-core = { path = "../laymesh-core", default-features = false }
+laymesh-language.workspace = true
+serde_json.workspace = true
+wasm-bindgen = "0.2"
+
+laymesh-render = { path = "../laymesh-render", default-features = false }

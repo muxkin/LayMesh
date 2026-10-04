@@ -1,0 +1,16 @@
+# Gallery: scripting / units-builtins
+page = canvas(name="Units and built-ins", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Units and built-ins", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+values = append([2, 4], 6)
+count = len(values)
+low = min(2 mm, 5 mm, 3 mm)
+high = max(2 mm, 5 mm, 3 mm)
+distance = abs(-4 mm)
+label = text(content="len=" + str(count) + "  min=" + str(low) +
+                     "  max=" + str(high) + "  abs=" + str(distance),
+             font_family=font, font_size=10 pt, color="#087f8c")
+page.add(label, target=page.top_left, offset=(8 mm, 34 mm))
+# END DEMO

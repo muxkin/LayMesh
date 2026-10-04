@@ -1,0 +1,6 @@
+# Minimal complete example: legend
+page=canvas(size=(100mm,75mm),background="#ffffff")
+p=plot(size=(86mm,62mm),x=axis(range=(0,4)),y=axis(range=(0,5)))
+layer=p.line(x=[0,1,2,3],y=[1,2,4,3],label="Signal")
+page.add(p,offset=(7mm,6mm))
+page.add(legend(layers=[layer]),offset=(10mm,5mm))

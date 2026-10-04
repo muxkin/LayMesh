@@ -1,0 +1,1 @@
+ShapingTest.ttf is a test-only subset of DejaVu Sans containing basic Latin, combining marks, Hebrew, Arabic and required shaping substitutions. It is covered by DejaVu.LICENSE. This fixture is compiled only into tests and is excluded from every runtime artifact.

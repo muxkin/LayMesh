@@ -1,0 +1,2 @@
+style { .frame {border:1mm double #ff0000;} }
+export frame=rect(size=(10,10),class="frame")

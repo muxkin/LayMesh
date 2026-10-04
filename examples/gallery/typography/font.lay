@@ -1,0 +1,10 @@
+# Gallery: typography / font
+page = canvas(name="Embedded font", size=(120 mm, 80 mm), background="#f7f9fc")
+font = ["DejaVu Sans", "Noto Sans CJK SC"]
+heading = text(content="Embedded font", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+label = text(content="Signal 信号: fonts in priority order", font_family=font,
+             font_size=13 pt, color="#087f8c")
+page.add(label, target=page.top_left, offset=(9 mm, 34 mm))
+# END DEMO

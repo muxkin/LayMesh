@@ -1,0 +1,13 @@
+# Gallery: containers / group-local
+page = canvas(name="Group local coordinates", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Group local coordinates", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+badge = group()
+back = badge.add(rect(size=(44 mm, 32 mm), border_radius=3 mm, fill="#d8f0ec"),
+                 target=badge.top_left)
+badge.add(ellipse(size=(14 mm, 14 mm), fill="#eaa94a"),
+          anchor=center, target=back.center)
+page.add(badge, target=page.top_left, offset=(29 mm, 29 mm))
+# END DEMO

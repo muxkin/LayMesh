@@ -1,0 +1,5 @@
+page=canvas(size=(125mm,85mm),background="#f0f0f0")
+paints=[rgb(255,80,40,alpha=0.6),hsv(200deg,0.7,0.8,alpha=0.6),oklch(0.7,0.15,200deg,alpha=0.6),linear_gradient(stops=[(0,"#ffffff"),(1,"#087f8c90")]),radial_gradient(stops=[(0,"#ffffff"),(1,"#087f8c")]),hatch(pattern=cross,color="#087f8c",spacing=3mm,line_width=0.5pt),image_fill(src="../assets/photo.png",fit=cover)]
+for i in range(len(paints)) {
+    page.add(rect(size=(13mm,45mm),fill=paints[i],border_radius=2mm,border_color="#425466",border_width=0.5pt),offset=(5mm+i*17mm,20mm))
+}

@@ -1,0 +1,9 @@
+page = canvas(size=(160 mm, 100 mm), background="#ffffff")
+
+card = rect(size=(60 mm, 30 mm),
+            fill="#e7f4fa", border_color="#28618a", border_width=0.4 mm)
+left = page.add(card, target=page.top_left, offset=(12 mm, 15 mm))
+page.add(card, target=left.top_right, offset=(8 mm, 0 mm))
+
+title = text(content="Hello LayMesh", font_size=14 pt, color="#203864")
+page.add(title, anchor=center, target=left.center)

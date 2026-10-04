@@ -1,0 +1,17 @@
+
+import { photo as basePhoto, icon as baseIcon, jpeg as baseJpeg, tiff as baseTiff, gap } from "./base.lay"
+export photo=basePhoto
+export icon=baseIcon
+export jpeg=baseJpeg
+export tiff=baseTiff
+export function card(label, size=12 mm) {
+  g=group()
+  inside=group()
+  picture=inside.add(photo,size=(size, auto),target=inside.top_left)
+  title=text(content=label,font_family="素材/DejaVuSans.ttf",font_size=8 pt)
+  inside.add(title,target=picture.bottom_left,offset=(0 mm,gap))
+  otfLabel=text(content="OTF",font_family="素材/GFSNeohellenic.otf",font_size=7 pt)
+  inside.add(otfLabel,target=picture.bottom_left,offset=(0 mm,2 * gap))
+  g.add(inside,target=g.top_left)
+  return g
+}

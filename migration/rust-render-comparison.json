@@ -1,0 +1,116 @@
+{
+  "comparison": "Archived Node wheel versus repaired Rust release, exact same inputs",
+  "engine_commit": "282638a074727b58bb7b13d4714179dd4d3f2c20",
+  "rust_binary_sha256": "0df6e43c3383ecfb119481cf8168f52d8e76b811264a17cb35d4061a96593833",
+  "dpi": 144,
+  "algorithm": "Decode PNG and alpha-composite on white; compare same-size RGB pixels with no resizing. These descriptive differences are not a pixel-equality gate. Geometry/paint assertions and allowed RaTeX/native-circle changes are recorded separately.",
+  "cases": [
+    {
+      "example": "examples/basic.lay",
+      "source_sha256": "2790b33b0138b73298431b9bb02ecd0b08733a0a3a7e370acd89b7949ae33b8a",
+      "baseline_png_sha256": "49d1f95a8fea1e2a84fe07b88670e081cde3770a4b08c42bca770ed61791a8ad",
+      "rust_png_sha256": "419903038e9c4e1bc32846c8cf12f9046eaa418a6491d5d9d014d06e4c7a2597",
+      "width_px": 1020,
+      "height_px": 680,
+      "mean_absolute_channel_delta_0_to_255": 0.001376874279123414,
+      "pixel_fraction_with_max_channel_delta_gt_20": 1.8742791234140715e-05,
+      "regions": {
+        "title": {
+          "box_pixels": [
+            0,
+            0,
+            1020,
+            110
+          ],
+          "mean_absolute_channel_delta_0_to_255": 0.0,
+          "pixel_fraction_with_max_channel_delta_gt_20": 0.0
+        },
+        "image_uncropped": {
+          "box_pixels": [
+            55,
+            139,
+            490,
+            359
+          ],
+          "mean_absolute_channel_delta_0_to_255": 0.0,
+          "pixel_fraction_with_max_channel_delta_gt_20": 0.0
+        },
+        "image_cropped": {
+          "box_pixels": [
+            537,
+            140,
+            851,
+            455
+          ],
+          "mean_absolute_channel_delta_0_to_255": 0.0,
+          "pixel_fraction_with_max_channel_delta_gt_20": 0.0
+        },
+        "arrow": {
+          "box_pixels": [
+            535,
+            470,
+            670,
+            565
+          ],
+          "mean_absolute_channel_delta_0_to_255": 0.009824561403508772,
+          "pixel_fraction_with_max_channel_delta_gt_20": 0.00023391812865497077
+        }
+      }
+    },
+    {
+      "example": "examples/typography.lay",
+      "source_sha256": "db6d2f6e0fc902f201249f8ce696ce0f18b2c9625da889918a30767212d24dc1",
+      "baseline_png_sha256": "251fa854b34b1bce1ad2f1ab633e78a95cac30129bb2c22c47bdaee80ac3c1e5",
+      "rust_png_sha256": "9fb0d8560fad23239a37cdc9b0f35cd3eee3aa511a0bca092813e0e007195001",
+      "width_px": 907,
+      "height_px": 567,
+      "mean_absolute_channel_delta_0_to_255": 1.6893733305591692,
+      "pixel_fraction_with_max_channel_delta_gt_20": 0.010393393340839132,
+      "regions": {}
+    },
+    {
+      "example": "examples/outlines.lay",
+      "source_sha256": "4ab688892c7575373ad2fc6610794053f1b9643be2304b725199d7bbd69f6906",
+      "baseline_png_sha256": "432050aa8b6b871bc0356a10f9fbc93e75e257b8d93704b173dea6eae21b1ed5",
+      "rust_png_sha256": "574826d6512c073d89c2754d1a25cf081d412bb1b1b33303315078fa7d5700c0",
+      "width_px": 1020,
+      "height_px": 624,
+      "mean_absolute_channel_delta_0_to_255": 0.3794473772414949,
+      "pixel_fraction_with_max_channel_delta_gt_20": 0.007541478129713424,
+      "regions": {}
+    },
+    {
+      "example": "examples/plot/multi-axes-breaks.lay",
+      "source_sha256": "338e2511b4f2605272d3533ac513b545686503fd7973888ad224cc166c94b6ed",
+      "baseline_png_sha256": "be8c9823e6fa5eea5146e4e95f148f55a0dba6610527e52f0ea45ba40a33b804",
+      "rust_png_sha256": "af2cb480e59c6d5a0d5ec73bc3d2a8831ebebe0cc387857e48300d46a5ad3af8",
+      "width_px": 1191,
+      "height_px": 726,
+      "mean_absolute_channel_delta_0_to_255": 0.0204915346889242,
+      "pixel_fraction_with_max_channel_delta_gt_20": 0.00014456449079760277,
+      "regions": {}
+    },
+    {
+      "example": "examples/plot/statistics.lay",
+      "source_sha256": "7c80eaa5dea2fec06cb566b635cb44ef5f5688eadee22716798245d1d77d9ed1",
+      "baseline_png_sha256": "58515ff5118310de09723104a1e3e9bb7daae79471db678b1f745d106806cd43",
+      "rust_png_sha256": "3fbe0b5ab22a46d0115650163d66fcbe4a4cef1a0d939b9390f18692835c09b1",
+      "width_px": 1553,
+      "height_px": 726,
+      "mean_absolute_channel_delta_0_to_255": 0.22836572716570375,
+      "pixel_fraction_with_max_channel_delta_gt_20": 0.004118040440700395,
+      "regions": {}
+    },
+    {
+      "example": "examples/plot/polar-field.lay",
+      "source_sha256": "2d16596ab7bd8670177c385795dd849dc2889f24711f58582cb0b983372103f0",
+      "baseline_png_sha256": "aaf76ca882e635a1855721cf6bb8a321060177402ad48d04681e94a9beb65ceb",
+      "rust_png_sha256": "28e7e0d7e0fb49a2f0d2a8049c63633c3fa1a4fd73971be58a742b0bc9a2b1aa",
+      "width_px": 1236,
+      "height_px": 720,
+      "mean_absolute_channel_delta_0_to_255": 0.10025208258420233,
+      "pixel_fraction_with_max_channel_delta_gt_20": 0.0006685994246673859,
+      "regions": {}
+    }
+  ]
+}

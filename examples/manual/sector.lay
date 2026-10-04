@@ -1,0 +1,3 @@
+# Minimal complete example: sector
+page=canvas(size=(100mm,75mm),background="#ffffff")
+page.add(sector(radius=20mm,start=0deg,end=120deg,fill="#087f8c"),offset=(15mm,15mm))

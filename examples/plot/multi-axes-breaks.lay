@@ -1,0 +1,21 @@
+# BEGIN DEMO
+# Independent axis gaps. Lengths are literal mm, not stretch factors.
+page=canvas(size=(210 mm,128 mm),background="#ffffff")
+s=plot_style(font_family="DejaVu Sans",font_size=8 pt)
+p=plot(size=(195 mm,112 mm),plot_area=box(offset=(24 mm, 20 mm), size=(110 mm, 62 mm)),style=s,
+ x=axis(label="Time (s)",range=(0,10),ticks=[0,1,2,8,9,10],breaks=[(2,8)],break_gap=3 mm,segment_lengths=[45 mm,62 mm],minor_ticks="auto"),
+ y=axis(label="Signal (a.u.)",range=(0,100),ticks=[0,5,80,90,100],breaks=[(10,80)],break_gap=2 mm,segment_lengths=[20 mm,40 mm],line_color="#264b69"))
+p.add_axis(name="temperature",side= right,offset=0 mm,
+ axis=axis(label="Temperature (K)",range=(200,1000),ticks=[200,400,800,1000],breaks=[(400,800)],break_gap=4 mm,segment_lengths=[29 mm,29 mm],line_color="#a04725"))
+p.add_axis(name="pressure",side= right,offset=29 mm,
+ axis=axis(label="Pressure (MPa)",range=(0,100),ticks=[0,25,50,75,100],line_color="#34705a"))
+a=p.line(x=[0,1,2,8,9,10],y=[1,5,9,84,92,98],marker= circle,color="#264b69",label="Signal")
+b=p.line(x=[0,1,2,8,9,10],y=[220,300,380,830,910,980],y_axis="temperature",marker= diamond,color="#a04725",label="Temperature")
+c=p.line(x=[0,1,2,8,9,10],y=[15,26,40,55,72,91],y_axis="pressure",line_dash=[2 mm,1 mm],color="#34705a",label="Pressure")
+p.errorbar(x=[1,9],y=[5,91],yerr=[4,8],color="#264b69",cap_size=2 mm)
+chart=page.add(p,offset=(6 mm,8 mm))
+page.add(text(content="Independent gaps on three vertical axes",font_family="DejaVu Sans",font_size=10 pt),target=chart.plot_top_left,offset=(0 mm,-14 mm))
+page.add(legend(layers=[a,b,c],columns=3,gap=3 mm,background="none"),target=chart.plot_bottom_left,offset=(0 mm,23 mm))
+# This data anchor uses temperature values, including its independent break.
+page.add(text(content="T",font_family="DejaVu Sans",font_size=8 pt,color="#a04725"),anchor=bottom_left,target=chart.data(x=9,y=910,y_axis="temperature"),offset=(2 mm,-2 mm))
+# END DEMO

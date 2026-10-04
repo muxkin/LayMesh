@@ -1,0 +1,16 @@
+# Gallery: shapes / path-commands
+page = canvas(name="Path commands", size=(120 mm, 80 mm), background="#f7f9fc")
+font = "DejaVu Sans"
+heading = text(content="Path commands", font_family=font, font_size=14 pt, color="#203864")
+page.add(heading, target=page.top_left, offset=(7 mm, 5 mm))
+# BEGIN DEMO
+curve = path(commands=[
+    move_to(0 mm, 27 mm),
+    line_to(12 mm, 5 mm),
+    quad_to(23 mm, -5 mm, 35 mm, 10 mm),
+    cubic_to(44 mm, 24 mm, 54 mm, 7 mm, 65 mm, 13 mm),
+    arc_to(12 mm, 12 mm, 0 deg, false, true, 82 mm, 27 mm)
+], fill="none", border_color="#087f8c", border_width=1.5 mm,
+   border_cap=round, border_join=round)
+page.add(curve, target=page.top_left, offset=(13 mm, 31 mm))
+# END DEMO

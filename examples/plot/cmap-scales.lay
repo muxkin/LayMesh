@@ -1,0 +1,13 @@
+# The same immutable handle drives heatmap, contour, scatter and colorbar.
+page=canvas(size=(210mm,108mm),background="#ffffff")
+cm=cmap("coolwarm")
+scale=color_scale(norm="centered",vmin=-2,vmax=2,center=0,cmap=cm)
+style=plot_style(font_family="DejaVu Sans",font_size=8pt)
+a=plot(size=(90mm,85mm),style=style,x=axis(range=(0,4)),y=axis(range=(0,4)))
+a.heatmap(z=[[-2,-1,0,1],[-1,0,1,2],[0,1,2,1],[1,2,1,0]],extent=(0,4,0,4),color_scale=scale)
+page.add(a,offset=(4mm,5mm))
+b=plot(size=(90mm,85mm),style=style,x=axis(range=(0,4)),y=axis(range=(0,4)))
+b.contourf(z=[[-2,-1,0,1,2],[-1,0,1,2,1],[0,1,2,1,0],[1,2,1,0,-1],[2,1,0,-1,-2]],levels=[-2,-1,0,1],color_scale=scale)
+b.scatter(x=[0.5,1.5,2.5,3.5],y=[3.5,2.5,1.5,0.5],c=[-2,-1,1,2],color_scale=scale,marker_border_color="#222222",marker_border_width=0.5pt)
+page.add(b,offset=(101mm,5mm))
+page.add(colorbar(scale=scale,length=150mm,orientation="horizontal",label="Shared value",style=style),offset=(28mm,90mm))

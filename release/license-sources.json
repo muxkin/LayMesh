@@ -1,0 +1,114 @@
+[
+  {
+    "name": "i_key_sort",
+    "version": "0.10.3",
+    "file": "i_key_sort-0.10.3-LICENSE",
+    "url": "https://raw.githubusercontent.com/iShape-Rust/iKeySort/10a9a72f0cdae785dd2185896eed138b09945515/LICENSE",
+    "sha256": "47e00f18b265d350a2860d3899f17dd1c7689b966545e929df8ffa7033f5acdc"
+  },
+  {
+    "name": "i_overlay",
+    "version": "4.5.2",
+    "file": "i_overlay-4.5.2-LICENSE-MIT",
+    "url": "https://raw.githubusercontent.com/iShape-Rust/iOverlay/9448d8da87e11f5b7aedcf994967b18ff640c734/LICENSE-MIT",
+    "sha256": "260cc580f53a756821a0f35475e2cd6da790f8fed0efc058252fe1bed8f2689e"
+  },
+  {
+    "name": "i_overlay",
+    "version": "4.5.2",
+    "file": "i_overlay-4.5.2-LICENSE-APACHE",
+    "url": "https://raw.githubusercontent.com/iShape-Rust/iOverlay/9448d8da87e11f5b7aedcf994967b18ff640c734/LICENSE-APACHE",
+    "sha256": "59899c6091b540582ed617e8eeaac4919dc985ccfc35459ee9752b699be5205b"
+  },
+  {
+    "name": "krilla",
+    "version": "0.8.2",
+    "file": "krilla-0.8.2-LICENSE_MIT",
+    "url": "https://raw.githubusercontent.com/LaurenzV/krilla/3ffdf0588cf98050aad6edba51ca70162e1fb5b5/LICENSE_MIT",
+    "sha256": "9d1eb142840c7acfd5511b4dd298cece3f0053f5809228906445cd8a3365592f"
+  },
+  {
+    "name": "krilla",
+    "version": "0.8.2",
+    "file": "krilla-0.8.2-LICENSE_APACHE",
+    "url": "https://raw.githubusercontent.com/LaurenzV/krilla/3ffdf0588cf98050aad6edba51ca70162e1fb5b5/LICENSE_APACHE",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "name": "krilla-svg",
+    "version": "0.8.1",
+    "file": "krilla-svg-0.8.1-LICENSE_MIT",
+    "url": "https://raw.githubusercontent.com/LaurenzV/krilla/3ffdf0588cf98050aad6edba51ca70162e1fb5b5/LICENSE_MIT",
+    "sha256": "9d1eb142840c7acfd5511b4dd298cece3f0053f5809228906445cd8a3365592f"
+  },
+  {
+    "name": "krilla-svg",
+    "version": "0.8.1",
+    "file": "krilla-svg-0.8.1-LICENSE_APACHE",
+    "url": "https://raw.githubusercontent.com/LaurenzV/krilla/3ffdf0588cf98050aad6edba51ca70162e1fb5b5/LICENSE_APACHE",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "name": "ratex-font",
+    "version": "0.1.14",
+    "file": "ratex-font-0.1.14-LICENSE",
+    "url": "https://raw.githubusercontent.com/erweixin/RaTeX/08cae05377938391117913ca4f278e6a3ffb6a8a/LICENSE",
+    "sha256": "f65e10eaa978c50a58c5e792110b4be5014b865edcb2ade49076bfcc98fa92b0"
+  },
+  {
+    "name": "ratex-layout",
+    "version": "0.1.14",
+    "file": "ratex-layout-0.1.14-LICENSE",
+    "url": "https://raw.githubusercontent.com/erweixin/RaTeX/08cae05377938391117913ca4f278e6a3ffb6a8a/LICENSE",
+    "sha256": "f65e10eaa978c50a58c5e792110b4be5014b865edcb2ade49076bfcc98fa92b0"
+  },
+  {
+    "name": "ratex-lexer",
+    "version": "0.1.14",
+    "file": "ratex-lexer-0.1.14-LICENSE",
+    "url": "https://raw.githubusercontent.com/erweixin/RaTeX/08cae05377938391117913ca4f278e6a3ffb6a8a/LICENSE",
+    "sha256": "f65e10eaa978c50a58c5e792110b4be5014b865edcb2ade49076bfcc98fa92b0"
+  },
+  {
+    "name": "ratex-parser",
+    "version": "0.1.14",
+    "file": "ratex-parser-0.1.14-LICENSE",
+    "url": "https://raw.githubusercontent.com/erweixin/RaTeX/08cae05377938391117913ca4f278e6a3ffb6a8a/LICENSE",
+    "sha256": "f65e10eaa978c50a58c5e792110b4be5014b865edcb2ade49076bfcc98fa92b0"
+  },
+  {
+    "name": "ratex-types",
+    "version": "0.1.14",
+    "file": "ratex-types-0.1.14-LICENSE",
+    "url": "https://raw.githubusercontent.com/erweixin/RaTeX/08cae05377938391117913ca4f278e6a3ffb6a8a/LICENSE",
+    "sha256": "f65e10eaa978c50a58c5e792110b4be5014b865edcb2ade49076bfcc98fa92b0"
+  },
+  {
+    "name": "windows-link",
+    "version": "0.2.1",
+    "file": "windows-link-0.2.1-license-mit",
+    "url": "https://raw.githubusercontent.com/microsoft/windows-rs/d468916ac27a36fb8a12bafc1bf5c0ec2fe92238/license-mit",
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  {
+    "name": "windows-link",
+    "version": "0.2.1",
+    "file": "windows-link-0.2.1-license-apache-2.0",
+    "url": "https://raw.githubusercontent.com/microsoft/windows-rs/d468916ac27a36fb8a12bafc1bf5c0ec2fe92238/license-apache-2.0",
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  },
+  {
+    "name": "windows-sys",
+    "version": "0.61.2",
+    "file": "windows-sys-0.61.2-license-mit",
+    "url": "https://raw.githubusercontent.com/microsoft/windows-rs/32c3144490c016fe496a0aed769bce60987a2e9d/license-mit",
+    "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+  },
+  {
+    "name": "windows-sys",
+    "version": "0.61.2",
+    "file": "windows-sys-0.61.2-license-apache-2.0",
+    "url": "https://raw.githubusercontent.com/microsoft/windows-rs/32c3144490c016fe496a0aed769bce60987a2e9d/license-apache-2.0",
+    "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+  }
+]

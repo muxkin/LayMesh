@@ -1,0 +1,1505 @@
+{
+  "cases": [
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044527.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-font-stack-8wWW7j/figure.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 7
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-DnA8KG/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 1
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-AJY7Yp/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 2
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-J7MMqH/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 3
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-hnWAxS/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 4
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-MTmZY9/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 5
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-WFGb1O/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 6
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-c2TVls/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 18
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-Oq9Ayd/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 19
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-hp0VzG/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 20
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-ln8kW3/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 21
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-q4zNdt/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 22
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-3Hecxm/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 23
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-c44RGi/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 24
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-VV6KNy/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 25
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-skOvsP/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 26
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-hUU0Lt/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 27
+    },
+    {
+      "automatic_margin_changes": [
+        {
+          "field": "plot[0].bounds.height",
+          "new": 65.35317009168736,
+          "old": 64.89670386946513
+        },
+        {
+          "field": "plot[0].bounds.y",
+          "new": 15.999769888888888,
+          "old": 16.45623611111111
+        }
+      ],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-QO94TE/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [
+        {
+          "new_height": 2.8719921111111106,
+          "new_width": 3.9626469444444443,
+          "old_height": 3.3284583333333333,
+          "old_width": 4.774847222222222,
+          "source": "T^2"
+        }
+      ],
+      "line": 28
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-sy6wvd/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 29
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-XO4IPr/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 30
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-qjCYR3/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 31
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-B9Suje/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 32
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-TsOO0D/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 33
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-eXEDX5/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 34
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-ar4zqH/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 46
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-9lUnAA/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 47
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044564.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-complete-wsQrea/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 48
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-PBcH67/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 1
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-pZ0eo8/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 2
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-Bxfw3K/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 3
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-l7B9IH/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 4
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-t1GTG2/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 5
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-2cE6op/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 6
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-jfQjbb/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 7
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-AhQHy7/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 8
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-TPAmg5/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 9
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-AdzDOr/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 10
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-Zxuyr9/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 11
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-kFA7NO/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 12
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-7Z3fqL/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 13
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-aNdKga/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 14
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-Z3U3eQ/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 15
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-NiPEOu/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 16
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-tFmIfq/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 17
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-FRZMHi/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 18
+    },
+    {
+      "automatic_margin_changes": [
+        {
+          "field": "plot[0].bounds.height",
+          "new": 93.61167497777778,
+          "old": 93.31516666666668
+        },
+        {
+          "field": "plot[0].bounds.y",
+          "new": 4.732769466666666,
+          "old": 5.029277777777778
+        }
+      ],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-LdVNBH/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [
+        {
+          "new_height": 2.5327694666666662,
+          "new_width": 7.68272671111111,
+          "old_height": 2.8292777777777776,
+          "old_width": 8.8265,
+          "source": "\\times 10^{-6}"
+        },
+        {
+          "new_height": 2.5327694666666662,
+          "new_width": 6.14617911111111,
+          "old_height": 2.8292777777777776,
+          "old_width": 7.069666666666666,
+          "source": "\\times 10^{5}"
+        }
+      ],
+      "line": 19
+    },
+    {
+      "automatic_margin_changes": [
+        {
+          "field": "plot[0].bounds.height",
+          "new": 90.02001662222222,
+          "old": 89.42699999999999
+        },
+        {
+          "field": "plot[0].bounds.y",
+          "new": 4.732769466666666,
+          "old": 5.029277777777778
+        }
+      ],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-2bp2aj/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [
+        {
+          "new_height": 2.5327694666666662,
+          "new_width": 7.68272671111111,
+          "old_height": 2.8292777777777776,
+          "old_width": 8.8265,
+          "source": "\\times 10^{-6}"
+        },
+        {
+          "new_height": 2.5327694666666662,
+          "new_width": 6.14617911111111,
+          "old_height": 2.8292777777777776,
+          "old_width": 7.069666666666666,
+          "source": "\\times 10^{5}"
+        }
+      ],
+      "line": 20
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-zUAALc/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 21
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-KDrbg6/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 22
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-G3FUO7/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 23
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-CXNuXT/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 24
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-6GeuEU/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 25
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044567.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-axis-title-onCHDj/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 31
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-SDb0kJ/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 1
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-k6jQCX/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 2
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-DGaA8k/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 3
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-SqSdO1/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 4
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-NL1n7R/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 5
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-KO3LkX/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 6
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-yl1Dew/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 7
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-oCPeDS/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 8
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-vUHcYE/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 9
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-u9kJjg/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 10
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-RlsJwn/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 19
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-sM0nFM/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 21
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-mAYi1M/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 22
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-3UE5Yd/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 23
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-LxwLPE/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 25
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-o4PXCv/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 26
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-0Vnxjh/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 27
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-PSjjJD/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 28
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-LWjBzy/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 29
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-ClHeMN/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 30
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044575.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-polar-hbVM35/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 31
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-hBWC9X/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 1
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-zGNPbj/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 2
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-74QNKQ/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 3
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-x6YCSi/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 4
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-ywlfJk/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 5
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-K12ldb/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 6
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-6og1vm/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 7
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-rcsXm1/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 8
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-wxG30r/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 9
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-k9PxA3/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 10
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-sSRSZi/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 11
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-sX3Fn1/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 12
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-dg3a1j/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 13
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-fIlHnq/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 14
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-28VJDA/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 15
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-tQnNq6/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 16
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-wzKbdO/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 17
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-ze7tfW/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 18
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-NWpg2M/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 19
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-4UlpW6/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 20
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-z2PPQZ/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 21
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-sf3YBn/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 22
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-VCz6as/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 23
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-IINC0v/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 24
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-LqYrC8/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 25
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-WUoFxI/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 26
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-bKlkar/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 27
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044586.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-science-ZJBxRr/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 46
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-FKJDuv/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 1
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-pwAhzm/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 2
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-5o9g6A/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 3
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-n1i4J3/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 4
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-jLipxm/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 5
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-N8KHOn/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 6
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-QbxNhq/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 7
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-gk2GZ1/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 8
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-HUATwD/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 9
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-KIOjvw/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 31
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-Qo5TB0/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 32
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-f9d3oX/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 33
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-LnxBnN/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 34
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-Q96FPP/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 35
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-h3YQzI/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 36
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-PygPPt/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 37
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-feagls/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 38
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-Y9l7wR/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 55
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-IF8mLy/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 56
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-LbckPt/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 57
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-P7rXYR/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 58
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-mPudtR/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 59
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-27udks/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 60
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-vSNGjK/test.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 61
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-8uhwoF/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 62
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-bkF6BY/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 63
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-vyNWXa/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 64
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-GGmnyM/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 65
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-FPA1kY/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 66
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-02nR3Q/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 69
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-KygLRd/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 70
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044587.jsonl",
+      "differences": [],
+      "file": "/tmp/laymesh-plot-Y2603R/test.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 83
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/tmp/unified-language.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 10
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/tmp/unified-language.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 17
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/tmp/unified-language.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 21
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/multi-axes-breaks.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 70
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/statistics.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 71
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/shared-colors.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 72
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/inset.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 73
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/polar-directions.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 74
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/polar-errors.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 75
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/polar-rose.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 76
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/polar-field.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 77
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/radar.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 78
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/polar-data.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 79
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/line-scatter.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 80
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/first-plot.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 81
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/scientific.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 82
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/annotations.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 83
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/colorbars.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 84
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/complete-data.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 85
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/markers.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 86
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/publication.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 87
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/plot/scientific-labels.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 88
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/workspace/LayMesh/examples/unified.lay",
+      "fixed_area": true,
+      "formula_metric_changes": [],
+      "line": 89
+    },
+    {
+      "automatic_margin_changes": [],
+      "capture": "cases-1044744.jsonl",
+      "differences": [],
+      "file": "/tmp/unified-language.lay",
+      "fixed_area": false,
+      "formula_metric_changes": [],
+      "line": 100
+    }
+  ],
+  "summary": {
+    "automatic_margin_change_cases": 3,
+    "cases": 158,
+    "cases_with_mismatches": 0,
+    "coverage": "Coordinates, axes, projection metadata, clips and all ordinary text paints (including standalone legends). Full geometry and drawing semantics are checked by the mapped assertion suites; this report alone is not full visual parity.",
+    "plots_compared": 217,
+    "tolerance_mm": 0.001
+  }
+}

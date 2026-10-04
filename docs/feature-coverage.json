@@ -1,0 +1,1884 @@
+{
+  "schema": 1,
+  "features": {
+    "api:canvas": {
+      "topic": "concepts",
+      "anchor": "canvas",
+      "reference": "canvas",
+      "minimal": "examples/manual/canvas.lay",
+      "composition": "examples/hello.lay"
+    },
+    "api:image": {
+      "topic": "images",
+      "anchor": "image",
+      "reference": "image",
+      "minimal": "examples/manual/image.lay",
+      "composition": "examples/gallery/images/crop.lay"
+    },
+    "api:text": {
+      "topic": "fonts",
+      "anchor": "text",
+      "reference": "text",
+      "minimal": "examples/manual/text.lay",
+      "composition": "examples/gallery/typography/font.lay"
+    },
+    "api:span": {
+      "topic": "fonts",
+      "anchor": "span",
+      "reference": "span",
+      "minimal": "examples/manual/span.lay",
+      "composition": "examples/gallery/typography/inline-formula.lay"
+    },
+    "api:formula": {
+      "topic": "formulas",
+      "anchor": "formula",
+      "reference": "formula",
+      "minimal": "examples/manual/formula.lay",
+      "composition": "examples/gallery/typography/display-formula.lay"
+    },
+    "api:rect": {
+      "topic": "shapes",
+      "anchor": "rect",
+      "reference": "rect",
+      "minimal": "examples/manual/rect.lay",
+      "composition": "examples/basic.lay"
+    },
+    "api:ellipse": {
+      "topic": "shapes",
+      "anchor": "ellipse",
+      "reference": "ellipse",
+      "minimal": "examples/manual/ellipse.lay",
+      "composition": "examples/basic.lay"
+    },
+    "api:line": {
+      "topic": "shapes",
+      "anchor": "line",
+      "reference": "line",
+      "minimal": "examples/manual/line.lay",
+      "composition": "examples/basic.lay"
+    },
+    "api:group": {
+      "topic": "groups",
+      "anchor": "group",
+      "reference": "group",
+      "minimal": "examples/manual/group.lay",
+      "composition": "examples/gallery/containers/group-reuse.lay"
+    },
+    "api:path": {
+      "topic": "shapes",
+      "anchor": "path",
+      "reference": "path",
+      "minimal": "examples/manual/path.lay",
+      "composition": "examples/gallery/shapes/path-commands.lay"
+    },
+    "api:polygon": {
+      "topic": "shapes",
+      "anchor": "polygon",
+      "reference": "polygon",
+      "minimal": "examples/manual/polygon.lay",
+      "composition": "examples/gallery/shapes/polygon-polyline.lay"
+    },
+    "api:polyline": {
+      "topic": "shapes",
+      "anchor": "polyline",
+      "reference": "polyline",
+      "minimal": "examples/manual/polyline.lay",
+      "composition": "examples/gallery/shapes/polygon-polyline.lay"
+    },
+    "api:arc": {
+      "topic": "shapes",
+      "anchor": "arc",
+      "reference": "arc",
+      "minimal": "examples/manual/arc.lay",
+      "composition": "examples/gallery/shapes/arc-sector.lay"
+    },
+    "api:sector": {
+      "topic": "shapes",
+      "anchor": "sector",
+      "reference": "sector",
+      "minimal": "examples/manual/sector.lay",
+      "composition": "examples/gallery/shapes/arc-sector.lay"
+    },
+    "api:star": {
+      "topic": "shapes",
+      "anchor": "star",
+      "reference": "star",
+      "minimal": "examples/manual/star.lay",
+      "composition": "examples/gallery/shapes/star-ring.lay"
+    },
+    "api:ring": {
+      "topic": "shapes",
+      "anchor": "ring",
+      "reference": "ring",
+      "minimal": "examples/manual/ring.lay",
+      "composition": "examples/gallery/shapes/star-ring.lay"
+    },
+    "api:box": {
+      "topic": "plot-area",
+      "anchor": "box",
+      "reference": "box",
+      "minimal": "examples/manual/box.lay",
+      "composition": "examples/plot/publication.lay"
+    },
+    "api:instance.data": {
+      "topic": "anchors",
+      "anchor": "instance-data",
+      "reference": "instance-data",
+      "minimal": "examples/manual/instance-data.lay",
+      "composition": "examples/gallery/positioning/chart-parts.lay"
+    },
+    "api:instance.axis": {
+      "topic": "anchors",
+      "anchor": "instance-axis",
+      "reference": "instance-axis",
+      "minimal": "examples/manual/instance-axis.lay",
+      "composition": "examples/manual/geometry-composition.lay"
+    },
+    "api:add": {
+      "topic": "anchors",
+      "anchor": "add",
+      "reference": "add",
+      "minimal": "examples/manual/add.lay",
+      "composition": "examples/gallery/positioning/anchors.lay"
+    },
+    "api:fuse": {
+      "topic": "groups",
+      "anchor": "fuse",
+      "reference": "fuse",
+      "minimal": "examples/manual/fuse.lay",
+      "composition": "examples/gallery/shapes/fuse-angled.lay"
+    },
+    "api:linear_gradient": {
+      "topic": "fills",
+      "anchor": "linear_gradient",
+      "reference": "linear_gradient",
+      "minimal": "examples/manual/linear_gradient.lay",
+      "composition": "examples/gallery/shapes/linear-gradient.lay"
+    },
+    "api:radial_gradient": {
+      "topic": "fills",
+      "anchor": "radial_gradient",
+      "reference": "radial_gradient",
+      "minimal": "examples/manual/radial_gradient.lay",
+      "composition": "examples/gallery/shapes/radial-gradient.lay"
+    },
+    "api:hatch": {
+      "topic": "fills",
+      "anchor": "hatch",
+      "reference": "hatch",
+      "minimal": "examples/manual/hatch.lay",
+      "composition": "examples/unified.lay"
+    },
+    "api:image_fill": {
+      "topic": "fills",
+      "anchor": "image_fill",
+      "reference": "image_fill",
+      "minimal": "examples/manual/image_fill.lay",
+      "composition": "examples/manual/paint-composition.lay"
+    },
+    "api:table": {
+      "topic": "data",
+      "anchor": "table",
+      "reference": "table",
+      "minimal": "examples/manual/table.lay",
+      "composition": "examples/plot/first-plot.lay"
+    },
+    "api:array": {
+      "topic": "data",
+      "anchor": "array",
+      "reference": "array",
+      "minimal": "examples/manual/array.lay",
+      "composition": "examples/plot/complete-data.lay"
+    },
+    "api:plot": {
+      "topic": "plot-area",
+      "anchor": "plot",
+      "reference": "plot",
+      "minimal": "examples/manual/plot.lay",
+      "composition": "examples/plot/publication.lay"
+    },
+    "api:axis": {
+      "topic": "axes",
+      "anchor": "axis",
+      "reference": "axis",
+      "minimal": "examples/manual/axis.lay",
+      "composition": "examples/plot/multi-axes-breaks.lay"
+    },
+    "api:plot_style": {
+      "topic": "plot-area",
+      "anchor": "plot_style",
+      "reference": "plot_style",
+      "minimal": "examples/manual/plot_style.lay",
+      "composition": "examples/plot/publication.lay"
+    },
+    "api:color_scale": {
+      "topic": "legends",
+      "anchor": "color_scale",
+      "reference": "color_scale",
+      "minimal": "examples/manual/color_scale.lay",
+      "composition": "examples/plot/shared-colors.lay"
+    },
+    "api:legend": {
+      "topic": "legends",
+      "anchor": "legend",
+      "reference": "legend",
+      "minimal": "examples/manual/legend.lay",
+      "composition": "examples/plot/complete-data.lay"
+    },
+    "api:colorbar": {
+      "topic": "legends",
+      "anchor": "colorbar",
+      "reference": "colorbar",
+      "minimal": "examples/manual/colorbar.lay",
+      "composition": "examples/plot/shared-colors.lay"
+    },
+    "api:plot.add_axis": {
+      "topic": "multi-axes",
+      "anchor": "plot-add_axis",
+      "reference": "plot-add_axis",
+      "minimal": "examples/manual/plot-add_axis.lay",
+      "composition": "examples/plot/multi-axes-breaks.lay"
+    },
+    "api:plot.line": {
+      "topic": "line-scatter",
+      "anchor": "plot-line",
+      "reference": "plot-line",
+      "minimal": "examples/manual/plot-line.lay",
+      "composition": "examples/plot/line-scatter.lay"
+    },
+    "api:plot.scatter": {
+      "topic": "line-scatter",
+      "anchor": "plot-scatter",
+      "reference": "plot-scatter",
+      "minimal": "examples/manual/plot-scatter.lay",
+      "composition": "examples/plot/line-scatter.lay"
+    },
+    "api:plot.errorbar": {
+      "topic": "uncertainty",
+      "anchor": "plot-errorbar",
+      "reference": "plot-errorbar",
+      "minimal": "examples/manual/plot-errorbar.lay",
+      "composition": "examples/plot/scientific.lay"
+    },
+    "api:plot.band": {
+      "topic": "uncertainty",
+      "anchor": "plot-band",
+      "reference": "plot-band",
+      "minimal": "examples/manual/plot-band.lay",
+      "composition": "examples/plot/scientific.lay"
+    },
+    "api:plot.hline": {
+      "topic": "annotations",
+      "anchor": "plot-hline",
+      "reference": "plot-hline",
+      "minimal": "examples/manual/plot-hline.lay",
+      "composition": "examples/plot/annotations.lay"
+    },
+    "api:plot.vline": {
+      "topic": "annotations",
+      "anchor": "plot-vline",
+      "reference": "plot-vline",
+      "minimal": "examples/manual/plot-vline.lay",
+      "composition": "examples/manual/reference-lines-composition.lay"
+    },
+    "api:plot.bar": {
+      "topic": "bars",
+      "anchor": "plot-bar",
+      "reference": "plot-bar",
+      "minimal": "examples/manual/plot-bar.lay",
+      "composition": "examples/plot/statistics.lay"
+    },
+    "api:plot.step": {
+      "topic": "bars",
+      "anchor": "plot-step",
+      "reference": "plot-step",
+      "minimal": "examples/manual/plot-step.lay",
+      "composition": "examples/plot/statistics.lay"
+    },
+    "api:plot.area": {
+      "topic": "bars",
+      "anchor": "plot-area",
+      "reference": "plot-area",
+      "minimal": "examples/manual/plot-area.lay",
+      "composition": "examples/plot/polar-data.lay"
+    },
+    "api:plot.hist": {
+      "topic": "hist-ecdf",
+      "anchor": "plot-hist",
+      "reference": "plot-hist",
+      "minimal": "examples/manual/plot-hist.lay",
+      "composition": "examples/plot/statistics.lay"
+    },
+    "api:plot.boxplot": {
+      "topic": "box-violin",
+      "anchor": "plot-boxplot",
+      "reference": "plot-boxplot",
+      "minimal": "examples/manual/plot-boxplot.lay",
+      "composition": "examples/plot/statistics.lay"
+    },
+    "api:plot.violin": {
+      "topic": "box-violin",
+      "anchor": "plot-violin",
+      "reference": "plot-violin",
+      "minimal": "examples/manual/plot-violin.lay",
+      "composition": "examples/plot/statistics.lay"
+    },
+    "api:plot.ecdf": {
+      "topic": "hist-ecdf",
+      "anchor": "plot-ecdf",
+      "reference": "plot-ecdf",
+      "minimal": "examples/manual/plot-ecdf.lay",
+      "composition": "examples/plot/statistics.lay"
+    },
+    "api:plot.heatmap": {
+      "topic": "heatmaps",
+      "anchor": "plot-heatmap",
+      "reference": "plot-heatmap",
+      "minimal": "examples/manual/plot-heatmap.lay",
+      "composition": "examples/plot/shared-colors.lay"
+    },
+    "api:plot.contour": {
+      "topic": "heatmaps",
+      "anchor": "plot-contour",
+      "reference": "plot-contour",
+      "minimal": "examples/manual/plot-contour.lay",
+      "composition": "examples/plot/shared-colors.lay"
+    },
+    "api:plot.contourf": {
+      "topic": "heatmaps",
+      "anchor": "plot-contourf",
+      "reference": "plot-contourf",
+      "minimal": "examples/manual/plot-contourf.lay",
+      "composition": "examples/plot/shared-colors.lay"
+    },
+    "api:range": {
+      "topic": "values",
+      "anchor": "range",
+      "reference": "range",
+      "minimal": "examples/manual/range.lay",
+      "composition": "examples/functions.lay"
+    },
+    "api:len": {
+      "topic": "values",
+      "anchor": "len",
+      "reference": "len",
+      "minimal": "examples/manual/len.lay",
+      "composition": "examples/gallery/scripting/units-builtins.lay"
+    },
+    "api:append": {
+      "topic": "values",
+      "anchor": "append",
+      "reference": "append",
+      "minimal": "examples/manual/append.lay",
+      "composition": "examples/gallery/scripting/units-builtins.lay"
+    },
+    "api:str": {
+      "topic": "values",
+      "anchor": "str",
+      "reference": "str",
+      "minimal": "examples/manual/str.lay",
+      "composition": "examples/gallery/scripting/units-builtins.lay"
+    },
+    "api:abs": {
+      "topic": "values",
+      "anchor": "abs",
+      "reference": "abs",
+      "minimal": "examples/manual/abs.lay",
+      "composition": "examples/gallery/scripting/units-builtins.lay"
+    },
+    "api:min": {
+      "topic": "values",
+      "anchor": "min",
+      "reference": "min",
+      "minimal": "examples/manual/min.lay",
+      "composition": "examples/gallery/scripting/units-builtins.lay"
+    },
+    "api:max": {
+      "topic": "values",
+      "anchor": "max",
+      "reference": "max",
+      "minimal": "examples/manual/max.lay",
+      "composition": "examples/gallery/scripting/units-builtins.lay"
+    },
+    "api:move_to": {
+      "topic": "shapes",
+      "anchor": "move_to",
+      "reference": "move_to",
+      "minimal": "examples/manual/move_to.lay",
+      "composition": "examples/gallery/shapes/path-commands.lay"
+    },
+    "api:line_to": {
+      "topic": "shapes",
+      "anchor": "line_to",
+      "reference": "line_to",
+      "minimal": "examples/manual/line_to.lay",
+      "composition": "examples/gallery/shapes/path-commands.lay"
+    },
+    "api:quad_to": {
+      "topic": "shapes",
+      "anchor": "quad_to",
+      "reference": "quad_to",
+      "minimal": "examples/manual/quad_to.lay",
+      "composition": "examples/gallery/shapes/path-commands.lay"
+    },
+    "api:cubic_to": {
+      "topic": "shapes",
+      "anchor": "cubic_to",
+      "reference": "cubic_to",
+      "minimal": "examples/manual/cubic_to.lay",
+      "composition": "examples/gallery/shapes/path-commands.lay"
+    },
+    "api:arc_to": {
+      "topic": "shapes",
+      "anchor": "arc_to",
+      "reference": "arc_to",
+      "minimal": "examples/manual/arc_to.lay",
+      "composition": "examples/gallery/shapes/path-commands.lay"
+    },
+    "api:close": {
+      "topic": "shapes",
+      "anchor": "close",
+      "reference": "close",
+      "minimal": "examples/manual/close.lay",
+      "composition": "examples/gallery/shapes/evenodd-hole.lay"
+    },
+    "api:plot.legend": {
+      "topic": "legends",
+      "anchor": "plot-legend",
+      "reference": "plot-legend",
+      "minimal": "examples/manual/plot-legend.lay",
+      "composition": "examples/plot/first-plot.lay"
+    },
+    "api:plot.colorbar": {
+      "topic": "legends",
+      "anchor": "plot-colorbar",
+      "reference": "plot-colorbar",
+      "minimal": "examples/manual/plot-colorbar.lay",
+      "composition": "examples/plot/colorbars.lay"
+    },
+    "api:ray": {
+      "topic": "anchors",
+      "anchor": "ray",
+      "reference": "ray",
+      "minimal": "examples/manual/ray.lay",
+      "composition": "examples/manual/geometry-composition.lay"
+    },
+    "api:path.at": {
+      "topic": "anchors",
+      "anchor": "path-at",
+      "reference": "path-at",
+      "minimal": "examples/manual/path-at.lay",
+      "composition": "examples/manual/geometry-composition.lay"
+    },
+    "api:path.nearest": {
+      "topic": "anchors",
+      "anchor": "path-nearest",
+      "reference": "path-nearest",
+      "minimal": "examples/manual/path-nearest.lay",
+      "composition": "examples/manual/geometry-composition.lay"
+    },
+    "api:path.extrema": {
+      "topic": "anchors",
+      "anchor": "path-extrema",
+      "reference": "path-extrema",
+      "minimal": "examples/manual/path-extrema.lay",
+      "composition": "examples/manual/geometry-composition.lay"
+    },
+    "api:path.inflections": {
+      "topic": "anchors",
+      "anchor": "path-inflections",
+      "reference": "path-inflections",
+      "minimal": "examples/manual/path-inflections.lay",
+      "composition": "examples/manual/geometry-composition.lay"
+    },
+    "api:path.corners": {
+      "topic": "anchors",
+      "anchor": "path-corners",
+      "reference": "path-corners",
+      "minimal": "examples/manual/path-corners.lay",
+      "composition": "examples/manual/geometry-composition.lay"
+    },
+    "api:path.intersections": {
+      "topic": "anchors",
+      "anchor": "path-intersections",
+      "reference": "path-intersections",
+      "minimal": "examples/manual/path-intersections.lay",
+      "composition": "examples/manual/geometry-composition.lay"
+    },
+    "api:path.between": {
+      "topic": "anchors",
+      "anchor": "path-between",
+      "reference": "path-between",
+      "minimal": "examples/manual/path-between.lay",
+      "composition": "examples/manual/geometry-composition.lay"
+    },
+    "api:path.in_space": {
+      "topic": "anchors",
+      "anchor": "path-in_space",
+      "reference": "path-in_space",
+      "minimal": "examples/manual/path-in_space.lay",
+      "composition": "examples/manual/geometry-composition.lay"
+    },
+    "api:anchor.with_side": {
+      "topic": "anchors",
+      "anchor": "anchor-with_side",
+      "reference": "anchor-with_side",
+      "minimal": "examples/manual/anchor-with_side.lay",
+      "composition": "examples/manual/geometry-composition.lay"
+    },
+    "api:head": {
+      "topic": "shapes",
+      "anchor": "head",
+      "reference": "head",
+      "minimal": "examples/manual/head.lay",
+      "composition": "examples/basic.lay"
+    },
+    "api:rgb": {
+      "topic": "fills",
+      "anchor": "rgb",
+      "reference": "rgb",
+      "minimal": "examples/manual/rgb.lay",
+      "composition": "examples/gallery/shapes/colors-alpha.lay"
+    },
+    "api:hsv": {
+      "topic": "fills",
+      "anchor": "hsv",
+      "reference": "hsv",
+      "minimal": "examples/manual/hsv.lay",
+      "composition": "examples/gallery/shapes/colors-alpha.lay"
+    },
+    "api:oklch": {
+      "topic": "fills",
+      "anchor": "oklch",
+      "reference": "oklch",
+      "minimal": "examples/manual/oklch.lay",
+      "composition": "examples/gallery/shapes/colors-alpha.lay"
+    },
+    "geometry:instance.top_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_left\\b"
+    },
+    "geometry:instance.top_center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_center\\b"
+    },
+    "geometry:instance.top_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_right\\b"
+    },
+    "geometry:instance.middle_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.middle_left\\b"
+    },
+    "geometry:instance.center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.center\\b"
+    },
+    "geometry:instance.middle_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.middle_right\\b"
+    },
+    "geometry:instance.bottom_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_left\\b"
+    },
+    "geometry:instance.bottom_center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_center\\b"
+    },
+    "geometry:instance.bottom_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_right\\b"
+    },
+    "geometry:instance.bounds": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bounds\\b"
+    },
+    "geometry:instance.path": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.path\\b"
+    },
+    "geometry:instance.ink": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.ink\\b"
+    },
+    "geometry:instance.plot_area": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.plot_area\\b"
+    },
+    "geometry:instance.axes": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "instance",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.axes\\b"
+    },
+    "geometry:component.top_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_left\\b"
+    },
+    "geometry:component.top_center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_center\\b"
+    },
+    "geometry:component.top_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_right\\b"
+    },
+    "geometry:component.middle_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.middle_left\\b"
+    },
+    "geometry:component.center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.center\\b"
+    },
+    "geometry:component.middle_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.middle_right\\b"
+    },
+    "geometry:component.bottom_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_left\\b"
+    },
+    "geometry:component.bottom_center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_center\\b"
+    },
+    "geometry:component.bottom_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_right\\b"
+    },
+    "geometry:component.bounds": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bounds\\b"
+    },
+    "geometry:bounds.top_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "bounds",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_left\\b"
+    },
+    "geometry:bounds.top_center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "bounds",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_center\\b"
+    },
+    "geometry:bounds.top_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "bounds",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_right\\b"
+    },
+    "geometry:bounds.middle_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "bounds",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.middle_left\\b"
+    },
+    "geometry:bounds.center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "bounds",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.center\\b"
+    },
+    "geometry:bounds.middle_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "bounds",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.middle_right\\b"
+    },
+    "geometry:bounds.bottom_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "bounds",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_left\\b"
+    },
+    "geometry:bounds.bottom_center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "bounds",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_center\\b"
+    },
+    "geometry:bounds.bottom_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "bounds",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_right\\b"
+    },
+    "geometry:bounds.width": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "bounds",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.width\\b"
+    },
+    "geometry:bounds.height": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "bounds",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.height\\b"
+    },
+    "geometry:ink.bounds": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "ink",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bounds\\b"
+    },
+    "geometry:ink.boundary": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "ink",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.boundary\\b"
+    },
+    "geometry:geometry_path.top_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_left\\b"
+    },
+    "geometry:geometry_path.top_center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_center\\b"
+    },
+    "geometry:geometry_path.top_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_right\\b"
+    },
+    "geometry:geometry_path.middle_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.middle_left\\b"
+    },
+    "geometry:geometry_path.center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.center\\b"
+    },
+    "geometry:geometry_path.middle_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.middle_right\\b"
+    },
+    "geometry:geometry_path.bottom_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_left\\b"
+    },
+    "geometry:geometry_path.bottom_center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_center\\b"
+    },
+    "geometry:geometry_path.bottom_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_right\\b"
+    },
+    "geometry:geometry_path.bounds": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bounds\\b"
+    },
+    "geometry:geometry_path.path": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.path\\b"
+    },
+    "geometry:geometry_path.subpaths": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.subpaths\\b"
+    },
+    "geometry:geometry_path.segments": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.segments\\b"
+    },
+    "geometry:geometry_path.nodes": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.nodes\\b"
+    },
+    "geometry:geometry_path.controls": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.controls\\b"
+    },
+    "geometry:geometry_path.start": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.start\\b"
+    },
+    "geometry:geometry_path.end": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.end\\b"
+    },
+    "geometry:geometry_path.at": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/path-at.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.at\\s*\\("
+    },
+    "geometry:geometry_path.nearest": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/path-nearest.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.nearest\\s*\\("
+    },
+    "geometry:geometry_path.extrema": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/path-extrema.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.extrema\\s*\\("
+    },
+    "geometry:geometry_path.inflections": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/path-inflections.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.inflections\\s*\\("
+    },
+    "geometry:geometry_path.corners": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/path-corners.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.corners\\s*\\("
+    },
+    "geometry:geometry_path.intersections": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/path-intersections.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.intersections\\s*\\("
+    },
+    "geometry:geometry_path.between": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/path-between.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.between\\s*\\("
+    },
+    "geometry:geometry_path.in_space": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/path-in_space.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.in_space\\s*\\("
+    },
+    "geometry:axes[i]": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axes",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "axes\\[\"x\"\\]"
+    },
+    "geometry:axis_component.top_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_left\\b"
+    },
+    "geometry:axis_component.top_center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_center\\b"
+    },
+    "geometry:axis_component.top_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.top_right\\b"
+    },
+    "geometry:axis_component.middle_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.middle_left\\b"
+    },
+    "geometry:axis_component.center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.center\\b"
+    },
+    "geometry:axis_component.middle_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.middle_right\\b"
+    },
+    "geometry:axis_component.bottom_left": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_left\\b"
+    },
+    "geometry:axis_component.bottom_center": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_center\\b"
+    },
+    "geometry:axis_component.bottom_right": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bottom_right\\b"
+    },
+    "geometry:axis_component.bounds": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.bounds\\b"
+    },
+    "geometry:axis_component.spine": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.spine\\b"
+    },
+    "geometry:axis_component.label": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.label\\b"
+    },
+    "geometry:axis_component.exponent": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.exponent\\b"
+    },
+    "geometry:axis_component.ticks": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.ticks\\b"
+    },
+    "geometry:axis_component.min": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.min\\b"
+    },
+    "geometry:axis_component.max": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "axis_component",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.max\\b"
+    },
+    "geometry:paths[i]": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "paths",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.subpaths\\["
+    },
+    "geometry:segments[i]": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "segments",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.segments\\["
+    },
+    "geometry:components[i]": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "components",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.ticks\\["
+    },
+    "geometry:path_nodes[i]": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "path_nodes",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.nodes\\["
+    },
+    "geometry:control_nodes[i]": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "control_nodes",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "controls\\["
+    },
+    "geometry:anchor_collection[i]": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "anchor_collection",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\)\\[0\\]"
+    },
+    "geometry:anchor.x": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "anchor",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.x\\b"
+    },
+    "geometry:anchor.y": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "anchor",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.y\\b"
+    },
+    "geometry:path_anchor.x": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "path_anchor",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.x\\b"
+    },
+    "geometry:path_anchor.y": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "path_anchor",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.y\\b"
+    },
+    "geometry:path_anchor.tangent": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "path_anchor",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.tangent\\b"
+    },
+    "geometry:path_anchor.normal": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "path_anchor",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.normal\\b"
+    },
+    "geometry:path_anchor.tangent_angle": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "path_anchor",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.tangent_angle\\b"
+    },
+    "geometry:path_anchor.with_side": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "path_anchor",
+      "minimal": "examples/manual/anchor-with_side.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "\\.with_side\\s*\\("
+    },
+    "geometry:vector[i]": {
+      "topic": "anchors",
+      "anchor": "geometry-model",
+      "reference": "vector",
+      "minimal": "examples/manual/geometry-members.lay",
+      "composition": "examples/manual/geometry-composition.lay",
+      "exercise": "direction\\[0\\]"
+    },
+    "lcss:font_family": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:font_size": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:font_weight": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:font_style": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:color": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:line_height": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:background": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:padding": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:border_radius": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:border_color": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:border_width": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:border_style": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:border_dash": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:border_dash_offset": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:border_cap": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:border_join": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:border_miter_limit": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:border_opacity": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:line_color": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:line_width": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:line_style": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:line_dash": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:line_dash_offset": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:line_cap": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:line_join": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:line_miter_limit": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:line_opacity": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:fill": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:opacity": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:tick_font_size": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:label_font_size": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:tick_color": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:grid_color": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:grid_line_width": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:grid_line_dash": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:start_head": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:end_head": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:start_cap": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "lcss:end_cap": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "language.units": {
+      "topic": "units",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/manual/line.lay",
+      "composition": "examples/gallery/scripting/units-builtins.lay"
+    },
+    "language.variables": {
+      "topic": "values",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/manual/str.lay",
+      "composition": "examples/gallery/scripting/units-builtins.lay"
+    },
+    "language.predefined": {
+      "topic": "values",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/manual/variables-strings.lay",
+      "composition": "examples/gallery/shapes/line-endpoints.lay"
+    },
+    "language.scope": {
+      "topic": "modules",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/functions.lay",
+      "composition": "examples/scripted.lay"
+    },
+    "language.control-flow": {
+      "topic": "control-flow",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/functions.lay",
+      "composition": "examples/gallery/scripting/control-flow.lay"
+    },
+    "language.modules": {
+      "topic": "modules",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/gallery/containers/module-import.lay",
+      "composition": "examples/scripted.lay"
+    },
+    "language.strings": {
+      "topic": "formulas",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/manual/formula.lay",
+      "composition": "examples/typography.lay"
+    },
+    "geometry.views": {
+      "topic": "anchors",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/manual/path-nearest.lay",
+      "composition": "examples/gallery/positioning/geometry-anchors.lay"
+    },
+    "geometry.identity": {
+      "topic": "groups",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/manual/group.lay",
+      "composition": "examples/gallery/containers/group-reuse.lay"
+    },
+    "geometry.transforms": {
+      "topic": "transforms",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/manual/add.lay",
+      "composition": "examples/gallery/positioning/rotation.lay"
+    },
+    "geometry.endpoints": {
+      "topic": "shapes",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/manual/line.lay",
+      "composition": "examples/gallery/shapes/line-endpoints.lay"
+    },
+    "cli.validate": {
+      "topic": "cli",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/hello.lay",
+      "composition": "examples/showcase.lay"
+    },
+    "cli.inspect": {
+      "topic": "diagnostics",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/manual/instance-data.lay",
+      "composition": "examples/plot/multi-axes-breaks.lay"
+    },
+    "cli.render": {
+      "topic": "export",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/manual/line.lay",
+      "composition": "examples/showcase.lay"
+    },
+    "cli.lsp": {
+      "topic": "editors",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "extensions/vscode/src/client.cjs",
+      "composition": "scripts/vscode-smoke.cjs"
+    },
+    "cli.options": {
+      "topic": "cli-reference",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "crates/laymesh-cli/src/main.rs",
+      "composition": "scripts/smoke-vscode.py"
+    },
+    "python.render_source": {
+      "topic": "python-reference",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "python/laymesh/bridge.py",
+      "composition": "examples/plot/complete-data.py"
+    },
+    "python.render_file": {
+      "topic": "python-reference",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "python/laymesh/bridge.py",
+      "composition": "examples/jupyter-integration.ipynb"
+    },
+    "python.data": {
+      "topic": "python-data",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/plot/complete-data.py",
+      "composition": "examples/plot/polar-data.py"
+    },
+    "python.notebook": {
+      "topic": "notebook",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "python/laymesh/ipython.py",
+      "composition": "examples/jupyter-integration.ipynb"
+    },
+    "python.save_source": {
+      "topic": "save-source",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/plot/complete-data.py",
+      "composition": "examples/jupyter-integration.ipynb"
+    },
+    "python.matplotlib": {
+      "topic": "matplotlib",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "python/laymesh/bridge.py",
+      "composition": "examples/jupyter-integration.ipynb"
+    },
+    "node.migration": {
+      "topic": "node-reference",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/integration/render.mjs",
+      "composition": "site/live/worker.mjs"
+    },
+    "rust.api": {
+      "topic": "node",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "crates/laymesh-core/src/lib.rs",
+      "composition": "crates/laymesh-render/src/lib.rs"
+    },
+    "wasm.api": {
+      "topic": "node-reference",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "crates/laymesh-wasm/src/lib.rs",
+      "composition": "site/live/language-worker.mjs"
+    },
+    "editor.language": {
+      "topic": "editors",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "scripts/vscode-smoke.cjs",
+      "composition": "scripts/test-browser-language.py"
+    },
+    "editor.colors": {
+      "topic": "editors",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "site/live/color-panel.mjs",
+      "composition": "scripts/test-browser-picker.py"
+    },
+    "lcss.precedence": {
+      "topic": "lcss",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
+    },
+    "library.docs": {
+      "topic": "library-docs",
+      "anchor": "workflow",
+      "reference": "",
+      "minimal": "examples/components/card.lay",
+      "composition": "examples/scripted.lay"
+    },
+    "api:dict": {
+      "topic": "values",
+      "anchor": "dict",
+      "reference": "dict",
+      "minimal": "examples/manual/dictionaries.lay",
+      "composition": "examples/gallery/scripting/dictionaries.lay"
+    },
+    "api:enumerate": {
+      "topic": "control-flow",
+      "anchor": "enumerate",
+      "reference": "enumerate",
+      "minimal": "examples/gallery/scripting/dictionaries.lay",
+      "composition": "examples/gallery/scripting/dictionaries.lay"
+    },
+    "api:zip": {
+      "topic": "control-flow",
+      "anchor": "zip",
+      "reference": "zip",
+      "minimal": "examples/gallery/scripting/dictionaries.lay",
+      "composition": "examples/gallery/scripting/dictionaries.lay"
+    },
+    "api:cmap": {
+      "topic": "cmaps",
+      "anchor": "cmap",
+      "reference": "cmap",
+      "minimal": "examples/manual/cmaps.lay",
+      "composition": "examples/plot/cmap-presets.lay"
+    },
+    "api:cmap_names": {
+      "topic": "cmaps",
+      "anchor": "cmap_names",
+      "reference": "cmap_names",
+      "minimal": "examples/manual/cmaps.lay",
+      "composition": "examples/plot/cmap-presets.lay"
+    },
+    "api:palette": {
+      "topic": "cmaps",
+      "anchor": "palette",
+      "reference": "palette",
+      "minimal": "examples/manual/cmaps.lay",
+      "composition": "examples/plot/cmap-presets.lay"
+    },
+    "api:dict.keys": {
+      "topic": "values",
+      "anchor": "dict-keys",
+      "reference": "dict-keys",
+      "minimal": "examples/manual/dictionaries.lay",
+      "composition": "examples/gallery/scripting/dictionaries.lay"
+    },
+    "api:dict.values": {
+      "topic": "values",
+      "anchor": "dict-values",
+      "reference": "dict-values",
+      "minimal": "examples/manual/dictionaries.lay",
+      "composition": "examples/gallery/scripting/dictionaries.lay"
+    },
+    "api:dict.items": {
+      "topic": "values",
+      "anchor": "dict-items",
+      "reference": "dict-items",
+      "minimal": "examples/manual/dictionaries.lay",
+      "composition": "examples/gallery/scripting/dictionaries.lay"
+    },
+    "api:dict.get": {
+      "topic": "values",
+      "anchor": "dict-get",
+      "reference": "dict-get",
+      "minimal": "examples/manual/dictionaries.lay",
+      "composition": "examples/gallery/scripting/dictionaries.lay"
+    },
+    "api:dict.update": {
+      "topic": "values",
+      "anchor": "dict-update",
+      "reference": "dict-update",
+      "minimal": "examples/manual/dictionaries.lay",
+      "composition": "examples/gallery/scripting/dictionaries.lay"
+    },
+    "api:cmap.sample": {
+      "topic": "cmaps",
+      "anchor": "cmap-sample",
+      "reference": "cmap-sample",
+      "minimal": "examples/manual/cmaps.lay",
+      "composition": "examples/plot/cmap-presets.lay"
+    },
+    "api:cmap.colors": {
+      "topic": "cmaps",
+      "anchor": "cmap-colors",
+      "reference": "cmap-colors",
+      "minimal": "examples/manual/cmaps.lay",
+      "composition": "examples/plot/cmap-presets.lay"
+    },
+    "api:cmap.reversed": {
+      "topic": "cmaps",
+      "anchor": "cmap-reversed",
+      "reference": "cmap-reversed",
+      "minimal": "examples/manual/cmaps.lay",
+      "composition": "examples/plot/cmap-presets.lay"
+    }
+  }
+}

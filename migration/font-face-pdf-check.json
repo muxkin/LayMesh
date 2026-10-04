@@ -1,0 +1,103 @@
+{
+  "dpi": 600,
+  "native_cli": "debug",
+  "comparison": "Selected TTC/OTC glyphs checked in independently rasterized PDF and PNG; <=2-pixel ink-bound difference, shape comparison after raster alignment; first/second faces visibly differ in both backends.",
+  "cases": [
+    {
+      "collection": "ttc",
+      "face": "LayMeshTestFirst",
+      "png_ink_pixels": 18056,
+      "pdf_ink_pixels": 18034,
+      "png_bounds": [
+        97,
+        148,
+        318,
+        390
+      ],
+      "pdf_bounds": [
+        97,
+        147,
+        318,
+        389
+      ],
+      "aligned_ink_intersection_over_union": 0.9772092258806772,
+      "alignment_pixels": [
+        0,
+        1
+      ],
+      "pdf_vs_png_mean_channel_difference": 0.23782638888888888
+    },
+    {
+      "collection": "ttc",
+      "face": "LayMeshTestSecond",
+      "png_ink_pixels": 22663,
+      "pdf_ink_pixels": 22638,
+      "png_bounds": [
+        127,
+        148,
+        299,
+        390
+      ],
+      "pdf_bounds": [
+        127,
+        147,
+        298,
+        389
+      ],
+      "aligned_ink_intersection_over_union": 0.9919532143171225,
+      "alignment_pixels": [
+        0,
+        1
+      ],
+      "pdf_vs_png_mean_channel_difference": 0.33184166666666665
+    },
+    {
+      "collection": "otc",
+      "face": "LayMeshOTFFirst",
+      "png_ink_pixels": 11086,
+      "pdf_ink_pixels": 11073,
+      "png_bounds": [
+        104,
+        180,
+        290,
+        390
+      ],
+      "pdf_bounds": [
+        104,
+        179,
+        290,
+        389
+      ],
+      "aligned_ink_intersection_over_union": 0.9672407670454546,
+      "alignment_pixels": [
+        0,
+        1
+      ],
+      "pdf_vs_png_mean_channel_difference": 0.20071111111111112
+    },
+    {
+      "collection": "otc",
+      "face": "LayMeshOTFSecond",
+      "png_ink_pixels": 12660,
+      "pdf_ink_pixels": 12518,
+      "png_bounds": [
+        121,
+        183,
+        266,
+        390
+      ],
+      "pdf_bounds": [
+        121,
+        182,
+        265,
+        389
+      ],
+      "aligned_ink_intersection_over_union": 0.9719611528822055,
+      "alignment_pixels": [
+        1,
+        1
+      ],
+      "pdf_vs_png_mean_channel_difference": 0.30285416666666665
+    }
+  ]
+}

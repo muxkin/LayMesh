@@ -1,0 +1,222 @@
+// Run only inside VS Code's supplied extension test host; no npm/Node toolchain.
+const vscode = require('vscode');
+const assert = require('assert/strict');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+exports.run = async function () {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'laymesh-vscode-test-'));
+  const evidence = {host: 'VS Code extension host', tests: [], node_toolchain: false};
+  const file = path.join(directory, 'main.lay');
+  const source = 'page=canvas(size=(80,60))\np=plot(size=(60,40))\np.line(x=[0,1],y=[2,3], line_';
+  fs.writeFileSync(file, source);
+  const uri = vscode.Uri.file(file);
+  const document = await vscode.workspace.openTextDocument(uri);
+  await vscode.window.showTextDocument(document);
+  const extension = vscode.extensions.getExtension('laymesh.laymesh-language');
+  assert(extension, 'LayMesh extension discovered');
+  // Capture the real webview's bridge while retaining normal VS Code panels.
+  // The shared DOM controls are exercised separately in the browser suite.
+  let colorHost;
+  const extensionApi=require("module")._load("vscode",{filename:path.join(extension.extensionPath,"dist/client.cjs")});
+  const createPanel=extensionApi.window.createWebviewPanel;
+  extensionApi.window.createWebviewPanel=(...args)=>{
+    const panel=createPanel(...args);
+    if(args[0]==='laymeshColor'){
+      const host={panel,messages:[],receive:null};colorHost=host;
+      const listen=panel.webview.onDidReceiveMessage;
+      panel.webview.onDidReceiveMessage=(handler,...rest)=>{host.receive=handler;return listen.call(panel.webview,handler,...rest);};
+      const post=panel.webview.postMessage;
+      panel.webview.postMessage=message=>{host.messages.push(message);return post.call(panel.webview,message);};
+    }
+    return panel;
+  };
+  await extension.activate();
+  const end = document.positionAt(source.length);
+  let complete;
+  for (let retry=0; retry<30; retry++) {
+    complete = await vscode.commands.executeCommand('vscode.executeCompletionItemProvider', uri, end);
+    if (complete?.items.some(item => item.label === 'line_width')) break;
+    await pause(100);
+  }
+  assert(complete.items.some(item => item.label === 'line_width'));
+  evidence.tests.push('Native completion via registered VS Code provider');
+  const hover = await vscode.commands.executeCommand('vscode.executeHoverProvider', uri, new vscode.Position(0, 7));
+  assert(hover.length && hover[0].contents.some(item => /canvas|画布|page/i.test(item.value || item)));
+  evidence.tests.push('Hover documentation');
+  const signature = await vscode.commands.executeCommand('vscode.executeSignatureHelpProvider', uri, end);
+  assert(signature.signatures[0].label.startsWith('plot.line('));
+  assert(signature.signatures[0].parameters.length > 0);
+  evidence.tests.push('Named parameters and signature help');
+  const fixed = 'page=canvas(size=(80,60))\nr=rect(size=(10,5),stroke_width=1pt)';
+  const edit = new vscode.WorkspaceEdit();
+  edit.replace(uri, new vscode.Range(document.positionAt(0), document.positionAt(source.length)), fixed);
+  await vscode.workspace.applyEdit(edit);
+  let issue;
+  for (let retry=0; retry<100; retry++) {
+    issue = vscode.languages.getDiagnostics(uri).find(d => d.code === 'E_API_MIGRATION');
+    if (issue) break;
+    await pause(100);
+  }
+  assert(issue, 'Incremental edits publish diagnostics: '+JSON.stringify(vscode.languages.getDiagnostics(uri)));
+  const actions = await vscode.commands.executeCommand('vscode.executeCodeActionProvider', uri, issue.range);
+  assert(actions.some(action => action.edit), 'Migration quick fix registered');
+  evidence.tests.push('Incremental edits, located diagnostic and quick fix');
+  const quickFix=actions.find(action=>action.edit);
+  assert(await vscode.workspace.applyEdit(quickFix.edit));
+  assert(document.getText().includes('border_width=1pt'));
+  assert(!document.getText().includes('stroke_width'));
+  for(let retry=0;retry<100;retry++) {
+    if(!vscode.languages.getDiagnostics(uri).some(d=>d.code==='E_API_MIGRATION'))break;
+    await pause(50);
+  }
+  assert(!vscode.languages.getDiagnostics(uri).some(d=>d.code==='E_API_MIGRATION'));
+  evidence.tests.push('Apply native quick fix; document changes and obsolete diagnostic disappears');
+  const library = path.join(directory, 'card.lay');
+  fs.writeFileSync(library, '## Reusable card.\nexport function card(title) {return group()}');
+  const imported = 'import {card as tile} from "./card.lay"\ntile("hello")';
+  const importEdit = new vscode.WorkspaceEdit();
+  importEdit.replace(uri, new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length)), imported);
+  await vscode.workspace.applyEdit(importEdit);
+  const definitions = await vscode.commands.executeCommand('vscode.executeDefinitionProvider', uri, new vscode.Position(1, 2));
+  assert(definitions.some(d => (d.uri || d.targetUri).fsPath === library));
+  evidence.tests.push('Imported symbol definition');
+  // Preserve editor history and prove that the actual providers see unsaved
+  // imported buffers, then their on-disk source immediately after closing.
+  const replace = async (doc, text) => {
+    const change = new vscode.WorkspaceEdit();
+    change.replace(doc.uri, new vscode.Range(doc.positionAt(0), doc.positionAt(doc.getText().length)), text);
+    assert(await vscode.workspace.applyEdit(change));
+  };
+  const call = 'import {card} from "./card.lay"\ncard(';
+  await replace(document, call);
+  const querySignature = () => vscode.commands.executeCommand('vscode.executeSignatureHelpProvider', uri, new vscode.Position(1, 5));
+  const libraryDoc = await vscode.workspace.openTextDocument(vscode.Uri.file(library));
+  await vscode.window.showTextDocument(libraryDoc);
+  await replace(libraryDoc, '## Unsaved component.\nexport function card(buffer=2) {return buffer}');
+  assert((await querySignature()).signatures[0].label.includes('buffer=2'));
+  fs.writeFileSync(library, '## Updated disk component.\nexport function card(disk=3) {return disk}');
+  await pause(150);
+  assert((await querySignature()).signatures[0].label.includes('buffer=2'));
+  await vscode.commands.executeCommand('workbench.action.revertAndCloseActiveEditor');
+  assert((await querySignature()).signatures[0].label.includes('disk=3'));
+  evidence.tests.push('Unsaved imported buffer wins; closing restores updated disk signature');
+  await vscode.window.showTextDocument(document);
+  await replace(document, 'page=canvas(size=(30,20))\ntext(font_size=');
+  const unitCompletions = await vscode.commands.executeCommand('vscode.executeCompletionItemProvider', uri, document.positionAt(document.getText().length));
+  assert(unitCompletions.items.some(item => item.label === 'pt'));
+  await replace(document, 'style { .title {color:red;} }\ntext(class="ti');
+  const classCompletions = await vscode.commands.executeCommand('vscode.executeCompletionItemProvider', uri, document.positionAt(document.getText().length));
+  assert(classCompletions.items.some(item => item.label === 'title'));
+  evidence.tests.push('Physical unit and style class completions');
+  const beforeUndo = document.getText();
+  await vscode.commands.executeCommand('undo');
+  assert(document.getText().includes('font_size='));
+  await vscode.commands.executeCommand('redo');
+  assert.equal(document.getText(), beforeUndo);
+  evidence.tests.push('Actual editor undo and redo preserve document content');
+  await replace(document, 'style { text {font-size:12;} }');
+  let styleIssue;
+  for(let retry=0;retry<100;retry++) {
+    styleIssue=vscode.languages.getDiagnostics(uri).find(d=>d.code==='E_LCSS');
+    if(styleIssue)break;
+    await pause(50);
+  }
+  assert(styleIssue, 'Embedded LCSS errors reach the real editor');
+  assert.equal(styleIssue.range.start.character,14);
+  evidence.tests.push('Embedded LCSS semantic diagnostic with source range');
+  const geometry = 'page=canvas(size=(100,80))\np=plot(size=(80,60))\np.line(x=[0,1],y=[0,1])\na=page.add(p)\n';
+  await replace(document, geometry+'a.axes["x"].spine.path.subpaths[0].');
+  const geometryCompletions=await vscode.commands.executeCommand('vscode.executeCompletionItemProvider',uri,document.positionAt(document.getText().length));
+  assert(geometryCompletions.items.some(item=>item.label==='segments' && item.detail==='segments'));
+  assert(geometryCompletions.items.some(item=>item.label==='at'));
+  evidence.tests.push('Typed geometry completions after chart component and subpath indices');
+  await replace(document,geometry+'a.axes["x"].spine.path.nearest(to=a.plot_area.bounds.top_left)[0].with_side(');
+  const geometrySignature=await vscode.commands.executeCommand('vscode.executeSignatureHelpProvider',uri,document.positionAt(document.getText().length));
+  assert(geometrySignature.signatures[0].label.startsWith('anchor.with_side('));
+  evidence.tests.push('Geometry method signature after candidate indexing');
+  await replace(document,geometry+'v=a.axes["x"].spine.path.at(distance=10deg)');
+  let geometryIssue;
+  for(let retry=0;retry<100;retry++) {
+    geometryIssue=vscode.languages.getDiagnostics(uri).find(d=>d.code==='E_UNIT');
+    if(geometryIssue)break;
+    await pause(50);
+  }
+  assert(geometryIssue,'Chained geometry methods publish unit diagnostics');
+  evidence.tests.push('Chained geometry unit diagnostic in the actual editor');
+  await replace(document,'# 😀\npage=canvas(size=(80,60),background="#fff8")\na=hsv(120deg,1,1,alpha=0.5)');
+  const colorInfo=await vscode.commands.executeCommand('vscode.executeDocumentColorProvider',uri);
+  assert.equal(colorInfo.length,2);assert(colorInfo.some(c=>c.range.start.line===1&&Math.abs(c.color.alpha-136/255)<1e-8));
+  evidence.tests.push('Native document color provider: hex alpha, HSV and UTF-16 ranges');
+  const hexInfo=colorInfo.find(c=>c.range.start.line===1);
+  const colorPresentations=await vscode.commands.executeCommand('vscode.executeColorPresentationProvider',new vscode.Color(1,0,0,0.5),{uri,range:hexInfo.range});
+  assert.equal(colorPresentations.length,4);const hsvPresentation=colorPresentations.find(c=>c.label.startsWith('hsv('));assert(hsvPresentation.textEdit.newText.startsWith('"hsv('));
+  const colorEdit=new vscode.WorkspaceEdit();colorEdit.replace(uri,hsvPresentation.textEdit.range,hsvPresentation.textEdit.newText);assert(await vscode.workspace.applyEdit(colorEdit));assert(document.getText().includes('"hsv('));await vscode.commands.executeCommand('undo');assert(document.getText().includes('"#fff8"'));
+  evidence.tests.push('RGB/HSV/OKLCH presentations apply a quoted edit and support undo');
+  const panelSource='page=canvas(size=(80,60),background="#0072b290")';
+  const openColor=async()=>{await vscode.window.showTextDocument(document);const editor=vscode.window.activeTextEditor;editor.selection=new vscode.Selection(document.positionAt(document.getText().indexOf('background=')+'background='.length+2),document.positionAt(document.getText().indexOf('background=')+'background='.length+2));colorHost=null;await vscode.commands.executeCommand('laymesh.editColor');assert(colorHost?.receive,'Color command opens the native webview: '+JSON.stringify(vscode.window.tabGroups.all.flatMap(g=>g.tabs.map(t=>t.label))));return colorHost;};
+  await replace(document,panelSource);let host=await openColor();
+  await host.receive({method:'ready'});assert(host.messages.some(m=>m.type==='initial'&&m.color.space==='hex'));
+  await host.receive({id:1001,method:'convert',params:{space:'hsv',channels:[120,1,1],alpha:0.4}});
+  const converted=host.messages.find(m=>m.id===1001).result;assert.equal(converted.rgba[1],1);
+  assert.equal(document.getText(),panelSource,'Preview conversion does not write');
+  await host.receive({id:1002,method:'apply',params:{rgba:converted.rgba,space:'hsv',originalSpace:'hsv',channels:[120,1,1]}});
+  assert(document.getText().includes('"hsv(120 1 1 / 0.4)"'));host.panel.dispose();
+  await vscode.window.showTextDocument(document);await vscode.commands.executeCommand('undo');assert.equal(document.getText(),panelSource);
+  evidence.tests.push('Native color webview: shared Rust conversion, apply, source format and one-step undo');
+  const shortSource='page=canvas(size=(80,60),background="#07B9")';
+  await replace(document,shortSource);host=await openColor();const untouchedVersion=document.version;
+  await host.receive({id:1010,method:'apply',params:{unchanged:true,space:'hex',rgba:[0,119/255,187/255,0.6]}});
+  assert.equal(document.version,untouchedVersion);assert.equal(document.getText(),shortSource);host.panel.dispose();
+  evidence.tests.push('Native color webview: unchanged Apply preserves original source and document version');
+  const originalChannels=[0.7123456789012345,0.1234567890123456,203.12345678901234];
+  const originalAlpha=0.6123456789012345;
+  const preciseSource='page=canvas(size=(80,60),background=oklch('+originalChannels.join(',')+',alpha='+originalAlpha+'))';
+  await replace(document,preciseSource);host=await openColor();
+  await host.receive({id:1011,method:'convert',params:{space:'oklch',channels:originalChannels,alpha:originalAlpha}});
+  const preciseColor=host.messages.find(m=>m.id===1011).result;
+  await host.receive({id:1012,method:'apply',params:{rgba:preciseColor.rgba,space:'oklch',originalSpace:'oklch',channels:originalChannels}});
+  for(const channel of originalChannels)assert(document.getText().includes(String(channel)));
+  assert(document.getText().includes(String(originalAlpha)));host.panel.dispose();
+  await vscode.window.showTextDocument(document);await vscode.commands.executeCommand('undo');assert.equal(document.getText(),preciseSource);
+  evidence.tests.push('Native color webview: constructor channels retain full precision and undo restores formatting');
+  await replace(document,panelSource);
+
+  host=await openColor();await replace(document,panelSource+'\n# concurrent edit');
+  await host.receive({id:1003,method:'apply',params:{rgba:[1,0,0,1],space:'hex'}});
+  assert(host.messages.find(m=>m.id===1003).error.includes('Document changed'));
+  await host.receive({method:'close'});assert.equal(document.getText(),panelSource+'\n# concurrent edit');
+  await replace(document,panelSource);host=await openColor();await host.receive({method:'close'});assert.equal(document.getText(),panelSource);
+  evidence.tests.push('Native color webview: stale version refusal and cancel preserve concurrent edits');
+  const optionSource='# 😀 中文\nline(length=40mm,start_cap=rouxx)';
+  await replace(document,optionSource);
+  let candidates=await vscode.commands.executeCommand('vscode.executeCompletionItemProvider',uri,document.positionAt(optionSource.indexOf('rouxx')+2));
+  let roundOption=candidates.items.find(i=>i.label==='round');assert(roundOption);assert.equal(roundOption.insertText,'round');
+  assert.equal(document.offsetAt(roundOption.range.end),optionSource.indexOf('rouxx')+5);
+  evidence.tests.push('Predefined option completion inserts bare variable and replaces suffix with UTF-16 ranges');
+  const quotedSource='# 😀 中文\nline(length=40mm,start_cap="rouxx")';
+  await replace(document,quotedSource);
+  candidates=await vscode.commands.executeCommand('vscode.executeCompletionItemProvider',uri,document.positionAt(quotedSource.indexOf('rouxx')+2));
+  roundOption=candidates.items.find(i=>i.label==='round');assert(roundOption);assert.equal(roundOption.insertText,'round');
+  assert.equal(document.offsetAt(roundOption.range.start),quotedSource.indexOf('rouxx'));assert.equal(document.offsetAt(roundOption.range.end),quotedSource.indexOf('rouxx')+5);
+  evidence.tests.push('Quoted option completion preserves quotes and replaces the complete value');
+  const hoverSource='line(length=40mm,start_cap=round)';await replace(document,hoverSource);
+  const variableHover=await vscode.commands.executeCommand('vscode.executeHoverProvider',uri,document.positionAt(hoverSource.indexOf('round')+2));
+  const variableText=variableHover.flatMap(h=>h.contents.map(c=>c.value||String(c))).join('\n');assert(variableText.includes('round: string = "round"'));assert(!variableText.includes('line_cap'));
+  const parameterHover=await vscode.commands.executeCommand('vscode.executeHoverProvider',uri,document.positionAt(hoverSource.indexOf('start_cap')+3));
+  const parameterText=parameterHover.flatMap(h=>h.contents.map(c=>c.value||String(c))).join('\n');assert(parameterText.includes('line_cap')&&parameterText.includes('square')&&parameterText.includes('butt'));
+  evidence.tests.push('Variable hover stays ordinary while parameter hover explains allowed choices and defaults');
+  const anchorSource='page=canvas(size=(80,60))\npage.add(line(length=20mm),anchor=';await replace(document,anchorSource);
+  candidates=await vscode.commands.executeCommand('vscode.executeCompletionItemProvider',uri,document.positionAt(anchorSource.length));
+  assert(candidates.items.some(i=>i.label==='top_left'&&i.insertText==='top_left'));assert(candidates.items.some(i=>i.label==='self'&&i.insertText==='self.'));
+  evidence.tests.push('Nested anchor context suggests bounds variables and self selectors');
+  await replace(document,'page=canvas(size=(80,60))\na=page.add(arrow(dx=30mm,dy=0mm))');
+  let arrowIssue;for(let retry=0;retry<100;retry++){arrowIssue=vscode.languages.getDiagnostics(uri).find(d=>d.code==='E_API_MIGRATION');if(arrowIssue)break;await pause(50);}assert(arrowIssue);
+  const arrowActions=await vscode.commands.executeCommand('vscode.executeCodeActionProvider',uri,arrowIssue.range);const arrowAction=arrowActions.find(a=>a.edit);assert(arrowAction);await vscode.workspace.applyEdit(arrowAction.edit);assert(document.getText().includes('line(end_head=head(),'));
+  evidence.tests.push('Retired arrow diagnostic and complete-call quick fix in the editor');
+  if (process.env.LAYMESH_VSCODE_EVIDENCE) fs.writeFileSync(process.env.LAYMESH_VSCODE_EVIDENCE, JSON.stringify(evidence, null, 2)+'\n');
+  console.log(JSON.stringify(evidence));
+  await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+  fs.rmSync(directory, {recursive: true, force: true});
+};

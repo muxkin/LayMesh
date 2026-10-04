@@ -1,0 +1,192 @@
+# Authored on a 297 x 420 mm grid, then uniformly scaled to a 16 cm page.
+import { photo, icon } from "./components/materials.lay"
+import { card } from "./components/card.lay"
+
+scale = 160 / 297
+page = canvas(name="LayMesh layout atlas", size=(16 cm, 420 mm * scale), background="#ffffff")
+artboard = group()
+artboard.add(rect(size=(297 mm, 420 mm), fill="#ffffff"), target=artboard.top_left)
+font_family = "DejaVu Sans"
+ink = "#213047"
+muted = "#66768b"
+teal = "#087f8c"
+gold = "#e4a63a"
+
+function title(value) {
+  return text(content=value, font_family=font_family, font_size=12 pt, color=ink)
+}
+function note(value) {
+  return text(content=value, font_family=font_family, font_size=8 pt, color=muted)
+}
+
+artboard.add(text(spans=[span("Lay", color=teal), span("Mesh", color=ink),
+                     span("  /  LAYOUT ATLAS", color=muted)],
+              font_family=font_family, font_size=25 pt),
+         target=artboard.top_left, offset=(12 mm, 8 mm))
+artboard.add(note("One canvas  /  reusable media  /  nested groups  /  vector geometry  /  fusion"),
+         target=artboard.top_left, offset=(12 mm, 27 mm))
+artboard.add(rect(size=(273 mm, 1.2 mm),
+              fill=linear_gradient(start=(0, 0), end=(1, 0),
+                                   stops=[(0, teal), (0.52, "#6cc9be"), (1, gold)])),
+         target=artboard.top_left, offset=(12 mm, 40 mm))
+
+# Reusing one panel definition also exercises script arithmetic and drawing order.
+panel = rect(size=(132 mm, 105 mm), border_radius=3 mm,
+             fill="#f8fafc", border_color="#dce5ec", border_width=0.28 mm)
+for row in range(3) {
+  artboard.add(panel, target=artboard.top_left, offset=(12 mm, 50 mm + row * 114 mm))
+  artboard.add(panel, target=artboard.top_left, offset=(153 mm, 50 mm + row * 114 mm))
+}
+
+artboard.add(title("01  MEDIA + REUSE"), target=artboard.top_left, offset=(17 mm, 55 mm))
+artboard.add(title("02  SHAPES + PAINT"), target=artboard.top_left, offset=(158 mm, 55 mm))
+artboard.add(title("03  PATHS + TYPE"), target=artboard.top_left, offset=(17 mm, 169 mm))
+artboard.add(title("04  OUTLINE SYSTEM"), target=artboard.top_left, offset=(158 mm, 169 mm))
+artboard.add(title("05  NESTED + SCRIPT"), target=artboard.top_left, offset=(17 mm, 283 mm))
+artboard.add(title("06  FUSION + INSTANCES"), target=artboard.top_left, offset=(158 mm, 283 mm))
+
+# 01: Imported PNG and SVG assets; two independent instances share one image.
+first_photo = artboard.add(photo,size=(66 mm, auto), target=artboard.top_left, offset=(17 mm, 76 mm))
+artboard.add(rect(size=(66 mm, 33 mm), fill="none", border_color="#ffffff", border_width=0.6 mm),
+         target=first_photo.top_left)
+second_photo = artboard.add(photo,size=(43 mm, auto), crop=box(offset=(0.5, 0), size=(0.5, 1)),
+                        target=artboard.top_left, offset=(92 mm, 76 mm))
+artboard.add(rect(size=(43 mm, 43 mm), fill="none", border_color="#ffffff", border_width=0.6 mm),
+         target=second_photo.top_left)
+artboard.add(note("one source / two crops"), target=artboard.top_left, offset=(17 mm, 119 mm))
+artboard.add(icon,size=(9 mm, auto), target=artboard.top_left, offset=(17 mm, 134 mm))
+artboard.add(note("SVG component asset"), target=artboard.top_left, offset=(30 mm, 137 mm))
+
+# 02: Multiple built-in shapes, two gradient types, and editable paths.
+sunset = linear_gradient(start=(0, 0), end=(1, 1),
+                         stops=[(0, "#ffe2a8"), (0.54, "#ff9e72"), (1, "#b85587")])
+lagoon = radial_gradient(center=(0.32, 0.26), radius=0.9,
+                         stops=[(0, "#d2fff5"), (1, teal)])
+artboard.add(rect(size=(49 mm, 34 mm), border_radius=7 mm, fill=sunset,
+              border_color="#b85587", border_width=0.4 mm),
+         target=artboard.top_left, offset=(158 mm, 78 mm))
+artboard.add(ellipse(size=(34 mm, 34 mm), fill=lagoon),
+         target=artboard.top_left, offset=(214 mm, 78 mm))
+artboard.add(ring(outer_radius=16 mm, inner_radius=8 mm, fill="#f5c75b",
+              border_color="#ab7526", border_width=0.45 mm),
+         target=artboard.top_left, offset=(252 mm, 79 mm))
+artboard.add(star(points=7, outer_radius=9 mm, inner_radius=4.5 mm,
+              fill="#e8b14b", border_color="#8e6425", border_width=0.35 mm),
+         target=artboard.top_left, offset=(159 mm, 121 mm))
+artboard.add(sector(radius=10 mm, start=-45 deg, end=225 deg, fill="#8cd6ca"),
+         target=artboard.top_left, offset=(188 mm, 120 mm))
+artboard.add(polygon(points=[(0 mm, 12 mm), (7 mm, 0 mm), (20 mm, 3 mm),
+                         (24 mm, 14 mm), (10 mm, 18 mm)],
+                 fill="#a68acb", border_color="#655484", border_width=0.35 mm),
+         target=artboard.top_left, offset=(218 mm, 120 mm))
+artboard.add(arc(radius=10 mm, start=-25 deg, end=240 deg,
+             line_color=teal, line_width=1.4 mm, line_cap=round),
+         target=artboard.top_left, offset=(254 mm, 119 mm))
+artboard.add(note("rect     ellipse      ring      star   sector   polygon   arc"),
+         target=artboard.top_left, offset=(158 mm, 145 mm))
+
+# 03: Cubic, quadratic and elliptical curves; even-odd fill and colored spans.
+artboard.add(path(commands=[move_to(0 mm, 19 mm),
+                        cubic_to(12 mm, -7 mm, 30 mm, -7 mm, 44 mm, 19 mm),
+                        quad_to(22 mm, 32 mm, 0 mm, 19 mm), close()],
+              fill=sunset, border_color="#9d5075", border_width=0.55 mm),
+         target=artboard.top_left, offset=(18 mm, 192 mm))
+artboard.add(path(commands=[move_to(0 mm, 0 mm), line_to(35 mm, 0 mm),
+                        line_to(35 mm, 35 mm), line_to(0 mm, 35 mm), close(),
+                        move_to(9 mm, 9 mm), line_to(26 mm, 9 mm),
+                        line_to(26 mm, 26 mm), line_to(9 mm, 26 mm), close()],
+              fill_rule=evenodd, fill=lagoon, border_color=teal, border_width=0.45 mm),
+         target=artboard.top_left, offset=(86 mm, 191 mm))
+artboard.add(text(spans=[span("COLOR ", color=teal), span("IN ONE ", color="#b85587"),
+                     span("LINE", color=gold)], font_family=font_family, font_size=15 pt),
+         target=artboard.top_left, offset=(18 mm, 235 mm))
+artboard.add(path(commands=[move_to(0 mm, 7 mm), quad_to(18 mm, -5 mm, 36 mm, 7 mm),
+                        arc_to(8 mm, 8 mm, 0 deg, false, true, 58 mm, 7 mm)],
+              fill="none", border_color="#66768b", border_width=0.7 mm,
+              border_dash=[3 mm, 1.4 mm], border_cap=round),
+         target=artboard.top_left, offset=(18 mm, 243 mm))
+artboard.add(note("Bezier curves / compound hole / selectable text"),
+         target=artboard.top_left, offset=(18 mm, 260 mm))
+
+# 04: Fill and outline are independent. Named presets can be reused.
+
+
+
+artboard.add(rect(size=(29 mm, 21 mm), border_radius=3 mm, fill="#ddf4ef", border_color=teal, border_width=1.7 mm, border_style= solid),
+         target=artboard.top_left, offset=(161 mm, 193 mm))
+artboard.add(rect(size=(29 mm, 21 mm), border_radius=3 mm, fill="#ddf4ef", border_color=teal, border_width=1.7 mm, border_style=double),
+         target=artboard.top_left, offset=(200 mm, 193 mm))
+artboard.add(rect(size=(29 mm, 21 mm), border_radius=3 mm, fill="#ddf4ef", border_color=teal, border_width=1.7 mm, border_style=triple),
+         target=artboard.top_left, offset=(239 mm, 193 mm))
+artboard.add(note("SINGLE"), target=artboard.top_left, offset=(162 mm, 218 mm))
+artboard.add(note("DOUBLE"), target=artboard.top_left, offset=(201 mm, 218 mm))
+artboard.add(note("TRIPLE"), target=artboard.top_left, offset=(240 mm, 218 mm))
+artboard.add(rect(size=(29 mm, 17 mm), fill="#fff2dc"),
+         target=artboard.top_left, offset=(161 mm, 235 mm))
+artboard.add(rect(size=(29 mm, 17 mm), fill="#fff2dc"),
+         target=artboard.top_left, offset=(200 mm, 235 mm))
+artboard.add(rect(size=(29 mm, 17 mm), fill="#fff2dc"),
+         target=artboard.top_left, offset=(239 mm, 235 mm))
+artboard.add(note("DOT"), target=artboard.top_left, offset=(162 mm, 256 mm))
+artboard.add(note("DASH DOT"), target=artboard.top_left, offset=(201 mm, 256 mm))
+artboard.add(note("CUSTOM"), target=artboard.top_left, offset=(240 mm, 256 mm))
+
+# 05: A component imported through another module, repeated by a loop.
+for index in range(3) {
+  tile_width = 30 mm
+  if index == 1 { tile_width = 34 mm }
+  tile = card("Card " + str(index + 1), width=tile_width)
+  artboard.add(tile, target=artboard.top_left, offset=(18 mm + index * 39 mm, 305 mm))
+}
+inner = group()
+foundation = inner.add(rect(size=(26 mm, 18 mm), border_radius=3 mm,
+                            fill="#d8efe9", border_color=teal, border_width=1.7 mm, border_style= solid), target=inner.top_left)
+inner.add(ellipse(size=(10 mm, 10 mm), fill=gold),
+          anchor=center, target=foundation.center)
+outer = group()
+placed_inner = outer.add(inner, target=outer.top_left)
+follower = outer.add(rect(size=(32 mm, 15 mm), border_radius=3 mm,
+                          fill="#f8e9cb", border_color="#c48a34", border_width=0.5 mm),
+                     target=placed_inner.bottom_right, offset=(5 mm, -8 mm))
+outer.add(note("B at A corner"), anchor=center, target=follower.center)
+artboard.add(outer, target=artboard.top_left, offset=(18 mm, 343 mm), rotation=-3 deg)
+artboard.add(note("A + B / anchored"), target=artboard.top_left, offset=(91 mm, 355 mm))
+artboard.add(note("local anchors / rotation / module assets"),
+         target=artboard.top_left, offset=(18 mm, 375 mm))
+
+# 06: Unfused overlay above, then two copies of one fused group.
+artboard.add(note("OVERLAY"), target=artboard.top_left, offset=(160 mm, 304 mm))
+artboard.add(note("FUSED"), target=artboard.top_left, offset=(224 mm, 304 mm))
+block = rect(size=(15 mm, 13 mm), fill=teal)
+artboard.add(block, target=artboard.top_left, offset=(161 mm, 317 mm))
+artboard.add(line(dx=24 mm, dy=0 mm, line_color=teal, line_width=2 mm),
+         target=artboard.top_left, offset=(174 mm, 323.5 mm))
+left = artboard.add(block, target=artboard.top_left, offset=(222 mm, 317 mm))
+stem = artboard.add(line(dx=24 mm, dy=0 mm, line_width=2 mm),
+                target=artboard.top_left, offset=(243 mm, 323.5 mm))
+joint = artboard.fuse(left, stem, points=(left.middle_right, stem.start),
+                  bridge_width=2 mm, junction=round, radius=1.2 mm,
+                  fill=teal, border_color="none")
+artboard.add(note("two instances become one path"),
+         target=joint.bottom_left, offset=(0 mm, 6 mm))
+
+connector = group()
+base = connector.add(rect(size=(12 mm, 10 mm), fill="#7b65a9"),
+                     target=connector.top_left)
+arm = connector.add(line(dx=22 mm, dy=5 mm, line_width=1.4 mm),
+                    target=connector.top_left, offset=(18 mm, 5 mm))
+connector.fuse(base, arm, points=(base.middle_right, arm.start),
+               bridge_width=1.4 mm, junction=bevel, fill="#7b65a9")
+artboard.add(connector, target=artboard.top_left, offset=(164 mm, 351 mm))
+artboard.add(connector, target=artboard.top_left, offset=(225 mm, 351 mm),
+         rotation=12 deg, opacity=0.8)
+artboard.add(note("same fused component / two transforms"),
+         target=artboard.top_left, offset=(164 mm, 376 mm))
+
+artboard.add(note("LAYMESH  /  SVG + PDF + PNG  /  16 cm WIDE"),
+         target=artboard.top_left, offset=(12 mm, 401 mm))
+artboard.add(note("01 - 06  /  all geometry stays editable in .lay"),
+         target=artboard.top_left, offset=(187 mm, 401 mm))
+
+# Scale the complete editable design into the physical export page.
+page.add(artboard,size=(16 cm, 420 mm * scale), target=page.top_left)
