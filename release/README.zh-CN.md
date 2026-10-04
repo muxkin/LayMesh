@@ -1,6 +1,6 @@
 # 构建与发布到 PyPI
 
-当前发布候选版本为 **`0.3.0a2`**，对应 Rust **`0.3.0-alpha.2`**。首次 PyPI 上传尚未完成。每个平台 wheel 包含 Python API、CLI 入口、一个 Rust 原生程序、依赖许可及构建清单。公式字体编译进 RaTeX，正文使用系统或用户字体。
+当前 PyPI 版本为 **[`0.3.0a2`](https://pypi.org/project/laymesh/0.3.0a2/)**，对应 Rust **`0.3.0-alpha.2`**，属于 alpha 预发布版本。[正式发布工作流](https://github.com/muxkin/LayMesh/actions/runs/37185200630)包含五个平台 wheel、Python 3.10/3.13/3.14 检查、包审计、校验和与 Trusted Publishing 上传。每个平台 wheel 包含 Python API、CLI 入口、一个 Rust 原生程序、依赖许可及构建清单。公式字体编译进 RaTeX，正文使用系统或用户字体。
 
 [runtime.json](runtime.json) 定义五个目标：Linux x64 / arm64、macOS 14+ Intel / Apple Silicon、Windows x64。使用者需要 Python 3.10+；构建脚本需要 Python 3.11+ 和 Rust 1.93.1。本次只发布平台 wheel；`python/` 目录不包含完整的 Rust 引擎源码构建链，不要上传仅从该目录生成的 sdist。
 

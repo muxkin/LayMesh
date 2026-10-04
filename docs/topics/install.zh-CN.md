@@ -2,16 +2,16 @@
 
 ## 安装平台 wheel
 
-要求 Python 3.10+。当前发布候选版本为 alpha 预发布 `0.3.0a2`。首次 PyPI 上传尚未完成；上传后使用：
+要求 Python 3.10+。alpha 预发布 `0.3.0a2` 已发布到 [PyPI](https://pypi.org/project/laymesh/0.3.0a2/)：
 
 ```sh
 python -m pip install --pre laymesh
 python -m laymesh --version
 ```
 
-发布前可按[发布流程](../../release/README.zh-CN.md)构建 wheel，再使用 `python -m pip install /path/to/laymesh-<version>-<tags>.whl` 安装生成的具体文件。请选择匹配操作系统、架构及 Linux glibc 版本的包。[画廊](../sections/examples.zh-CN.md)中的仓库示例需要另行获取，pip 不安装示例目录。
+也可按[发布流程](../../release/README.zh-CN.md)构建 wheel，再使用 `python -m pip install /path/to/laymesh-<version>-<tags>.whl` 安装生成的具体文件。请选择匹配操作系统、架构及 Linux glibc 版本的包。[画廊](../sections/examples.zh-CN.md)中的仓库示例需要另行获取，pip 不安装示例目录。
 
-| 用途 | 发布后的安装命令 |
+| 用途 | 安装命令 |
 | --- | --- |
 | CLI、原生图表、Python API 与 IPython Magic | `python -m pip install --pre laymesh` |
 | NumPy / pandas 数据绑定 | `python -m pip install --pre "laymesh[data]"` |
@@ -28,7 +28,7 @@ python -m laymesh --version
 | macOS Intel / Apple Silicon | macOS 14+，Python 架构匹配 |
 | Linux x64 / arm64 | glibc 不低于 wheel 的 `manylinux_2_XX` 标签 |
 
-本地实测覆盖 Linux x64，wheel 标记为 `manylinux_2_35_x86_64`，要求 glibc 2.35+。CI 配置构建五个平台，并检查 Python 3.10、3.13、3.14；工作流已配置不代表远端检查已通过。pip 能安装的平台以实际上传并验证的 wheel 为准。当前没有 Alpine/musl、32 位系统和 Windows ARM64 构建目标。
+本次发布包含以上五个平台的 wheel，均已通过 Python 3.10、3.13、3.14 的安装与使用检查。Linux wheel 为 `manylinux_2_35_x86_64` / `manylinux_2_35_aarch64`，要求 glibc 2.35+。完整验证见[发布工作流](https://github.com/muxkin/LayMesh/actions/runs/37185200630)。当前没有 Alpine/musl、32 位系统和 Windows ARM64 wheel。
 
 wheel 包含一个 Rust 原生程序、公式字体及依赖许可。绘图时不下载引擎或字体，无需额外安装 Rust、Node.js 或 TeX。正文使用系统或用户字体；缺字会警告并显示方框。共享可复现图件时请提供明确的字体文件。文档网页预览单独提供自己的字体。
 

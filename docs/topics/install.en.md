@@ -2,16 +2,16 @@
 
 ## Install a platform wheel
 
-Requires Python 3.10+. The release candidate is `0.3.0a2`, an alpha prerelease. The first PyPI upload is pending; after publication, install with:
+Requires Python 3.10+. Alpha prerelease `0.3.0a2` is available on [PyPI](https://pypi.org/project/laymesh/0.3.0a2/):
 
 ```sh
 python -m pip install --pre laymesh
 python -m laymesh --version
 ```
 
-Before publication, follow the [release procedure](../../release/README.en.md) to build a wheel, then install that exact `.whl` file with `python -m pip install /path/to/laymesh-<version>-<tags>.whl`. Use the wheel matching your OS, architecture and Linux glibc version. Repository examples are available separately in the [gallery](../sections/examples.en.md); they are not installed by pip.
+Alternatively, follow the [release procedure](../../release/README.en.md) to build a wheel, then install that exact `.whl` file with `python -m pip install /path/to/laymesh-<version>-<tags>.whl`. Use the wheel matching your OS, architecture and Linux glibc version. Repository examples are available separately in the [gallery](../sections/examples.en.md); they are not installed by pip.
 
-| Usage | Install after publication |
+| Usage | Install |
 | --- | --- |
 | CLI, native plots, Python API and IPython magics | `python -m pip install --pre laymesh` |
 | NumPy / pandas bindings | `python -m pip install --pre "laymesh[data]"` |
@@ -28,7 +28,7 @@ Install in the same Python environment used by your Notebook kernel. In a Notebo
 | macOS Intel / Apple Silicon | macOS 14+, matching Python architecture |
 | Linux x64 / arm64 | glibc at least as new as the wheel's `manylinux_2_XX` tag |
 
-Local verification covers Linux x64; the local wheel is `manylinux_2_35_x86_64` and requires glibc 2.35+. The CI matrix builds five platforms and checks Python 3.10, 3.13 and 3.14; configured jobs do not establish that remote checks have passed. Only uploaded, validated wheels are available to pip. Alpine/musl, 32-bit systems and Windows ARM64 have no configured wheels.
+This release includes wheels for all five platforms, each verified on Python 3.10, 3.13 and 3.14. The Linux wheels are `manylinux_2_35_x86_64` / `manylinux_2_35_aarch64` and require glibc 2.35+. See the [release workflow](https://github.com/muxkin/LayMesh/actions/runs/37185200630) for validation. Alpine/musl, 32-bit systems and Windows ARM64 have no wheels.
 
 Wheels contain one Rust native executable, formula fonts and dependency licenses. Rendering downloads no engine or fonts and requires no Rust, Node.js or TeX installation. Body fonts come from the system or user files; missing glyphs warn and display vector boxes. Supply explicit font files when sharing reproducible figures. Documentation browser previews provide their own fonts separately.
 

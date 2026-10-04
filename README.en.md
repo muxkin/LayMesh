@@ -10,14 +10,14 @@
 
 ## Install
 
-Requires **Python 3.10+**. The release candidate is **`0.3.0a2`** (Rust engine `0.3.0-alpha.2`), an alpha prerelease. The first PyPI upload is pending; after publication, run:
+Requires **Python 3.10+**. Version **`0.3.0a2`** (Rust engine `0.3.0-alpha.2`) is available on [PyPI](https://pypi.org/project/laymesh/0.3.0a2/) as an alpha prerelease:
 
 ```sh
 python -m pip install --pre laymesh
 python -m laymesh --version
 ```
 
-Platform wheels bundle the native Rust engine and formula fonts for the CLI, Python API and Jupyter magics. Rendering requires no Rust compilation and downloads no engine or fonts. Until publication, install a [locally built wheel](release/README.en.md).
+Platform wheels bundle the native Rust engine and formula fonts for the CLI, Python API and Jupyter magics. Rendering requires no Rust compilation and downloads no engine or fonts. You can also install a [locally built wheel](release/README.en.md).
 
 | Optional feature | Install command |
 | --- | --- |
@@ -25,7 +25,7 @@ Platform wheels bundle the native Rust engine and formula fonts for the CLI, Pyt
 | Matplotlib Figure import | `python -m pip install --pre "laymesh[plot]"` |
 | Both | `python -m pip install --pre "laymesh[data,plot]"` |
 
-Build targets are Windows x64, macOS 14+ on Intel / Apple Silicon, and Linux x64 / arm64. The minimum Linux glibc version follows each wheel's `manylinux_2_XX` tag; the local build requires glibc 2.35+. See the [release procedure](release/README.en.md) for verification status. Body fonts come from the system or user-provided files; missing glyphs warn and display vector boxes. Supply the fonts with your figure for reproducible rendering across machines.
+Supported wheel platforms are Windows x64, macOS 14+ on Intel / Apple Silicon, and Linux x64 / arm64. This release's Linux wheels require glibc 2.35+. All five platforms passed installation and usage checks on Python 3.10, 3.13 and 3.14; see the [release procedure](release/README.en.md). Body fonts come from the system or user-provided files; missing glyphs warn and display vector boxes. Supply the fonts with your figure for reproducible rendering across machines.
 
 ## First figure
 

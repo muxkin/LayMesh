@@ -1,6 +1,6 @@
 # Build and publish to PyPI
 
-The release candidate is **`0.3.0a2`**, corresponding to Rust **`0.3.0-alpha.2`**. The first PyPI upload is pending. Each platform wheel includes the Python API, CLI entry point, one native Rust executable, dependency licenses and a build manifest. Formula fonts are compiled into RaTeX; body fonts come from the system or user files.
+The current PyPI release is **[`0.3.0a2`](https://pypi.org/project/laymesh/0.3.0a2/)**, corresponding to Rust **`0.3.0-alpha.2`**, an alpha prerelease. The [publishing workflow](https://github.com/muxkin/LayMesh/actions/runs/37185200630) records five platform wheels, Python 3.10/3.13/3.14 checks, wheel audits, checksums and the Trusted Publishing upload. Each platform wheel includes the Python API, CLI entry point, one native Rust executable, dependency licenses and a build manifest. Formula fonts are compiled into RaTeX; body fonts come from the system or user files.
 
 [runtime.json](runtime.json) defines five targets: Linux x64 / arm64, macOS 14+ Intel / Apple Silicon, and Windows x64. Python users need 3.10+; build scripts need Python 3.11+ and Rust 1.93.1. This release publishes platform wheels only. The `python/` directory alone is not a complete source distribution with the Rust engine; do not upload an sdist made from that directory.
 

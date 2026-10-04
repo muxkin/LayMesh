@@ -10,14 +10,14 @@
 
 ## 安装
 
-需要 **Python 3.10+**。当前发布候选版本是 **`0.3.0a2`**（Rust 引擎 `0.3.0-alpha.2`），属于预发布版本。PyPI 首次上传尚未完成；上传后使用：
+需要 **Python 3.10+**。当前版本 **`0.3.0a2`**（Rust 引擎 `0.3.0-alpha.2`）已发布到 [PyPI](https://pypi.org/project/laymesh/0.3.0a2/)，属于 alpha 预发布版本：
 
 ```sh
 python -m pip install --pre laymesh
 python -m laymesh --version
 ```
 
-平台 wheel 内置 Rust 绘图程序和公式字体，安装后即可使用 CLI、Python API 与 Jupyter Magic。使用时无需编译 Rust，也不会下载引擎或字体。发布前可安装[本地构建的 wheel](release/README.zh-CN.md)。
+平台 wheel 内置 Rust 绘图程序和公式字体，安装后即可使用 CLI、Python API 与 Jupyter Magic。使用时无需编译 Rust，也不会下载引擎或字体。也可安装[本地构建的 wheel](release/README.zh-CN.md)。
 
 | 可选功能 | 安装命令 |
 | --- | --- |
@@ -25,7 +25,7 @@ python -m laymesh --version
 | 导入 Matplotlib Figure | `python -m pip install --pre "laymesh[plot]"` |
 | 两者都需要 | `python -m pip install --pre "laymesh[data,plot]"` |
 
-构建目标为 Windows x64、macOS 14+ 的 Intel / Apple Silicon、Linux x64 / arm64。Linux 最低 glibc 版本以 wheel 的 `manylinux_2_XX` 标签为准；本地构建包要求 glibc 2.35+。各平台的实际验证状态见[发布说明](release/README.zh-CN.md)。正文使用系统或用户提供的字体；缺字会警告并显示方框。跨机器复现时请随图提供使用的字体文件。
+构建目标为 Windows x64、macOS 14+ 的 Intel / Apple Silicon、Linux x64 / arm64。本次发布的 Linux wheel 要求 glibc 2.35+。五个平台已通过 Python 3.10、3.13、3.14 安装与使用检查，详见[发布说明](release/README.zh-CN.md)。正文使用系统或用户提供的字体；缺字会警告并显示方框。跨机器复现时请随图提供使用的字体文件。
 
 ## 第一张图
 
