@@ -249,6 +249,7 @@ fn legacy_missing_glyphs_are_vector_boxes_and_import_paths_and_lists_are_checked
             .join("parts/font.ttf")
             .to_str()
             .unwrap()
+            .replace('\\', "/")
     );
     located(
         "1044527",
@@ -360,6 +361,7 @@ fn legacy_unavailable_fonts_warn_and_ttc_otc_faces_are_embedded_correctly() {
             .join("组件/fonts/local.ttc")
             .to_str()
             .unwrap()
+            .replace('\\', "/")
     );
     assert!(s.warnings.is_empty());
 }
