@@ -6,6 +6,7 @@ coverage/
 *.pdf
 *.png
 *.svg
+!site/logo.svg
 !examples/assets/*.svg
 !examples/assets/*.png
 !examples/*-preview.png

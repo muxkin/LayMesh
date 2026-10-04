@@ -73,6 +73,30 @@ fn unsafe_calls_and_execution_limits_have_diagnostics() {
     }
 }
 #[test]
+fn recursive_calls_report_limits_on_a_small_stack() {
+    std::thread::Builder::new()
+        .stack_size(512 * 1024)
+        .spawn(|| {
+            for function in [
+                "function f(){return f()}",
+                "function f(){return 1+f()}",
+                "function f(){if true{return f()}}",
+                "function f(){return g()}\nfunction g(){return f()}",
+            ] {
+                let source = format!("page=canvas(size=(100,100))\n{function}\nx=f()");
+                let error = compile_source(&source, "/recursion.lay", Host::default()).unwrap_err();
+                assert_eq!(error.code, "E_LIMIT");
+            }
+            let result = scene("page=canvas(size=(100,100))\nfunction count(n){if n==0{return 1}\nreturn count(n-1)+1}\nwidth=count(63)\npage.add(rect(size=(width,1)))");
+            close(jnum(&result.nodes[0], "width", 0.), 64.);
+            let error = compile_source("page=canvas(size=(100,100))\nfunction count(n){if n==0{return 1}\nreturn count(n-1)+1}\nx=count(64)", "/recursion.lay", Host::default()).unwrap_err();
+            assert_eq!(error.code, "E_LIMIT");
+        })
+        .unwrap()
+        .join()
+        .unwrap();
+}
+#[test]
 fn inline_styles_cascade_inherit_and_keep_physical_padding() {
     let s = scene(
         "style { text { border:1pt solid #111111; } .note {border-color:#ff0000;} text.note {border:2pt solid #004488;} }\npage=canvas(size=(30,30))\npage.add(text(\"A\",class=\"note\",padding=2mm,background=\"#fff\"))",

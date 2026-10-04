@@ -19,7 +19,7 @@ def main():
     args.log.with_name('assertion-coverage.json').unlink(missing_ok=True)
     subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'migration/tests', '-v'], cwd=ROOT, check=True)
     args.log.parent.mkdir(parents=True, exist_ok=True)
-    command = ['cargo', 'test', '--locked', '--workspace', '--message-format=json-render-diagnostics']
+    command = ['cargo', 'test', '--color', 'never', '--locked', '--workspace', '--message-format=json-render-diagnostics']
     if args.offline:
         command.append('--offline')
     spec = importlib.util.spec_from_file_location('assertion_gate', ROOT / 'migration/check-assertions.py')

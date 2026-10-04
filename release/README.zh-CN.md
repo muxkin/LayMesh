@@ -11,7 +11,8 @@
 ```sh
 python -m pip install -r release/build-requirements.txt
 python scripts/check-release.py
-cargo test --workspace --locked
+python -m pip install -e "./python[data,plot]" pillow
+python scripts/test-contracts.py
 python scripts/collect-licenses.py
 python scripts/build-python-wheel.py --output release/dist/pypi-0.3.0a2
 python scripts/check-python-wheels.py release/dist/pypi-0.3.0a2 --checksums release/dist/pypi-0.3.0a2/SHA256SUMS
@@ -47,9 +48,9 @@ python -m unittest discover -s python/tests -v
 
 发布任务下载审核过的同一批文件，不重新构建。PR 和普通构建运行不上传。发布后在仓库以外验证索引安装：`python -m pip install --pre "laymesh[data,plot]==0.3.0a2"`，再运行 `python -m pip check` 与 `python -m laymesh --version`。已发布版本不能覆盖；需要替换时同步递增 Python、Rust 与 runtime 版本。
 
-## 本次本地验证（2026-10-04）
+## 验证记录
 
-Linux x64 / Python 3.13.11：356 项 Rust 测试通过（1 项忽略），41 项安装包 Python 测试通过，172 个原生示例入口验证通过。9 个 README／文档文件的实际用法与文档站全部 570 个页面检查通过。wheel 审计、Twine 严格校验及 pip 依赖检查均通过。`manylinux_2_35_x86_64` wheel 压缩后 6.05 MiB，安装展开 14.39 MiB；SHA-256 位于 `release/dist/pypi-0.3.0a2/SHA256SUMS`，本地验证摘要位于 `release/verification/pypi-0.3.0a2/checks.json`。本次未上传 PyPI、未执行远端 CI。查询 GitHub `pypi` environment 返回 404，审核人配置尚未确认。
+`python scripts/test-contracts.py` 会生成 `release/verification/cargo-tests.log`、`python-tests.log` 与 `assertion-coverage.json`，检查当前源码、测试执行与历史断言映射的一致性。检查期间需安装 Poppler 和 MuPDF 命令行工具。发布候选的跨平台结果以 GitHub Actions 当前提交的运行记录为准；最终包与校验和保存在 `reviewed-python-release` artifact 中。
 
 ## 其他发行物
 

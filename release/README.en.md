@@ -11,7 +11,8 @@ Use a virtual environment, install the pinned tooling, and run from the reposito
 ```sh
 python -m pip install -r release/build-requirements.txt
 python scripts/check-release.py
-cargo test --workspace --locked
+python -m pip install -e "./python[data,plot]" pillow
+python scripts/test-contracts.py
 python scripts/collect-licenses.py
 python scripts/build-python-wheel.py --output release/dist/pypi-0.3.0a2
 python scripts/check-python-wheels.py release/dist/pypi-0.3.0a2 --checksums release/dist/pypi-0.3.0a2/SHA256SUMS
@@ -47,9 +48,9 @@ The existing [publish workflow](../.github/workflows/publish-pypi.yml) uses [PyP
 
 The publishing job downloads the exact reviewed artifacts and uploads them without rebuilding. Pull requests and ordinary build runs do not upload. After publication, verify an index installation outside the checkout with `python -m pip install --pre "laymesh[data,plot]==0.3.0a2"`, then `python -m pip check` and `python -m laymesh --version`. A published version cannot be overwritten; increment the Python/Rust/runtime versions together for a replacement release.
 
-## Local verification on 2026-10-04
+## Verification records
 
-Linux x64 / Python 3.13.11: 356 Rust tests passed (1 ignored), 41 installed-wheel Python tests passed, and 172 native example entry points validated. Actual usage in 9 README/documentation files and all 570 generated documentation pages passed. Wheel audit, strict Twine validation and pip dependency checks passed. The `manylinux_2_35_x86_64` wheel is 6.05 MiB compressed, 14.39 MiB installed; its SHA-256 is recorded in `release/dist/pypi-0.3.0a2/SHA256SUMS`. A local verification summary is saved in `release/verification/pypi-0.3.0a2/checks.json`. No PyPI upload or remote CI run was performed. The GitHub `pypi` environment query returned 404; its reviewer configuration remains unverified.
+`python scripts/test-contracts.py` produces `release/verification/cargo-tests.log`, `python-tests.log` and `assertion-coverage.json`, checking current source identities, test execution and historical assertion mappings. Install the Poppler and MuPDF command-line tools before running these checks. Use the GitHub Actions runs for the current commit as cross-platform release evidence; the final wheels and checksums are stored in the `reviewed-python-release` artifact.
 
 ## Other artifacts
 

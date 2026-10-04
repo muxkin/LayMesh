@@ -221,6 +221,39 @@ impl Engine {
         Ok(exports)
     }
     fn run(&mut self, stmts: &[Stmt], scope: &Scope) -> Result<Flow> {
+        self.declare_functions(stmts, scope);
+        for stmt in stmts {
+            self.steps += 1;
+            if self.steps > 1_000_000 {
+                return Err(self.error("E_LIMIT", "执行步骤超过 1,000,000", stmt.loc));
+            }
+            let flow = self.run_statement(stmt, scope)?;
+            if !matches!(flow, Flow::Normal) {
+                return Ok(flow);
+            }
+        }
+        Ok(Flow::Normal)
+    }
+    #[inline(never)]
+    fn run_statement(&mut self, stmt: &Stmt, scope: &Scope) -> Result<Flow> {
+        // Keep recursive returns outside the large statement dispatch frame.
+        match &stmt.kind {
+            StmtKind::Return(e) => Ok(Flow::Return(self.eval(e, scope)?)),
+            StmtKind::Bind(n, e, _) => {
+                self.run_binding(n, e, scope, stmt.loc)?;
+                Ok(Flow::Normal)
+            }
+            StmtKind::If(bs, other) => self.run_if(bs, other, scope),
+            _ => self.run_other_statement(stmt, scope),
+        }
+    }
+    #[inline(never)]
+    fn run_binding(&mut self, name: &str, expression: &Expr, scope: &Scope, loc: Loc) -> Result<()> {
+        let value = self.eval(expression, scope)?;
+        self.bind_value(name, value, scope, loc)
+    }
+    #[inline(never)]
+    fn declare_functions(&mut self, stmts: &[Stmt], scope: &Scope) {
         for stmt in stmts {
             if let StmtKind::Function(n, ps, body, _) = &stmt.kind {
                 self.cyclic_scopes.push(Rc::downgrade(scope));
@@ -235,109 +268,100 @@ impl Engine {
                 );
             }
         }
-        for stmt in stmts {
-            self.steps += 1;
-            if self.steps > 1_000_000 {
-                return Err(self.error("E_LIMIT", "执行步骤超过 1,000,000", stmt.loc));
+    }
+    #[inline(never)]
+    fn run_if(&mut self, branches: &[(Expr, Vec<Stmt>)], other: &[Stmt], scope: &Scope) -> Result<Flow> {
+        let mut branch = other;
+        for (condition, body) in branches {
+            if self.truth(condition, scope)? {
+                branch = body;
+                break;
             }
-            match &stmt.kind {
-                StmtKind::Bind(n, e, _) => {
-                    let v = self.eval(e, scope)?;
-                    self.bind_value(n, v, scope, stmt.loc)?;
+        }
+        self.run(branch, &Environment::child(scope))
+    }
+    #[inline(never)]
+    fn run_other_statement(&mut self, stmt: &Stmt, scope: &Scope) -> Result<Flow> {
+        match &stmt.kind {
+            StmtKind::Bind(..) | StmtKind::Return(..) | StmtKind::If(..) => unreachable!(),
+            StmtKind::SetIndex(target, value) => self.set_index(target, value, scope, stmt.loc)?,
+            StmtKind::Expr(e) => {
+                if !matches!(&e.kind,ExprKind::Call(parts,_) if parts.len()==2 && (matches!(parts[1].as_str(),"add"|"fuse") || Environment::get(scope,&parts[0]).and_then(|v|v.object()).is_some_and(|o|o.borrow().kind=="plot")))
+                {
+                    return Err(self.error(
+                        "E_STATEMENT",
+                        "独立语句只能调用容器的 add/fuse",
+                        stmt.loc,
+                    ));
                 }
-                StmtKind::SetIndex(target, value) => self.set_index(target, value, scope, stmt.loc)?,
-                StmtKind::Expr(e) => {
-                    if !matches!(&e.kind,ExprKind::Call(parts,_) if parts.len()==2 && (matches!(parts[1].as_str(),"add"|"fuse") || Environment::get(scope,&parts[0]).and_then(|v|v.object()).is_some_and(|o|o.borrow().kind=="plot")))
-                    {
-                        return Err(self.error(
-                            "E_STATEMENT",
-                            "独立语句只能调用容器的 add/fuse",
-                            stmt.loc,
-                        ));
-                    }
-                    let value = self.eval(e, scope)?;
-                    if let Some(instance) = value.object().filter(|o| o.borrow().kind == "instance")
-                    {
-                        self.unnamed_instances += 1;
-                        let name = json!(format!("@{}", self.unnamed_instances));
-                        let mut instance = instance.borrow_mut();
-                        let parent = instance.parent;
-                        if let Some(node) = instance.node.as_mut() {
-                            let old = node["id"].clone();
-                            node["id"] = name.clone();
-                            if let Some(owner) = self.objects.get(&parent) {
-                                for node in &mut owner.borrow_mut().nodes {
-                                    if node["id"] == old {
-                                        node["id"] = name.clone();
-                                    }
+                let value = self.eval(e, scope)?;
+                if let Some(instance) = value.object().filter(|o| o.borrow().kind == "instance")
+                {
+                    self.unnamed_instances += 1;
+                    let name = json!(format!("@{}", self.unnamed_instances));
+                    let mut instance = instance.borrow_mut();
+                    let parent = instance.parent;
+                    if let Some(node) = instance.node.as_mut() {
+                        let old = node["id"].clone();
+                        node["id"] = name.clone();
+                        if let Some(owner) = self.objects.get(&parent) {
+                            for node in &mut owner.borrow_mut().nodes {
+                                if node["id"] == old {
+                                    node["id"] = name.clone();
                                 }
                             }
                         }
                     }
                 }
-                StmtKind::Function(..) => {}
-                StmtKind::Return(e) => return Ok(Flow::Return(self.eval(e, scope)?)),
-                StmtKind::Break => return Ok(Flow::Break),
-                StmtKind::Continue => return Ok(Flow::Continue),
-                StmtKind::Import(ns, path) => {
-                    let path = resolve(&self.file, path);
-                    let m = self.module(&path, stmt.loc)?;
-                    for (n, a) in ns {
-                        let v = Environment::get(&m, n).ok_or_else(|| {
-                            self.error("E_IMPORT", format!("模块没有导出 {n}"), stmt.loc)
-                        })?;
-                        scope.borrow_mut().values.insert(a.clone(), v);
-                        scope.borrow_mut().readonly.push(a.clone());
+            }
+            StmtKind::Function(..) => {}
+            StmtKind::Break => return Ok(Flow::Break),
+            StmtKind::Continue => return Ok(Flow::Continue),
+            StmtKind::Import(ns, path) => {
+                let path = resolve(&self.file, path);
+                let m = self.module(&path, stmt.loc)?;
+                for (n, a) in ns {
+                    let v = Environment::get(&m, n).ok_or_else(|| {
+                        self.error("E_IMPORT", format!("模块没有导出 {n}"), stmt.loc)
+                    })?;
+                    scope.borrow_mut().values.insert(a.clone(), v);
+                    scope.borrow_mut().readonly.push(a.clone());
+                }
+            }
+            StmtKind::Style(css) => self.stylesheet_scoped(
+                css,
+                &self.file.clone(),
+                stmt.loc,
+                Some(&self.file.clone()),
+            )?,
+            StmtKind::For(n, seq, body) => {
+                let v = self.eval(seq, scope)?;
+                let vs = self.sequence(v, stmt.loc)?;
+                if vs.len() > 10_000 {
+                    return Err(self.error("E_LIMIT", "循环次数超过 10,000", stmt.loc));
+                }
+                for v in vs {
+                    let s = Environment::child(scope);
+                    let bindings = self.bind_pattern(n, v, stmt.loc)?;
+                    s.borrow_mut().values.extend(bindings);
+                    match self.run(body, &s)? {
+                        Flow::Break => break,
+                        Flow::Return(v) => return Ok(Flow::Return(v)),
+                        _ => {}
                     }
                 }
-                StmtKind::Style(css) => self.stylesheet_scoped(
-                    css,
-                    &self.file.clone(),
-                    stmt.loc,
-                    Some(&self.file.clone()),
-                )?,
-                StmtKind::If(bs, other) => {
-                    let mut branch = other;
-                    for (c, body) in bs {
-                        if self.truth(c, scope)? {
-                            branch = body;
-                            break;
-                        }
-                    }
-                    match self.run(branch, &Environment::child(scope))? {
-                        Flow::Normal => {}
-                        x => return Ok(x),
-                    }
-                }
-                StmtKind::For(n, seq, body) => {
-                    let v = self.eval(seq, scope)?;
-                    let vs = self.sequence(v, stmt.loc)?;
-                    if vs.len() > 10_000 {
+            }
+            StmtKind::While(c, body) => {
+                let mut count = 0;
+                while self.truth(c, scope)? {
+                    count += 1;
+                    if count > 10_000 {
                         return Err(self.error("E_LIMIT", "循环次数超过 10,000", stmt.loc));
                     }
-                    for v in vs {
-                        let s = Environment::child(scope);
-                        let bindings = self.bind_pattern(n, v, stmt.loc)?;
-                        s.borrow_mut().values.extend(bindings);
-                        match self.run(body, &s)? {
-                            Flow::Break => break,
-                            Flow::Return(v) => return Ok(Flow::Return(v)),
-                            _ => {}
-                        }
-                    }
-                }
-                StmtKind::While(c, body) => {
-                    let mut count = 0;
-                    while self.truth(c, scope)? {
-                        count += 1;
-                        if count > 10_000 {
-                            return Err(self.error("E_LIMIT", "循环次数超过 10,000", stmt.loc));
-                        }
-                        match self.run(body, &Environment::child(scope))? {
-                            Flow::Break => break,
-                            Flow::Return(v) => return Ok(Flow::Return(v)),
-                            _ => {}
-                        }
+                    match self.run(body, &Environment::child(scope))? {
+                        Flow::Break => break,
+                        Flow::Return(v) => return Ok(Flow::Return(v)),
+                        _ => {}
                     }
                 }
             }
@@ -380,6 +404,31 @@ impl Engine {
         }
     }
     pub fn eval(&mut self, e: &Expr, s: &Scope) -> Result<V> {
+        // Debug builds also need to honor the 64-call limit on small native stacks.
+        // Drop the larger expression dispatch frame before entering user code.
+        match &e.kind {
+            ExprKind::Call(parts, args) => {
+                let (pos, named) = self.eval_call_arguments(args, s, e.loc)?;
+                self.call(parts, pos, named, s, e.loc)
+            }
+            ExprKind::Binary(op, a, b) => self.eval_binary(op, a, b, s, e.loc),
+            _ => self.eval_other(e, s),
+        }
+    }
+    #[inline(never)]
+    fn eval_binary(&mut self, op: &str, a: &Expr, b: &Expr, s: &Scope, l: Loc) -> Result<V> {
+        let left = self.eval(a, s)?;
+        if op == "and" && matches!(left, V::Bool(false)) {
+            Ok(V::Bool(false))
+        } else if op == "or" && matches!(left, V::Bool(true)) {
+            Ok(V::Bool(true))
+        } else {
+            let right = self.eval(b, s)?;
+            self.binary(op, left, right, l)
+        }
+    }
+    #[inline(never)]
+    fn eval_other(&mut self, e: &Expr, s: &Scope) -> Result<V> {
         let l = e.loc;
         Ok(match &e.kind {
             ExprKind::Number(n, u) => {
@@ -482,21 +531,7 @@ impl Engine {
                 let (pos, named) = self.eval_arguments(args, s, l)?;
                 self.value_method(receiver, name, pos, named, l)?
             }
-            ExprKind::Binary(op, a, b) => {
-                let left = self.eval(a, s)?;
-                if op == "and" && matches!(left, V::Bool(false)) {
-                    V::Bool(false)
-                } else if op == "or" && matches!(left, V::Bool(true)) {
-                    V::Bool(true)
-                } else {
-                    let right = self.eval(b, s)?;
-                    self.binary(op, left, right, l)?
-                }
-            }
-            ExprKind::Call(parts, args) => {
-                let (pos, named) = self.eval_call_arguments(args, s, l)?;
-                self.call(parts, pos, named, s, l)?
-            }
+            ExprKind::Call(..) | ExprKind::Binary(..) => unreachable!(),
         })
     }
     // Drop argument provenance temporaries before entering a user function.
@@ -733,7 +768,7 @@ impl Engine {
         }
         Err(self.error("E_NAME", format!("未知属性 {p}"), l))
     }
-    fn call(&mut self, parts: &[String], pos: Vec<V>, mut a: Args, s: &Scope, l: Loc) -> Result<V> {
+    fn call(&mut self, parts: &[String], pos: Vec<V>, a: Args, s: &Scope, l: Loc) -> Result<V> {
         if parts.len() == 1 {
             if let Some(V::Function {
                 params,
@@ -742,33 +777,10 @@ impl Engine {
                 file,
             }) = Environment::get(s, &parts[0])
             {
-                a.remove("__arg_locations");
-                a.remove("__call_origin");
                 if self.calls >= 64 {
                     return Err(self.error("E_LIMIT", "函数调用深度超过 64", l));
                 }
-                if pos.len() > params.len() {
-                    return Err(self.error("E_ARG", "位置参数过多", l));
-                }
-                let local = Environment::child(&scope);
-                for (i, (n, d)) in params.iter().enumerate() {
-                    if i < pos.len() && a.contains_key(n) {
-                        return Err(self.error("E_ARG", format!("重复参数 {n}"), l));
-                    }
-                    let v = if let Some(v) = pos.get(i) {
-                        v.clone()
-                    } else if let Some(v) = a.remove(n) {
-                        v
-                    } else if let Some(d) = d {
-                        self.eval(d, &scope)?
-                    } else {
-                        return Err(self.error("E_ARG", format!("缺少参数 {n}"), l));
-                    };
-                    local.borrow_mut().values.insert(n.clone(), v);
-                }
-                if !a.is_empty() {
-                    return Err(self.error("E_ARG", "函数收到未知参数", l));
-                }
+                let local = self.bind_call_arguments(&params, pos, a, &scope, l)?;
                 let old = std::mem::replace(&mut self.file, file);
                 self.calls += 1;
                 let result = self.run(&body, &local);
@@ -781,6 +793,34 @@ impl Engine {
             }
         }
         self.call_builtin(parts, pos, a, s, l)
+    }
+    #[inline(never)]
+    fn bind_call_arguments(&mut self, params: &[(String, Option<Expr>)], pos: Vec<V>, mut a: Args, scope: &Scope, l: Loc) -> Result<Scope> {
+        a.remove("__arg_locations");
+        a.remove("__call_origin");
+        if pos.len() > params.len() {
+            return Err(self.error("E_ARG", "位置参数过多", l));
+        }
+        let local = Environment::child(scope);
+        for (i, (n, d)) in params.iter().enumerate() {
+            if i < pos.len() && a.contains_key(n) {
+                return Err(self.error("E_ARG", format!("重复参数 {n}"), l));
+            }
+            let v = if let Some(v) = pos.get(i) {
+                v.clone()
+            } else if let Some(v) = a.remove(n) {
+                v
+            } else if let Some(d) = d {
+                self.eval(d, scope)?
+            } else {
+                return Err(self.error("E_ARG", format!("缺少参数 {n}"), l));
+            };
+            local.borrow_mut().values.insert(n.clone(), v);
+        }
+        if !a.is_empty() {
+            return Err(self.error("E_ARG", "函数收到未知参数", l));
+        }
+        Ok(local)
     }
     #[inline(never)]
     fn call_builtin(
