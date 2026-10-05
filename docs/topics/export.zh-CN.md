@@ -45,7 +45,7 @@ render_file("figure.lay", output="figure.webp", dpi=300, webp_lossless=True,
 
 ## VS Code
 
-在 `.lay` 编辑器执行 **LayMesh：导出图形**，或点击实时预览的 **导出**。依次选择格式、DPI、适用于该格式的参数和目标文件。参数按工作区及格式记忆；默认值可在 `laymesh.export.*` 设置中调整。导出使用当前未保存的入口及已打开导入文件；无需安装 Python、Rust 或 npm。远程窗口的目标文件位于扩展宿主所在机器。
+在 `.lay` 编辑器执行 **LayMesh：导出图形**，或点击实时预览的 **导出**。选择格式和目标文件后直接导出，不再询问编码参数。图片默认 1200 DPI，TIFF 默认 LZW 无损压缩。参数在 `laymesh.export.*` 设置中调整，也支持项目/全局配置；不再使用旧对话框记忆值。导出使用当前未保存的入口及已打开导入文件；无需安装 Python、Rust 或 npm。远程窗口的目标文件位于扩展宿主所在机器。
 
 ## 诊断
 
@@ -69,13 +69,13 @@ render_file("figure.lay", output="figure.webp", dpi=300, webp_lossless=True,
 | `pdf_auto_palette_limit` | `32` | 采样颜色数阈值，0–16384 |
 | `pdf_auto_flatness_threshold` | `0.9` | 相邻像素平坦比例，0–1 |
 
-强制 JPEG 仍遵守开启的精度和透明度保留选项，并返回 `W_PDF_LOSSLESS` 原因。要允许透明 16 位图使用 JPEG，需同时关闭两项保留设置。源文件不修改。全部参数支持 Python 关键字、CLI 选项（如 `--pdf-preserve-16bit false`）与 VS Code 设置/导出对话框。文字、公式和标尺保持矢量，PDF 不嵌入 WebP；导出独立使用规范化源像素。
+强制 JPEG 仍遵守开启的精度和透明度保留选项，并返回 `W_PDF_LOSSLESS` 原因。要允许透明 16 位图使用 JPEG，需同时关闭两项保留设置。源文件不修改。全部参数支持 Python 关键字、CLI 选项（如 `--pdf-preserve-16bit false`）与 VS Code 设置。文字、公式和标尺保持矢量，PDF 不嵌入 WebP；导出独立使用规范化源像素。
 
 ## JSON 配置
 
 项目采用源文件向上查找的最近 `.laymesh.json`；CLI 的 `--config PATH`（Python 的 `config=PATH`）可指定项目配置。全局配置路径：Linux 为 `$XDG_CONFIG_HOME/laymesh/config.json`，省略或为空时为 `~/.config/laymesh/config.json`；Windows 为 `%APPDATA%/laymesh/config.json`；macOS 为 `~/Library/Application Support/laymesh/config.json`。
 
-优先级从高到低为：单次参数/导出对话框、VS Code 文件夹或工作区显式设置、项目配置、VS Code 用户显式设置、全局配置、内置默认。未显式设置的 VS Code 默认值不会覆盖项目配置。配置变化触发预览刷新并清除不再适用的导出对话框记忆；旧默认配置版本的记忆值会废弃。
+优先级从高到低为：单次 API/CLI 参数、VS Code 文件夹或工作区显式设置、项目配置、VS Code 用户显式设置、全局配置、内置默认。未显式设置的 VS Code 默认值不会覆盖项目配置。配置变化应用于预览和下一次导出。
 
 ```json
 {

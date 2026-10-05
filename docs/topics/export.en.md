@@ -45,7 +45,7 @@ render_file("figure.lay", output="figure.webp", dpi=300, webp_lossless=True,
 
 ## VS Code
 
-Run **LayMesh: Export Figure** from a `.lay` editor, or click **Export** in live preview. Choose the format, DPI, applicable encoding options and destination. Options are remembered by workspace and format; `laymesh.export.*` settings control defaults. Export uses the current unsaved entry and opened imported buffers. No Python, Rust or npm installation is required. In remote windows, output is saved on the extension host machine.
+Run **LayMesh: Export Figure** from a `.lay` editor, or click **Export** in live preview. Choose the format and destination, then export directly. Raster defaults to 1200 DPI and TIFF to LZW. Change parameters in `laymesh.export.*` settings; project/global configuration also applies. Old dialog choices are no longer used. Export uses the current unsaved entry and opened imported buffers. No Python, Rust or npm installation is required. In remote windows, output is saved on the extension host machine.
 
 ## Diagnostics
 
@@ -69,13 +69,13 @@ Automatic mode samples at most 128 × 128 pixels. Images with at most 32 colors,
 | `pdf_auto_palette_limit` | `32` | 0–16384 sampled colors |
 | `pdf_auto_flatness_threshold` | `0.9` | 0–1 adjacent pixel flatness ratio |
 
-Forced JPEG still honors enabled depth/alpha preservation and reports `W_PDF_LOSSLESS`. To permit JPEG for a transparent 16-bit image, disable both preservation options. The original file is untouched. All options are available as Python keywords, CLI flags (`--pdf-preserve-16bit false`, etc.) and VS Code settings/dialog choices. Export always uses normalized source pixels, independently of preview JPEG/WebP resources.
+Forced JPEG still honors enabled depth/alpha preservation and reports `W_PDF_LOSSLESS`. To permit JPEG for a transparent 16-bit image, disable both preservation options. The original file is untouched. All options are available as Python keywords, CLI flags (`--pdf-preserve-16bit false`, etc.) and VS Code settings. Export always uses normalized source pixels, independently of preview JPEG/WebP resources.
 
 ## JSON configuration
 
 The nearest `.laymesh.json` above the source file supplies project defaults. `--config PATH` (Python `config=PATH`) selects an explicit project configuration. Global defaults use `$XDG_CONFIG_HOME/laymesh/config.json` on Linux (fallback `~/.config/laymesh/config.json`), `%APPDATA%/laymesh/config.json` on Windows, or `~/Library/Application Support/laymesh/config.json` on macOS.
 
-Precedence, highest first: one-shot parameters/export dialog; explicitly set VS Code folder/workspace values; project configuration; explicitly set VS Code user values; global configuration; built-in defaults. Missing VS Code values do not mask project/global defaults. Configuration changes invalidate preview and remembered dialog choices; remembered values from older default schemas are discarded.
+Precedence, highest first: one-shot API/CLI parameters; explicitly set VS Code folder/workspace values; project configuration; explicitly set VS Code user values; global configuration; built-in defaults. Missing VS Code values do not mask project/global defaults. Configuration changes apply to preview and the next export.
 
 ```json
 {

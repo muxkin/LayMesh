@@ -14,7 +14,7 @@ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Pa
 with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup_errors=True) as temp:
  profile=Path(temp);gate=profile/'gate.json';evidence=profile/'evidence.json'
  (profile/'profile/User').mkdir(parents=True)
- (profile/'profile/User/settings.json').write_text(json.dumps({'workbench.colorTheme':'VS Code Dark','window.autoDetectColorScheme':False}))
+ (profile/'profile/User/settings.json').write_text(json.dumps({'workbench.colorTheme':'VS Code Dark','window.autoDetectColorScheme':False,'files.simpleDialog.enable':True}))
  with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
  bmp=profile/'中文 # 图片.bmp';Image.new('RGB',(20,10),(30,150,220)).save(bmp)
  transparent=profile/'透明.png';Image.new('RGBA',(20,10),(255,0,0,128)).save(transparent)
@@ -51,7 +51,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   wait("d.querySelector('.preview').dataset.state==='success'&&(d.querySelector('.preview').dataset.painted==='true'||d.querySelector('.figure').complete)")
   wait("d.body.classList.contains('vscode-dark')")
   root.call('Page.bringToFront')
-  # Follow the real webview -> host -> Quick Input export wizard, without replacing VS Code APIs.
+  # Follow the real webview -> host -> format picker and save dialog, without replacing VS Code APIs.
   assert evaluate("d.querySelector('[data-action=export]').textContent==='导出'")
   evaluate("(()=>{d.querySelector('[data-action=export]').click();return true})()")
   def quick_text():return root.evaluate("document.querySelector('.quick-input-widget')?.textContent||''")
@@ -59,13 +59,8 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   def key(name,code):
    for kind in ['keyDown','keyUp']:root.call('Input.dispatchKeyEvent',{'type':kind,'key':name,'windowsVirtualKeyCode':code})
   root.call('Input.insertText',{'text':'TIFF'});key('Enter',13)
-  until(lambda:'DPI' in quick_text(),'Export DPI input')
-  root.evaluate("(()=>{const input=document.querySelector('.quick-input-widget input');input.focus();input.select();return true})()")
-  root.call('Input.insertText',{'text':'0'})
-  until(lambda:'25400' in quick_text(),'Invalid DPI validation')
-  root.evaluate("(()=>{document.querySelector('.quick-input-widget input').select();return true})()")
-  root.call('Input.insertText',{'text':'144'});key('Enter',13)
-  until(lambda:all(name in quick_text() for name in ['LZW','Deflate','PackBits']),'TIFF compression picker')
+  until(lambda:root.evaluate("!!document.querySelector('.quick-input-widget input')?.value.endsWith('.tif')"),'Direct TIFF save dialog')
+  assert 'DPI' not in quick_text() and 'PackBits' not in quick_text(),quick_text()
   key('Escape',27)
   last_layout=None;stable_frames=0
   def stable_layout():
@@ -159,7 +154,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   wait("d.querySelector('.preview').dataset.state==='error'&&d.querySelector('.status').textContent==='Error · preview stale'")
   assert evaluate("!d.querySelector('.error-location').hidden&&d.querySelector('.error-location').title==='Go to source'&&d.querySelector('.figure').getBoundingClientRect().width>0")
   phase('error-verified');wait_phase('complete');host.wait(timeout=20);assert host.returncode==0
-  result=json.loads(evidence.read_text());result['ui']={'bmp_pixel':bitmap,'transparent_webp_pixel':transparent_pixel,'opaque_16bit_jpeg_pixel':high_pixel,'export_wizard_verified':True,'invalid_export_dpi_rejected':True,'tiff_compression_choices_verified':True,'initial_readout':readout,'english_readout':english_readout,'state':state,'narrow':layout,'console_errors':console_errors,'viewports':['1440x1000 dark DPR 2','760x720 light DPR 2'],'checks':['BMP on a Chinese/space/hash path','canvas/data hover','ruler markers','wheel anchor','Space drag','100%','ruler toggle','fit','continuous motion','pointer exit','narrow resize','DPR ruler pixels','explicit English and auto UI','view preserved on language change','English stale error and source action']}
+  result=json.loads(evidence.read_text());result['ui']={'bmp_pixel':bitmap,'transparent_webp_pixel':transparent_pixel,'opaque_16bit_jpeg_pixel':high_pixel,'direct_export_save_dialog_verified':True,'no_dpi_or_compression_prompts':True,'initial_readout':readout,'english_readout':english_readout,'state':state,'narrow':layout,'console_errors':console_errors,'viewports':['1440x1000 dark DPR 2','760x720 light DPR 2'],'checks':['BMP on a Chinese/space/hash path','canvas/data hover','ruler markers','wheel anchor','Space drag','100%','ruler toggle','fit','continuous motion','pointer exit','narrow resize','DPR ruler pixels','explicit English and auto UI','view preserved on language change','English stale error and source action']}
   (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))
  except Exception:
   try:

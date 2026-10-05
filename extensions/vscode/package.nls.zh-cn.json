@@ -32,5 +32,11 @@
   "config.preview.webpMethod": "透明预览图片的 WebP 编码力度（0 最快）。",
   "config.preview.imageThreads": "图片编码线程数；0 自动选择，最多 2。",
   "config.preview.processingMemoryMb": "并行编码的在途内存预算 MiB；单张超大图片独占处理。",
-  "command.configurePreviewDebounce": "LayMesh：设置预览防抖时间"
+  "command.configurePreviewDebounce": "LayMesh：设置预览防抖时间",
+  "config.export.pngCompression": "PNG 压缩方式（均为无损）。",
+  "config.export.background": "JPEG、GIF 和不透明 PNM 导出时的透明区域底色。",
+  "config.export.webpMethod": "WebP 编码耗时（0–6）。",
+  "config.export.webpAlphaQuality": "有损 WebP 透明通道质量；100 保留完整精度。",
+  "config.export.webpNearLossless": "无损 WebP 模式的近无损保真度；100 为完全无损。",
+  "config.export.webpQuality": "WebP 质量（0–100）；显式设置后覆盖通用导出质量。"
 }

@@ -1,3 +1,8 @@
+# 0.3.8
+
+- Export directly after choosing the format and destination; move all encoding options to Settings.
+- Raster defaults remain 1200 DPI; TIFF defaults to lossless LZW compression.
+
 # 0.3.7
 
 - Cache preview image hashes and font fallback rankings to reduce refresh latency.

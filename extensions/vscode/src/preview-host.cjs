@@ -53,7 +53,10 @@ function editorDefaults(uri){
  const cfg=vscode.workspace.getConfiguration('laymesh',uri),user={},workspace={};
  const mappings={
   'export.dpi':'export.dpi','export.quality':['export.jpeg.quality','export.webp.quality'],
-  'export.tiffCompression':'export.tiff.compression','export.webpLossless':'export.webp.webp_lossless',
+  'export.tiffCompression':'export.tiff.compression','export.pngCompression':'export.png.compression',
+  'export.background':['export.jpeg.background','export.gif.background','export.ppm.background','export.pgm.background','export.pbm.background'],
+  'export.webpQuality':'export.webp.quality','export.webpLossless':'export.webp.webp_lossless','export.webpMethod':'export.webp.webp_method',
+  'export.webpAlphaQuality':'export.webp.webp_alpha_quality','export.webpNearLossless':'export.webp.webp_near_lossless',
   'export.pdf.imageCompression':'export.pdf.pdf_image_compression','export.pdf.jpegQuality':'export.pdf.pdf_jpeg_quality',
   'export.pdf.downsample':'export.pdf.pdf_downsample',
   'export.pdf.recompressJpeg':'export.pdf.pdf_recompress_jpeg','export.pdf.autoPaletteLimit':'export.pdf.pdf_auto_palette_limit',
@@ -88,7 +91,7 @@ function activatePreview(context,binary,output){
     const formats=[['svg','SVG'],['pdf','PDF'],['png','PNG'],['jpg','JPEG'],['tif','TIFF'],['webp','WebP'],['bmp','BMP'],['gif','GIF'],['ico','ICO'],['pam','PAM / PNM'],['ppm','PPM'],['pgm','PGM'],['pbm','PBM'],['tga','TGA']];
     const format=await vscode.window.showQuickPick(formats.map(([extension,label])=>({label,extension})),{title:text('LayMesh：导出图形','LayMesh: Export Figure'),placeHolder:text('选择导出格式','Choose an export format')});
     if(!format)return;
-    options=await exportOptions(format.extension,uri);if(!options)return;
+    options={};
     destination=await vscode.window.showSaveDialog({defaultUri:vscode.Uri.file(uri.fsPath.replace(/\.lay$/,'.'+format.extension)),filters:{[format.label]:[format.extension]},saveLabel:text('导出','Export')});
     if(!destination)return;
     const actual=path.extname(destination.fsPath).toLowerCase();
@@ -108,54 +111,6 @@ function activatePreview(context,binary,output){
    if(!provided)await vscode.window.showInformationMessage(text('已导出：','Exported: ')+destination.fsPath);
    return result;
   }catch(error){if(provided)throw error;vscode.window.showErrorMessage('LayMesh: '+error.message);}
- }
- async function exportOptions(format,uri){
-  if(format==='svg')return {};
-  const document=await vscode.workspace.openTextDocument(uri);
-  const resolved=await new Promise(resolve=>{const resolver=new PreviewWorker(binary,output);resolver.enqueue({file:keyOf(uri),source:document.getText(),overlays:{},request:{type:'defaults',format,...editorDefaults(uri)},timeout:30000,done:r=>{resolver.dispose();resolve(r);}});});
-  if(resolved.error)throw new Error(resolved.error.message);
-  const defaults=resolved.options||{},remembered=context.workspaceState.get('export.'+format,{}),previous=remembered.fingerprint===resolved.fingerprint?(remembered.options||{}):{},options={};
-  const number=async(key,prompt,value,min,max,integer=false)=>{
-   const answer=await vscode.window.showInputBox({title:text('LayMesh：导出参数','LayMesh: Export Options'),prompt,value:String(previous[key]??value),validateInput:input=>{
-    const n=Number(input);return !input.trim()||!Number.isFinite(n)||n<min||n>max||(integer&&!Number.isInteger(n))?text(`请输入 ${min}–${max}${integer?' 的整数':''}`,`Enter ${integer?'an integer':'a number'} from ${min} to ${max}`):undefined;
-   }});
-   if(answer===undefined)return false;options[key]=Number(answer);return true;
-  };
-  const choice=async(key,prompt,items,value)=>{
-   const preferred=previous[key]??value;
-   const chosen=await vscode.window.showQuickPick(items.map(([id,label])=>({label,id})).sort((a,b)=>Number(b.id===preferred)-Number(a.id===preferred)),{title:text('LayMesh：导出参数','LayMesh: Export Options'),placeHolder:prompt});
-   if(!chosen)return false;options[key]=chosen.id;return true;
-  };
-  if(!await number('dpi',text('分辨率 DPI；决定像素尺寸','Resolution in DPI; sets pixel dimensions'),defaults.dpi??1200,0.01,25400))return;
-  if(format==='pdf'){
-   if(!await choice('pdf_image_compression',text('图片压缩方式','Image compression'),[['auto',text('自动','Automatic')],['lossless',text('无损','Lossless')],['jpeg','JPEG']],defaults.pdf_image_compression??'auto'))return;
-   if(!await number('pdf_jpeg_quality',text('JPEG 质量','JPEG quality'),defaults.pdf_jpeg_quality??90,1,100,true))return;
-   if(!await choice('pdf_downsample',text('按 DPI 上限缩小图片','Downsample images to the DPI cap'),[[true,text('开启','Enabled')],[false,text('保留源图分辨率','Keep source resolution')]],defaults.pdf_downsample??true))return;
-   if(!await choice('pdf_recompress_jpeg',text('重新编码原始 JPEG','Recompress original JPEG'),[[false,text('允许直接嵌入','Allow direct embedding')],[true,text('按质量重新编码','Recompress at selected quality')]],defaults.pdf_recompress_jpeg??false))return;
-   if(!await choice('pdf_preserve_16bit',text('保留 16 位精度','Preserve 16-bit precision'),[[true,text('保留','Preserve')],[false,text('转为 8 位','Convert to 8-bit')]],defaults.pdf_preserve_16bit??true))return;
-   if(!await choice('pdf_preserve_alpha',text('保留透明度','Preserve transparency'),[[true,text('保留','Preserve')],[false,text('合成到背景','Flatten to background')]],defaults.pdf_preserve_alpha??true))return;
-   if(options.pdf_preserve_alpha===false){const matte=await vscode.window.showInputBox({prompt:text('透明区域背景色 #RRGGBB','Transparency matte #RRGGBB'),value:previous.pdf_alpha_background??defaults.pdf_alpha_background??'#ffffff',validateInput:v=>/^#[0-9a-f]{6}$/i.test(v)?undefined:text('请输入 #RRGGBB','Enter #RRGGBB')});if(matte===undefined)return;options.pdf_alpha_background=matte;}
-   if(!await number('pdf_auto_palette_limit',text('线图采样颜色数阈值','Line-art sampled color limit'),defaults.pdf_auto_palette_limit??32,0,16384,true))return;
-   if(!await number('pdf_auto_flatness_threshold',text('线图相邻像素平坦比例','Line-art adjacent pixel flatness'),defaults.pdf_auto_flatness_threshold??0.9,0,1))return;
-  }
-  if(format==='jpg'){
-   if(!await number('quality',text('JPEG 质量；越高文件越大','JPEG quality; higher values produce larger files'),defaults.quality??90,1,100,true))return;
-  }
-  if(format==='tif'&&!await choice('compression',text('TIFF 压缩方式（均为无损）','TIFF compression (all lossless)'),[['lzw','LZW'],['deflate','Deflate'],['packbits','PackBits'],['none',text('无压缩','Uncompressed')]],defaults.compression??'lzw'))return;
-  if(format==='png'&&!await choice('compression',text('PNG 压缩（均为无损）','PNG compression (all lossless)'),[['default',text('默认','Default')],['fast',text('快速','Fast')],['best',text('更小文件','Smaller file')]],defaults.compression??'default'))return;
-  if(format==='webp'){
-   if(!await choice('webp_lossless',text('WebP 编码模式','WebP encoding mode'),[[true,text('无损','Lossless')],[false,text('有损','Lossy')]],defaults.webp_lossless??true))return;
-   if(!await number('quality',options.webp_lossless?text('无损压缩力度；越高压缩越充分','Lossless compression effort; higher values compress more'):text('WebP 图像质量','WebP image quality'),options.webp_lossless?100:defaults.quality??90,0,100))return;
-   if(!await number('webp_method',text('编码耗时 0–6；越高通常文件越小','Encoding effort 0–6; higher values usually produce smaller files'),defaults.webp_method??4,0,6,true))return;
-   if(options.webp_lossless){if(!await number('webp_near_lossless',text('近无损保真度；100 为完全无损','Near-lossless fidelity; 100 is fully lossless'),defaults.webp_near_lossless??100,0,100,true))return;}
-   else if(!await number('webp_alpha_quality',text('透明通道质量；100 完整保留','Alpha quality; 100 preserves full precision'),defaults.webp_alpha_quality??100,0,100,true))return;
-  }
-  if(['jpg','gif','ppm','pgm','pbm'].includes(format)){
-   const background=await vscode.window.showInputBox({title:text('LayMesh：导出参数','LayMesh: Export Options'),prompt:text('透明像素的底色 #RRGGBB；GIF 保留完全透明像素','Matte color #RRGGBB; GIF retains fully transparent pixels'),value:previous.background??defaults.background??'#ffffff',validateInput:value=>/^#[\da-f]{6}$/i.test(value)?undefined:text('请输入 #RRGGBB 颜色','Enter a #RRGGBB color')});
-   if(background===undefined)return;options.background=background;
-  }
-  await context.workspaceState.update('export.'+format,{options,fingerprint:resolved.fingerprint});
-  return options;
  }
 
  function resource(state,item){

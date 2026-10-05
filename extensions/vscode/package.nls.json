@@ -32,5 +32,11 @@
   "config.preview.webpMethod": "WebP effort (0 is fastest) for transparent preview images.",
   "config.preview.imageThreads": "Image encoding threads; 0 selects up to 2 automatically.",
   "config.preview.processingMemoryMb": "Concurrent encoding memory budget in MiB; oversized images run alone.",
-  "command.configurePreviewDebounce": "LayMesh: Set Preview Delay"
+  "command.configurePreviewDebounce": "LayMesh: Set Preview Delay",
+  "config.export.pngCompression": "PNG compression (all lossless).",
+  "config.export.background": "Matte color for JPEG, GIF and opaque PNM exports.",
+  "config.export.webpMethod": "WebP encoding effort (0–6).",
+  "config.export.webpAlphaQuality": "Alpha quality for lossy WebP; 100 preserves full precision.",
+  "config.export.webpNearLossless": "Near-lossless fidelity for lossless WebP; 100 is fully lossless.",
+  "config.export.webpQuality": "WebP quality (0–100); overrides the shared export quality when explicitly set."
 }

@@ -123,7 +123,7 @@ Ctrl/Command + wheel zooms about the pointer; Space + drag or middle drag pans. 
 
 Run **LayMesh: Set Preview Delay** to enter an integer from 0 to 5000 ms (default 100; 0 disables debounce). It saves to workspace settings when a workspace is open, otherwise user settings, and applies immediately.
 
-Run **LayMesh: Export Figure** from a `.lay` editor or click **Export** in preview, then choose format, DPI, encoding options and destination. Unsaved entry and opened imported buffers are used; remote windows save on the extension host. [Export formats and encoding options](export.en.md)
+Run **LayMesh: Export Figure** from a `.lay` editor or click **Export** in preview, then choose the format and destination to export directly. Images default to 1200 DPI and TIFF to LZW; change parameters in `laymesh.export.*` settings. Unsaved entry and opened imported buffers are used; remote windows save on the extension host. [Export formats and encoding options](export.en.md)
 
 ## Full-resolution native preview
 
