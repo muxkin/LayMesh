@@ -1,4 +1,5 @@
 pub mod assets;
+pub mod asset_cache;
 mod collections;
 pub mod color;
 pub mod colormap;

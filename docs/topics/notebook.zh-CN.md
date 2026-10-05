@@ -46,3 +46,5 @@ page.add(p,offset=(7mm,6mm))
 先运行注册单元格。单元格 magic 读取 Notebook 命名空间，展开 {{values}}，生成预览并保存可独立运行的源码和资源。占位符是不加引号的名称，不执行任意 Python 表达式。再次执行会更新自动生成文件；普通手工源码受覆盖保护。
 
 `render_source` 和 `render_file` 还接受 `quality=None`、`compression=None`、`background=None`、`webp_lossless=None`、`webp_method=None`、`webp_alpha_quality=None`、`webp_near_lossless=None`。Magics 接受相应的 `--quality`、`--compression`、`--background` 与 `--webp-*` 参数。[导出格式与编码参数](export.zh-CN.md)
+
+默认导出 DPI 为 1200，`--dpi` 也控制 PDF 图片上限。支持 `--config PATH` 与 `--pdf-*` 压缩/精度保留参数，见[导出配置](export.zh-CN.md)。

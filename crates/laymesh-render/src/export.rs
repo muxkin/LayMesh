@@ -16,6 +16,15 @@ pub struct ExportOptions {
     pub webp_method: Option<u8>,
     pub webp_alpha_quality: Option<u8>,
     pub webp_near_lossless: Option<u8>,
+    pub pdf_image_compression: Option<String>,
+    pub pdf_jpeg_quality: Option<u8>,
+    pub pdf_downsample: Option<bool>,
+    pub pdf_recompress_jpeg: Option<bool>,
+    pub pdf_preserve_16bit: Option<bool>,
+    pub pdf_preserve_alpha: Option<bool>,
+    pub pdf_alpha_background: Option<String>,
+    pub pdf_auto_palette_limit: Option<usize>,
+    pub pdf_auto_flatness_threshold: Option<f64>,
 }
 
 pub fn export_format(extension: &str) -> Result<&'static str> {
@@ -47,8 +56,8 @@ impl ExportOptions {
         let format = export_format(extension)?;
         let raster = !matches!(format, "svg" | "pdf");
         if let Some(dpi) = self.dpi {
-            if !raster || !dpi.is_finite() || dpi <= 0. || dpi > 25_400. {
-                return Err(error("DPI 仅用于位图输出，须为 0–25400 之间的正数"));
+            if !(raster || format == "pdf") || !dpi.is_finite() || dpi <= 0. || dpi > 25_400. {
+                return Err(error("DPI 仅用于位图/PDF 输出，须为 0–25400 之间的正数"));
             }
         }
         if let Some(quality) = self.quality {
@@ -103,6 +112,38 @@ impl ExportOptions {
         if self.webp_lossless.unwrap_or(true) && self.webp_alpha_quality.is_some_and(|v| v != 100) {
             return Err(error("降低 webp_alpha_quality 须选择有损 WebP 模式"));
         }
+        if let Some(background) = &self.pdf_alpha_background {
+            parse_background(background)?;
+        }
+        let pdf_explicit = self.pdf_image_compression.is_some()
+            || self.pdf_jpeg_quality.is_some()
+            || self.pdf_downsample.is_some()
+            || self.pdf_recompress_jpeg.is_some()
+            || self.pdf_preserve_16bit.is_some()
+            || self.pdf_preserve_alpha.is_some()
+            || self.pdf_alpha_background.is_some()
+            || self.pdf_auto_palette_limit.is_some()
+            || self.pdf_auto_flatness_threshold.is_some();
+        if pdf_explicit && format != "pdf" {
+            return Err(error("pdf_* 参数仅用于 PDF 输出"));
+        }
+        if self
+            .pdf_image_compression
+            .as_deref()
+            .is_some_and(|s| !matches!(s, "auto" | "lossless" | "jpeg"))
+            || self
+                .pdf_jpeg_quality
+                .is_some_and(|v| !(1..=100).contains(&v))
+            || self.pdf_auto_palette_limit.is_some_and(|v| v > 16384)
+            || [self.pdf_auto_flatness_threshold]
+                .into_iter()
+                .flatten()
+                .any(|v| !v.is_finite() || !(0.0..=1.0).contains(&v))
+        {
+            return Err(error(
+                "无效 PDF 参数：compression=auto/lossless/jpeg，quality=1–100，阈值=0–1，palette_limit=0–16384",
+            ));
+        }
         Ok(())
     }
 }
@@ -134,7 +175,7 @@ pub fn render_export(scene: &Scene, extension: &str, options: &ExportOptions) ->
         return Ok(render_svg(scene)?.into_bytes());
     }
     if format == "pdf" {
-        return native::render_pdf(scene);
+        return native::render_pdf_with_options(scene, options);
     }
     let dpi = options.dpi.unwrap_or(scene.export_dpi);
     // Fail before allocating the raster when a codec has a smaller dimension limit.

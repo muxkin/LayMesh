@@ -1,3 +1,9 @@
+# 0.3.7
+
+- Cache preview image hashes and font fallback rankings to reduce refresh latency.
+- Default preview debounce to 100 ms; add a command to configure 0–5000 ms.
+- Bundle LayMesh 0.3.2 for Linux and Windows.
+
 # Changelog
 
 ## 0.3.6

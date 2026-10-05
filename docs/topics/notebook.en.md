@@ -46,3 +46,5 @@ page.add(p,offset=(7mm,6mm))
 Run the registration cell first. The cell magic reads the Notebook namespace, expands {{values}}, renders a preview and writes a portable source/resource pair. Placeholders are unquoted names, not arbitrary Python expressions. Re-executing updates generated files; regular manually edited source is protected from accidental generated-file overwrite.
 
 `render_source` and `render_file` also accept `quality=None`, `compression=None`, `background=None`, `webp_lossless=None`, `webp_method=None`, `webp_alpha_quality=None`, and `webp_near_lossless=None`. Magics accept the corresponding `--quality`, `--compression`, `--background` and `--webp-*` flags. [Export formats and encoding options](export.en.md)
+
+Export DPI defaults to 1200; `--dpi` also caps PDF image resolution. `--config PATH` and `--pdf-*` compression/preservation options follow [export configuration](export.en.md).

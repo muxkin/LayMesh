@@ -38,6 +38,8 @@ pub struct Engine {
     pub serial: usize,
     unnamed_instances: usize,
     instance_names: BTreeMap<String, usize>,
+    // Successful image reads are a snapshot for one preview compilation only.
+    preview_images: BTreeMap<String, Json>,
     cyclic_scopes: Vec<std::rc::Weak<RefCell<Environment>>>,
 }
 impl Drop for Engine {
@@ -64,6 +66,21 @@ enum Flow {
     Continue,
 }
 impl Engine {
+    pub(crate) fn load_image(&mut self, path: &str, file: &str, loc: Loc) -> Result<Json> {
+        let preview = crate::asset_cache::is_preview();
+        if preview {
+            if let Some(asset) = self.preview_images.get(path) {
+                return Ok(asset.clone());
+            }
+        }
+        let bytes = self.host.read(path, file, loc)?;
+        let asset = crate::assets::load(&bytes, path, file, loc)?;
+        if preview {
+            self.preview_images.insert(path.into(), asset.clone());
+        }
+        Ok(asset)
+    }
+
     pub fn new(host: Host) -> Self {
         let native = host.native;
         let mut fonts = crate::text::FontSystem::new(native);
@@ -98,6 +115,7 @@ impl Engine {
             serial: 0,
             unnamed_instances: 0,
             instance_names: BTreeMap::new(),
+            preview_images: BTreeMap::new(),
             cyclic_scopes: vec![],
         }
     }
@@ -145,6 +163,7 @@ impl Engine {
         }
     }
     pub fn compile(&mut self, source: &str, file: &str) -> Result<Scene> {
+        self.preview_images.clear();
         self.file = file.into();
         let stmts = parser::parse(source, file)?;
         let scope = Environment::root();
@@ -182,7 +201,7 @@ impl Engine {
                 .unwrap_or(json!("none")),
             layout_dpi: self.dpi,
             canvas_unit: self.unit.clone(),
-            export_dpi: 96.,
+            export_dpi: 1200.,
             nodes: c.nodes.clone(),
             warnings: self.warnings.clone(),
             fonts: self.fonts.assets.clone(),
@@ -1144,9 +1163,8 @@ impl Engine {
         }
         if name == "image_fill" {
             let path = resolve(&self.file, &string(&a, "src", ""));
-            let bytes = self.host.read(&path, &self.file, l)?;
-            let asset = crate::assets::load(&bytes, &path, &self.file, l)?;
-            for key in ["data", "mime", "width", "height"] {
+            let asset = self.load_image(&path, &self.file.clone(), l)?;
+            for key in ["data", "mime", "width", "height", "rasterKey", "sourceJpegHash"] {
                 a.insert(key.into(), V::from_json(&asset[key]));
             }
         }
@@ -1320,4 +1338,65 @@ pub fn compile_file(file: &str) -> Result<Scene> {
 }
 pub fn compile_source(source: &str, file: &str, host: Host) -> Result<Scene> {
     Engine::new(host).compile(source, file)
+}
+
+#[cfg(test)]
+mod preview_image_tests {
+    use super::*;
+
+    #[test]
+    fn preview_image_snapshot_is_reused_only_within_one_compilation() {
+        struct Reset;
+        impl Drop for Reset {
+            fn drop(&mut self) {
+                crate::asset_cache::preview_mode(false);
+            }
+        }
+        crate::asset_cache::preview_mode(true);
+        let _reset = Reset;
+        let png = |color| {
+            let image = image::DynamicImage::ImageRgb8(image::RgbImage::from_pixel(
+                2,
+                2,
+                image::Rgb(color),
+            ));
+            let mut out = std::io::Cursor::new(Vec::new());
+            image.write_to(&mut out, image::ImageFormat::Png).unwrap();
+            out.into_inner()
+        };
+        let dependencies = Rc::new(RefCell::new(BTreeSet::new()));
+        let mut host = Host {
+            dependencies: Some(dependencies.clone()),
+            ..Host::default()
+        };
+        host.files.insert("/image.png".into(), png([255, 0, 0]));
+        let mut engine = Engine::new(host);
+        let first = engine
+            .load_image("/image.png", "/main.lay", Loc::default())
+            .unwrap();
+        assert!(dependencies.borrow().contains("/image.png"));
+        engine.host.files.clear();
+        let mut reused = engine
+            .load_image("/image.png", "/main.lay", Loc::default())
+            .unwrap();
+        assert_eq!(first, reused);
+        reused["width"] = json!(999);
+        assert_eq!(
+            engine
+                .load_image("/image.png", "/main.lay", Loc::default())
+                .unwrap()["width"],
+            2
+        );
+
+        let source = "page=canvas(size=(20,20))\npage.add(image(src=\"image.png\"),size=(10,10))";
+        // A new compile must observe deletion, and then recover with new pixels.
+        let error = engine.compile(source, "/main.lay").unwrap_err();
+        assert_eq!(error.code, "E_ASSET");
+        engine
+            .host
+            .files
+            .insert("/image.png".into(), png([0, 0, 255]));
+        let scene = compile_source(source, "/main.lay", engine.host.clone()).unwrap();
+        assert_ne!(scene.nodes[0]["rasterKey"], first["rasterKey"]);
+    }
 }

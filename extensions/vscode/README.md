@@ -6,21 +6,21 @@ Preview and edit scientific figures in `.lay` and `.lcss`. Get live SVG previews
 
 Marketplace packages are provided for **Windows x64** and **Linux x64**, including matching remote extension hosts. Preview uses a bundled native Rust program; no Python, Rust toolchain or npm installation is needed by extension users. macOS, Windows ARM64 and browser-only VS Code require their own compatible packages. Language analysis is static and never executes figure code; preview rendering is a separate opt-in process in a trusted workspace.
 
-Build from the repository root with `python scripts/build-editors.py`. Create a Marketplace prerelease with `python scripts/package-editor.py --target linux-x64 --pre-release --output release/dist/laymesh-language-0.3.6-linux-x64.vsix`, then audit it with `python scripts/check-editor.py release/dist/laymesh-language-0.3.6-linux-x64.vsix --binary target/release/laymesh --target linux-x64 --pre-release --marketplace`. No npm packages are needed. To install locally, use VS Code's **Extensions: Install from VSIX** command.
+Build from the repository root with `python scripts/build-editors.py`. Create a stable Marketplace package with `python scripts/package-editor.py --target linux-x64 --output release/dist/laymesh-language-0.3.6-linux-x64.vsix`, then audit it with `python scripts/check-editor.py release/dist/laymesh-language-0.3.6-linux-x64.vsix --binary target/release/laymesh --target linux-x64 --marketplace`. No npm packages are needed. To install locally, use VS Code's **Extensions: Install from VSIX** command.
 
 Build Windows x64 on Windows with `cargo build --release --locked -p laymesh-cli`, then stage `target/release/laymesh.exe`. A Linux build host with MinGW-w64 can instead run `rustup target add x86_64-pc-windows-gnu` and `cargo build --release --locked -p laymesh-cli --target x86_64-pc-windows-gnu`. Package it in a separate directory to preserve the Linux development binary:
 
 ```sh
 python scripts/build-editors.py --binary target/x86_64-pc-windows-gnu/release/laymesh.exe --extension-dir release/staging/vscode-win32-x64
-python scripts/package-editor.py --extension-dir release/staging/vscode-win32-x64 --target win32-x64 --pre-release --output release/dist/laymesh-language-0.3.6-win32-x64.vsix
-python scripts/check-editor.py release/dist/laymesh-language-0.3.6-win32-x64.vsix --binary target/x86_64-pc-windows-gnu/release/laymesh.exe --target win32-x64 --pre-release --marketplace
+python scripts/package-editor.py --extension-dir release/staging/vscode-win32-x64 --target win32-x64 --output release/dist/laymesh-language-0.3.6-win32-x64.vsix
+python scripts/check-editor.py release/dist/laymesh-language-0.3.6-win32-x64.vsix --binary target/x86_64-pc-windows-gnu/release/laymesh.exe --target win32-x64 --marketplace
 ```
 
 Run `python scripts/smoke-native-editor.py --binary target/release/laymesh.exe --output release/dist/windows-native-evidence.json` on Windows to verify the preview protocol, resources, units, paths, error recovery and bilingual language service. On Linux, `--wine /path/to/wine` runs the cross-built EXE through Wine. This protocol check is separate from testing the actual Windows VS Code interface.
 
-Upload each platform VSIX to the same Marketplace extension using the same publisher, extension name, version and prerelease channel. To add Windows to an existing Linux release, choose **Update** on that extension and upload the Windows package; VS Code selects the package for its extension host. See [platform-specific publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#platform-specific-extensions).
+Upload each platform VSIX to the same Marketplace extension using the same publisher, extension name, version and stable channel. To add Windows to an existing Linux release, choose **Update** on that extension and upload the Windows package; VS Code selects the package for its extension host. See [platform-specific publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#platform-specific-extensions).
 
-Windows x64 和 Linux x64 均提供独立安装包，内置原生语言服务与预览程序，用户无需安装 Python、Rust 或 npm。发布 Windows 包时，在已有的 `Hyacine.laymesh-language` 扩展中选择 **Update** 并上传 Windows VSIX，沿用相同版本和预发布通道。远程开发时，安装包平台应匹配远程扩展宿主。
+Windows x64 和 Linux x64 均提供独立安装包，内置原生语言服务与预览程序，用户无需安装 Python、Rust 或 npm。发布 Windows 包时，在已有的 `Hyacine.laymesh-language` 扩展中选择 **Update** 并上传 Windows VSIX，沿用相同版本和正式版通道。远程开发时，安装包平台应匹配远程扩展宿主。
 
 Keyboard: Ctrl+Space requests completion, Ctrl+Shift+Space requests a signature, F12 goes to a definition, Shift+F12 finds workspace references, and F2 renames a binding. Full signatures open on request rather than on typed punctuation; hover over a function or parameter for documentation. On macOS use the corresponding editor key bindings.
 
@@ -56,7 +56,7 @@ Library comments may use `## @lang zh-CN` and `## @lang en` sections. Missing fi
 
 Open a saved `.lay` file and click the preview icon in the editor title, use **LayMesh: Open Preview** (**LayMesh：打开预览** in Chinese), or choose it from the editor context menu. Each entry has its own preview beside the editor; reopening reuses its panel. Preview runs in a separate native process and requires a trusted workspace. Local files in remote extension hosts work in the same way; untitled and virtual files must first be saved to the host filesystem.
 
-Edits refresh after 250 ms, including unsaved imported modules, stylesheets and text data. Changes to loaded local images, fonts and data also refresh the figure. A compilation error retains the last successful figure, marks it stale, and offers a source-location button. Language help continues independently.
+Edits refresh after 100 ms, including unsaved imported modules, stylesheets and text data. Changes to loaded local images, fonts and data also refresh the figure. A compilation error retains the last successful figure, marks it stale, and offers a source-location button. Language help continues independently.
 
 The top and left rulers and canvas X/Y values follow `canvas(unit=...)`: `mm`, `cm`, `in`/`inch`, `pt`, or `px`. Pixels use `layout_dpi`, independently of raster export DPI. The origin is the canvas top left; X increases right and Y increases down. Explicit units mixed in the source do not change the preview's display unit.
 
@@ -66,7 +66,7 @@ Toolbar: **Refresh**, **Fit**, **100%**, zoom out/in, **Rulers**, and **Export**
 
 ```json
 {
-  "laymesh.preview.debounceMs": 250,
+  "laymesh.preview.debounceMs": 100,
   "laymesh.preview.renderTimeoutMs": 30000,
   "laymesh.preview.showRulers": true
 }
@@ -99,3 +99,7 @@ Image imports include BMP, WebP, GIF (first frame), ICO, PNM and TGA alongside P
 Use **LayMesh: Export Figure** from the editor title/context menu or **Export** in the preview toolbar. Choose SVG/PDF or PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA, then resolution and the options relevant to that format. JPEG supports quality and matte color, TIFF supports none/LZW/Deflate/PackBits, PNG supports fast/default/best, and WebP supports lossy/lossless, quality, method, alpha quality and near-lossless fidelity. Defaults are under `laymesh.export.*`; options are remembered per workspace and format. The current unsaved entry and opened imported buffers are exported by the bundled engine, including in remote windows. See [all export options and alpha limits](https://muxkin.github.io/LayMesh/en/docs/topics/export.html).
 
 The native stdio transport also accepts `type: "export"`, an absolute `output` path and an `options` object alongside the existing `file`, `source` and `overlays` fields. A success returns `exported`, `bytes`, `warnings` and `dependencies`; failures return the structured `error`. The export command accepts `(uri, {output, options})` for editor automation. This entry has the same trust checks and option validation as interactive export.
+
+Native preview directly displays full-resolution JPEG 90 images; only nonopaque alpha uses lossy WebP with method 0. It reuses image/font resources across text refreshes and provides configurable parallel encoding and memory budgets. Export defaults to 1200 DPI with independent PDF precision/transparency preservation. [Preview settings](https://muxkin.github.io/LayMesh/en/docs/topics/editors.html) · [Export configuration](https://muxkin.github.io/LayMesh/en/docs/topics/export.html).
+
+Use **LayMesh: Set Preview Delay** in the Command Palette to enter any integer from 0 to 5000 ms (default 100). Set 0 to disable debounce. The command saves to the current workspace, or user settings if no workspace is open; changes apply immediately. You can also edit `laymesh.preview.debounceMs` in Settings.

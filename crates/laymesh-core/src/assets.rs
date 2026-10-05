@@ -415,14 +415,8 @@ fn gray_alpha_tiff(
     raster_asset(image, file, loc)
 }
 fn raster_asset(image: image::DynamicImage, file: &str, loc: Loc) -> Result<Json> {
-    let (w, h) = (image.width(), image.height());
-    let mut out = Cursor::new(vec![]);
-    image
-        .write_to(&mut out, ImageFormat::Png)
-        .map_err(|e| error("E_ASSET", e.to_string(), file, loc))?;
-    Ok(
-        json!({"mime":"image/png","data":base64::engine::general_purpose::STANDARD.encode(out.into_inner()),"width":w,"height":h}),
-    )
+    let key = crate::asset_cache::insert(image);
+    crate::asset_cache::asset(&key).map_err(|e| error("E_ASSET", e.message, file, loc))
 }
 fn convert_icc(
     image: image::DynamicImage,
@@ -577,6 +571,13 @@ fn cmyk_jpeg(
     ))
 }
 pub fn load(bytes: &[u8], path: &str, file: &str, loc: Loc) -> Result<Json> {
+    let key = crate::asset_cache::input_key(bytes, path);
+    if let Some(asset) = crate::asset_cache::get_input(&key) { return Ok(asset); }
+    let asset = load_uncached(bytes, path, file, loc)?;
+    crate::asset_cache::put_input(key, &asset);
+    Ok(asset)
+}
+fn load_uncached(bytes: &[u8], path: &str, file: &str, loc: Loc) -> Result<Json> {
     let ext = path.rsplit('.').next().unwrap_or("").to_ascii_lowercase();
     if ext == "svg" {
         let xml = std::str::from_utf8(bytes)
@@ -756,8 +757,13 @@ pub fn load(bytes: &[u8], path: &str, file: &str, loc: Loc) -> Result<Json> {
             image
         }
     };
+    let passthrough = format == ImageFormat::Jpeg && profile.is_none()
+        && orientation == image::metadata::Orientation::NoTransforms
+        && matches!(image.color(), image::ColorType::L8 | image::ColorType::Rgb8);
     image.apply_orientation(orientation);
-    raster_asset(image, file, loc)
+    let mut asset = raster_asset(image, file, loc)?;
+    if passthrough { crate::asset_cache::register_jpeg(asset["rasterKey"].as_str().unwrap(), bytes); asset["sourceJpegHash"]=json!(crate::asset_cache::digest(bytes)); }
+    Ok(asset)
 }
 #[cfg(test)]
 mod tests {
@@ -814,6 +820,13 @@ pub fn crop_raster(data: &str, rect: [f64; 4], file: &str, loc: Loc) -> Result<J
         .map_err(|_| error("E_ASSET", "无效图片数据", file, loc))?;
     let image = image::load_from_memory_with_format(&bytes, ImageFormat::Png)
         .map_err(|e| error("E_ASSET", e.to_string(), file, loc))?;
+    crop_pixels(&image, rect, file, loc)
+}
+pub fn crop_asset(asset: &Json, rect: [f64; 4], file: &str, loc: Loc) -> Result<Json> {
+    if let Some(image) = asset["rasterKey"].as_str().and_then(crate::asset_cache::pixels) { return crop_pixels(&image, rect, file, loc); }
+    crop_raster(asset["data"].as_str().unwrap_or(""), rect, file, loc)
+}
+fn crop_pixels(image: &image::DynamicImage, rect: [f64; 4], file: &str, loc: Loc) -> Result<Json> {
     let (x, y) = (
         rect[0].round().max(0.) as u32,
         rect[1].round().max(0.) as u32,
@@ -826,11 +839,5 @@ pub fn crop_raster(data: &str, rect: [f64; 4], file: &str, loc: Loc) -> Result<J
         return Err(error("E_IMAGE", "裁剪区域小于一个像素", file, loc));
     }
     let cropped = image.crop_imm(x, y, w, h);
-    let mut out = Cursor::new(vec![]);
-    cropped
-        .write_to(&mut out, ImageFormat::Png)
-        .map_err(|e| error("E_ASSET", e.to_string(), file, loc))?;
-    Ok(
-        json!({"data":base64::engine::general_purpose::STANDARD.encode(out.into_inner()),"mime":"image/png","width":w,"height":h}),
-    )
+    raster_asset(cropped, file, loc)
 }

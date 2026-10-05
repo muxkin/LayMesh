@@ -13,7 +13,8 @@ laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quali
 
 | 格式 | 编码参数及默认值 | 透明度与分辨率 |
 | --- | --- | --- |
-| SVG、PDF | 不接受位图编码参数 | 保留矢量图形、物理页面尺寸及透明度 |
+| SVG | 不接受位图编码参数 | 保留矢量图形、物理页面尺寸及透明度 |
+| PDF | `pdf_image_compression=auto`、`pdf_jpeg_quality=90`、`pdf_downsample=true` | 文字和公式保持矢量；位图采用 JPEG 或无损 Flate，不采用 WebP |
 | PNG | `compression=fast/default/best`，默认 `default` | RGBA；写入 DPI 元数据 |
 | JPEG | `quality=1–100`，默认 90；`background="#ffffff"` | 不支持 Alpha；先与底色合成；写入 DPI 元数据 |
 | TIFF | `compression=none/lzw/deflate/packbits`，默认 `lzw`，均无损 | 单页 RGBA，非预乘 Alpha；写入 DPI 元数据 |
@@ -24,7 +25,7 @@ laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quali
 | PAM、PNM | 无额外编码参数 | RGBA PAM，保留 Alpha |
 | PPM、PGM、PBM | `background="#ffffff"` | 先与底色合成；RGB、灰度、黑白二值；PBM 灰度阈值 128 |
 
-所有位图支持 `--dpi`：正数，最多 25400；CLI/Python 省略时默认 96。每轴像素数为 `round(毫米尺寸 × DPI / 25.4)`，最少 1；总像素上限为 100000000。DPI 不改变布局尺寸、字号或 `layout_dpi`。仅 PNG/JPEG/TIFF/BMP 写入密度元数据；其他格式的 DPI 控制像素尺寸。JPEG/GIF/TGA 每轴最多 65535 px，WebP 为 16383 px。
+所有位图支持 `--dpi`：正数，最多 25400；CLI、Python/Jupyter 与 VS Code 省略时默认 1200 DPI。PDF 也接受 DPI，作为内嵌图片降采样上限。每轴像素数为 `round(毫米尺寸 × DPI / 25.4)`，最少 1；总像素上限为 100000000。DPI 不改变布局尺寸、字号或 `layout_dpi`。仅 PNG/JPEG/TIFF/BMP 写入密度元数据；其他格式的 DPI 控制像素尺寸。JPEG/GIF/TGA 每轴最多 65535 px，WebP 为 16383 px。
 
 WebP 还支持 `--webp-alpha-quality 0–100`（默认 100；降低需使用有损模式）、`--webp-near-lossless 0–100`（仅无损模式，默认 100，100 完全无损）。`method` 越高编码越慢，通常文件越小；有损 `quality` 越高视觉质量越高。无损模式的 `quality` 控制压缩力度。近无损值小于 100 允许 RGB 样本近似，Alpha 仍保留。参数说明依据 [WebP 编码器文档](https://developers.google.com/speed/webp/docs/api)。
 
@@ -51,3 +52,43 @@ render_file("figure.lay", output="figure.webp", dpi=300, webp_lossless=True,
 不合法、格式不适用或未知参数会被拒绝。CLI 参数错误退出 2；布局、资源或编码错误退出 1。所有命令支持 `--warnings show|hide`，优先于 `LAYMESH_WARNINGS`。先完成渲染再通过临时文件替换目标，正常失败保留已有文件；资源诊断保留源码位置。`inspect --json` 保留全部警告。
 
 [CLI 参数](cli-reference.zh-CN.md) · [Python API](python-reference.zh-CN.md) · [编辑器](editors.zh-CN.md)
+
+## PDF 位图压缩
+
+自动模式最多采样 128 × 128 像素。颜色数不超过 32，或相邻像素近似相同的比例达到 90%（RGB 各通道差不超过 2），采用无损 Flate；其余不透明 8 位图片采用 JPEG 90。不再分别编码 JPEG/PNG 比较大小。透明和 16 位图片默认保持无损。满足颜色、方向、裁剪及分辨率条件的原始 JPEG 直接嵌入；`pdf_recompress_jpeg=true` 强制重编码。
+
+| PDF 参数 | 默认值 | 含义 |
+| --- | --- | --- |
+| `pdf_image_compression` | `auto` | `auto`、`lossless` 或 `jpeg` |
+| `pdf_jpeg_quality` | `90` | 新编码 JPEG 的质量，1–100 |
+| `pdf_downsample` | `true` | 只缩小；考虑物理尺寸、适配方式、裁剪和组缩放 |
+| `pdf_recompress_jpeg` | `false` | 允许 JPEG 原始字节直接嵌入 |
+| `pdf_preserve_16bit` | `true` | 关闭后允许转成 8 位 |
+| `pdf_preserve_alpha` | `true` | 关闭后先将透明区域合成到背景 |
+| `pdf_alpha_background` | `#ffffff` | 关闭透明度保留时的背景色 |
+| `pdf_auto_palette_limit` | `32` | 采样颜色数阈值，0–16384 |
+| `pdf_auto_flatness_threshold` | `0.9` | 相邻像素平坦比例，0–1 |
+
+强制 JPEG 仍遵守开启的精度和透明度保留选项，并返回 `W_PDF_LOSSLESS` 原因。要允许透明 16 位图使用 JPEG，需同时关闭两项保留设置。源文件不修改。全部参数支持 Python 关键字、CLI 选项（如 `--pdf-preserve-16bit false`）与 VS Code 设置/导出对话框。文字、公式和标尺保持矢量，PDF 不嵌入 WebP；导出独立使用规范化源像素。
+
+## JSON 配置
+
+项目采用源文件向上查找的最近 `.laymesh.json`；CLI 的 `--config PATH`（Python 的 `config=PATH`）可指定项目配置。全局配置路径：Linux 为 `$XDG_CONFIG_HOME/laymesh/config.json`，省略或为空时为 `~/.config/laymesh/config.json`；Windows 为 `%APPDATA%/laymesh/config.json`；macOS 为 `~/Library/Application Support/laymesh/config.json`。
+
+优先级从高到低为：单次参数/导出对话框、VS Code 文件夹或工作区显式设置、项目配置、VS Code 用户显式设置、全局配置、内置默认。未显式设置的 VS Code 默认值不会覆盖项目配置。配置变化触发预览刷新并清除不再适用的导出对话框记忆；旧默认配置版本的记忆值会废弃。
+
+```json
+{
+  "export": {
+    "dpi": 1200,
+    "pdf": {"pdf_image_compression": "auto", "pdf_jpeg_quality": 90,
+            "pdf_preserve_16bit": true, "pdf_preserve_alpha": true},
+    "jpeg": {"quality": 90, "background": "#ffffff"},
+    "png": {"compression": "fast"}
+  },
+  "preview": {"jpeg_quality": 90, "webp_quality": 90, "webp_method": 0,
+              "image_threads": 0, "cache_mb": 256, "processing_memory_mb": 128}
+}
+```
+
+SVG 不接受 DPI。各格式配置使用标准名称（`jpeg`、`tiff`、`webp` 等），参数名与 Python 导出关键字一致。位图导出保留 100000000 像素上限；过高 DPI 会在页面缓冲区分配前失败。

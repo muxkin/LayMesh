@@ -8,6 +8,8 @@ use unicode_segmentation::UnicodeSegmentation;
 
 pub struct FontSystem {
     db: Database,
+    name_index: Option<BTreeMap<String, Vec<ID>>>,
+    fallback_candidates: BTreeMap<(u16, bool), Vec<ID>>,
     pub assets: BTreeMap<String, FontAsset>,
     paths: BTreeMap<String, Vec<ID>>,
     choices: BTreeMap<String, Option<String>>,
@@ -91,6 +93,8 @@ impl FontSystem {
         }
         Self {
             db,
+            name_index: None,
+            fallback_candidates: BTreeMap::new(),
             assets: BTreeMap::new(),
             paths: BTreeMap::new(),
             choices: BTreeMap::new(),
@@ -106,6 +110,8 @@ impl FontSystem {
     /// Add user-provided font bytes (including TTC/OTC collections), without accessing the filesystem.
     pub fn register_font(&mut self, name: &str, data: Vec<u8>) {
         self.choices.clear();
+        self.name_index = None;
+        self.fallback_candidates.clear();
         let ids = self
             .db
             .load_font_source(fontdb::Source::Binary(std::sync::Arc::new(data)));
@@ -268,16 +274,24 @@ impl FontSystem {
                     .into_iter()
                     .collect()
             } else {
-                self.db
-                    .faces()
-                    .filter(|f| {
-                        f.families
+                // Preserve catalog order (including equal-weight ties), but
+                // normalize each face name once instead of once per grapheme.
+                let index = self.name_index.get_or_insert_with(|| {
+                    let mut index: BTreeMap<String, Vec<ID>> = BTreeMap::new();
+                    for face in self.db.faces() {
+                        let mut names: BTreeSet<String> = face
+                            .families
                             .iter()
-                            .any(|(s, _)| canonical(s) == canonical(&name))
-                            || canonical(&f.post_script_name) == canonical(&name)
-                    })
-                    .map(|f| f.id)
-                    .collect()
+                            .map(|(s, _)| canonical(s))
+                            .collect();
+                        names.insert(canonical(&face.post_script_name));
+                        for name in names {
+                            index.entry(name).or_default().push(face.id);
+                        }
+                    }
+                    index
+                });
+                index.get(&canonical(&name)).cloned().unwrap_or_default()
             };
             if ids.is_empty() {
                 warn(w, format!("字体 {name} 不可用"), file, loc);
@@ -300,34 +314,42 @@ impl FontSystem {
             candidates.extend(ids);
         }
         if !explicit_list {
-            let desired = self.db.query(&fontdb::Query {
-                families: &[fontdb::Family::SansSerif],
-                weight: fontdb::Weight(weight),
-                style: if italic {
-                    fontdb::Style::Italic
-                } else {
-                    fontdb::Style::Normal
-                },
-                ..Default::default()
-            });
-            candidates.extend(desired);
-            let mut all: Vec<_> = self.db.faces().map(|f| f.id).collect();
-            all.sort_by_key(|id| {
-                let f = self.db.face(*id).unwrap();
-                u32::from(f.weight.0.abs_diff(weight))
-                    + 10000
-                        * u32::from(
-                            f.stretch
-                                .to_number()
-                                .abs_diff(fontdb::Stretch::Normal.to_number()),
-                        )
-                    + if (f.style != fontdb::Style::Normal) != italic {
-                        2000
-                    } else {
-                        0
-                    }
-            });
-            candidates.extend(all);
+            // Ranking depends on the catalog and style, not the grapheme or
+            // diagnostic location. Keep glyph and embedding checks below live.
+            let fallback = self
+                .fallback_candidates
+                .entry((weight, italic))
+                .or_insert_with(|| {
+                    let desired = self.db.query(&fontdb::Query {
+                        families: &[fontdb::Family::SansSerif],
+                        weight: fontdb::Weight(weight),
+                        style: if italic {
+                            fontdb::Style::Italic
+                        } else {
+                            fontdb::Style::Normal
+                        },
+                        ..Default::default()
+                    });
+
+                    let mut all: Vec<_> = self.db.faces().map(|f| f.id).collect();
+                    all.sort_by_key(|id| {
+                        let f = self.db.face(*id).unwrap();
+                        u32::from(f.weight.0.abs_diff(weight))
+                            + 10000
+                                * u32::from(
+                                    f.stretch
+                                        .to_number()
+                                        .abs_diff(fontdb::Stretch::Normal.to_number()),
+                                )
+                            + if (f.style != fontdb::Style::Normal) != italic {
+                                2000
+                            } else {
+                                0
+                            }
+                    });
+                    desired.into_iter().chain(all).collect()
+                });
+            candidates.extend(fallback.iter().copied());
         }
         for id in candidates {
             let (restriction, supports) = self
@@ -1375,6 +1397,89 @@ mod policy_tests {
 #[cfg(test)]
 mod matching_tests {
     use super::*;
+    #[test]
+    fn fallback_ranking_is_reused_without_caching_glyphs_or_warning_locations() {
+        let mut fonts = FontSystem::new(false);
+        fonts.register_font("font.ttf", include_bytes!("../../../tests/fonts/DejaVuSans.ttf").to_vec());
+        let request = json!("Missing Family");
+        let mut warnings = vec![];
+        for file in ["a.lay", "b.lay"] {
+            assert!(fonts.choose(&request, 400, false, "A", file, Loc::default(), &mut warnings).is_some());
+        }
+        assert_eq!(fonts.fallback_candidates.len(), 1);
+        assert!(warnings.iter().any(|w| w.file == "a.lay"));
+        assert!(warnings.iter().any(|w| w.file == "b.lay"));
+        assert!(fonts.choose(&request, 400, false, "\u{10ffff}", "a.lay", Loc::default(), &mut warnings).is_none());
+        assert!(fonts.choose(&json!(["Missing Family"]), 400, false, "A", "a.lay", Loc::default(), &mut warnings).is_none());
+        fonts.choose(&request, 700, true, "B", "a.lay", Loc::default(), &mut warnings);
+        assert_eq!(fonts.fallback_candidates.len(), 2);
+        fonts.register_font("new.ttf", include_bytes!("../../../tests/fonts/DejaVuSans.ttf").to_vec());
+        assert!(fonts.fallback_candidates.is_empty());
+    }
+
+    #[test]
+    fn named_lookup_preserves_aliases_order_and_newly_registered_faces() {
+        let bytes = include_bytes!("../../../tests/fonts/DejaVuSans.ttf").to_vec();
+        let mut fonts = FontSystem::new(false);
+        let mut warnings = vec![];
+        let request = json!(["  DEJAVU_sans  "]);
+        assert!(fonts
+            .choose(
+                &request,
+                400,
+                false,
+                "A",
+                "x.lay",
+                Loc::default(),
+                &mut warnings
+            )
+            .is_none());
+        fonts.register_font("first.ttf", bytes.clone());
+        fonts.register_font("second.ttf", bytes);
+        warnings.clear();
+        let key = fonts
+            .choose(
+                &request,
+                400,
+                false,
+                "A",
+                "x.lay",
+                Loc::default(),
+                &mut warnings,
+            )
+            .unwrap();
+        assert_eq!(fonts.origins[&key], "first.ttf");
+        assert!(warnings.is_empty());
+        let key_by_postscript = fonts
+            .choose(
+                &json!(["DejaVuSans"]),
+                400,
+                false,
+                "B",
+                "x.lay",
+                Loc::default(),
+                &mut warnings,
+            )
+            .unwrap();
+        assert_eq!(key, key_by_postscript);
+        // Registration after the first successful lookup invalidates the index.
+        let bytes = include_bytes!("../../../tests/assets/GFSNeohellenic.otf").to_vec();
+        fonts.register_font("added.otf", bytes);
+        let id = fonts.paths["added.otf"][0];
+        let family = fonts.db.face(id).unwrap().families[0].0.clone();
+        let key = fonts
+            .choose(
+                &json!([family]),
+                400,
+                false,
+                "Abc",
+                "x.lay",
+                Loc::default(),
+                &mut warnings,
+            )
+            .unwrap();
+        assert_eq!(fonts.origins[&key], "added.otf");
+    }
     #[test]
     fn normal_stretch_wins_over_condensed_with_the_same_family_and_weight() {
         let bytes = include_bytes!("../../../tests/assets/GFSNeohellenic.otf").to_vec();

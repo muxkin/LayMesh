@@ -482,6 +482,16 @@ def _export_args(output: Path | None, options: Mapping[str, object]) -> list[str
         raise LayMeshBridgeError("webp_near_lossless 仅用于无损 WebP 模式")
     if explicit.get("webp_lossless", True) and explicit.get("webp_alpha_quality", 100) != 100:
         raise LayMeshBridgeError("降低 webp_alpha_quality 须选择有损 WebP 模式")
+    for key, value in explicit.items():
+        if not key.startswith("pdf_"):
+            continue
+        valid = suffix == ".pdf"
+        if key == "pdf_image_compression": valid = valid and value in {"auto", "lossless", "jpeg"}
+        elif key in {"pdf_downsample", "pdf_recompress_jpeg", "pdf_preserve_16bit", "pdf_preserve_alpha"}: valid = valid and isinstance(value, bool)
+        elif key == "pdf_alpha_background": valid = valid and isinstance(value, str) and re.fullmatch(r"#[0-9a-fA-F]{6}", value) is not None
+        elif key in {"pdf_jpeg_quality", "pdf_auto_palette_limit"}: valid = valid and type(value) is int and (1 if key == "pdf_jpeg_quality" else 0) <= value <= (100 if key == "pdf_jpeg_quality" else 16384)
+        else: valid = valid and type(value) in {int, float} and math.isfinite(value) and 0 <= value <= 1
+        if not valid: raise LayMeshBridgeError("无效的 PDF 参数：" + key)
     return [part for key, value in explicit.items() for part in ("--" + key.replace("_", "-"), str(value).lower() if isinstance(value, bool) else str(value))]
 
 
@@ -489,7 +499,7 @@ def _render_impl(
     source: str, *, namespace: Mapping[str, object], base_dir: Path,
     output: Path | str | None, dpi: float | None, plot_dpi: float,
     save_source: Path | str | None, original: Path | None,
-    export_options: Mapping[str, object],
+    export_options: Mapping[str, object], config: Path | str | None = None,
 ) -> RenderResult:
     base_dir = base_dir.resolve()
     if not base_dir.is_dir():
@@ -501,9 +511,10 @@ def _render_impl(
     output_path = Path(output).resolve() if output is not None else None
     if output_path and output_path.suffix.lower() not in _FORMATS:
         raise LayMeshBridgeError("输出文件须为 SVG/PDF/PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA")
-    if dpi is not None and (not output_path or output_path.suffix.lower() not in _RASTER_FORMATS):
-        raise LayMeshBridgeError("--dpi 只用于位图输出")
+    if dpi is not None and (not output_path or output_path.suffix.lower() not in (_RASTER_FORMATS | {".pdf"})):
+        raise LayMeshBridgeError("--dpi 只用于位图/PDF 输出")
     option_args = _export_args(output_path, export_options)
+    config_args = ["--config", str(Path(config).expanduser().resolve())] if config else []
     saved_path = (base_dir / save_source).resolve() if save_source else None
     if saved_path:
         if saved_path.suffix != ".lay" or saved_path.parent != base_dir:
@@ -522,13 +533,13 @@ def _render_impl(
                 args = ["render", str(file), "-o", str(output_path)]
                 if dpi is not None:
                     args += ["--dpi", str(dpi)]
-                args += option_args
+                args += option_args + config_args
                 _run(cli, args, base_dir, file if cleanup else None)
             if output_path and output_path.suffix.lower() == ".svg":
                 preview = output_path.read_text(encoding="utf-8")
             else:
                 preview_file = Path(scratch_name) / "preview.svg"
-                _run(cli, ["render", str(file), "-o", str(preview_file)], base_dir, file if cleanup else None)
+                _run(cli, ["render", str(file), "-o", str(preview_file), *config_args], base_dir, file if cleanup else None)
                 preview = preview_file.read_text(encoding="utf-8")
             if saved_path:
                 staged = _temporary_lay(base_dir, _GENERATED + expanded)
@@ -558,15 +569,26 @@ def render_source(
     quality: float | None = None, compression: str | None = None, background: str | None = None,
     webp_lossless: bool | None = None, webp_method: int | None = None,
     webp_alpha_quality: int | None = None, webp_near_lossless: int | None = None,
+    pdf_image_compression: str | None = None,
+    pdf_jpeg_quality: int | None = None,
+    pdf_downsample: bool | None = None,
+    pdf_preserve_16bit: bool | None = None,
+    pdf_preserve_alpha: bool | None = None,
+    pdf_alpha_background: str | None = None,
+    pdf_recompress_jpeg: bool | None = None,
+    pdf_auto_palette_limit: int | None = None,
+    pdf_auto_flatness_threshold: float | None = None,
+    config: Path | str | None = None,
 ) -> RenderResult:
     """Render inline .lay source with optional Notebook variable bindings."""
     return _render(
         source, namespace=namespace or {}, base_dir=Path(base_dir or Path.cwd()),
-        output=output, dpi=dpi, plot_dpi=plot_dpi,
+        output=output, dpi=dpi, plot_dpi=plot_dpi, config=config,
         save_source=save_source, original=None, show_warnings=show_warnings,
         export_options=dict(quality=quality, compression=compression, background=background,
                             webp_lossless=webp_lossless, webp_method=webp_method,
-                            webp_alpha_quality=webp_alpha_quality, webp_near_lossless=webp_near_lossless),
+                            webp_alpha_quality=webp_alpha_quality, webp_near_lossless=webp_near_lossless,
+                            pdf_image_compression=pdf_image_compression, pdf_jpeg_quality=pdf_jpeg_quality, pdf_downsample=pdf_downsample, pdf_preserve_16bit=pdf_preserve_16bit, pdf_preserve_alpha=pdf_preserve_alpha, pdf_alpha_background=pdf_alpha_background, pdf_recompress_jpeg=pdf_recompress_jpeg, pdf_auto_palette_limit=pdf_auto_palette_limit, pdf_auto_flatness_threshold=pdf_auto_flatness_threshold),
     )
 
 
@@ -577,6 +599,16 @@ def render_file(
     quality: float | None = None, compression: str | None = None, background: str | None = None,
     webp_lossless: bool | None = None, webp_method: int | None = None,
     webp_alpha_quality: int | None = None, webp_near_lossless: int | None = None,
+    pdf_image_compression: str | None = None,
+    pdf_jpeg_quality: int | None = None,
+    pdf_downsample: bool | None = None,
+    pdf_preserve_16bit: bool | None = None,
+    pdf_preserve_alpha: bool | None = None,
+    pdf_alpha_background: str | None = None,
+    pdf_recompress_jpeg: bool | None = None,
+    pdf_auto_palette_limit: int | None = None,
+    pdf_auto_flatness_threshold: float | None = None,
+    config: Path | str | None = None,
 ) -> RenderResult:
     """Render an existing .lay file; its relative assets stay relative to it."""
     file = Path(file).resolve()
@@ -584,9 +616,10 @@ def render_file(
         raise LayMeshBridgeError(f"布局文件不存在或不是 .lay：{file}")
     return _render(
         file.read_text(encoding="utf-8"), namespace=namespace or {},
-        base_dir=file.parent, output=output, dpi=dpi,
+        base_dir=file.parent, output=output, dpi=dpi, config=config,
         plot_dpi=plot_dpi, save_source=save_source, original=file, show_warnings=show_warnings,
         export_options=dict(quality=quality, compression=compression, background=background,
                             webp_lossless=webp_lossless, webp_method=webp_method,
-                            webp_alpha_quality=webp_alpha_quality, webp_near_lossless=webp_near_lossless),
+                            webp_alpha_quality=webp_alpha_quality, webp_near_lossless=webp_near_lossless,
+                            pdf_image_compression=pdf_image_compression, pdf_jpeg_quality=pdf_jpeg_quality, pdf_downsample=pdf_downsample, pdf_preserve_16bit=pdf_preserve_16bit, pdf_preserve_alpha=pdf_preserve_alpha, pdf_alpha_background=pdf_alpha_background, pdf_recompress_jpeg=pdf_recompress_jpeg, pdf_auto_palette_limit=pdf_auto_palette_limit, pdf_auto_flatness_threshold=pdf_auto_flatness_threshold),
     )

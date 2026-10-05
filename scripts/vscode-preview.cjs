@@ -7,7 +7,9 @@ exports.run=async()=>{
  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'laymesh-preview-'));
  const file=path.join(directory,'main.lay'),dependency=path.join(directory,'values.lay');
  const gate=process.env.LAYMESH_PREVIEW_GATE;
- const source='page=canvas(size=(12,9),unit="cm",background="#ffffff")\nimport {top} from "./values.lay"\np=plot(size=(9,6),plot_area=box(offset=(1.5,1),size=(6,4)),x=axis(range=(0,10)),y=axis(range=(-1,1)))\np.line(x=[0,2,4,6,8,10],y=[0,0.6,-0.2,0.8,-0.5,0],line_color="#0072b2",line_width=1.5pt)\npage.add(p,offset=(1,1))\npage.add(rect(size=(top,0.3),fill="#d55e00"),offset=(1,8))\npage.add(text("LayMesh preview",font_size=14pt),offset=(1,0.3))'+(process.env.LAYMESH_PREVIEW_BMP?'\npage.add(image(src='+JSON.stringify(process.env.LAYMESH_PREVIEW_BMP)+'),offset=(10.5,0.3),size=(1,0.5))':'');
+ let source='page=canvas(size=(12,9),unit="cm",background="#ffffff")\nimport {top} from "./values.lay"\np=plot(size=(9,6),plot_area=box(offset=(1.5,1),size=(6,4)),x=axis(range=(0,10)),y=axis(range=(-1,1)))\np.line(x=[0,2,4,6,8,10],y=[0,0.6,-0.2,0.8,-0.5,0],line_color="#0072b2",line_width=1.5pt)\npage.add(p,offset=(1,1))\npage.add(rect(size=(top,0.3),fill="#d55e00"),offset=(1,8))\npage.add(text("LayMesh preview",font_size=14pt),offset=(1,0.3))'+(process.env.LAYMESH_PREVIEW_BMP?'\npage.add(image(src='+JSON.stringify(process.env.LAYMESH_PREVIEW_BMP)+'),offset=(10.5,0.3),size=(1,0.5))':'');
+ if(process.env.LAYMESH_PREVIEW_TRANSPARENT)source+='\npage.add(image(src='+JSON.stringify(process.env.LAYMESH_PREVIEW_TRANSPARENT)+'),offset=(11.6,0.3),size=(0.3,0.5))';
+ if(process.env.LAYMESH_PREVIEW_16BIT)source+='\npage.add(image(src='+JSON.stringify(process.env.LAYMESH_PREVIEW_16BIT)+'),offset=(10.5,1),size=(1,0.5))';
  fs.writeFileSync(file,source);fs.writeFileSync(dependency,'export top=3');
  const doc=await vscode.workspace.openTextDocument(file);await vscode.window.showTextDocument(doc);
  const extension=vscode.extensions.getExtension(require('../extensions/vscode/package.json').publisher+'.laymesh-language');
@@ -65,6 +67,15 @@ exports.run=async()=>{
   await vscode.workspace.getConfiguration('laymesh').update('language','auto',vscode.ConfigurationTarget.Global);assert.equal(vscode.env.language,'en');fs.writeFileSync(gate,JSON.stringify({phase:'auto-ready'}));await until(()=>phase()==='auto-verified','Automatic language gate',2400);
   assert.equal(renderCount(),before,'Changing language must not compile');evidence.checks.push('English manifest commands/settings; explicit and automatic English UI switching without rendering');
   await vscode.workspace.getConfiguration('workbench').update('colorTheme','VS Code Light',vscode.ConfigurationTarget.Global);await until(()=>vscode.window.activeColorTheme.kind===vscode.ColorThemeKind.Light,'Light theme');fs.writeFileSync(gate,JSON.stringify({phase:'light-ready'}));await until(()=>phase()==='light-verified','Light/narrow gate',2400);
+ }
+ const configuration=path.join(directory,'.laymesh.json');let configCount=host.messages.length;
+ fs.writeFileSync(configuration,JSON.stringify({preview:{jpeg_quality:88}}));
+ await until(()=>host.messages.slice(configCount).find(m=>m.previewSettings?.jpeg_quality===88),'Created project config');
+ configCount=host.messages.length;fs.unlinkSync(configuration);await until(()=>host.messages.slice(configCount).find(m=>m.previewSettings?.jpeg_quality===90),'Removed project config');
+ evidence.checks.push('Created/deleted project configuration refreshes effective preview quality');
+ if(process.env.LAYMESH_PREVIEW_BMP){const asset=process.env.LAYMESH_PREVIEW_BMP,original=fs.readFileSync(asset),changed=Buffer.from(original),offset=changed.readUInt32LE(10);changed[offset]^=4;
+  const before=host.messages.filter(m=>m.svg).at(-1).svg;const count=host.messages.length;fs.writeFileSync(asset,changed);await until(()=>host.messages.slice(count).find(m=>m.svg&&m.svg!==before),'Changed bitmap on disk');
+  const changedCount=host.messages.length;fs.writeFileSync(asset,original);await until(()=>host.messages.slice(changedCount).find(m=>m.svg===before),'Restored bitmap on disk');evidence.checks.push('Disk bitmap modification changes resource identity and restores correctly');
  }
  const dependencyDoc=await vscode.workspace.openTextDocument(dependency);let count=host.messages.length;await replace(dependencyDoc,'export top=5');
  let result=await until(()=>host.messages.slice(count).find(m=>m.svg),'Unsaved dependency');assert(fs.readFileSync(dependency,'utf8').includes('top=3'));assert(result.svg!==host.messages.find(m=>m.svg).svg);

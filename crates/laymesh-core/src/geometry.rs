@@ -663,8 +663,7 @@ impl Engine {
             "image" => {
                 let src = string(a, "src", "");
                 let path = resolve(&o.file, &src);
-                let data = self.host.read(&path, &o.file, l)?;
-                let mut asset = crate::assets::load(&data, &path, &o.file, l)?;
+                let mut asset = self.load_image(&path, &o.file, l)?;
                 let (iw, ih) = (jnum(&asset, "width", 1.), jnum(&asset, "height", 1.));
                 let crop = if let Some(c) = a.get("crop").and_then(V::object) {
                     let args = &c.borrow().args;
@@ -689,8 +688,8 @@ impl Engine {
                     if asset["mime"] == "image/svg+xml" {
                         return Err(self.error("E_IMAGE", "SVG 不支持像素裁剪", l));
                     }
-                    asset = crate::assets::crop_raster(
-                        jstr(&asset, "data", ""),
+                    asset = crate::assets::crop_asset(
+                        &asset,
                         [
                             jnum(&c, "x", 0.),
                             jnum(&c, "y", 0.),
@@ -714,6 +713,8 @@ impl Engine {
                 }
                 let mut n = base("image", w, h);
                 n["data"] = asset["data"].clone();
+                if asset["rasterKey"].is_string() { n["rasterKey"] = asset["rasterKey"].clone(); }
+                if asset["sourceJpegHash"].is_string(){n["sourceJpegHash"]=asset["sourceJpegHash"].clone();}
                 n["mime"] = asset["mime"].clone();
                 n["intrinsicWidth"] = json!(cw);
                 n["intrinsicHeight"] = json!(ch);

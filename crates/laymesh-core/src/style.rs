@@ -686,7 +686,7 @@ impl Engine {
             let data = self.host.read(&path, file, l)?;
             let asset = crate::assets::load(&data, &path, file, l)?;
             return Ok(V::from_json(
-                &json!({"kind":"imagePaint","data":asset["data"],"mime":asset["mime"],"width":asset["width"],"height":asset["height"],"fit":args.get(1).map(String::as_str).unwrap_or("cover")}),
+                &json!({"kind":"imagePaint","rasterKey":asset["rasterKey"],"sourceJpegHash":asset["sourceJpegHash"],"data":asset["data"],"mime":asset["mime"],"width":asset["width"],"height":asset["height"],"fit":args.get(1).map(String::as_str).unwrap_or("cover")}),
             ));
         }
         if key.ends_with("color") || matches!(key, "fill" | "background") {

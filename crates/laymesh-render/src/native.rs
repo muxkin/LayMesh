@@ -176,6 +176,11 @@ fn formula_semantics(
 }
 /// Render vector PDF with subset embedded user fonts and searchable formula LaTeX source.
 pub fn render_pdf(scene: &Scene) -> Result<Vec<u8>> {
+    render_pdf_with_options(scene, &super::export::ExportOptions::default())
+}
+pub fn render_pdf_with_options(scene: &Scene, options: &super::export::ExportOptions) -> Result<Vec<u8>> {
+    let optimized = super::raster_policy::pdf_scene(scene, options)?;
+    let scene = &optimized;
     let tree = tree(scene)?;
     let size = Size::from_wh(
         (scene.width * 72. / 25.4) as f32,

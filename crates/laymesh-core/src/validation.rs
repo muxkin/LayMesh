@@ -169,8 +169,7 @@ impl Engine {
         if name == "image" {
             let src = string(a, "src", "");
             let path = resolve(&self.file, &src);
-            let bytes = self.host.read(&path, &self.file, l)?;
-            crate::assets::load(&bytes, &path, &self.file, l)?;
+            self.load_image(&path, &self.file.clone(), l)?;
         }
         if name == "formula" {
             let mut spec = self.text_spec(a, &self.file.clone(), l)?;

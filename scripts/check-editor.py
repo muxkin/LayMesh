@@ -32,10 +32,12 @@ with zipfile.ZipFile(a.vsix) as z:
  properties={v.get('Id'):v.get('Value') for v in manifest.findall('.//{*}Property')}
  if a.target:assert identity.get('TargetPlatform')==a.target
  assert (properties.get('Microsoft.VisualStudio.Code.PreRelease')=='true')==a.pre_release
+ assert manifest.find('.//{*}GalleryFlags').text==('Public Preview' if package.get('preview') else 'Public')
  for asset in manifest.findall('.//{*}Asset'):
   assert asset.get('Path') in names
   assert content_type(asset.get('Path')),f'Missing content type for asset: {asset.get("Path")}'
  if a.marketplace:
+  if not a.pre_release:assert not package.get('preview'), 'Stable Marketplace packages must not display the Preview badge.'
   assert re.fullmatch(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)',package['version'])
   assert identity.get('TargetPlatform'), 'A native Marketplace package must declare its platform.'
   assert package['extensionKind']==['workspace']

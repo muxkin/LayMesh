@@ -17,7 +17,9 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
  (profile/'profile/User/settings.json').write_text(json.dumps({'workbench.colorTheme':'VS Code Dark','window.autoDetectColorScheme':False}))
  with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
  bmp=profile/'中文 # 图片.bmp';Image.new('RGB',(20,10),(30,150,220)).save(bmp)
- env={**os.environ,'LAYMESH_PREVIEW_GATE':str(gate),'LAYMESH_PREVIEW_EVIDENCE':str(evidence),'LAYMESH_PREVIEW_BMP':str(bmp)};env.pop('ELECTRON_RUN_AS_NODE',None)
+ transparent=profile/'透明.png';Image.new('RGBA',(20,10),(255,0,0,128)).save(transparent)
+ high=profile/'16位.png';Image.new('I;16',(20,10),35000).save(high)
+ env={**os.environ,'LAYMESH_PREVIEW_GATE':str(gate),'LAYMESH_PREVIEW_EVIDENCE':str(evidence),'LAYMESH_PREVIEW_BMP':str(bmp),'LAYMESH_PREVIEW_TRANSPARENT':str(transparent),'LAYMESH_PREVIEW_16BIT':str(high)};env.pop('ELECTRON_RUN_AS_NODE',None)
  command=[a.code,'--no-sandbox','--disable-gpu','--disable-updates','--ozone-platform=headless','--force-device-scale-factor=2','--remote-debugging-port='+str(port),'--remote-allow-origins=*','--user-data-dir='+str(profile/'profile'),'--extensions-dir='+str(profile/'extensions'),'--extensionDevelopmentPath='+str(ROOT/'extensions/vscode'),'--extensionTestsPath='+str(ROOT/'scripts/vscode-preview.cjs'),'--skip-welcome','--skip-release-notes','--new-window']
  log=(profile/'host.log').open('w');host=subprocess.Popen(command,env=env,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
  try:
@@ -46,10 +48,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   def phase(value):gate.write_text(json.dumps({'phase':value}))
   def wait_phase(value):return until(lambda:json.loads(gate.read_text()).get('phase')==value,'Gate '+value)
   evaluate("(()=>{d.defaultView.previewEvents=[];for(const type of ['pointerdown','pointerup','pointerout','pointerleave','mouseout','mouseleave'])d.addEventListener(type,e=>{const es=d.defaultView.previewEvents;es.push({type:e.type,target:e.target.className,related:e.relatedTarget?.className});if(es.length>12)es.shift()},true);return true})()")
-  wait("d.querySelector('.preview').dataset.state==='success'&&d.querySelector('.figure').complete")
-  # Sample the actual SVG image after the browser rendered its embedded BMP pixels.
-  bitmap=evaluate("(()=>{const img=d.querySelector('.figure'),c=d.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);return Array.from(ctx.getImageData(Math.floor(c.width*11/12),Math.floor(c.height*.55/9),1,1).data)})()")
-  assert bitmap==[30,150,220,255],bitmap
+  wait("d.querySelector('.preview').dataset.state==='success'&&(d.querySelector('.preview').dataset.painted==='true'||d.querySelector('.figure').complete)")
   wait("d.body.classList.contains('vscode-dark')")
   root.call('Page.bringToFront')
   # Follow the real webview -> host -> Quick Input export wizard, without replacing VS Code APIs.
@@ -76,6 +75,20 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
    stable_frames=stable_frames+1 if geometry==last_layout else 0;last_layout=geometry
    return stable_frames>=5
   until(stable_layout,'Stable native layout')
+  # Sample the rendered page screenshot; external full-resolution resources cannot
+  # be drawn into a canvas without changing webview origin security.
+  bounds=root.evaluate("document.querySelector('iframe').getBoundingClientRect().toJSON()")
+  rect=evaluate("d.querySelector('.figure').getBoundingClientRect().toJSON()")
+  shot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False})
+  import io
+  rendered=Image.open(io.BytesIO(base64.b64decode(shot['data']))).convert('RGBA')
+  ratio=rendered.width/1440
+  bitmap=list(rendered.getpixel((round((bounds['x']+rect['x']+rect['width']*11/12)*ratio),round((bounds['y']+rect['y']+rect['height']*.55/9)*ratio))))
+  assert all(abs(a-b)<=3 for a,b in zip(bitmap,[30,150,220,255])),bitmap
+  def sample(fx,fy):return list(rendered.getpixel((round((bounds['x']+rect['x']+rect['width']*fx)*ratio),round((bounds['y']+rect['y']+rect['height']*fy)*ratio))))
+  transparent_pixel=sample(11.75/12,.55/9);high_pixel=sample(11/12,1.25/9)
+  assert all(abs(a-b)<=4 for a,b in zip(transparent_pixel,[255,127,127,255])),transparent_pixel
+  assert all(abs(a-b)<=2 for a,b in zip(high_pixel,[136,136,136,255])),high_pixel
   phase('mouse-start');wait_phase('mouse-ready')
   def screen_point(fx,fy):
    outer=root.evaluate("document.querySelector('iframe').getBoundingClientRect().toJSON()")
@@ -114,7 +127,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   for i in range(30):move(.3+.3*i/29,.3)
   move(5.5/12,4/9);wait_readout()
   screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'dark-desktop.png').write_bytes(base64.b64decode(screenshot['data']))
-  state=evaluate("({readout:d.querySelector('.coordinates').textContent,blank:!d.querySelector('.figure').naturalWidth,errors:d.querySelector('.error-location').hidden,unit:d.querySelector('.corner').textContent})");assert not state['blank'] and state['errors']
+  state=evaluate("({readout:d.querySelector('.coordinates').textContent,blank:d.querySelector('.figure').getBoundingClientRect().width===0,errors:d.querySelector('.error-location').hidden,unit:d.querySelector('.corner').textContent})");assert not state['blank'] and state['errors']
   outer=root.evaluate("document.querySelector('iframe').getBoundingClientRect().toJSON()");vp=evaluate("d.querySelector('.viewport').getBoundingClientRect().toJSON()")
   root.call('Input.dispatchMouseEvent',{'type':'mouseMoved','x':outer['x']+vp['x']+3,'y':outer['y']+vp['y']+3});wait("d.querySelector('.coordinates').textContent===''&&d.querySelector('.crosshair').hidden")
   # Manual view survives explicit English and automatic editor-language selection.
@@ -144,9 +157,9 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   assert not console_errors,console_errors
   phase('light-verified');wait_phase('english-error')
   wait("d.querySelector('.preview').dataset.state==='error'&&d.querySelector('.status').textContent==='Error · preview stale'")
-  assert evaluate("!d.querySelector('.error-location').hidden&&d.querySelector('.error-location').title==='Go to source'&&d.querySelector('.figure').naturalWidth>0")
+  assert evaluate("!d.querySelector('.error-location').hidden&&d.querySelector('.error-location').title==='Go to source'&&d.querySelector('.figure').getBoundingClientRect().width>0")
   phase('error-verified');wait_phase('complete');host.wait(timeout=20);assert host.returncode==0
-  result=json.loads(evidence.read_text());result['ui']={'bmp_pixel':bitmap,'export_wizard_verified':True,'invalid_export_dpi_rejected':True,'tiff_compression_choices_verified':True,'initial_readout':readout,'english_readout':english_readout,'state':state,'narrow':layout,'console_errors':console_errors,'viewports':['1440x1000 dark DPR 2','760x720 light DPR 2'],'checks':['BMP on a Chinese/space/hash path','canvas/data hover','ruler markers','wheel anchor','Space drag','100%','ruler toggle','fit','continuous motion','pointer exit','narrow resize','DPR ruler pixels','explicit English and auto UI','view preserved on language change','English stale error and source action']}
+  result=json.loads(evidence.read_text());result['ui']={'bmp_pixel':bitmap,'transparent_webp_pixel':transparent_pixel,'opaque_16bit_jpeg_pixel':high_pixel,'export_wizard_verified':True,'invalid_export_dpi_rejected':True,'tiff_compression_choices_verified':True,'initial_readout':readout,'english_readout':english_readout,'state':state,'narrow':layout,'console_errors':console_errors,'viewports':['1440x1000 dark DPR 2','760x720 light DPR 2'],'checks':['BMP on a Chinese/space/hash path','canvas/data hover','ruler markers','wheel anchor','Space drag','100%','ruler toggle','fit','continuous motion','pointer exit','narrow resize','DPR ruler pixels','explicit English and auto UI','view preserved on language change','English stale error and source action']}
   (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))
  except Exception:
   try:

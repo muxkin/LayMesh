@@ -155,7 +155,7 @@ fn legacy_cli_plot_layout_warnings_do_not_prevent_any_export() {
             ),
             "png" => assert_eq!(
                 u32::from_be_bytes(bytes[16..20].try_into().unwrap()),
-                (180. * 96. / 25.4_f64).round() as u32
+                (180. * 1200. / 25.4_f64).round() as u32
             ),
             _ => unreachable!(),
         }

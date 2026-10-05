@@ -79,7 +79,9 @@ fn paint(p: &Json, defs: &mut Vec<String>) -> String {
             } else {
                 "xMidYMid meet"
             };
-            defs.push(format!("<pattern id='{id}' width='1' height='1' patternContentUnits='objectBoundingBox'><svg width='1' height='1' viewBox='0 0 {} {}' preserveAspectRatio='{aspect}'><image width='{}' height='{}' href='data:{};base64,{}'/></svg></pattern>",n(p,"width",1.),n(p,"height",1.),n(p,"width",1.),n(p,"height",1.),escape(jstr(p,"mime","image/png")),jstr(p,"data","")));
+            let mut pattern = format!("<pattern id='{id}' width='1' height='1' patternContentUnits='objectBoundingBox'><svg width='1' height='1' viewBox='0 0 {} {}' preserveAspectRatio='{aspect}'><image width='{}' height='{}' href='data:{};base64,{}'/></svg></pattern>",n(p,"width",1.),n(p,"height",1.),n(p,"width",1.),n(p,"height",1.),escape(jstr(p,"mime","image/png")),jstr(p,"data",""));
+            if let Some(uri)=p["resourceUri"].as_str() { pattern=pattern.replace(&format!("data:{};base64,{}",jstr(p,"mime","image/png"),jstr(p,"data","")),&escape(uri)); pattern=pattern.replacen("<image ",&format!("<image data-laymesh-asset='{}' ",escape(jstr(p,"previewAsset",""))),1); }
+            defs.push(pattern);
         }
         _ => {
             let stops = p["stops"]
@@ -498,7 +500,7 @@ fn node_svg_transformed(
                 (scale, scale)
             };
             let (x, y) = ((w - cw * sw) / 2. - cx * sw, (h - ch * sh) / 2. - cy * sh);
-            let image = format!(
+            let mut image = format!(
                 "<image x='{}' y='{}' width='{}' height='{}' href='data:{};base64,{}' preserveAspectRatio='none'{} />",
                 number(x),
                 number(y),
@@ -512,6 +514,10 @@ fn node_svg_transformed(
                     ""
                 }
             );
+            if let Some(uri) = node["resourceUri"].as_str() {
+                image = image.replace(&format!("data:{};base64,{}", jstr(node,"mime","image/png"),jstr(node,"data","")), &escape(uri));
+                image = image.replacen("<image ", &format!("<image data-laymesh-asset='{}' ",escape(jstr(node,"previewAsset",""))),1);
+            }
             if fit == "cover" || crop.is_object() {
                 let id = format!("clip-{}", defs.len());
                 defs.push(format!(
@@ -694,6 +700,12 @@ fn svg(scene: &Scene, embed_fonts: bool) -> Result<String> {
 mod export;
 #[cfg(feature = "native")]
 mod native;
+#[cfg(feature = "native")]
+pub mod raster_policy;
+#[cfg(feature = "native")]
+pub mod config;
+#[cfg(feature = "native")]
+pub mod preview_assets;
 #[cfg(feature = "native")]
 pub use export::{ExportOptions, export_format, render_export};
 #[cfg(feature = "native")]

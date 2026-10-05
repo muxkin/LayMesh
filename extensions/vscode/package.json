@@ -1,10 +1,9 @@
 {
   "name": "laymesh-language",
   "displayName": "LayMesh",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "publisher": "Hyacine",
   "description": "%extension.description%",
-  "preview": true,
   "icon": "icon.png",
   "keywords": [
     "LayMesh",
@@ -98,8 +97,8 @@
           "description": "%config.executable%"
         },
         "laymesh.preview.debounceMs": {
-          "type": "number",
-          "default": 250,
+          "type": "integer",
+          "default": 100,
           "minimum": 0,
           "maximum": 5000,
           "description": "%config.preview.debounceMs%"
@@ -118,7 +117,7 @@
         },
         "laymesh.export.dpi": {
           "type": "number",
-          "default": 300,
+          "default": 1200,
           "minimum": 0.01,
           "maximum": 25400,
           "description": "%config.export.dpi%"
@@ -145,6 +144,105 @@
           "type": "boolean",
           "default": true,
           "description": "%config.export.webpLossless%"
+        },
+        "laymesh.export.pdf.imageCompression": {
+          "type": "string",
+          "default": "auto",
+          "description": "%config.export.pdf.imageCompression%",
+          "enum": [
+            "auto",
+            "lossless",
+            "jpeg"
+          ]
+        },
+        "laymesh.export.pdf.jpegQuality": {
+          "type": "integer",
+          "default": 90,
+          "description": "%config.export.pdf.jpegQuality%",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "laymesh.export.pdf.downsample": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.export.pdf.downsample%"
+        },
+        "laymesh.export.pdf.recompressJpeg": {
+          "type": "boolean",
+          "default": false,
+          "description": "%config.export.pdf.recompressJpeg%"
+        },
+        "laymesh.export.pdf.autoPaletteLimit": {
+          "type": "integer",
+          "default": 32,
+          "description": "%config.export.pdf.autoPaletteLimit%",
+          "minimum": 0,
+          "maximum": 16384
+        },
+        "laymesh.export.pdf.autoFlatnessThreshold": {
+          "type": "number",
+          "default": 0.9,
+          "description": "%config.export.pdf.autoFlatnessThreshold%",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "laymesh.preview.jpegQuality": {
+          "type": "integer",
+          "default": 90,
+          "description": "%config.preview.jpegQuality%",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "laymesh.preview.cacheMb": {
+          "type": "integer",
+          "default": 256,
+          "description": "%config.preview.cacheMb%",
+          "minimum": 1,
+          "maximum": 65536
+        },
+        "laymesh.export.pdf.preserve16bit": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.export.pdf.preserve16bit%"
+        },
+        "laymesh.export.pdf.preserveAlpha": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.export.pdf.preserveAlpha%"
+        },
+        "laymesh.export.pdf.alphaBackground": {
+          "type": "string",
+          "default": "#ffffff",
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "description": "%config.export.pdf.alphaBackground%"
+        },
+        "laymesh.preview.webpQuality": {
+          "type": "integer",
+          "default": 90,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "%config.preview.webpQuality%"
+        },
+        "laymesh.preview.webpMethod": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 6,
+          "description": "%config.preview.webpMethod%"
+        },
+        "laymesh.preview.imageThreads": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 32,
+          "description": "%config.preview.imageThreads%"
+        },
+        "laymesh.preview.processingMemoryMb": {
+          "type": "integer",
+          "default": 128,
+          "minimum": 1,
+          "maximum": 65536,
+          "description": "%config.preview.processingMemoryMb%"
         }
       }
     },
@@ -162,6 +260,10 @@
         "command": "laymesh.exportFigure",
         "title": "%command.exportFigure%",
         "icon": "$(export)"
+      },
+      {
+        "command": "laymesh.configurePreviewDebounce",
+        "title": "%command.configurePreviewDebounce%"
       }
     ],
     "menus": {

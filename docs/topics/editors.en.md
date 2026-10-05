@@ -115,10 +115,20 @@ The web computes necessary colors locally during input events and coalesces comp
 
 The preview supports English and Simplified Chinese. `laymesh.language: "auto"` follows VS Code; select `"en"` or `"zh-CN"` to override it. An open preview changes labels immediately without compiling or resetting its view. Command titles and Settings descriptions follow VS Code's display language. Native compiler details and figure text retain their original language.
 
-Use the editor title preview icon, context menu, or **LayMesh: Open Preview** on a saved `.lay` file. Each entry has its own panel beside the editor. Edits refresh after 250 ms, including unsaved modules, LCSS and text data; local resource changes refresh it too. Preview uses an independent Rust process in a trusted workspace.
+Use the editor title preview icon, context menu, or **LayMesh: Open Preview** on a saved `.lay` file. Each entry has its own panel beside the editor. Edits refresh after 100 ms, including unsaved modules, LCSS and text data; local resource changes refresh it too. Preview uses an independent Rust process in a trusted workspace.
 
 Rulers and canvas X/Y follow `canvas(unit=...)`; px uses `layout_dpi`. Hovering a plot also shows all named data axes, including log, symlog, reversed and broken scales. Gaps show `—`. Polar plots show θ/r without an angle at the center; radar charts show dimension values near their spokes.
 
 Ctrl/Command + wheel zooms about the pointer; Space + drag or middle drag pans. The toolbar offers refresh, fit, 100%, zoom and rulers. 100% uses layout pixels. Errors retain the last figure and mark it stale; click the error to open its source location. Configure `laymesh.preview.debounceMs`, `laymesh.preview.renderTimeoutMs`, and `laymesh.preview.showRulers` for refresh delay, timeout and default rulers.
 
+Run **LayMesh: Set Preview Delay** to enter an integer from 0 to 5000 ms (default 100; 0 disables debounce). It saves to workspace settings when a workspace is open, otherwise user settings, and applies immediately.
+
 Run **LayMesh: Export Figure** from a `.lay` editor or click **Export** in preview, then choose format, DPI, encoding options and destination. Unsaved entry and opened imported buffers are used; remote windows save on the extension host. [Export formats and encoding options](export.en.md)
+
+## Full-resolution native preview
+
+VS Code directly loads full-resolution normalized images: opaque images use JPEG quality 90, including 16-bit inputs converted to 8-bit for display. Only images with actually nonopaque alpha pixels use lossy WebP quality 90, method 0 (fast). Alpha is retained; no PNG candidate comparison, proxy images, idle upgrades or double buffering are used.
+
+Validation and layout share a content cache. Independent native threads encode owned pixels (automatic thread count up to 2), with a 128 MiB concurrent working-memory budget. An oversized image runs alone. Active document pixels can exceed the 256 MiB reusable cache budget; eviction bounds reusable entries, not the necessary active working set. Encoded image/font files use stable content URIs; inline SVG refreshes transfer geometry, inspection and newly referenced resources. Text-only changes reuse resources. Closing the final preview releases the worker and resource directory.
+
+Settings: `laymesh.preview.jpegQuality` (90), `webpQuality` (90), `webpMethod` (0), `imageThreads` (0=auto), `cacheMb` (256), `processingMemoryMb` (128). These map to JSON `preview` snake_case keys. The browser asynchronously decodes the full images. Older executables use the existing embedded SVG compatibility path. Zoom, pan, cursor readings and vector annotations stay independent of image encoding. The source files and export precision are untouched.
