@@ -76,9 +76,19 @@ class Exports(unittest.TestCase):
         import os
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary);project=root/'project';project.mkdir();file=project/'figure.lay';file.write_text(SOURCE)
-            global_dir=root/'global';(global_dir/'laymesh').mkdir(parents=True)
+            # Exercise each platform's real configuration location in an isolated
+            # subprocess environment; XDG_CONFIG_HOME is Linux-specific.
+            import sys
+            env=dict(os.environ)
+            if sys.platform == 'win32':
+                global_dir=root/'appdata';env['APPDATA']=str(global_dir)
+            elif sys.platform == 'darwin':
+                home=root/'home';env['HOME']=str(home)
+                global_dir=home/'Library'/'Application Support'
+            else:
+                global_dir=root/'global';env['XDG_CONFIG_HOME']=str(global_dir)
+            (global_dir/'laymesh').mkdir(parents=True)
             (global_dir/'laymesh/config.json').write_text('{"export":{"dpi":600}}')
-            env={**os.environ,'XDG_CONFIG_HOME':str(global_dir)}
             def export(extra,expected):
                 output=project/'out.png';result=subprocess.run([*_command(),'render',str(file),'-o',str(output),*extra],env=env,capture_output=True,text=True);self.assertEqual(result.returncode,0,result.stderr)
                 with Image.open(output) as image:self.assertEqual(image.size,(expected,expected//2))
