@@ -57,3 +57,5 @@ python -m unittest discover -s python/tests -v
 ## 其他发行物
 
 原生 VS Code 扩展使用 `python scripts/build-editors.py` 构建，`python scripts/package-editor.py --output release/dist/laymesh.vsix` 打包，再用 `python scripts/check-editor.py release/dist/laymesh.vsix` 审计。Rust/WASM 文档站使用 `python scripts/build-docs.py` 构建。这些发行物与 PyPI wheel 分开发放。
+
+若修改 Rust 源码、Cargo 版本或锁文件，还需使用当前引擎运行 `python scripts/build-docs-media.py --binary target/release/laymesh`，随后运行 `python scripts/build-docs.py` 与 `python scripts/build-docs.py --check`。提交重新生成的 `site/media` 图片和清单；文档 CI 会拒绝与渲染器指纹不一致的旧缓存。

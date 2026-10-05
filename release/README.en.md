@@ -57,3 +57,5 @@ The publishing job downloads the exact reviewed artifacts and uploads them witho
 ## Other artifacts
 
 Build the native VS Code extension with `python scripts/build-editors.py`, package it with `python scripts/package-editor.py --output release/dist/laymesh.vsix`, and audit with `python scripts/check-editor.py release/dist/laymesh.vsix`. Build the Rust/WASM documentation site with `python scripts/build-docs.py`. These artifacts are distributed separately from the PyPI wheel.
+
+When Rust sources, Cargo versions or the lockfile change, regenerate documentation media with the current engine: `python scripts/build-docs-media.py --binary target/release/laymesh`, then run `python scripts/build-docs.py` and `python scripts/build-docs.py --check`. Commit the regenerated `site/media` images and manifest; documentation CI rejects cached media whose renderer fingerprint no longer matches.
