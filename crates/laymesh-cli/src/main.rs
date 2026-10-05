@@ -109,7 +109,13 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 i += 1;
                 let value = rest.get(i).unwrap_or_else(|| usage(2));
                 match flag {
-                    "--dpi" => options.dpi = Some(value.parse().unwrap_or_else(|_| usage(2))),
+                    "--dpi" => {
+                        let dpi: f64 = value.parse().unwrap_or_else(|_| usage(2));
+                        if !dpi.is_finite() || dpi <= 0. {
+                            usage(2);
+                        }
+                        options.dpi = Some(dpi);
+                    }
                     "--quality" => {
                         options.quality = Some(value.parse().unwrap_or_else(|_| usage(2)))
                     }
