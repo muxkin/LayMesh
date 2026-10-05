@@ -6,7 +6,7 @@
 
 ## Install
 
-Requires **Python 3.10+**. Version `0.3.1` adds configurable raster export. Install an uploaded release or a reviewed local platform wheel:
+Requires **Python 3.10+**. Version `0.3.2` adds configurable raster export. Install an uploaded release or a reviewed local platform wheel:
 
 ```sh
 python -m pip install laymesh
@@ -42,7 +42,7 @@ laymesh render figure.lay -o figure.png --dpi 300
 
 `python -m laymesh` invokes the same CLI. Geometry defaults to mm; typography and line widths default to pt. Raster DPI changes output pixels while preserving physical dimensions. `.lay` is a restricted standalone language, separate from Python.
 
-## Image export options (0.3.1)
+## Image export options (0.3.2)
 
 ```sh
 laymesh render figure.lay -o figure.jpg --dpi 300 --quality 95 --background "#ffffff"
