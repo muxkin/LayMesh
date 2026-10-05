@@ -328,6 +328,9 @@ fn normalized_icc_pixels_have_the_same_colors_in_svg_png_and_pdf() {
     let mut old = scene.clone();
     use base64::Engine as _;
     old.nodes[0]["data"] = json!(base64::engine::general_purpose::STANDARD.encode(raw));
+    // Replacing the pixels also invalidates the reference to the original
+    // normalized pixels; otherwise PDF correctly retains the original image.
+    old.nodes[0].as_object_mut().unwrap().remove("rasterKey");
     for image in all_rasters(&old) {
         assert!(
             !correct_color(&image),
