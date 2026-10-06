@@ -109,8 +109,11 @@ jobs:
           --source release-source --version "$RELEASE_VERSION"
           --wheels reviewed/dist --vsix reviewed/vsix --checksums reviewed/SHA256SUMS
           --report marketplace-audit.json
-      - run: npm install --global --no-audit --no-fund @vscode/vsce@4.0.0
+      # Includes Microsoft's OIDC protocol fix c960f2e; 4.0.0 cannot exchange tokens.
+      - run: npm install --global --no-audit --no-fund @vscode/vsce@4.0.1-3
       - run: vsce --version
+      - name: Check the installed publisher's OIDC protocol without credentials
+        run: node scripts/check-marketplace-oidc.cjs "$(npm root -g)/@vscode/vsce"
       - name: Check VSIX compatibility with the pinned publisher
         run: |
           for package in reviewed/vsix/*.vsix; do

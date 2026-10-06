@@ -58,7 +58,7 @@ python -m unittest discover -s python/tests -v
 
 ## VS Code 自动发布
 
-[Publish VS Code Marketplace](../.github/workflows/publish-marketplace.yml) 在 `main` 的 PyPI 发布成功后自动运行。它下载原运行的五个平台 VSIX、审核 wheel 和校验和，检查来源提交、版本、哈希及内置引擎一致性，再使用固定版本的 `@vscode/vsce` 4.0.0 发布正式版。商店校验完成后，会核对五个平台和 VSIX 哈希；重试会跳过已发布的平台，同一版本的不同包会报错。
+[Publish VS Code Marketplace](../.github/workflows/publish-marketplace.yml) 在 `main` 的 PyPI 发布成功后自动运行。它下载原运行的五个平台 VSIX、审核 wheel 和校验和，检查来源提交、版本、哈希及内置引擎一致性，再使用固定版本的 `@vscode/vsce` 4.0.1-3 发布正式版。该发布工具包含[微软的 OIDC 协议修复](https://github.com/microsoft/vscode-vsce/commit/c960f2e97da3360899f2bfe93390fa4890c69327)，流程会在使用前验证请求协议。商店校验完成后，会核对五个平台和 VSIX 哈希；重试会跳过已发布的平台，同一版本的不同包会报错。
 
 在现有 [Hyacine 发布者后台](https://marketplace.visualstudio.com/manage/publishers/Hyacine)配置一次[可信发布授权](https://github.com/microsoft/vscode-vsce#trusted-publishing)：所有者 `muxkin`、仓库 `LayMesh`、`main` 上的工作流 `publish-marketplace.yml`。发布任务使用 GitHub 环境 `marketplace` 和 `id-token: write`，默认 `oidc` 模式获取临时商店凭据，无需保存 PAT。配置后，扩展跟随 PyPI 发布，无需逐次手动上传 VSIX。
 
