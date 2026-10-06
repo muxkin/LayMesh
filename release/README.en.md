@@ -58,20 +58,20 @@ The publishing job downloads the exact reviewed artifacts and uploads them witho
 
 ## Automated VS Code publication
 
-[Publish VS Code Marketplace](../.github/workflows/publish-marketplace.yml) runs automatically after a successful PyPI publication from `main`. It downloads the original five VSIX packages and reviewed wheels, checks their source commit, versions, checksums and matching native binaries, then publishes the stable packages with pinned `@vscode/vsce` 4.0.1-3. This publisher contains [Microsoft's OIDC protocol fix](https://github.com/microsoft/vscode-vsce/commit/c960f2e97da3360899f2bfe93390fa4890c69327); the workflow checks its request contract before use. It verifies each platform and VSIX hash on Marketplace after validation. Retrying skips already published packages and detects mismatched packages at the same version.
+[Publish VS Code Marketplace](../.github/workflows/publish-marketplace.yml) runs automatically after a successful PyPI publication from `main`. It downloads the original five VSIX packages and reviewed wheels, checks their source commit, versions, checksums and matching native binaries, then publishes the stable packages with pinned `@vscode/vsce` 4.0.0. It verifies each platform and VSIX hash on Marketplace after validation. Retrying skips already published packages and detects mismatched packages at the same version.
 
-Configure [trusted publishing](https://github.com/microsoft/vscode-vsce#trusted-publishing) once under the existing [Hyacine publisher](https://marketplace.visualstudio.com/manage/publishers/Hyacine): authorize owner `muxkin`, repository `LayMesh`, workflow `publish-marketplace.yml` on `main`. The job uses the GitHub environment `marketplace` and `id-token: write`. Its default `oidc` mode obtains a temporary Marketplace credential; no stored PAT is required.
+Configure the `VSCE_PAT` secret once in the repository's [Actions secrets](https://github.com/muxkin/LayMesh/settings/secrets/actions) or its `marketplace` environment. The token needs Marketplace Manage permissions and the account must have access to the existing [Hyacine publisher](https://marketplace.visualstudio.com/manage/publishers/Hyacine). The workflow defaults to `pat`; no per-release VSIX uploads are needed. [Microsoft's publishing guide](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) explains how to create the token and documents the December 1, 2026 retirement of global PATs. Store credentials through the GitHub interface or `gh secret set VSCE_PAT`; do not place them in source files or release logs.
 
 To publish the existing 0.3.9 artifacts, or resume a partial publication within their retention period:
 
 ```sh
 gh workflow run publish-marketplace.yml --ref main \
-  -f run_id=37400436659 -f version=0.3.9 -f publish=true -f auth=oidc
+  -f run_id=37400436659 -f version=0.3.9 -f publish=true -f auth=pat
 ```
 
 Set `publish=false` for an audit without uploading. Failed, fork, PR and skipped PyPI publication runs are rejected. The workflow never rebuilds or increments versions.
 
-If the publisher cannot yet use trusted publishing, configure a `VSCE_PAT` Actions secret with Marketplace Manage permissions and access to `Hyacine`; use `auth=pat` for manual runs, or the `MARKETPLACE_AUTH=pat` variable in the `marketplace` environment for automatic runs. [Microsoft's publishing guide](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) documents PAT permissions and the December 1, 2026 retirement of global PATs; prefer OIDC for continuing automation.
+[Trusted publishing](https://github.com/microsoft/vscode-vsce#trusted-publishing) is an optional future route without a stored PAT. The [October 6, 2026 attempt](https://github.com/muxkin/LayMesh/actions/runs/37404048392) passed the source, artifact and OIDC protocol checks, but Marketplace returned `Trusted Publishing is not supported`. Once Marketplace supports the publisher, authorize owner `muxkin`, repository `LayMesh`, workflow `publish-marketplace.yml` on `main` and environment `marketplace`; select `auth=oidc` for manual runs, or set `MARKETPLACE_AUTH=oidc` in that environment for automatic runs. OIDC mode pins 4.0.1-3 with [Microsoft's protocol fix](https://github.com/microsoft/vscode-vsce/commit/c960f2e97da3360899f2bfe93390fa4890c69327) and tests the installed request contract before use. Failed OIDC authentication never falls back to a PAT.
 
 ## Other artifacts
 

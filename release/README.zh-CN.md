@@ -58,20 +58,20 @@ python -m unittest discover -s python/tests -v
 
 ## VS Code 自动发布
 
-[Publish VS Code Marketplace](../.github/workflows/publish-marketplace.yml) 在 `main` 的 PyPI 发布成功后自动运行。它下载原运行的五个平台 VSIX、审核 wheel 和校验和，检查来源提交、版本、哈希及内置引擎一致性，再使用固定版本的 `@vscode/vsce` 4.0.1-3 发布正式版。该发布工具包含[微软的 OIDC 协议修复](https://github.com/microsoft/vscode-vsce/commit/c960f2e97da3360899f2bfe93390fa4890c69327)，流程会在使用前验证请求协议。商店校验完成后，会核对五个平台和 VSIX 哈希；重试会跳过已发布的平台，同一版本的不同包会报错。
+[Publish VS Code Marketplace](../.github/workflows/publish-marketplace.yml) 在 `main` 的 PyPI 发布成功后自动运行。它下载原运行的五个平台 VSIX、审核 wheel 和校验和，检查来源提交、版本、哈希及内置引擎一致性，再使用固定版本的 `@vscode/vsce` 4.0.0 发布正式版。商店校验完成后，会核对五个平台和 VSIX 哈希；重试会跳过已发布的平台，同一版本的不同包会报错。
 
-在现有 [Hyacine 发布者后台](https://marketplace.visualstudio.com/manage/publishers/Hyacine)配置一次[可信发布授权](https://github.com/microsoft/vscode-vsce#trusted-publishing)：所有者 `muxkin`、仓库 `LayMesh`、`main` 上的工作流 `publish-marketplace.yml`。发布任务使用 GitHub 环境 `marketplace` 和 `id-token: write`，默认 `oidc` 模式获取临时商店凭据，无需保存 PAT。配置后，扩展跟随 PyPI 发布，无需逐次手动上传 VSIX。
+在仓库的 [Actions Secrets](https://github.com/muxkin/LayMesh/settings/secrets/actions) 或 `marketplace` 环境中配置一次 `VSCE_PAT` Secret。令牌需具有 Marketplace Manage 权限，其账户必须能访问现有 [Hyacine 发布者](https://marketplace.visualstudio.com/manage/publishers/Hyacine)。流程默认使用 `pat`，配置后无需逐次手动上传 VSIX。[微软发布指南](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)说明了令牌创建方法及全局 PAT 于 2026 年 12 月 1 日退役的安排。通过 GitHub 界面或 `gh secret set VSCE_PAT` 保存凭据，不要写进源码或发布日志。
 
 补发当前 0.3.9，或在产物保留期内恢复部分成功的发布：
 
 ```sh
 gh workflow run publish-marketplace.yml --ref main \
-  -f run_id=37400436659 -f version=0.3.9 -f publish=true -f auth=oidc
+  -f run_id=37400436659 -f version=0.3.9 -f publish=true -f auth=pat
 ```
 
 设置 `publish=false` 可执行仅审计运行。失败、fork、PR 以及跳过 PyPI 上传的运行不能作为发布来源；流程复用原包，不重新构建或递增版本。
 
-如果发布者暂时不能使用可信发布，可在 Actions 中配置拥有 Marketplace Manage 权限、可访问 `Hyacine` 的 `VSCE_PAT` Secret；手动运行选择 `auth=pat`，自动运行在 `marketplace` 环境设置变量 `MARKETPLACE_AUTH=pat`。[微软发布指南](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)说明了 PAT 权限及全局 PAT 于 2026 年 12 月 1 日退役的安排，长期自动化优先使用 OIDC。
+[可信发布](https://github.com/microsoft/vscode-vsce#trusted-publishing)保留为后续无需存储 PAT 的可选方式。[2026 年 10 月 6 日实发尝试](https://github.com/muxkin/LayMesh/actions/runs/37404048392)已通过来源、产物及 OIDC 请求协议检查，但商店返回 `Trusted Publishing is not supported`。待商店支持该发布者后，可授权所有者 `muxkin`、仓库 `LayMesh`、`main` 上的 `publish-marketplace.yml` 和环境 `marketplace`；手动运行选择 `auth=oidc`，自动运行在该环境设置变量 `MARKETPLACE_AUTH=oidc`。OIDC 模式固定使用包含[微软协议修复](https://github.com/microsoft/vscode-vsce/commit/c960f2e97da3360899f2bfe93390fa4890c69327)的 4.0.1-3，并在使用前验证请求协议；认证失败不会自动改用 PAT。
 
 ## 其他发行物
 
