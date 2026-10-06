@@ -1,12 +1,12 @@
 # 构建与发布到 PyPI
 
-**0.3.2 已发布**：包含预览性能优化、图片哈希复用及字体候选缓存；VS Code 0.3.7 增加可调防抖命令。五平台构建、Python 3.10/3.13/3.14 检查及完整契约测试均通过。[验证与发布记录](https://github.com/muxkin/LayMesh/actions/runs/37310038289)。
+**0.3.9 已发布**：增加双端点直线连接和允许省略几何的 `line()` 素材，Python、Rust 引擎和 VS Code 扩展统一版本号。五个平台 wheel 和正式版 VSIX 构建、Python 3.10/3.13/3.14 检查及完整契约测试均通过。[验证与发布记录](https://github.com/muxkin/LayMesh/actions/runs/37400436659)。
 
-上一已发布版本为 **[`0.3.2`](https://pypi.org/project/laymesh/0.3.2/)**（已发布五个平台 wheel），Python 包与 Rust 引擎使用同一版本号。默认安装包含 NumPy、pandas、Matplotlib 和 IPython，使用 `pip install laymesh` 即可获得全部 Python 功能。[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)构建和验证五个平台 wheel，并执行包审计、校验和检查与 Trusted Publishing 上传。每个平台 wheel 包含 Python API、CLI 入口、一个 Rust 原生程序、依赖许可及构建清单。公式字体编译进 RaTeX，正文使用系统或用户字体。
+当前版本为 **[`0.3.9`](https://pypi.org/project/laymesh/0.3.9/)**，已发布五个平台 wheel。默认安装包含 NumPy、pandas、Matplotlib 和 IPython，使用 `pip install laymesh` 即可获得全部 Python 功能。[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)构建和验证五个平台 wheel，并执行包审计、校验和检查与 Trusted Publishing 上传。每个平台 wheel 包含 Python API、CLI 入口、一个 Rust 原生程序、依赖许可及构建清单。公式字体编译进 RaTeX，正文使用系统或用户字体。
 
 [runtime.json](runtime.json) 定义五个目标：Linux x64 / arm64、macOS 14+ Intel / Apple Silicon、Windows x64。使用者需要 Python 3.10+；构建脚本需要 Python 3.11+ 和 Rust 1.93.1。本次只发布平台 wheel；`python/` 目录不包含完整的 Rust 引擎源码构建链，不要上传仅从该目录生成的 sdist。
 
-**0.3.9 发布候选**增加双端点直线连接，Python、Rust 和 VS Code 扩展统一版本号；发布前检查会拒绝版本不一致。工作流同时构建 Windows x64、Linux x64 / arm64、macOS Intel / Apple Silicon 扩展包并审计其原生程序架构，构建结果以当前运行记录为准。
+发布前检查会拒绝 Python、Rust、runtime 和扩展版本不一致。工作流同时构建上述五个平台的 VSIX 并审计原生程序架构；扩展内置引擎与对应 wheel 的二进制哈希完全一致。PyPI 上五个文件的 SHA-256 已核对为该次审核包的原始校验和。
 
 ## 本地构建与审计
 
