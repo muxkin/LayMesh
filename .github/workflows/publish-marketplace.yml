@@ -1,0 +1,156 @@
+name: Publish VS Code Marketplace
+
+on:
+  workflow_run:
+    workflows: ['Python wheels and PyPI']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Successful PyPI release run containing the five VSIX artifacts'
+        required: true
+        type: string
+      version:
+        description: 'Exact extension and PyPI version to publish'
+        required: true
+        type: string
+      publish:
+        description: 'Upload to Marketplace (false audits the release only)'
+        type: boolean
+        default: false
+      auth:
+        description: 'Publishing identity (OIDC trusted publishing is recommended)'
+        type: choice
+        options: [oidc, pat]
+        default: oidc
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: marketplace-release
+  cancel-in-progress: false
+
+env:
+  PYTHONUTF8: '1'
+
+jobs:
+  source:
+    if: >-
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.event == 'workflow_dispatch') ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-24.04
+    outputs:
+      run_id: ${{ steps.source.outputs.run_id }}
+      sha: ${{ steps.source.outputs.sha }}
+      version: ${{ steps.source.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify the successful PyPI publication and original source
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_RUN_ID: ${{ github.event.workflow_run.id || inputs.run_id }}
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: python scripts/marketplace-release.py source --run-id "$RELEASE_RUN_ID" --version "$REQUESTED_VERSION"
+
+  publish:
+    needs: source
+    runs-on: ubuntu-24.04
+    environment:
+      name: marketplace
+      url: https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      RELEASE_VERSION: ${{ needs.source.outputs.version }}
+      RELEASE_SHA: ${{ needs.source.outputs.sha }}
+      PUBLISH_RELEASE: ${{ github.event_name == 'workflow_run' || inputs.publish }}
+      MARKETPLACE_AUTH: ${{ inputs.auth || vars.MARKETPLACE_AUTH || 'oidc' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          path: release-source
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: python -m pip install -r release-source/release/build-requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ needs.source.outputs.run_id }}
+          name: reviewed-python-release
+          path: reviewed
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ needs.source.outputs.run_id }}
+          pattern: editor-*
+          merge-multiple: true
+          path: reviewed/vsix
+      - name: Audit versions, platforms, reviewed checksums and matching native engines
+        id: audit
+        run: >-
+          python scripts/marketplace-release.py audit
+          --source release-source --version "$RELEASE_VERSION"
+          --wheels reviewed/dist --vsix reviewed/vsix --checksums reviewed/SHA256SUMS
+          --report marketplace-audit.json
+      - run: npm install --global --no-audit --no-fund @vscode/vsce@4.0.0
+      - run: vsce --version
+      - name: Check VSIX compatibility with the pinned publisher
+        run: |
+          for package in reviewed/vsix/*.vsix; do
+            vsce generate-manifest --packagePath "$package" --out "$package.manifest"
+          done
+      - name: Publish the original stable VSIX packages
+        if: env.PUBLISH_RELEASE == 'true'
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          case "$MARKETPLACE_AUTH" in
+            oidc)
+              unset VSCE_PAT
+              vsce publish --oidc --skip-duplicate --packagePath reviewed/vsix/*.vsix
+              ;;
+            pat)
+              if [ -z "$VSCE_PAT" ]; then
+                echo 'Configure the VSCE_PAT secret for the marketplace environment or use OIDC trusted publishing.' >&2
+                exit 1
+              fi
+              vsce publish --skip-duplicate --packagePath reviewed/vsix/*.vsix
+              ;;
+            *)
+              echo 'MARKETPLACE_AUTH must be oidc or pat.' >&2
+              exit 1
+              ;;
+          esac
+      - name: Verify all five stable packages and hashes on Marketplace
+        if: env.PUBLISH_RELEASE == 'true'
+        run: python scripts/marketplace-release.py verify --report marketplace-audit.json
+      - name: Release summary
+        if: always() && steps.audit.outcome == 'success'
+        run: |
+          echo "Version: $RELEASE_VERSION; original release commit: $RELEASE_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "Publish requested: $PUBLISH_RELEASE; authentication: $MARKETPLACE_AUTH" >> "$GITHUB_STEP_SUMMARY"
+          echo 'All five VSIX packages match the reviewed wheel engines and checksums.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.audit.outcome == 'success'
+        with:
+          name: marketplace-release-audit
+          path: marketplace-audit.json
+          if-no-files-found: error
+          retention-days: 30

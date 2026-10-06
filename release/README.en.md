@@ -56,6 +56,23 @@ The publishing job downloads the exact reviewed artifacts and uploads them witho
 
 `python scripts/test-contracts.py` produces `release/verification/cargo-tests.log`, `python-tests.log` and `assertion-coverage.json`, checking current source identities, test execution and historical assertion mappings. Install the Poppler and MuPDF command-line tools before running these checks. Use the GitHub Actions runs for the current commit as cross-platform release evidence; the final wheels and checksums are stored in the `reviewed-python-release` artifact.
 
+## Automated VS Code publication
+
+[Publish VS Code Marketplace](../.github/workflows/publish-marketplace.yml) runs automatically after a successful PyPI publication from `main`. It downloads the original five VSIX packages and reviewed wheels, checks their source commit, versions, checksums and matching native binaries, then publishes the stable packages with pinned `@vscode/vsce` 4.0.0. It verifies each platform and VSIX hash on Marketplace after validation. Retrying skips already published packages and detects mismatched packages at the same version.
+
+Configure [trusted publishing](https://github.com/microsoft/vscode-vsce#trusted-publishing) once under the existing [Hyacine publisher](https://marketplace.visualstudio.com/manage/publishers/Hyacine): authorize owner `muxkin`, repository `LayMesh`, workflow `publish-marketplace.yml` on `main`. The job uses the GitHub environment `marketplace` and `id-token: write`. Its default `oidc` mode obtains a temporary Marketplace credential; no stored PAT is required.
+
+To publish the existing 0.3.9 artifacts, or resume a partial publication within their retention period:
+
+```sh
+gh workflow run publish-marketplace.yml --ref main \
+  -f run_id=37400436659 -f version=0.3.9 -f publish=true -f auth=oidc
+```
+
+Set `publish=false` for an audit without uploading. Failed, fork, PR and skipped PyPI publication runs are rejected. The workflow never rebuilds or increments versions.
+
+If the publisher cannot yet use trusted publishing, configure a `VSCE_PAT` Actions secret with Marketplace Manage permissions and access to `Hyacine`; use `auth=pat` for manual runs, or the `MARKETPLACE_AUTH=pat` variable in the `marketplace` environment for automatic runs. [Microsoft's publishing guide](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) documents PAT permissions and the December 1, 2026 retirement of global PATs; prefer OIDC for continuing automation.
+
 ## Other artifacts
 
 Build the native VS Code extension with `python scripts/build-editors.py`, package it with `python scripts/package-editor.py --output release/dist/laymesh.vsix`, and audit with `python scripts/check-editor.py release/dist/laymesh.vsix`. Build the Rust/WASM documentation site with `python scripts/build-docs.py`. The publishing workflow also produces VSIX packages for all five platforms, sharing their version with Python and the engine. VSIX files are distributed separately from the PyPI wheel.

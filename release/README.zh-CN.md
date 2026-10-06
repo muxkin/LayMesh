@@ -56,6 +56,23 @@ python -m unittest discover -s python/tests -v
 
 `python scripts/test-contracts.py` 会生成 `release/verification/cargo-tests.log`、`python-tests.log` 与 `assertion-coverage.json`，检查当前源码、测试执行与历史断言映射的一致性。检查期间需安装 Poppler 和 MuPDF 命令行工具。发布候选的跨平台结果以 GitHub Actions 当前提交的运行记录为准；最终包与校验和保存在 `reviewed-python-release` artifact 中。
 
+## VS Code 自动发布
+
+[Publish VS Code Marketplace](../.github/workflows/publish-marketplace.yml) 在 `main` 的 PyPI 发布成功后自动运行。它下载原运行的五个平台 VSIX、审核 wheel 和校验和，检查来源提交、版本、哈希及内置引擎一致性，再使用固定版本的 `@vscode/vsce` 4.0.0 发布正式版。商店校验完成后，会核对五个平台和 VSIX 哈希；重试会跳过已发布的平台，同一版本的不同包会报错。
+
+在现有 [Hyacine 发布者后台](https://marketplace.visualstudio.com/manage/publishers/Hyacine)配置一次[可信发布授权](https://github.com/microsoft/vscode-vsce#trusted-publishing)：所有者 `muxkin`、仓库 `LayMesh`、`main` 上的工作流 `publish-marketplace.yml`。发布任务使用 GitHub 环境 `marketplace` 和 `id-token: write`，默认 `oidc` 模式获取临时商店凭据，无需保存 PAT。配置后，扩展跟随 PyPI 发布，无需逐次手动上传 VSIX。
+
+补发当前 0.3.9，或在产物保留期内恢复部分成功的发布：
+
+```sh
+gh workflow run publish-marketplace.yml --ref main \
+  -f run_id=37400436659 -f version=0.3.9 -f publish=true -f auth=oidc
+```
+
+设置 `publish=false` 可执行仅审计运行。失败、fork、PR 以及跳过 PyPI 上传的运行不能作为发布来源；流程复用原包，不重新构建或递增版本。
+
+如果发布者暂时不能使用可信发布，可在 Actions 中配置拥有 Marketplace Manage 权限、可访问 `Hyacine` 的 `VSCE_PAT` Secret；手动运行选择 `auth=pat`，自动运行在 `marketplace` 环境设置变量 `MARKETPLACE_AUTH=pat`。[微软发布指南](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)说明了 PAT 权限及全局 PAT 于 2026 年 12 月 1 日退役的安排，长期自动化优先使用 OIDC。
+
 ## 其他发行物
 
 原生 VS Code 扩展使用 `python scripts/build-editors.py` 构建，`python scripts/package-editor.py --output release/dist/laymesh.vsix` 打包，再用 `python scripts/check-editor.py release/dist/laymesh.vsix` 审计。Rust/WASM 文档站使用 `python scripts/build-docs.py` 构建。发布工作流同时生成上述五个平台的 VSIX，扩展、Python 包和引擎必须使用同一版本号；VSIX 与 PyPI wheel 分开发放。
