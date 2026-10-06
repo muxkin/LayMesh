@@ -399,6 +399,92 @@ impl Engine {
         }
         Ok(spec)
     }
+    fn connection_pair(&self, value: &V, l: Loc) -> Result<[f64; 2]> {
+        let V::List(values) = value.value() else {
+            return Err(self.error("E_ARG", "坐标或偏移需要两个物理长度", l));
+        };
+        if values.len() != 2 {
+            return Err(self.error("E_ARG", "坐标或偏移需要两个物理长度", l));
+        }
+        Ok([self.len(&values[0], l)?, self.len(&values[1], l)?])
+    }
+
+    fn connection_endpoints(&self, owner: usize, a: &Args, l: Loc) -> Result<Option<[Point; 2]>> {
+        if !crate::endpoints::CONNECTION_PARAMETERS
+            .iter()
+            .any(|k| a.contains_key(*k))
+        {
+            return Ok(None);
+        }
+        if !a.contains_key("start") || !a.contains_key("end") {
+            return Err(self.error("E_ARG", "连接需要同时指定 start 和 end", l));
+        }
+        for key in ["anchor", "target", "rotation", "size"] {
+            if a.contains_key(key) {
+                return Err(self.error("E_ARG", format!("双端点连接与 {key} 互斥"), l));
+            }
+        }
+        if string(a, "offset_space", "container") != "container" {
+            return Err(self.error("E_ARG", "双端点连接的整体 offset_space 只支持 container", l));
+        }
+        let mut points = [Point::ZERO; 2];
+        for (i, key) in ["start", "end"].iter().enumerate() {
+            let value = &a[*key];
+            let (point, anchor) = if matches!(value.value(), V::List(_)) {
+                let xy = self.connection_pair(value, l)?;
+                (Point::new(xy[0], xy[1]), None)
+            } else {
+                let anchor = self.geometry_anchor(value, None, l)?;
+                if anchor.owner != owner {
+                    return Err(self.error("E_LAYOUT", "连接端点必须位于同一画布或组", l));
+                }
+                (anchor.point, Some(anchor))
+            };
+            let space_key = format!("{key}_offset_space");
+            let space = string(a, &space_key, "container");
+            if !matches!(space.as_str(), "container" | "target") {
+                return Err(self.error("E_ARG", format!("{space_key} 须为 container/target"), l));
+            }
+            let mut offset = a
+                .get(&format!("{key}_offset"))
+                .map(|v| self.connection_pair(v, l))
+                .transpose()?
+                .unwrap_or([0., 0.]);
+            if space == "target" {
+                let tangent = anchor
+                    .as_ref()
+                    .ok_or_else(|| {
+                        self.error(
+                            "E_ANCHOR_DIRECTION",
+                            "端点没有路径方向，请使用 instance.path...",
+                            l,
+                        )
+                    })?
+                    .tangent(self, l)?;
+                offset = [
+                    offset[0] * tangent.x + offset[1] * tangent.y,
+                    offset[0] * tangent.y - offset[1] * tangent.x,
+                ];
+            }
+            points[i] = point + kurbo::Vec2::new(offset[0], offset[1]);
+        }
+        let vector = points[1] - points[0];
+        if !points.iter().all(|p| p.x.is_finite() && p.y.is_finite())
+            || !vector.x.is_finite()
+            || !vector.y.is_finite()
+        {
+            return Err(self.error("E_LAYOUT", "连接端点和位移需要有限长度", l));
+        }
+        if vector == kurbo::Vec2::ZERO {
+            return Err(self.error(
+                "E_ANCHOR_DIRECTION",
+                "连接端点不能重合；零长度头部使用 line(length=0,angle=...)",
+                l,
+            ));
+        }
+        Ok(Some(points))
+    }
+
     pub fn add(&mut self, owner: Rc<RefCell<Object>>, pos: Vec<V>, a: Args, l: Loc) -> Result<V> {
         if owner.borrow().sealed {
             return Err(self.error("E_GROUP", "组合放置后不能修改", l));
@@ -430,6 +516,24 @@ impl Engine {
         if Rc::ptr_eq(&owner, &def) {
             return Err(self.error("E_GROUP", "组合不能包含自身", l));
         }
+        let connection = {
+            let def = def.borrow();
+            if def.kind != "line"
+                && crate::endpoints::CONNECTION_PARAMETERS
+                    .iter()
+                    .any(|k| a.contains_key(*k))
+            {
+                return Err(self.error("E_ARG", "双端点连接参数只适用于 line 素材", l));
+            }
+            let connection = self.connection_endpoints(owner.borrow().id, &a, l)?;
+            if def.kind == "line"
+                && connection.is_none()
+                && !crate::endpoints::has_line_geometry(&def.args)
+            {
+                return Err(self.error("E_ARG", crate::endpoints::MISSING_LINE_GEOMETRY, l));
+            }
+            connection
+        };
         if owner.borrow().kind == "group" {
             let depth = if def.borrow().kind == "group" {
                 1. + num(&def.borrow().args, "__depth", 0.)
@@ -459,55 +563,67 @@ impl Engine {
                 self.styled(&owner.kind, &args, &Args::new())?
             }
         };
-        let mut n = self.materialize(def.clone(), &a, &parent)?;
+        let vector = connection.map(|p| [p[1].x - p[0].x, p[1].y - p[0].y]);
+        let mut n = self.materialize_with_line_vector(def.clone(), &a, &parent, vector)?;
         if !matches!(
             string(&a, "offset_space", "container").as_str(),
             "container" | "target"
         ) {
             return Err(self.error("E_ARG", "offset_space 须为 container/target", l));
         }
-        let mut xy = pair(&a, "offset", [0., 0.], &self.unit, self.dpi);
-        let target = match a.get("target") {
-            Some(value @ V::Geometry(_)) => {
-                let point = self.geometry_anchor(value, None, l)?;
-                if point.owner != owner.borrow().id {
-                    return Err(self.error("E_LAYOUT", "target 必须位于同一画布或组", l));
+        let mut xy = if connection.is_some() {
+            a.get("offset")
+                .map(|v| self.connection_pair(v, l))
+                .transpose()?
+                .unwrap_or([0., 0.])
+        } else {
+            pair(&a, "offset", [0., 0.], &self.unit, self.dpi)
+        };
+        let target = if let Some(points) = connection {
+            [points[0].x, points[0].y]
+        } else {
+            match a.get("target") {
+                Some(value @ V::Geometry(_)) => {
+                    let point = self.geometry_anchor(value, None, l)?;
+                    if point.owner != owner.borrow().id {
+                        return Err(self.error("E_LAYOUT", "target 必须位于同一画布或组", l));
+                    }
+                    if string(&a, "offset_space", "container") == "target" {
+                        let t = point.tangent(self, l)?;
+                        xy = [xy[0] * t.x + xy[1] * t.y, xy[0] * t.y - xy[1] * t.x];
+                    }
+                    [point.point.x, point.point.y]
                 }
-                if string(&a, "offset_space", "container") == "target" {
-                    let t = point.tangent(self, l)?;
-                    xy = [xy[0] * t.x + xy[1] * t.y, xy[0] * t.y - xy[1] * t.x];
+                Some(V::Anchor {
+                    owner: target,
+                    x,
+                    y,
+                    ..
+                }) => {
+                    if string(&a, "offset_space", "container") == "target" {
+                        return Err(self.error(
+                            "E_ANCHOR_DIRECTION",
+                            "目标没有路径方向，请使用 target=instance.path...",
+                            l,
+                        ));
+                    }
+                    if *target != owner.borrow().id {
+                        return Err(self.error("E_LAYOUT", "target 必须位于同一画布或组", l));
+                    }
+                    [*x, *y]
                 }
-                [point.point.x, point.point.y]
+                None => {
+                    if string(&a, "offset_space", "container") == "target" {
+                        return Err(self.error(
+                            "E_ANCHOR_DIRECTION",
+                            "offset_space=target 需要路径目标",
+                            l,
+                        ));
+                    }
+                    [0., 0.]
+                }
+                _ => return Err(self.error("E_ANCHOR", "target 需要锚点", l)),
             }
-            Some(V::Anchor {
-                owner: target,
-                x,
-                y,
-                ..
-            }) => {
-                if string(&a, "offset_space", "container") == "target" {
-                    return Err(self.error(
-                        "E_ANCHOR_DIRECTION",
-                        "目标没有路径方向，请使用 target=instance.path...",
-                        l,
-                    ));
-                }
-                if *target != owner.borrow().id {
-                    return Err(self.error("E_LAYOUT", "target 必须位于同一画布或组", l));
-                }
-                [*x, *y]
-            }
-            None => {
-                if string(&a, "offset_space", "container") == "target" {
-                    return Err(self.error(
-                        "E_ANCHOR_DIRECTION",
-                        "offset_space=target 需要路径目标",
-                        l,
-                    ));
-                }
-                [0., 0.]
-            }
-            _ => return Err(self.error("E_ANCHOR", "target 需要锚点", l)),
         };
         if owner.borrow().kind == "group" {
             let mut record = a.clone();
@@ -524,7 +640,11 @@ impl Engine {
             return Err(self.error("E_ARG", "opacity 必须在 0–1 之间", l));
         }
         n["opacity"] = json!(opacity * jnum(&n, "opacity", 1.));
-        let anc = string(&a, "anchor", "top_left");
+        let anc = if connection.is_some() {
+            "start".into()
+        } else {
+            string(&a, "anchor", "top_left")
+        };
         let p = if let Some(V::Geometry(query)) = a.get("anchor") {
             if !query.is_self_contained() {
                 return Err(self.error("E_ANCHOR", "anchor 选择器只能引用 self", l));
@@ -558,6 +678,9 @@ impl Engine {
         };
         n["x"] = json!(target[0] + xy[0] - p[0]);
         n["y"] = json!(target[1] + xy[1] - p[1]);
+        if connection.is_some() && (n["x"].as_f64().is_none() || n["y"].as_f64().is_none()) {
+            return Err(self.error("E_LAYOUT", "连接位置需要有限长度", l));
+        }
         self.serial += 1;
         n["id"] = json!(format!("instance-{}", self.serial));
         let mut instance = Object {
@@ -592,6 +715,15 @@ impl Engine {
         placement: &Args,
         parent: &Args,
     ) -> Result<Json> {
+        self.materialize_with_line_vector(def, placement, parent, None)
+    }
+    fn materialize_with_line_vector(
+        &mut self,
+        def: Rc<RefCell<Object>>,
+        placement: &Args,
+        parent: &Args,
+        vector: Option<[f64; 2]>,
+    ) -> Result<Json> {
         let o = def.borrow().clone();
         let old = std::mem::replace(&mut self.file, o.file.clone());
         let mut explicit = o.args.clone();
@@ -607,11 +739,24 @@ impl Engine {
                     | "offset"
                     | "rotation"
                     | "opacity"
+                    | "start"
+                    | "end"
+                    | "start_offset"
+                    | "end_offset"
+                    | "start_offset_space"
+                    | "end_offset_space"
                     | "__arg_locations"
                     | "__call_origin"
             ) {
                 a.insert(k.clone(), v.clone());
             }
+        }
+        if let Some([dx, dy]) = vector {
+            for key in ["length", "angle", "dx", "dy"] {
+                a.remove(key);
+            }
+            a.insert("dx".into(), V::mm(dx));
+            a.insert("dy".into(), V::mm(dy));
         }
         if matches!(o.kind.as_str(), "rect" | "ellipse") && placement.contains_key("size") {
             let original = pair(&o.args, "size", [o.width, o.height], &self.unit, self.dpi);
@@ -713,8 +858,12 @@ impl Engine {
                 }
                 let mut n = base("image", w, h);
                 n["data"] = asset["data"].clone();
-                if asset["rasterKey"].is_string() { n["rasterKey"] = asset["rasterKey"].clone(); }
-                if asset["sourceJpegHash"].is_string(){n["sourceJpegHash"]=asset["sourceJpegHash"].clone();}
+                if asset["rasterKey"].is_string() {
+                    n["rasterKey"] = asset["rasterKey"].clone();
+                }
+                if asset["sourceJpegHash"].is_string() {
+                    n["sourceJpegHash"] = asset["sourceJpegHash"].clone();
+                }
                 n["mime"] = asset["mime"].clone();
                 n["intrinsicWidth"] = json!(cw);
                 n["intrinsicHeight"] = json!(ch);
@@ -732,25 +881,27 @@ impl Engine {
                 ]
                 .iter()
                 .any(|k| a.get(*k).map(V::json) != o.args.get(*k).map(V::json));
-                let (_, _, mut children) =
-                    if o.layers.is_empty() || (!style_changed && self.styles.is_empty()) {
-                        (o.width, o.height, o.nodes.clone())
-                    } else {
-                        let temp = self.object("group", a.clone(), o.loc).object().unwrap();
-                        let mut replayed: std::collections::BTreeMap<usize, V> =
-                            std::collections::BTreeMap::new();
-                        for (operation, record) in &o.layers {
-                            let mut args = record.clone();
-                            let id = args
-                                .remove("__result_id")
-                                .and_then(|v| v.number())
-                                .unwrap_or(0.) as usize;
-                            if operation == "__fuse" {
-                                let left = args.remove("__left").and_then(|v| v.number()).unwrap()
-                                    as usize;
-                                let right = args.remove("__right").and_then(|v| v.number()).unwrap()
-                                    as usize;
-                                let inputs = vec![
+                let (_, _, mut children) = if o.layers.is_empty()
+                    || (!style_changed && self.styles.is_empty())
+                {
+                    (o.width, o.height, o.nodes.clone())
+                } else {
+                    let temp = self.object("group", a.clone(), o.loc).object().unwrap();
+                    let mut replayed: std::collections::BTreeMap<usize, V> =
+                        std::collections::BTreeMap::new();
+                    for (operation, record) in &o.layers {
+                        let mut args = record.clone();
+                        let id = args
+                            .remove("__result_id")
+                            .and_then(|v| v.number())
+                            .unwrap_or(0.) as usize;
+                        if operation == "__fuse" {
+                            let left =
+                                args.remove("__left").and_then(|v| v.number()).unwrap() as usize;
+                            let right =
+                                args.remove("__right").and_then(|v| v.number()).unwrap() as usize;
+                            let inputs =
+                                vec![
                                     replayed.get(&left).cloned().ok_or_else(|| {
                                         self.error("E_FUSE", "无法重放融合对象", l)
                                     })?,
@@ -758,44 +909,49 @@ impl Engine {
                                         self.error("E_FUSE", "无法重放融合对象", l)
                                     })?,
                                 ];
-                                if let Some(V::List(points)) = args.get("points") {
-                                    let anchors = points
-                                        .iter()
-                                        .map(|point| {
-                                            self.replay_anchor(
-                                                point,
-                                                temp.borrow().id,
-                                                &replayed,
-                                                o.loc,
-                                            )
-                                        })
-                                        .collect::<Result<Vec<_>>>()?;
-                                    args.insert("points".into(), V::List(anchors));
-                                }
-                                let result = self.fuse(temp.clone(), inputs, args, o.loc)?;
-                                self.retain_replayed_name(id, &result, &temp);
-                                replayed.insert(id, result);
-                                continue;
+                            if let Some(V::List(points)) = args.get("points") {
+                                let anchors = points
+                                    .iter()
+                                    .map(|point| {
+                                        self.replay_anchor(
+                                            point,
+                                            temp.borrow().id,
+                                            &replayed,
+                                            o.loc,
+                                        )
+                                    })
+                                    .collect::<Result<Vec<_>>>()?;
+                                args.insert("points".into(), V::List(anchors));
                             }
-                            let material = args.remove("__material").unwrap();
-                            args = args
-                                .iter()
-                                .map(|(key, v)| {
-                                    Ok((key.clone(), self.replay_query_value(v, &replayed, o.loc)?))
-                                })
-                                .collect::<Result<_>>()?;
-                            if let Some(anchor) = args.get("target") {
-                                let anchor =
-                                    self.replay_anchor(anchor, temp.borrow().id, &replayed, o.loc)?;
-                                args.insert("target".into(), anchor);
-                            }
-                            let result = self.add(temp.clone(), vec![material], args, o.loc)?;
+                            let result = self.fuse(temp.clone(), inputs, args, o.loc)?;
                             self.retain_replayed_name(id, &result, &temp);
                             replayed.insert(id, result);
+                            continue;
                         }
-                        let temp = temp.borrow();
-                        (temp.width, temp.height, temp.nodes.clone())
-                    };
+                        let material = args.remove("__material").unwrap();
+                        args = args
+                            .iter()
+                            .map(|(key, v)| {
+                                Ok((key.clone(), self.replay_query_value(v, &replayed, o.loc)?))
+                            })
+                            .collect::<Result<_>>()?;
+                        for key in ["target", "start", "end"] {
+                            if let Some(anchor) = args.get(key) {
+                                if matches!(anchor, V::List(_)) {
+                                    continue;
+                                }
+                                let anchor =
+                                    self.replay_anchor(anchor, temp.borrow().id, &replayed, o.loc)?;
+                                args.insert(key.into(), anchor);
+                            }
+                        }
+                        let result = self.add(temp.clone(), vec![material], args, o.loc)?;
+                        self.retain_replayed_name(id, &result, &temp);
+                        replayed.insert(id, result);
+                    }
+                    let temp = temp.borrow();
+                    (temp.width, temp.height, temp.nodes.clone())
+                };
                 if children.is_empty() {
                     return Err(self.error("E_GROUP", "不能放置空组", l));
                 }

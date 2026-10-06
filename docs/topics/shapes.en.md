@@ -17,13 +17,13 @@ Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. E
 
 ## Composition
 
-Define line with dx/dy or length/angle, never both. start_head points opposite the start tangent and end_head along the end tangent. triangle/open/stealth locate their tip; dot/diamond/bar locate their center. Zero length plus an explicit angle creates standalone heads.
+Use line() or style-only line(...) as material and supply start/end in add, or retain dx/dy or length/angle, never both. Construction may omit geometry; placement must determine it. start_head points opposite the start tangent and end_head along the end tangent. triangle/open/stealth locate their tip; dot/diamond/bar locate their center. Zero length plus an explicit angle creates standalone heads.
 
 <!-- example:examples/gallery/shapes/path-commands.lay -->
 
 ## Common errors and limits
 
-Closed subpaths reject heads; each open subpath receives its own endpoint styles. Short lines do not shrink heads. Zero-length layout retains cap/head dimension rules while path length remains zero. arrow(...) is removed; migrate to line(...,end_head=head(...)).
+Closed subpaths reject heads; each open subpath receives its own endpoint styles. Short lines do not shrink heads. Zero-length layout retains cap/head dimension rules while path length remains zero. arrow(...) is removed; migrate to line(...,end_head=head(...)). Missing material geometry without start/end is reported at add. Coincident connection endpoints error rather than creating a zero-length head.
 
 ## Individual functions
 
@@ -49,7 +49,7 @@ Required inputs: `size`.
 
 ### line
 
-Create a line using dx/dy or length/angle, with independent endpoint caps and heads. Zero length requires an explicit angle. Heads retain their size on short lines.
+Create reusable line material. Omit geometry and supply start/end in add, or define dx/dy or length/angle. Placement requires geometry; zero length requires an explicit angle. Supports independent caps and heads.
 
 Returns: material
 

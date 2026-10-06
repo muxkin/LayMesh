@@ -74,6 +74,22 @@ pub fn css_head(s: &str, file: &str, l: Loc) -> Result<V> {
         l,
     ))
 }
+pub fn has_line_geometry(a: &Args) -> bool {
+    ["dx", "dy", "length", "angle"]
+        .iter()
+        .any(|k| a.contains_key(*k))
+}
+pub const CONNECTION_PARAMETERS: [&str; 6] = [
+    "start",
+    "end",
+    "start_offset",
+    "end_offset",
+    "start_offset_space",
+    "end_offset_space",
+];
+pub const MISSING_LINE_GEOMETRY: &str =
+    "线条素材未定义几何，请指定 start/end，或在 line 中定义 dx/dy 或 length/angle";
+
 pub fn line_vector(e: &Engine, a: &Args, l: Loc) -> Result<(f64, f64)> {
     let polar = a.contains_key("length") || a.contains_key("angle");
     if polar {

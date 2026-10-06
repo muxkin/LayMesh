@@ -1,0 +1,23 @@
+# Reusable line styles, box anchors, physical points and data anchors.
+page=canvas(size=(150mm,110mm),background="#ffffff",font_family="serif",font_size=9pt)
+pointer=line(line_color="#d55e00",line_width=0.55pt,end_head=head(shape=open,size=(1.5mm,1.1mm)))
+
+# Each placement chooses its own geometry without changing the material.
+a=page.add(rect(size=(30mm,12mm),fill="#e6f0ef",border_color="#087f8c",border_width=0.6pt),offset=(12mm,9mm))
+b=page.add(rect(size=(30mm,12mm),fill="#e6f0ef",border_color="#087f8c",border_width=0.6pt),offset=(108mm,9mm))
+page.add(text("Source"),anchor=center,target=a.center)
+page.add(text("Destination"),anchor=center,target=b.center)
+page.add(pointer,start=a.middle_right,end=b.middle_left,start_offset=(2mm,0mm),end_offset=(-2mm,0mm))
+
+# Data mapping is resolved before the physical endpoint offset.
+p=plot(size=(135mm,73mm),plot_area=box(offset=(18mm,6mm),size=(100mm,48mm)),
+ x=axis(range=(2,6),label="Pair separation (Å)"),
+ y=axis(range=(-1.3,0.3),label="Energy (eV)"))
+p.hline(y=0,color="#777777",line_dash=[1pt,2pt],line_width=0.6pt)
+p.scatter(x=[2.8,4.95,5.15],y=[0.174,0.073,-1.096],color="#c94c4c",marker=circle,marker_size=4.8pt)
+chart=page.add(p,offset=(7mm,32mm))
+peak=page.add(text("Shortest: +0.174",color="#d55e00"),offset=(54mm,34mm))
+page.add(pointer,start=peak.bottom_left,end=chart.data(x=2.8,y=0.174),end_offset=(0mm,-1mm))
+axial=page.add(text("Axial: -1.096",color="#d55e00"),offset=(38mm,67mm))
+page.add(pointer,start=axial.bottom_left,end=chart.data(x=5.15,y=-1.096),end_offset=(-1mm,0mm))
+page.add(pointer,start=(130mm,55mm),end=chart.data(x=4.95,y=0.073),line_color="#087f8c")

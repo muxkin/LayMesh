@@ -17,13 +17,13 @@
 
 ## 组合用法
 
-line 可用 dx/dy 或 length/angle 定义，二者互斥。start_head 反向沿起点切线，end_head 沿终点切线；triangle/open/stealth 以尖定位，dot/diamond/bar 以中心定位。零长度显式 angle 可生成独立头部。
+line() 或只带样式的 line(...) 可作为未指定几何的素材，在 add 中用 start/end 连接两点；也可沿用 dx/dy 或 length/angle 定义，二者互斥。构造可省略几何，放置必须能确定几何。start_head 反向沿起点切线，end_head 沿终点切线；triangle/open/stealth 以尖定位，dot/diamond/bar 以中心定位。零长度显式 angle 可生成独立头部。
 
 <!-- example:examples/gallery/shapes/path-commands.lay -->
 
 ## 常见错误与限制
 
-闭合子路径不接受头部；多条开放子路径各自设置端部。头部不会因短线缩小。零长度布局框沿用端帽或头部尺寸规则，path 弧长仍为零。arrow(...) 已移除，迁移为 line(...,end_head=head(...))。
+闭合子路径不接受头部；多条开放子路径各自设置端部。头部不会因短线缩小。零长度布局框沿用端帽或头部尺寸规则，path 弧长仍为零。arrow(...) 已移除，迁移为 line(...,end_head=head(...))。 未定义几何且未提供 start/end 时，错误定位到 add；两端重合的连接报错，不会自动变成零长度头部。
 
 ## 逐项功能说明
 
@@ -49,7 +49,7 @@ line 可用 dx/dy 或 length/angle 定义，二者互斥。start_head 反向沿�
 
 ### line
 
-创建线段；使用 dx/dy 或 length/angle，支持独立端帽和头部。零长度需要显式 angle，头部大小不随线长缩小。
+创建可复用线条素材，可省略几何并在 add 中指定 start/end；也可用 dx/dy 或 length/angle 定义。放置时必须能确定几何，零长度需要显式 angle，支持独立端帽和头部。
 
 返回：material
 

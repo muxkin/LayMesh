@@ -1464,8 +1464,8 @@
     },
     {
       "name": "line",
-      "description": "创建线段；使用 dx/dy 或 length/angle，支持独立端帽和头部。零长度需要显式 angle，头部大小不随线长缩小。",
-      "descriptionEn": "Create a line using dx/dy or length/angle, with independent endpoint caps and heads. Zero length requires an explicit angle. Heads retain their size on short lines.",
+      "description": "创建可复用线条素材，可省略几何并在 add 中指定 start/end；也可用 dx/dy 或 length/angle 定义。放置时必须能确定几何，零长度需要显式 angle，支持独立端帽和头部。",
+      "descriptionEn": "Create reusable line material. Omit geometry and supply start/end in add, or define dx/dy or length/angle. Placement requires geometry; zero length requires an explicit angle. Supports independent caps and heads.",
       "required": [],
       "parameters": [
         {
@@ -3746,8 +3746,8 @@
     },
     {
       "name": "add",
-      "description": "将素材放置到画布或组合中，使用 anchor 对齐素材锚点、target 指定目标、offset 设置偏移。同一素材可以重复放置，各实例可独立设置尺寸与样式。",
-      "descriptionEn": "Place material in a canvas or group. Align its anchor to a target with an offset. Reuse the same material with independent size and styling for each placement.",
+      "description": "将素材放置到画布或组合中；使用 anchor/target 单点定位，或为 line 指定 start/end 双端点连接。offset 平移整个实例，同一素材可重复放置并独立覆盖样式。",
+      "descriptionEn": "Place material in a canvas or group using anchor/target, or connect two start/end points with line material. Offset translates the entire instance. Reuse material with independent style overrides.",
       "returns": {
         "zh": "已放置实例；可读取测量尺寸并引用其锚点继续定位。",
         "en": "A placed instance with measured dimensions and anchors for subsequent placement."
@@ -3922,8 +3922,8 @@
           "name": "offset",
           "unit": "geometry",
           "type": "(length, length)",
-          "description": "相对目标的 (横向, 纵向) 偏移",
-          "descriptionEn": "Horizontal and vertical offset from the target",
+          "description": "相对目标的 (横向, 纵向) 偏移；双端点连接时同时平移两端",
+          "descriptionEn": "Horizontal and vertical offset from the target; translates both endpoints in a line connection",
           "default": "(0, 0)"
         },
         {
@@ -4339,8 +4339,8 @@
             "container",
             "target"
           ],
-          "description": "offset 的方向：容器坐标，或目标路径的切线与左法线",
-          "descriptionEn": "Offset in container coordinates, or target tangent and left normal.",
+          "description": "offset 的方向：容器坐标，或目标路径的切线与左法线；双端点连接时只接受 container，两端方向分别用 start_offset_space/end_offset_space",
+          "descriptionEn": "Offset in container coordinates, or target tangent and left normal.; line connections accept container only, with separate start_offset_space/end_offset_space for endpoint frames",
           "valueDescriptions": {
             "container": {
               "zh": "偏移沿当前容器的横纵方向",
@@ -4349,6 +4349,80 @@
             "target": {
               "zh": "偏移沿目标切线与左法线方向",
               "en": "Offsets follow the target tangent and left normal"
+            }
+          }
+        },
+        {
+          "name": "start",
+          "type": "anchor | (length, length)",
+          "unit": "none",
+          "description": "线条连接起点：当前容器中的物理坐标或锚点；start/end 必须同时指定，与 anchor/target/rotation/size 互斥；覆盖本次实例的素材几何",
+          "descriptionEn": "Start of a line connection: physical coordinates or an anchor in the current container. Both start/end are required, exclusive with anchor/target/rotation/size; overrides material geometry for this placement"
+        },
+        {
+          "name": "end",
+          "type": "anchor | (length, length)",
+          "unit": "none",
+          "description": "线条连接终点：当前容器中的物理坐标或锚点；start/end 必须同时指定，与 anchor/target/rotation/size 互斥；覆盖本次实例的素材几何",
+          "descriptionEn": "End of a line connection: physical coordinates or an anchor in the current container. Both start/end are required, exclusive with anchor/target/rotation/size; overrides material geometry for this placement"
+        },
+        {
+          "name": "start_offset",
+          "type": "(length, length)",
+          "unit": "geometry",
+          "default": "(0, 0)",
+          "description": "连接起点的独立物理偏移，随后叠加整体 offset",
+          "descriptionEn": "Independent physical offset of the start, followed by the overall offset"
+        },
+        {
+          "name": "end_offset",
+          "type": "(length, length)",
+          "unit": "geometry",
+          "default": "(0, 0)",
+          "description": "连接终点的独立物理偏移，随后叠加整体 offset",
+          "descriptionEn": "Independent physical offset of the end, followed by the overall offset"
+        },
+        {
+          "name": "start_offset_space",
+          "type": "enum",
+          "unit": "none",
+          "default": "container",
+          "values": [
+            "container",
+            "target"
+          ],
+          "description": "起点偏移的方向；target 需要路径锚点及明确切线方向",
+          "descriptionEn": "Direction frame for the start offset; target requires a path anchor with an unambiguous tangent",
+          "valueDescriptions": {
+            "container": {
+              "zh": "沿当前容器的横纵方向",
+              "en": "Along the current container axes"
+            },
+            "target": {
+              "zh": "沿对应路径锚点的切线与左法线",
+              "en": "Along this path anchor tangent and left normal"
+            }
+          }
+        },
+        {
+          "name": "end_offset_space",
+          "type": "enum",
+          "unit": "none",
+          "default": "container",
+          "values": [
+            "container",
+            "target"
+          ],
+          "description": "终点偏移的方向；target 需要路径锚点及明确切线方向",
+          "descriptionEn": "Direction frame for the end offset; target requires a path anchor with an unambiguous tangent",
+          "valueDescriptions": {
+            "container": {
+              "zh": "沿当前容器的横纵方向",
+              "en": "Along the current container axes"
+            },
+            "target": {
+              "zh": "沿对应路径锚点的切线与左法线",
+              "en": "Along this path anchor tangent and left normal"
             }
           }
         }

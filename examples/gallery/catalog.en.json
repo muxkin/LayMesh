@@ -94,6 +94,10 @@
       "chart-parts": [
         "Chart components",
         "Domain endpoints on a reversed axis, vertical spines, label bounds and data-coordinate anchors."
+      ],
+      "line-connections": [
+        "Two-endpoint connections",
+        "Reuse line styles to connect physical positions, instance anchors and chart data points, with independent endpoint offsets."
       ]
     }
   },

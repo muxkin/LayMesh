@@ -17,13 +17,13 @@ Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. E
 
 ## Composition
 
-Target a curve’s arc-length midpoint with text and use its tangent_angle for rotation. offset_space=target applies tangent/normal offsets; choose incoming or outgoing at a corner first.
+Target a curve’s arc-length midpoint with text and use its tangent_angle for rotation. offset_space=target applies tangent/normal offsets; choose incoming or outgoing at a corner first. Connect physical coordinates, data points or anchors with start/end in add. start_offset/end_offset adjust each endpoint, while offset translates the whole line. Each endpoint frame may be container or target.
 
 <!-- example:examples/gallery/positioning/anchors.lay -->
 
 ## Common errors and limits
 
-A candidate collection cannot be passed directly to target. Indexing an empty collection errors; continuous overlap and infinitely many nearest points are not arbitrarily sampled. self binds only in anchor, and unplaced material cannot serve as a target.
+A candidate collection cannot be passed directly to target. Indexing an empty collection errors; continuous overlap and infinitely many nearest points are not arbitrarily sampled. self binds only in anchor, and unplaced material cannot serve as a target. Connections require line material and both endpoints, exclusive with explicit anchor/target/rotation/size. Endpoints belong to the same container; overall offset_space accepts container only.
 
 ## Individual functions
 
@@ -45,7 +45,7 @@ Returns: anchor
 
 ### add
 
-Place material in a canvas or group. Align its anchor to a target with an offset. Reuse the same material with independent size and styling for each placement.
+Place material in a canvas or group using anchor/target, or connect two start/end points with line material. Offset translates the entire instance. Reuse material with independent style overrides.
 
 Returns: A placed instance with measured dimensions and anchors for subsequent placement.
 
@@ -142,6 +142,20 @@ Returns: path_anchor
 <!-- walkthrough:end -->
 
 ## Detailed behavior and further examples
+
+### Two-endpoint connections
+
+Define reusable styling with `line()` and choose its geometry in `add`. Mix physical coordinate pairs, instance anchors, `chart.data(...)` and explicitly indexed geometry-query anchors in the current container.
+
+<!-- example:examples/gallery/positioning/line-connections.lay -->
+
+`start_offset/end_offset` default to `(0,0)`; unitless values use the canvas unit. `start_offset_space/end_offset_space` default to `"container"`. Select `"target"` for the corresponding path anchor's tangent and left normal; corners require `with_side(...)`. Data and ordinary layout anchors have no path direction.
+
+The overall `offset` translates both endpoints last. Connections only accept `"container"` as their overall `offset_space`. Each final endpoint is its resolved position plus its endpoint offset plus the overall offset. Offsets are physical distances, not data increments. Connections built inside a group follow its scaling and rotation; group replay resolves anchor references again.
+
+Both endpoints are required, exclusive with explicit `anchor/target/rotation/size`. Existing `dx/dy` and `length/angle` line material remains reusable: endpoints override geometry for this placement only. Without endpoints, retain the material geometry and ordinary single-point placement. The resulting `.path.start/end` and `.start/end` remain available for subsequent annotations. Coincident final endpoints error; continue to use `line(length=0,angle=...)` for standalone zero-length heads.
+
+Constructing `line()` requires no geometry. Placing `page.add(line())` without endpoints or geometry reports an error at `add`. Foreign-container anchors, unplaced material, `self` and unindexed candidate collections cannot be connection endpoints.
 
 ### Three geometry views
 

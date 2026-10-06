@@ -17,13 +17,13 @@
 
 ## 组合用法
 
-将曲线的弧长中点用作文字 target，并将 rotation 设置为该点的 tangent_angle。需要沿线与法线偏移时使用 offset_space=target；尖角先选择 incoming 或 outgoing。
+将曲线的弧长中点用作文字 target，并将 rotation 设置为该点的 tangent_angle。需要沿线与法线偏移时使用 offset_space=target；尖角先选择 incoming 或 outgoing。 线条可在 add 中用 start/end 连接物理坐标、数据点或锚点；start_offset/end_offset 分别微调两端，offset 平移整条线。每端的 *_offset_space 可选 container 或 target。
 
 <!-- example:examples/gallery/positioning/anchors.lay -->
 
 ## 常见错误与限制
 
-候选集合不能直接传给 target。空集合索引报错；连续重合和无限个最近点不会被随意抽样。self 只在 anchor 中绑定，未放置的素材不能充当目标实例。
+候选集合不能直接传给 target。空集合索引报错；连续重合和无限个最近点不会被随意抽样。self 只在 anchor 中绑定，未放置的素材不能充当目标实例。 双端点仅适用于 line，必须同时指定，且与显式 anchor/target/rotation/size 互斥；端点须属于同一容器，整体 offset_space 只接受 container。
 
 ## 逐项功能说明
 
@@ -45,7 +45,7 @@
 
 ### add
 
-将素材放置到画布或组合中，使用 anchor 对齐素材锚点、target 指定目标、offset 设置偏移。同一素材可以重复放置，各实例可独立设置尺寸与样式。
+将素材放置到画布或组合中；使用 anchor/target 单点定位，或为 line 指定 start/end 双端点连接。offset 平移整个实例，同一素材可重复放置并独立覆盖样式。
 
 返回：已放置实例；可读取测量尺寸并引用其锚点继续定位。
 
@@ -142,6 +142,20 @@
 <!-- walkthrough:end -->
 
 ## 详细行为与补充示例
+
+### 双端点连接
+
+`line()` 可以先只定义样式，在 `add` 时决定起终点。两端可混合使用当前容器中的物理坐标、实例锚点、`chart.data(...)` 和已索引的几何查询锚点。
+
+<!-- example:examples/gallery/positioning/line-connections.lay -->
+
+`start_offset/end_offset` 默认 `(0,0)`，裸值使用画布单位。`start_offset_space/end_offset_space` 默认 `"container"`；设为 `"target"` 时沿对应路径锚点的切线和左法线偏移，尖角须先选择 `with_side(...)`。数据锚点和普通布局锚点没有路径方向。
+
+整体 `offset` 最后同时平移两端；双端点时整体 `offset_space` 只接受 `"container"`。最终端点为“解析位置 + 对应端点偏移 + 整体偏移”。偏移均是物理距离，不是数据增量。在组内构建的连接随整个组缩放、旋转，组重放重新解析锚点引用。
+
+双端点必须同时指定，与显式 `anchor/target/rotation/size` 互斥。原有带 `dx/dy` 或 `length/angle` 的线条素材仍可复用，双端点只覆盖本次实例的几何；不传双端点时继续采用素材自身几何与原有单点定位。连接结果的 `.path.start/end` 和 `.start/end` 仍可供后续标注引用。最终两端重合时报错；需要零长度头部时继续使用 `line(length=0,angle=...)`。
+
+构造 `line()` 不要求几何；放置 `page.add(line())` 时由于没有几何和双端点，错误定位到 `add`。跨容器、未放置素材、`self` 和未索引候选集合不能用作连接端点。
 
 ### 三种几何视图
 

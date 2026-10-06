@@ -238,3 +238,32 @@ page.add(line(dx=0mm,dy=-7mm,line_color="#df6e70",line_width=0.4mm),anchor=self.
 复现命令：`laymesh validate examples/gallery/positioning/chart-parts.lay`; `laymesh render examples/gallery/positioning/chart-parts.lay -o chart-parts.png --dpi 150`.
 
 实测：`有效：examples/gallery/positioning/chart-parts.lay（160 × 120 mm，9 个顶层实例）`; PNG **945 × 709 px**, 150 DPI; 警告：无。
+
+## 连接与标注
+
+<a id="line-connections"></a>
+
+### 双端点连接
+
+复用线条样式，在放置时连接物理位置、实例锚点和图表数据点，并独立微调端点。完整源码还演示数据点箭头和物理坐标与数据坐标混合连接。
+
+```lay
+pointer=line(line_color="#d55e00",line_width=0.55pt,end_head=head(shape=open,size=(1.5mm,1.1mm)))
+
+# Each placement chooses its own geometry without changing the material.
+a=page.add(rect(size=(30mm,12mm),fill="#e6f0ef",border_color="#087f8c",border_width=0.6pt),offset=(12mm,9mm))
+b=page.add(rect(size=(30mm,12mm),fill="#e6f0ef",border_color="#087f8c",border_width=0.6pt),offset=(108mm,9mm))
+page.add(text("Source"),anchor=center,target=a.center)
+page.add(text("Destination"),anchor=center,target=b.center)
+page.add(pointer,start=a.middle_right,end=b.middle_left,start_offset=(2mm,0mm),end_offset=(-2mm,0mm))
+
+# Data mapping is resolved before the physical endpoint offset.
+```
+
+![双端点连接的实际渲染结果](../../site/media/gallery-positioning-line-connections-1920.webp)
+
+源码：[line-connections.lay](../../examples/gallery/positioning/line-connections.lay)。
+
+复现命令：`laymesh validate examples/gallery/positioning/line-connections.lay`；`laymesh render examples/gallery/positioning/line-connections.lay -o line-connections.png --dpi 150`。
+
+实测：`有效：examples/gallery/positioning/line-connections.lay（150 × 110 mm，11 个顶层实例）`；PNG **886 × 650 px**，150 DPI；警告：无。另已验证 SVG 和单页矢量 PDF 导出。

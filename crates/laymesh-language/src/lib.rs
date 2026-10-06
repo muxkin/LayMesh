@@ -1,6 +1,7 @@
 //! Static, non-evaluating language services shared by native LSP and WebAssembly.
 mod bindings;
 mod colors;
+mod connections;
 mod index;
 pub mod inspect;
 pub mod lsp;
@@ -1904,6 +1905,23 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                         .iter()
                         .filter_map(|(k, _)| k.as_deref())
                         .collect::<Vec<_>>();
+                    if (keys.contains(&"dx") && !keys.contains(&"dy"))
+                        || (keys.contains(&"dy") && !keys.contains(&"dx"))
+                        || (keys.contains(&"angle") && !keys.contains(&"length"))
+                    {
+                        report(
+                            e.loc.offset,
+                            e.loc.offset + 4,
+                            "E_ARG",
+                            if en {
+                                "Geometry must specify both dx/dy, or length with optional angle"
+                            } else {
+                                "几何定义需要完整的 dx/dy，或 length 及可选 angle"
+                            }
+                            .into(),
+                            None,
+                        );
+                    }
                     if (keys.contains(&"length") || keys.contains(&"angle"))
                         && (keys.contains(&"dx") || keys.contains(&"dy"))
                     {
@@ -2018,5 +2036,6 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
         }
     }
     statements(&stmts, &mut out, &declared, &inferred, source, en);
+    out.extend(connections::diagnostics(service, uri, &stmts));
     json!(out)
 }

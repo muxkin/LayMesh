@@ -5,7 +5,7 @@ use crate::{
 };
 impl Engine {
     pub(crate) fn validate_definition(&mut self, name: &str, a: &Args, l: Loc) -> Result<()> {
-        if name == "line" {
+        if name == "line" && crate::endpoints::has_line_geometry(a) {
             crate::endpoints::line_vector(self, a, l)?;
         }
         if name == "head" {

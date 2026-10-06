@@ -383,7 +383,7 @@ page.add(ellipse(size=(45mm,25mm),fill="#e6f2f3",border_color="#087f8c",border_w
 
 ## line
 
-Create a line using dx/dy or length/angle, with independent endpoint caps and heads. Zero length requires an explicit angle. Heads retain their size on short lines.
+Create reusable line material. Omit geometry and supply start/end in add, or define dx/dy or length/angle. Placement requires geometry; zero length requires an explicit angle. Supports independent caps and heads.
 
 Returns: material
 
@@ -414,6 +414,11 @@ Returns: material
 # Minimal complete example: line
 page=canvas(size=(100mm,75mm),background="#ffffff")
 page.add(line(length=55mm,angle=20deg,start_cap=round,end_head=head(shape=triangle,size=(6mm,5mm)),line_width=2mm),offset=(12mm,15mm))
+# Geometry-free material: its endpoints are supplied when placed.
+wire=line(line_color="#087f8c",end_head=head(shape=open))
+a=page.add(rect(size=(18mm,10mm),fill="#e0f1ef"),offset=(10mm,50mm))
+b=page.add(rect(size=(18mm,10mm),fill="#e0f1ef"),offset=(70mm,55mm))
+page.add(wire,start=a.middle_right,end=b.middle_left,start_offset=(2mm,0mm),end_offset=(-2mm,0mm))
 ```
 
 [Concepts and common errors](topics/shapes.en.md#line) · [Composition source](../examples/basic.lay)
@@ -797,7 +802,7 @@ page.add(ellipse(size=(2mm,2mm),fill="#e36b70"),anchor=center,target=chart.axis(
 
 ## add
 
-Place material in a canvas or group. Align its anchor to a target with an offset. Reuse the same material with independent size and styling for each placement.
+Place material in a canvas or group using anchor/target, or connect two start/end points with line material. Offset translates the entire instance. Reuse material with independent style overrides.
 
 Returns: A placed instance with measured dimensions and anchors for subsequent placement.
 
@@ -812,7 +817,7 @@ Required: `material`.
 | `crop` | box (normalized 0–1) | Normalized crop region in the source image; coordinates are 0–1 | — |
 | `anchor` | "top_left" \| "top_center" \| "top_right" \| "middle_left" \| "center" \| "middle_right" \| "bottom_left" \| "bottom_center" \| "bottom_right" \| "start" \| "end" \| "plot_top_left" \| "plot_top_center" \| "plot_top_right" \| "plot_middle_left" \| "plot_center" \| "plot_middle_right" \| "plot_bottom_left" \| "plot_bottom_center" \| "plot_bottom_right" \| self selector | Source bounds name, line start/end, plot-only plot_* name, or a self geometry selector; targets belong to placed instances in the same container<br>`top_left`: Top-left corner of the layout box<br>`top_center`: Top-edge midpoint of the layout box<br>`top_right`: Top-right corner of the layout box<br>`middle_left`: Left-edge midpoint of the layout box<br>`center`: Center of the layout box<br>`middle_right`: Right-edge midpoint of the layout box<br>`bottom_left`: Bottom-left corner of the layout box<br>`bottom_center`: Bottom-edge midpoint of the layout box<br>`bottom_right`: Bottom-right corner of the layout box<br>`start`: Legacy start anchor for endpoint-bearing materials; retains legacy transform semantics<br>`end`: Legacy end anchor for endpoint-bearing materials; retains legacy transform semantics<br>`plot_top_left`: Plot-area box anchor; plot material only, transformed with the instance<br>`plot_top_center`: Plot-area box anchor; plot material only, transformed with the instance<br>`plot_top_right`: Plot-area box anchor; plot material only, transformed with the instance<br>`plot_middle_left`: Plot-area box anchor; plot material only, transformed with the instance<br>`plot_center`: Plot-area box anchor; plot material only, transformed with the instance<br>`plot_middle_right`: Plot-area box anchor; plot material only, transformed with the instance<br>`plot_bottom_left`: Plot-area box anchor; plot material only, transformed with the instance<br>`plot_bottom_center`: Plot-area box anchor; plot material only, transformed with the instance<br>`plot_bottom_right`: Plot-area box anchor; plot material only, transformed with the instance | top_left |
 | `target` | anchor | Anchor on an instance in the same container; candidate collections require explicit indexing | parent.top_left |
-| `offset` | (length, length) / canvas unit | Horizontal and vertical offset from the target | (0, 0) |
+| `offset` | (length, length) / canvas unit | Horizontal and vertical offset from the target; translates both endpoints in a line connection | (0, 0) |
 | `rotation` | angle | Rotate about the instance center; accepts a path anchor tangent_angle | 0deg |
 | `opacity` | number \| number[] | Opacity from 0 to 1, multiplied by parent opacity | 1 |
 | `class` | string | Space-separated LCSS class names | "" |
@@ -843,7 +848,13 @@ Required: `material`.
 | `line_join` | "miter" \| "round" \| "bevel" | Line segment join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `line_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `line_opacity` | value | Independent line opacity, 0–1 | 1 |
-| `offset_space` | "container" \| "target" | Offset in container coordinates, or target tangent and left normal.<br>`container`: Offsets follow the current container axes<br>`target`: Offsets follow the target tangent and left normal | container |
+| `offset_space` | "container" \| "target" | Offset in container coordinates, or target tangent and left normal.; line connections accept container only, with separate start_offset_space/end_offset_space for endpoint frames<br>`container`: Offsets follow the current container axes<br>`target`: Offsets follow the target tangent and left normal | container |
+| `start` | anchor \| (length, length) | Start of a line connection: physical coordinates or an anchor in the current container. Both start/end are required, exclusive with anchor/target/rotation/size; overrides material geometry for this placement | — |
+| `end` | anchor \| (length, length) | End of a line connection: physical coordinates or an anchor in the current container. Both start/end are required, exclusive with anchor/target/rotation/size; overrides material geometry for this placement | — |
+| `start_offset` | (length, length) / canvas unit | Independent physical offset of the start, followed by the overall offset | (0, 0) |
+| `end_offset` | (length, length) / canvas unit | Independent physical offset of the end, followed by the overall offset | (0, 0) |
+| `start_offset_space` | "container" \| "target" | Direction frame for the start offset; target requires a path anchor with an unambiguous tangent<br>`container`: Along the current container axes<br>`target`: Along this path anchor tangent and left normal | container |
+| `end_offset_space` | "container" \| "target" | Direction frame for the end offset; target requires a path anchor with an unambiguous tangent<br>`container`: Along the current container axes<br>`target`: Along this path anchor tangent and left normal | container |
 
 ### Minimal complete example
 

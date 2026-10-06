@@ -1,3 +1,8 @@
 # Minimal complete example: line
 page=canvas(size=(100mm,75mm),background="#ffffff")
 page.add(line(length=55mm,angle=20deg,start_cap=round,end_head=head(shape=triangle,size=(6mm,5mm)),line_width=2mm),offset=(12mm,15mm))
+# Geometry-free material: its endpoints are supplied when placed.
+wire=line(line_color="#087f8c",end_head=head(shape=open))
+a=page.add(rect(size=(18mm,10mm),fill="#e0f1ef"),offset=(10mm,50mm))
+b=page.add(rect(size=(18mm,10mm),fill="#e0f1ef"),offset=(70mm,55mm))
+page.add(wire,start=a.middle_right,end=b.middle_left,start_offset=(2mm,0mm),end_offset=(-2mm,0mm))

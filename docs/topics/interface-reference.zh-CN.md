@@ -384,7 +384,7 @@ page.add(ellipse(size=(45mm,25mm),fill="#e6f2f3",border_color="#087f8c",border_w
 
 ## line
 
-创建线段；使用 dx/dy 或 length/angle，支持独立端帽和头部。零长度需要显式 angle，头部大小不随线长缩小。
+创建可复用线条素材，可省略几何并在 add 中指定 start/end；也可用 dx/dy 或 length/angle 定义。放置时必须能确定几何，零长度需要显式 angle，支持独立端帽和头部。
 
 返回：material
 
@@ -415,6 +415,11 @@ page.add(ellipse(size=(45mm,25mm),fill="#e6f2f3",border_color="#087f8c",border_w
 # Minimal complete example: line
 page=canvas(size=(100mm,75mm),background="#ffffff")
 page.add(line(length=55mm,angle=20deg,start_cap=round,end_head=head(shape=triangle,size=(6mm,5mm)),line_width=2mm),offset=(12mm,15mm))
+# Geometry-free material: its endpoints are supplied when placed.
+wire=line(line_color="#087f8c",end_head=head(shape=open))
+a=page.add(rect(size=(18mm,10mm),fill="#e0f1ef"),offset=(10mm,50mm))
+b=page.add(rect(size=(18mm,10mm),fill="#e0f1ef"),offset=(70mm,55mm))
+page.add(wire,start=a.middle_right,end=b.middle_left,start_offset=(2mm,0mm),end_offset=(-2mm,0mm))
 ```
 
 [概念与常见错误](shapes.zh-CN.md#line) · [组合源码](../../examples/basic.lay)
@@ -798,7 +803,7 @@ page.add(ellipse(size=(2mm,2mm),fill="#e36b70"),anchor=center,target=chart.axis(
 
 ## add
 
-将素材放置到画布或组合中，使用 anchor 对齐素材锚点、target 指定目标、offset 设置偏移。同一素材可以重复放置，各实例可独立设置尺寸与样式。
+将素材放置到画布或组合中；使用 anchor/target 单点定位，或为 line 指定 start/end 双端点连接。offset 平移整个实例，同一素材可重复放置并独立覆盖样式。
 
 返回：已放置实例；可读取测量尺寸并引用其锚点继续定位。
 
@@ -813,7 +818,7 @@ page.add(ellipse(size=(2mm,2mm),fill="#e36b70"),anchor=center,target=chart.axis(
 | `crop` | box (normalized 0–1) | 原图中的归一化裁剪区域；各坐标为 0–1 | — |
 | `anchor` | "top_left" \| "top_center" \| "top_right" \| "middle_left" \| "center" \| "middle_right" \| "bottom_left" \| "bottom_center" \| "bottom_right" \| "start" \| "end" \| "plot_top_left" \| "plot_top_center" \| "plot_top_right" \| "plot_middle_left" \| "plot_center" \| "plot_middle_right" \| "plot_bottom_left" \| "plot_bottom_center" \| "plot_bottom_right" \| self selector | 自身布局框九点名称、线段 start/end、图表 plot_*，或 self 几何选择器；target 必须来自同一容器中已放置实例<br>`top_left`: 左上角，对应布局框<br>`top_center`: 上边中点，对应布局框<br>`top_right`: 右上角，对应布局框<br>`middle_left`: 左边中点，对应布局框<br>`center`: 中心，对应布局框<br>`middle_right`: 右边中点，对应布局框<br>`bottom_left`: 左下角，对应布局框<br>`bottom_center`: 下边中点，对应布局框<br>`bottom_right`: 右下角，对应布局框<br>`start`: 旧端点锚点：只适用于具有端点的素材；保留旧变换语义<br>`end`: 旧端点锚点：只适用于具有端点的素材；保留旧变换语义<br>`plot_top_left`: 图表绘图区九点锚点；只适用于图表素材，随实例变换<br>`plot_top_center`: 图表绘图区九点锚点；只适用于图表素材，随实例变换<br>`plot_top_right`: 图表绘图区九点锚点；只适用于图表素材，随实例变换<br>`plot_middle_left`: 图表绘图区九点锚点；只适用于图表素材，随实例变换<br>`plot_center`: 图表绘图区九点锚点；只适用于图表素材，随实例变换<br>`plot_middle_right`: 图表绘图区九点锚点；只适用于图表素材，随实例变换<br>`plot_bottom_left`: 图表绘图区九点锚点；只适用于图表素材，随实例变换<br>`plot_bottom_center`: 图表绘图区九点锚点；只适用于图表素材，随实例变换<br>`plot_bottom_right`: 图表绘图区九点锚点；只适用于图表素材，随实例变换 | top_left |
 | `target` | anchor | 同一容器中已放置实例的锚点；候选集合须显式索引 | parent.top_left |
-| `offset` | (length, length) / 画布单位 | 相对目标的 (横向, 纵向) 偏移 | (0, 0) |
+| `offset` | (length, length) / 画布单位 | 相对目标的 (横向, 纵向) 偏移；双端点连接时同时平移两端 | (0, 0) |
 | `rotation` | angle | 围绕实例中心旋转，可使用路径锚点的 tangent_angle | 0deg |
 | `opacity` | number \| number[] | 对象透明度，0–1；与父级透明度相乘 | 1 |
 | `class` | string | 空格分隔的 LCSS 类名 | "" |
@@ -844,7 +849,13 @@ page.add(ellipse(size=(2mm,2mm),fill="#e36b70"),anchor=center,target=chart.axis(
 | `line_join` | "miter" \| "round" \| "bevel" | 线段交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `line_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `line_opacity` | value | 线条独立透明度 0–1 | 1 |
-| `offset_space` | "container" \| "target" | offset 的方向：容器坐标，或目标路径的切线与左法线<br>`container`: 偏移沿当前容器的横纵方向<br>`target`: 偏移沿目标切线与左法线方向 | container |
+| `offset_space` | "container" \| "target" | offset 的方向：容器坐标，或目标路径的切线与左法线；双端点连接时只接受 container，两端方向分别用 start_offset_space/end_offset_space<br>`container`: 偏移沿当前容器的横纵方向<br>`target`: 偏移沿目标切线与左法线方向 | container |
+| `start` | anchor \| (length, length) | 线条连接起点：当前容器中的物理坐标或锚点；start/end 必须同时指定，与 anchor/target/rotation/size 互斥；覆盖本次实例的素材几何 | — |
+| `end` | anchor \| (length, length) | 线条连接终点：当前容器中的物理坐标或锚点；start/end 必须同时指定，与 anchor/target/rotation/size 互斥；覆盖本次实例的素材几何 | — |
+| `start_offset` | (length, length) / 画布单位 | 连接起点的独立物理偏移，随后叠加整体 offset | (0, 0) |
+| `end_offset` | (length, length) / 画布单位 | 连接终点的独立物理偏移，随后叠加整体 offset | (0, 0) |
+| `start_offset_space` | "container" \| "target" | 起点偏移的方向；target 需要路径锚点及明确切线方向<br>`container`: 沿当前容器的横纵方向<br>`target`: 沿对应路径锚点的切线与左法线 | container |
+| `end_offset_space` | "container" \| "target" | 终点偏移的方向；target 需要路径锚点及明确切线方向<br>`container`: 沿当前容器的横纵方向<br>`target`: 沿对应路径锚点的切线与左法线 | container |
 
 ### 最小完整示例
 

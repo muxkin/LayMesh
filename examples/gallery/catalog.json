@@ -126,6 +126,12 @@
           "slug": "chart-parts",
           "title": "图表内部部件",
           "description": "反向轴的数值端点、纵向轴线、标题布局框及数据坐标锚点。"
+        },
+        {
+          "group": "连接与标注",
+          "slug": "line-connections",
+          "title": "双端点连接",
+          "description": "复用线条样式，在放置时连接物理位置、实例锚点和图表数据点，并独立微调端点。"
         }
       ]
     },
