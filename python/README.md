@@ -110,11 +110,13 @@ The magic displays an SVG preview and writes the requested export. `%laymesh fig
 
 ## Scope
 
-LayMesh provides physical units, anchors, cropping, paths, reusable modules, LCSS styles and native scientific plots including statistical, polar and radar layers. Layouts are single-page; panels use explicit positioning. Finish plot layers and decorations before placing a chart. Fixed plot areas keep their physical dimensions; decoration overflow emits a warning. [Language reference](https://muxkin.github.io/LayMesh/en/docs/language-reference.html).
+LayMesh provides physical units, anchors, cropping, paths, reusable modules, LCSS styles and native scientific plots including statistical, polar and radar layers. Artistic text adds glyph gradients and outlines, path text, arc/wave/perspective warps and two-dimensional vector extrusion. Text, shapes, transparent images and groups support inner/outer shadows and glow via `effects=[shadow(...), glow(...)]`. These source interfaces work through `render_source` and Notebook cells. PDF subjects stay vector, while effect layers use tiled raster rendering at the configured DPI (default 1200). See the [effects guide](https://muxkin.github.io/LayMesh/en/docs/topics/art-effects.html).
+
+Layouts are single-page; panels use explicit positioning. Finish plot layers and decorations before placing a chart. Fixed plot areas keep their physical dimensions; decoration overflow emits a warning. [Language reference](https://muxkin.github.io/LayMesh/en/docs/language-reference.html).
 
 ## 中文
 
-LayMesh 用一个可编辑的 `.lay` 文件组织科研图表、图片、文字与公式，导出 SVG、PDF、PNG。需要 Python 3.10+；运行 `python -m pip install laymesh` 即可安装全部功能，包括 NumPy/pandas 数据绑定和 Matplotlib Figure 导入。平台 wheel 内置原生 Rust 引擎和公式字体，正文使用系统或用户字体。支持 `laymesh` 命令、Python API 和 Jupyter Magic；保存源码与资源后可独立重新导出。[中文入门](https://muxkin.github.io/LayMesh/docs/topics/install.zh-CN.html)。
+LayMesh 用一个可编辑的 `.lay` 文件组织科研图表、图片、文字与公式，导出 SVG、PDF、PNG。需要 Python 3.10+；运行 `python -m pip install laymesh` 即可安装全部功能，包括 NumPy/pandas 数据绑定和 Matplotlib Figure 导入。平台 wheel 内置原生 Rust 引擎和公式字体，正文使用系统或用户字体。支持字形渐变与描边、沿路径排字、弧形/波浪/透视变形、二维矢量挤出，以及文字、形状、透明图片和组的内外阴影与发光。PDF 主体保持矢量，效果层按设置的 DPI 分块渲染，默认 1200 DPI。[效果说明](https://muxkin.github.io/LayMesh/docs/topics/art-effects.zh-CN.html)。支持 `laymesh` 命令、Python API 和 Jupyter Magic；保存源码与资源后可独立重新导出。[中文入门](https://muxkin.github.io/LayMesh/docs/topics/install.zh-CN.html)。
 
 LayMesh is [MIT licensed](https://github.com/muxkin/LayMesh/blob/main/LICENSE). Bundled native dependencies, formula fonts and colormap data retain their own license texts inside the installed package. `_vendor/manifest.json` records engine, platform and build hashes; `_vendor/licenses/manifest.json` records dependency license provenance.
 

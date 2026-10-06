@@ -261,3 +261,15 @@
 | `api:cmap.sample` | [→](cmaps.zh-CN.md#cmap-sample) | [→](../../examples/manual/cmaps.lay) | [→](../../examples/plot/cmap-presets.lay) |
 | `api:cmap.colors` | [→](cmaps.zh-CN.md#cmap-colors) | [→](../../examples/manual/cmaps.lay) | [→](../../examples/plot/cmap-presets.lay) |
 | `api:cmap.reversed` | [→](cmaps.zh-CN.md#cmap-reversed) | [→](../../examples/manual/cmaps.lay) | [→](../../examples/plot/cmap-presets.lay) |
+| `api:shadow` | [→](art-effects.zh-CN.md#shadow) | [→](../../examples/effects/shadow-glow.lay) | [→](../../examples/effects/shadow-glow.lay) |
+| `api:glow` | [→](art-effects.zh-CN.md#glow) | [→](../../examples/effects/shadow-glow.lay) | [→](../../examples/effects/shadow-glow.lay) |
+| `api:text_path` | [→](art-effects.zh-CN.md#text_path) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/art-text.lay) |
+| `api:text_warp` | [→](art-effects.zh-CN.md#text_warp) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/art-text.lay) |
+| `api:text_extrude` | [→](art-effects.zh-CN.md#text_extrude) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/art-text.lay) |
+| `lcss:text_fill` | [→](art-effects.zh-CN.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
+| `lcss:text_stroke_color` | [→](art-effects.zh-CN.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
+| `lcss:text_stroke_width` | [→](art-effects.zh-CN.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
+| `lcss:effects` | [→](art-effects.zh-CN.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
+| `lcss:path` | [→](art-effects.zh-CN.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
+| `lcss:warp` | [→](art-effects.zh-CN.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
+| `lcss:extrude` | [→](art-effects.zh-CN.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |

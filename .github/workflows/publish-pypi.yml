@@ -3,17 +3,8 @@ name: Python wheels and PyPI
 on:
   pull_request:
   push:
-    branches: ['codex/pypi-*']
+    tags: ['v[0-9]*.[0-9]*.[0-9]*']
   workflow_dispatch:
-    inputs:
-      publish:
-        description: 'Publish after all checks and pypi environment approval'
-        type: boolean
-        default: false
-      version:
-        description: 'Exact version to publish (required only for publishing)'
-        type: string
-        default: ''
 
 permissions:
   contents: read
@@ -26,17 +17,26 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
       - run: python -m pip install -r release/build-requirements.txt
       - run: python scripts/check-release.py
+      - name: Verify stable tag, versions and main ancestry
+        if: startsWith(github.ref, 'refs/tags/')
+        run: python scripts/github-release.py check-tag --tag "$GITHUB_REF_NAME"
       - run: sudo apt-get update && sudo apt-get install -y poppler-utils mupdf-tools
       - run: python -m pip install -e './python' pillow
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: '1.93.1'
       - run: python scripts/test-contracts.py
+      - run: python scripts/build-api-reference.py --check
+      - run: python scripts/build-topic-walkthroughs.py --check
+      - run: python scripts/check-feature-docs.py
+      - run: python scripts/build-docs-media.py --check
 
   wheels:
     strategy:
@@ -144,14 +144,27 @@ jobs:
           merge-multiple: true
           path: release/dist
       - run: python scripts/check-python-wheels.py release/dist --all-targets --checksums release/SHA256SUMS
-      - run: python -m twine check --strict release/dist/*.whl
-      - name: Verify requested release version
-        if: github.event_name == 'workflow_dispatch' && inputs.publish
-        env:
-          REQUESTED_VERSION: ${{ inputs.version }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: editor-*
+          merge-multiple: true
+          path: release/editors
+      - name: Audit all five stable VSIX packages against their wheel engines
+        run: >-
+          python scripts/marketplace-release.py audit
+          --source . --version "$(python scripts/check-release.py | awk '{print $NF}')"
+          --wheels release/dist --vsix release/editors --checksums release/SHA256SUMS
+          --report release/editor-audit.json
+      - name: Assemble reviewed GitHub release assets
         run: |
-          python -c "import os,tomllib; assert os.environ['REQUESTED_VERSION'] == tomllib.load(open('python/pyproject.toml','rb'))['project']['version'], 'Explicit version must match the package'"
+          mkdir -p release/assets
+          cp release/dist/*.whl release/editors/*.vsix release/assets/
+          cd release/assets
+          sha256sum *.whl *.vsix > SHA256SUMS
+
+      - run: python -m twine check --strict release/dist/*.whl
       - name: Require an existing human approval gate
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -171,20 +184,28 @@ jobs:
             release/SHA256SUMS
           if-no-files-found: error
           retention-days: 14
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-github-release
+          path: release/assets/*
+          if-no-files-found: error
+          retention-days: 30
 
   publish:
-    if: github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/main'
-    needs: review
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [core, review]
     runs-on: ubuntu-24.04
     environment:
       name: pypi
       url: https://pypi.org/project/laymesh/
     permissions:
+      contents: read
       id-token: write
     concurrency:
       group: pypi-release
       cancel-in-progress: false
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: reviewed-python-release
@@ -192,6 +213,34 @@ jobs:
       - name: Verify reviewed artifacts
         working-directory: reviewed/dist
         run: sha256sum --check ../SHA256SUMS
+      - name: Refuse conflicting existing PyPI wheels
+        run: python scripts/check-pypi-release.py --wheels reviewed/dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: reviewed/dist/
+          skip-existing: true
+      - name: Verify all published wheel hashes
+        run: python scripts/check-pypi-release.py --wheels reviewed/dist --complete
+
+  github-release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: publish
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r release/build-requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: reviewed-github-release
+          path: reviewed/assets
+      - name: Publish and verify reviewed GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/github-release.py publish --tag "$GITHUB_REF_NAME" --assets reviewed/assets --repo "$GITHUB_REPOSITORY"

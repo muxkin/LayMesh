@@ -7,6 +7,7 @@ use ttf_parser::OutlineBuilder;
 use unicode_segmentation::UnicodeSegmentation;
 
 pub struct FontSystem {
+    pub(crate) glyph_paths: BTreeMap<(String, u16), kurbo::BezPath>,
     db: Database,
     name_index: Option<BTreeMap<String, Vec<ID>>>,
     fallback_candidates: BTreeMap<(u16, bool), Vec<ID>>,
@@ -92,6 +93,7 @@ impl FontSystem {
                 .clone();
         }
         Self {
+            glyph_paths: BTreeMap::new(),
             db,
             name_index: None,
             fallback_candidates: BTreeMap::new(),
@@ -109,6 +111,7 @@ impl FontSystem {
     }
     /// Add user-provided font bytes (including TTC/OTC collections), without accessing the filesystem.
     pub fn register_font(&mut self, name: &str, data: Vec<u8>) {
+        self.glyph_paths.clear();
         self.choices.clear();
         self.name_index = None;
         self.fallback_candidates.clear();
@@ -279,11 +282,8 @@ impl FontSystem {
                 let index = self.name_index.get_or_insert_with(|| {
                     let mut index: BTreeMap<String, Vec<ID>> = BTreeMap::new();
                     for face in self.db.faces() {
-                        let mut names: BTreeSet<String> = face
-                            .families
-                            .iter()
-                            .map(|(s, _)| canonical(s))
-                            .collect();
+                        let mut names: BTreeSet<String> =
+                            face.families.iter().map(|(s, _)| canonical(s)).collect();
                         names.insert(canonical(&face.post_script_name));
                         for name in names {
                             index.entry(name).or_default().push(face.id);
@@ -646,6 +646,7 @@ struct Unit {
     ascent: f64,
     descent: f64,
     formula: Option<Json>,
+    art: Json,
 }
 fn text_parts(spec: &Json) -> Vec<Json> {
     if let Some(spans) = spec["spans"].as_array() {
@@ -654,6 +655,9 @@ fn text_parts(spec: &Json) -> Vec<Json> {
             .map(|s| {
                 let mut v = spec.clone();
                 v.as_object_mut().unwrap().remove("spans");
+                if s["__span_color_explicit"].as_bool() == Some(true) {
+                    v.as_object_mut().unwrap().remove("text_fill");
+                }
                 if let Some(s) = s.as_object() {
                     for (k, val) in s {
                         v[k] = val.clone();
@@ -851,7 +855,10 @@ pub fn layout_text(
         }
         if jstr(&part, "kind", "") == "formula" {
             part["font_size"] = json!(psize);
-            let f = formula(&part, fonts, w, &part_file, part_loc)?;
+            let mut f = formula(&part, fonts, w, &part_file, part_loc)?;
+            if let Some(paint) = part.get("text_fill") {
+                f["text_fill"] = paint.clone();
+            }
             all.push('\u{fffc}');
             units.push(Unit {
                 content: "\u{fffc}".into(),
@@ -864,6 +871,7 @@ pub fn layout_text(
                 width: jnum(&f, "width", 0.),
                 ascent: jnum(&f, "ascent", 0.),
                 descent: jnum(&f, "height", 0.) - jnum(&f, "ascent", 0.),
+                art: Json::Null,
                 formula: Some(f),
             });
             continue;
@@ -909,6 +917,19 @@ pub fn layout_text(
                 width,
                 ascent,
                 descent,
+                art: {
+                    let mut art = serde_json::Map::new();
+                    for k in ["text_fill", "text_stroke_color", "text_stroke_width"] {
+                        if let Some(v) = part.get(k) {
+                            art.insert(k.into(), v.clone());
+                        }
+                    }
+                    if art.is_empty() {
+                        Json::Null
+                    } else {
+                        Json::Object(art)
+                    }
+                },
                 formula: None,
             });
         }
@@ -1034,6 +1055,7 @@ pub fn layout_text(
                     && u.color == p.color
                     && u.weight == p.weight
                     && u.italic == p.italic
+                    && u.art == p.art
                     && group_levels.last() == Some(&level)
                     && !(align == "justify" && (u.content == " " || p.content == " "))
                 {
@@ -1108,8 +1130,18 @@ pub fn layout_text(
                     .unwrap_or(u.weight);
                 let italic = face.as_ref().map(|f| f.is_italic()).unwrap_or(u.italic);
                 runs.push(json!({"kind":"glyph","content":group.iter().map(|u|u.content.as_str()).collect::<String>(),"x":x,"baseline":baseline,"fontFamily":key,"fontSystemFamily":font.family,"fontPath":fonts.origins.get(key),"fontFace":fonts.face_names.get(key),"fontSize":u.size,"fontWeight":weight,"fontItalic":italic,"color":u.color,"width":width}));
+                if let Some(art) = u.art.as_object() {
+                    for (k, v) in art {
+                        runs.last_mut().unwrap()[k] = v.clone();
+                    }
+                }
             } else if !u.content.chars().all(char::is_whitespace) {
                 runs.push(missing_box(x, baseline - u.ascent, u.size, &u.color));
+                if let Some(art) = u.art.as_object() {
+                    for (k, v) in art {
+                        runs.last_mut().unwrap()[k] = v.clone();
+                    }
+                }
             }
             x += width
                 + if group.len() == 1 && u.content == " " {
@@ -1400,20 +1432,70 @@ mod matching_tests {
     #[test]
     fn fallback_ranking_is_reused_without_caching_glyphs_or_warning_locations() {
         let mut fonts = FontSystem::new(false);
-        fonts.register_font("font.ttf", include_bytes!("../../../tests/fonts/DejaVuSans.ttf").to_vec());
+        fonts.register_font(
+            "font.ttf",
+            include_bytes!("../../../tests/fonts/DejaVuSans.ttf").to_vec(),
+        );
         let request = json!("Missing Family");
         let mut warnings = vec![];
         for file in ["a.lay", "b.lay"] {
-            assert!(fonts.choose(&request, 400, false, "A", file, Loc::default(), &mut warnings).is_some());
+            assert!(
+                fonts
+                    .choose(
+                        &request,
+                        400,
+                        false,
+                        "A",
+                        file,
+                        Loc::default(),
+                        &mut warnings
+                    )
+                    .is_some()
+            );
         }
         assert_eq!(fonts.fallback_candidates.len(), 1);
         assert!(warnings.iter().any(|w| w.file == "a.lay"));
         assert!(warnings.iter().any(|w| w.file == "b.lay"));
-        assert!(fonts.choose(&request, 400, false, "\u{10ffff}", "a.lay", Loc::default(), &mut warnings).is_none());
-        assert!(fonts.choose(&json!(["Missing Family"]), 400, false, "A", "a.lay", Loc::default(), &mut warnings).is_none());
-        fonts.choose(&request, 700, true, "B", "a.lay", Loc::default(), &mut warnings);
+        assert!(
+            fonts
+                .choose(
+                    &request,
+                    400,
+                    false,
+                    "\u{10ffff}",
+                    "a.lay",
+                    Loc::default(),
+                    &mut warnings
+                )
+                .is_none()
+        );
+        assert!(
+            fonts
+                .choose(
+                    &json!(["Missing Family"]),
+                    400,
+                    false,
+                    "A",
+                    "a.lay",
+                    Loc::default(),
+                    &mut warnings
+                )
+                .is_none()
+        );
+        fonts.choose(
+            &request,
+            700,
+            true,
+            "B",
+            "a.lay",
+            Loc::default(),
+            &mut warnings,
+        );
         assert_eq!(fonts.fallback_candidates.len(), 2);
-        fonts.register_font("new.ttf", include_bytes!("../../../tests/fonts/DejaVuSans.ttf").to_vec());
+        fonts.register_font(
+            "new.ttf",
+            include_bytes!("../../../tests/fonts/DejaVuSans.ttf").to_vec(),
+        );
         assert!(fonts.fallback_candidates.is_empty());
     }
 
@@ -1423,17 +1505,19 @@ mod matching_tests {
         let mut fonts = FontSystem::new(false);
         let mut warnings = vec![];
         let request = json!(["  DEJAVU_sans  "]);
-        assert!(fonts
-            .choose(
-                &request,
-                400,
-                false,
-                "A",
-                "x.lay",
-                Loc::default(),
-                &mut warnings
-            )
-            .is_none());
+        assert!(
+            fonts
+                .choose(
+                    &request,
+                    400,
+                    false,
+                    "A",
+                    "x.lay",
+                    Loc::default(),
+                    &mut warnings
+                )
+                .is_none()
+        );
         fonts.register_font("first.ttf", bytes.clone());
         fonts.register_font("second.ttf", bytes);
         warnings.clear();

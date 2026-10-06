@@ -1,0 +1,4 @@
+page=canvas(size=(150mm,95mm),background="#202936")
+page.add(rect(size=(35mm,25mm),border_radius=4mm,fill="#3782d6",effects=[shadow(blur=2mm,offset=(2mm,3mm)),glow(color="#59b7ff",blur=1mm,spread=0.5mm)]),offset=(12mm,15mm))
+page.add(ellipse(size=(35mm,25mm),fill="#eb6d9b",effects=[shadow(mode="inner",blur=2mm,offset=(2mm,2mm),opacity=0.8),glow(mode="inner",color="#ffe9f2",blur=1mm)]),offset=(58mm,15mm))
+page.add(text("Mixed effects",font_family="DejaVu Sans",font_size=25pt,color="#f6f6f6",effects=[glow(color="#8d6cff",blur=1mm),shadow(blur=0.5mm,offset=(1mm,1mm))]),offset=(18mm,59mm))

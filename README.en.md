@@ -8,9 +8,11 @@
 
 [Showcase source](examples/showcase.lay) · [Scientific plot examples](docs/gallery/plots.en.md)
 
+[Artistic text, shadows and glow](docs/topics/art-effects.en.md) · [Editable example](examples/effects/art-text.lay) · [Release notes](release/notes/0.4.0.md)
+
 ## VS Code (recommended)
 
-Install [LayMesh by Hyacine](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) from Extensions, or use **Extensions: Install from VSIX** with a platform package. **Version 0.3.9 VSIX packages for Windows x64, Linux x64 / ARM64 and macOS Intel / Apple Silicon include the native engine: no Python, Rust or npm installation is needed.** With Remote SSH, install the package matching the remote extension host.
+Install [LayMesh by Hyacine](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) from Extensions, or use **Extensions: Install from VSIX** with a platform package. **Version 0.4.0 VSIX packages for Windows x64, Linux x64 / ARM64 and macOS Intel / Apple Silicon include the native engine: no Python, Rust or npm installation is needed.** With Remote SSH, install the package matching the remote extension host.
 
 Open a trusted local or Remote SSH folder and save this as `figure.lay`:
 
@@ -24,7 +26,7 @@ Click the preview icon or run **LayMesh: Open Preview** for a live figure beside
 
 ## Python and CLI installation
 
-Requires **Python 3.10+**. **`0.3.9`** is published on PyPI, shared by Python, Rust and the VS Code extension, with two-endpoint straight-line connections and geometry-free `line()` materials. Install from [PyPI](https://pypi.org/project/laymesh/):
+Requires **Python 3.10+**. The **`0.4.0`** sources synchronize Python, Rust and the VS Code extension, adding artistic text and inner/outer shadows and glow. Stable tags build reviewed packages; PyPI approval precedes publication and the GitHub Release. Check PyPI for the currently published version. Install from [PyPI](https://pypi.org/project/laymesh/):
 
 ```sh
 python -m pip install laymesh
@@ -35,7 +37,7 @@ Platform wheels bundle the native Rust engine and formula fonts for the CLI, Pyt
 
 The standard installation includes NumPy, pandas, Matplotlib and IPython. Data bindings, Matplotlib Figure import and Jupyter magics are ready to use.
 
-Supported wheel platforms are Windows x64, macOS 14+ on Intel / Apple Silicon, and Linux x64 / arm64. Published Linux wheels require glibc 2.35+. All five 0.3.9 platforms passed checks on Python 3.10, 3.13 and 3.14. The Windows wheel statically links its runtime and needs no separate Visual C++ Redistributable; see the [release procedure](release/README.en.md). Body fonts come from the system or user-provided files; missing glyphs warn and display vector boxes. Supply the fonts with your figure for reproducible rendering across machines.
+Supported wheel platforms are Windows x64, macOS 14+ on Intel / Apple Silicon, and Linux x64 / arm64. Published Linux wheels require glibc 2.35+. The release workflow checks all five platforms on Python 3.10, 3.13 and 3.14. The Windows wheel statically links its runtime and needs no separate Visual C++ Redistributable; see the [release procedure](release/README.en.md). Body fonts come from the system or user-provided files; missing glyphs warn and display vector boxes. Supply the fonts with your figure for reproducible rendering across machines.
 
 ## First figure
 

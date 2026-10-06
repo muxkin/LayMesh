@@ -1,5 +1,6 @@
-pub mod assets;
+mod art;
 pub mod asset_cache;
+pub mod assets;
 mod collections;
 pub mod color;
 pub mod colormap;

@@ -1,4 +1,5 @@
 //! SVG is shared by native and WASM. Native exports use resvg and krilla.
+mod effects;
 use base64::Engine;
 use laymesh_core::{
     Diagnostic, Loc, Result,
@@ -79,8 +80,33 @@ fn paint(p: &Json, defs: &mut Vec<String>) -> String {
             } else {
                 "xMidYMid meet"
             };
-            let mut pattern = format!("<pattern id='{id}' width='1' height='1' patternContentUnits='objectBoundingBox'><svg width='1' height='1' viewBox='0 0 {} {}' preserveAspectRatio='{aspect}'><image width='{}' height='{}' href='data:{};base64,{}'/></svg></pattern>",n(p,"width",1.),n(p,"height",1.),n(p,"width",1.),n(p,"height",1.),escape(jstr(p,"mime","image/png")),jstr(p,"data",""));
-            if let Some(uri)=p["resourceUri"].as_str() { pattern=pattern.replace(&format!("data:{};base64,{}",jstr(p,"mime","image/png"),jstr(p,"data","")),&escape(uri)); pattern=pattern.replacen("<image ",&format!("<image data-laymesh-asset='{}' ",escape(jstr(p,"previewAsset",""))),1); }
+            let mut pattern = format!(
+                "<pattern id='{id}' width='1' height='1' patternContentUnits='objectBoundingBox'><svg width='1' height='1' viewBox='0 0 {} {}' preserveAspectRatio='{aspect}'><image width='{}' height='{}' href='data:{};base64,{}'/></svg></pattern>",
+                n(p, "width", 1.),
+                n(p, "height", 1.),
+                n(p, "width", 1.),
+                n(p, "height", 1.),
+                escape(jstr(p, "mime", "image/png")),
+                jstr(p, "data", "")
+            );
+            if let Some(uri) = p["resourceUri"].as_str() {
+                pattern = pattern.replace(
+                    &format!(
+                        "data:{};base64,{}",
+                        jstr(p, "mime", "image/png"),
+                        jstr(p, "data", "")
+                    ),
+                    &escape(uri),
+                );
+                pattern = pattern.replacen(
+                    "<image ",
+                    &format!(
+                        "<image data-laymesh-asset='{}' ",
+                        escape(jstr(p, "previewAsset", ""))
+                    ),
+                    1,
+                );
+            }
             defs.push(pattern);
         }
         _ => {
@@ -113,11 +139,23 @@ fn paint(p: &Json, defs: &mut Vec<String>) -> String {
                 })
                 .collect::<String>();
             if matches!(kind, "linearGradient" | "linear_gradient") {
-                let a = pair(&p["start"], [0., 0.]);
-                let b = pair(&p["end"], [1., 1.]);
+                let mut a = pair(&p["start"], [0., 0.]);
+                let mut b = pair(&p["end"], [1., 1.]);
+                if let Some(bb) = p["paintBox"].as_array() {
+                    let r: Vec<f64> = bb.iter().map(|v| v.as_f64().unwrap_or(0.)).collect();
+                    a = [r[0] + a[0] * r[2], r[1] + a[1] * r[3]];
+                    b = [r[0] + b[0] * r[2], r[1] + b[1] * r[3]];
+                    defs.push(format!("<linearGradient id='{id}' gradientUnits='userSpaceOnUse' x1='{}' y1='{}' x2='{}' y2='{}'>{stops}</linearGradient>",a[0],a[1],b[0],b[1]));
+                    return format!("url(#{id})");
+                }
                 defs.push(format!("<linearGradient id='{id}' x1='{}%' y1='{}%' x2='{}%' y2='{}%'>{stops}</linearGradient>",a[0]*100.,a[1]*100.,b[0]*100.,b[1]*100.));
             } else {
                 let c = pair(&p["center"], [0.5, 0.5]);
+                if let Some(bb) = p["paintBox"].as_array() {
+                    let r: Vec<f64> = bb.iter().map(|v| v.as_f64().unwrap_or(0.)).collect();
+                    defs.push(format!("<radialGradient id='{id}' gradientUnits='userSpaceOnUse' cx='{}' cy='{}' r='{}'>{stops}</radialGradient>",r[0]+c[0]*r[2],r[1]+c[1]*r[3],jnum(p,"radius",0.5)*r[2].max(r[3])));
+                    return format!("url(#{id})");
+                }
                 defs.push(format!(
                     "<radialGradient id='{id}' cx='{}%' cy='{}%' r='{}%'>{stops}</radialGradient>",
                     c[0] * 100.,
@@ -198,7 +236,7 @@ fn item_svg(item: &Json, defs: &mut Vec<String>) -> Result<String> {
         "path" if item.get("strokeStyle").is_none() => format!(
             "<path d=\"{}\" fill=\"{}\" stroke=\"{}\" stroke-width=\"{}\" opacity=\"{}\"/>",
             escape(jstr(item, "d", "")),
-            escape(&laymesh_core::color::css(jstr(item, "fill", "#000000"))),
+            paint(&item["fill"], defs),
             escape(&laymesh_core::color::css(jstr(item, "stroke", "none"))),
             n(item, "strokeWidth", 0.),
             n(item, "opacity", 1.)
@@ -387,8 +425,16 @@ fn node_svg_transformed(
                     transform * kurbo::Affine::scale_non_uniform(sx, sy),
                 )?;
             }
+            let decorated = if node["effects"].as_array().is_some_and(|e| !e.is_empty()) {
+                let mut local = node.clone();
+                local["width"] = json!(jnum(node, "contentWidth", w));
+                local["height"] = json!(jnum(node, "contentHeight", h));
+                effects::apply(&local, format!("<g{clip}>{children}</g>"), defs)
+            } else {
+                format!("<g{clip}>{children}</g>")
+            };
             format!(
-                "<g transform='scale({} {})'><g{clip}>{children}</g></g>",
+                "<g transform='scale({} {})'>{decorated}</g>",
                 number(sx),
                 number(sy)
             )
@@ -398,7 +444,15 @@ fn node_svg_transformed(
             for r in node["runs"].as_array().into_iter().flatten() {
                 runs += &item_svg(r, defs)?;
             }
-            runs
+            if let Some(source) = node["artText"].as_str() {
+                format!(
+                    "<g aria-label=\"{}\"><title>{}</title>{runs}</g>",
+                    escape(source),
+                    escape(source)
+                )
+            } else {
+                runs
+            }
         }
         "formula" => {
             let mut local = node.clone();
@@ -421,7 +475,7 @@ fn node_svg_transformed(
                         )
                     })
                     .collect::<String>();
-                return Ok(wrap(node, body));
+                return Ok(wrap(node, effects::apply(node, body, defs)));
             }
             let fill = paint(&node["fill"], defs);
             let attrs = stroke_attrs(&node["strokeStyle"]);
@@ -515,8 +569,22 @@ fn node_svg_transformed(
                 }
             );
             if let Some(uri) = node["resourceUri"].as_str() {
-                image = image.replace(&format!("data:{};base64,{}", jstr(node,"mime","image/png"),jstr(node,"data","")), &escape(uri));
-                image = image.replacen("<image ", &format!("<image data-laymesh-asset='{}' ",escape(jstr(node,"previewAsset",""))),1);
+                image = image.replace(
+                    &format!(
+                        "data:{};base64,{}",
+                        jstr(node, "mime", "image/png"),
+                        jstr(node, "data", "")
+                    ),
+                    &escape(uri),
+                );
+                image = image.replacen(
+                    "<image ",
+                    &format!(
+                        "<image data-laymesh-asset='{}' ",
+                        escape(jstr(node, "previewAsset", ""))
+                    ),
+                    1,
+                );
             }
             if fit == "cover" || crop.is_object() {
                 let id = format!("clip-{}", defs.len());
@@ -615,7 +683,14 @@ fn node_svg_transformed(
         }
         _ => return Err(error(format!("未知 Scene 对象：{kind}"))),
     };
-    Ok(wrap(node, body))
+    Ok(wrap(
+        node,
+        if kind == "group" {
+            body
+        } else {
+            effects::apply(node, body, defs)
+        },
+    ))
 }
 fn used_fonts(scene: &Scene) -> std::collections::BTreeMap<String, (u16, bool)> {
     fn visit(node: &Json, fonts: &mut std::collections::BTreeMap<String, (u16, bool)>) {
@@ -697,15 +772,15 @@ fn svg(scene: &Scene, embed_fonts: bool) -> Result<String> {
 }
 
 #[cfg(feature = "native")]
+pub mod config;
+#[cfg(feature = "native")]
 mod export;
 #[cfg(feature = "native")]
 mod native;
 #[cfg(feature = "native")]
-pub mod raster_policy;
-#[cfg(feature = "native")]
-pub mod config;
-#[cfg(feature = "native")]
 pub mod preview_assets;
+#[cfg(feature = "native")]
+pub mod raster_policy;
 #[cfg(feature = "native")]
 pub use export::{ExportOptions, export_format, render_export};
 #[cfg(feature = "native")]

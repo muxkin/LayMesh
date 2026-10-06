@@ -69,6 +69,7 @@
           "pages": [
             "images",
             "fonts",
+            "art-effects",
             "resources",
             "formulas",
             "shapes",
@@ -386,6 +387,14 @@
         "Text and fonts"
       ],
       "example": "examples/gallery/typography/font.lay"
+    },
+    {
+      "key": "art-effects",
+      "title": [
+        "艺术字、阴影与发光",
+        "Artistic text, shadows and glow"
+      ],
+      "example": "examples/effects/art-text.lay"
     },
     {
       "key": "resources",

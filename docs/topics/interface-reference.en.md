@@ -121,6 +121,13 @@ Names below are ordinary string variables, available without declarations. User 
 | `vertical` | `string` | `"vertical"` |
 | `x` | `string` | `"x"` |
 | `y` | `string` | `"y"` |
+| `outer` | `string` | `"outer"` |
+| `inner` | `string` | `"inner"` |
+| `content` | `string` | `"content"` |
+| `object` | `string` | `"object"` |
+| `arc` | `string` | `"arc"` |
+| `wave` | `string` | `"wave"` |
+| `perspective` | `string` | `"perspective"` |
 
 ## canvas
 
@@ -183,6 +190,7 @@ Required: `src`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -229,6 +237,13 @@ Required: `content / spans`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `text_fill` | paint | 字形填充 / Glyph paint; defaults to color | — |
+| `text_stroke_color` | color | 字形描边颜色 / Glyph stroke color | none |
+| `text_stroke_width` | length / pt | 字形描边宽度 / Glyph stroke width | 0 |
+| `path` | text_path | 沿路径排字 / Text path configuration | — |
+| `warp` | text_warp | 字形变形 / Text warp configuration | — |
+| `extrude` | text_extrude | 二维矢量挤出 / Vector extrusion | — |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -259,6 +274,9 @@ Required: `content`.
 | `font_weight` | integer | Font weight, 100–900 | 400 |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | normal |
 | `color` | color | Text color or base series color | — |
+| `text_fill` | paint | 字形填充 / Glyph paint; defaults to color | — |
+| `text_stroke_color` | color | 字形描边颜色 / Glyph stroke color | none |
+| `text_stroke_width` | length / pt | 字形描边宽度 / Glyph stroke width | 0 |
 
 ### Minimal complete example
 
@@ -300,6 +318,7 @@ Required: `source`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -337,6 +356,7 @@ Required: `size`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -371,6 +391,7 @@ Required: `size`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -408,6 +429,7 @@ Returns: material
 | `end_head` | head | End head configuration; absent by default | — |
 | `start_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -451,6 +473,7 @@ Returns: material
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -493,6 +516,7 @@ Required: `commands`.
 | `end_head` | head | End head configuration; absent by default | — |
 | `start_cap` | "butt" \| "round" \| "square" | Independent path endpoint cap, inheriting border_cap; internal dash caps are unaffected<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits border_cap |
 | `end_cap` | "butt" \| "round" \| "square" | Independent path endpoint cap, inheriting border_cap; internal dash caps are unaffected<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits border_cap |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -527,6 +551,7 @@ Required: `points`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -565,6 +590,7 @@ Required: `points`.
 | `end_head` | head | End head configuration; absent by default | — |
 | `start_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -605,6 +631,7 @@ Required: `radius`, `start`, `end`.
 | `end_head` | head | End head configuration; absent by default | — |
 | `start_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -641,6 +668,7 @@ Required: `radius`, `start`, `end`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -678,6 +706,7 @@ Required: `points`, `outer_radius`, `inner_radius`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -713,6 +742,7 @@ Required: `outer_radius`, `inner_radius`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -856,6 +886,7 @@ Required: `material`.
 | `end_offset` | (length, length) / canvas unit | Independent physical offset of the end, followed by the overall offset | (0, 0) |
 | `start_offset_space` | "container" \| "target" | Direction frame for the start offset; target requires a path anchor with an unambiguous tangent<br>`container`: Along the current container axes<br>`target`: Along this path anchor tangent and left normal | container |
 | `end_offset_space` | "container" \| "target" | Direction frame for the end offset; target requires a path anchor with an unambiguous tangent<br>`container`: Along the current container axes<br>`target`: Along this path anchor tangent and left normal | container |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -1106,6 +1137,7 @@ Required: `size`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### Minimal complete example
 
@@ -3506,6 +3538,153 @@ for i,color in enumerate(colors) {
 ```
 
 [Concepts and common errors](cmaps.en.md#cmap-reversed) · [Composition source](../../examples/plot/cmap-presets.lay)
+
+## shadow
+
+阴影 / Alpha-based shadow
+
+Returns: shadow
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `color` | color | color | #000000 |
+| `opacity` | value | opacity | 0.5 |
+| `blur` | length / canvas unit | blur | 1mm |
+| `spread` | length / canvas unit | spread | 0mm |
+| `mode` | "outer" \| "inner" | mode<br>`outer`: outer<br>`inner`: inner | outer |
+| `target` | "content" \| "object" | target<br>`content`: content<br>`object`: object | content |
+| `offset` | (length,length) / canvas unit | offset | (1mm,1mm) |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(150mm,95mm),background="#202936")
+page.add(rect(size=(35mm,25mm),border_radius=4mm,fill="#3782d6",effects=[shadow(blur=2mm,offset=(2mm,3mm)),glow(color="#59b7ff",blur=1mm,spread=0.5mm)]),offset=(12mm,15mm))
+page.add(ellipse(size=(35mm,25mm),fill="#eb6d9b",effects=[shadow(mode="inner",blur=2mm,offset=(2mm,2mm),opacity=0.8),glow(mode="inner",color="#ffe9f2",blur=1mm)]),offset=(58mm,15mm))
+page.add(text("Mixed effects",font_family="DejaVu Sans",font_size=25pt,color="#f6f6f6",effects=[glow(color="#8d6cff",blur=1mm),shadow(blur=0.5mm,offset=(1mm,1mm))]),offset=(18mm,59mm))
+```
+
+[Concepts and common errors](art-effects.en.md#shadow) · [Composition source](../../examples/effects/shadow-glow.lay)
+
+## glow
+
+发光 / Alpha-based glow
+
+Returns: glow
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `color` | color | color | #ffffff |
+| `opacity` | value | opacity | 1 |
+| `blur` | length / canvas unit | blur | 1mm |
+| `spread` | length / canvas unit | spread | 0mm |
+| `mode` | "outer" \| "inner" | mode<br>`outer`: outer<br>`inner`: inner | outer |
+| `target` | "content" \| "object" | target<br>`content`: content<br>`object`: object | content |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(150mm,95mm),background="#202936")
+page.add(rect(size=(35mm,25mm),border_radius=4mm,fill="#3782d6",effects=[shadow(blur=2mm,offset=(2mm,3mm)),glow(color="#59b7ff",blur=1mm,spread=0.5mm)]),offset=(12mm,15mm))
+page.add(ellipse(size=(35mm,25mm),fill="#eb6d9b",effects=[shadow(mode="inner",blur=2mm,offset=(2mm,2mm),opacity=0.8),glow(mode="inner",color="#ffe9f2",blur=1mm)]),offset=(58mm,15mm))
+page.add(text("Mixed effects",font_family="DejaVu Sans",font_size=25pt,color="#f6f6f6",effects=[glow(color="#8d6cff",blur=1mm),shadow(blur=0.5mm,offset=(1mm,1mm))]),offset=(18mm,59mm))
+```
+
+[Concepts and common errors](art-effects.en.md#glow) · [Composition source](../../examples/effects/shadow-glow.lay)
+
+## text_path
+
+沿本地单条开放路径排字 / Typeset on one local open path
+
+Returns: text_path
+
+Positional parameters: `path`.
+
+Required: `path`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `path` | material | path | — |
+| `start` | length / canvas unit | start | 0mm |
+| `align` | "left" \| "center" \| "right" | align<br>`left`: left<br>`center`: center<br>`right`: right | left |
+| `reverse` | boolean | reverse | false |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(180mm,150mm),background="#f3f5f9")
+font="DejaVu Sans"
+paint=linear_gradient(stops=[(0,"#ea366d"),(1,"#365de6")],start=(0,0),end=(1,0))
+page.add(text("LayMesh 0.4.0",font_family=font,font_size=30pt,font_weight=700,text_fill=paint,text_stroke_color="#ffffff",text_stroke_width=0.7pt,extrude=text_extrude(depth=1.4mm,angle=45deg,color="#213864"),effects=[shadow(blur=0.8mm,offset=(1mm,2mm))]),offset=(10mm,8mm))
+route=path(commands=[move_to(0mm,12mm),cubic_to(35mm,0mm,95mm,0mm,130mm,12mm)])
+page.add(text("Text follows a curved path",font_family=font,font_size=17pt,path=text_path(route,align="center"),color="#3255b7"),offset=(20mm,32mm))
+page.add(text("ARC LETTERS",font_family=font,font_size=25pt,font_weight=700,warp=text_warp("arc",angle=55deg),text_fill=paint),offset=(30mm,62mm))
+page.add(text("Wave and glow",font_family=font,font_size=23pt,warp=text_warp("wave",amplitude=2mm,wavelength=30mm),color="#213864",effects=[glow(color="#4a8eff",blur=0.7mm,spread=0.2mm)]),offset=(25mm,88mm))
+page.add(text("PERSPECTIVE",font_family=font,font_size=26pt,font_weight=700,warp=text_warp("perspective",corners=[(0mm,2mm),(85mm,0mm),(75mm,12mm),(8mm,9mm)]),text_fill=paint,extrude=text_extrude(depth=1mm,color="#324165")),offset=(35mm,113mm))
+```
+
+[Concepts and common errors](art-effects.en.md#text_path) · [Composition source](../../examples/effects/art-text.lay)
+
+## text_warp
+
+弧形、波浪或四角透视变形 / Arc, wave or perspective warp
+
+Returns: text_warp
+
+Positional parameters: `kind`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `kind` | "arc" \| "wave" \| "perspective" | kind<br>`arc`: arc<br>`wave`: wave<br>`perspective`: perspective | arc |
+| `angle` | angle | angle | 45deg |
+| `amplitude` | length / canvas unit | amplitude | 2mm |
+| `wavelength` | length / canvas unit | wavelength | 20mm |
+| `phase` | angle | phase | 0deg |
+| `corners` | (length,length)[] / canvas unit | corners | — |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(180mm,150mm),background="#f3f5f9")
+font="DejaVu Sans"
+paint=linear_gradient(stops=[(0,"#ea366d"),(1,"#365de6")],start=(0,0),end=(1,0))
+page.add(text("LayMesh 0.4.0",font_family=font,font_size=30pt,font_weight=700,text_fill=paint,text_stroke_color="#ffffff",text_stroke_width=0.7pt,extrude=text_extrude(depth=1.4mm,angle=45deg,color="#213864"),effects=[shadow(blur=0.8mm,offset=(1mm,2mm))]),offset=(10mm,8mm))
+route=path(commands=[move_to(0mm,12mm),cubic_to(35mm,0mm,95mm,0mm,130mm,12mm)])
+page.add(text("Text follows a curved path",font_family=font,font_size=17pt,path=text_path(route,align="center"),color="#3255b7"),offset=(20mm,32mm))
+page.add(text("ARC LETTERS",font_family=font,font_size=25pt,font_weight=700,warp=text_warp("arc",angle=55deg),text_fill=paint),offset=(30mm,62mm))
+page.add(text("Wave and glow",font_family=font,font_size=23pt,warp=text_warp("wave",amplitude=2mm,wavelength=30mm),color="#213864",effects=[glow(color="#4a8eff",blur=0.7mm,spread=0.2mm)]),offset=(25mm,88mm))
+page.add(text("PERSPECTIVE",font_family=font,font_size=26pt,font_weight=700,warp=text_warp("perspective",corners=[(0mm,2mm),(85mm,0mm),(75mm,12mm),(8mm,9mm)]),text_fill=paint,extrude=text_extrude(depth=1mm,color="#324165")),offset=(35mm,113mm))
+```
+
+[Concepts and common errors](art-effects.en.md#text_warp) · [Composition source](../../examples/effects/art-text.lay)
+
+## text_extrude
+
+二维矢量挤出 / Two-dimensional vector extrusion
+
+Returns: text_extrude
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `depth` | length / canvas unit | depth | 1mm |
+| `angle` | angle | angle | 45deg |
+| `color` | color | color | #555555 |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(180mm,150mm),background="#f3f5f9")
+font="DejaVu Sans"
+paint=linear_gradient(stops=[(0,"#ea366d"),(1,"#365de6")],start=(0,0),end=(1,0))
+page.add(text("LayMesh 0.4.0",font_family=font,font_size=30pt,font_weight=700,text_fill=paint,text_stroke_color="#ffffff",text_stroke_width=0.7pt,extrude=text_extrude(depth=1.4mm,angle=45deg,color="#213864"),effects=[shadow(blur=0.8mm,offset=(1mm,2mm))]),offset=(10mm,8mm))
+route=path(commands=[move_to(0mm,12mm),cubic_to(35mm,0mm,95mm,0mm,130mm,12mm)])
+page.add(text("Text follows a curved path",font_family=font,font_size=17pt,path=text_path(route,align="center"),color="#3255b7"),offset=(20mm,32mm))
+page.add(text("ARC LETTERS",font_family=font,font_size=25pt,font_weight=700,warp=text_warp("arc",angle=55deg),text_fill=paint),offset=(30mm,62mm))
+page.add(text("Wave and glow",font_family=font,font_size=23pt,warp=text_warp("wave",amplitude=2mm,wavelength=30mm),color="#213864",effects=[glow(color="#4a8eff",blur=0.7mm,spread=0.2mm)]),offset=(25mm,88mm))
+page.add(text("PERSPECTIVE",font_family=font,font_size=26pt,font_weight=700,warp=text_warp("perspective",corners=[(0mm,2mm),(85mm,0mm),(75mm,12mm),(8mm,9mm)]),text_fill=paint,extrude=text_extrude(depth=1mm,color="#324165")),offset=(35mm,113mm))
+```
+
+[Concepts and common errors](art-effects.en.md#text_extrude) · [Composition source](../../examples/effects/art-text.lay)
 
 ## Geometry view types
 

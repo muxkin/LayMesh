@@ -1707,7 +1707,19 @@ pub(crate) fn query_anchor(
 
 /// Constructor-time diagnostics also apply to definitions which are never placed.
 pub fn validate_definition(e: &Engine, name: &str, a: &Args, l: Loc) -> Result<()> {
-    if matches!(name, "line" | "head" | "rgb" | "hsv" | "oklch") {
+    if matches!(
+        name,
+        "line"
+            | "head"
+            | "rgb"
+            | "hsv"
+            | "oklch"
+            | "shadow"
+            | "glow"
+            | "text_path"
+            | "text_warp"
+            | "text_extrude"
+    ) {
         return Ok(());
     }
     let scalar = |v: &V| match v {

@@ -1,3 +1,11 @@
+# 0.4.0
+
+- Add glyph paint and outlines, path text, arc/wave/perspective warps and vector extrusion.
+- Add inner/outer shadows and glow across text, shapes, transparent images and groups.
+- Preserve vector PDF subjects; rasterize only effect layers at configured DPI.
+- Build five stable platform packages automatically; publish extensions manually.
+- Publish PyPI and GitHub Release from reviewed stable version tags.
+
 # 0.3.9
 
 - Connect reusable lines with `start` and `end`, including physical coordinates, instance anchors, chart data points and selected path anchors.

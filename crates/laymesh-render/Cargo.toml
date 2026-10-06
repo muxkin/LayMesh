@@ -21,6 +21,7 @@ serde = { workspace = true, optional = true }
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "bmp", "gif", "ico", "pnm", "tga", "webp", "tiff"], optional = true }
 tiff = { version = "=0.11.3", optional = true }
 webp = { version = "=0.3.1", default-features = false, optional = true }
+roxmltree = "0.21"
 [dev-dependencies]
 image = { version = "0.25", default-features = false, features = ["png", "webp", "ico", "tga", "tiff"] }
 roxmltree = "0.21"

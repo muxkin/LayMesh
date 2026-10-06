@@ -1,8 +1,8 @@
 # 构建与发布到 PyPI
 
-**0.3.9 已发布**：增加双端点直线连接和允许省略几何的 `line()` 素材，Python、Rust 引擎和 VS Code 扩展统一版本号。五个平台 wheel 和正式版 VSIX 构建、Python 3.10/3.13/3.14 检查及完整契约测试均通过。[验证与发布记录](https://github.com/muxkin/LayMesh/actions/runs/37400436659)。
+**0.4.0 已发布**：增加双端点直线连接和允许省略几何的 `line()` 素材，Python、Rust 引擎和 VS Code 扩展统一版本号。五个平台 wheel 和正式版 VSIX 构建、Python 3.10/3.13/3.14 检查及完整契约测试均通过。[验证与发布记录](https://github.com/muxkin/LayMesh/actions/runs/37400436659)。
 
-当前版本为 **[`0.3.9`](https://pypi.org/project/laymesh/0.3.9/)**，已发布五个平台 wheel。默认安装包含 NumPy、pandas、Matplotlib 和 IPython，使用 `pip install laymesh` 即可获得全部 Python 功能。[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)构建和验证五个平台 wheel，并执行包审计、校验和检查与 Trusted Publishing 上传。每个平台 wheel 包含 Python API、CLI 入口、一个 Rust 原生程序、依赖许可及构建清单。公式字体编译进 RaTeX，正文使用系统或用户字体。
+当前版本为 **[`0.4.0`](https://pypi.org/project/laymesh/0.4.0/)**，已发布五个平台 wheel。默认安装包含 NumPy、pandas、Matplotlib 和 IPython，使用 `pip install laymesh` 即可获得全部 Python 功能。[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)构建和验证五个平台 wheel，并执行包审计、校验和检查与 Trusted Publishing 上传。每个平台 wheel 包含 Python API、CLI 入口、一个 Rust 原生程序、依赖许可及构建清单。公式字体编译进 RaTeX，正文使用系统或用户字体。
 
 [runtime.json](runtime.json) 定义五个目标：Linux x64 / arm64、macOS 14+ Intel / Apple Silicon、Windows x64。使用者需要 Python 3.10+；构建脚本需要 Python 3.11+ 和 Rust 1.93.1。本次只发布平台 wheel；`python/` 目录不包含完整的 Rust 引擎源码构建链，不要上传仅从该目录生成的 sdist。
 
@@ -18,9 +18,9 @@ python scripts/check-release.py
 python -m pip install -e "./python" pillow
 python scripts/test-contracts.py
 python scripts/collect-licenses.py
-python scripts/build-python-wheel.py --output release/dist/pypi-0.3.9
-python scripts/check-python-wheels.py release/dist/pypi-0.3.9 --checksums release/dist/pypi-0.3.9/SHA256SUMS
-python -m twine check --strict release/dist/pypi-0.3.9/*.whl
+python scripts/build-python-wheel.py --output release/dist/pypi-0.4.0
+python scripts/check-python-wheels.py release/dist/pypi-0.4.0 --checksums release/dist/pypi-0.4.0/SHA256SUMS
+python -m twine check --strict release/dist/pypi-0.4.0/*.whl
 ```
 
 构建器先检查版本一致性，再编译锁定依赖的 release 引擎，在源码树以外暂存并打包。独立输出目录避免混入旧包。Linux 标签依据二进制实际 GLIBC 符号要求生成，下限为 2.28；新系统构建不能宣称旧系统兼容。本地 Linux x64 wheel 要求 glibc 2.35+；CI runner 生成的包可能需要更新的 glibc，请查看实际文件名与清单。
@@ -32,7 +32,7 @@ python -m twine check --strict release/dist/pypi-0.3.9/*.whl
 另建一个**干净的虚拟环境**，安装生成的 wheel，不使用可编辑源码安装。下面的文件名应替换为本机实际生成的包：
 
 ```sh
-python -m pip install "release/dist/pypi-0.3.9/laymesh-0.3.9-py3-none-manylinux_2_35_x86_64.whl" pillow
+python -m pip install "release/dist/pypi-0.4.0/laymesh-0.4.0-py3-none-manylinux_2_35_x86_64.whl" pillow
 python -m pip check
 python -m laymesh --version
 python scripts/smoke-python-wheel.py --examples examples
@@ -47,31 +47,22 @@ python -m unittest discover -s python/tests -v
 
 1. 在 PyPI 配置 pending trusted publisher：项目 `laymesh`、所有者 `muxkin`、仓库 `LayMesh`、工作流 `publish-pypi.yml`、环境 `pypi`。
 2. 在 GitHub 仓库创建 `pypi` environment 并配置 required reviewers。工作流会检查人工审核门禁是否存在。
-3. 将最终改动同步到 `main`，手动运行 **Python wheels and PyPI**，设置 `publish=false` 验证候选包。检查 `reviewed-python-release` 中的五个平台 wheel 与校验和。
-4. 真正上传时，在 `main` 手动运行同一工作流，设置 `publish=true`、`version=0.3.9`。它会重新构建并测试、检查指定版本与校验和，再等待 environment 审核；请审核该次运行生成的包。
+3. 将已验证的提交同步到 `main`，创建并推送稳定标签：`git tag v0.4.0`、`git push origin v0.4.0`。
+4. 审核本次运行的 wheel、VSIX 和校验和，再批准 `pypi` 环境；上传成功后自动创建 GitHub Release。
 
-发布任务下载审核过的同一批文件，不重新构建。PR 和普通构建运行不上传。发布后在仓库以外验证索引安装：`python -m pip install "laymesh==0.3.9"`，再运行 `python -m pip check` 与 `python -m laymesh --version`。已发布版本不能覆盖；需要替换时同步递增 Python、Rust、runtime 与 VS Code 扩展版本。
+发布任务下载审核过的同一批文件，不重新构建。PR 和普通构建运行不上传。发布后在仓库以外验证索引安装：`python -m pip install "laymesh==0.4.0"`，再运行 `python -m pip check` 与 `python -m laymesh --version`。已发布版本不能覆盖；需要替换时同步递增 Python、Rust、runtime 与 VS Code 扩展版本。
 
 ## 验证记录
 
 `python scripts/test-contracts.py` 会生成 `release/verification/cargo-tests.log`、`python-tests.log` 与 `assertion-coverage.json`，检查当前源码、测试执行与历史断言映射的一致性。检查期间需安装 Poppler 和 MuPDF 命令行工具。发布候选的跨平台结果以 GitHub Actions 当前提交的运行记录为准；最终包与校验和保存在 `reviewed-python-release` artifact 中。
 
-## VS Code 自动发布
+## VS Code 手动发布与 GitHub Release
 
-[Publish VS Code Marketplace](../.github/workflows/publish-marketplace.yml) 在 `main` 的 PyPI 发布成功后自动运行。它下载原运行的五个平台 VSIX、审核 wheel 和校验和，检查来源提交、版本、哈希及内置引擎一致性，再使用固定版本的 `@vscode/vsce` 4.0.0 发布正式版。商店校验完成后，会核对五个平台和 VSIX 哈希；重试会跳过已发布的平台，同一版本的不同包会报错。
+稳定版本标签（例如 `v0.4.0`）触发五平台 wheel 和 VSIX 构建、审计与 Python 兼容性检查；通过现有 `pypi` 环境人工审批后自动上传 PyPI，再创建带中英文更新说明、十个发行包及 `SHA256SUMS` 的 GitHub Release。标签必须与全部版本元数据一致，且对应提交属于 `main`。PR 和手动启动的工作流只验证，不发布。
 
-在仓库的 [Actions Secrets](https://github.com/muxkin/LayMesh/settings/secrets/actions) 或 `marketplace` 环境中配置一次 `VSCE_PAT` Secret。令牌需具有 Marketplace Manage 权限，其账户必须能访问现有 [Hyacine 发布者](https://marketplace.visualstudio.com/manage/publishers/Hyacine)。流程默认使用 `pat`，配置后无需逐次手动上传 VSIX。[微软发布指南](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)说明了令牌创建方法及全局 PAT 于 2026 年 12 月 1 日退役的安排。通过 GitHub 界面或 `gh secret set VSCE_PAT` 保存凭据，不要写进源码或发布日志。
+Marketplace 自动上传工作流已移除。下载 Release 中五个平台的 `.vsix`，通过 [Hyacine 发布者门户](https://marketplace.visualstudio.com/manage/publishers/Hyacine) 手动上传。也可在本地使用 `vsce publish --packagePath <已审核包.vsix>`；凭据只保存在本机，不需要 Actions Marketplace Secret。
 
-补发当前 0.3.9，或在产物保留期内恢复部分成功的发布：
-
-```sh
-gh workflow run publish-marketplace.yml --ref main \
-  -f run_id=37400436659 -f version=0.3.9 -f publish=true -f auth=pat
-```
-
-设置 `publish=false` 可执行仅审计运行。失败、fork、PR 以及跳过 PyPI 上传的运行不能作为发布来源；流程复用原包，不重新构建或递增版本。
-
-[可信发布](https://github.com/microsoft/vscode-vsce#trusted-publishing)保留为后续无需存储 PAT 的可选方式。[2026 年 10 月 6 日实发尝试](https://github.com/muxkin/LayMesh/actions/runs/37404048392)已通过来源、产物及 OIDC 请求协议检查，但商店返回 `Trusted Publishing is not supported`。待商店支持该发布者后，可授权所有者 `muxkin`、仓库 `LayMesh`、`main` 上的 `publish-marketplace.yml` 和环境 `marketplace`；手动运行选择 `auth=oidc`，自动运行在该环境设置变量 `MARKETPLACE_AUTH=oidc`。OIDC 模式固定使用包含[微软协议修复](https://github.com/microsoft/vscode-vsce/commit/c960f2e97da3360899f2bfe93390fa4890c69327)的 4.0.1-3，并在使用前验证请求协议；认证失败不会自动改用 PAT。
+`python scripts/marketplace-release.py audit` 保留为发行包审计工具。GitHub Release 重试使用同一批审核产物，核对已上传附件的 SHA-256；拒绝覆盖同版本不同内容。更新说明位于 `release/notes/<版本>.md`。重试时只重新运行原流程中失败的发布任务（`gh run rerun <run-id> --failed`），继续下载同一批审核产物；不要为已上传版本重新构建并替换包。
 
 ## 其他发行物
 

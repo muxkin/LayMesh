@@ -454,11 +454,32 @@ pub fn validate_stylesheet(source: &str, file: &str, origin: Loc) -> Result<()> 
     for rule in rules {
         for declaration in rule.declarations {
             let key = &declaration.property;
+            if matches!(key.as_str(), "effects" | "path" | "warp" | "extrude")
+                && !declaration.value.contains("var(")
+            {
+                crate::art::css_config(
+                    &declaration.value,
+                    &declaration.file,
+                    declaration.loc,
+                    "mm",
+                    96.,
+                )?;
+                continue;
+            }
             if key.starts_with("--")
                 || declaration.value.contains("var(")
                 || matches!(
                     key.as_str(),
-                    "fill" | "background" | "border" | "line" | "font_family"
+                    "fill"
+                        | "text_fill"
+                        | "effects"
+                        | "path"
+                        | "warp"
+                        | "extrude"
+                        | "background"
+                        | "border"
+                        | "line"
+                        | "font_family"
                 )
                 || key.ends_with("color")
             {
@@ -557,6 +578,9 @@ impl Engine {
         let s = s.trim();
         if matches!(key, "start_head" | "end_head") {
             return crate::endpoints::css_head(s, file, l);
+        }
+        if matches!(key, "effects" | "path" | "warp" | "extrude") {
+            return crate::art::css_config(s, file, l, &self.unit, self.dpi);
         }
         if key == "font_family" {
             return Ok(V::List(

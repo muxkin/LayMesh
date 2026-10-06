@@ -369,6 +369,14 @@
           "description": "边框独立透明度 0–1",
           "descriptionEn": "Independent border opacity, 0–1",
           "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "positional": [
@@ -686,6 +694,58 @@
           "description": "边框独立透明度 0–1",
           "descriptionEn": "Independent border opacity, 0–1",
           "default": "1"
+        },
+        {
+          "name": "text_fill",
+          "type": "paint",
+          "unit": "none",
+          "description": "字形填充 / Glyph paint; defaults to color",
+          "descriptionEn": "字形填充 / Glyph paint; defaults to color"
+        },
+        {
+          "name": "text_stroke_color",
+          "type": "color",
+          "unit": "none",
+          "description": "字形描边颜色 / Glyph stroke color",
+          "descriptionEn": "字形描边颜色 / Glyph stroke color",
+          "default": "none"
+        },
+        {
+          "name": "text_stroke_width",
+          "type": "length",
+          "unit": "pt",
+          "description": "字形描边宽度 / Glyph stroke width",
+          "descriptionEn": "字形描边宽度 / Glyph stroke width",
+          "default": "0"
+        },
+        {
+          "name": "path",
+          "type": "text_path",
+          "unit": "none",
+          "description": "沿路径排字 / Text path configuration",
+          "descriptionEn": "沿路径排字 / Text path configuration"
+        },
+        {
+          "name": "warp",
+          "type": "text_warp",
+          "unit": "none",
+          "description": "字形变形 / Text warp configuration",
+          "descriptionEn": "字形变形 / Text warp configuration"
+        },
+        {
+          "name": "extrude",
+          "type": "text_extrude",
+          "unit": "none",
+          "description": "二维矢量挤出 / Vector extrusion",
+          "descriptionEn": "二维矢量挤出 / Vector extrusion"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "positional": [
@@ -769,6 +829,29 @@
           "type": "color",
           "description": "文字颜色或数据系列基础配色",
           "descriptionEn": "Text color or base series color"
+        },
+        {
+          "name": "text_fill",
+          "type": "paint",
+          "unit": "none",
+          "description": "字形填充 / Glyph paint; defaults to color",
+          "descriptionEn": "字形填充 / Glyph paint; defaults to color"
+        },
+        {
+          "name": "text_stroke_color",
+          "type": "color",
+          "unit": "none",
+          "description": "字形描边颜色 / Glyph stroke color",
+          "descriptionEn": "字形描边颜色 / Glyph stroke color",
+          "default": "none"
+        },
+        {
+          "name": "text_stroke_width",
+          "type": "length",
+          "unit": "pt",
+          "description": "字形描边宽度 / Glyph stroke width",
+          "descriptionEn": "字形描边宽度 / Glyph stroke width",
+          "default": "0"
         }
       ],
       "positional": [
@@ -1038,6 +1121,14 @@
           "description": "边框独立透明度 0–1",
           "descriptionEn": "Independent border opacity, 0–1",
           "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "positional": [
@@ -1264,6 +1355,14 @@
           "description": "边框独立透明度 0–1",
           "descriptionEn": "Independent border opacity, 0–1",
           "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ]
     },
@@ -1455,6 +1554,14 @@
           "description": "边框独立透明度 0–1",
           "descriptionEn": "Independent border opacity, 0–1",
           "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "returns": {
@@ -1721,6 +1828,14 @@
               "en": "Square cap; extends half the stroke width"
             }
           }
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "returns": {
@@ -1974,6 +2089,14 @@
           "description": "边框独立透明度 0–1",
           "descriptionEn": "Independent border opacity, 0–1",
           "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "returns": {
@@ -2235,6 +2358,14 @@
               "en": "Square cap; extends half the stroke width"
             }
           }
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "returns": {
@@ -2428,6 +2559,14 @@
           "description": "边框独立透明度 0–1",
           "descriptionEn": "Independent border opacity, 0–1",
           "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "returns": {
@@ -2688,6 +2827,14 @@
               "en": "Square cap; extends half the stroke width"
             }
           }
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "returns": {
@@ -2964,6 +3111,14 @@
               "en": "Square cap; extends half the stroke width"
             }
           }
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "returns": {
@@ -3173,6 +3328,14 @@
           "description": "边框独立透明度 0–1",
           "descriptionEn": "Independent border opacity, 0–1",
           "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "returns": {
@@ -3391,6 +3554,14 @@
           "description": "边框独立透明度 0–1",
           "descriptionEn": "Independent border opacity, 0–1",
           "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "returns": {
@@ -3593,6 +3764,14 @@
           "description": "边框独立透明度 0–1",
           "descriptionEn": "Independent border opacity, 0–1",
           "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "returns": {
@@ -4425,6 +4604,14 @@
               "en": "Along this path anchor tangent and left normal"
             }
           }
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ],
       "positional": [
@@ -5330,6 +5517,14 @@
           "description": "边框独立透明度 0–1",
           "descriptionEn": "Independent border opacity, 0–1",
           "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
         }
       ]
     },
@@ -14937,6 +15132,382 @@
         "en": "cmap"
       },
       "returnType": "cmap"
+    },
+    {
+      "name": "shadow",
+      "category": "effects",
+      "description": "阴影 / Alpha-based shadow",
+      "descriptionEn": "阴影 / Alpha-based shadow",
+      "returns": {
+        "zh": "shadow",
+        "en": "shadow"
+      },
+      "parameters": [
+        {
+          "name": "color",
+          "type": "color",
+          "unit": "none",
+          "description": "color",
+          "descriptionEn": "color",
+          "default": "#000000"
+        },
+        {
+          "name": "opacity",
+          "type": "value",
+          "unit": "none",
+          "description": "opacity",
+          "descriptionEn": "opacity",
+          "default": "0.5"
+        },
+        {
+          "name": "blur",
+          "type": "length",
+          "unit": "geometry",
+          "description": "blur",
+          "descriptionEn": "blur",
+          "default": "1mm"
+        },
+        {
+          "name": "spread",
+          "type": "length",
+          "unit": "geometry",
+          "description": "spread",
+          "descriptionEn": "spread",
+          "default": "0mm"
+        },
+        {
+          "name": "mode",
+          "type": "enum",
+          "unit": "none",
+          "description": "mode",
+          "descriptionEn": "mode",
+          "default": "outer",
+          "values": [
+            "outer",
+            "inner"
+          ],
+          "valueDescriptions": {
+            "outer": {
+              "zh": "outer",
+              "en": "outer"
+            },
+            "inner": {
+              "zh": "inner",
+              "en": "inner"
+            }
+          }
+        },
+        {
+          "name": "target",
+          "type": "enum",
+          "unit": "none",
+          "description": "target",
+          "descriptionEn": "target",
+          "default": "content",
+          "values": [
+            "content",
+            "object"
+          ],
+          "valueDescriptions": {
+            "content": {
+              "zh": "content",
+              "en": "content"
+            },
+            "object": {
+              "zh": "object",
+              "en": "object"
+            }
+          }
+        },
+        {
+          "name": "offset",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "offset",
+          "descriptionEn": "offset",
+          "default": "(1mm,1mm)"
+        }
+      ],
+      "positional": [],
+      "required": []
+    },
+    {
+      "name": "glow",
+      "category": "effects",
+      "description": "发光 / Alpha-based glow",
+      "descriptionEn": "发光 / Alpha-based glow",
+      "returns": {
+        "zh": "glow",
+        "en": "glow"
+      },
+      "parameters": [
+        {
+          "name": "color",
+          "type": "color",
+          "unit": "none",
+          "description": "color",
+          "descriptionEn": "color",
+          "default": "#ffffff"
+        },
+        {
+          "name": "opacity",
+          "type": "value",
+          "unit": "none",
+          "description": "opacity",
+          "descriptionEn": "opacity",
+          "default": "1"
+        },
+        {
+          "name": "blur",
+          "type": "length",
+          "unit": "geometry",
+          "description": "blur",
+          "descriptionEn": "blur",
+          "default": "1mm"
+        },
+        {
+          "name": "spread",
+          "type": "length",
+          "unit": "geometry",
+          "description": "spread",
+          "descriptionEn": "spread",
+          "default": "0mm"
+        },
+        {
+          "name": "mode",
+          "type": "enum",
+          "unit": "none",
+          "description": "mode",
+          "descriptionEn": "mode",
+          "default": "outer",
+          "values": [
+            "outer",
+            "inner"
+          ],
+          "valueDescriptions": {
+            "outer": {
+              "zh": "outer",
+              "en": "outer"
+            },
+            "inner": {
+              "zh": "inner",
+              "en": "inner"
+            }
+          }
+        },
+        {
+          "name": "target",
+          "type": "enum",
+          "unit": "none",
+          "description": "target",
+          "descriptionEn": "target",
+          "default": "content",
+          "values": [
+            "content",
+            "object"
+          ],
+          "valueDescriptions": {
+            "content": {
+              "zh": "content",
+              "en": "content"
+            },
+            "object": {
+              "zh": "object",
+              "en": "object"
+            }
+          }
+        }
+      ],
+      "positional": [],
+      "required": []
+    },
+    {
+      "name": "text_path",
+      "category": "effects",
+      "description": "沿本地单条开放路径排字 / Typeset on one local open path",
+      "descriptionEn": "沿本地单条开放路径排字 / Typeset on one local open path",
+      "returns": {
+        "zh": "text_path",
+        "en": "text_path"
+      },
+      "parameters": [
+        {
+          "name": "path",
+          "type": "material",
+          "unit": "none",
+          "description": "path",
+          "descriptionEn": "path"
+        },
+        {
+          "name": "start",
+          "type": "length",
+          "unit": "geometry",
+          "description": "start",
+          "descriptionEn": "start",
+          "default": "0mm"
+        },
+        {
+          "name": "align",
+          "type": "enum",
+          "unit": "none",
+          "description": "align",
+          "descriptionEn": "align",
+          "default": "left",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ],
+          "valueDescriptions": {
+            "left": {
+              "zh": "left",
+              "en": "left"
+            },
+            "center": {
+              "zh": "center",
+              "en": "center"
+            },
+            "right": {
+              "zh": "right",
+              "en": "right"
+            }
+          }
+        },
+        {
+          "name": "reverse",
+          "type": "boolean",
+          "unit": "none",
+          "description": "reverse",
+          "descriptionEn": "reverse",
+          "default": "false"
+        }
+      ],
+      "positional": [
+        "path"
+      ],
+      "required": [
+        "path"
+      ]
+    },
+    {
+      "name": "text_warp",
+      "category": "effects",
+      "description": "弧形、波浪或四角透视变形 / Arc, wave or perspective warp",
+      "descriptionEn": "弧形、波浪或四角透视变形 / Arc, wave or perspective warp",
+      "returns": {
+        "zh": "text_warp",
+        "en": "text_warp"
+      },
+      "parameters": [
+        {
+          "name": "kind",
+          "type": "enum",
+          "unit": "none",
+          "description": "kind",
+          "descriptionEn": "kind",
+          "default": "arc",
+          "values": [
+            "arc",
+            "wave",
+            "perspective"
+          ],
+          "valueDescriptions": {
+            "arc": {
+              "zh": "arc",
+              "en": "arc"
+            },
+            "wave": {
+              "zh": "wave",
+              "en": "wave"
+            },
+            "perspective": {
+              "zh": "perspective",
+              "en": "perspective"
+            }
+          }
+        },
+        {
+          "name": "angle",
+          "type": "angle",
+          "unit": "none",
+          "description": "angle",
+          "descriptionEn": "angle",
+          "default": "45deg"
+        },
+        {
+          "name": "amplitude",
+          "type": "length",
+          "unit": "geometry",
+          "description": "amplitude",
+          "descriptionEn": "amplitude",
+          "default": "2mm"
+        },
+        {
+          "name": "wavelength",
+          "type": "length",
+          "unit": "geometry",
+          "description": "wavelength",
+          "descriptionEn": "wavelength",
+          "default": "20mm"
+        },
+        {
+          "name": "phase",
+          "type": "angle",
+          "unit": "none",
+          "description": "phase",
+          "descriptionEn": "phase",
+          "default": "0deg"
+        },
+        {
+          "name": "corners",
+          "type": "(length,length)[]",
+          "unit": "geometry",
+          "description": "corners",
+          "descriptionEn": "corners"
+        }
+      ],
+      "positional": [
+        "kind"
+      ],
+      "required": []
+    },
+    {
+      "name": "text_extrude",
+      "category": "effects",
+      "description": "二维矢量挤出 / Two-dimensional vector extrusion",
+      "descriptionEn": "二维矢量挤出 / Two-dimensional vector extrusion",
+      "returns": {
+        "zh": "text_extrude",
+        "en": "text_extrude"
+      },
+      "parameters": [
+        {
+          "name": "depth",
+          "type": "length",
+          "unit": "geometry",
+          "description": "depth",
+          "descriptionEn": "depth",
+          "default": "1mm"
+        },
+        {
+          "name": "angle",
+          "type": "angle",
+          "unit": "none",
+          "description": "angle",
+          "descriptionEn": "angle",
+          "default": "45deg"
+        },
+        {
+          "name": "color",
+          "type": "color",
+          "unit": "none",
+          "description": "color",
+          "descriptionEn": "color",
+          "default": "#555555"
+        }
+      ],
+      "positional": [],
+      "required": []
     }
   ],
   "styleProperties": [
@@ -14978,7 +15549,14 @@
     "start_head",
     "end_head",
     "start_cap",
-    "end_cap"
+    "end_cap",
+    "text_fill",
+    "text_stroke_color",
+    "text_stroke_width",
+    "effects",
+    "path",
+    "warp",
+    "extrude"
   ],
   "geometryTypes": {
     "instance": {
@@ -15744,6 +16322,41 @@
       "name": "y",
       "type": "string",
       "value": "y"
+    },
+    {
+      "name": "outer",
+      "type": "string",
+      "value": "outer"
+    },
+    {
+      "name": "inner",
+      "type": "string",
+      "value": "inner"
+    },
+    {
+      "name": "content",
+      "type": "string",
+      "value": "content"
+    },
+    {
+      "name": "object",
+      "type": "string",
+      "value": "object"
+    },
+    {
+      "name": "arc",
+      "type": "string",
+      "value": "arc"
+    },
+    {
+      "name": "wave",
+      "type": "string",
+      "value": "wave"
+    },
+    {
+      "name": "perspective",
+      "type": "string",
+      "value": "perspective"
     }
   ],
   "valueTypes": {

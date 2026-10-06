@@ -572,7 +572,9 @@ fn cmyk_jpeg(
 }
 pub fn load(bytes: &[u8], path: &str, file: &str, loc: Loc) -> Result<Json> {
     let key = crate::asset_cache::input_key(bytes, path);
-    if let Some(asset) = crate::asset_cache::get_input(&key) { return Ok(asset); }
+    if let Some(asset) = crate::asset_cache::get_input(&key) {
+        return Ok(asset);
+    }
     let asset = load_uncached(bytes, path, file, loc)?;
     crate::asset_cache::put_input(key, &asset);
     Ok(asset)
@@ -757,12 +759,16 @@ fn load_uncached(bytes: &[u8], path: &str, file: &str, loc: Loc) -> Result<Json>
             image
         }
     };
-    let passthrough = format == ImageFormat::Jpeg && profile.is_none()
+    let passthrough = format == ImageFormat::Jpeg
+        && profile.is_none()
         && orientation == image::metadata::Orientation::NoTransforms
         && matches!(image.color(), image::ColorType::L8 | image::ColorType::Rgb8);
     image.apply_orientation(orientation);
     let mut asset = raster_asset(image, file, loc)?;
-    if passthrough { crate::asset_cache::register_jpeg(asset["rasterKey"].as_str().unwrap(), bytes); asset["sourceJpegHash"]=json!(crate::asset_cache::digest(bytes)); }
+    if passthrough {
+        crate::asset_cache::register_jpeg(asset["rasterKey"].as_str().unwrap(), bytes);
+        asset["sourceJpegHash"] = json!(crate::asset_cache::digest(bytes));
+    }
     Ok(asset)
 }
 #[cfg(test)]
@@ -823,7 +829,12 @@ pub fn crop_raster(data: &str, rect: [f64; 4], file: &str, loc: Loc) -> Result<J
     crop_pixels(&image, rect, file, loc)
 }
 pub fn crop_asset(asset: &Json, rect: [f64; 4], file: &str, loc: Loc) -> Result<Json> {
-    if let Some(image) = asset["rasterKey"].as_str().and_then(crate::asset_cache::pixels) { return crop_pixels(&image, rect, file, loc); }
+    if let Some(image) = asset["rasterKey"]
+        .as_str()
+        .and_then(crate::asset_cache::pixels)
+    {
+        return crop_pixels(&image, rect, file, loc);
+    }
     crop_raster(asset["data"].as_str().unwrap_or(""), rect, file, loc)
 }
 fn crop_pixels(image: &image::DynamicImage, rect: [f64; 4], file: &str, loc: Loc) -> Result<Json> {

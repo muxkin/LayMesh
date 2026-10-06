@@ -371,7 +371,7 @@ impl Engine {
                     json!({"value":value,"raw":raw,"file":at["file"],"loc":at["loc"]});
             }
         }
-        for key in ["font_size", "line_height"] {
+        for key in ["font_size", "line_height", "text_stroke_width"] {
             if let Some(v) = a.get(key) {
                 spec[key] = json!(value_length(v, "pt", self.dpi).unwrap_or(10. * PT));
             }
@@ -387,8 +387,14 @@ impl Engine {
                     let o = o.borrow().clone();
                     let mut explicit = o.args.clone();
                     explicit.insert("__style_file".into(), V::text(&o.file));
+                    let parent_color = a.get("color").map(V::as_str);
                     let a = self.styled(&o.kind, &explicit, a)?;
+                    let local_color = o.args.contains_key("color")
+                        || a.get("color").map(V::as_str) != parent_color;
                     let mut spec = self.text_spec(&a, &o.file, o.loc)?;
+                    if local_color {
+                        spec["__span_color_explicit"] = json!(true);
+                    }
                     spec["kind"] = json!(o.kind);
                     output.push(spec);
                 } else {
@@ -1017,6 +1023,21 @@ impl Engine {
                 }
             })
             .unwrap_or([0.; 4]);
+        if o.kind == "text" {
+            self.decorate_text(&mut n, a, l)?;
+        }
+        let effects = self.art_effects(a, l)?;
+        if !effects.is_empty() {
+            n["effects"] = json!(
+                effects
+                    .iter()
+                    .filter(|e| e["target"] == "content")
+                    .collect::<Vec<_>>()
+            );
+        }
+        if let Some(b) = crate::art::decorated_bounds(&n) {
+            n["effectsBounds"] = json!({"x":b.x0,"y":b.y0,"width":b.width(),"height":b.height()});
+        }
         if (a.contains_key("background")
             || a.contains_key("border_color")
             || a.contains_key("border_width")
@@ -1056,7 +1077,20 @@ impl Engine {
             g["children"] = json!([back, n]);
             n = g;
         }
+        let object_effects: Vec<_> = effects
+            .iter()
+            .filter(|e| e["target"] == "object")
+            .cloned()
+            .collect();
+        if !object_effects.is_empty() {
+            let mut current = n["effects"].as_array().cloned().unwrap_or_default();
+            current.extend(object_effects);
+            n["effects"] = json!(current);
+        }
         n["opacity"] = json!(num(a, "opacity", 1.));
+        if let Some(b) = crate::art::decorated_bounds(&n) {
+            n["effectsBounds"] = json!({"x":b.x0,"y":b.y0,"width":b.width(),"height":b.height()});
+        }
         Ok(n)
     }
     pub fn shape(&self, o: &Object, a: &Args, size: [f64; 2]) -> Result<Json> {

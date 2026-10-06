@@ -1,0 +1,7 @@
+page=canvas(size=(160mm,80mm),background="#f4f5f8")
+photo=image(src="alpha-ring.png",effects=[shadow(blur=1mm,offset=(2mm,2mm)),glow(color="#3496ff",blur=0.6mm)])
+page.add(photo,size=(35mm,35mm),offset=(10mm,18mm))
+g=group(effects=[glow(color="#9b6cff",blur=1mm)])
+g.add(rect(size=(42mm,22mm),border_radius=3mm,fill="#4665bd",effects=[shadow(mode="inner",blur=0.8mm,offset=(1mm,1mm))]))
+g.add(text("Group",font_family="DejaVu Sans",font_size=17pt,color="#ffffff"),offset=(8mm,6mm))
+page.add(g,size=(60mm,32mm),rotation=-12deg,offset=(78mm,20mm))

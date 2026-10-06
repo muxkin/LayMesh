@@ -128,5 +128,32 @@ pub fn inspect_scene(scene: &Scene) -> J {
     for (i, n) in scene.nodes.iter().enumerate() {
         visit(n, [1., 0., 0., 1., 0., 0.], i.to_string(), &[], &mut plots)
     }
-    json!({"schema_version":scene.schema_version,"units":"mm","page":{"width":scene.width,"height":scene.height,"unit":scene.canvas_unit,"layout_dpi":scene.layout_dpi},"plots":plots,"warnings":scene.warnings})
+    fn decorations(n: &J, parent: [f64; 6], path: String, out: &mut Vec<J>) {
+        let tr = multiply(
+            parent,
+            laymesh_core::geometry::node_transform(n).as_coeffs(),
+        );
+        if n.get("subjectBounds").is_some() || n.get("effectsBounds").is_some() {
+            out.push(json!({"id":n["id"],"path":path,"layout_bounds":{"x":0,"y":0,"width":n["width"],"height":n["height"]},"subject_bounds":n.get("subjectBounds").cloned().unwrap_or(json!({"x":0,"y":0,"width":n["width"],"height":n["height"]})),"effect_bounds":n["effectsBounds"],"page_transform":tr}));
+        }
+        let sx = jnum(n, "width", 1.) / jnum(n, "contentWidth", jnum(n, "width", 1.)).max(1e-12);
+        let sy = jnum(n, "height", 1.) / jnum(n, "contentHeight", jnum(n, "height", 1.)).max(1e-12);
+        for (i, c) in n["children"].as_array().into_iter().flatten().enumerate() {
+            decorations(
+                c,
+                multiply(tr, [sx, 0., 0., sy, 0., 0.]),
+                format!("{path}/{i}"),
+                out,
+            );
+        }
+    }
+    let mut result = json!({"schema_version":scene.schema_version,"units":"mm","page":{"width":scene.width,"height":scene.height,"unit":scene.canvas_unit,"layout_dpi":scene.layout_dpi},"plots":plots,"warnings":scene.warnings});
+    let mut items = Vec::new();
+    for (i, n) in scene.nodes.iter().enumerate() {
+        decorations(n, [1., 0., 0., 1., 0., 0.], i.to_string(), &mut items);
+    }
+    if !items.is_empty() {
+        result["decorations"] = json!(items);
+    }
+    result
 }

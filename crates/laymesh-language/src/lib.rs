@@ -1791,6 +1791,53 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                                     None,
                                 )
                             }
+                            fn literal_number(v: &Expr) -> Option<f64> {
+                                match &v.kind {
+                                    ExprKind::Number(value, _) => Some(*value),
+                                    ExprKind::Unary(op, value) if op == "-" => {
+                                        literal_number(value).map(|v| -v)
+                                    }
+                                    ExprKind::Unary(op, value) if op == "+" => {
+                                        literal_number(value)
+                                    }
+                                    _ => None,
+                                }
+                            }
+                            if (["blur", "spread", "depth", "text_stroke_width"]
+                                .contains(&n.as_str())
+                                && literal_number(v).is_some_and(|v| v < 0.))
+                                || (n == "wavelength" && literal_number(v).is_some_and(|v| v <= 0.))
+                            {
+                                report(
+                                    v.loc.offset,
+                                    v.loc.offset + 1,
+                                    "E_EFFECT",
+                                    if n == "wavelength" {
+                                        "wavelength must be positive"
+                                    } else {
+                                        "Effect length must be nonnegative"
+                                    }
+                                    .into(),
+                                    None,
+                                );
+                            }
+                            if n == "effects"
+                                && matches!(
+                                    v.kind,
+                                    ExprKind::Call(..)
+                                        | ExprKind::Number(..)
+                                        | ExprKind::String(..)
+                                        | ExprKind::Bool(_)
+                                )
+                            {
+                                report(
+                                    v.loc.offset,
+                                    v.loc.offset + 1,
+                                    "E_EFFECT",
+                                    "effects requires a list of shadow(...) or glow(...)".into(),
+                                    None,
+                                );
+                            }
                             if n == "font_family"
                                 && (matches!(v.kind, ExprKind::Number(..) | ExprKind::Bool(_))
                                     || matches!(&v.kind, ExprKind::List(values) if values.iter().any(|v| matches!(v.kind, ExprKind::Number(..) | ExprKind::Bool(_)))))

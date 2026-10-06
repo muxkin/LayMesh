@@ -88,11 +88,25 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     i = 0;
     while i < rest.len() {
         match rest[i] {
-            "--config" => { i += 1; config_path = rest.get(i).map(Path::new); if config_path.is_none() { usage(2); } }
+            "--config" => {
+                i += 1;
+                config_path = rest.get(i).map(Path::new);
+                if config_path.is_none() {
+                    usage(2);
+                }
+            }
             flag if flag.starts_with("--pdf-") => {
-                i += 1; let value = rest.get(i).unwrap_or_else(|| usage(2));
+                i += 1;
+                let value = rest.get(i).unwrap_or_else(|| usage(2));
                 let key = flag.trim_start_matches("--").replace('-', "_");
-                pdf_options[&key] = if matches!(key.as_str(),"pdf_image_compression"|"pdf_alpha_background") { serde_json::json!(value) } else { serde_json::from_str(value).unwrap_or_else(|_| usage(2)) };
+                pdf_options[&key] = if matches!(
+                    key.as_str(),
+                    "pdf_image_compression" | "pdf_alpha_background"
+                ) {
+                    serde_json::json!(value)
+                } else {
+                    serde_json::from_str(value).unwrap_or_else(|_| usage(2))
+                };
             }
             "-o" | "--output" => {
                 i += 1;
@@ -150,10 +164,25 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .to_ascii_lowercase();
     let mut explicit = serde_json::to_value(&options)?;
     laymesh_render::config::merge(&mut explicit, &pdf_options);
-    options = serde_json::from_value(explicit).unwrap_or_else(|error| { eprintln!("{error}"); usage(2) });
-    if let Err(error)=options.validate(&format) {eprintln!("{error}");usage(2)}
-    let absolute = if Path::new(file).is_absolute() { Path::new(file).to_path_buf() } else { env::current_dir()?.join(file) };
-    let (defaults, _) = laymesh_render::config::resolve(&absolute, config_path, &serde_json::json!({}), &serde_json::json!({}))?;
+    options = serde_json::from_value(explicit).unwrap_or_else(|error| {
+        eprintln!("{error}");
+        usage(2)
+    });
+    if let Err(error) = options.validate(&format) {
+        eprintln!("{error}");
+        usage(2)
+    }
+    let absolute = if Path::new(file).is_absolute() {
+        Path::new(file).to_path_buf()
+    } else {
+        env::current_dir()?.join(file)
+    };
+    let (defaults, _) = laymesh_render::config::resolve(
+        &absolute,
+        config_path,
+        &serde_json::json!({}),
+        &serde_json::json!({}),
+    )?;
     options = laymesh_render::config::export_options(&defaults, &format, &options)?;
     if let Err(error) = options.validate(&format) {
         eprintln!("{error}");
@@ -166,7 +195,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             eprintln!("{w}")
         }
     }
-    if warning_mode == "show" && format=="pdf" {for w in laymesh_render::raster_policy::pdf_warnings(&scene,&options)? {eprintln!("{w}");}}
+    if warning_mode == "show" && format == "pdf" {
+        for w in laymesh_render::raster_policy::pdf_warnings(&scene, &options)? {
+            eprintln!("{w}");
+        }
+    }
     let data = laymesh_render::render_export(&scene, &format, &options)?;
     laymesh_core::asset_cache::preview_mode(false);
     export::write_atomic(Path::new(output), &data)?;

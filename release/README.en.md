@@ -1,8 +1,8 @@
 # Build and publish to PyPI
 
-**Release 0.3.9 is published** with two-endpoint straight-line connections and geometry-free `line()` materials. Python, the Rust engine and the VS Code extension share the same version. All five platform wheels and stable VSIX builds, Python 3.10/3.13/3.14 checks and full contracts passed. [Verification and publication](https://github.com/muxkin/LayMesh/actions/runs/37400436659).
+**Release 0.4.0 is published** with two-endpoint straight-line connections and geometry-free `line()` materials. Python, the Rust engine and the VS Code extension share the same version. All five platform wheels and stable VSIX builds, Python 3.10/3.13/3.14 checks and full contracts passed. [Verification and publication](https://github.com/muxkin/LayMesh/actions/runs/37400436659).
 
-The current release is **[`0.3.9`](https://pypi.org/project/laymesh/0.3.9/)**, with all five platform wheels published. NumPy, pandas, Matplotlib and IPython are default dependencies; `pip install laymesh` installs all Python features. The [publishing workflow](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml) builds and verifies five platform wheels, audits their contents and checksums, and uploads through Trusted Publishing. Each wheel includes the Python API, CLI entry point, one native Rust executable, dependency licenses and a build manifest. Formula fonts are compiled into RaTeX; body fonts come from the system or user files.
+The current release is **[`0.4.0`](https://pypi.org/project/laymesh/0.4.0/)**, with all five platform wheels published. NumPy, pandas, Matplotlib and IPython are default dependencies; `pip install laymesh` installs all Python features. The [publishing workflow](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml) builds and verifies five platform wheels, audits their contents and checksums, and uploads through Trusted Publishing. Each wheel includes the Python API, CLI entry point, one native Rust executable, dependency licenses and a build manifest. Formula fonts are compiled into RaTeX; body fonts come from the system or user files.
 
 [runtime.json](runtime.json) defines five targets: Linux x64 / arm64, macOS 14+ Intel / Apple Silicon, and Windows x64. Python users need 3.10+; build scripts need Python 3.11+ and Rust 1.93.1. This release publishes platform wheels only. The `python/` directory alone is not a complete source distribution with the Rust engine; do not upload an sdist made from that directory.
 
@@ -18,9 +18,9 @@ python scripts/check-release.py
 python -m pip install -e "./python" pillow
 python scripts/test-contracts.py
 python scripts/collect-licenses.py
-python scripts/build-python-wheel.py --output release/dist/pypi-0.3.9
-python scripts/check-python-wheels.py release/dist/pypi-0.3.9 --checksums release/dist/pypi-0.3.9/SHA256SUMS
-python -m twine check --strict release/dist/pypi-0.3.9/*.whl
+python scripts/build-python-wheel.py --output release/dist/pypi-0.4.0
+python scripts/check-python-wheels.py release/dist/pypi-0.4.0 --checksums release/dist/pypi-0.4.0/SHA256SUMS
+python -m twine check --strict release/dist/pypi-0.4.0/*.whl
 ```
 
 The builder checks version alignment, compiles the locked release engine, and stages a wheel outside the source tree. A separate output directory avoids mixing this candidate with earlier wheels. Linux tags reflect the binary's measured GLIBC symbol requirements, with a floor of 2.28; a newer host build must not claim an older baseline. The local Linux x64 wheel requires glibc 2.35+. CI runner builds may require a newer glibc; review the actual filenames and manifests.
@@ -32,7 +32,7 @@ The manifest records Python/Rust versions, target, executable SHA-256 and Cargo.
 Create a **second, clean virtual environment** and install the generated wheel, not an editable checkout. Replace the example filename below with the actual wheel for your machine:
 
 ```sh
-python -m pip install "release/dist/pypi-0.3.9/laymesh-0.3.9-py3-none-manylinux_2_35_x86_64.whl" pillow
+python -m pip install "release/dist/pypi-0.4.0/laymesh-0.4.0-py3-none-manylinux_2_35_x86_64.whl" pillow
 python -m pip check
 python -m laymesh --version
 python scripts/smoke-python-wheel.py --examples examples
@@ -47,31 +47,20 @@ The existing [publish workflow](../.github/workflows/publish-pypi.yml) uses [PyP
 
 1. Configure a PyPI pending trusted publisher with project `laymesh`, owner `muxkin`, repository `LayMesh`, workflow `publish-pypi.yml`, and environment `pypi`.
 2. Configure the repository's GitHub environment `pypi` with required reviewers. The workflow checks that this approval gate exists.
-3. Make the final changes available on `main`. Run **Python wheels and PyPI** manually with `publish=false` to verify the candidate. Review all five wheels and checksums in `reviewed-python-release`.
-4. For the actual upload, run the same workflow on `main` with `publish=true` and `version=0.3.9`. It builds and tests again, verifies the requested version and checksums, then waits for the configured environment approval. Approve the artifacts from that run.
+3. Push the verified commit to `main`, then create and push the stable tag: `git tag v0.4.0` and `git push origin v0.4.0`.
+4. Review the wheels, VSIX and checksums from this run, then approve the `pypi` environment. Successful upload automatically creates the GitHub Release.
 
-The publishing job downloads the exact reviewed artifacts and uploads them without rebuilding. Pull requests and ordinary build runs do not upload. After publication, verify an index installation outside the checkout with `python -m pip install "laymesh==0.3.9"`, then `python -m pip check` and `python -m laymesh --version`. A published version cannot be overwritten; increment the Python/Rust/runtime/VS Code extension versions together for a replacement release.
+The publishing job downloads the exact reviewed artifacts and uploads them without rebuilding. Pull requests and ordinary build runs do not upload. After publication, verify an index installation outside the checkout with `python -m pip install "laymesh==0.4.0"`, then `python -m pip check` and `python -m laymesh --version`. A published version cannot be overwritten; increment the Python/Rust/runtime/VS Code extension versions together for a replacement release.
 
 ## Verification records
 
 `python scripts/test-contracts.py` produces `release/verification/cargo-tests.log`, `python-tests.log` and `assertion-coverage.json`, checking current source identities, test execution and historical assertion mappings. Install the Poppler and MuPDF command-line tools before running these checks. Use the GitHub Actions runs for the current commit as cross-platform release evidence; the final wheels and checksums are stored in the `reviewed-python-release` artifact.
 
-## Automated VS Code publication
+## Manual VS Code publishing and GitHub Release
 
-[Publish VS Code Marketplace](../.github/workflows/publish-marketplace.yml) runs automatically after a successful PyPI publication from `main`. It downloads the original five VSIX packages and reviewed wheels, checks their source commit, versions, checksums and matching native binaries, then publishes the stable packages with pinned `@vscode/vsce` 4.0.0. It verifies each platform and VSIX hash on Marketplace after validation. Retrying skips already published packages and detects mismatched packages at the same version.
+Stable version tags trigger five-platform wheel/VSIX builds and audits. The existing PyPI environment approval remains. Successful PyPI upload creates a GitHub Release with bilingual notes, ten reviewed packages and SHA256SUMS. Tags must match all metadata and belong to main. PR and manual workflow runs validate without uploading.
 
-Configure the `VSCE_PAT` secret once in the repository's [Actions secrets](https://github.com/muxkin/LayMesh/settings/secrets/actions) or its `marketplace` environment. The token needs Marketplace Manage permissions and the account must have access to the existing [Hyacine publisher](https://marketplace.visualstudio.com/manage/publishers/Hyacine). The workflow defaults to `pat`; no per-release VSIX uploads are needed. [Microsoft's publishing guide](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) explains how to create the token and documents the December 1, 2026 retirement of global PATs. Store credentials through the GitHub interface or `gh secret set VSCE_PAT`; do not place them in source files or release logs.
-
-To publish the existing 0.3.9 artifacts, or resume a partial publication within their retention period:
-
-```sh
-gh workflow run publish-marketplace.yml --ref main \
-  -f run_id=37400436659 -f version=0.3.9 -f publish=true -f auth=pat
-```
-
-Set `publish=false` for an audit without uploading. Failed, fork, PR and skipped PyPI publication runs are rejected. The workflow never rebuilds or increments versions.
-
-[Trusted publishing](https://github.com/microsoft/vscode-vsce#trusted-publishing) is an optional future route without a stored PAT. The [October 6, 2026 attempt](https://github.com/muxkin/LayMesh/actions/runs/37404048392) passed the source, artifact and OIDC protocol checks, but Marketplace returned `Trusted Publishing is not supported`. Once Marketplace supports the publisher, authorize owner `muxkin`, repository `LayMesh`, workflow `publish-marketplace.yml` on `main` and environment `marketplace`; select `auth=oidc` for manual runs, or set `MARKETPLACE_AUTH=oidc` in that environment for automatic runs. OIDC mode pins 4.0.1-3 with [Microsoft's protocol fix](https://github.com/microsoft/vscode-vsce/commit/c960f2e97da3360899f2bfe93390fa4890c69327) and tests the installed request contract before use. Failed OIDC authentication never falls back to a PAT.
+Marketplace automation has been removed. Download the VSIX packages from the Release and upload them through the [Hyacine publisher portal](https://marketplace.visualstudio.com/manage/publishers/Hyacine), or use local `vsce publish --packagePath <reviewed.vsix>`. Credentials stay local. `scripts/marketplace-release.py audit` remains available for package audits. Release retries verify hashes and refuse to overwrite different content; notes live in `release/notes/<version>.md`. Retry only failed publication jobs in the original run (`gh run rerun <run-id> --failed`), so they download the same reviewed artifacts. Do not rebuild and substitute packages for an already uploaded version.
 
 ## Other artifacts
 

@@ -1879,6 +1879,90 @@
       "reference": "cmap-reversed",
       "minimal": "examples/manual/cmaps.lay",
       "composition": "examples/plot/cmap-presets.lay"
+    },
+    "api:shadow": {
+      "topic": "art-effects",
+      "anchor": "shadow",
+      "reference": "shadow",
+      "minimal": "examples/effects/shadow-glow.lay",
+      "composition": "examples/effects/shadow-glow.lay"
+    },
+    "api:glow": {
+      "topic": "art-effects",
+      "anchor": "glow",
+      "reference": "glow",
+      "minimal": "examples/effects/shadow-glow.lay",
+      "composition": "examples/effects/shadow-glow.lay"
+    },
+    "api:text_path": {
+      "topic": "art-effects",
+      "anchor": "text_path",
+      "reference": "text_path",
+      "minimal": "examples/effects/art-text.lay",
+      "composition": "examples/effects/art-text.lay"
+    },
+    "api:text_warp": {
+      "topic": "art-effects",
+      "anchor": "text_warp",
+      "reference": "text_warp",
+      "minimal": "examples/effects/art-text.lay",
+      "composition": "examples/effects/art-text.lay"
+    },
+    "api:text_extrude": {
+      "topic": "art-effects",
+      "anchor": "text_extrude",
+      "reference": "text_extrude",
+      "minimal": "examples/effects/art-text.lay",
+      "composition": "examples/effects/art-text.lay"
+    },
+    "lcss:text_fill": {
+      "topic": "art-effects",
+      "anchor": "LCSS decorations",
+      "reference": "text_fill",
+      "minimal": "examples/effects/art-text.lay",
+      "composition": "examples/effects/shadow-glow.lay"
+    },
+    "lcss:text_stroke_color": {
+      "topic": "art-effects",
+      "anchor": "LCSS decorations",
+      "reference": "text_stroke_color",
+      "minimal": "examples/effects/art-text.lay",
+      "composition": "examples/effects/shadow-glow.lay"
+    },
+    "lcss:text_stroke_width": {
+      "topic": "art-effects",
+      "anchor": "LCSS decorations",
+      "reference": "text_stroke_width",
+      "minimal": "examples/effects/art-text.lay",
+      "composition": "examples/effects/shadow-glow.lay"
+    },
+    "lcss:effects": {
+      "topic": "art-effects",
+      "anchor": "LCSS decorations",
+      "reference": "effects",
+      "minimal": "examples/effects/art-text.lay",
+      "composition": "examples/effects/shadow-glow.lay"
+    },
+    "lcss:path": {
+      "topic": "art-effects",
+      "anchor": "LCSS decorations",
+      "reference": "path",
+      "minimal": "examples/effects/art-text.lay",
+      "composition": "examples/effects/shadow-glow.lay"
+    },
+    "lcss:warp": {
+      "topic": "art-effects",
+      "anchor": "LCSS decorations",
+      "reference": "warp",
+      "minimal": "examples/effects/art-text.lay",
+      "composition": "examples/effects/shadow-glow.lay"
+    },
+    "lcss:extrude": {
+      "topic": "art-effects",
+      "anchor": "LCSS decorations",
+      "reference": "extrude",
+      "minimal": "examples/effects/art-text.lay",
+      "composition": "examples/effects/shadow-glow.lay"
     }
   }
 }

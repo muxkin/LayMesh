@@ -10,7 +10,7 @@
     "version": 2,
     "engine": "rust-ratex"
   },
-  "engine": "f7b040e826d73a803088b06762a9dc381caaa36dcb631008e11ac19bbea1209e",
+  "engine": "4627e94899179d2d035ccd9c1379aada133400b1fb3b9156f361d8e38afe80ec",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -1716,6 +1716,85 @@
           "width": 3840,
           "height": 2560,
           "sha256": "1285019493621c0a895f48d72f559bbf803174cd43c5f297c335dfed93eae3e3"
+        }
+      ]
+    },
+    "examples/effects/art-text.lay": {
+      "fingerprint": "debc3e9fac4faa5e91ee534de4167973be1d0a1ab9a17679adf058c12512b607",
+      "dependencies": [
+        "examples/effects/art-text.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-art-text-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "c47f171cedf00a12b2cc985482771e343f528a7e88e2c6a1223a5557f4b97756"
+        },
+        {
+          "file": "site/media/effects-art-text-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "387d29587101ae1548d0281feb976c1d799b95acd132975ad339972b332654d5"
+        },
+        {
+          "file": "site/media/effects-art-text-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "b771dcc55f176e5a21d6ddfe08336f983bc910354c7f270e72078def722b8f33"
+        }
+      ]
+    },
+    "examples/effects/images-groups.lay": {
+      "fingerprint": "992373a1cca5e4c7ee8e813f7470f79732762080eff50b614d0c1999cd62af05",
+      "dependencies": [
+        "examples/effects/alpha-ring.png",
+        "examples/effects/images-groups.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-images-groups-960.webp",
+          "width": 960,
+          "height": 480,
+          "sha256": "2f15f04f0b55a314e1b019ed7433db45aab816eddb348e060ec11d55c5b00d3d"
+        },
+        {
+          "file": "site/media/effects-images-groups-1920.webp",
+          "width": 1920,
+          "height": 960,
+          "sha256": "63536e52571724fb780e546afea38af02822b2b6e284b18e846a0a32b4f9c398"
+        },
+        {
+          "file": "site/media/effects-images-groups-3840.webp",
+          "width": 3840,
+          "height": 1920,
+          "sha256": "50439266f1c9dd698d943724cf1eddcc025a6f126088060416594ef110df7def"
+        }
+      ]
+    },
+    "examples/effects/shadow-glow.lay": {
+      "fingerprint": "cecc4f603964dc810275b7141d3968c9fae457cde6b2850292198164d44966f8",
+      "dependencies": [
+        "examples/effects/shadow-glow.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-shadow-glow-960.webp",
+          "width": 960,
+          "height": 608,
+          "sha256": "4d049560761484a3a33e762f6c56345f565ee4e4ed43cfa4a3dd85a013e7fc9c"
+        },
+        {
+          "file": "site/media/effects-shadow-glow-1920.webp",
+          "width": 1920,
+          "height": 1216,
+          "sha256": "1c79c1aa287c81f2fcf00f32cbbe9b549503a538c5f35c1893bd38583d053b3e"
+        },
+        {
+          "file": "site/media/effects-shadow-glow-3840.webp",
+          "width": 3840,
+          "height": 2432,
+          "sha256": "569a3f2227b02ae6a928d4c41d4fc9aecfb259396c8c37689518e05d1e2488f9"
         }
       ]
     },

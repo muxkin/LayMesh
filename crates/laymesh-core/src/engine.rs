@@ -25,6 +25,7 @@ pub struct Engine {
     pub host: Host,
     pub warnings: Vec<Diagnostic>,
     pub fonts: crate::text::FontSystem,
+    pub(crate) art_cache: BTreeMap<String, Json>,
     pub unit: String,
     pub dpi: f64,
     pub canvas: Option<Rc<RefCell<Object>>>,
@@ -102,6 +103,7 @@ impl Engine {
             host,
             warnings: vec![],
             fonts,
+            art_cache: BTreeMap::new(),
             unit: "mm".into(),
             dpi: 96.,
             canvas: None,
@@ -190,6 +192,17 @@ impl Engine {
             )
         })?;
         let c = c.borrow();
+        for node in &c.nodes {
+            if let Some(b) = crate::art::decorated_bounds(node) {
+                if b.x0 < -0.01 || b.y0 < -0.01 || b.x1 > c.width + 0.01 || b.y1 > c.height + 0.01 {
+                    self.warn(
+                        "W_EFFECT_OVERFLOW",
+                        "Decorated content or effects extend beyond the canvas",
+                        Loc::default(),
+                    );
+                }
+            }
+        }
         Ok(Scene {
             schema_version: 8,
             width: c.width,
@@ -1164,7 +1177,14 @@ impl Engine {
         if name == "image_fill" {
             let path = resolve(&self.file, &string(&a, "src", ""));
             let asset = self.load_image(&path, &self.file.clone(), l)?;
-            for key in ["data", "mime", "width", "height", "rasterKey", "sourceJpegHash"] {
+            for key in [
+                "data",
+                "mime",
+                "width",
+                "height",
+                "rasterKey",
+                "sourceJpegHash",
+            ] {
                 a.insert(key.into(), V::from_json(&asset[key]));
             }
         }

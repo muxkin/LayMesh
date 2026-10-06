@@ -121,6 +121,13 @@
 | `vertical` | `string` | `"vertical"` |
 | `x` | `string` | `"x"` |
 | `y` | `string` | `"y"` |
+| `outer` | `string` | `"outer"` |
+| `inner` | `string` | `"inner"` |
+| `content` | `string` | `"content"` |
+| `object` | `string` | `"object"` |
+| `arc` | `string` | `"arc"` |
+| `wave` | `string` | `"wave"` |
+| `perspective` | `string` | `"perspective"` |
 
 ## canvas
 
@@ -183,6 +190,7 @@ page.add(text("Physical page",font_size=12pt),offset=(5mm,5mm))
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -229,6 +237,13 @@ page.add(image(src="../assets/photo.png"),size=(55mm,auto),offset=(8mm,8mm))
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `text_fill` | paint | 字形填充 / Glyph paint; defaults to color | — |
+| `text_stroke_color` | color | 字形描边颜色 / Glyph stroke color | none |
+| `text_stroke_width` | length / pt | 字形描边宽度 / Glyph stroke width | 0 |
+| `path` | text_path | 沿路径排字 / Text path configuration | — |
+| `warp` | text_warp | 字形变形 / Text warp configuration | — |
+| `extrude` | text_extrude | 二维矢量挤出 / Vector extrusion | — |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -259,6 +274,9 @@ page.add(text("Wrapping preserves physical type size.",size=(45mm,auto),font_siz
 | `font_weight` | integer | 字体字重，100–900 | 400 |
 | `font_style` | "normal" \| "italic" | 正体或斜体<br>`normal`: 正常字形<br>`italic`: 斜体字形 | normal |
 | `color` | color | 文字颜色或数据系列基础配色 | — |
+| `text_fill` | paint | 字形填充 / Glyph paint; defaults to color | — |
+| `text_stroke_color` | color | 字形描边颜色 / Glyph stroke color | none |
+| `text_stroke_width` | length / pt | 字形描边宽度 / Glyph stroke width | 0 |
 
 ### 最小完整示例
 
@@ -300,6 +318,7 @@ page.add(text(spans=[span("Red ",color="#e36b70"),span("bold",font_weight=700)],
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -337,6 +356,7 @@ page.add(formula(r"E=mc^2",style=display,font_size=16pt,math_font=ratex_katex),o
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -371,6 +391,7 @@ page.add(rect(size=(40mm,25mm),border_radius=7mm,fill="#e6f2f3",border_color="#0
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -408,6 +429,7 @@ page.add(ellipse(size=(45mm,25mm),fill="#e6f2f3",border_color="#087f8c",border_w
 | `end_head` | head | 结束端头部配置，默认无 | — |
 | `start_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -451,6 +473,7 @@ page.add(wire,start=a.middle_right,end=b.middle_left,start_offset=(2mm,0mm),end_
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -493,6 +516,7 @@ page.add(g,offset=(55mm,38mm),rotation=15deg)
 | `end_head` | head | 结束端头部配置，默认无 | — |
 | `start_cap` | "butt" \| "round" \| "square" | 路径独立端帽，默认继承 border_cap；虚线内部端帽不受此项影响<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 border_cap |
 | `end_cap` | "butt" \| "round" \| "square" | 路径独立端帽，默认继承 border_cap；虚线内部端帽不受此项影响<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 border_cap |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -527,6 +551,7 @@ page.add(path(commands=[move_to(0mm,20mm),quad_to(20mm,0mm,40mm,20mm),line_to(40
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -565,6 +590,7 @@ page.add(polygon(points=[(0mm,0mm),(40mm,0mm),(30mm,30mm)],fill="#e6f2f3"),offse
 | `end_head` | head | 结束端头部配置，默认无 | — |
 | `start_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -605,6 +631,7 @@ page.add(polyline(points=[(0mm,20mm),(20mm,0mm),(45mm,20mm)],line_color="#087f8c
 | `end_head` | head | 结束端头部配置，默认无 | — |
 | `start_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -641,6 +668,7 @@ page.add(arc(radius=20mm,start=0deg,end=120deg,line_width=1mm,end_head=head(shap
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -678,6 +706,7 @@ page.add(sector(radius=20mm,start=0deg,end=120deg,fill="#087f8c"),offset=(15mm,1
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -713,6 +742,7 @@ page.add(star(points=5,outer_radius=20mm,inner_radius=9mm,fill="#e6f2f3",border_
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -856,6 +886,7 @@ page.add(ellipse(size=(2mm,2mm),fill="#e36b70"),anchor=center,target=chart.axis(
 | `end_offset` | (length, length) / 画布单位 | 连接终点的独立物理偏移，随后叠加整体 offset | (0, 0) |
 | `start_offset_space` | "container" \| "target" | 起点偏移的方向；target 需要路径锚点及明确切线方向<br>`container`: 沿当前容器的横纵方向<br>`target`: 沿对应路径锚点的切线与左法线 | container |
 | `end_offset_space` | "container" \| "target" | 终点偏移的方向；target 需要路径锚点及明确切线方向<br>`container`: 沿当前容器的横纵方向<br>`target`: 沿对应路径锚点的切线与左法线 | container |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -1106,6 +1137,7 @@ page.add(p,offset=(7mm,6mm))
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
 
 ### 最小完整示例
 
@@ -3506,6 +3538,153 @@ for i,color in enumerate(colors) {
 ```
 
 [概念与常见错误](cmaps.zh-CN.md#cmap-reversed) · [组合源码](../../examples/plot/cmap-presets.lay)
+
+## shadow
+
+阴影 / Alpha-based shadow
+
+返回：shadow
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `color` | color | color | #000000 |
+| `opacity` | value | opacity | 0.5 |
+| `blur` | length / 画布单位 | blur | 1mm |
+| `spread` | length / 画布单位 | spread | 0mm |
+| `mode` | "outer" \| "inner" | mode<br>`outer`: outer<br>`inner`: inner | outer |
+| `target` | "content" \| "object" | target<br>`content`: content<br>`object`: object | content |
+| `offset` | (length,length) / 画布单位 | offset | (1mm,1mm) |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(150mm,95mm),background="#202936")
+page.add(rect(size=(35mm,25mm),border_radius=4mm,fill="#3782d6",effects=[shadow(blur=2mm,offset=(2mm,3mm)),glow(color="#59b7ff",blur=1mm,spread=0.5mm)]),offset=(12mm,15mm))
+page.add(ellipse(size=(35mm,25mm),fill="#eb6d9b",effects=[shadow(mode="inner",blur=2mm,offset=(2mm,2mm),opacity=0.8),glow(mode="inner",color="#ffe9f2",blur=1mm)]),offset=(58mm,15mm))
+page.add(text("Mixed effects",font_family="DejaVu Sans",font_size=25pt,color="#f6f6f6",effects=[glow(color="#8d6cff",blur=1mm),shadow(blur=0.5mm,offset=(1mm,1mm))]),offset=(18mm,59mm))
+```
+
+[概念与常见错误](art-effects.zh-CN.md#shadow) · [组合源码](../../examples/effects/shadow-glow.lay)
+
+## glow
+
+发光 / Alpha-based glow
+
+返回：glow
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `color` | color | color | #ffffff |
+| `opacity` | value | opacity | 1 |
+| `blur` | length / 画布单位 | blur | 1mm |
+| `spread` | length / 画布单位 | spread | 0mm |
+| `mode` | "outer" \| "inner" | mode<br>`outer`: outer<br>`inner`: inner | outer |
+| `target` | "content" \| "object" | target<br>`content`: content<br>`object`: object | content |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(150mm,95mm),background="#202936")
+page.add(rect(size=(35mm,25mm),border_radius=4mm,fill="#3782d6",effects=[shadow(blur=2mm,offset=(2mm,3mm)),glow(color="#59b7ff",blur=1mm,spread=0.5mm)]),offset=(12mm,15mm))
+page.add(ellipse(size=(35mm,25mm),fill="#eb6d9b",effects=[shadow(mode="inner",blur=2mm,offset=(2mm,2mm),opacity=0.8),glow(mode="inner",color="#ffe9f2",blur=1mm)]),offset=(58mm,15mm))
+page.add(text("Mixed effects",font_family="DejaVu Sans",font_size=25pt,color="#f6f6f6",effects=[glow(color="#8d6cff",blur=1mm),shadow(blur=0.5mm,offset=(1mm,1mm))]),offset=(18mm,59mm))
+```
+
+[概念与常见错误](art-effects.zh-CN.md#glow) · [组合源码](../../examples/effects/shadow-glow.lay)
+
+## text_path
+
+沿本地单条开放路径排字 / Typeset on one local open path
+
+返回：text_path
+
+位置参数：`path`.
+
+必需：`path`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `path` | material | path | — |
+| `start` | length / 画布单位 | start | 0mm |
+| `align` | "left" \| "center" \| "right" | align<br>`left`: left<br>`center`: center<br>`right`: right | left |
+| `reverse` | boolean | reverse | false |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(180mm,150mm),background="#f3f5f9")
+font="DejaVu Sans"
+paint=linear_gradient(stops=[(0,"#ea366d"),(1,"#365de6")],start=(0,0),end=(1,0))
+page.add(text("LayMesh 0.4.0",font_family=font,font_size=30pt,font_weight=700,text_fill=paint,text_stroke_color="#ffffff",text_stroke_width=0.7pt,extrude=text_extrude(depth=1.4mm,angle=45deg,color="#213864"),effects=[shadow(blur=0.8mm,offset=(1mm,2mm))]),offset=(10mm,8mm))
+route=path(commands=[move_to(0mm,12mm),cubic_to(35mm,0mm,95mm,0mm,130mm,12mm)])
+page.add(text("Text follows a curved path",font_family=font,font_size=17pt,path=text_path(route,align="center"),color="#3255b7"),offset=(20mm,32mm))
+page.add(text("ARC LETTERS",font_family=font,font_size=25pt,font_weight=700,warp=text_warp("arc",angle=55deg),text_fill=paint),offset=(30mm,62mm))
+page.add(text("Wave and glow",font_family=font,font_size=23pt,warp=text_warp("wave",amplitude=2mm,wavelength=30mm),color="#213864",effects=[glow(color="#4a8eff",blur=0.7mm,spread=0.2mm)]),offset=(25mm,88mm))
+page.add(text("PERSPECTIVE",font_family=font,font_size=26pt,font_weight=700,warp=text_warp("perspective",corners=[(0mm,2mm),(85mm,0mm),(75mm,12mm),(8mm,9mm)]),text_fill=paint,extrude=text_extrude(depth=1mm,color="#324165")),offset=(35mm,113mm))
+```
+
+[概念与常见错误](art-effects.zh-CN.md#text_path) · [组合源码](../../examples/effects/art-text.lay)
+
+## text_warp
+
+弧形、波浪或四角透视变形 / Arc, wave or perspective warp
+
+返回：text_warp
+
+位置参数：`kind`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `kind` | "arc" \| "wave" \| "perspective" | kind<br>`arc`: arc<br>`wave`: wave<br>`perspective`: perspective | arc |
+| `angle` | angle | angle | 45deg |
+| `amplitude` | length / 画布单位 | amplitude | 2mm |
+| `wavelength` | length / 画布单位 | wavelength | 20mm |
+| `phase` | angle | phase | 0deg |
+| `corners` | (length,length)[] / 画布单位 | corners | — |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(180mm,150mm),background="#f3f5f9")
+font="DejaVu Sans"
+paint=linear_gradient(stops=[(0,"#ea366d"),(1,"#365de6")],start=(0,0),end=(1,0))
+page.add(text("LayMesh 0.4.0",font_family=font,font_size=30pt,font_weight=700,text_fill=paint,text_stroke_color="#ffffff",text_stroke_width=0.7pt,extrude=text_extrude(depth=1.4mm,angle=45deg,color="#213864"),effects=[shadow(blur=0.8mm,offset=(1mm,2mm))]),offset=(10mm,8mm))
+route=path(commands=[move_to(0mm,12mm),cubic_to(35mm,0mm,95mm,0mm,130mm,12mm)])
+page.add(text("Text follows a curved path",font_family=font,font_size=17pt,path=text_path(route,align="center"),color="#3255b7"),offset=(20mm,32mm))
+page.add(text("ARC LETTERS",font_family=font,font_size=25pt,font_weight=700,warp=text_warp("arc",angle=55deg),text_fill=paint),offset=(30mm,62mm))
+page.add(text("Wave and glow",font_family=font,font_size=23pt,warp=text_warp("wave",amplitude=2mm,wavelength=30mm),color="#213864",effects=[glow(color="#4a8eff",blur=0.7mm,spread=0.2mm)]),offset=(25mm,88mm))
+page.add(text("PERSPECTIVE",font_family=font,font_size=26pt,font_weight=700,warp=text_warp("perspective",corners=[(0mm,2mm),(85mm,0mm),(75mm,12mm),(8mm,9mm)]),text_fill=paint,extrude=text_extrude(depth=1mm,color="#324165")),offset=(35mm,113mm))
+```
+
+[概念与常见错误](art-effects.zh-CN.md#text_warp) · [组合源码](../../examples/effects/art-text.lay)
+
+## text_extrude
+
+二维矢量挤出 / Two-dimensional vector extrusion
+
+返回：text_extrude
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `depth` | length / 画布单位 | depth | 1mm |
+| `angle` | angle | angle | 45deg |
+| `color` | color | color | #555555 |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(180mm,150mm),background="#f3f5f9")
+font="DejaVu Sans"
+paint=linear_gradient(stops=[(0,"#ea366d"),(1,"#365de6")],start=(0,0),end=(1,0))
+page.add(text("LayMesh 0.4.0",font_family=font,font_size=30pt,font_weight=700,text_fill=paint,text_stroke_color="#ffffff",text_stroke_width=0.7pt,extrude=text_extrude(depth=1.4mm,angle=45deg,color="#213864"),effects=[shadow(blur=0.8mm,offset=(1mm,2mm))]),offset=(10mm,8mm))
+route=path(commands=[move_to(0mm,12mm),cubic_to(35mm,0mm,95mm,0mm,130mm,12mm)])
+page.add(text("Text follows a curved path",font_family=font,font_size=17pt,path=text_path(route,align="center"),color="#3255b7"),offset=(20mm,32mm))
+page.add(text("ARC LETTERS",font_family=font,font_size=25pt,font_weight=700,warp=text_warp("arc",angle=55deg),text_fill=paint),offset=(30mm,62mm))
+page.add(text("Wave and glow",font_family=font,font_size=23pt,warp=text_warp("wave",amplitude=2mm,wavelength=30mm),color="#213864",effects=[glow(color="#4a8eff",blur=0.7mm,spread=0.2mm)]),offset=(25mm,88mm))
+page.add(text("PERSPECTIVE",font_family=font,font_size=26pt,font_weight=700,warp=text_warp("perspective",corners=[(0mm,2mm),(85mm,0mm),(75mm,12mm),(8mm,9mm)]),text_fill=paint,extrude=text_extrude(depth=1mm,color="#324165")),offset=(35mm,113mm))
+```
+
+[概念与常见错误](art-effects.zh-CN.md#text_extrude) · [组合源码](../../examples/effects/art-text.lay)
 
 ## 几何视图类型
 
