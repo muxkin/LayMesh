@@ -7,10 +7,10 @@
 ```text
 laymesh validate <file.lay> [--warnings show|hide]
 laymesh inspect <file.lay> --json [--warnings show|hide]
-laymesh render <file.lay> -o <output.svg|pdf|png|jpg|tif|webp|bmp|gif|ico|pnm|tga> [--dpi <positive-number>] [--warnings show|hide]
+laymesh render <file.lay> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|tga> [--dpi <positive-number>] [--warnings show|hide]
 ```
 
-在当前 workspace 中以 `cargo run --release --locked -p laymesh-cli --` 为前缀。`-o` 与 `--output` 等价；扩展名决定格式；`--dpi` 用于所有位图输出与 PDF 图片上限，默认 1200；`--config PATH` 指定项目配置，`--pdf-*` 调节 PDF 压缩、精度和透明度保留。[完整参数与配置](export.zh-CN.md)。成功的 `validate` 打印尺寸与**顶层**实例数；成功的 `render` 打印输出路径。警告写 stderr，成功仍退出 0；源文件/渲染错误退出 1，参数用法错误退出 2。CLI 先渲染再经临时文件改名到目标路径，防止正常错误留下半成品。具体 stdout 见[执行记录](../examples-and-results.zh-CN.md)。
+在当前 workspace 中以 `cargo run --release --locked -p laymesh-cli --` 为前缀。`-o` 与 `--output` 等价；扩展名决定格式；`--dpi` 用于所有位图输出、PDF 图片上限与 PPTX 局部图片回退，默认 1200；`--config PATH` 指定项目配置，`--pdf-*` 调节 PDF 压缩、精度和透明度保留。[完整参数与配置](export.zh-CN.md)。成功的 `validate` 打印尺寸与**顶层**实例数；成功的 `render` 打印输出路径。警告写 stderr，成功仍退出 0；源文件/渲染错误退出 1，参数用法错误退出 2。CLI 先渲染再经临时文件改名到目标路径，防止正常错误留下半成品。具体 stdout 见[执行记录](../examples-and-results.zh-CN.md)。
 
 ## 限制与相关主题
 

@@ -1,0 +1,30 @@
+# CLI trial: ordinary text and geometry remain editable in PowerPoint.
+page = canvas(name="Editable PPTX trial", size=(180 mm, 120 mm), background="#ffffff")
+page.add(text("LayMesh / PPTX", font_family="DejaVu Sans", font_size=20 pt,
+              color="#203864"), offset=(10 mm, 8 mm))
+page.add(text("可编辑文字与矢量公式", font_family="Noto Sans CJK SC", font_size=14 pt,
+              color="#203864"), offset=(10 mm, 22 mm))
+page.add(text(spans=[span("Regular ", color="#203864"),
+                    span("bold", font_weight=700, color="#b24d26"),
+                    span(" / italic", font_style=italic, color="#087f8c")],
+              font_family="DejaVu Sans", font_size=12 pt), offset=(10 mm, 34 mm))
+page.add(formula(source=r"\int_0^1 x^2\,dx=\frac{1}{3}", font_size=20 pt,
+                 style=display), offset=(105 mm, 19 mm))
+
+inner = group()
+inner.add(ellipse(size=(16 mm, 16 mm), fill="#f2ab47", border_width=0))
+outer = group()
+plate = outer.add(rect(size=(45 mm, 24 mm), fill="#d8f0ec", border_color="#087f8c",
+                       border_width=0.4 mm))
+outer.add(inner, anchor=center, target=plate.center)
+page.add(outer, size=(54 mm, 28.8 mm), rotation=-12 deg, offset=(12 mm, 55 mm))
+page.add(line(dx=45 mm, dy=0 mm, line_dash=[2 mm, 1 mm], line_width=0.6 mm,
+              line_color="#203864", end_head=head()), offset=(13 mm, 91 mm))
+page.add(image(src="../effects/alpha-ring.png"), size=(24 mm, 24 mm),
+         rotation=15 deg, opacity=0.65, offset=(80 mm, 56 mm))
+
+# Only the gradient fill and the shadow layer need local PNG fallback.
+warm = linear_gradient(stops=[(0, "#fff0ce"), (1, "#ad3462")])
+page.add(rect(size=(35 mm, 20 mm), fill=warm, border_width=0), offset=(127 mm, 53 mm))
+page.add(rect(size=(35 mm, 14 mm), fill="#3782d6", border_width=0,
+              effects=[shadow(blur=1 mm, offset=(1 mm, 1 mm))]), offset=(127 mm, 85 mm))

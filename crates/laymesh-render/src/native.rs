@@ -14,7 +14,7 @@ use std::sync::Arc;
 fn tree(scene: &Scene) -> Result<usvg::Tree> {
     tree_svg(scene, &svg(scene, false)?)
 }
-fn tree_svg(scene: &Scene, xml: &str) -> Result<usvg::Tree> {
+pub(crate) fn tree_svg(scene: &Scene, xml: &str) -> Result<usvg::Tree> {
     let mut db = usvg::fontdb::Database::new();
     for (key, _) in used_fonts(scene) {
         let Some(asset) = scene.fonts.get(&key) else {

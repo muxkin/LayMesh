@@ -14,6 +14,7 @@ laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quali
 | 格式 | 编码参数及默认值 | 透明度与分辨率 |
 | --- | --- | --- |
 | SVG | 不接受位图编码参数 | 保留矢量图形、物理页面尺寸及透明度 |
+| PPTX（CLI 试验） | `dpi` 仅控制局部 PNG 回退，默认 1200 | 一张幻灯片；文字为文本框，公式及几何为可编辑形状；不嵌入字体 |
 | PDF | `pdf_image_compression=auto`、`pdf_jpeg_quality=90`、`pdf_downsample=true` | 文字和公式保持矢量；位图采用 JPEG 或无损 Flate，不采用 WebP |
 | PNG | `compression=fast/default/best`，默认 `default` | RGBA；写入 DPI 元数据 |
 | JPEG | `quality=1–100`，默认 90；`background="#ffffff"` | 不支持 Alpha；先与底色合成；写入 DPI 元数据 |
@@ -30,6 +31,23 @@ laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quali
 WebP 还支持 `--webp-alpha-quality 0–100`（默认 100；降低需使用有损模式）、`--webp-near-lossless 0–100`（仅无损模式，默认 100，100 完全无损）。`method` 越高编码越慢，通常文件越小；有损 `quality` 越高视觉质量越高。无损模式的 `quality` 控制压缩力度。近无损值小于 100 允许 RGB 样本近似，Alpha 仍保留。参数说明依据 [WebP 编码器文档](https://developers.google.com/speed/webp/docs/api)。
 
 原生栅格导出使用 **8 位 sRGB RGB/RGBA**。16 位输入在解码、ICC 转换、裁剪及中间 PNG 中保留精度和原始强度范围；最终页面栅格化到 8 位。TIFF 输出不会声称提供原生 16 位精度。SVG/PDF 中的图像素材仍走现有颜色与透明度链路，详见[图片格式](images.zh-CN.md)。
+
+## PPTX 可编辑导出试验（仅 CLI）
+
+```sh
+laymesh render examples/export/pptx-editable.lay -o figure.pptx
+laymesh render figure.lay -o figure.pptx --dpi 300
+```
+
+每份源码生成一张幻灯片，保留画布物理尺寸、背景和绘制顺序。普通文字按已布局的文字段生成可修改文本框，关闭自动缩放；公式转为可解组的矢量轮廓，不能直接修改为另一条公式。几何和描边使用自定义路径，描边轮廓可编辑，但不作为 PowerPoint 的线宽属性。图表保留组成它的形状与文字，不生成原生数据图表。
+
+PNG/JPEG 图片独立嵌入，保留透明度和可表达的旋转。渐变、纹理、复杂裁剪、滤镜、重叠对象的组透明度、多轮廓奇偶填充以及无法精确表示的文字或图片变换按最小完整子树转为透明 PNG；其他对象继续保持可编辑。`W_PPTX_RASTER` 列出回退对象和原因。效果流程允许只回退阴影层，保留主体为矢量。
+
+`--dpi` 只控制局部回退图片的像素尺寸，沿用默认 1200，支持项目配置 `export.pptx.dpi`；不改变幻灯片大小。每个回退图片仍受 100000000 像素上限约束。`quality`、`compression`、`background`、`pdf_*`、`webp_*` 不适用于 PPTX。`--warnings hide` 可隐藏导出警告，失败仍保留原目标文件。
+
+首版不嵌入字体。`W_PPTX_FONT` 列出目标机器所需字体，字体替换可能改变文字排版。幻灯片宽高须在 25.4–1422.4 mm（1–56 英寸）之间；透明画布在演示软件中使用默认幻灯片底色。当前只提供 CLI 入口，Python/Jupyter 和 VS Code 格式列表尚未加入 PPTX；兼容性验证须区分 LibreOffice 打开、往返保存与 PowerPoint 实机检查。
+
+[完整试验源码](../../examples/export/pptx-editable.lay)
 
 ## Python 和 Jupyter
 

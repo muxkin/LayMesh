@@ -14,6 +14,7 @@ laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quali
 | Format | Options and defaults | Transparency and density |
 | --- | --- | --- |
 | SVG | No raster encoding options | Vector graphics, physical page size and transparency |
+| PPTX (CLI trial) | `dpi` controls local PNG fallback only; default 1200 | One slide; editable text boxes and vector shapes; fonts are not embedded |
 | PDF | `pdf_image_compression=auto`, `pdf_jpeg_quality=90`, `pdf_downsample=true` | Vector text/formulas; JPEG or lossless Flate images, never WebP |
 | PNG | `compression=fast/default/best`, default `default` | RGBA; records DPI metadata |
 | JPEG | `quality=1–100`, default 90; `background="#ffffff"` | Alpha is composited over the matte; records DPI metadata |
@@ -30,6 +31,23 @@ Every raster format accepts `--dpi`: a positive number up to 25400. CLI, Python/
 WebP also accepts `--webp-alpha-quality 0–100` (default 100; lowering requires lossy mode), and `--webp-near-lossless 0–100` (lossless mode only, default 100, fully lossless). Higher `method` spends more encoding time, usually reducing size; higher lossy `quality` improves visual quality. In lossless mode, `quality` controls compression effort. Near-lossless values below 100 permit approximate RGB samples while retaining alpha. See the [WebP encoder documentation](https://developers.google.com/speed/webp/docs/api).
 
 Native raster exports are **8-bit sRGB RGB/RGBA**. Sixteen-bit inputs retain precision and their intensity range during decoding, ICC conversion, cropping and intermediate PNG generation; final page rasterization is 8-bit. TIFF output does not claim native 16-bit precision. Embedded SVG/PDF assets retain the existing color and alpha pipeline; see [image formats](images.en.md).
+
+## Editable PPTX export trial (CLI only)
+
+```sh
+laymesh render examples/export/pptx-editable.lay -o figure.pptx
+laymesh render figure.lay -o figure.pptx --dpi 300
+```
+
+Each source produces one slide with the original physical canvas dimensions, background and drawing order. Ordinary text becomes editable text boxes positioned per laid-out run, with auto-fit disabled. Formulas become grouped vector outlines rather than editable equation source. Geometry and stroke outlines use custom paths; stroke thickness is represented by geometry, not a PowerPoint line-width property. Plots retain their constituent shapes and text rather than becoming native data charts.
+
+PNG/JPEG assets are embedded as independent pictures. Gradients, patterns, clipping, filters, overlapping group opacity, multi-contour even-odd fills and unrepresentable text/picture transforms rasterize only the smallest complete subtree as a transparent PNG. `W_PPTX_RASTER` identifies each fallback and its reason. Effect lowering can preserve the subject as vectors while rasterizing only its shadow layer.
+
+`--dpi` controls fallback pixels only, defaults to 1200 and supports `export.pptx.dpi` configuration. It never changes slide size. Each fallback image retains the 100000000-pixel limit. `quality`, `compression`, `background`, `pdf_*` and `webp_*` options are rejected for PPTX. `--warnings hide` hides export warnings; failed exports preserve existing destination files.
+
+Fonts are not embedded. `W_PPTX_FONT` lists the required installed families; substitution may alter text layout. Slide width and height must be within 25.4–1422.4 mm (1–56 inches). Transparent canvases use the presentation application's default slide background. Python/Jupyter and the VS Code format picker do not yet expose PPTX. LibreOffice rendering and round-trip checks must be distinguished from native PowerPoint verification.
+
+[Complete trial source](../../examples/export/pptx-editable.lay)
 
 ## Python and Jupyter
 

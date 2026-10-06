@@ -31,6 +31,7 @@ pub fn export_format(extension: &str) -> Result<&'static str> {
     Ok(match extension.to_ascii_lowercase().as_str() {
         "svg" => "svg",
         "pdf" => "pdf",
+        "pptx" => "pptx",
         "png" => "png",
         "jpg" | "jpeg" => "jpeg",
         "tif" | "tiff" => "tiff",
@@ -45,7 +46,7 @@ pub fn export_format(extension: &str) -> Result<&'static str> {
         "pbm" => "pbm",
         _ => {
             return Err(error(
-                "不支持的导出格式；可用 SVG/PDF/PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA",
+                "不支持的导出格式；可用 SVG/PDF/PPTX/PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA",
             ));
         }
     })
@@ -54,10 +55,16 @@ pub fn export_format(extension: &str) -> Result<&'static str> {
 impl ExportOptions {
     pub fn validate(&self, extension: &str) -> Result<()> {
         let format = export_format(extension)?;
-        let raster = !matches!(format, "svg" | "pdf");
+        let raster = !matches!(format, "svg" | "pdf" | "pptx");
         if let Some(dpi) = self.dpi {
-            if !(raster || format == "pdf") || !dpi.is_finite() || dpi <= 0. || dpi > 25_400. {
-                return Err(error("DPI 仅用于位图/PDF 输出，须为 0–25400 之间的正数"));
+            if !(raster || matches!(format, "pdf" | "pptx"))
+                || !dpi.is_finite()
+                || dpi <= 0.
+                || dpi > 25_400.
+            {
+                return Err(error(
+                    "DPI 仅用于位图/PDF/PPTX 输出，须为 0–25400 之间的正数",
+                ));
             }
         }
         if let Some(quality) = self.quality {
@@ -176,6 +183,9 @@ pub fn render_export(scene: &Scene, extension: &str, options: &ExportOptions) ->
     }
     if format == "pdf" {
         return native::render_pdf_with_options(scene, options);
+    }
+    if format == "pptx" {
+        return Ok(crate::pptx::render_pptx(scene, options)?.0);
     }
     let dpi = options.dpi.unwrap_or(scene.export_dpi);
     // Fail before allocating the raster when a codec has a smaller dimension limit.

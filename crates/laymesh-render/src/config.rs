@@ -141,6 +141,7 @@ pub fn export_options(
                 "dpi"
                     | "svg"
                     | "pdf"
+                    | "pptx"
                     | "png"
                     | "jpeg"
                     | "tiff"

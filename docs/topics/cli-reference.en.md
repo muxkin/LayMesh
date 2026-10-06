@@ -7,10 +7,10 @@ The [CLI entry point](../../crates/laymesh-cli/src/main.rs) has three document c
 ```text
 laymesh validate <file.lay> [--warnings show|hide]
 laymesh inspect <file.lay> --json [--warnings show|hide]
-laymesh render <file.lay> -o <output.svg|pdf|png|jpg|tif|webp|bmp|gif|ico|pnm|tga> [--dpi <positive-number>] [--warnings show|hide]
+laymesh render <file.lay> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|tga> [--dpi <positive-number>] [--warnings show|hide]
 ```
 
-Use `cargo run --release --locked -p laymesh-cli --` as the prefix in this workspace. `-o` and `--output` are equivalent; the extension selects the format; `--dpi` applies to raster exports and the PDF image cap (default 1200). `--config PATH` overrides project configuration; `--pdf-*` controls PDF image compression and preservation. See [export configuration](export.en.md). Successful validation prints dimensions and the **top-level** placement count. Successful rendering prints the output path. Warnings go to stderr without changing a success exit code of 0. Source/render errors exit 1, usage errors exit 2. The CLI renders to a temporary file before renaming to the destination, avoiding partial outputs on ordinary failures. See [actual stdout](../examples-and-results.en.md).
+Use `cargo run --release --locked -p laymesh-cli --` as the prefix in this workspace. `-o` and `--output` are equivalent; the extension selects the format; `--dpi` applies to raster exports, the PDF image cap and PPTX local image fallback (default 1200). `--config PATH` overrides project configuration; `--pdf-*` controls PDF image compression and preservation. See [export configuration](export.en.md). Successful validation prints dimensions and the **top-level** placement count. Successful rendering prints the output path. Warnings go to stderr without changing a success exit code of 0. Source/render errors exit 1, usage errors exit 2. The CLI renders to a temporary file before renaming to the destination, avoiding partial outputs on ordinary failures. See [actual stdout](../examples-and-results.en.md).
 
 ## Limits and related topics
 

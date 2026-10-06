@@ -4,7 +4,7 @@ mod export;
 mod preview;
 
 fn usage(status: i32) -> ! {
-    let help = "用法:\n  laymesh validate <file.lay>\n  laymesh inspect <file.lay> --json\n  laymesh render <file.lay> -o <output.svg|pdf|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga>\n    [--dpi <number>] [--quality <1–100 (JPEG) / 0–100 (WebP)>]\n    [--compression <fast|default|best (PNG) / none|lzw|deflate|packbits (TIFF)>]\n    [--background <#RRGGBB>] [--webp-lossless <true|false>]\n    [--webp-method <0–6>] [--webp-alpha-quality <0–100>] [--webp-near-lossless <0–100>]\n    [--config <file.json>] [--pdf-image-compression <auto|lossless|jpeg>]\n    [--pdf-jpeg-quality <1–100>] [--pdf-downsample <true|false>]\n    [--pdf-recompress-jpeg <true|false>] [--pdf-preserve-16bit <true|false>] [--pdf-preserve-alpha <true|false>] [--pdf-alpha-background <#RRGGBB>]\n    [--pdf-auto-palette-limit <0–16384>] [--pdf-auto-flatness-threshold <0–1>]\n  laymesh lsp --stdio\n  laymesh preview --stdio\n所有命令支持 --warnings show|hide（默认读取 LAYMESH_WARNINGS）\n几何默认 mm；字号与线宽默认 pt；样式表使用 .lcss";
+    let help = "用法:\n  laymesh validate <file.lay>\n  laymesh inspect <file.lay> --json\n  laymesh render <file.lay> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga>\n    [--dpi <number>] [--quality <1–100 (JPEG) / 0–100 (WebP)>]\n    [--compression <fast|default|best (PNG) / none|lzw|deflate|packbits (TIFF)>]\n    [--background <#RRGGBB>] [--webp-lossless <true|false>]\n    [--webp-method <0–6>] [--webp-alpha-quality <0–100>] [--webp-near-lossless <0–100>]\n    [--config <file.json>] [--pdf-image-compression <auto|lossless|jpeg>]\n    [--pdf-jpeg-quality <1–100>] [--pdf-downsample <true|false>]\n    [--pdf-recompress-jpeg <true|false>] [--pdf-preserve-16bit <true|false>] [--pdf-preserve-alpha <true|false>] [--pdf-alpha-background <#RRGGBB>]\n    [--pdf-auto-palette-limit <0–16384>] [--pdf-auto-flatness-threshold <0–1>]\n  laymesh lsp --stdio\n  laymesh preview --stdio\n所有命令支持 --warnings show|hide（默认读取 LAYMESH_WARNINGS）\n几何默认 mm；字号与线宽默认 pt；样式表使用 .lcss";
     if status == 0 {
         println!("{help}")
     } else {
@@ -200,7 +200,17 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             eprintln!("{w}");
         }
     }
-    let data = laymesh_render::render_export(&scene, &format, &options)?;
+    let data = if format == "pptx" {
+        let (data, warnings) = laymesh_render::pptx::render_pptx(&scene, &options)?;
+        if warning_mode == "show" {
+            for warning in warnings {
+                eprintln!("{warning}");
+            }
+        }
+        data
+    } else {
+        laymesh_render::render_export(&scene, &format, &options)?
+    };
     laymesh_core::asset_cache::preview_mode(false);
     export::write_atomic(Path::new(output), &data)?;
     println!("已导出：{output}");

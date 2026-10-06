@@ -10,7 +10,7 @@
     "version": 2,
     "engine": "rust-ratex"
   },
-  "engine": "4627e94899179d2d035ccd9c1379aada133400b1fb3b9156f361d8e38afe80ec",
+  "engine": "e730b2a52eec203948267653f39864ad1eb15ae67aef57a522dec4d8e6b9e42a",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -1795,6 +1795,33 @@
           "width": 3840,
           "height": 2432,
           "sha256": "569a3f2227b02ae6a928d4c41d4fc9aecfb259396c8c37689518e05d1e2488f9"
+        }
+      ]
+    },
+    "examples/export/pptx-editable.lay": {
+      "fingerprint": "293a0739325fdc05a6260a6dbf2865c39cb984ddc46c1bc9261fd9904118e291",
+      "dependencies": [
+        "examples/effects/alpha-ring.png",
+        "examples/export/pptx-editable.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/export-pptx-editable-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "18516c74d80f4b049cb4aba63609c6ea546aab2e6ad3d7904abb924b2707e2b0"
+        },
+        {
+          "file": "site/media/export-pptx-editable-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "f054a2eb170642650dc28608cecac1d46ac5e7168343490cc0be156176311ed3"
+        },
+        {
+          "file": "site/media/export-pptx-editable-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "ee9d4f4b22636e88e818b85e168121cf33a143987c944593979981f3781124ee"
         }
       ]
     },

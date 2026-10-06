@@ -778,6 +778,8 @@ mod export;
 #[cfg(feature = "native")]
 mod native;
 #[cfg(feature = "native")]
+pub mod pptx;
+#[cfg(feature = "native")]
 pub mod preview_assets;
 #[cfg(feature = "native")]
 pub mod raster_policy;
