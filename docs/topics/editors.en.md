@@ -18,7 +18,7 @@ The candidate list and selected item's details stay available while typing, whet
 
 ## VS Code
 
-Install the [LayMesh extension](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) or a platform VSIX. Windows x64 and Linux x64 packages bundle the engine and need no Python, Rust or npm; Remote SSH packages match the remote host. Variable hover shows inferred types, Shift+F12 finds workspace references and F2 safely renames bindings, prioritizing unsaved buffers. Explicit import aliases rename locally; exported-name changes update import source names and unaliased uses. Incomplete affected code and name conflicts prevent rename. The following commands build packages for source developers.
+Install the [LayMesh extension](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) or a platform VSIX. Version 0.3.9 platform VSIX builds cover Windows x64, Linux x64 / ARM64 and macOS Intel / Apple Silicon. Packages bundle the engine and need no Python, Rust or npm; Remote SSH packages match the remote host. Variable hover shows inferred types, Shift+F12 finds workspace references and F2 safely renames bindings, prioritizing unsaved buffers. Explicit import aliases rename locally; exported-name changes update import source names and unaliased uses. Incomplete affected code and name conflicts prevent rename. The following commands build packages for source developers.
 
 Run from the repository root:
 

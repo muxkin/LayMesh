@@ -2,9 +2,11 @@
 
 **0.3.2 已发布**：包含预览性能优化、图片哈希复用及字体候选缓存；VS Code 0.3.7 增加可调防抖命令。五平台构建、Python 3.10/3.13/3.14 检查及完整契约测试均通过。[验证与发布记录](https://github.com/muxkin/LayMesh/actions/runs/37310038289)。
 
-当前版本为 **[`0.3.2`](https://pypi.org/project/laymesh/0.3.2/)**（已发布五个平台 wheel），Python 包与 Rust 引擎使用同一版本号。默认安装包含 NumPy、pandas、Matplotlib 和 IPython，使用 `pip install laymesh` 即可获得全部 Python 功能。[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)构建和验证五个平台 wheel，并执行包审计、校验和检查与 Trusted Publishing 上传。每个平台 wheel 包含 Python API、CLI 入口、一个 Rust 原生程序、依赖许可及构建清单。公式字体编译进 RaTeX，正文使用系统或用户字体。
+上一已发布版本为 **[`0.3.2`](https://pypi.org/project/laymesh/0.3.2/)**（已发布五个平台 wheel），Python 包与 Rust 引擎使用同一版本号。默认安装包含 NumPy、pandas、Matplotlib 和 IPython，使用 `pip install laymesh` 即可获得全部 Python 功能。[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)构建和验证五个平台 wheel，并执行包审计、校验和检查与 Trusted Publishing 上传。每个平台 wheel 包含 Python API、CLI 入口、一个 Rust 原生程序、依赖许可及构建清单。公式字体编译进 RaTeX，正文使用系统或用户字体。
 
 [runtime.json](runtime.json) 定义五个目标：Linux x64 / arm64、macOS 14+ Intel / Apple Silicon、Windows x64。使用者需要 Python 3.10+；构建脚本需要 Python 3.11+ 和 Rust 1.93.1。本次只发布平台 wheel；`python/` 目录不包含完整的 Rust 引擎源码构建链，不要上传仅从该目录生成的 sdist。
+
+**0.3.9 发布候选**增加双端点直线连接，Python、Rust 和 VS Code 扩展统一版本号；发布前检查会拒绝版本不一致。工作流同时构建 Windows x64、Linux x64 / arm64、macOS Intel / Apple Silicon 扩展包并审计其原生程序架构，构建结果以当前运行记录为准。
 
 ## 本地构建与审计
 
@@ -16,9 +18,9 @@ python scripts/check-release.py
 python -m pip install -e "./python" pillow
 python scripts/test-contracts.py
 python scripts/collect-licenses.py
-python scripts/build-python-wheel.py --output release/dist/pypi-0.3.2
-python scripts/check-python-wheels.py release/dist/pypi-0.3.2 --checksums release/dist/pypi-0.3.2/SHA256SUMS
-python -m twine check --strict release/dist/pypi-0.3.2/*.whl
+python scripts/build-python-wheel.py --output release/dist/pypi-0.3.9
+python scripts/check-python-wheels.py release/dist/pypi-0.3.9 --checksums release/dist/pypi-0.3.9/SHA256SUMS
+python -m twine check --strict release/dist/pypi-0.3.9/*.whl
 ```
 
 构建器先检查版本一致性，再编译锁定依赖的 release 引擎，在源码树以外暂存并打包。独立输出目录避免混入旧包。Linux 标签依据二进制实际 GLIBC 符号要求生成，下限为 2.28；新系统构建不能宣称旧系统兼容。本地 Linux x64 wheel 要求 glibc 2.35+；CI runner 生成的包可能需要更新的 glibc，请查看实际文件名与清单。
@@ -30,7 +32,7 @@ python -m twine check --strict release/dist/pypi-0.3.2/*.whl
 另建一个**干净的虚拟环境**，安装生成的 wheel，不使用可编辑源码安装。下面的文件名应替换为本机实际生成的包：
 
 ```sh
-python -m pip install "release/dist/pypi-0.3.2/laymesh-0.3.2-py3-none-manylinux_2_35_x86_64.whl" pillow
+python -m pip install "release/dist/pypi-0.3.9/laymesh-0.3.9-py3-none-manylinux_2_35_x86_64.whl" pillow
 python -m pip check
 python -m laymesh --version
 python scripts/smoke-python-wheel.py --examples examples
@@ -46,9 +48,9 @@ python -m unittest discover -s python/tests -v
 1. 在 PyPI 配置 pending trusted publisher：项目 `laymesh`、所有者 `muxkin`、仓库 `LayMesh`、工作流 `publish-pypi.yml`、环境 `pypi`。
 2. 在 GitHub 仓库创建 `pypi` environment 并配置 required reviewers。工作流会检查人工审核门禁是否存在。
 3. 将最终改动同步到 `main`，手动运行 **Python wheels and PyPI**，设置 `publish=false` 验证候选包。检查 `reviewed-python-release` 中的五个平台 wheel 与校验和。
-4. 真正上传时，在 `main` 手动运行同一工作流，设置 `publish=true`、`version=0.3.2`。它会重新构建并测试、检查指定版本与校验和，再等待 environment 审核；请审核该次运行生成的包。
+4. 真正上传时，在 `main` 手动运行同一工作流，设置 `publish=true`、`version=0.3.9`。它会重新构建并测试、检查指定版本与校验和，再等待 environment 审核；请审核该次运行生成的包。
 
-发布任务下载审核过的同一批文件，不重新构建。PR 和普通构建运行不上传。发布后在仓库以外验证索引安装：`python -m pip install "laymesh==0.3.2"`，再运行 `python -m pip check` 与 `python -m laymesh --version`。已发布版本不能覆盖；需要替换时同步递增 Python、Rust 与 runtime 版本。
+发布任务下载审核过的同一批文件，不重新构建。PR 和普通构建运行不上传。发布后在仓库以外验证索引安装：`python -m pip install "laymesh==0.3.9"`，再运行 `python -m pip check` 与 `python -m laymesh --version`。已发布版本不能覆盖；需要替换时同步递增 Python、Rust、runtime 与 VS Code 扩展版本。
 
 ## 验证记录
 
@@ -56,6 +58,6 @@ python -m unittest discover -s python/tests -v
 
 ## 其他发行物
 
-原生 VS Code 扩展使用 `python scripts/build-editors.py` 构建，`python scripts/package-editor.py --output release/dist/laymesh.vsix` 打包，再用 `python scripts/check-editor.py release/dist/laymesh.vsix` 审计。Rust/WASM 文档站使用 `python scripts/build-docs.py` 构建。这些发行物与 PyPI wheel 分开发放。
+原生 VS Code 扩展使用 `python scripts/build-editors.py` 构建，`python scripts/package-editor.py --output release/dist/laymesh.vsix` 打包，再用 `python scripts/check-editor.py release/dist/laymesh.vsix` 审计。Rust/WASM 文档站使用 `python scripts/build-docs.py` 构建。发布工作流同时生成上述五个平台的 VSIX，扩展、Python 包和引擎必须使用同一版本号；VSIX 与 PyPI wheel 分开发放。
 
 若修改 Rust 源码、Cargo 版本或锁文件，还需使用当前引擎运行 `python scripts/build-docs-media.py --binary target/release/laymesh`，随后运行 `python scripts/build-docs.py` 与 `python scripts/build-docs.py --check`。提交重新生成的 `site/media` 图片和清单；文档 CI 会拒绝与渲染器指纹不一致的旧缓存。

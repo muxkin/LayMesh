@@ -2,9 +2,11 @@
 
 Release **0.3.2 is published** with preview performance improvements, image hash reuse and cached font fallback rankings. VS Code 0.3.7 adds the configurable debounce command. All five platforms, Python 3.10/3.13/3.14 checks and full contracts passed. [Verification and publication](https://github.com/muxkin/LayMesh/actions/runs/37310038289).
 
-The current release is **[`0.3.2`](https://pypi.org/project/laymesh/0.3.2/)** (all five platform wheels are published), shared by the Python package and Rust engine. NumPy, pandas, Matplotlib and IPython are default dependencies; `pip install laymesh` installs all Python features. The [publishing workflow](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml) builds and verifies five platform wheels, audits their contents and checksums, and uploads through Trusted Publishing. Each wheel includes the Python API, CLI entry point, one native Rust executable, dependency licenses and a build manifest. Formula fonts are compiled into RaTeX; body fonts come from the system or user files.
+The previous published release is **[`0.3.2`](https://pypi.org/project/laymesh/0.3.2/)** (all five platform wheels are published), shared by the Python package and Rust engine. NumPy, pandas, Matplotlib and IPython are default dependencies; `pip install laymesh` installs all Python features. The [publishing workflow](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml) builds and verifies five platform wheels, audits their contents and checksums, and uploads through Trusted Publishing. Each wheel includes the Python API, CLI entry point, one native Rust executable, dependency licenses and a build manifest. Formula fonts are compiled into RaTeX; body fonts come from the system or user files.
 
 [runtime.json](runtime.json) defines five targets: Linux x64 / arm64, macOS 14+ Intel / Apple Silicon, and Windows x64. Python users need 3.10+; build scripts need Python 3.11+ and Rust 1.93.1. This release publishes platform wheels only. The `python/` directory alone is not a complete source distribution with the Rust engine; do not upload an sdist made from that directory.
+
+**Release candidate 0.3.9** adds two-endpoint straight-line connections and synchronizes Python, Rust and the VS Code extension. Release checks reject mismatched versions. The workflow also builds Windows x64, Linux x64 / arm64 and macOS Intel / Apple Silicon VSIX packages and audits native architectures; the current workflow run provides build evidence.
 
 ## Local build and audit
 
@@ -16,9 +18,9 @@ python scripts/check-release.py
 python -m pip install -e "./python" pillow
 python scripts/test-contracts.py
 python scripts/collect-licenses.py
-python scripts/build-python-wheel.py --output release/dist/pypi-0.3.2
-python scripts/check-python-wheels.py release/dist/pypi-0.3.2 --checksums release/dist/pypi-0.3.2/SHA256SUMS
-python -m twine check --strict release/dist/pypi-0.3.2/*.whl
+python scripts/build-python-wheel.py --output release/dist/pypi-0.3.9
+python scripts/check-python-wheels.py release/dist/pypi-0.3.9 --checksums release/dist/pypi-0.3.9/SHA256SUMS
+python -m twine check --strict release/dist/pypi-0.3.9/*.whl
 ```
 
 The builder checks version alignment, compiles the locked release engine, and stages a wheel outside the source tree. A separate output directory avoids mixing this candidate with earlier wheels. Linux tags reflect the binary's measured GLIBC symbol requirements, with a floor of 2.28; a newer host build must not claim an older baseline. The local Linux x64 wheel requires glibc 2.35+. CI runner builds may require a newer glibc; review the actual filenames and manifests.
@@ -30,7 +32,7 @@ The manifest records Python/Rust versions, target, executable SHA-256 and Cargo.
 Create a **second, clean virtual environment** and install the generated wheel, not an editable checkout. Replace the example filename below with the actual wheel for your machine:
 
 ```sh
-python -m pip install "release/dist/pypi-0.3.2/laymesh-0.3.2-py3-none-manylinux_2_35_x86_64.whl" pillow
+python -m pip install "release/dist/pypi-0.3.9/laymesh-0.3.9-py3-none-manylinux_2_35_x86_64.whl" pillow
 python -m pip check
 python -m laymesh --version
 python scripts/smoke-python-wheel.py --examples examples
@@ -46,9 +48,9 @@ The existing [publish workflow](../.github/workflows/publish-pypi.yml) uses [PyP
 1. Configure a PyPI pending trusted publisher with project `laymesh`, owner `muxkin`, repository `LayMesh`, workflow `publish-pypi.yml`, and environment `pypi`.
 2. Configure the repository's GitHub environment `pypi` with required reviewers. The workflow checks that this approval gate exists.
 3. Make the final changes available on `main`. Run **Python wheels and PyPI** manually with `publish=false` to verify the candidate. Review all five wheels and checksums in `reviewed-python-release`.
-4. For the actual upload, run the same workflow on `main` with `publish=true` and `version=0.3.2`. It builds and tests again, verifies the requested version and checksums, then waits for the configured environment approval. Approve the artifacts from that run.
+4. For the actual upload, run the same workflow on `main` with `publish=true` and `version=0.3.9`. It builds and tests again, verifies the requested version and checksums, then waits for the configured environment approval. Approve the artifacts from that run.
 
-The publishing job downloads the exact reviewed artifacts and uploads them without rebuilding. Pull requests and ordinary build runs do not upload. After publication, verify an index installation outside the checkout with `python -m pip install "laymesh==0.3.2"`, then `python -m pip check` and `python -m laymesh --version`. A published version cannot be overwritten; increment the Python/Rust/runtime versions together for a replacement release.
+The publishing job downloads the exact reviewed artifacts and uploads them without rebuilding. Pull requests and ordinary build runs do not upload. After publication, verify an index installation outside the checkout with `python -m pip install "laymesh==0.3.9"`, then `python -m pip check` and `python -m laymesh --version`. A published version cannot be overwritten; increment the Python/Rust/runtime/VS Code extension versions together for a replacement release.
 
 ## Verification records
 
@@ -56,6 +58,6 @@ The publishing job downloads the exact reviewed artifacts and uploads them witho
 
 ## Other artifacts
 
-Build the native VS Code extension with `python scripts/build-editors.py`, package it with `python scripts/package-editor.py --output release/dist/laymesh.vsix`, and audit with `python scripts/check-editor.py release/dist/laymesh.vsix`. Build the Rust/WASM documentation site with `python scripts/build-docs.py`. These artifacts are distributed separately from the PyPI wheel.
+Build the native VS Code extension with `python scripts/build-editors.py`, package it with `python scripts/package-editor.py --output release/dist/laymesh.vsix`, and audit with `python scripts/check-editor.py release/dist/laymesh.vsix`. Build the Rust/WASM documentation site with `python scripts/build-docs.py`. The publishing workflow also produces VSIX packages for all five platforms, sharing their version with Python and the engine. VSIX files are distributed separately from the PyPI wheel.
 
 When Rust sources, Cargo versions or the lockfile change, regenerate documentation media with the current engine: `python scripts/build-docs-media.py --binary target/release/laymesh`, then run `python scripts/build-docs.py` and `python scripts/build-docs.py --check`. Commit the regenerated `site/media` images and manifest; documentation CI rejects cached media whose renderer fingerprint no longer matches.

@@ -15,11 +15,14 @@ def check(root: Path = ROOT) -> str:
     project = tomllib.loads((root / "python/pyproject.toml").read_text())["project"]
     rust = tomllib.loads((root / "Cargo.toml").read_text())["workspace"]["package"]
     runtime = json.loads((root / "release/runtime.json").read_text())
+    extension = json.loads((root / "extensions/vscode/package.json").read_text())
     version = Version(project["version"])
     if str(version) != project["version"] or version != Version(rust["version"]):
         raise ValueError("Python and Rust versions must describe the same canonical release")
     if runtime["rust_version"] != rust["version"] or runtime["engine"] != "rust":
         raise ValueError("release/runtime.json must match the Rust workspace version and engine")
+    if extension["version"] != project["version"]:
+        raise ValueError("VS Code extension version must match the Python and Rust release")
     if version.pre:
         status = {"a": "3 - Alpha", "b": "4 - Beta", "rc": "4 - Beta"}[version.pre[0]]
         if f"Development Status :: {status}" not in project["classifiers"]:

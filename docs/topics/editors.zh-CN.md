@@ -18,7 +18,7 @@
 
 ## VS Code
 
-安装 [LayMesh 扩展](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language)或平台 VSIX 后即可使用；Windows x64、Linux x64 安装包内置引擎，无需 Python、Rust 或 npm，Remote SSH 安装包匹配远程宿主。变量悬停显示推断类型，Shift+F12 查找整个工作区的引用，F2 安全重命名；未保存内容优先。显式导入别名在本地重命名，导出改名同步更新导入源名和未起别名的使用。代码不完整或名称冲突时拒绝重命名。下述命令用于源码开发者构建安装包。
+安装 [LayMesh 扩展](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language)或平台 VSIX 后即可使用；0.3.9 平台 VSIX 构建覆盖 Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon；安装包内置引擎，无需 Python、Rust 或 npm，Remote SSH 安装包匹配远程宿主。变量悬停显示推断类型，Shift+F12 查找整个工作区的引用，F2 安全重命名；未保存内容优先。显式导入别名在本地重命名，导出改名同步更新导入源名和未起别名的使用。代码不完整或名称冲突时拒绝重命名。下述命令用于源码开发者构建安装包。
 
 在仓库根目录运行：
 

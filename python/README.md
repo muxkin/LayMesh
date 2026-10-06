@@ -6,7 +6,7 @@
 
 ## Install
 
-Requires **Python 3.10+**. Version `0.3.2` adds configurable raster export. Install an uploaded release or a reviewed local platform wheel:
+Requires **Python 3.10+**. Version `0.3.9` adds two-endpoint line connections and shares its version with the native engine and VS Code extension. Install an uploaded release or a reviewed local platform wheel:
 
 ```sh
 python -m pip install laymesh
@@ -41,6 +41,20 @@ laymesh render figure.lay -o figure.png --dpi 300
 ```
 
 `python -m laymesh` invokes the same CLI. Geometry defaults to mm; typography and line widths default to pt. Raster DPI changes output pixels while preserving physical dimensions. `.lay` is a restricted standalone language, separate from Python.
+
+## Connect annotations (0.3.9)
+
+Line materials may define only their appearance. Both endpoints determine the geometry when placed:
+
+```lay
+page = canvas(size=(80mm, 50mm))
+label = page.add(text(content="Signal"), offset=(10mm, 5mm))
+pointer = line(line_color="#d55e00", end_head=head(shape="open"))
+page.add(pointer, start=label.bottom_right, end=(60mm, 35mm),
+         start_offset=(0mm, 1mm))
+```
+
+Endpoints also accept placed chart data points and selected path anchors. Each endpoint offset uses physical units; target-space offsets follow a path's tangent and left normal. Existing `line(dx=..., dy=...)` and `line(length=..., angle=...)` materials remain reusable, with endpoints overriding geometry for that placement. [Anchors and connections](https://muxkin.github.io/LayMesh/en/docs/topics/anchors.html).
 
 ## Image export options (0.3.2)
 

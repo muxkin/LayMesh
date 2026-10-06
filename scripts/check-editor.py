@@ -52,8 +52,11 @@ with zipfile.ZipFile(a.vsix) as z:
   icon=z.read('extension/'+package['icon']);assert icon[:8]==b'\x89PNG\r\n\x1a\n'
   assert min(struct.unpack('>II',icon[16:24]))>=128
   assert manifest.find('.//{*}Icon').text=='extension/'+package['icon']
-  if identity.get('TargetPlatform')=='linux-x64':
-   native=z.read(engines[0]);assert native[:6]==b'\x7fELF\x02\x01' and struct.unpack('<H',native[18:20])[0]==62
+  if identity.get('TargetPlatform') in ('linux-x64','linux-arm64'):
+   native=z.read(engines[0]);assert native[:6]==b'\x7fELF\x02\x01' and struct.unpack('<H',native[18:20])[0]==(62 if identity.get('TargetPlatform')=='linux-x64' else 183)
+  if identity.get('TargetPlatform') in ('darwin-x64','darwin-arm64'):
+   native=z.read(engines[0]);assert native[:4]==b'\xcf\xfa\xed\xfe'
+   assert struct.unpack_from('<I',native,4)[0]==(0x01000007 if identity.get('TargetPlatform')=='darwin-x64' else 0x0100000c)
   if identity.get('TargetPlatform') in ('win32-x64','win32-arm64'):
    assert engines[0]=='extension/bin/laymesh.exe'
    native=z.read(engines[0]);assert native[:2]==b'MZ'

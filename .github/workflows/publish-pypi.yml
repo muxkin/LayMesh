@@ -70,8 +70,7 @@ jobs:
           python -m pip install "$(python -c "from pathlib import Path; print(next(Path('release/dist').glob('*.whl')))")"
       - run: python scripts/smoke-python-wheel.py --examples examples
       - run: python -m unittest discover -s python/tests -v
-      - name: Build and audit Linux and Windows VS Code packages
-        if: matrix.target == 'linux-x64' || matrix.target == 'win-x64'
+      - name: Build and audit Windows, Linux and macOS VS Code packages
         shell: bash
         run: |
           if [ "${{ matrix.target }}" = "win-x64" ]; then
@@ -79,13 +78,13 @@ jobs:
             platform=win32-x64
           else
             binary=target/release/laymesh
-            platform=linux-x64
+            platform="${{ matrix.target }}"
           fi
+          version=$(python -c "import json; print(json.load(open('extensions/vscode/package.json'))['version'])")
           python scripts/build-editors.py --binary "$binary" --extension-dir release/staging/editor
-          python scripts/package-editor.py --extension-dir release/staging/editor --target "$platform" --output "release/editors/laymesh-$platform.vsix"
-          python scripts/check-editor.py "release/editors/laymesh-$platform.vsix" --target "$platform" --binary "$binary" --marketplace
+          python scripts/package-editor.py --extension-dir release/staging/editor --target "$platform" --output "release/editors/laymesh-$version-$platform.vsix"
+          python scripts/check-editor.py "release/editors/laymesh-$version-$platform.vsix" --target "$platform" --binary "$binary" --marketplace
       - uses: actions/upload-artifact@v4
-        if: matrix.target == 'linux-x64' || matrix.target == 'win-x64'
         with:
           name: editor-${{ matrix.target }}
           path: release/editors/*.vsix
@@ -161,6 +160,7 @@ jobs:
       - name: Review summary
         run: |
           echo 'All five wheels passed native installation/export checks on Python 3.10, 3.13 and 3.14.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Windows, Linux and macOS VSIX packages use the same release version and passed native platform audits.' >> "$GITHUB_STEP_SUMMARY"
           echo 'Review these exact artifacts before approving the pypi environment.' >> "$GITHUB_STEP_SUMMARY"
           cat release/SHA256SUMS >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4

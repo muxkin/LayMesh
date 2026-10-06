@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "laymesh"
-version = "0.3.2"
+version = "0.3.9"
 description = "Reproducible scientific figures and precise physical layouts with a native Rust engine"
 readme = "README.md"
 license = "MIT"

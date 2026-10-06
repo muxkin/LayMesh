@@ -1,3 +1,9 @@
+# 0.3.9
+
+- Connect reusable lines with `start` and `end`, including physical coordinates, instance anchors, chart data points and selected path anchors.
+- Allow geometry-free `line()` materials; diagnose missing geometry at placement and support per-end physical offsets.
+- Synchronize the extension, Python package and native engine at 0.3.9; build Windows x64, Linux x64/ARM64 and macOS Intel/Apple Silicon packages.
+
 # 0.3.8
 
 - Export directly after choosing the format and destination; move all encoding options to Settings.
