@@ -19,7 +19,7 @@ print(result.preview_svg.startswith('<svg'), result.output, result.saved_source)
 
 | 公开函数或类 | 参数 | 行为 |
 | --- | --- | --- |
-| `render_source(source, *, namespace=None, base_dir=None, output=None, dpi=None, plot_dpi=300, save_source=None, show_warnings=None, quality=None, compression=None, background=None, webp_lossless=None, webp_method=None, webp_alpha_quality=None, webp_near_lossless=None)` | `source` 是 `.lay` 文本；`namespace` 给 `{{name}}` 变量；`base_dir` 为相对素材与组件目录；`output` 是矢量或位图导出路径；`dpi` 用于位图或 PDF 图片上限；`plot_dpi` 只用于 Matplotlib 回退 PNG；`save_source` 是 `base_dir` 中生成的 `.lay` 文件 | 返回 SVG 预览，并可选导出文件与保存展开后的源码。临时 `.lay` 会清理；显式保存的素材放在同名 `.assets/` 目录。 |
+| `render_source(source, *, namespace=None, base_dir=None, output=None, dpi=None, plot_dpi=300, save_source=None, show_warnings=None, quality=None, compression=None, background=None, webp_lossless=None, webp_method=None, webp_alpha_quality=None, webp_near_lossless=None)` | `source` 是 `.lay` 文本；`namespace` 给 `{{name}}` 变量；`base_dir` 为相对素材与组件目录；`output` 是矢量或位图导出路径；`dpi` 用于位图、PDF 图片上限或 PPTX 局部回退；`plot_dpi` 只用于 Matplotlib 回退 PNG；`save_source` 是 `base_dir` 中生成的 `.lay` 文件 | 返回 SVG 预览，并可选导出文件与保存展开后的源码。临时 `.lay` 会清理；显式保存的素材放在同名 `.assets/` 目录。 |
 | `render_file(file, *, namespace=None, output=None, dpi=None, plot_dpi=300, save_source=None, show_warnings=None, quality=None, compression=None, background=None, webp_lossless=None, webp_method=None, webp_alpha_quality=None, webp_near_lossless=None)` | 读取现有 `.lay`；相对素材路径按该文件所在目录解析 | 复用同一展开和渲染流程，原文件不修改。 |
 | `RenderResult` | `preview_svg: str`、`output: Path\|None`、`saved_source: Path\|None` | 不可变 dataclass；无 `output` 时仍有 SVG 预览。 |
 | `LayMeshBridgeError` | 异常类 | 变量、素材、CLI 启动或 CLI 返回错误时抛出，适合在 Notebook 中展示。 |

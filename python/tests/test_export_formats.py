@@ -3,6 +3,8 @@ import json
 import subprocess
 import tempfile
 import unittest
+import zipfile
+from xml.etree import ElementTree as ET
 from pathlib import Path
 from PIL import Image
 from laymesh import LayMeshBridgeError, render_source, render_file
@@ -134,4 +136,54 @@ class Exports(unittest.TestCase):
             self.assertEqual(broken['error']['file'],str(main).replace('\\','/'));self.assertEqual(broken['error']['loc']['line'],1)
             with Image.open(dest) as image:
                 self.assertEqual(image.size,(144,72));self.assertEqual(image.getpixel((70,30)),(18,171,52,255))
+            self.assertFalse(list(root.glob('*.tmp')))
+
+    def test_pptx_python_export_and_replay_preserve_editable_objects(self):
+        ns={'a':'http://schemas.openxmlformats.org/drawingml/2006/main',
+            'p':'http://schemas.openxmlformats.org/presentationml/2006/main'}
+        source='page=canvas(size=(64mm,36mm))\npage.add(text("Editable 文本"),offset=(2mm,2mm))\npage.add(rect(size=(12mm,8mm),fill=image_fill(src="asset.png",fit=cover),border_width=0,border_radius=2mm),offset=(2mm,16mm))'
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)/'中文 # PPTX';root.mkdir()
+            Image.new('RGBA',(24,16),(30,120,220,128)).save(root/'asset.png')
+            first=render_source(source,base_dir=root,output=root/'figure.PPTX',dpi=144,save_source='saved.lay',show_warnings=False)
+            second=render_file(first.saved_source,output=root/'replay.pptx',show_warnings=False)
+            for result in [first,second]:
+                self.assertIn('<svg',result.preview_svg)
+                with zipfile.ZipFile(result.output) as deck:
+                    self.assertIsNone(deck.testzip())
+                    xml=ET.fromstring(deck.read('ppt/slides/slide1.xml'))
+                    self.assertEqual(''.join(n.text or '' for n in xml.findall('.//a:t',ns)),'Editable 文本')
+                    self.assertEqual(len(xml.findall('.//p:pic',ns)),1)
+                    self.assertEqual(xml.find('.//p:pic/p:spPr/a:prstGeom',ns).get('prst'),'roundRect')
+                    size=ET.fromstring(deck.read('ppt/presentation.xml')).find('p:sldSz',ns)
+                    self.assertEqual((int(size.get('cx')),int(size.get('cy'))),(64*36000,36*36000))
+            dest=root/'protected.pptx';dest.write_bytes(b'existing')
+            for options in [dict(quality=90),dict(compression='best'),dict(background='#ffffff'),dict(pdf_downsample=False),dict(webp_lossless=True)]:
+                with self.subTest(options=options),self.assertRaises(LayMeshBridgeError):
+                    render_source(source,base_dir=root,output=dest,save_source='invalid.lay',**options)
+                self.assertEqual(dest.read_bytes(),b'existing')
+                self.assertFalse((root/'invalid.lay').exists())
+            with self.assertRaises(LayMeshBridgeError):
+                render_source('page=unknown()',base_dir=root,output=dest)
+            self.assertEqual(dest.read_bytes(),b'existing')
+
+    def test_pptx_editor_transport_uses_unsaved_imports_and_defaults(self):
+        ns={'a':'http://schemas.openxmlformats.org/drawingml/2006/main'}
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);main=root/'main.lay';module=root/'label.lay';dest=root/'editor.pptx'
+            main.write_text('page=canvas(size=(64mm,36mm))',encoding='utf-8')
+            module.write_text('export label="Disk"',encoding='utf-8')
+            source='import {label} from "./label.lay"\npage=canvas(size=(64mm,36mm))\npage.add(text(label))'
+            request=dict(type='export',file=main.as_posix(),source=source,overlays={module.as_posix():'export label="Unsaved"'},output=str(dest),options={})
+            requests=[{**request,'id':1,'options':dict(quality=90)},{**request,'id':2},{**request,'id':3,'source':'page=unknown()'}]
+            child=subprocess.run([*_command(),'preview','--stdio'],input='\n'.join(map(json.dumps,requests))+'\n',capture_output=True,text=True)
+            self.assertEqual(child.returncode,0,child.stderr)
+            ready,invalid,good,broken=map(json.loads,child.stdout.splitlines())
+            self.assertEqual(invalid['error']['code'],'E_EXPORT')
+            self.assertEqual(good['exported'],str(dest));self.assertEqual(good['bytes'],dest.stat().st_size)
+            self.assertIn(module.as_posix(),good['dependencies'])
+            self.assertIn('error',broken)
+            with zipfile.ZipFile(dest) as deck:
+                xml=ET.fromstring(deck.read('ppt/slides/slide1.xml'))
+                self.assertEqual([n.text for n in xml.findall('.//a:t',ns)],['Unsaved'])
             self.assertFalse(list(root.glob('*.tmp')))

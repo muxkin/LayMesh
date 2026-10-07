@@ -41,4 +41,4 @@ target/release/laymesh render experiments/pptx/research-agent.lay -o figure.pptx
 python scripts/test-pptx-export.py --libreoffice --output examples/output/pptx-quality-fix/regression
 ```
 
-源码、实现与验收例只保留在实验分支；交付目录位于 `examples/output/pptx-quality-fix/`，生成文件不提交到 Git。
+验收最初在实验分支完成；源码、实现与验收例现随 PPTX 功能合入主分支，版本号不变，不发布版本。交付目录位于 `examples/output/pptx-quality-fix/`，生成文件不提交到 Git。

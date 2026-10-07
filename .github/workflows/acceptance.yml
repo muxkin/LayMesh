@@ -28,6 +28,8 @@ jobs:
       - run: cargo build --locked --release -p laymesh-cli
       - run: python -m pip install -e './python' pillow
       - run: python -m unittest discover -s python/tests -v
+      - run: python scripts/test-pptx-export.py
+      - run: node scripts/test-editor-pptx.cjs
       - run: python scripts/check-gallery-docs.py
       - run: python scripts/build-api-reference.py --check
       - run: python scripts/build-topic-walkthroughs.py --check

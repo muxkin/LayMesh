@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the CLI PPTX trial, optionally render and round-trip with LibreOffice.
+"""Verify CLI PPTX export, optionally render and round-trip with LibreOffice.
 
 Requires Pillow; visual checks also require LibreOffice and Poppler. Generated
 sources, decks, PDF comparisons, PNG previews and evidence stay in --output.

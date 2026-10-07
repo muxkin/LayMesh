@@ -48,6 +48,22 @@
     ]
   },
   {
+    "name": "arbitrary",
+    "version": "1.4.2",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/rust-fuzz/arbitrary/",
+    "texts": [
+      {
+        "file": "arbitrary-1.4.2-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "arbitrary-1.4.2-LICENSE-MIT",
+        "sha256": "15656cc11a8331f28c0986b8ab97220d3e76f98e60ed388b5ffad37dfac4710c"
+      }
+    ]
+  },
+  {
     "name": "arrayref",
     "version": "0.3.9",
     "license": "BSD-2-Clause",
@@ -392,6 +408,22 @@
     ]
   },
   {
+    "name": "crossbeam-utils",
+    "version": "0.8.23",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/crossbeam-rs/crossbeam",
+    "texts": [
+      {
+        "file": "crossbeam-utils-0.8.23-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "crossbeam-utils-0.8.23-LICENSE-MIT",
+        "sha256": "5734ed989dfca1f625b40281ee9f4530f91b2411ec01cb748223e7eb87e201ab"
+      }
+    ]
+  },
+  {
     "name": "crunchy",
     "version": "0.2.4",
     "license": "MIT",
@@ -484,6 +516,22 @@
     ]
   },
   {
+    "name": "derive_arbitrary",
+    "version": "1.4.2",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/rust-fuzz/arbitrary",
+    "texts": [
+      {
+        "file": "derive_arbitrary-1.4.2-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "derive_arbitrary-1.4.2-LICENSE-MIT",
+        "sha256": "15656cc11a8331f28c0986b8ab97220d3e76f98e60ed388b5ffad37dfac4710c"
+      }
+    ]
+  },
+  {
     "name": "digest",
     "version": "0.10.7",
     "license": "MIT OR Apache-2.0",
@@ -512,6 +560,22 @@
       {
         "file": "digest-0.11.3-LICENSE-MIT",
         "sha256": "af59cea35d7f5e2777a713b8d155d65efa2c339eb43f3c14e868c6ac8506edad"
+      }
+    ]
+  },
+  {
+    "name": "displaydoc",
+    "version": "0.2.7",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/yaahc/displaydoc",
+    "texts": [
+      {
+        "file": "displaydoc-0.2.7-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "displaydoc-0.2.7-LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
       }
     ]
   },
@@ -2788,6 +2852,18 @@
     ]
   },
   {
+    "name": "zip",
+    "version": "2.4.2",
+    "license": "MIT",
+    "repository": "https://github.com/zip-rs/zip2.git",
+    "texts": [
+      {
+        "file": "zip-2.4.2-LICENSE",
+        "sha256": "04dc52136d82400b11df5f474949863a70a5d05d2278dec45b99c479494450a6"
+      }
+    ]
+  },
+  {
     "name": "zlib-rs",
     "version": "0.6.8",
     "license": "Zlib",
@@ -2808,6 +2884,18 @@
       {
         "file": "zmij-1.0.23-LICENSE-MIT",
         "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "name": "zopfli",
+    "version": "0.8.3",
+    "license": "Apache-2.0",
+    "repository": "https://github.com/zopfli-rs/zopfli",
+    "texts": [
+      {
+        "file": "zopfli-0.8.3-COPYING",
+        "sha256": "018b1cb87efdf7a04c2fcc13d57ed63f62149113fb207b27ea13430d64f13513"
       }
     ]
   },

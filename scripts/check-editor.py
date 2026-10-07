@@ -15,6 +15,8 @@ with zipfile.ZipFile(a.vsix) as z:
  if not engines[0].endswith('.exe'):assert (z.getinfo(engines[0]).external_attr>>16)&0o111
  scripts=[n for n in names if Path(n).suffix in ('.js','.mjs','.cjs')];assert scripts==['extension/dist/client.cjs','extension/dist/color-math.mjs','extension/dist/color-panel.mjs','extension/dist/color-webview.mjs','extension/dist/preview-host.cjs','extension/dist/preview-math.mjs','extension/dist/preview-webview.mjs'],scripts
  assert 'extension/dist/preview.css' in names
+ host=z.read('extension/dist/preview-host.cjs').decode()
+ assert "['pptx','PowerPoint (PPTX)']" in host, 'PPTX must be available in the export format picker'
  client=z.read(scripts[0]).decode();assert set(re.findall(r"require\(['\"]([^'\"]+)",client))=={'vscode','child_process','path','./preview-host.cjs'}
  package=json.loads(z.read('extension/package.json'));assert not package.get('dependencies') and not package.get('devDependencies');assert package['main']=='./dist/client.cjs'
  placeholders=set(re.findall(r'"%([^%]+)%"',z.read('extension/package.json').decode()))

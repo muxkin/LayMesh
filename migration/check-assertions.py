@@ -25,6 +25,7 @@ def source_manifest(root):
             paths.add(root / name)
     for directory in ('tests', 'migration/corpus', 'examples/assets'):
         paths.update(path for path in (root / directory).rglob('*') if path.is_file() and '__pycache__' not in path.parts)
+    paths = {path for path in paths if not path.is_relative_to(root / "examples/output")}
     for source in list(paths):
         if source.suffix == '.rs':
             for included in re.findall(r'include_(?:str|bytes)!\(\s*"([^"]+)"\s*\)', source.read_text()):

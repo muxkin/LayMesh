@@ -1,6 +1,6 @@
 # LayMesh
 
-**Plot data and compose precise, reproducible scientific figures in readable code.** Combine native plots, images, vector shapes, text and formulas in one `.lay` file, then export SVG, PDF, or PNG, JPEG, TIFF, WebP and other images at your chosen DPI.
+**Plot data and compose precise, reproducible scientific figures in readable code.** Combine native plots, images, vector shapes, text and formulas in one `.lay` file, then export SVG, PDF, editable PPTX (development version), or PNG, JPEG, TIFF, WebP and other images at your chosen DPI.
 
 [Documentation](https://muxkin.github.io/LayMesh/en/) · [中文](README.md) · [Feature gallery](docs/sections/examples.en.md) · [Installation](docs/topics/install.en.md)
 

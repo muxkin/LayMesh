@@ -1,6 +1,6 @@
 # LayMesh
 
-**用可读的代码，绘制数据并排出尺寸精确、可以重复生成的科研图。** 在一个 `.lay` 文件中组合原生图表、图片、矢量形状、文字与公式，将同一布局导出为 SVG、PDF，或指定 DPI 的 PNG、JPEG、TIFF、WebP 等图片。
+**用可读的代码，绘制数据并排出尺寸精确、可以重复生成的科研图。** 在一个 `.lay` 文件中组合原生图表、图片、矢量形状、文字与公式，将同一布局导出为 SVG、PDF、可编辑 PPTX（开发版），或指定 DPI 的 PNG、JPEG、TIFF、WebP 等图片。
 
 [在线文档](https://muxkin.github.io/LayMesh/) · [English](README.en.md) · [功能画廊](docs/sections/examples.zh-CN.md) · [安装说明](docs/topics/install.zh-CN.md)
 

@@ -79,3 +79,12 @@ class AssertionGateTests(unittest.TestCase):
   self.failed(self.result(python=self.python_log.replace(json.dumps(str(self.python)),json.dumps(str(self.root/'another/tests/test_contract.py')))))
  def test_missing_python_file_identity_fails(self):
   self.failed(self.result(python='\n'.join(line for line in self.python_log.splitlines() if not line.startswith('LAYMESH_PYTHON_TEST_SOURCES '))))
+
+ def test_generated_outputs_do_not_change_source_manifest(self):
+  expected=gate.source_manifest(self.root)
+  output=self.root/'examples/output/trial';output.mkdir(parents=True)
+  (output/'invalid.lay').write_text('page=unknown()')
+  (output/'evidence.json').write_text('{}')
+  self.assertEqual(gate.source_manifest(self.root),expected)
+  source=self.root/'examples/actual.lay';source.write_text('page=canvas()')
+  self.assertIn('examples/actual.lay',gate.source_manifest(self.root))

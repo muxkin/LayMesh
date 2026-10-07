@@ -50,6 +50,15 @@ class MagicTest(unittest.TestCase):
                         with Image.open(filename) as image:self.assertEqual(image.size,(144,72))
                     with Image.open('compressed.tif') as image:self.assertEqual(image.tag_v2[259],5)
                     self.assertEqual(display.call_count, 8)
+                    shell.run_cell_magic('laymesh', '-o editable.pptx --dpi 144 --warnings hide', 'page=canvas(size=(64mm,36mm))\npage.add(text("Notebook PPTX"))')
+                    shell.run_line_magic('laymesh', 'native.lay -o replay.pptx --warnings hide')
+                    import zipfile
+                    from xml.etree import ElementTree as ET
+                    with zipfile.ZipFile('editable.pptx') as deck:
+                        xml=ET.fromstring(deck.read('ppt/slides/slide1.xml'))
+                        self.assertEqual([n.text for n in xml.findall('.//{http://schemas.openxmlformats.org/drawingml/2006/main}t')],['Notebook PPTX'])
+                    self.assertTrue(zipfile.is_zipfile('replay.pptx'))
+                    self.assertEqual(display.call_count, 10)
             finally:
                 os.chdir(previous)
 

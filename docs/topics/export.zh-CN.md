@@ -14,7 +14,7 @@ laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quali
 | 格式 | 编码参数及默认值 | 透明度与分辨率 |
 | --- | --- | --- |
 | SVG | 不接受位图编码参数 | 保留矢量图形、物理页面尺寸及透明度 |
-| PPTX（CLI 试验） | `dpi` 仅控制局部 PNG 回退，默认 1200 | 一张幻灯片；文字为文本框，公式及几何为可编辑形状；不嵌入字体 |
+| PPTX | `dpi` 仅控制局部 PNG 回退，默认 1200 | 一张幻灯片；文字为文本框，公式及几何为可编辑形状；不嵌入字体 |
 | PDF | `pdf_image_compression=auto`、`pdf_jpeg_quality=90`、`pdf_downsample=true` | 文字和公式保持矢量；位图采用 JPEG 或无损 Flate，不采用 WebP |
 | PNG | `compression=fast/default/best`，默认 `default` | RGBA；写入 DPI 元数据 |
 | JPEG | `quality=1–100`，默认 90；`background="#ffffff"` | 不支持 Alpha；先与底色合成；写入 DPI 元数据 |
@@ -32,7 +32,9 @@ WebP 还支持 `--webp-alpha-quality 0–100`（默认 100；降低需使用有�
 
 原生栅格导出使用 **8 位 sRGB RGB/RGBA**。16 位输入在解码、ICC 转换、裁剪及中间 PNG 中保留精度和原始强度范围；最终页面栅格化到 8 位。TIFF 输出不会声称提供原生 16 位精度。SVG/PDF 中的图像素材仍走现有颜色与透明度链路，详见[图片格式](images.zh-CN.md)。
 
-## PPTX 可编辑导出试验（仅 CLI）
+## PPTX 可编辑导出
+
+已接入当前开发源码；随下一版本发布，已发布的旧版可能尚不支持此格式。
 
 ```sh
 laymesh render examples/export/pptx-editable.lay -o figure.pptx
@@ -45,14 +47,15 @@ PNG/JPEG 图片作为独立资源嵌入并复用。矩形裁剪、圆角图片�
 
 `--dpi` 只控制局部回退图片的像素尺寸，沿用默认 1200，支持项目配置 `export.pptx.dpi`；不改变幻灯片大小。每个回退图片仍受 100000000 像素上限约束。`quality`、`compression`、`background`、`pdf_*`、`webp_*` 不适用于 PPTX。`--warnings hide` 可隐藏导出警告，失败仍保留原目标文件。
 
-首版不嵌入字体。`W_PPTX_FONT` 列出目标机器所需字体，字体替换可能改变文字排版。幻灯片宽高须在 25.4–1422.4 mm（1–56 英寸）之间；透明画布在演示软件中使用默认幻灯片底色。当前只提供 CLI 入口，Python/Jupyter 和 VS Code 格式列表尚未加入 PPTX；兼容性验证须区分 LibreOffice 打开、往返保存与 PowerPoint 实机检查。
+首版不嵌入字体。`W_PPTX_FONT` 列出目标机器所需字体，字体替换可能改变文字排版。幻灯片宽高须在 25.4–1422.4 mm（1–56 英寸）之间；透明画布在演示软件中使用默认幻灯片底色。CLI、Python/Jupyter 和 VS Code 均可导出 PPTX；兼容性验证须区分 LibreOffice 打开、往返保存与 PowerPoint 实机检查。
 
-[完整试验源码](../../examples/export/pptx-editable.lay) · [原生几何和图片适配验收例](../../examples/export/pptx-native.lay) · [复合描边验收例](../../examples/export/pptx-strokes.lay)
+[完整示例源码](../../examples/export/pptx-editable.lay) · [原生几何和图片适配验收例](../../examples/export/pptx-native.lay) · [复合描边验收例](../../examples/export/pptx-strokes.lay)
 
 ## Python 和 Jupyter
 
 ```python
 from laymesh import render_file
+render_file("figure.lay", output="figure.pptx")
 render_file("figure.lay", output="figure.jpg", dpi=300, quality=95, background="#ffffff")
 render_file("figure.lay", output="figure.tif", dpi=600, compression="lzw")
 render_file("figure.lay", output="figure.webp", dpi=300, webp_lossless=True,
@@ -60,6 +63,8 @@ render_file("figure.lay", output="figure.webp", dpi=300, webp_lossless=True,
 ```
 
 `render_source` 接受相同关键字参数；`output=None` 时不能指定编码参数。`%laymesh` 和 `%%laymesh` 接受上面示例中的同名 CLI 参数。SVG 预览保持可用，导出文件使用所选编码。
+
+PPTX 保留 SVG Notebook 预览，`%laymesh figure.lay -o figure.pptx` 或 `%%laymesh -o figure.pptx` 可直接导出；`dpi` 仅调节局部回退，默认 1200。
 
 ## VS Code
 

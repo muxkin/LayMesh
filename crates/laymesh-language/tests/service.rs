@@ -240,18 +240,25 @@ fn localized_docs_field_fallback() {
 #[test]
 fn shipped_examples_static_diagnostics() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
-    fn collect(p: &std::path::Path, s: &mut LanguageService) {
+    fn collect(p: &std::path::Path, s: &mut LanguageService, generated: &std::path::Path) {
+        if p == generated {
+            return; // Build artifacts are not shipped source examples.
+        }
         for e in std::fs::read_dir(p).unwrap() {
             let p = e.unwrap().path();
             if p.is_dir() {
-                collect(&p, s)
+                collect(&p, s, generated)
             } else if p.extension().is_some_and(|s| s == "lay" || s == "lcss") {
                 s.update(&p.to_string_lossy(), &std::fs::read_to_string(&p).unwrap());
             }
         }
     }
     let mut s = LanguageService::new("en");
-    collect(&root.join("examples"), &mut s);
+    collect(
+        &root.join("examples"),
+        &mut s,
+        &root.join("examples/output"),
+    );
     let errors: Vec<_> = s
         .documents
         .keys()

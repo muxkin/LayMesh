@@ -1,6 +1,6 @@
 # LayMesh
 
-**Reproducible scientific figures and precise physical layouts from readable code.** Compose native plots, images, vector shapes, text and formulas in one editable `.lay` source; export SVG, PDF and PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA with a native Rust engine.
+**Reproducible scientific figures and precise physical layouts from readable code.** Compose native plots, images, vector shapes, text and formulas in one editable `.lay` source; export SVG, PDF, editable PPTX (development source) and PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA with a native Rust engine.
 
 [中文文档](https://muxkin.github.io/LayMesh/) · [English documentation](https://muxkin.github.io/LayMesh/en/) · [Examples](https://github.com/muxkin/LayMesh/tree/main/examples) · [Source](https://github.com/muxkin/LayMesh)
 
@@ -121,3 +121,14 @@ LayMesh 用一个可编辑的 `.lay` 文件组织科研图表、图片、文字�
 LayMesh is [MIT licensed](https://github.com/muxkin/LayMesh/blob/main/LICENSE). Bundled native dependencies, formula fonts and colormap data retain their own license texts inside the installed package. `_vendor/manifest.json` records engine, platform and build hashes; `_vendor/licenses/manifest.json` records dependency license provenance.
 
 Exports default to 1200 DPI, independently of `layout_dpi`. PDF accepts `dpi`, `pdf_image_compression`, `pdf_jpeg_quality`, `pdf_downsample`, `pdf_recompress_jpeg`, `pdf_preserve_16bit`, `pdf_preserve_alpha`, `pdf_alpha_background`, `pdf_auto_palette_limit`, and `pdf_auto_flatness_threshold`. `config=PATH` selects project defaults; Notebook magics support corresponding `--config` and `--pdf-*` flags. See [configuration](../docs/topics/export.en.md).
+
+## Editable PowerPoint export
+
+Available in the current development source for the next release.
+
+```python
+from laymesh import render_file
+render_file("figure.lay", output="figure.pptx")
+```
+
+CLI and Jupyter magics also accept `-o figure.pptx`. Each canvas becomes one slide; text is editable, formulas use grouped outlines, and complex effects may fall back locally to PNG. Fonts are not embedded. `dpi` controls fallback resolution only (default 1200).

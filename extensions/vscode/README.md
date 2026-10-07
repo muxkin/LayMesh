@@ -107,3 +107,7 @@ The native stdio transport also accepts `type: "export"`, an absolute `output` p
 Native preview directly displays full-resolution JPEG 90 images; only nonopaque alpha uses lossy WebP with method 0. It reuses image/font resources across text refreshes and provides configurable parallel encoding and memory budgets. Export defaults to 1200 DPI with independent PDF precision/transparency preservation. [Preview settings](https://muxkin.github.io/LayMesh/en/docs/topics/editors.html) · [Export configuration](https://muxkin.github.io/LayMesh/en/docs/topics/export.html).
 
 Use **LayMesh: Set Preview Delay** in the Command Palette to enter any integer from 0 to 5000 ms (default 100). Set 0 to disable debounce. The command saves to the current workspace, or user settings if no workspace is open; changes apply immediately. You can also edit `laymesh.preview.debounceMs` in Settings.
+
+The current development source includes PPTX export as **PowerPoint (PPTX)** in the format picker. Text and supported shapes remain editable; complex effects use reported local PNG fallback. DPI controls fallback only (default 1200), and fonts are not embedded.
+
+当前开发源码的格式列表支持 **PowerPoint (PPTX)**，随下一版本发布。文字和支持的形状可编辑，复杂效果局部回退为 PNG 并给出警告；DPI 仅控制回退图片（默认 1200），不嵌入字体。
