@@ -1,0 +1,19 @@
+{
+  "mode": "built-in image_gen.imagegen",
+  "reference": "User supplied ABACUS workflow infographic",
+  "assets": [
+    {
+      "file": "traditional.png",
+      "prompt": "Reference image role: composition and illustration style reference. Create only the warm orange office illustration underneath the LEFT main cycle panel, as a standalone landscape bitmap approximately 960:430 aspect ratio. No infographic, no text, no numbers, no arrows, no cards, no headings, no borders. Pale cream warm softly blurred office shelves, plants and windows, table near bottom. In the central lower area a charming anime illustrated young male researcher with tousled brown hair, black glasses, orange sweater over white collar, thinking with one hand at chin, writing notebook with other hand, laptop on right, stack of blue/brown books on left WITHOUT any lettering. Match original style and placement carefully: leave top 25 percent mostly empty background and leave the outer left/right 25 percent and bottom edge uncluttered to overlay editable flow cards. Person occupies middle 38 percent width, bottom 68 percent height. Full bleed rectangular background, detailed polished flat anime illustration, no readable marks, no logos."
+    },
+    {
+      "file": "agent.png",
+      "prompt": "Reference image role: composition and illustration style reference. Create only the cool blue office illustration underneath the RIGHT main cycle panel, standalone landscape bitmap approximately 960:430 aspect ratio. No infographic, no text, no numbers, no arrows, no cards, no headings, no borders. Pale blue softly blurred office windows, shelves and plants, table at bottom. Center lower area: charming anime young male researcher with tousled brown hair, black glasses, orange sweater over white collar, writing notebook/thinking; next to him a cute small purple dragon girl assistant with silver/lavender hair, purple eyes, tiny cream horns, blue-purple ornamental roses near ears and purple bat wings. Laptop between them, plain navy lid without any mark or logo. Match reference style and relative positions. Leave top 25 percent and outer left/right 22 percent predominantly softly blurred background for editable flow cards. Characters occupy central 48 percent width, bottom 65 percent height. Full bleed rectangular background, polished anime illustration, no readable lettering, no logos."
+    },
+    {
+      "file": "sleeping.png",
+      "prompt": "Reference image role: illustration style reference. Create a wide 3.5:1 landscape small vignette of the sleeping brown-haired young man from the lower left of reference, asleep under pale blue duvet, head on pillow, dark blue starry background and pale crescent moon at left. Cute gentle anime style, only this sleeping scene, no infographic cards, no text, no letters including no Z lettering, no numbers or labels. Full rectangular background, pillow and blanket fill bottom edge, faithful character hairstyle and relaxed closed eyes."
+    }
+  ],
+  "limitations": "Generated illustrations match composition and style approximately; they are not pixel-identical to the reference."
+}
