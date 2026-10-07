@@ -33,7 +33,7 @@ class GitHubReleaseTests(unittest.TestCase):
    existing={'assets':[{'name':'package-0.whl','id':1}],'draft':False}
    with patch.object(release,'validate_tag',return_value='0.4.0'),patch.object(release.subprocess,'run',return_value=subprocess.CompletedProcess([],0,json.dumps(existing),'')),patch.object(release,'run',return_value=subprocess.CompletedProcess([],0,json.dumps({'digest':'sha256:'+'0'*64}),'')) as run:
     with self.assertRaisesRegex(ValueError,'conflicting digest'):release.publish('v0.4.0',path,'owner/repo')
-    self.assertTrue(all(c.args[:3]!=('gh','release','upload') for c in run.call_args_list))
+    self.assertTrue(all('--method' not in c.args for c in run.call_args_list))
  def test_noncanonical_and_prerelease_tags_are_rejected_before_git(self):
   for tag in ['0.4.0','v0.4.0rc1','v00.4.0','v0.4.0-extra']:
    with self.assertRaises(ValueError):release.validate_tag(tag)
@@ -45,12 +45,22 @@ class GitHubReleaseTests(unittest.TestCase):
     uploaded=[{'id':i,'name':name,'digest':'sha256:'+digest} for i,(name,digest) in enumerate(wanted.items(),1)]
     draft={'id':77,'tag_name':'v0.5.0','draft':True,'assets':uploaded if resume else []}
     final={**draft,'assets':uploaded}
-    calls=[];listings=iter([[draft]] if resume else [[],[draft]])
+    calls=[];listings=iter([[draft]] if resume else [[]])
     def fake_run(*args,**kwargs):
      calls.append(args)
      if args[:2]==('gh','api'):
       endpoint=args[2]
-      if endpoint.endswith('releases?per_page=100'):payload=next(listings)
+      if '--method' in args:
+       method=args[args.index('--method')+1]
+       body=Path(args[args.index('--input')+1])
+       if endpoint.startswith('https://uploads.github.com/'):
+        self.assertEqual(method,'POST');self.assertIn('Content-Type: application/octet-stream',args)
+        self.assertTrue(body.is_file());payload={}
+       elif endpoint.endswith('/releases'):
+        self.assertEqual(method,'POST');self.assertEqual(json.loads(body.read_text())['tag_name'],'v0.5.0');payload=draft
+       else:
+        self.assertEqual(method,'PATCH');self.assertEqual(json.loads(body.read_text()),{'draft':False});payload=final
+      elif endpoint.endswith('releases?per_page=100'):payload=next(listings)
       elif endpoint.endswith('releases/77'):payload=final
       elif '/releases/assets/' in endpoint:payload=next(a for a in uploaded if str(a['id'])==endpoint.rsplit('/',1)[1])
       else:self.fail('Unexpected API endpoint: '+endpoint)
@@ -58,9 +68,9 @@ class GitHubReleaseTests(unittest.TestCase):
      return subprocess.CompletedProcess(args,0,'','')
     with patch.object(release,'validate_tag',return_value='0.5.0'),patch.object(release.subprocess,'run',return_value=subprocess.CompletedProcess([],1,'','Not Found')),patch.object(release,'run',side_effect=fake_run):
      release.publish('v0.5.0',path,'owner/repo')
-    self.assertEqual(sum(c[:3]==('gh','release','create') for c in calls),0 if resume else 1)
-    self.assertEqual(sum(c[:3]==('gh','release','upload') for c in calls),0 if resume else 11)
-    self.assertEqual(calls[-1][:4],('gh','release','edit','v0.5.0'))
+    self.assertEqual(sum(c[:3]==('gh','api','repos/owner/repo/releases') for c in calls),0 if resume else 1)
+    self.assertEqual(sum(c[:2]==('gh','api') and c[2].startswith('https://uploads.github.com/') for c in calls),0 if resume else 11)
+    self.assertEqual(calls[-1][:5],('gh','api','repos/owner/repo/releases/77','--method','PATCH'))
 class PyPIRetryTests(unittest.TestCase):
  def test_partial_retry_requires_identical_existing_wheels(self):
   expected={'a.whl':'a'*64,'b.whl':'b'*64}

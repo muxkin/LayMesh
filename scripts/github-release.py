@@ -7,11 +7,20 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
+from urllib.parse import quote
 ROOT = Path(__file__).resolve().parents[1]
 
 def run(*args: str, **kwargs):
     return subprocess.run(args, check=True, text=True, **kwargs)
+
+def json_request(endpoint: str, method: str, payload: dict) -> dict:
+    with tempfile.TemporaryDirectory(prefix='laymesh-release-') as temp:
+        body = Path(temp) / 'body.json'
+        body.write_text(json.dumps(payload), encoding='utf-8')
+        return json.loads(run('gh', 'api', endpoint, '--method', method,
+                              '--input', str(body), capture_output=True).stdout)
 
 def validate_tag(tag: str) -> str:
     if not re.fullmatch(r'v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)', tag):
@@ -59,12 +68,17 @@ def publish(tag: str, directory: Path, repo: str) -> None:
         listing = json.loads(run('gh', 'api', f'repos/{repo}/releases?per_page=100', capture_output=True).stdout)
         matches = [r for r in listing if r['tag_name'] == tag]
         if not matches:
-            run('gh', 'release', 'create', tag, '--repo', repo, '--verify-tag', '--draft', '--title', f'LayMesh {version}', '--notes-file', str(ROOT / f'release/notes/{version}.md'))
-            listing = json.loads(run('gh', 'api', f'repos/{repo}/releases?per_page=100', capture_output=True).stdout)
-            matches = [r for r in listing if r['tag_name'] == tag]
-        if len(matches) != 1:
+            # Use the creation response directly: the draft may not yet be
+            # visible to an Actions token through list/tag lookup endpoints.
+            info = json_request(f'repos/{repo}/releases', 'POST', {
+                'tag_name': tag, 'name': f'LayMesh {version}',
+                'body': (ROOT / f'release/notes/{version}.md').read_text(encoding='utf-8'),
+                'draft': True, 'prerelease': False,
+            })
+        elif len(matches) == 1:
+            info = matches[0]
+        else:
             raise ValueError('Release could not be identified uniquely')
-        info = matches[0]
     else:
         info = json.loads(probe.stdout)
     existing = {a['name']: a for a in info['assets']}
@@ -77,7 +91,11 @@ def publish(tag: str, directory: Path, repo: str) -> None:
         if asset.get('digest') != f'sha256:{wanted[name]}':
             raise ValueError(f'Existing asset has an absent or conflicting digest: {name}')
     for name in sorted(set(wanted) - set(existing)):
-        run('gh', 'release', 'upload', tag, str(directory / name), '--repo', repo)
+        endpoint = f'https://uploads.github.com/repos/{repo}/releases/{info["id"]}/assets?name={quote(name, safe="")}'
+        run('gh', 'api', endpoint, '--method', 'POST', '--header',
+            'Content-Type: application/octet-stream', '--input', str(directory / name),
+            capture_output=True)
+        print(f'Uploaded reviewed asset: {name}', flush=True)
     # The numeric endpoint can inspect unpublished drafts before publishing.
     final = json.loads(run('gh', 'api', f'repos/{repo}/releases/{info["id"]}', capture_output=True).stdout)
     if {a['name'] for a in final['assets']} != set(wanted):
@@ -87,7 +105,7 @@ def publish(tag: str, directory: Path, repo: str) -> None:
         if asset.get('digest') != f'sha256:{wanted[item["name"]]}':
             raise ValueError(f'Release asset digest mismatch: {item["name"]}')
     if info['draft']:
-        run('gh', 'release', 'edit', tag, '--repo', repo, '--draft=false')
+        json_request(f'repos/{repo}/releases/{info["id"]}', 'PATCH', {'draft': False})
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
