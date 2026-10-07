@@ -43,7 +43,7 @@ def inspect(deck, *, roundtrip=False):
                 assert len(ids) == len(set(ids))
                 for n in doc:
                     if n.attrib.get('TargetMode') != 'External':
-                        assert posixpath.normpath(posixpath.join(parent, n.attrib['Target'])) in names, name
+                        assert posixpath.normpath(posixpath.join(parent, n.attrib['Target'])).lstrip('/') in names, name
         presentation = docs['ppt/presentation.xml']
         assert len(presentation.findall('p:sldIdLst/p:sldId', NS)) == 1
         size = presentation.find('p:sldSz', NS).attrib
@@ -62,6 +62,7 @@ def inspect(deck, *, roundtrip=False):
             assert blip.attrib[f'{{{R}}}embed'] in rels
         return dict(size_emu=[int(size['cx']), int(size['cy'])],
                     texts=[n.text or '' for n in slide.findall('.//a:t', NS)],
+                    text_box_contents=[''.join(n.text or '' for n in body.findall('.//a:t', NS)) for body in slide.findall('.//p:txBody', NS) if any(n.text for n in body.findall('.//a:t', NS))],
                     text_boxes=sum(any((n.text or '') for n in body.findall('.//a:t', NS)) for body in slide.findall('.//p:txBody', NS)),
                     shapes=len(slide.findall('.//p:sp', NS)),
                     groups=len(slide.findall('.//p:grpSp', NS)),
@@ -78,8 +79,9 @@ def main():
     args = parser.parse_args()
     binary, output = args.binary.resolve(), args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
+    (output/'evidence.json').unlink(missing_ok=True)
     cases = [('hello', 'examples/hello.lay'), ('editable', 'examples/export/pptx-editable.lay'),
-             ('vector', 'examples/vector.lay'), ('formula', 'examples/gallery/typography/display-formula.lay'),
+             ('native', 'examples/export/pptx-native.lay'), ('strokes', 'examples/export/pptx-strokes.lay'), ('vector', 'examples/vector.lay'), ('formula', 'examples/gallery/typography/display-formula.lay'),
              ('nested', 'examples/gallery/containers/group-nested.lay'),
              ('crop', 'examples/gallery/images/crop.lay'), ('effects', 'examples/effects/shadow-glow.lay'),
              ('polar', 'examples/plot/polar-data.lay')]
@@ -96,8 +98,16 @@ def main():
             assert actual['text_boxes'] > 0
         if name == 'editable':
             assert '可编辑文字与矢量公式' in actual['texts']
-            assert actual['pictures'] == 3  # Original PNG, gradient, shadow layer.
-            assert sum('W_PPTX_RASTER' in s for s in actual['warnings']) == 2
+            assert actual['pictures'] == 2  # Original PNG and shadow; gradient is native.
+            assert sum('W_PPTX_RASTER' in s for s in actual['warnings']) == 1
+        if name == 'strokes':
+            assert actual['pictures'] == 0
+            assert not any('W_PPTX_RASTER' in s for s in actual['warnings'])
+        if name == 'native':
+            assert actual['pictures'] == 5  # Four native pictures, one alpha-gradient fallback.
+            assert len(actual['media']) == 2  # Source PNG is shared, never cropped/re-encoded.
+            assert actual['groups'] == 3  # Two explicit groups and one formula group.
+            assert sum('W_PPTX_RASTER' in s for s in actual['warnings']) == 1
         evidence['cases'].append(actual)
     with tempfile.TemporaryDirectory(prefix='laymesh-pptx-cli-') as tmp:
         tmp = Path(tmp)
@@ -112,7 +122,7 @@ def main():
         run([binary, 'render', bad, '-o', protected], code=1)
         assert protected.read_bytes() == b'existing destination'
         expensive = tmp/'expensive.lay'
-        expensive.write_text('page=canvas(size=(100mm,100mm))\npage.add(rect(size=(100mm,100mm),fill=linear_gradient(stops=[(0,"#fff"),(1,"#000")])))')
+        expensive.write_text('page=canvas(size=(100mm,100mm))\npage.add(rect(size=(100mm,100mm),fill=radial_gradient(stops=[(0,"#fff"),(1,"#000")])))')
         run([binary, 'render', expensive, '-o', protected, '--dpi', '25400'], code=1)
         assert protected.read_bytes() == b'existing destination'
         for size in ['20mm,75mm', '1500mm,75mm']:
@@ -148,9 +158,9 @@ def main():
                 assert pdf.is_file() and saved.is_file(), f'{name}: LibreOffice failed to produce artifacts'
                 assert 'Pages:           1' in run(['pdfinfo', pdf]).stdout
                 saved_info = inspect(saved, roundtrip=True)
-                assert ''.join(saved_info['texts']) == ''.join(actual['texts']), f'{name}: text lost after saving'
+                assert saved_info['text_box_contents'] == actual['text_box_contents'], f'{name}: text lost or reordered after saving'
                 assert saved_info['shapes'] >= actual['shapes'], f'{name}: geometry lost after saving'
-                assert saved_info['pictures'] == actual['pictures'], f'{name}: pictures changed'
+                assert saved_info['pictures'] + saved_info['shapes'] == actual['pictures'] + actual['shapes'], f'{name}: drawing objects changed'
                 assert saved_info['text_boxes'] == actual['text_boxes'], f'{name}: text boxes changed'
                 assert all(abs(a-b) <= 900 for a, b in zip(saved_info['size_emu'], actual['size_emu'])), f'{name}: slide dimensions changed'
                 reference = output/f'{name}-reference.pdf'

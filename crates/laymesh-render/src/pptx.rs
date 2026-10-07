@@ -6,10 +6,13 @@ use kurbo::{Affine, BezPath, PathEl, Point, Rect, Shape};
 use resvg::{tiny_skia, usvg};
 use roxmltree::Node;
 use std::{
-    collections::BTreeSet,
+    collections::{BTreeMap, BTreeSet},
     io::{Cursor, Write},
 };
 use zip::{ZipWriter, write::SimpleFileOptions};
+
+mod geometry;
+mod paint;
 
 const MM_TO_EMU: f64 = 36_000.;
 const PX_TO_MM: f64 = 25.4 / 96.;
@@ -78,6 +81,8 @@ struct Media {
 }
 struct Writer<'a> {
     scene: &'a Scene,
+    object_kinds: BTreeMap<String, String>,
+    recipes: BTreeMap<String, Json>,
     source: &'a str,
     defs: String,
     dpi: f64,
@@ -159,8 +164,7 @@ impl Writer<'_> {
             * Affine::translate(-center.to_vec2());
         self.bounds
             .push(rotation_transform.transform_rect_bbox(rect));
-        self.media.push(Media { data, extension });
-        let rid = self.media.len() + 1; // rId1 is the slide layout.
+        let rid = self.image_relationship(data, extension);
         format!(
             "<p:pic><p:nvPicPr><p:cNvPr id=\"{id}\" name=\"{}\"/><p:cNvPicPr><a:picLocks noChangeAspect=\"1\"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed=\"rId{rid}\"><a:alphaModFix amt=\"{}\"/></a:blip><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr>{}<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:ln><a:noFill/></a:ln></p:spPr></p:pic>",
             escape(name),
@@ -377,6 +381,81 @@ impl Writer<'_> {
         }
         visit(self, tree.root(), opacity, name)
     }
+    fn shape(
+        &mut self,
+        n: Node<'_, '_>,
+        parent: Affine,
+        transform: Affine,
+        opacity: f64,
+        inherited_opacity: f64,
+        name: &str,
+    ) -> Result<String> {
+        let mut path = geometry::svg_path(n)?;
+        if path.is_empty() {
+            return Ok(String::new());
+        }
+        let value = n.attribute("fill").unwrap_or("#000000");
+        if n.attribute("fill-rule") == Some("evenodd")
+            && value != "none"
+            && path
+                .iter()
+                .filter(|e| matches!(e, PathEl::MoveTo(_)))
+                .count()
+                > 1
+        {
+            if n.attribute("fill-opacity").is_some() && transform.determinant().abs() > 1e-12 {
+                // Shared SVG marks generated compound-stroke outlines with
+                // fill-opacity. Normalize their even-odd contours in final mm
+                // so DrawingML's nonzero fill keeps the exact vector region.
+                let physical = transform * path;
+                path =
+                    transform.inverse() * laymesh_core::geometry::union(&physical, &BezPath::new());
+            } else {
+                return self.fallback(n, parent, inherited_opacity, name, "多轮廓奇偶填充");
+            }
+        }
+        let line = geometry::native_stroke(n, transform, opacity)?;
+        let mut g = geometry::geometry(n, &path, transform, line.is_some(), self.recipes.get(name));
+        let Some(fill) = self.fill(n, opacity, path.bounding_box(), &g)? else {
+            return self.fallback(
+                n,
+                parent,
+                inherited_opacity,
+                name,
+                "无法准确映射的渐变、纹理或图片填充",
+            );
+        };
+        if let Some(line) = line {
+            if n.attribute("stroke").unwrap_or("none") != "none" {
+                let outline = laymesh_core::geometry::outline_transformed(
+                    &path,
+                    &geometry::stroke_style(n)?,
+                    transform,
+                );
+                if !outline.is_empty() {
+                    g.bounds = g.bounds.union(outline.bounding_box());
+                }
+            }
+            return Ok(self.emit_shape(name, g, &fill, &line));
+        }
+        let stroke = n.attribute("stroke").unwrap_or("none");
+        if stroke.starts_with("url(") {
+            return self.fallback(n, parent, inherited_opacity, name, "无法准确映射的渐变描边");
+        }
+        let mut out = if value == "none" {
+            String::new()
+        } else {
+            self.emit_shape(name, g, &fill, "<a:ln><a:noFill/></a:ln>")
+        };
+        let style = geometry::stroke_style(n)?;
+        let outline = laymesh_core::geometry::outline_transformed(&path, &style, transform);
+        out += &self.path(
+            outline,
+            &solid(stroke, opacity * attr(n, "stroke-opacity", 1.))?,
+            &format!("{name} stroke outline"),
+        );
+        Ok(out)
+    }
     fn node(
         &mut self,
         n: Node<'_, '_>,
@@ -397,14 +476,20 @@ impl Writer<'_> {
         let transform = parent * affine(n)?;
         let opacity = inherited_opacity * attr(n, "opacity", 1.);
         let formula = in_formula || n.attribute("data-latex-source").is_some();
+        if n.attribute("clip-path").is_some()
+            && n.attribute("filter").is_none()
+            && n.attribute("mask").is_none()
+        {
+            if let Some(image) = self.clipped_image(n, transform, opacity, name)? {
+                return Ok(image);
+            }
+        }
         let reason = if n.attribute("clip-path").is_some() {
-            Some("裁剪")
+            Some("复杂裁剪")
         } else if n.attribute("filter").is_some() {
             Some("滤镜或特效")
         } else if n.attribute("mask").is_some() {
             Some("蒙版")
-        } else if n.attribute("fill").is_some_and(|s| s.starts_with("url(")) {
-            Some("渐变、纹理或图片填充")
         } else if matches!(tag, "g" | "svg") && attr(n, "opacity", 1.) != 1. && paint_count(n) > 1 {
             Some("分组透明度合成")
         } else if tag == "svg" {
@@ -422,7 +507,20 @@ impl Writer<'_> {
                 for child in n.children().filter(Node::is_element) {
                     out += &self.node(child, transform, opacity, formula, name)?;
                 }
-                Ok(self.group(name, &out, start))
+                let kind = n
+                    .attribute("data-id")
+                    .and_then(|id| self.object_kinds.get(id))
+                    .map(String::as_str);
+                let logical_group =
+                    kind == Some("group") || n.attribute("data-latex-source").is_some();
+                let compound = n.attribute("data-id").is_some()
+                    && kind != Some("formula")
+                    && self.bounds.len() - start > 1;
+                if logical_group || compound {
+                    Ok(self.group(name, &out, start))
+                } else {
+                    Ok(out)
+                }
             }
             "text" => {
                 if formula {
@@ -441,128 +539,51 @@ impl Writer<'_> {
                 }
             }
             "path" | "rect" | "ellipse" | "circle" => {
-                let path = match tag {
-                    "path" => BezPath::from_svg(n.attribute("d").unwrap_or(""))
-                        .map_err(|_| error("PPTX 无效路径"))?,
-                    "rect" => {
-                        let rect = Rect::new(
-                            attr(n, "x", 0.),
-                            attr(n, "y", 0.),
-                            attr(n, "x", 0.) + attr(n, "width", 0.),
-                            attr(n, "y", 0.) + attr(n, "height", 0.),
-                        );
-                        let r = attr(n, "rx", 0.);
-                        if r > 0. {
-                            rect.to_rounded_rect(r).to_path(0.001)
-                        } else {
-                            rect.to_path(0.001)
-                        }
-                    }
-                    _ => kurbo::Ellipse::new(
-                        (attr(n, "cx", 0.), attr(n, "cy", 0.)),
-                        (
-                            attr(n, "rx", attr(n, "r", 0.)),
-                            attr(n, "ry", attr(n, "r", 0.)),
-                        ),
-                        0.,
-                    )
-                    .to_path(0.001),
-                };
-                let fill = n.attribute("fill").unwrap_or("#000000");
-                if n.attribute("fill-rule") == Some("evenodd")
-                    && fill != "none"
-                    && path
-                        .iter()
-                        .filter(|e| matches!(e, PathEl::MoveTo(_)))
-                        .count()
-                        > 1
-                {
-                    return self.fallback(n, parent, inherited_opacity, name, "多轮廓奇偶填充");
-                }
-                let mut out = String::new();
-                if fill != "none" {
-                    out += &self.path(
-                        transform * path.clone(),
-                        &solid(fill, opacity * attr(n, "fill-opacity", 1.))?,
-                        name,
-                    );
-                }
-                let stroke = n.attribute("stroke").unwrap_or("none");
-                let width = attr(n, "stroke-width", 1.);
-                if stroke != "none" && width > 0. {
-                    let dash = n
-                        .attribute("stroke-dasharray")
-                        .unwrap_or("")
-                        .split([' ', ','])
-                        .filter(|s| !s.is_empty())
-                        .map(str::parse::<f64>)
-                        .collect::<std::result::Result<Vec<_>, _>>()
-                        .map_err(|_| error("PPTX 无效虚线"))?;
-                    let style = json!({"width":width,"dash":dash,"dashOffset":attr(n,"stroke-dashoffset",0.),"cap":n.attribute("stroke-linecap").unwrap_or("butt"),"join":n.attribute("stroke-linejoin").unwrap_or("miter"),"miterLimit":attr(n,"stroke-miterlimit",4.)});
-                    let outline =
-                        laymesh_core::geometry::outline_transformed(&path, &style, transform);
-                    out += &self.path(
-                        outline,
-                        &solid(stroke, opacity * attr(n, "stroke-opacity", 1.))?,
-                        &format!("{name} stroke"),
-                    );
-                }
-                Ok(out)
+                self.shape(n, parent, transform, opacity, inherited_opacity, name)
             }
             "image" => {
-                let Some((scale, angle)) = similarity(transform) else {
-                    return self.fallback(n, parent, inherited_opacity, name, "图片非等比变换");
-                };
-                let href = n
-                    .attribute("href")
-                    .or_else(|| n.attribute(("http://www.w3.org/1999/xlink", "href")))
-                    .unwrap_or("");
-                let (extension, data) = if let Some(data) =
-                    href.strip_prefix("data:image/png;base64,")
-                {
-                    ("png", data)
-                } else if let Some(data) = href.strip_prefix("data:image/jpeg;base64,") {
-                    ("jpeg", data)
-                } else {
+                let Some(data) = paint::image_data(n)? else {
                     return self.fallback(n, parent, inherited_opacity, name, "SVG 或其他图片格式");
                 };
-                let bytes = base64::engine::general_purpose::STANDARD
-                    .decode(data)
-                    .map_err(|e| error(format!("PPTX 无效图片：{e}")))?;
-                let image = image::load_from_memory(&bytes)
-                    .map_err(|e| error(format!("PPTX 无效图片：{e}")))?;
-                let (x, y, w, h) = (
+                let mut rect = Rect::new(
                     attr(n, "x", 0.),
                     attr(n, "y", 0.),
-                    attr(n, "width", 1.),
-                    attr(n, "height", 1.),
+                    attr(n, "x", 0.) + attr(n, "width", 1.),
+                    attr(n, "y", 0.) + attr(n, "height", 1.),
                 );
                 let aspect = n
                     .attribute("preserveAspectRatio")
                     .unwrap_or("xMidYMid meet");
+                let mut crop = [0.; 4];
                 if aspect.contains("slice") {
-                    return self.fallback(n, parent, inherited_opacity, name, "图片 cover 裁剪");
+                    let ratio = data.width / data.height;
+                    let target = rect.width() / rect.height();
+                    if ratio > target {
+                        crop[0] = (1. - target / ratio) / 2.;
+                        crop[2] = crop[0];
+                    } else {
+                        crop[1] = (1. - ratio / target) / 2.;
+                        crop[3] = crop[1];
+                    }
+                } else if aspect != "none" {
+                    let ratio = (rect.width() / data.width).min(rect.height() / data.height);
+                    rect = Rect::from_center_size(
+                        rect.center(),
+                        (data.width * ratio, data.height * ratio),
+                    );
                 }
-                let rect = if aspect == "none" {
-                    Rect::new(x, y, x + w, y + h)
-                } else {
-                    let ratio = (w / image.width() as f64).min(h / image.height() as f64);
-                    let (iw, ih) = (image.width() as f64 * ratio, image.height() as f64 * ratio);
-                    Rect::new(
-                        x + (w - iw) / 2.,
-                        y + (h - ih) / 2.,
-                        x + (w + iw) / 2.,
-                        y + (h + ih) / 2.,
-                    )
+                let Some((b, xfrm, paint)) = geometry::frame(transform, rect) else {
+                    return self.fallback(n, parent, inherited_opacity, name, "图片斜切变换");
                 };
-                Ok(self.picture(
-                    bytes,
-                    extension,
-                    placed_rect(transform, rect, scale),
-                    angle,
-                    opacity,
-                    name,
-                ))
+                let g = geometry::Geometry {
+                    rect: b,
+                    bounds: transform.transform_rect_bbox(rect),
+                    xml: geometry::preset("rect", 0., b),
+                    transform: xfrm,
+                    paint_transform: paint,
+                };
+                let fill = self.blip_fill(data, opacity, crop, [0.; 4]);
+                Ok(self.emit_shape(name, g, &fill, "<a:ln><a:noFill/></a:ln>"))
             }
             _ => self.fallback(
                 n,
@@ -606,6 +627,97 @@ fn placed_rect(t: Affine, r: Rect, scale: f64) -> Rect {
     Rect::from_center_size(center, (r.width() * scale, r.height() * scale))
 }
 
+// Symmetric, undecorated caps have an exact native line property. Keep the
+// shared endpoint geometry for arrows, asymmetric caps and head-only paths.
+// Reuse unmodified JPEG bytes only when core's color/orientation policy marked
+// them safe for passthrough. Managed/rotated JPEGs keep the normalized PNG.
+fn preserve_jpeg(value: &mut Json) {
+    if let (Some(key), Some(hash)) = (
+        value["rasterKey"].as_str(),
+        value["sourceJpegHash"].as_str(),
+    ) {
+        if let Some(bytes) = laymesh_core::asset_cache::source_jpeg(key) {
+            if laymesh_core::asset_cache::digest(&bytes) == hash {
+                value["mime"] = Json::String("image/jpeg".into());
+                value["data"] =
+                    Json::String(base64::engine::general_purpose::STANDARD.encode(&*bytes));
+            }
+        }
+    }
+}
+fn normalize_caps(nodes: &mut [Json]) {
+    for n in nodes {
+        if n["kind"] == "image" && n["sourceImage"].is_object() {
+            let source = n["sourceImage"].clone();
+            for key in ["data", "mime", "rasterKey", "sourceJpegHash", "crop"] {
+                n[key] = source[key].clone();
+            }
+            n["intrinsicWidth"] = source["width"].clone();
+            n["intrinsicHeight"] = source["height"].clone();
+        }
+        preserve_jpeg(n);
+        if n["fill"].is_object() {
+            preserve_jpeg(&mut n["fill"]);
+        }
+        // SVG normally physically crops PNGs for PDF edge sampling. PPTX
+        // retains the original resource and maps this crop to DrawingML.
+        if n["kind"] == "image" && n["crop"].is_object() {
+            n["_pptxKeepSourceCrop"] = Json::Bool(true);
+        }
+        let r = &n["endpointRecipe"];
+        if r.is_object()
+            && !r["start_head"].is_object()
+            && !r["end_head"].is_object()
+            && r["start_cap"] == r["end_cap"]
+            // DrawingML applies the cap to every dash. Endpoint-only caps
+            // with a different dash-body cap must retain the exact outline.
+            && (n["strokeStyle"]["dash"].as_array().is_none_or(|d| d.is_empty())
+                || r["start_cap"] == n["strokeStyle"]["cap"])
+            && n["zeroAngle"].is_null()
+        {
+            let cap = r["start_cap"].clone();
+            n["strokeStyle"]["cap"] = cap;
+            n.as_object_mut().unwrap().remove("endpointRecipe");
+        }
+        if let Some(children) = n["children"].as_array_mut() {
+            normalize_caps(children);
+        }
+    }
+}
+fn object_recipes(nodes: &[Json]) -> BTreeMap<String, Json> {
+    fn visit(nodes: &[Json], out: &mut BTreeMap<String, Json>) {
+        for n in nodes {
+            if let Some(id) = n["id"].as_str() {
+                if n["geometryRecipe"].is_object() {
+                    out.insert(id.into(), n["geometryRecipe"].clone());
+                }
+            }
+            if let Some(children) = n["children"].as_array() {
+                visit(children, out);
+            }
+        }
+    }
+    let mut out = BTreeMap::new();
+    visit(nodes, &mut out);
+    out
+}
+
+fn object_kinds(nodes: &[Json]) -> BTreeMap<String, String> {
+    fn visit(nodes: &[Json], out: &mut BTreeMap<String, String>) {
+        for n in nodes {
+            if let (Some(id), Some(kind)) = (n["id"].as_str(), n["kind"].as_str()) {
+                out.insert(id.into(), kind.into());
+            }
+            if let Some(children) = n["children"].as_array() {
+                visit(children, out);
+            }
+        }
+    }
+    let mut out = BTreeMap::new();
+    visit(nodes, &mut out);
+    out
+}
+
 /// Return bytes and export-specific diagnostics. CLI honors --warnings; other
 /// native callers may use this function to expose the same fallback diagnostics.
 pub fn render_pptx(scene: &Scene, options: &ExportOptions) -> Result<(Vec<u8>, Vec<Diagnostic>)> {
@@ -624,7 +736,9 @@ pub fn render_pptx(scene: &Scene, options: &ExportOptions) -> Result<(Vec<u8>, V
         ..Default::default()
     }
     .validate("pptx")?;
-    let source = svg(scene, false)?;
+    let mut lowered = scene.clone();
+    normalize_caps(&mut lowered.nodes);
+    let source = svg(&lowered, false)?;
     let doc = roxmltree::Document::parse(&source).map_err(|e| error(e.to_string()))?;
     let defs = doc
         .root_element()
@@ -639,6 +753,8 @@ pub fn render_pptx(scene: &Scene, options: &ExportOptions) -> Result<(Vec<u8>, V
         .unwrap_or_default();
     let mut writer = Writer {
         scene,
+        object_kinds: object_kinds(&scene.nodes),
+        recipes: object_recipes(&scene.nodes),
         source: &source,
         defs,
         dpi,

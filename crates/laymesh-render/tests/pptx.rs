@@ -138,7 +138,7 @@ page.add(line(dx=35mm,dy=0mm,line_width=0.4mm,line_dash=[2mm,1mm]),offset=(20mm,
     assert!(
         slide
             .descendants()
-            .any(|n| n.tag_name().name() == "cubicBezTo")
+            .any(|n| matches!(n.tag_name().name(), "cubicBezTo" | "quadBezTo"))
     );
     assert!(
         slide
@@ -158,7 +158,7 @@ fn fallback_is_local_transparent_and_respects_dpi() {
         r##"
 page=canvas(size=(100mm,75mm),background="none")
 page.add(text("Keep editable",font_family="DejaVu Sans",font_size=12pt),offset=(5mm,5mm))
-page.add(rect(size=(10mm,8mm),fill=linear_gradient(stops=[(0,"#ff000080"),(1,"#0000ff80")]),border_width=0),offset=(40mm,30mm),rotation=17deg)
+page.add(rect(size=(10mm,8mm),fill=radial_gradient(stops=[(0,"#ff000080"),(1,"#0000ff80")]),border_width=0),offset=(40mm,30mm),rotation=17deg)
 "##,
     );
     let mut dimensions = vec![];
@@ -399,4 +399,357 @@ fn formula_text_glyphs_become_outlines_and_anisotropic_text_falls_back() {
             .count(),
         1
     );
+}
+
+#[test]
+fn native_presets_strokes_and_source_groups_replace_wrappers() {
+    let scene = compile(
+        r##"
+page=canvas(size=(160mm,100mm),background="none")
+outer=group()
+inner=group()
+inner.add(rect(size=(30mm,20mm),border_radius=4mm,fill="#ff000080",border_color="#203864",border_width=0.5mm),offset=(0mm,0mm))
+inner.add(ellipse(size=(10mm,8mm),fill="#3782d6",border_width=0),offset=(40mm,0mm))
+outer.add(inner,offset=(2mm,3mm))
+page.add(outer,offset=(10mm,10mm),rotation=23deg)
+page.add(line(dx=-30mm,dy=10mm,line_width=0.4mm,line_dash=[2mm,1mm],line_cap=round,start_cap=round,end_cap=round),offset=(20mm,60mm))
+"##,
+    );
+    let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    let data = files(&bytes);
+    let slide = xml(&data, "ppt/slides/slide1.xml");
+    let count = |tag| {
+        slide
+            .descendants()
+            .filter(|n| n.tag_name().name() == tag)
+            .count()
+    };
+    assert_eq!(count("grpSp"), 2, "Only the two explicit groups survive");
+    assert_eq!(
+        count("sp"),
+        3,
+        "Each fill and border share one editable shape"
+    );
+    for kind in ["roundRect", "ellipse", "line"] {
+        assert!(
+            slide
+                .descendants()
+                .any(|n| n.attribute("prst") == Some(kind))
+        );
+    }
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.attribute("fmla") == Some("val 20000")),
+        "4mm radius on 20mm short edge"
+    );
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.attribute("w") == Some("18000") && n.tag_name().name() == "ln")
+    );
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.attribute("cap") == Some("rnd"))
+    );
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.attribute("d") == Some("500000") && n.attribute("sp") == Some("250000"))
+    );
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.attribute("rot") == Some("1380000"))
+    );
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.attribute("flipH") == Some("1"))
+    );
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.attribute("val") == Some("50196") && n.tag_name().name() == "alpha")
+    );
+    assert_eq!(count("custGeom"), 0);
+}
+
+fn png_fixture() -> Vec<u8> {
+    let mut png = Vec::new();
+    let mut encoder = png::Encoder::new(&mut png, 4, 2);
+    encoder.set_color(png::ColorType::Rgba);
+    encoder.set_depth(png::BitDepth::Eight);
+    encoder
+        .write_header()
+        .unwrap()
+        .write_image_data(&[
+            255, 0, 0, 255, 255, 0, 0, 255, 0, 0, 255, 128, 0, 0, 255, 128, 255, 0, 0, 255, 255, 0,
+            0, 255, 0, 0, 255, 128, 0, 0, 255, 128,
+        ])
+        .unwrap();
+    png
+}
+#[test]
+fn rounded_image_fill_fit_and_rectangular_crop_keep_original_media() {
+    use base64::Engine;
+    let png = png_fixture();
+    let encoded = base64::engine::general_purpose::STANDARD.encode(&png);
+    let mut scene = compile("page=canvas(size=(160mm,100mm),background=\"none\")");
+    for (i, fit) in ["cover", "contain", "stretch"].into_iter().enumerate() {
+        scene.nodes.push(serde_json::json!({"kind":"rect","id":fit,"x":10.+i as f64*30.,"y":10.,"width":20.,"height":20.,"radius":3.,"rotation":17.,"opacity":0.5,"fill":{"kind":"image_fill","mime":"image/png","data":encoded,"width":4.,"height":2.,"fit":fit}}));
+    }
+    scene.nodes.push(serde_json::json!({"kind":"image","id":"cropped","x":110.,"y":10.,"width":20.,"height":20.,"fit":"cover","crop":{"x":1.,"y":0.,"width":2.,"height":2.},"intrinsicWidth":4.,"intrinsicHeight":2.,"mime":"image/png","data":encoded}));
+    let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    let data = files(&bytes);
+    assert_eq!(
+        data.keys().filter(|n| n.starts_with("ppt/media/")).count(),
+        1,
+        "{:?}",
+        data.iter()
+            .filter(|(n, _)| n.starts_with("ppt/media/"))
+            .map(|(n, b)| (
+                n,
+                b.len(),
+                image::load_from_memory(b).map(|im| (im.width(), im.height()))
+            ))
+            .collect::<Vec<_>>()
+    );
+    assert_eq!(data["ppt/media/image1.png"], png);
+    let slide = xml(&data, "ppt/slides/slide1.xml");
+    assert_eq!(
+        slide
+            .descendants()
+            .filter(|n| n.tag_name().name() == "pic")
+            .count(),
+        4
+    );
+    assert_eq!(
+        slide
+            .descendants()
+            .filter(|n| n.attribute("prst") == Some("roundRect"))
+            .count(),
+        3
+    );
+    assert!(slide.descendants().any(|n| n.tag_name().name() == "srcRect"
+        && n.attribute("l") == Some("25000")
+        && n.attribute("r") == Some("25000")));
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.tag_name().name() == "fillRect"
+                && n.attribute("t") == Some("25000")
+                && n.attribute("b") == Some("25000"))
+    );
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.tag_name().name() == "alphaModFix" && n.attribute("amt") == Some("50000"))
+    );
+    // The shared SVG must fit the image to the rectangle, not a unit square.
+    let svg = String::from_utf8(render_export(&scene, "svg", &ExportOptions::default()).unwrap())
+        .unwrap();
+    assert!(svg.contains("viewBox='0 0 20 20'"));
+    assert!(svg.contains("preserveAspectRatio='xMidYMid slice'"));
+}
+#[test]
+fn gradients_are_native_when_exact_and_other_paints_warn_locally() {
+    let scene = compile(
+        r##"
+page=canvas(size=(160mm,100mm),background="none")
+page.add(rect(size=(30mm,20mm),fill=linear_gradient(stops=[(0,"#ff000080"),(1,"#0000ff80")]),border_width=0),offset=(10mm,10mm),rotation=17deg)
+page.add(rect(size=(20mm,15mm),fill=linear_gradient(stops=[(0,"#ff000000"),(1,"#0000ff")]),border_width=0),offset=(60mm,10mm))
+page.add(rect(size=(20mm,15mm),fill=hatch(color="#3782d6"),border_width=0),offset=(90mm,10mm))
+"##,
+    );
+    let (bytes, warnings) = render_pptx(
+        &scene,
+        &ExportOptions {
+            dpi: Some(96.),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        warnings
+            .iter()
+            .filter(|w| w.code == "W_PPTX_RASTER")
+            .count(),
+        2
+    );
+    let data = files(&bytes);
+    let slide = xml(&data, "ppt/slides/slide1.xml");
+    assert_eq!(
+        slide
+            .descendants()
+            .filter(|n| n.tag_name().name() == "gradFill")
+            .count(),
+        1
+    );
+    assert_eq!(
+        slide
+            .descendants()
+            .filter(|n| n.tag_name().name() == "pic")
+            .count(),
+        2
+    );
+}
+#[test]
+fn anisotropic_stroke_keeps_vector_outline_and_mirrored_image_is_native() {
+    use base64::Engine;
+    let mut scene = compile("page=canvas(size=(160mm,100mm),background=\"none\")");
+    scene.nodes.push(serde_json::json!({"kind":"group","id":"scaled","x":10.,"y":10.,"width":40.,"height":20.,"contentWidth":20.,"contentHeight":20.,"children":[{"kind":"rect","id":"rect","width":20.,"height":20.,"fill":"#ff0000","stroke":"#000000","strokeWidth":1.}]}));
+    scene.nodes.push(serde_json::json!({"kind":"group","id":"mirrored","x":100.,"y":10.,"width":-20.,"height":20.,"contentWidth":20.,"contentHeight":20.,"children":[{"kind":"image","id":"image","width":20.,"height":20.,"fit":"stretch","intrinsicWidth":4.,"intrinsicHeight":2.,"mime":"image/png","data":base64::engine::general_purpose::STANDARD.encode(png_fixture())}]}));
+    let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    let data = files(&bytes);
+    let slide = xml(&data, "ppt/slides/slide1.xml");
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.tag_name().name() == "custGeom")
+    );
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.attribute("flipV") == Some("1"))
+    );
+    assert_eq!(
+        slide
+            .descendants()
+            .filter(|n| n.tag_name().name() == "pic")
+            .count(),
+        1
+    );
+}
+
+#[test]
+fn cli_compiled_crops_and_jpeg_fills_share_the_original_resource() {
+    let mut jpeg = Vec::new();
+    image::codecs::jpeg::JpegEncoder::new(&mut jpeg)
+        .encode(
+            &[255, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 255],
+            2,
+            2,
+            image::ExtendedColorType::Rgb8,
+        )
+        .unwrap();
+    let mut host = Host::default();
+    host.files.insert("/photo.jpg".into(), jpeg.clone());
+    let scene = compile_source(r##"
+page=canvas(size=(160mm,100mm),background="none")
+page.add(rect(size=(20mm,20mm),border_radius=3mm,fill=image_fill(src="photo.jpg",fit=cover),border_width=0),offset=(10mm,10mm))
+page.add(image(src="photo.jpg"),size=(20mm,20mm),crop=box(offset=(0.5,0),size=(0.5,1)),fit=cover,offset=(40mm,10mm))
+"##, "/pptx.lay", host).unwrap();
+    let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    let data = files(&bytes);
+    assert_eq!(
+        data.keys().filter(|n| n.starts_with("ppt/media/")).count(),
+        1
+    );
+    assert_eq!(data["ppt/media/image1.jpeg"], jpeg);
+    let slide = xml(&data, "ppt/slides/slide1.xml");
+    assert_eq!(
+        slide
+            .descendants()
+            .filter(|n| n.tag_name().name() == "pic")
+            .count(),
+        2
+    );
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.tag_name().name() == "srcRect" && n.attribute("l") == Some("50000"))
+    );
+}
+
+#[test]
+fn group_selection_contains_acute_miter_stroke_ink() {
+    let mut scene = compile("page=canvas(size=(160mm,100mm),background=\"none\")");
+    scene.nodes.push(serde_json::json!({"kind":"group","id":"sharp","width":20.,"height":20.,"contentWidth":20.,"contentHeight":20.,"x":30.,"y":30.,"children":[{"kind":"path","id":"acute","d":"M0 20L10 0L11 20","width":11.,"height":20.,"intrinsicWidth":11.,"intrinsicHeight":20.,"fill":"none","strokeStyle":{"color":"#000000","width":2.,"join":"miter","miterLimit":40.}}]}));
+    let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    let data = files(&bytes);
+    let slide = xml(&data, "ppt/slides/slide1.xml");
+    let group = slide
+        .descendants()
+        .find(|n| n.tag_name().name() == "grpSp")
+        .unwrap()
+        .children()
+        .find(|n| n.tag_name().name() == "grpSpPr")
+        .unwrap();
+    let height = group
+        .descendants()
+        .find(|n| n.tag_name().name() == "ext")
+        .unwrap()
+        .attribute("cy")
+        .unwrap()
+        .parse::<i64>()
+        .unwrap();
+    assert!(
+        height > 24 * 36_000,
+        "acute miter ink exceeds a half-width inflated path box"
+    );
+}
+
+#[test]
+fn compound_stroke_outlines_stay_vector_with_transparent_gaps() {
+    let scene = compile(
+        r##"
+page=canvas(size=(160mm,100mm),background="none")
+page.add(rect(size=(30mm,20mm),border_radius=4mm,fill="#e6f0ff",border_color="#1268ff80",border_width=1.2mm,border_style=double),offset=(20mm,20mm),rotation=17deg)
+"##,
+    );
+    let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    let data = files(&bytes);
+    assert!(!data.keys().any(|n| n.starts_with("ppt/media/")));
+    let slide = xml(&data, "ppt/slides/slide1.xml");
+    assert!(
+        slide
+            .descendants()
+            .any(|n| n.tag_name().name() == "custGeom")
+    );
+    assert!(
+        slide
+            .descendants()
+            .filter(|n| n.tag_name().name() == "moveTo")
+            .count()
+            >= 4,
+        "The double stroke retains its separate contours and gaps"
+    );
+}
+
+#[test]
+fn gradient_hard_stops_at_endpoints_preserve_stop_order() {
+    let scene = compile(
+        r##"
+page=canvas(size=(160mm,100mm),background="none")
+page.add(rect(size=(40mm,20mm),fill=linear_gradient(start=(0,0),end=(1,0),stops=[(0,"#ff0000"),(0,"#0000ff"),(1,"#0000ff"),(1,"#00ff00")]),border_width=0),offset=(10mm,10mm))
+"##,
+    );
+    let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    let data = files(&bytes);
+    let slide = xml(&data, "ppt/slides/slide1.xml");
+    let colors = |position| {
+        slide
+            .descendants()
+            .filter(|n| n.tag_name().name() == "gs" && n.attribute("pos") == Some(position))
+            .map(|n| {
+                n.descendants()
+                    .find(|n| n.tag_name().name() == "srgbClr")
+                    .unwrap()
+                    .attribute("val")
+                    .unwrap()
+            })
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(colors("0").last(), Some(&"0000FF"));
+    assert_eq!(colors("100000").first(), Some(&"0000FF"));
+    assert_eq!(colors("100000").last(), Some(&"00FF00"));
 }

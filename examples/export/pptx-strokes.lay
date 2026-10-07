@@ -1,0 +1,8 @@
+# Unsupported line properties remain editable vector regions, with clear gaps.
+page=canvas(size=(160mm,110mm),background="#ffffff")
+page.add(text("Compound strokes and endpoint caps",font_family="DejaVu Sans",font_size=16pt,color="#203864"),offset=(8mm,6mm))
+page.add(rect(size=(52mm,32mm),border_radius=6mm,fill="#e6f0ff",border_color="#1268ff80",border_width=2mm,border_style=double),offset=(12mm,25mm),rotation=-9deg)
+page.add(rect(size=(52mm,32mm),border_radius=6mm,fill="#fff0ce",border_color="#b24d26",border_width=2mm,border_style=triple),offset=(90mm,25mm),rotation=9deg)
+# Caps at the overall endpoints differ from the flat caps of individual dashes.
+page.add(line(dx=55mm,dy=12mm,line_color="#1268ff",line_width=1.2mm,line_dash=[5mm,3mm],line_cap=butt,start_cap=round,end_cap=round),offset=(12mm,77mm))
+page.add(polyline(points=[(0mm,24mm),(14mm,0mm),(17mm,24mm)],line_color="#203864",line_width=2mm,line_join=miter,line_miter_limit=40),offset=(100mm,70mm))

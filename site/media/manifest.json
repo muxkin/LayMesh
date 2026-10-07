@@ -10,7 +10,7 @@
     "version": 2,
     "engine": "rust-ratex"
   },
-  "engine": "e730b2a52eec203948267653f39864ad1eb15ae67aef57a522dec4d8e6b9e42a",
+  "engine": "e01988057bfa20aeb46dd22d18917cacea0a26008115a6ee43c37179497c36c2",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -1799,7 +1799,7 @@
       ]
     },
     "examples/export/pptx-editable.lay": {
-      "fingerprint": "293a0739325fdc05a6260a6dbf2865c39cb984ddc46c1bc9261fd9904118e291",
+      "fingerprint": "43ec9b22078bb9b5f40bf62882105829d29c8c5d40231cc658560d968e0adf2e",
       "dependencies": [
         "examples/effects/alpha-ring.png",
         "examples/export/pptx-editable.lay"
@@ -1822,6 +1822,59 @@
           "width": 3840,
           "height": 2560,
           "sha256": "ee9d4f4b22636e88e818b85e168121cf33a143987c944593979981f3781124ee"
+        }
+      ]
+    },
+    "examples/export/pptx-native.lay": {
+      "fingerprint": "7dbb1acbecbeb5896e0836f1b3f44981858ca5d02f661c5bcc770dec5c6fc7ed",
+      "dependencies": [
+        "examples/export/pptx-native.lay",
+        "examples/gallery/assets/sample.png"
+      ],
+      "variants": [
+        {
+          "file": "site/media/export-pptx-native-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "88f89f4bf2d0f0faf0ca97e768586d2732d93c052900815746544d04536b7c90"
+        },
+        {
+          "file": "site/media/export-pptx-native-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "90ebd0eeed533b74da4ec2bb76702f28d4ee0cd8d50f01665b0b4e0c0477eed1"
+        },
+        {
+          "file": "site/media/export-pptx-native-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "a617733ec117a59d8aa146169481309e2478035812300ddec34dd580b6afe758"
+        }
+      ]
+    },
+    "examples/export/pptx-strokes.lay": {
+      "fingerprint": "eb95eb7d267b03aa4a76e5720b3ead9ae34305207d851c81846236235afbfa31",
+      "dependencies": [
+        "examples/export/pptx-strokes.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/export-pptx-strokes-960.webp",
+          "width": 960,
+          "height": 660,
+          "sha256": "0a4cccb60be2715ce25b22f5863fcf1b72669c7295d38d8649b5d33b1a588cdd"
+        },
+        {
+          "file": "site/media/export-pptx-strokes-1920.webp",
+          "width": 1920,
+          "height": 1320,
+          "sha256": "c2ff49a0225e4898785b10f6742805fbd41c2b5ddf25277dea44967891109c65"
+        },
+        {
+          "file": "site/media/export-pptx-strokes-3840.webp",
+          "width": 3840,
+          "height": 2640,
+          "sha256": "dd785268fd836bf0d00c60369b55b1a875d231beeb2ee2044dc79715ef84eefa"
         }
       ]
     },
@@ -2621,19 +2674,19 @@
           "file": "site/media/manual-image_fill-960.webp",
           "width": 960,
           "height": 720,
-          "sha256": "5e4773148096b85623ae1b011d4fca5b69bac6dcabddd533b261520f2e0d23bc"
+          "sha256": "6299ffb78e8dc64269ff76525303c0c16e2061f275c4d62e6b72fafc890c7421"
         },
         {
           "file": "site/media/manual-image_fill-1920.webp",
           "width": 1920,
           "height": 1440,
-          "sha256": "9c43558c532a939e375b8d4fc9555fbccffd3204d5323981d424297c1014be9d"
+          "sha256": "a3fa61fcf7a55e916e294596397ea7f501af2d8328b018db06bfe86ac59f12d8"
         },
         {
           "file": "site/media/manual-image_fill-3840.webp",
           "width": 3840,
           "height": 2880,
-          "sha256": "f82bc248b2f0d078f930de4107a7e7883771dac966d344e0565b00a2755f975c"
+          "sha256": "688d11893bdc5b27a7f99ef7e4497d80ca4d57b6e7f1c2b33a6b9f411788ebef"
         }
       ]
     },
@@ -2934,19 +2987,19 @@
           "file": "site/media/manual-paint-composition-960.webp",
           "width": 960,
           "height": 653,
-          "sha256": "3da691c5c4364f815a7fae0be3dd7039372a13a5d71fbebd82823181df2b2d9e"
+          "sha256": "812e17a3fbdec3cd82a6865b1515badc8f8afcb8f80173e117dc47fa4a15af4a"
         },
         {
           "file": "site/media/manual-paint-composition-1920.webp",
           "width": 1920,
           "height": 1306,
-          "sha256": "00c3bf774cad3f21b27b3638f44f251d7f9178d2529034a734346e833929cd5e"
+          "sha256": "443b6e51ec5b1c8631f1acda17825ed74ecb56dc196597383833ff0d2ef1f796"
         },
         {
           "file": "site/media/manual-paint-composition-3840.webp",
           "width": 3840,
           "height": 2611,
-          "sha256": "ae92ec6857bf27ab3f9b6eeeed7d7680ef4bbfc38d8eb6ab92171318430b5dbb"
+          "sha256": "4d03abc22f95c723a352972ebc55fc37c67bcc79ae09336136351bc47106dc32"
         }
       ]
     },

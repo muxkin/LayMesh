@@ -22,6 +22,9 @@ fn pair(v: &Json, default: [f64; 2]) -> [f64; 2] {
     ]
 }
 fn paint(p: &Json, defs: &mut Vec<String>) -> String {
+    paint_box(p, defs, [1., 1.])
+}
+fn paint_box(p: &Json, defs: &mut Vec<String>, size: [f64; 2]) -> String {
     if let Some(s) = p.as_str() {
         return escape(&laymesh_core::color::css(s));
     }
@@ -81,11 +84,11 @@ fn paint(p: &Json, defs: &mut Vec<String>) -> String {
                 "xMidYMid meet"
             };
             let mut pattern = format!(
-                "<pattern id='{id}' width='1' height='1' patternContentUnits='objectBoundingBox'><svg width='1' height='1' viewBox='0 0 {} {}' preserveAspectRatio='{aspect}'><image width='{}' height='{}' href='data:{};base64,{}'/></svg></pattern>",
-                n(p, "width", 1.),
-                n(p, "height", 1.),
-                n(p, "width", 1.),
-                n(p, "height", 1.),
+                "<pattern id='{id}' width='1' height='1' patternContentUnits='objectBoundingBox'><svg width='1' height='1' viewBox='0 0 {} {}' preserveAspectRatio='none'><image width='{}' height='{}' preserveAspectRatio='{aspect}' href='data:{};base64,{}'/></svg></pattern>",
+                size[0],
+                size[1],
+                size[0],
+                size[1],
                 escape(jstr(p, "mime", "image/png")),
                 jstr(p, "data", "")
             );
@@ -293,7 +296,11 @@ fn node_svg_transformed(
     parent: kurbo::Affine,
 ) -> Result<String> {
     let transform = parent * laymesh_core::geometry::node_transform(node);
-    if node["kind"] == "image" && node["mime"] == "image/png" && node["crop"].is_object() {
+    if node["kind"] == "image"
+        && node["mime"] == "image/png"
+        && node["crop"].is_object()
+        && node["_pptxKeepSourceCrop"] != true
+    {
         let c = &node["crop"];
         let asset = laymesh_core::assets::crop_raster(
             jstr(node, "data", ""),
@@ -477,7 +484,17 @@ fn node_svg_transformed(
                     .collect::<String>();
                 return Ok(wrap(node, effects::apply(node, body, defs)));
             }
-            let fill = paint(&node["fill"], defs);
+            let fill = if matches!(
+                jstr(&node["fill"], "kind", ""),
+                "imagePaint" | "image_paint" | "image_fill"
+            ) {
+                let bounds = kurbo::Shape::bounding_box(
+                    &kurbo::BezPath::from_svg(jstr(node, "d", "")).unwrap_or_default(),
+                );
+                paint_box(&node["fill"], defs, [bounds.width(), bounds.height()])
+            } else {
+                paint(&node["fill"], defs)
+            };
             let attrs = stroke_attrs(&node["strokeStyle"]);
             let d = escape(jstr(node, "d", ""));
             let rule = escape(jstr(node, "fillRule", "nonzero"));
@@ -514,7 +531,7 @@ fn node_svg_transformed(
         "rect" => format!(
             "<rect width='{w}' height='{h}' rx='{}' fill='{}' stroke='{}' stroke-width='{}'/>",
             n(node, "radius", 0.),
-            paint(&node["fill"], defs),
+            paint_box(&node["fill"], defs, [w, h]),
             escape(&laymesh_core::color::css(jstr(node, "stroke", "none"))),
             n(node, "strokeWidth", 0.)
         ),
@@ -524,7 +541,7 @@ fn node_svg_transformed(
             h / 2.,
             w / 2.,
             h / 2.,
-            paint(&node["fill"], defs),
+            paint_box(&node["fill"], defs, [w, h]),
             escape(&laymesh_core::color::css(jstr(node, "stroke", "none"))),
             n(node, "strokeWidth", 0.)
         ),
@@ -736,7 +753,7 @@ fn svg(scene: &Scene, embed_fonts: bool) -> Result<String> {
             "<rect width='{}' height='{}' fill='{}'/>",
             number(scene.width),
             number(scene.height),
-            paint(&scene.background, &mut defs)
+            paint_box(&scene.background, &mut defs, [scene.width, scene.height])
         );
     }
     for node in &scene.nodes {

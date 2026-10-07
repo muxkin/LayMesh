@@ -23,7 +23,7 @@ page.add(line(dx=45 mm, dy=0 mm, line_dash=[2 mm, 1 mm], line_width=0.6 mm,
 page.add(image(src="../effects/alpha-ring.png"), size=(24 mm, 24 mm),
          rotation=15 deg, opacity=0.65, offset=(80 mm, 56 mm))
 
-# Only the gradient fill and the shadow layer need local PNG fallback.
+# The linear gradient is native; only the shadow layer needs PNG fallback.
 warm = linear_gradient(stops=[(0, "#fff0ce"), (1, "#ad3462")])
 page.add(rect(size=(35 mm, 20 mm), fill=warm, border_width=0), offset=(127 mm, 53 mm))
 page.add(rect(size=(35 mm, 14 mm), fill="#3782d6", border_width=0,

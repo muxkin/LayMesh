@@ -835,7 +835,12 @@ impl Engine {
                 } else {
                     None
                 };
+                // Keep the source pixels and integer crop for editable exporters;
+                // ordinary renderers still receive the pre-cropped raster below.
+                let mut source_image = Json::Null;
                 if let Some(c) = crop {
+                    source_image = asset.clone();
+                    source_image["crop"] = c.clone();
                     if asset["mime"] == "image/svg+xml" {
                         return Err(self.error("E_IMAGE", "SVG 不支持像素裁剪", l));
                     }
@@ -874,6 +879,13 @@ impl Engine {
                 n["intrinsicWidth"] = json!(cw);
                 n["intrinsicHeight"] = json!(ch);
                 n["fit"] = json!(string(a, "fit", "contain"));
+                if source_image.is_object() {
+                    source_image["crop"]["x"] = json!(jnum(&source_image["crop"], "x", 0.).round());
+                    source_image["crop"]["y"] = json!(jnum(&source_image["crop"], "y", 0.).round());
+                    source_image["crop"]["width"] = json!(cw);
+                    source_image["crop"]["height"] = json!(ch);
+                    n["sourceImage"] = source_image;
+                }
                 n
             }
             "group" => {

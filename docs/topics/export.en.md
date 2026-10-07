@@ -39,15 +39,15 @@ laymesh render examples/export/pptx-editable.lay -o figure.pptx
 laymesh render figure.lay -o figure.pptx --dpi 300
 ```
 
-Each source produces one slide with the original physical canvas dimensions, background and drawing order. Ordinary text becomes editable text boxes positioned per laid-out run, with auto-fit disabled. Formulas become grouped vector outlines rather than editable equation source. Geometry and stroke outlines use custom paths; stroke thickness is represented by geometry, not a PowerPoint line-width property. Plots retain their constituent shapes and text rather than becoming native data charts.
+Each source produces one slide with the original physical canvas dimensions, background and drawing order. Ordinary text becomes editable text boxes positioned per laid-out run, with auto-fit disabled. Formulas become grouped vector outlines rather than editable equation source. Rectangles, rounded rectangles, ellipses and straight lines use native DrawingML presets. Representable custom paths share editable fill and line properties, including width, color, dash, join and symmetric cap styles. Anisotropic strokes, shifted dash patterns and decorated endpoints retain exact vector outlines. Explicit source groups and formula groups survive; layout/SVG wrapper groups are removed. Plots retain their constituent shapes and text rather than becoming native data charts.
 
-PNG/JPEG assets are embedded as independent pictures. Gradients, patterns, clipping, filters, overlapping group opacity, multi-contour even-odd fills and unrepresentable text/picture transforms rasterize only the smallest complete subtree as a transparent PNG. `W_PPTX_RASTER` identifies each fallback and its reason. Effect lowering can preserve the subject as vectors while rasterizing only its shadow layer.
+PNG/JPEG assets stay independent picture resources, shared when reused. Rectangular crops and rounded image fills support `contain`, `cover` and `stretch`, rotation, scaling and reflection without raster fallback. Image fills also use the rectangle’s actual aspect ratio in native SVG/PDF/raster exports. Linear gradients with constant stop opacity map to editable gradient fills. Radial gradients, varying stop opacity, textures, complex clipping/masks, filters, overlapping group opacity, multi-contour even-odd fills and unrepresentable text/picture transforms rasterize only the smallest complete subtree as a transparent PNG. `W_PPTX_RASTER` identifies each fallback and its reason. Effect lowering can preserve the subject as vectors while rasterizing only its shadow layer.
 
 `--dpi` controls fallback pixels only, defaults to 1200 and supports `export.pptx.dpi` configuration. It never changes slide size. Each fallback image retains the 100000000-pixel limit. `quality`, `compression`, `background`, `pdf_*` and `webp_*` options are rejected for PPTX. `--warnings hide` hides export warnings; failed exports preserve existing destination files.
 
 Fonts are not embedded. `W_PPTX_FONT` lists the required installed families; substitution may alter text layout. Slide width and height must be within 25.4–1422.4 mm (1–56 inches). Transparent canvases use the presentation application's default slide background. Python/Jupyter and the VS Code format picker do not yet expose PPTX. LibreOffice rendering and round-trip checks must be distinguished from native PowerPoint verification.
 
-[Complete trial source](../../examples/export/pptx-editable.lay)
+[Complete trial source](../../examples/export/pptx-editable.lay) · [Native geometry and picture-fit fixture](../../examples/export/pptx-native.lay) · [Compound stroke fixture](../../examples/export/pptx-strokes.lay)
 
 ## Python and Jupyter
 
