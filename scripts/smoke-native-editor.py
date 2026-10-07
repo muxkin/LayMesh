@@ -77,7 +77,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-editor-') as temporary:
     # CRLF is normal on Windows; a malformed request must not kill the server.
     payload = '\r\n'.join(['{bad JSON}'] + [json.dumps(r, ensure_ascii=False) for r in requests]) + '\r\n'
     results = [json.loads(line) for line in run(['preview', '--stdio'], payload.encode()).decode().splitlines()]
-    assert results[0] == {'type': 'ready', 'protocol': 1}
+    assert results[0]['type'] == 'ready' and results[0]['protocol'] == 1
     assert results[1]['error']['code'] == 'E_PREVIEW_PROTOCOL'
     results = results[2:]
     assert [r['id'] for r in results] == list(range(len(requests)))
@@ -125,6 +125,12 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-editor-') as temporary:
         {'id': 3, 'method': 'textDocument/hover', 'params': {'textDocument': {'uri': uri}, 'position': {'line': 0, 'character': 7}}},
         {'method': 'workspace/didChangeConfiguration', 'params': {'settings': {'laymesh': {'language': 'zh-CN'}}}},
         {'id': 4, 'method': 'textDocument/hover', 'params': {'textDocument': {'uri': uri}, 'position': {'line': 0, 'character': 7}}},
+        {'method': 'textDocument/didChange', 'params': {'textDocument': {'uri': uri, 'version': 2}, 'contentChanges': [{'text': 'first=1\nvalue=text(content="中文 😀",font_size=12pt)\nlast=3'}]}},
+        {'id': 6, 'method': 'textDocument/formatting', 'params': {'textDocument': {'uri': uri}, 'options': {'tabSize': 2, 'insertSpaces': True, 'lineWidth': 30}}},
+        {'id': 7, 'method': 'textDocument/rangeFormatting', 'params': {'textDocument': {'uri': uri}, 'range': {'start': {'line': 1, 'character': 9}, 'end': {'line': 1, 'character': 20}}, 'options': {'tabSize': 2, 'insertSpaces': True, 'lineWidth': 30}}},
+        {'method': 'textDocument/didOpen', 'params': {'textDocument': {'uri': uri + '.lcss', 'languageId': 'lcss', 'version': 1, 'text': 'canvas {\ncolor:#123456;\nfont-size:12pt;\n}'}}},
+        {'id': 8, 'method': 'textDocument/formatting', 'params': {'textDocument': {'uri': uri + '.lcss'}, 'options': {'tabSize': 2, 'insertSpaces': True}}},
+        {'id': 9, 'method': 'textDocument/rangeFormatting', 'params': {'textDocument': {'uri': uri + '.lcss'}, 'range': {'start': {'line': 1, 'character': 1}, 'end': {'line': 1, 'character': 5}}, 'options': {'tabSize': 2, 'insertSpaces': True}}},
         {'id': 5, 'method': 'shutdown', 'params': None},
         {'method': 'exit', 'params': None},
     ]
@@ -149,6 +155,15 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-editor-') as temporary:
     english = responses[3]['result']['contents']['value']
     chinese = responses[4]['result']['contents']['value']
     assert english != chinese and '/en/docs/' in english and '.zh-CN.html' in chinese
+    assert responses[1]['result']['capabilities']['documentFormattingProvider'] is True
+    assert responses[1]['result']['capabilities']['documentRangeFormattingProvider'] is True
+    assert 'text(\n' in responses[6]['result'][0]['newText']
+    assert responses[7]['result'][0]['range']['start']['line'] == 1
+    assert responses[7]['result'][0]['range']['end']['line'] == 1
+    assert 'color: #123456;' in responses[8]['result'][0]['newText']
+    assert responses[9]['result'][0]['range']['start']['line'] == 1
+    assert responses[9]['result'][0]['range']['end']['line'] == 1
+    checks.append('LSP formatting capabilities, unsaved LayMesh/LCSS documents and UTF-16 selection ranges')
     assert responses[5]['result'] is None
     checks.append('File-path LSP initialization, completion, English/Chinese hover and clean shutdown')
 

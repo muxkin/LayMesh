@@ -1,6 +1,6 @@
 # LayMesh
 
-**Plot data and compose precise, reproducible scientific figures in readable code.** Combine native plots, images, vector shapes, text and formulas in one `.lay` file, then export SVG, PDF, editable PPTX (development version), or PNG, JPEG, TIFF, WebP and other images at your chosen DPI.
+**Plot data and compose precise, reproducible scientific figures in readable code.** Combine native plots, images, vector shapes, text and formulas in one `.lay` file, then export SVG, PDF, editable PPTX, or PNG, JPEG, TIFF, WebP and other images at your chosen DPI.
 
 [Documentation](https://muxkin.github.io/LayMesh/en/) · [中文](README.md) · [Feature gallery](docs/sections/examples.en.md) · [Installation](docs/topics/install.en.md)
 
@@ -8,11 +8,11 @@
 
 [Showcase source](examples/showcase.lay) · [Scientific plot examples](docs/gallery/plots.en.md)
 
-[Artistic text, shadows and glow](docs/topics/art-effects.en.md) · [Editable example](examples/effects/art-text.lay) · [Release notes](release/notes/0.4.0.md)
+[Editable PPTX export](docs/topics/export.en.md#editable-pptx-export) · [Artistic text, shadows and glow](docs/topics/art-effects.en.md) · [Release notes](release/notes/0.5.0.md)
 
 ## VS Code (recommended)
 
-Install [LayMesh by Hyacine](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) from Extensions, or use **Extensions: Install from VSIX** with a platform package. **Version 0.4.0 VSIX packages for Windows x64, Linux x64 / ARM64 and macOS Intel / Apple Silicon include the native engine: no Python, Rust or npm installation is needed.** With Remote SSH, install the package matching the remote extension host.
+Install [LayMesh by Hyacine](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) from Extensions, or use **Extensions: Install from VSIX** with a platform package. **Version 0.5.0 VSIX packages for Windows x64, Linux x64 / ARM64 and macOS Intel / Apple Silicon include the native engine: no Python, Rust or npm installation is needed.** With Remote SSH, install the package matching the remote extension host.
 
 Open a trusted local or Remote SSH folder and save this as `figure.lay`:
 
@@ -26,7 +26,7 @@ Click the preview icon or run **LayMesh: Open Preview** for a live figure beside
 
 ## Python and CLI installation
 
-Requires **Python 3.10+**. The **`0.4.0`** sources synchronize Python, Rust and the VS Code extension, adding artistic text and inner/outer shadows and glow. Stable tags build reviewed packages; PyPI approval precedes publication and the GitHub Release. Check PyPI for the currently published version. Install from [PyPI](https://pypi.org/project/laymesh/):
+Requires **Python 3.10+**. The **`0.5.0`** sources synchronize Python, Rust and the VS Code extension, adding editable PPTX export, editor file icons and code formatting. Stable tags build reviewed packages; PyPI approval precedes publication and the GitHub Release. Check PyPI for the currently published version. Install from [PyPI](https://pypi.org/project/laymesh/):
 
 ```sh
 python -m pip install laymesh

@@ -34,7 +34,7 @@ Native raster exports are **8-bit sRGB RGB/RGBA**. Sixteen-bit inputs retain pre
 
 ## Editable PPTX export
 
-Available in the current development source for the next release; older published packages may not expose this format.
+Requires LayMesh 0.5.0 or later.
 
 ```sh
 laymesh render examples/export/pptx-editable.lay -o figure.pptx

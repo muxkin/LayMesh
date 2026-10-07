@@ -4,23 +4,23 @@ Preview and edit scientific figures in `.lay` and `.lcss`. Get live SVG previews
 
 支持 `.lay` 与 `.lcss`：实时 SVG 预览、单位标尺、鼠标画布和绘图坐标、代码补全、参数说明、诊断与选色器，界面支持中文和英文。
 
-Version **0.4.0** shares its version with the Python package and Rust engine. Platform VSIX builds cover **Windows x64**, **Linux x64 / ARM64** and **macOS Intel / Apple Silicon**, including matching remote extension hosts. Preview uses a bundled native Rust program; no Python, Rust toolchain or npm installation is needed by extension users. Windows ARM64 and browser-only VS Code require their own compatible packages. Language analysis is static and never executes figure code; preview rendering is a separate opt-in process in a trusted workspace.
+Version **0.5.0** shares its version with the Python package and Rust engine. Platform VSIX builds cover **Windows x64**, **Linux x64 / ARM64** and **macOS Intel / Apple Silicon**, including matching remote extension hosts. Preview uses a bundled native Rust program; no Python, Rust toolchain or npm installation is needed by extension users. Windows ARM64 and browser-only VS Code require their own compatible packages. Language analysis is static and never executes figure code; preview rendering is a separate opt-in process in a trusted workspace.
 
-Build from the repository root with `python scripts/build-editors.py`. Create a stable Marketplace package with `python scripts/package-editor.py --target linux-x64 --output release/dist/laymesh-language-0.4.0-linux-x64.vsix`, then audit it with `python scripts/check-editor.py release/dist/laymesh-language-0.4.0-linux-x64.vsix --binary target/release/laymesh --target linux-x64 --marketplace`. No npm packages are needed. To install locally, use VS Code's **Extensions: Install from VSIX** command.
+Build from the repository root with `python scripts/build-editors.py`. Create a stable Marketplace package with `python scripts/package-editor.py --target linux-x64 --output release/dist/laymesh-language-0.5.0-linux-x64.vsix`, then audit it with `python scripts/check-editor.py release/dist/laymesh-language-0.5.0-linux-x64.vsix --binary target/release/laymesh --target linux-x64 --marketplace`. No npm packages are needed. To install locally, use VS Code's **Extensions: Install from VSIX** command.
 
 Build Windows x64 on Windows with `cargo build --release --locked -p laymesh-cli`, then stage `target/release/laymesh.exe`. A Linux build host with MinGW-w64 can instead run `rustup target add x86_64-pc-windows-gnu` and `cargo build --release --locked -p laymesh-cli --target x86_64-pc-windows-gnu`. Package it in a separate directory to preserve the Linux development binary:
 
 ```sh
 python scripts/build-editors.py --binary target/x86_64-pc-windows-gnu/release/laymesh.exe --extension-dir release/staging/vscode-win32-x64
-python scripts/package-editor.py --extension-dir release/staging/vscode-win32-x64 --target win32-x64 --output release/dist/laymesh-language-0.4.0-win32-x64.vsix
-python scripts/check-editor.py release/dist/laymesh-language-0.4.0-win32-x64.vsix --binary target/x86_64-pc-windows-gnu/release/laymesh.exe --target win32-x64 --marketplace
+python scripts/package-editor.py --extension-dir release/staging/vscode-win32-x64 --target win32-x64 --output release/dist/laymesh-language-0.5.0-win32-x64.vsix
+python scripts/check-editor.py release/dist/laymesh-language-0.5.0-win32-x64.vsix --binary target/x86_64-pc-windows-gnu/release/laymesh.exe --target win32-x64 --marketplace
 ```
 
 Run `python scripts/smoke-native-editor.py --binary target/release/laymesh.exe --output release/dist/windows-native-evidence.json` on Windows to verify the preview protocol, resources, units, paths, error recovery and bilingual language service. On Linux, `--wine /path/to/wine` runs the cross-built EXE through Wine. This protocol check is separate from testing the actual Windows VS Code interface.
 
 Stable version tags build and audit five platform VSIX packages in GitHub Actions. After the existing PyPI approval and upload, GitHub Release provides these exact packages and `SHA256SUMS`. Marketplace uploads are manual through the [Hyacine publisher portal](https://marketplace.visualstudio.com/manage/publishers/Hyacine); no Actions Marketplace secret is needed. See the [release procedure](https://github.com/muxkin/LayMesh/blob/main/release/README.en.md) and [platform-specific publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#platform-specific-extensions).
 
-0.4.0 与 Python 包、Rust 引擎使用相同版本，构建 Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon 独立安装包，内置原生语言服务与预览程序。稳定标签触发五平台构建，PyPI 人工审批和上传成功后生成 GitHub Release；从 Release 下载审核包，通过发布者门户手动上传 Marketplace。远程开发时，安装包平台应匹配远程扩展宿主。
+0.5.0 与 Python 包、Rust 引擎使用相同版本，构建 Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon 独立安装包，内置原生语言服务与预览程序。稳定标签触发五平台构建，PyPI 人工审批和上传成功后生成 GitHub Release；从 Release 下载审核包，通过发布者门户手动上传 Marketplace。远程开发时，安装包平台应匹配远程扩展宿主。
 
 Artistic text supports glyph gradients/outlines, open paths, arc/wave/perspective warps and vector extrusion. Text, shapes, transparent images and groups support inner/outer shadow and glow. See the [effects guide](https://muxkin.github.io/LayMesh/en/docs/topics/art-effects.html).
 
@@ -36,6 +36,32 @@ The website uses Tab to accept completion and Enter to insert a newline. This ex
 {
   "[laymesh]": { "editor.acceptSuggestionOnEnter": "off" },
   "[lcss]": { "editor.acceptSuggestionOnEnter": "off" }
+}
+```
+
+## File icons and formatting / 文件图标与格式化
+
+`.lay` and `.lcss` have distinct SVG file icons for light and dark themes. VS Code uses these language icons when the active file icon theme permits them; a theme can provide its own icons or disable language icons.
+
+Use **Format Document** or **Format Selection** from the editor context menu. Both languages use the bundled Rust formatter, including `style { ... }` inside `.lay`. Short calls stay on one line; long calls and comma-separated collections expand at `laymesh.format.lineWidth` (default **100**). Indentation follows the editor's tab size and spaces/tabs setting. Literal strings, interpolations and comment text retain their spelling; indivisible content may exceed the target width. Incomplete syntax or a transformation that cannot preserve meaning produces no edits. Selection formatting may expand to a complete statement or style declaration.
+
+`.lay` 和 `.lcss` 提供可区分的浅色、深色 SVG 文件图标，显示遵循当前文件图标主题的规则。在编辑器中执行**格式化文档**或**格式化选区**即可整理代码，也支持 `.lay` 内嵌的 `style { ... }`。默认目标行宽为 **100**，通过 `laymesh.format.lineWidth` 调整；短调用保留一行，长参数与列表自动展开，缩进遵循编辑器设置。字符串、插值和注释正文保持原样；代码不完整或无法保证语义一致时不修改。选区会按需要扩展至完整语句或样式声明。
+
+Save-time formatting follows your existing `editor.formatOnSave` setting. To enable it only for these languages:
+
+保存时是否格式化沿用 `editor.formatOnSave`，扩展不会自动开启。可仅为这两种语言设置：
+
+```json
+{
+  "laymesh.format.lineWidth": 100,
+  "[laymesh]": {
+    "editor.defaultFormatter": "Hyacine.laymesh-language",
+    "editor.formatOnSave": true
+  },
+  "[lcss]": {
+    "editor.defaultFormatter": "Hyacine.laymesh-language",
+    "editor.formatOnSave": true
+  }
 }
 ```
 
@@ -108,6 +134,6 @@ Native preview directly displays full-resolution JPEG 90 images; only nonopaque 
 
 Use **LayMesh: Set Preview Delay** in the Command Palette to enter any integer from 0 to 5000 ms (default 100). Set 0 to disable debounce. The command saves to the current workspace, or user settings if no workspace is open; changes apply immediately. You can also edit `laymesh.preview.debounceMs` in Settings.
 
-The current development source includes PPTX export as **PowerPoint (PPTX)** in the format picker. Text and supported shapes remain editable; complex effects use reported local PNG fallback. DPI controls fallback only (default 1200), and fonts are not embedded.
+Version 0.5.0 includes PPTX export as **PowerPoint (PPTX)** in the format picker. Text and supported shapes remain editable; complex effects use reported local PNG fallback. DPI controls fallback only (default 1200), and fonts are not embedded.
 
-当前开发源码的格式列表支持 **PowerPoint (PPTX)**，随下一版本发布。文字和支持的形状可编辑，复杂效果局部回退为 PNG 并给出警告；DPI 仅控制回退图片（默认 1200），不嵌入字体。
+0.5.0 的格式列表支持 **PowerPoint (PPTX)**。文字和支持的形状可编辑，复杂效果局部回退为 PNG 并给出警告；DPI 仅控制回退图片（默认 1200），不嵌入字体。

@@ -1,0 +1,103 @@
+// Exercise real formatting providers, save participants and language icons.
+const vscode=require('vscode');
+const assert=require('assert/strict');
+const fs=require('fs');
+const path=require('path');
+const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+exports.run=async function(){
+ const root=process.env.LAYMESH_FORMAT_ROOT,gate=process.env.LAYMESH_FORMAT_GATE;
+ const evidence={host:'VS Code extension host',empty_path:true,tests:[]};
+ const extension=vscode.extensions.getExtension('Hyacine.laymesh-language');assert(extension);
+ const api=require('module')._load('vscode',{filename:path.join(extension.extensionPath,'dist/client.cjs')});
+ let provider,child;
+ const register=api.languages.registerDocumentFormattingEditProvider;
+ const cp=require('child_process'),spawn=cp.spawn;
+ api.languages.registerDocumentFormattingEditProvider=(select,p)=>{provider=p;return register.call(api.languages,select,p);};
+ cp.spawn=(binary,args,options)=>{const result=spawn(binary,args,options);if(args[0]==='lsp')child=result;return result;};
+ try{await extension.activate();}finally{api.languages.registerDocumentFormattingEditProvider=register;cp.spawn=spawn;}
+ assert(provider&&child);
+ const mainUri=vscode.Uri.file(path.join(root,'main.lay'));
+ const cssUri=vscode.Uri.file(path.join(root,'paper.lcss'));
+ const doc=await vscode.workspace.openTextDocument(mainUri);
+ const css=await vscode.workspace.openTextDocument(cssUri);
+ await vscode.window.showTextDocument(css,{preview:false});
+ await vscode.window.showTextDocument(doc,{preview:false});
+ const replace=async(doc,source)=>{
+  const edit=new vscode.WorkspaceEdit();edit.replace(doc.uri,new vscode.Range(doc.positionAt(0),doc.positionAt(doc.getText().length)),source);
+  assert(await vscode.workspace.applyEdit(edit));
+ };
+ const apply=async(doc,edits)=>{const edit=new vscode.WorkspaceEdit();edit.set(doc.uri,edits);assert(await vscode.workspace.applyEdit(edit));};
+ const opts={tabSize:2,insertSpaces:true};
+ const source='page=canvas(size=(80mm,60mm))\nlabel=text(content="A title for a scientific figure",font_size=12pt,color="#123456")\npage.add(label,offset=(4mm,5mm))';
+ await replace(doc,source);
+ assert(doc.isDirty&&fs.readFileSync(mainUri.fsPath,'utf8')!==source);
+ let edits=await vscode.commands.executeCommand('vscode.executeFormatDocumentProvider',mainUri,opts);
+ assert(edits.length);await apply(doc,edits);
+ assert(doc.getText().includes('page = canvas(size = (80 mm, 60 mm))'));
+ assert(!doc.getText().includes('text(\n'));
+ assert.deepEqual((await vscode.commands.executeCommand('vscode.executeFormatDocumentProvider',mainUri,opts))||[],[]);
+ evidence.tests.push('Document formatting reads unsaved text; short calls remain compact and repeated formatting is a no-op');
+ await vscode.workspace.getConfiguration('laymesh',mainUri).update('format.lineWidth',45,vscode.ConfigurationTarget.Workspace);
+ await replace(doc,source);
+ edits=await vscode.commands.executeCommand('vscode.executeFormatDocumentProvider',mainUri,opts);await apply(doc,edits);
+ assert(doc.getText().includes('text(\n  content = '));
+ assert(doc.getText().includes('font_size = 12 pt,\n'));
+ evidence.tests.push('Resource line-width setting expands long calls using requested indentation');
+ const selectedSource='first=1\nchosen=text(content="中文 😀",font_size=12pt)\nlast=3';
+ await replace(doc,selectedSource);
+ edits=await vscode.commands.executeCommand('vscode.executeFormatRangeProvider',mainUri,new vscode.Range(1,9,1,20),opts);
+ await apply(doc,edits);assert(doc.getText().startsWith('first=1\n'));assert(doc.getText().endsWith('\nlast=3'));
+ assert(doc.getText().includes('chosen = text('));
+ evidence.tests.push('Selection formatting expands to one statement and leaves surrounding statements unchanged');
+ await replace(css,'canvas{--ink:#123456;color:var(--ink);font-size:12pt;}');
+ edits=await vscode.commands.executeCommand('vscode.executeFormatDocumentProvider',cssUri,{tabSize:4,insertSpaces:false});await apply(css,edits);
+ assert(css.getText().includes('canvas {\n\t--ink: #123456;\n\tcolor: var(--ink);'));
+ assert.deepEqual((await vscode.commands.executeCommand('vscode.executeFormatDocumentProvider',cssUri,{tabSize:4,insertSpaces:false}))||[],[]);
+ await replace(css,'canvas {\n color:#123456;\n font-size:12pt;\n}');
+ edits=await vscode.commands.executeCommand('vscode.executeFormatRangeProvider',cssUri,new vscode.Range(1,3,1,6),opts);await apply(css,edits);
+ assert.equal(css.getText(),'canvas {\n  color: #123456;\n font-size:12pt;\n}');
+ evidence.tests.push('LCSS document and range providers respect tabs and preserve unselected declarations');
+ await replace(doc,'style { text {color:#123456;} }\nvalue=1');
+ edits=await vscode.commands.executeCommand('vscode.executeFormatDocumentProvider',mainUri,opts);await apply(doc,edits);
+ assert(doc.getText().includes('style {\n  text {\n    color: #123456;\n  }\n}'));
+ evidence.tests.push('LayMesh embedded styles use the stylesheet formatter');
+ await replace(doc,'value=text(');
+ assert.deepEqual((await vscode.commands.executeCommand('vscode.executeFormatDocumentProvider',mainUri,opts))||[],[]);
+ await replace(css,'canvas { color:');
+ assert.deepEqual((await vscode.commands.executeCommand('vscode.executeFormatDocumentProvider',cssUri,opts))||[],[]);
+ evidence.tests.push('Incomplete LayMesh and LCSS buffers return no edits');
+ assert.deepEqual(await provider.provideDocumentFormattingEdits(doc,opts,{isCancellationRequested:true}),[]);
+ await replace(doc,'value=1');
+ child.stdout.pause();
+ let token={isCancellationRequested:false};
+ let pending=provider.provideDocumentFormattingEdits(doc,opts,token);
+ token.isCancellationRequested=true;child.stdout.resume();assert.deepEqual(await pending,[]);
+ child.stdout.pause();
+ pending=provider.provideDocumentFormattingEdits(doc,opts,{isCancellationRequested:false});
+ await replace(doc,'value=2');child.stdout.resume();assert.deepEqual(await pending,[]);
+ evidence.tests.push('Cancelled requests and results for a changed document are discarded');
+ for(const document of [doc,css]){
+  const editor=vscode.workspace.getConfiguration('editor',document.uri);
+  assert.equal(editor.get('formatOnSave'),false,'Extension must not enable formatOnSave');
+  await replace(document,document===doc?'value=3':'canvas{color:#123456;}');await document.save();
+  assert.equal(document.getText(),document===doc?'value=3':'canvas{color:#123456;}');
+  await editor.update('defaultFormatter','Hyacine.laymesh-language',vscode.ConfigurationTarget.Workspace);
+  await editor.update('formatOnSave',true,vscode.ConfigurationTarget.Workspace);
+  await replace(document,document===doc?'value=4':'canvas{color:#abcdef;}');await document.save();
+  assert(document.getText().includes(document===doc?'value = 4':'color: #abcdef;'));
+  await editor.update('formatOnSave',false,vscode.ConfigurationTarget.Workspace);
+ }
+ evidence.tests.push('Save formatting stays disabled by default and follows editor.formatOnSave for both languages');
+ await vscode.workspace.getConfiguration('laymesh',mainUri).update('format.lineWidth',100,vscode.ConfigurationTarget.Workspace);
+ await replace(doc,'## A reusable scientific figure\npage=canvas(size=(80mm,60mm))\nstyle { text.title {color:#087f64;font-size:14pt;} }\nlabel=text(content="LayMesh",class="title")\npage.add(label,offset=(6mm,8mm))');
+ edits=await vscode.commands.executeCommand('vscode.executeFormatDocumentProvider',mainUri,opts);await apply(doc,edits);await doc.save();
+ await replace(css,'canvas {\n  --ink: #087f64;\n  color: var(--ink);\n}\n');await css.save();
+ await vscode.commands.executeCommand('workbench.view.explorer');
+ for(const [name,theme]of [['dark','Default Dark Modern'],['light','Default Light Modern']]){
+  await vscode.workspace.getConfiguration('workbench').update('colorTheme',theme,vscode.ConfigurationTarget.Global);
+  await pause(500);fs.writeFileSync(gate,JSON.stringify({phase:name}));
+  for(let i=0;i<200;i++){if(JSON.parse(fs.readFileSync(gate,'utf8')).phase===name+'-captured')break;await pause(100);if(i===199)throw Error('Icon capture timed out');}
+ }
+ evidence.tests.push('Distinct language file icons are displayed in explorer and tabs under light and dark themes');
+ fs.writeFileSync(process.env.LAYMESH_FORMAT_EVIDENCE,JSON.stringify(evidence,null,2));
+};

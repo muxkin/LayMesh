@@ -59,6 +59,25 @@ async function activate(context){
   }
  }),
  vscode.languages.registerCodeActionsProvider(select,{async provideCodeActions(doc,r,ctx){const actions=await request('textDocument/codeAction',{textDocument:{uri:doc.uri.toString()},range:wireRange(r),context:{diagnostics:ctx.diagnostics.map(d=>d._laymesh).filter(Boolean)}});return(actions||[]).map(a=>{const action=new vscode.CodeAction(a.title,vscode.CodeActionKind.QuickFix);const edit=new vscode.WorkspaceEdit();for(const [uri,changes]of Object.entries(a.edit.changes))for(const c of changes)edit.replace(vscode.Uri.parse(uri),range(c.range),c.newText);action.edit=edit;return action;});}},{providedCodeActionKinds:[vscode.CodeActionKind.QuickFix]}));
+ const formatOptions=(doc,options)=>({...options,
+  lineWidth:vscode.workspace.getConfiguration('laymesh',doc.uri).get('format.lineWidth',100),
+  trimTrailingWhitespace:vscode.workspace.getConfiguration('files',doc.uri).get('trimTrailingWhitespace',false),
+  insertFinalNewline:vscode.workspace.getConfiguration('files',doc.uri).get('insertFinalNewline',false),
+  trimFinalNewlines:vscode.workspace.getConfiguration('files',doc.uri).get('trimFinalNewlines',false)
+ });
+ const formatting=async(doc,options,token,selected)=>{
+  const version=doc.version;
+  if(token?.isCancellationRequested)return [];
+  const result=await request(selected?'textDocument/rangeFormatting':'textDocument/formatting',{
+   textDocument:{uri:doc.uri.toString()},options:formatOptions(doc,options),...(selected?{range:wireRange(selected)}:{})
+  });
+  if(token?.isCancellationRequested||doc.isClosed||doc.version!==version)return [];
+  return(result||[]).map(edit=>new vscode.TextEdit(range(edit.range),edit.newText));
+ };
+ context.subscriptions.push(
+  vscode.languages.registerDocumentFormattingEditProvider(select,{provideDocumentFormattingEdits(doc,options,token){return formatting(doc,options,token);}}),
+  vscode.languages.registerDocumentRangeFormattingEditProvider(select,{provideDocumentRangeFormattingEdits(doc,selected,options,token){return formatting(doc,options,token,selected);}})
+ );
  context.subscriptions.push(vscode.languages.registerColorProvider(select,{
   async provideDocumentColors(doc){const list=await request('textDocument/documentColor',{textDocument:{uri:doc.uri.toString()}});return(list||[]).map(c=>new vscode.ColorInformation(range(c.range),new vscode.Color(c.color.red,c.color.green,c.color.blue,c.color.alpha)));},
   async provideColorPresentations(color,ctx){const list=await request('textDocument/colorPresentation',{textDocument:{uri:ctx.document.uri.toString()},range:wireRange(ctx.range),color:{red:color.red,green:color.green,blue:color.blue,alpha:color.alpha}});return(list||[]).map(p=>{const item=new vscode.ColorPresentation(p.label);item.textEdit=new vscode.TextEdit(range(p.textEdit.range),p.textEdit.newText);return item;});}

@@ -38,5 +38,6 @@
   "config.export.webpMethod": "WebP encoding effort (0–6).",
   "config.export.webpAlphaQuality": "Alpha quality for lossy WebP; 100 preserves full precision.",
   "config.export.webpNearLossless": "Near-lossless fidelity for lossless WebP; 100 is fully lossless.",
-  "config.export.webpQuality": "WebP quality (0–100); overrides the shared export quality when explicitly set."
+  "config.export.webpQuality": "WebP quality (0–100); overrides the shared export quality when explicitly set.",
+  "config.format.lineWidth": "Preferred line width for document and selection formatting. Short calls stay on one line; long argument lists expand. Indentation follows VS Code settings. Strings and other indivisible content may exceed this width."
 }

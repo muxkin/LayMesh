@@ -2,6 +2,7 @@
 mod bindings;
 mod colors;
 mod connections;
+mod formatting;
 mod index;
 pub mod inspect;
 pub mod lsp;

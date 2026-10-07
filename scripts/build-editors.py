@@ -16,6 +16,7 @@ def build(binary=None,extension_dir=None):
   for item in source.iterdir():
    if item.is_file() and item.suffix.lower() not in ('.vsix','.pyc'):shutil.copy2(item,extension/item.name)
   shutil.copytree(source/'syntaxes',extension/'syntaxes',dirs_exist_ok=True)
+  shutil.copytree(source/'icons',extension/'icons',dirs_exist_ok=True)
  (extension/'dist').mkdir(exist_ok=True);(extension/'bin').mkdir(exist_ok=True)
  # Function spellings come from the same registry as language services.
  grammar=extension/'syntaxes/laymesh.tmLanguage.json';syntax=json.loads(grammar.read_text())

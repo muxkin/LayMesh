@@ -37,6 +37,30 @@ class GitHubReleaseTests(unittest.TestCase):
  def test_noncanonical_and_prerelease_tags_are_rejected_before_git(self):
   for tag in ['0.4.0','v0.4.0rc1','v00.4.0','v0.4.0-extra']:
    with self.assertRaises(ValueError):release.validate_tag(tag)
+ def test_new_and_existing_drafts_use_numeric_endpoint_before_publication(self):
+  for resume in [False,True]:
+   with self.subTest(resume=resume),tempfile.TemporaryDirectory() as tmp:
+    path=Path(tmp);assets=self.fixture(path)
+    wanted={**{name:hashlib.sha256(data).hexdigest() for name,data in assets.items()},'SHA256SUMS':hashlib.sha256((path/'SHA256SUMS').read_bytes()).hexdigest()}
+    uploaded=[{'id':i,'name':name,'digest':'sha256:'+digest} for i,(name,digest) in enumerate(wanted.items(),1)]
+    draft={'id':77,'tag_name':'v0.5.0','draft':True,'assets':uploaded if resume else []}
+    final={**draft,'assets':uploaded}
+    calls=[];listings=iter([[draft]] if resume else [[],[draft]])
+    def fake_run(*args,**kwargs):
+     calls.append(args)
+     if args[:2]==('gh','api'):
+      endpoint=args[2]
+      if endpoint.endswith('releases?per_page=100'):payload=next(listings)
+      elif endpoint.endswith('releases/77'):payload=final
+      elif '/releases/assets/' in endpoint:payload=next(a for a in uploaded if str(a['id'])==endpoint.rsplit('/',1)[1])
+      else:self.fail('Unexpected API endpoint: '+endpoint)
+      return subprocess.CompletedProcess(args,0,json.dumps(payload),'')
+     return subprocess.CompletedProcess(args,0,'','')
+    with patch.object(release,'validate_tag',return_value='0.5.0'),patch.object(release.subprocess,'run',return_value=subprocess.CompletedProcess([],1,'','Not Found')),patch.object(release,'run',side_effect=fake_run):
+     release.publish('v0.5.0',path,'owner/repo')
+    self.assertEqual(sum(c[:3]==('gh','release','create') for c in calls),0 if resume else 1)
+    self.assertEqual(sum(c[:3]==('gh','release','upload') for c in calls),0 if resume else 11)
+    self.assertEqual(calls[-1][:4],('gh','release','edit','v0.5.0'))
 class PyPIRetryTests(unittest.TestCase):
  def test_partial_retry_requires_identical_existing_wheels(self):
   expected={'a.whl':'a'*64,'b.whl':'b'*64}

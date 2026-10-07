@@ -34,7 +34,7 @@ WebP 还支持 `--webp-alpha-quality 0–100`（默认 100；降低需使用有�
 
 ## PPTX 可编辑导出
 
-已接入当前开发源码；随下一版本发布，已发布的旧版可能尚不支持此格式。
+需要 LayMesh 0.5.0 或更新版本。
 
 ```sh
 laymesh render examples/export/pptx-editable.lay -o figure.pptx

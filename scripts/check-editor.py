@@ -19,6 +19,16 @@ with zipfile.ZipFile(a.vsix) as z:
  assert "['pptx','PowerPoint (PPTX)']" in host, 'PPTX must be available in the export format picker'
  client=z.read(scripts[0]).decode();assert set(re.findall(r"require\(['\"]([^'\"]+)",client))=={'vscode','child_process','path','./preview-host.cjs'}
  package=json.loads(z.read('extension/package.json'));assert not package.get('dependencies') and not package.get('devDependencies');assert package['main']=='./dist/client.cjs'
+ languages={v['id']:v for v in package['contributes']['languages']};assert set(languages)=={'laymesh','lcss'}
+ for language in languages.values():
+  assert set(language['icon'])=={'light','dark'}
+  for icon_path in language['icon'].values():
+   icon_name='extension/'+icon_path.removeprefix('./')
+   assert icon_name in names, f'Missing language icon: {icon_name}'
+   svg=ElementTree.fromstring(z.read(icon_name));assert svg.tag=='{http://www.w3.org/2000/svg}svg'
+   assert svg.get('viewBox')=='0 0 16 16'
+ assert 'registerDocumentFormattingEditProvider' in client and 'registerDocumentRangeFormattingEditProvider' in client
+ assert package['contributes']['configuration']['properties']['laymesh.format.lineWidth']['default']==100
  placeholders=set(re.findall(r'"%([^%]+)%"',z.read('extension/package.json').decode()))
  translations=json.loads(z.read('extension/package.nls.json'))
  chinese=json.loads(z.read('extension/package.nls.zh-cn.json'))
@@ -28,6 +38,8 @@ with zipfile.ZipFile(a.vsix) as z:
  defaults={v.get('Extension').lstrip('.').lower():v.get('ContentType') for v in content.findall('{*}Default')}
  overrides={v.get('PartName').lstrip('/'):v.get('ContentType') for v in content.findall('{*}Override')}
  def content_type(name):return overrides.get(name) or defaults.get(Path(name).suffix.lstrip('.').lower())
+ for language in languages.values():
+  for icon_path in language['icon'].values():assert content_type('extension/'+icon_path.removeprefix('./'))=='image/svg+xml'
  assert manifest.find('.//{*}Description').text==translations['extension.description']
  identity=manifest.find('.//{*}Identity')
  assert identity.get('Id')==package['name'] and identity.get('Publisher')==package['publisher'] and identity.get('Version')==package['version']

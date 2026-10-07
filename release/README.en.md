@@ -1,12 +1,12 @@
 # Build and publish to PyPI
 
-**Release 0.4.0 is published** with two-endpoint straight-line connections and geometry-free `line()` materials. Python, the Rust engine and the VS Code extension share the same version. All five platform wheels and stable VSIX builds, Python 3.10/3.13/3.14 checks and full contracts passed. [Verification and publication](https://github.com/muxkin/LayMesh/actions/runs/37400436659).
+The **0.5.0** release combines editable PPTX export with VS Code file icons and native document/selection formatting. Python, Rust, runtime metadata and the extension share one version. See the [bilingual release notes](notes/0.5.0.md); publication status and cross-platform results are recorded in the [release workflow](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml).
 
-The current release is **[`0.4.0`](https://pypi.org/project/laymesh/0.4.0/)**, with all five platform wheels published. NumPy, pandas, Matplotlib and IPython are default dependencies; `pip install laymesh` installs all Python features. The [publishing workflow](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml) builds and verifies five platform wheels, audits their contents and checksums, and uploads through Trusted Publishing. Each wheel includes the Python API, CLI entry point, one native Rust executable, dependency licenses and a build manifest. Formula fonts are compiled into RaTeX; body fonts come from the system or user files.
+NumPy, pandas, Matplotlib and IPython are default dependencies; `pip install laymesh` installs all Python features. Check [PyPI](https://pypi.org/project/laymesh/) for the published version. The [publishing workflow](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml) builds and verifies five platform wheels, audits contents and checksums, and uploads through Trusted Publishing after approval. Each wheel includes the Python API, CLI entry point, one native Rust executable, dependency licenses and a build manifest. Formula fonts are compiled into RaTeX; body fonts come from the system or user files.
 
 [runtime.json](runtime.json) defines five targets: Linux x64 / arm64, macOS 14+ Intel / Apple Silicon, and Windows x64. Python users need 3.10+; build scripts need Python 3.11+ and Rust 1.93.1. This release publishes platform wheels only. The `python/` directory alone is not a complete source distribution with the Rust engine; do not upload an sdist made from that directory.
 
-Release checks reject mismatched Python, Rust, runtime and extension versions. The workflow also builds VSIX packages for all five platforms and audits their native architectures; each extension's native binary matches the corresponding wheel's hash. The SHA-256 hashes of all five published PyPI files match the original reviewed artifacts.
+Release checks reject mismatched Python, Rust, runtime and extension versions. The workflow also builds VSIX packages for all five platforms and audits their native architectures; each extension's native binary must match the corresponding wheel's hash. Publication checks require all five PyPI files to match the original reviewed SHA-256 hashes.
 
 ## Local build and audit
 
@@ -18,9 +18,9 @@ python scripts/check-release.py
 python -m pip install -e "./python" pillow
 python scripts/test-contracts.py
 python scripts/collect-licenses.py
-python scripts/build-python-wheel.py --output release/dist/pypi-0.4.0
-python scripts/check-python-wheels.py release/dist/pypi-0.4.0 --checksums release/dist/pypi-0.4.0/SHA256SUMS
-python -m twine check --strict release/dist/pypi-0.4.0/*.whl
+python scripts/build-python-wheel.py --output release/dist/pypi-0.5.0
+python scripts/check-python-wheels.py release/dist/pypi-0.5.0 --checksums release/dist/pypi-0.5.0/SHA256SUMS
+python -m twine check --strict release/dist/pypi-0.5.0/*.whl
 ```
 
 The builder checks version alignment, compiles the locked release engine, and stages a wheel outside the source tree. A separate output directory avoids mixing this candidate with earlier wheels. Linux tags reflect the binary's measured GLIBC symbol requirements, with a floor of 2.28; a newer host build must not claim an older baseline. The local Linux x64 wheel requires glibc 2.35+. CI runner builds may require a newer glibc; review the actual filenames and manifests.
@@ -32,7 +32,7 @@ The manifest records Python/Rust versions, target, executable SHA-256 and Cargo.
 Create a **second, clean virtual environment** and install the generated wheel, not an editable checkout. Replace the example filename below with the actual wheel for your machine:
 
 ```sh
-python -m pip install "release/dist/pypi-0.4.0/laymesh-0.4.0-py3-none-manylinux_2_35_x86_64.whl" pillow
+python -m pip install "release/dist/pypi-0.5.0/laymesh-0.5.0-py3-none-manylinux_2_35_x86_64.whl" pillow
 python -m pip check
 python -m laymesh --version
 python scripts/smoke-python-wheel.py --examples examples
@@ -47,10 +47,10 @@ The existing [publish workflow](../.github/workflows/publish-pypi.yml) uses [PyP
 
 1. Configure a PyPI pending trusted publisher with project `laymesh`, owner `muxkin`, repository `LayMesh`, workflow `publish-pypi.yml`, and environment `pypi`.
 2. Configure the repository's GitHub environment `pypi` with required reviewers. The workflow checks that this approval gate exists.
-3. Push the verified commit to `main`, then create and push the stable tag: `git tag v0.4.0` and `git push origin v0.4.0`.
+3. Push the verified commit to `main`, then create and push the stable tag: `git tag v0.5.0` and `git push origin v0.5.0`.
 4. Review the wheels, VSIX and checksums from this run, then approve the `pypi` environment. Successful upload automatically creates the GitHub Release.
 
-The publishing job downloads the exact reviewed artifacts and uploads them without rebuilding. Pull requests and ordinary build runs do not upload. After publication, verify an index installation outside the checkout with `python -m pip install "laymesh==0.4.0"`, then `python -m pip check` and `python -m laymesh --version`. A published version cannot be overwritten; increment the Python/Rust/runtime/VS Code extension versions together for a replacement release.
+The publishing job downloads the exact reviewed artifacts and uploads them without rebuilding. Pull requests and ordinary build runs do not upload. After publication, verify an index installation outside the checkout with `python -m pip install "laymesh==0.5.0"`, then `python -m pip check` and `python -m laymesh --version`. A published version cannot be overwritten; increment the Python/Rust/runtime/VS Code extension versions together for a replacement release.
 
 ## Verification records
 

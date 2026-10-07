@@ -54,12 +54,17 @@ def publish(tag: str, directory: Path, repo: str) -> None:
     expected = checksums(directory)
     probe = subprocess.run(['gh', 'api', f'repos/{repo}/releases/tags/{tag}'], capture_output=True, text=True)
     if probe.returncode:
-        # A transient/API/auth failure must not be treated as a missing release.
+        # Draft releases may be absent from the tag endpoint. Inspect the
+        # authenticated listing before creating or resuming a release.
         listing = json.loads(run('gh', 'api', f'repos/{repo}/releases?per_page=100', capture_output=True).stdout)
-        if any(r['tag_name'] == tag for r in listing):
-            raise ValueError('Existing release could not be inspected')
-        run('gh', 'release', 'create', tag, '--repo', repo, '--verify-tag', '--draft', '--title', f'LayMesh {version}', '--notes-file', str(ROOT / f'release/notes/{version}.md'))
-        info = {'assets': [], 'draft': True}
+        matches = [r for r in listing if r['tag_name'] == tag]
+        if not matches:
+            run('gh', 'release', 'create', tag, '--repo', repo, '--verify-tag', '--draft', '--title', f'LayMesh {version}', '--notes-file', str(ROOT / f'release/notes/{version}.md'))
+            listing = json.loads(run('gh', 'api', f'repos/{repo}/releases?per_page=100', capture_output=True).stdout)
+            matches = [r for r in listing if r['tag_name'] == tag]
+        if len(matches) != 1:
+            raise ValueError('Release could not be identified uniquely')
+        info = matches[0]
     else:
         info = json.loads(probe.stdout)
     existing = {a['name']: a for a in info['assets']}
@@ -73,7 +78,8 @@ def publish(tag: str, directory: Path, repo: str) -> None:
             raise ValueError(f'Existing asset has an absent or conflicting digest: {name}')
     for name in sorted(set(wanted) - set(existing)):
         run('gh', 'release', 'upload', tag, str(directory / name), '--repo', repo)
-    final = json.loads(run('gh', 'api', f'repos/{repo}/releases/tags/{tag}', capture_output=True).stdout)
+    # The numeric endpoint can inspect unpublished drafts before publishing.
+    final = json.loads(run('gh', 'api', f'repos/{repo}/releases/{info["id"]}', capture_output=True).stdout)
     if {a['name'] for a in final['assets']} != set(wanted):
         raise ValueError('Release asset verification failed')
     for item in final['assets']:

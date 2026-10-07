@@ -38,5 +38,6 @@
   "config.export.webpMethod": "WebP 编码耗时（0–6）。",
   "config.export.webpAlphaQuality": "有损 WebP 透明通道质量；100 保留完整精度。",
   "config.export.webpNearLossless": "无损 WebP 模式的近无损保真度；100 为完全无损。",
-  "config.export.webpQuality": "WebP 质量（0–100）；显式设置后覆盖通用导出质量。"
+  "config.export.webpQuality": "WebP 质量（0–100）；显式设置后覆盖通用导出质量。",
+  "config.format.lineWidth": "文档和选区格式化的目标行宽。短调用保留一行，长参数列表自动展开；缩进遵循 VS Code 设置。字符串等不可拆分内容可能超过此行宽。"
 }

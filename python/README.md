@@ -1,6 +1,6 @@
 # LayMesh
 
-**Reproducible scientific figures and precise physical layouts from readable code.** Compose native plots, images, vector shapes, text and formulas in one editable `.lay` source; export SVG, PDF, editable PPTX (development source) and PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA with a native Rust engine.
+**Reproducible scientific figures and precise physical layouts from readable code.** Compose native plots, images, vector shapes, text and formulas in one editable `.lay` source; export SVG, PDF, editable PPTX and PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA with a native Rust engine.
 
 [中文文档](https://muxkin.github.io/LayMesh/) · [English documentation](https://muxkin.github.io/LayMesh/en/) · [Examples](https://github.com/muxkin/LayMesh/tree/main/examples) · [Source](https://github.com/muxkin/LayMesh)
 
@@ -124,7 +124,7 @@ Exports default to 1200 DPI, independently of `layout_dpi`. PDF accepts `dpi`, `
 
 ## Editable PowerPoint export
 
-Available in the current development source for the next release.
+Available in LayMesh 0.5.0 or later.
 
 ```python
 from laymesh import render_file

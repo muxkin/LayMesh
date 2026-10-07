@@ -1,3 +1,13 @@
+# 0.5.0
+
+- Add editable PowerPoint (PPTX) export using the current unsaved entry and imported buffers.
+- Preserve native text, shapes, strokes, groups and image resources; rasterize unsupported effects locally with diagnostics.
+- Retain editable text when the source font lacks glyphs; presentation applications resolve installed fonts.
+- Add distinct light/dark SVG file icons for LayMesh and LCSS.
+- Add native document and selection formatting for both languages and embedded styles.
+- Wrap long calls and collections at a configurable 100-column default; respect editor indentation and save-time formatting settings.
+- Preserve source spelling and verify parse equivalence before returning edits.
+
 # 0.4.0
 
 - Add glyph paint and outlines, path text, arc/wave/perspective warps and vector extrusion.
