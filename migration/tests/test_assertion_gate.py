@@ -87,4 +87,4 @@ class AssertionGateTests(unittest.TestCase):
   (output/'evidence.json').write_text('{}')
   self.assertEqual(gate.source_manifest(self.root),expected)
   source=self.root/'examples/actual.lay';source.write_text('page=canvas()')
-  self.assertIn('examples/actual.lay',gate.source_manifest(self.root))
+  self.assertIn(str(source.relative_to(self.root)),gate.source_manifest(self.root))
