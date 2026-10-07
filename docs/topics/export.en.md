@@ -47,7 +47,7 @@ PNG/JPEG assets stay independent picture resources, shared when reused. Rectangu
 
 `--dpi` controls fallback pixels only, defaults to 1200 and supports `export.pptx.dpi` configuration. It never changes slide size. Each fallback image retains the 100000000-pixel limit. `quality`, `compression`, `background`, `pdf_*` and `webp_*` options are rejected for PPTX. `--warnings hide` hides export warnings; failed exports preserve existing destination files.
 
-Fonts are not embedded. `W_PPTX_FONT` lists the required installed families; substitution may alter text layout. Slide width and height must be within 25.4–1422.4 mm (1–56 inches). Transparent canvases use the presentation application's default slide background. CLI, Python/Jupyter and the VS Code format picker all support PPTX. LibreOffice rendering and round-trip checks must be distinguished from native PowerPoint verification.
+Fonts are not embedded. Missing glyphs on the exporting machine still retain their original editable text; the presentation application determines their display through font substitution. `W_PPTX_FONT` lists the required installed families; substitution may alter text layout. Slide width and height must be within 25.4–1422.4 mm (1–56 inches). Transparent canvases use the presentation application's default slide background. CLI, Python/Jupyter and the VS Code format picker all support PPTX. LibreOffice rendering and round-trip checks must be distinguished from native PowerPoint verification.
 
 [Complete example source](../../examples/export/pptx-editable.lay) · [Native geometry and picture-fit fixture](../../examples/export/pptx-native.lay) · [Compound stroke fixture](../../examples/export/pptx-strokes.lay)
 

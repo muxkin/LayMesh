@@ -7,6 +7,7 @@ sources, decks, PDF comparisons, PNG previews and evidence stay in --output.
 import argparse
 import hashlib
 import json
+import os
 import posixpath
 import shutil
 import subprocess
@@ -73,7 +74,7 @@ def inspect(deck, *, roundtrip=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--binary', type=Path, default=ROOT/'target/release/laymesh')
+    parser.add_argument('--binary', type=Path, default=ROOT/'target/release'/('laymesh.exe' if os.name == 'nt' else 'laymesh'))
     parser.add_argument('--output', type=Path, default=ROOT/'examples/output/pptx-trial')
     parser.add_argument('--libreoffice', action='store_true')
     args = parser.parse_args()
@@ -97,7 +98,7 @@ def main():
         if name in ('hello', 'editable', 'vector', 'formula', 'nested'):
             assert actual['text_boxes'] > 0
         if name == 'editable':
-            assert '可编辑文字与矢量公式' in actual['texts']
+            assert '可编辑文字与矢量公式' in ''.join(actual['texts'])
             assert actual['pictures'] == 2  # Original PNG and shadow; gradient is native.
             assert sum('W_PPTX_RASTER' in s for s in actual['warnings']) == 1
         if name == 'strokes':
@@ -106,7 +107,9 @@ def main():
         if name == 'native':
             assert actual['pictures'] == 5  # Four native pictures, one alpha-gradient fallback.
             assert len(actual['media']) == 2  # Source PNG is shared, never cropped/re-encoded.
-            assert actual['groups'] == 3  # Two explicit groups and one formula group.
+            # Two explicit groups and one formula group; font fallback can split
+            # the title into multiple runs requiring one compound text group.
+            assert 3 <= actual['groups'] <= 4, actual
             assert sum('W_PPTX_RASTER' in s for s in actual['warnings']) == 1
         evidence['cases'].append(actual)
     with tempfile.TemporaryDirectory(prefix='laymesh-pptx-cli-') as tmp:

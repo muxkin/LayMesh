@@ -202,15 +202,34 @@ fn item_svg(item: &Json, defs: &mut Vec<String>) -> Result<String> {
             escape(&laymesh_core::color::css(jstr(item, "color", "#000000"))),
             escape(jstr(item, "content", ""))
         ),
-        "box" => format!(
-            "<rect data-missing-glyph=\"true\" x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"none\" stroke=\"{}\" stroke-width=\"{}\"/>",
-            n(item, "x", 0.),
-            n(item, "y", 0.),
-            n(item, "width", 2.),
-            n(item, "height", 3.),
-            escape(&laymesh_core::color::css(jstr(item, "color", "#000000"))),
-            n(item, "strokeWidth", 0.15)
-        ),
+        "box" => {
+            let source = if item["sourceContent"].is_string() {
+                format!(
+                    " data-source-content=\"{}\" data-text-family=\"{}\" data-font-size=\"{}\" data-font-weight=\"{}\" data-font-style=\"{}\" data-baseline=\"{}\"",
+                    escape(jstr(item, "sourceContent", "")),
+                    escape(jstr(item, "requestedFamily", "sans-serif")),
+                    n(item, "fontSize", 3.),
+                    n(item, "fontWeight", 400.),
+                    if item["fontItalic"].as_bool().unwrap_or(false) {
+                        "italic"
+                    } else {
+                        "normal"
+                    },
+                    n(item, "baseline", 0.)
+                )
+            } else {
+                String::new()
+            };
+            format!(
+                "<rect data-missing-glyph=\"true\"{source} x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"none\" stroke=\"{}\" stroke-width=\"{}\"/>",
+                n(item, "x", 0.),
+                n(item, "y", 0.),
+                n(item, "width", 2.),
+                n(item, "height", 3.),
+                escape(&laymesh_core::color::css(jstr(item, "color", "#000000"))),
+                n(item, "strokeWidth", 0.15)
+            )
+        }
         "rule" => {
             if item["dashed"].as_bool().unwrap_or(false) {
                 format!(

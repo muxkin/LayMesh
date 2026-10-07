@@ -1,4 +1,4 @@
-//! Experimental, single-slide DrawingML export. The existing SVG lowering is the
+//! Single-slide DrawingML export. The existing SVG lowering is the
 //! geometry authority; this module preserves supported subtrees as native objects
 //! and rasterizes only a subtree whose compositing cannot be represented exactly.
 use super::*;
@@ -252,16 +252,52 @@ impl Writer<'_> {
             return Ok(None);
         };
         let key = n.attribute("font-family").unwrap_or("");
-        let Some(asset) = self.scene.fonts.get(key) else {
+        let missing_family = n.attribute("data-text-family");
+        let asset = self.scene.fonts.get(key).or_else(|| {
+            missing_family.and_then(|family| {
+                self.scene
+                    .fonts
+                    .values()
+                    .find(|asset| asset.family == family)
+            })
+        });
+        if asset.is_none() && missing_family.is_none() {
             return Ok(None);
-        };
-        let face = ttf_parser::Face::parse(&asset.data, asset.index)
+        }
+        let face = asset
+            .map(|asset| ttf_parser::Face::parse(&asset.data, asset.index))
+            .transpose()
             .map_err(|_| error("PPTX 无效字体"))?;
-        let size = attr(n, "font-size", 3.);
-        let units = face.units_per_em() as f64;
-        let ascent = face.ascender() as f64 / units * size;
-        let descent = -(face.descender() as f64) / units * size;
-        let content = n.text().unwrap_or("");
+        let size = attr(
+            n,
+            if missing_family.is_some() {
+                "data-font-size"
+            } else {
+                "font-size"
+            },
+            3.,
+        );
+        let units = face
+            .as_ref()
+            .map_or(1000., |face| face.units_per_em() as f64);
+        let ascent = face
+            .as_ref()
+            .map_or(size * 0.8, |face| face.ascender() as f64 / units * size);
+        let descent = face
+            .as_ref()
+            .map_or(size * 0.2, |face| -(face.descender() as f64) / units * size);
+        let content = n
+            .attribute("data-source-content")
+            .unwrap_or_else(|| n.text().unwrap_or(""));
+        let baseline = attr(
+            n,
+            if missing_family.is_some() {
+                "data-baseline"
+            } else {
+                "y"
+            },
+            0.,
+        );
         // DrawingML top-anchored paragraphs at 100% line spacing place the first
         // baseline one em below the box top (independent of font ink bounds).
         // No wrapping or auto-fit: width is deliberately generous. The original
@@ -269,11 +305,12 @@ impl Writer<'_> {
         let width = content
             .chars()
             .map(|ch| {
-                face.glyph_index(ch)
-                    .and_then(|id| face.glyph_hor_advance(id))
-                    .unwrap_or(face.units_per_em()) as f64
-                    / units
-                    * size
+                face.as_ref()
+                    .and_then(|face| {
+                        face.glyph_index(ch)
+                            .and_then(|id| face.glyph_hor_advance(id))
+                    })
+                    .map_or(size * 0.7, |advance| advance as f64 / units * size)
             })
             .sum::<f64>()
             + size;
@@ -282,9 +319,9 @@ impl Writer<'_> {
             transform,
             Rect::new(
                 attr(n, "x", 0.),
-                attr(n, "y", 0.) - size,
+                baseline - size,
                 attr(n, "x", 0.) + width,
-                attr(n, "y", 0.) - size + height,
+                baseline - size + height,
             ),
             scale,
         );
@@ -294,16 +331,36 @@ impl Writer<'_> {
             * Affine::translate(-center.to_vec2());
         self.bounds
             .push(rotation_transform.transform_rect_bbox(rect));
-        self.fonts.insert(asset.family.clone());
+        let family_name = asset
+            .map(|asset| asset.family.as_str())
+            .unwrap_or(missing_family.unwrap_or("sans-serif"));
+        self.fonts.insert(family_name.into());
         let id = self.id();
         let size_pt = (size * scale * 72. / 25.4 * 100.).round() as i64;
         let color = solid(
-            n.attribute("fill").unwrap_or("#000000"),
+            n.attribute(if missing_family.is_some() {
+                "stroke"
+            } else {
+                "fill"
+            })
+            .unwrap_or("#000000"),
             opacity * attr(n, "fill-opacity", 1.),
         )?;
-        let weight = attr(n, "font-weight", 400.);
-        let italic = n.attribute("font-style") == Some("italic");
-        let family = escape(&asset.family);
+        let weight = attr(
+            n,
+            if missing_family.is_some() {
+                "data-font-weight"
+            } else {
+                "font-weight"
+            },
+            400.,
+        );
+        let italic = n.attribute(if missing_family.is_some() {
+            "data-font-style"
+        } else {
+            "font-style"
+        }) == Some("italic");
+        let family = escape(family_name);
         Ok(Some(format!(
             "<p:sp><p:nvSpPr><p:cNvPr id=\"{id}\" name=\"{}\"/><p:cNvSpPr txBox=\"1\"/><p:nvPr/></p:nvSpPr><p:spPr>{}<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr wrap=\"none\" lIns=\"0\" tIns=\"0\" rIns=\"0\" bIns=\"0\" anchor=\"t\" vertOverflow=\"overflow\" horzOverflow=\"overflow\"><a:noAutofit/></a:bodyPr><a:lstStyle/><a:p><a:pPr marL=\"0\" indent=\"0\"><a:lnSpc><a:spcPct val=\"100000\"/></a:lnSpc><a:spcBef><a:spcPts val=\"0\"/></a:spcBef><a:spcAft><a:spcPts val=\"0\"/></a:spcAft></a:pPr><a:r><a:rPr sz=\"{size_pt}\" b=\"{}\" i=\"{}\" dirty=\"0\">{color}<a:latin typeface=\"{family}\"/><a:ea typeface=\"{family}\"/><a:cs typeface=\"{family}\"/></a:rPr><a:t xml:space=\"preserve\">{}</a:t></a:r><a:endParaRPr sz=\"{size_pt}\"/></a:p></p:txBody></p:sp>",
             escape(name),
@@ -535,6 +592,19 @@ impl Writer<'_> {
                         inherited_opacity,
                         name,
                         "文字变换或字体无法用文本框表达",
+                    )
+                }
+            }
+            "rect" if !formula && n.attribute("data-source-content").is_some() => {
+                if let Some(text) = self.text(n, transform, opacity, name)? {
+                    Ok(text)
+                } else {
+                    self.fallback(
+                        n,
+                        parent,
+                        inherited_opacity,
+                        name,
+                        "文字变换无法用文本框表达",
                     )
                 }
             }

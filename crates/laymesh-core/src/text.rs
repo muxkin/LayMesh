@@ -633,11 +633,37 @@ fn measure(font: &FontAsset, text: &str, size: f64) -> (f64, f64, f64) {
         -face.descender() as f64 * scale,
     )
 }
+// A name hint for editable exports; this never loads or chooses another font.
+fn requested_family_name(fonts: &FontSystem, request: &Json, file: &str) -> String {
+    let name = request
+        .as_str()
+        .or_else(|| {
+            request
+                .as_array()
+                .and_then(|a| a.first())
+                .and_then(Json::as_str)
+        })
+        .unwrap_or("sans-serif");
+    if font_path(name) {
+        let path = resolve(file, name.split('#').next().unwrap_or(name));
+        return fonts
+            .paths
+            .get(&path)
+            .and_then(|ids| ids.first())
+            .and_then(|id| fonts.db.face(*id))
+            .and_then(|face| face.families.first())
+            .map(|(name, _)| name.clone())
+            .unwrap_or_else(|| "sans-serif".into());
+    }
+    name.into()
+}
+
 #[derive(Clone)]
 struct Unit {
     content: String,
     end: usize,
     key: Option<String>,
+    requested_family: Json,
     size: f64,
     color: String,
     weight: u16,
@@ -864,6 +890,7 @@ pub fn layout_text(
                 content: "\u{fffc}".into(),
                 end: all.len(),
                 key: None,
+                requested_family: Json::Null,
                 size: psize,
                 color,
                 weight,
@@ -910,6 +937,7 @@ pub fn layout_text(
                 content: grapheme.into(),
                 end: all.len(),
                 key,
+                requested_family: json!(requested_family_name(fonts, request, font_file)),
                 size: psize,
                 color: color.clone(),
                 weight,
@@ -1136,7 +1164,16 @@ pub fn layout_text(
                     }
                 }
             } else if !u.content.chars().all(char::is_whitespace) {
-                runs.push(missing_box(x, baseline - u.ascent, u.size, &u.color));
+                let mut item = missing_box(x, baseline - u.ascent, u.size, &u.color);
+                // Retain source semantics for editable exports; native rendering
+                // still draws the same font-independent missing-glyph box.
+                item["sourceContent"] = json!(u.content);
+                item["requestedFamily"] = u.requested_family.clone();
+                item["baseline"] = json!(baseline);
+                item["fontSize"] = json!(u.size);
+                item["fontWeight"] = json!(u.weight);
+                item["fontItalic"] = json!(u.italic);
+                runs.push(item);
                 if let Some(art) = u.art.as_object() {
                     for (k, v) in art {
                         runs.last_mut().unwrap()[k] = v.clone();

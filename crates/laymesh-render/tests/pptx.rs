@@ -753,3 +753,51 @@ page.add(rect(size=(40mm,20mm),fill=linear_gradient(start=(0,0),end=(1,0),stops=
     assert_eq!(colors("100000").first(), Some(&"0000FF"));
     assert_eq!(colors("100000").last(), Some(&"00FF00"));
 }
+
+#[test]
+fn missing_glyphs_remain_editable_source_text() {
+    // This unassigned private-use character is absent regardless of CI fonts.
+    let missing = "\u{10fffd}";
+    for content in [format!("A{missing}B"), missing.to_owned()] {
+        let scene = compile(&format!(
+            "p=canvas(size=(64mm,36mm))\np.add(text(\"{content}\",font_family=\"DejaVu Sans\",font_size=14pt,font_weight=700,font_style=italic),offset=(2mm,2mm))"
+        ));
+        let native = laymesh_render::render_svg(&scene).unwrap();
+        assert!(native.contains("data-missing-glyph"));
+        let original = scene.nodes.clone();
+        let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
+        let package = files(&bytes);
+        let slide = xml(&package, "ppt/slides/slide1.xml");
+        let exported: String = slide
+            .descendants()
+            .filter(|n| {
+                n.has_tag_name(("http://schemas.openxmlformats.org/drawingml/2006/main", "t"))
+            })
+            .filter_map(|n| n.text())
+            .collect();
+        assert_eq!(exported, content);
+        assert!(!warnings.iter().any(|w| w.code == "W_PPTX_RASTER"));
+        assert_eq!(scene.nodes, original);
+        assert_eq!(laymesh_render::render_svg(&scene).unwrap(), native);
+        let run = slide
+            .descendants()
+            .find(|n| {
+                n.has_tag_name(("http://schemas.openxmlformats.org/drawingml/2006/main", "t"))
+                    && n.text() == Some(missing)
+            })
+            .unwrap()
+            .parent()
+            .unwrap();
+        let style = run
+            .children()
+            .find(|n| {
+                n.has_tag_name((
+                    "http://schemas.openxmlformats.org/drawingml/2006/main",
+                    "rPr",
+                ))
+            })
+            .unwrap();
+        assert_eq!(style.attribute("b"), Some("1"));
+        assert_eq!(style.attribute("i"), Some("1"));
+    }
+}

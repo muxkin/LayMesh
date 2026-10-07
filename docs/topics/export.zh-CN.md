@@ -47,7 +47,7 @@ PNG/JPEG 图片作为独立资源嵌入并复用。矩形裁剪、圆角图片�
 
 `--dpi` 只控制局部回退图片的像素尺寸，沿用默认 1200，支持项目配置 `export.pptx.dpi`；不改变幻灯片大小。每个回退图片仍受 100000000 像素上限约束。`quality`、`compression`、`background`、`pdf_*`、`webp_*` 不适用于 PPTX。`--warnings hide` 可隐藏导出警告，失败仍保留原目标文件。
 
-首版不嵌入字体。`W_PPTX_FONT` 列出目标机器所需字体，字体替换可能改变文字排版。幻灯片宽高须在 25.4–1422.4 mm（1–56 英寸）之间；透明画布在演示软件中使用默认幻灯片底色。CLI、Python/Jupyter 和 VS Code 均可导出 PPTX；兼容性验证须区分 LibreOffice 打开、往返保存与 PowerPoint 实机检查。
+不嵌入字体。导出机缺少字形时仍保留原始可编辑文字；目标软件的字体替换决定其显示。`W_PPTX_FONT` 列出目标机器所需字体，字体替换可能改变文字排版。幻灯片宽高须在 25.4–1422.4 mm（1–56 英寸）之间；透明画布在演示软件中使用默认幻灯片底色。CLI、Python/Jupyter 和 VS Code 均可导出 PPTX；兼容性验证须区分 LibreOffice 打开、往返保存与 PowerPoint 实机检查。
 
 [完整示例源码](../../examples/export/pptx-editable.lay) · [原生几何和图片适配验收例](../../examples/export/pptx-native.lay) · [复合描边验收例](../../examples/export/pptx-strokes.lay)
 
