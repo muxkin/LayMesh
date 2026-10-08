@@ -981,8 +981,7 @@ checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 [[package]]
 name = "ratex-font"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a7b73531dabe934a3e725ed5c90d18dacf43778b7a208381390943a9a8c24db"
+source = "git+https://github.com/muxkin/RaTeX.git?rev=9e03b1c0f365a15f51e68649311365c0d62842e1#9e03b1c0f365a15f51e68649311365c0d62842e1"
 dependencies = [
  "phf",
  "ratex-types",
@@ -991,8 +990,7 @@ dependencies = [
 [[package]]
 name = "ratex-katex-fonts"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c915a17fd71c41374d1ec19651a26ca352e757e1342391c2cbc5b825dacaa64b"
+source = "git+https://github.com/muxkin/RaTeX.git?rev=9e03b1c0f365a15f51e68649311365c0d62842e1#9e03b1c0f365a15f51e68649311365c0d62842e1"
 dependencies = [
  "rust-embed",
 ]
@@ -1000,6 +998,7 @@ dependencies = [
 [[package]]
 name = "ratex-layout"
 version = "0.1.14"
+source = "git+https://github.com/muxkin/RaTeX.git?rev=9e03b1c0f365a15f51e68649311365c0d62842e1#9e03b1c0f365a15f51e68649311365c0d62842e1"
 dependencies = [
  "ratex-font",
  "ratex-parser",
@@ -1010,8 +1009,7 @@ dependencies = [
 [[package]]
 name = "ratex-lexer"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f704add86d7bf4c4ecc7767f45ab38a44f1bbfa4b49725b2ae53c32e83b8a61e"
+source = "git+https://github.com/muxkin/RaTeX.git?rev=9e03b1c0f365a15f51e68649311365c0d62842e1#9e03b1c0f365a15f51e68649311365c0d62842e1"
 dependencies = [
  "ratex-types",
  "serde",
@@ -1021,8 +1019,7 @@ dependencies = [
 [[package]]
 name = "ratex-parser"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "079ec2e7ac6bc76137a6de093a173d1f901139a51318589ab9ce17139c21a6f0"
+source = "git+https://github.com/muxkin/RaTeX.git?rev=9e03b1c0f365a15f51e68649311365c0d62842e1#9e03b1c0f365a15f51e68649311365c0d62842e1"
 dependencies = [
  "fancy-regex",
  "ratex-font",
@@ -1039,8 +1036,7 @@ dependencies = [
 [[package]]
 name = "ratex-types"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0cf0be3d050525f0f7d37af55a443d7648c222ccc617639950e3de1f8e6f9900"
+source = "git+https://github.com/muxkin/RaTeX.git?rev=9e03b1c0f365a15f51e68649311365c0d62842e1#9e03b1c0f365a15f51e68649311365c0d62842e1"
 dependencies = [
  "serde",
 ]

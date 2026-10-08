@@ -208,11 +208,22 @@ count. `/sources/text-fonts-manifest.json` retains input and output hashes;
 The four math font files remain unchanged. Color bitmap emoji are unsupported
 by this outline-only text flow, and missing mathematical symbols still fail.
 
-The default KaTeX route uses the optional measured-text hook in
-[vendor/ratex-layout](../../vendor/ratex-layout/README.md). When the hook is
+The default KaTeX route uses the optional measured-text hook in the
+[muxkin/RaTeX fork](https://github.com/muxkin/RaTeX/blob/9e03b1c0f365a15f51e68649311365c0d62842e1/docs/HOST_TEXT_LAYOUT.md),
+pinned to commit `9e03b1c0f365a15f51e68649311365c0d62842e1`. When the hook is
 absent, the upstream layout is retained. The hook covers literal text groups,
 including proof text passing through explicit font wrappers; it does not match
 source strings or font names to fix individual formulas.
+
+The root Cargo patch pins all six RaTeX dependencies to that same Git revision
+so workspace path dependencies share the parser/AST/font types. `Cargo.lock`
+records the source; builds do not follow the fork's moving `main` branch.
+The original corpus fixtures remain pinned to upstream v0.1.14, independently
+of the implementation source. The fork keeps that version number, adds its
+own API/depth regressions, and needs no RaTeX or LayMesh release for this work.
+Future crate publication must retain the host-text API in the published RaTeX
+dependency; publishing LayMesh core against unpatched registry 0.1.14 would
+lose this integration.
 
 Validation includes 576 multilingual/domain combinations (24 cases × four
 math fonts × inline/display × three sizes), actual font-advance/space metrics,

@@ -35,7 +35,7 @@ def fingerprint(files):
 def engine_files():
  # Renderer provenance covers build settings and crate sources; standalone test
  # fixtures do not change rendered media when their platform paths are corrected.
- return ['Cargo.lock','Cargo.toml','rust-toolchain.toml']+[p.relative_to(ROOT).as_posix() for p in sorted((ROOT/'crates').rglob('*')) if p.is_file() and p.suffix in ('.rs','.toml','.json') and 'laymesh-wasm' not in p.parts and 'tests' not in p.relative_to(ROOT/'crates').parts]+[p.relative_to(ROOT).as_posix() for p in sorted((ROOT/'vendor').rglob('*')) if p.is_file() and p.suffix in ('.rs','.toml')]
+ return ['Cargo.lock','Cargo.toml','rust-toolchain.toml']+[p.relative_to(ROOT).as_posix() for p in sorted((ROOT/'crates').rglob('*')) if p.is_file() and p.suffix in ('.rs','.toml','.json') and 'laymesh-wasm' not in p.parts and 'tests' not in p.relative_to(ROOT/'crates').parts]
 def summary(source):
  text=(ROOT/source).read_text();m=re.search(r'# BEGIN DEMO\r?\n([\s\S]*?)\r?\n# END DEMO',text)
  if m:return m[1],m.start(1),text[:m.start(1)].count('\n')+1

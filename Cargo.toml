@@ -1,10 +1,15 @@
 [workspace]
 resolver = "2"
 members = ["crates/laymesh-core", "crates/laymesh-render", "crates/laymesh-cli", "crates/laymesh-language", "crates/laymesh-wasm"]
-exclude = ["vendor/ratex-layout"]
 
 [patch.crates-io]
-ratex-layout = { path = "vendor/ratex-layout" }
+# Keep RaTeX's workspace path dependencies on one source and immutable revision.
+ratex-layout = { git = "https://github.com/muxkin/RaTeX.git", rev = "9e03b1c0f365a15f51e68649311365c0d62842e1" }
+ratex-parser = { git = "https://github.com/muxkin/RaTeX.git", rev = "9e03b1c0f365a15f51e68649311365c0d62842e1" }
+ratex-types = { git = "https://github.com/muxkin/RaTeX.git", rev = "9e03b1c0f365a15f51e68649311365c0d62842e1" }
+ratex-font = { git = "https://github.com/muxkin/RaTeX.git", rev = "9e03b1c0f365a15f51e68649311365c0d62842e1" }
+ratex-katex-fonts = { git = "https://github.com/muxkin/RaTeX.git", rev = "9e03b1c0f365a15f51e68649311365c0d62842e1" }
+ratex-lexer = { git = "https://github.com/muxkin/RaTeX.git", rev = "9e03b1c0f365a15f51e68649311365c0d62842e1" }
 
 [workspace.package]
 version = "0.5.0"
