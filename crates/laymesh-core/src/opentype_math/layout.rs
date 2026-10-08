@@ -1,9 +1,10 @@
 use super::font::{Alphabet, MathFont, MathResult};
 use ratex_parser::{
     Mode, ParseNode as N,
-    parse_node::{AlignSpec, AlignType, AtomFamily, Measurement, StyleStr},
+    parse_node::{AlignType, AtomFamily, Measurement, StyleStr},
 };
 use ttf_parser::{GlyphId, math};
+mod advanced;
 
 #[derive(Clone)]
 pub(super) struct Context {
@@ -17,6 +18,7 @@ pub(super) struct Context {
     x_height: f64,
     sizing: f64,
     depth: usize,
+    middle_height: Option<f64>,
 }
 impl Context {
     pub fn new(display: bool, color: &str, em_pt: f64, x_height: f64) -> Self {
@@ -31,6 +33,7 @@ impl Context {
             x_height,
             sizing: 1.,
             depth: 0,
+            middle_height: None,
         }
     }
     fn script(&self, font: &MathFont<'_>) -> Self {
@@ -61,6 +64,14 @@ impl Context {
         c.alphabet = match (self.alphabet, alphabet) {
             (Sans, Bold) | (Bold, Sans) | (SansBold, Bold) => SansBold,
             (Italic, Bold) | (Bold, Italic) => BoldItalic,
+            (Script, Bold) | (Bold, Script) => BoldScript,
+            (Fraktur, Bold) | (Bold, Fraktur) => BoldFraktur,
+            (SansItalic, Bold)
+            | (Bold, SansItalic)
+            | (Sans, BoldItalic)
+            | (BoldItalic, Sans)
+            | (SansBold, Italic)
+            | (Italic, SansBold) => SansBoldItalic,
             _ => alphabet,
         };
         c
@@ -68,6 +79,12 @@ impl Context {
 }
 #[derive(Clone)]
 pub(super) enum Item {
+    Path {
+        path: kurbo::BezPath,
+        fill: Option<String>,
+        stroke: Option<String>,
+        thickness: f64,
+    },
     Glyph {
         id: GlyphId,
         codepoint: Option<u32>,
@@ -86,6 +103,7 @@ pub(super) enum Item {
 }
 #[derive(Clone, Copy, Default, PartialEq)]
 pub(super) enum Class {
+    Glue,
     #[default]
     Ord,
     Op,
@@ -115,6 +133,7 @@ impl Box {
         self.depth = self.depth.max(b.depth - y);
         for item in &mut b.items {
             match item {
+                Item::Path { path, .. } => path.apply_affine(kurbo::Affine::translate((x, y))),
                 Item::Glyph { x: a, y: b, .. } => {
                     *a += x;
                     *b += y;
@@ -156,20 +175,37 @@ impl<'a, 'f> Engine<'a, 'f> {
         Self { font, steps: 0 }
     }
     pub fn row(&mut self, nodes: &[N], c: &Context) -> MathResult<Box> {
+        if nodes
+            .iter()
+            .any(|n| matches!(n, N::Cr { new_line: true, .. }))
+        {
+            return self.multiline(nodes, c);
+        }
         let mut boxes = nodes
             .iter()
             .map(|n| self.node(n, c))
             .collect::<MathResult<Vec<_>>>()?;
-        // TeX binary-operator cancellation, including unary signs.
+        // Explicit glue/kerns do not participate in atom classification.
         for i in 0..boxes.len() {
-            if boxes[i].class == Class::Bin
-                && (i == 0
-                    || i + 1 == boxes.len()
-                    || matches!(
-                        boxes[i - 1].class,
-                        Class::Bin | Class::Op | Class::Rel | Class::Open | Class::Punct
-                    )
-                    || matches!(boxes[i + 1].class, Class::Rel | Class::Close | Class::Punct))
+            if boxes[i].class != Class::Bin {
+                continue;
+            }
+            let before = boxes[..i]
+                .iter()
+                .rev()
+                .find(|b| b.class != Class::Glue)
+                .map(|b| b.class);
+            let after = boxes[i + 1..]
+                .iter()
+                .find(|b| b.class != Class::Glue)
+                .map(|b| b.class);
+            if before.is_none()
+                || after.is_none()
+                || matches!(
+                    before,
+                    Some(Class::Bin | Class::Op | Class::Rel | Class::Open | Class::Punct)
+                )
+                || matches!(after, Some(Class::Rel | Class::Close | Class::Punct))
             {
                 boxes[i].class = Class::Ord;
             }
@@ -177,14 +213,25 @@ impl<'a, 'f> Engine<'a, 'f> {
         if boxes.len() == 1 {
             return Ok(boxes.remove(0));
         }
-        let mut result = Box::default();
+        let atoms: Vec<_> = boxes.iter().filter(|b| b.class != Class::Glue).collect();
+        let mut result = if atoms.len() == 1 {
+            Box {
+                class: atoms[0].class,
+                limits: atoms[0].limits,
+                ..Default::default()
+            }
+        } else {
+            Box::default()
+        };
         let mut previous = None;
         let mut x = 0.;
         for b in boxes {
-            if let Some(a) = previous {
-                x += spacing(a, b.class, c.level > 0) * c.scale;
+            if b.class != Class::Glue {
+                if let Some(a) = previous {
+                    x += spacing(a, b.class, c.level > 0) * c.scale;
+                }
+                previous = Some(b.class);
             }
-            previous = Some(b.class);
             let width = b.width;
             result.italic = b.italic;
             result.add(b, x, 0.);
@@ -249,10 +296,7 @@ impl<'a, 'f> Engine<'a, 'f> {
             N::Sqrt { body, index, .. } => self.radical(body, index.as_deref(), c),
             N::LeftRight {
                 body, left, right, ..
-            } => {
-                let inner = self.row(body, c)?;
-                self.delimit(inner, left, right, c)
-            }
+            } => self.left_right(body, left, right, c),
             N::DelimSizing {
                 delim,
                 size,
@@ -314,26 +358,7 @@ impl<'a, 'f> Engine<'a, 'f> {
                 b.limits = *limits && (c.display || *always_handle_sup_sub);
                 Ok(b)
             }
-            N::Array {
-                body,
-                cols,
-                row_gaps,
-                arraystretch,
-                hlines_before_row,
-                tags,
-                col_separation_type,
-                ..
-            } => {
-                if col_separation_type.as_deref().is_some_and(|s| s != "small") {
-                    return Err("OpenType 数学排版尚不支持 aligned/align/gather 等环境".into());
-                }
-                if hlines_before_row.iter().any(|r| !r.is_empty())
-                    || tags.as_ref().is_some_and(|t| !t.is_empty())
-                {
-                    return Err("OpenType 数学排版尚不支持数组横线或编号".into());
-                }
-                self.array(body, cols.as_deref(), row_gaps, *arraystretch, c)
-            }
+            N::Array { .. } => self.array_full(n, c),
             N::Accent {
                 label,
                 base,
@@ -395,10 +420,12 @@ impl<'a, 'f> Engine<'a, 'f> {
             }
             N::SpacingNode { text, .. } => Ok(Box {
                 width: space(text)? * c.scale,
+                class: Class::Glue,
                 ..Default::default()
             }),
             N::Kern { dimension, .. } => Ok(Box {
                 width: measurement(dimension, c)?,
+                class: Class::Glue,
                 ..Default::default()
             }),
             N::Styling { style, body, .. } => {
@@ -475,19 +502,23 @@ impl<'a, 'f> Engine<'a, 'f> {
                 Ok(b)
             }
             N::HBox { body, .. } => self.row(body, c),
-            N::Internal { .. } | N::NoNumber { .. } => Ok(Box::default()),
-            _ => {
-                let kind = serde_json::to_value(n)
-                    .ok()
-                    .and_then(|v| v["type"].as_str().map(str::to_owned))
-                    .unwrap_or_default();
-                Err(format!(
-                    "OpenType 数学排版尚不支持命令类型 {kind}；可使用默认 ratex-katex 后端"
-                ))
-            }
+            N::Internal { .. } | N::NoNumber { .. } => Ok(Box {
+                class: Class::Glue,
+                ..Default::default()
+            }),
+            _ => self.advanced(n, c),
         }
     }
     fn symbol(&mut self, text: &str, mode: Mode, c: &Context) -> MathResult<Box> {
+        if let Some(b) = self.composite_symbol(text, c)? {
+            return Ok(b);
+        }
+        let resolved_context = if mode == Mode::Text && matches!(c.alphabet, Alphabet::Auto) {
+            c.font(Alphabet::Roman)
+        } else {
+            c.clone()
+        };
+        let c = &resolved_context;
         if text.starts_with('\\') {
             return self.font.glyph(symbol(text, mode)?, c);
         }
@@ -803,7 +834,11 @@ impl<'a, 'f> Engine<'a, 'f> {
         if text == "." {
             return Ok(Box::default());
         }
-        let ch = symbol(text, Mode::Math)?;
+        let ch = match text {
+            "<" | "\\lt" => '⟨',
+            ">" | "\\gt" => '⟩',
+            _ => symbol(text, Mode::Math)?,
+        };
         let b = self
             .font
             .stretch(ch, target, true, &c.font(Alphabet::Roman))?;
@@ -845,18 +880,27 @@ impl<'a, 'f> Engine<'a, 'f> {
         c: &Context,
     ) -> MathResult<Box> {
         let mut b = self.node(base, c)?;
+        let under = under || label == "\\c";
         let ch = match label {
-            "\\hat" | "\\widehat" => '\u{0302}',
-            "\\tilde" | "\\widetilde" => '\u{0303}',
-            "\\bar" | "\\overline" => '\u{0304}',
-            "\\vec" | "\\overrightarrow" => '\u{20D7}',
-            "\\dot" => '\u{0307}',
-            "\\ddot" => '\u{0308}',
-            "\\breve" => '\u{0306}',
-            "\\check" => '\u{030C}',
-            "\\acute" => '\u{0301}',
-            "\\grave" => '\u{0300}',
-            _ => return Err(format!("OpenType 数学排版尚不支持重音 {label}")),
+            "\\hat" | "\\widehat" | "\\^" => '\u{0302}',
+            "\\tilde" | "\\widetilde" | "\\~" | "\\utilde" => '\u{0303}',
+            "\\bar" | "\\overline" | "\\=" => '\u{0304}',
+            "\\vec" => '\u{20D7}',
+            "\\dot" | "\\." => '\u{0307}',
+            "\\ddot" | "\\\"" => '\u{0308}',
+            "\\breve" | "\\u" => '\u{0306}',
+            "\\check" | "\\widecheck" | "\\v" => '\u{030C}',
+            "\\acute" | "\\'" => '\u{0301}',
+            "\\grave" | "\\`" => '\u{0300}',
+            "\\mathring" | "\\r" => '\u{030A}',
+            "\\H" => '\u{030B}',
+            "\\c" => '\u{0327}',
+            _ => return self.special_accent(label, b, under, c),
+        };
+        let ch = if ch == '\u{0327}' && self.font.face.glyph_index(ch).is_none() {
+            '¸'
+        } else {
+            ch
         };
         let mut accent = self.font.stretch(
             ch,
@@ -902,78 +946,6 @@ impl<'a, 'f> Engine<'a, 'f> {
         b.width = width;
         b.glyph = None;
         Ok(b)
-    }
-    fn array(
-        &mut self,
-        rows: &[Vec<N>],
-        cols: Option<&[AlignSpec]>,
-        gaps: &[Option<Measurement>],
-        stretch: f64,
-        c: &Context,
-    ) -> MathResult<Box> {
-        if !stretch.is_finite() || stretch <= 0. {
-            return Err("无效数组行距".into());
-        }
-        let align: Vec<_> = cols
-            .unwrap_or(&[])
-            .iter()
-            .filter(|s| matches!(s.align_type, AlignType::Align))
-            .collect();
-        if cols.is_some_and(|cols| {
-            cols.iter()
-                .any(|s| matches!(s.align_type, AlignType::Separator))
-        }) {
-            return Err("OpenType 数学排版尚不支持数组竖线".into());
-        }
-        let mut cellctx = c.clone();
-        cellctx.display = false;
-        let cells = rows
-            .iter()
-            .map(|r| {
-                r.iter()
-                    .map(|n| self.node(n, &cellctx))
-                    .collect::<MathResult<Vec<_>>>()
-            })
-            .collect::<MathResult<Vec<_>>>()?;
-        let count = cells.iter().map(Vec::len).max().unwrap_or(0);
-        let mut widths = vec![0_f64; count];
-        for row in &cells {
-            for (i, b) in row.iter().enumerate() {
-                widths[i] = widths[i].max(b.width);
-            }
-        }
-        let mut result = Box::default();
-        let gap = c.scale;
-        let mut y = 0.;
-        for (r, row) in cells.into_iter().enumerate() {
-            let ascent = row.iter().map(|b| b.ascent).fold(0.7 * c.scale, f64::max) * stretch;
-            let depth = row.iter().map(|b| b.depth).fold(0.3 * c.scale, f64::max) * stretch;
-            y -= ascent;
-            let mut x = 0.;
-            for (i, b) in row.into_iter().enumerate() {
-                let offset = match align.get(i).and_then(|s| s.align.as_deref()).unwrap_or("c") {
-                    "l" => 0.,
-                    "r" => widths[i] - b.width,
-                    _ => (widths[i] - b.width) / 2.,
-                };
-                result.add(b, x + offset, y);
-                x += widths[i] + gap;
-            }
-            y -= depth + 0.2 * c.scale;
-            if let Some(Some(extra)) = gaps.get(r) {
-                y -= measurement(extra, c)?;
-            }
-        }
-        let height = (-y - 0.2 * c.scale).max(0.);
-        result.depth = result.depth.max(height);
-        let shift = height / 2. + self.font.value(self.font.constants.axis_height(), c);
-        let mut centered = Box {
-            width: widths.iter().sum::<f64>() + gap * count.saturating_sub(1) as f64,
-            ..Default::default()
-        };
-        centered.add(result, 0., shift);
-        centered.class = Class::Inner;
-        Ok(centered)
     }
 }
 fn symbol(text: &str, mode: Mode) -> MathResult<char> {
@@ -1023,8 +995,12 @@ fn mclass_type(s: &str) -> Class {
 }
 fn spacing(a: Class, b: Class, script: bool) -> f64 {
     use Class::*;
+    if a == Glue || b == Glue {
+        return 0.;
+    }
     // TeX's eight atom classes, expressed in mu (1/18 em).
     let i = |c| match c {
+        Glue => unreachable!(),
         Ord => 0,
         Op => 1,
         Bin => 2,
@@ -1070,13 +1046,14 @@ fn font_style(s: &str) -> MathResult<Alphabet> {
 fn space(s: &str) -> MathResult<f64> {
     match s {
         "\\," | "\\thinspace" => Ok(3. / 18.),
-        "\\:" | "\\medspace" => Ok(4. / 18.),
+        "\\:" | "\\>" | "\\medspace" => Ok(4. / 18.),
         "\\;" | "\\thickspace" => Ok(5. / 18.),
         "\\!" | "\\negthinspace" => Ok(-3. / 18.),
         "\\quad" => Ok(1.),
         "\\qquad" => Ok(2.),
-        "\\ " | "~" | "\\space" | "\\nobreakspace" => Ok(0.25),
+        " " | "\\ " | "~" | "\\space" | "\\nobreakspace" => Ok(0.25),
         "\\enspace" => Ok(0.5),
+        "\\allowbreak" | "\\nobreak" => Ok(0.),
         _ => Err(format!("不支持的数学空白 {s}")),
     }
 }
@@ -1089,6 +1066,14 @@ fn measurement(m: &Measurement, c: &Context) -> MathResult<f64> {
         "mm" => 72. / 25.4 / c.em_pt,
         "cm" => 72. / 2.54 / c.em_pt,
         "in" => 72. / c.em_pt,
+        "bp" => 1. / c.em_pt,
+        "pc" => 12. / c.em_pt,
+        "dd" => 1238. / 1157. / c.em_pt,
+        "cc" => 12. * 1238. / 1157. / c.em_pt,
+        "nd" => 685. / 642. / c.em_pt,
+        "nc" => 12. * 685. / 642. / c.em_pt,
+        "sp" => 1. / 65536. / c.em_pt,
+        "px" => 0.75 / c.em_pt,
         "" => c.scale,
         _ => return Err(format!("不支持的数学长度单位 {}", m.unit)),
     };

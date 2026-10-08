@@ -85,6 +85,6 @@ page.add(formula(r"\frac{a}{b}+\bm{\alpha}",math_font="XITS Math",font_size=16pt
 
 也可写 `math_font="./fonts/XITSMath-Regular.otf"`；路径相对于定义公式的模块，LCSS 中的路径相对于样式表。该属性可从画布、文字、span 和图表样式继承，适用于显式公式和 `$...$` 自动公式。浏览器需先加载对应字体文件。字体度量、数学间距、斜体修正和伸缩字形均来自所选字体；导出继续使用矢量路径。
 
-本分支的 OpenType 后端仍属实验：已验证 Latin Modern Math、STIX Two Math 和 XITS Math 的分数、上下标、根号、求和/积分、矩阵、常见重音及数学字母表。尚未覆盖的命令会返回 `E_FORMULA`；字体不可用或缺少 MATH 表返回 `E_MATH_FONT`，不自动换成另一套字体。`mathcal` 和 `mathscr` 暂时使用同一 Unicode 花体字母表。XITS 独立粗体文件的伸缩字形覆盖不完整；常规 XITS Math 可使用 `mathbf`、`boldsymbol` 和 `bm`。字体没有拼接构造时使用其最大的原生变体。
+本分支已补齐化学 `ce/pu`、证明树 `prooftree`、带标签箭头、`middle`、对齐与编号、数组横竖线、重叠排版、括注、取消线等构造。固定 RaTeX 0.1.14 测试集和额外领域用例共执行 15,448 次排版检查；化学 91 条、物理 22 条、证明树 38 条在四套字体、两种模式下全部渲染成功。解析器不支持的输入和原有禁止命令单独记录；字体缺字会明确报错，字体不可用或缺少 MATH 表返回 `E_MATH_FONT`。`mathcal` 和 `mathscr` 暂时使用同一 Unicode 花体字母表。XITS 独立粗体文件的伸缩字形覆盖不完整；常规 XITS Math 可使用 `mathbf`、`boldsymbol` 和 `bm`。箭头缺少有效拼接构造时，延长所选字体原生轮廓的箭杆区域；其他无拼接构造的符号使用最大的原生变体。LaTeX 源码建议使用原始字符串，尤其是化学表达式内部包含 `$...$` 时。
 
 [可编辑对照图和验证说明](../../experiments/opentype-math/README.md)。默认值仍为 `ratex-katex`，旧 `mathjax-*` 名称保留兼容映射。

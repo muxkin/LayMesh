@@ -156,6 +156,7 @@ impl<'a> MathFont<'a> {
                 continue;
             }
             let mut joins = vec![];
+            let mut invalid_join = false;
             for pair in parts.windows(2) {
                 let max = f64::from(
                     pair[0]
@@ -163,9 +164,18 @@ impl<'a> MathFont<'a> {
                         .min(pair[1].start_connector_length),
                 ) * unit;
                 if max + 1e-9 < overlap {
-                    return Err("数学字体的伸缩连接器无效".into());
+                    invalid_join = true;
+                    break;
                 }
                 joins.push(max);
+            }
+            if invalid_join {
+                // Omitting all extenders may join two terminal parts which
+                // are not intended to touch. Retry with an extender present.
+                if repeats == 0 {
+                    continue;
+                }
+                return Err("数学字体的伸缩连接器无效".into());
             }
             let sum = parts
                 .iter()
@@ -231,6 +241,9 @@ pub(super) enum Alphabet {
     Sans,
     SansItalic,
     SansBold,
+    SansBoldItalic,
+    BoldScript,
+    BoldFraktur,
     Mono,
     Script,
     Fraktur,
@@ -251,10 +264,13 @@ pub(super) fn alphabet(ch: char, style: Alphabet) -> char {
     let latin = match style {
         Italic => Some((0x1D434, 0x1D44E, None)),
         Bold => Some((0x1D400, 0x1D41A, Some(0x1D7CE))),
-        BoldItalic => Some((0x1D468, 0x1D482, None)),
+        BoldItalic => Some((0x1D468, 0x1D482, Some(0x1D7CE))),
         Sans => Some((0x1D5A0, 0x1D5BA, Some(0x1D7E2))),
         SansItalic => Some((0x1D608, 0x1D622, None)),
         SansBold => Some((0x1D5D4, 0x1D5EE, Some(0x1D7EC))),
+        SansBoldItalic => Some((0x1D63C, 0x1D656, Some(0x1D7EC))),
+        BoldScript => Some((0x1D4D0, 0x1D4EA, Some(0x1D7CE))),
+        BoldFraktur => Some((0x1D56C, 0x1D586, Some(0x1D7CE))),
         Mono => Some((0x1D670, 0x1D68A, Some(0x1D7F6))),
         Script => Some((0x1D49C, 0x1D4B6, None)),
         Fraktur => Some((0x1D504, 0x1D51E, None)),
@@ -310,6 +326,7 @@ pub(super) fn alphabet(ch: char, style: Alphabet) -> char {
         Italic => Some(0x1D6E2),
         BoldItalic => Some(0x1D71C),
         SansBold => Some(0x1D756),
+        SansBoldItalic => Some(0x1D790),
         _ => None,
     };
     if let Some(base) = greek {

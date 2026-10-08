@@ -1,0 +1,37 @@
+{
+  "repository": "https://github.com/erweixin/RaTeX",
+  "tag": "v0.1.14",
+  "commit": "ae391d727ac615437c63c308f4538d971a84bede",
+  "files": [
+    {
+      "path": "tests/golden/test_cases.txt",
+      "file": "golden.txt",
+      "sha256": "e9f31c82e74e67fbceb6b3323ba6004f94b9a4aca1db704f04a2dedd2368d16e"
+    },
+    {
+      "path": "tests/golden/test_cases_prooftree.txt",
+      "file": "proofs.txt",
+      "sha256": "810a48ed4e9adb8381a9cfca2948c6d52bece94bdce958d9f918bf22daa80153"
+    },
+    {
+      "path": "tools/parser_compare/test_cases.txt",
+      "file": "parser.txt",
+      "sha256": "c88de8e20463f75adea17b1ee9a95b6e7e698c0a0f6f0dbae5fdfb1703a41f7e"
+    },
+    {
+      "path": "tools/layout_compare/test_cases_4_3.txt",
+      "file": "layout.txt",
+      "sha256": "804a674e7da0938c8c8e83daababa120d60b5e765fe0c9672bf353c278ed44c8"
+    },
+    {
+      "path": "website/public/data/chemistry.json",
+      "file": "chemistry.json",
+      "sha256": "d2e44c1129f8786f0c0dbbde09d350c9f025f4f104e4994bd7ee45d6178fc4af"
+    },
+    {
+      "path": "website/public/data/physics.json",
+      "file": "physics.json",
+      "sha256": "8920b1243dfe1ac006231d8aed4e53858a01867984e6b83cf7eec379449dbf32"
+    }
+  ]
+}

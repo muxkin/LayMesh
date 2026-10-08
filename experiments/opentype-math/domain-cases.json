@@ -1,0 +1,138 @@
+{
+  "Chemistry": [
+    [
+      "Reaction and labels",
+      "\\ce{Hg^2+ ->[I-] HgI2 ->[I-] [Hg^{II}I4]^2-}"
+    ],
+    [
+      "Equilibrium",
+      "\\ce{A <=>[{forward}][{reverse}] B}"
+    ],
+    [
+      "Isotopes and charge",
+      "\\ce{^{227}_{90}Th+ + ^0_-1n-}"
+    ],
+    [
+      "Bond styles",
+      "\\ce{A\\bond{~--}B\\bond{~=}C\\bond{-~-}D}"
+    ],
+    [
+      "Fractions and phases",
+      "\\ce{CH4 + 2 $\\left( \\ce{O2 + 79/21 N2} \\right)$}"
+    ],
+    [
+      "Physical quantities",
+      "\\pu{1.2e3 kJ//mol} + \\pu{123 kJ mol-1}"
+    ],
+    [
+      "Hydrate and valence",
+      "\\ce{Fe^{II}Fe^{III}2O4 + KCr(SO4)2*12H2O}"
+    ],
+    [
+      "Long annotation",
+      "\\ce{A ->[{a long reaction condition}][{catalyst}] B}"
+    ]
+  ],
+  "Physics": [
+    [
+      "Schrodinger equation",
+      "i\\hbar\\frac{\\partial}{\\partial t}\\Psi=\\hat H\\Psi"
+    ],
+    [
+      "Maxwell equation",
+      "\\nabla\\times\\mathbf E=-\\frac{\\partial\\mathbf B}{\\partial t}"
+    ],
+    [
+      "General relativity",
+      "G_{\\mu\\nu}+\\Lambda g_{\\mu\\nu}=\\frac{8\\pi G}{c^4}T_{\\mu\\nu}"
+    ],
+    [
+      "Stokes theorem",
+      "\\oint_{\\partial\\Sigma}\\mathbf F\\cdot d\\mathbf r=\\iint_{\\Sigma}(\\nabla\\times\\mathbf F)\\cdot d\\mathbf S"
+    ],
+    [
+      "Bra-ket notation",
+      "\\Braket{a|\\frac{\\partial^2}{\\partial t^2}|b}"
+    ],
+    [
+      "Dirac equation",
+      "(i\\gamma^\\mu\\partial_\\mu-m)\\psi=0"
+    ],
+    [
+      "Vector and tensor accents",
+      "\\overleftrightarrow{T}+\\overrightarrow{AB}+\\dddot x"
+    ],
+    [
+      "Aligned conservation laws",
+      "\\begin{aligned}\\partial_t\\rho+\\nabla\\cdot\\mathbf J&=0\\\\\\nabla\\cdot\\mathbf B&=0\\end{aligned}"
+    ]
+  ],
+  "Proof trees": [
+    [
+      "Unary with labels",
+      "\\begin{prooftree}\\AxiomC{A\\fCenter{}B}\\LeftLabel{cut}\\RightLabel{\\alpha}\\UnaryInfC{C\\fCenter{}D}\\end{prooftree}"
+    ],
+    [
+      "Binary inference",
+      "\\begin{prooftree}\\AxiomC{P}\\AxiomC{Q}\\BinaryInfC{P\\land Q}\\end{prooftree}"
+    ],
+    [
+      "Five premises",
+      "\\begin{prooftree}\\AxiomC{A}\\AxiomC{B}\\AxiomC{C}\\AxiomC{D}\\AxiomC{E}\\QuinaryInfC{F}\\end{prooftree}"
+    ],
+    [
+      "Nested branches",
+      "\\begin{prooftree}\\AxiomC{A}\\UnaryInfC{A_1}\\UnaryInfC{A_2}\\AxiomC{B}\\BinaryInfC{C}\\end{prooftree}"
+    ],
+    [
+      "Dashed rules",
+      "\\begin{prooftree}\\alwaysDashedLine\\AxiomC{P}\\UnaryInfC{Q}\\UnaryInfC{R}\\end{prooftree}"
+    ],
+    [
+      "Root at top",
+      "\\begin{prooftree}\\alwaysRootAtTop\\AxiomC{P}\\UnaryInfC{Q}\\UnaryInfC{R}\\end{prooftree}"
+    ],
+    [
+      "Mixed directions",
+      "\\begin{prooftree}\\AxiomC{P}\\rootAtTop\\UnaryInfC{Q}\\rootAtBottom\\UnaryInfC{R}\\end{prooftree}"
+    ],
+    [
+      "Long labels",
+      "\\begin{prooftree}\\AxiomC{P}\\LeftLabel{left-rule-label}\\RightLabel{right-rule-label}\\UnaryInfC{Q}\\end{prooftree}"
+    ]
+  ],
+  "Advanced mathematics": [
+    [
+      "Arrays with rules",
+      "\\begin{array}{|c|c|}\\hline a&b\\\\\\hdashline c&d\\\\\\hline\\end{array}"
+    ],
+    [
+      "Equation tags",
+      "\\begin{align}x&=a+b\\tag{A}\\\\y&=c\\tag{B}\\end{align}"
+    ],
+    [
+      "Set and middle delimiter",
+      "\\left\\{x\\in\\mathbb R\\middle|\\frac{x}{2}>0\\right\\}"
+    ],
+    [
+      "Braces and limits",
+      "\\underbrace{x+\\cdots+x}_{n\\text{ terms}}+\\overbrace{a+b}^{2}"
+    ],
+    [
+      "Enclosures",
+      "\\cancel{\\frac ab}+\\boxed{E=mc^2}+\\textcircled R"
+    ],
+    [
+      "Long arrows",
+      "\\xhookrightarrow[below]{long\\ label}+\\xrightleftharpoons{a+b}"
+    ],
+    [
+      "Unicode variants",
+      "\\imath+\\jmath\\ne\\varsubsetneq\\ngeqslant"
+    ],
+    [
+      "Bold alphabets",
+      "\\mathbf{\\mathcal A}+\\mathbf{\\mathfrak g}+\\mathbf{\\mathsfit x}"
+    ]
+  ]
+}

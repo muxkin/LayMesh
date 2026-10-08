@@ -1,0 +1,2256 @@
+[
+  {
+    "suite": "golden",
+    "line": 3,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 3,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 3,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 3,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 61,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 61,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 61,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 61,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 105,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2605"
+  },
+  {
+    "suite": "golden",
+    "line": 112,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+29EB"
+  },
+  {
+    "suite": "golden",
+    "line": 145,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1D4B6"
+  },
+  {
+    "suite": "golden",
+    "line": 157,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+263A"
+  },
+  {
+    "suite": "golden",
+    "line": 172,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+24C8"
+  },
+  {
+    "suite": "golden",
+    "line": 225,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+21E0"
+  },
+  {
+    "suite": "golden",
+    "line": 226,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+21E2"
+  },
+  {
+    "suite": "golden",
+    "line": 237,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 237,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 237,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 237,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 243,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+03DD"
+  },
+  {
+    "suite": "golden",
+    "line": 245,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2572"
+  },
+  {
+    "suite": "golden",
+    "line": 246,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2571"
+  },
+  {
+    "suite": "golden",
+    "line": 266,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2A5E"
+  },
+  {
+    "suite": "golden",
+    "line": 275,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 275,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 275,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 275,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 305,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2132"
+  },
+  {
+    "suite": "golden",
+    "line": 312,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2141"
+  },
+  {
+    "suite": "golden",
+    "line": 330,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 330,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 330,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 330,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 359,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 359,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 359,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 359,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 380,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\includegraphics"
+  },
+  {
+    "suite": "golden",
+    "line": 380,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\includegraphics"
+  },
+  {
+    "suite": "golden",
+    "line": 380,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\includegraphics"
+  },
+  {
+    "suite": "golden",
+    "line": 380,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\includegraphics"
+  },
+  {
+    "suite": "golden",
+    "line": 459,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+23B0"
+  },
+  {
+    "suite": "golden",
+    "line": 495,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1D4B6"
+  },
+  {
+    "suite": "golden",
+    "line": 532,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 532,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 532,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 532,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 566,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2AC5"
+  },
+  {
+    "suite": "golden",
+    "line": 570,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2AC6"
+  },
+  {
+    "suite": "golden",
+    "line": 625,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+22D4"
+  },
+  {
+    "suite": "golden",
+    "line": 637,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2AB7"
+  },
+  {
+    "suite": "golden",
+    "line": 640,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2AB9"
+  },
+  {
+    "suite": "golden",
+    "line": 641,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2AB5"
+  },
+  {
+    "suite": "golden",
+    "line": 671,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 671,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 671,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 671,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 692,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+23B1"
+  },
+  {
+    "suite": "golden",
+    "line": 757,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2AC5"
+  },
+  {
+    "suite": "golden",
+    "line": 759,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2ACB"
+  },
+  {
+    "suite": "golden",
+    "line": 796,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+25C3"
+  },
+  {
+    "suite": "golden",
+    "line": 799,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+25B9"
+  },
+  {
+    "suite": "golden",
+    "line": 831,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 831,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 831,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 831,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 855,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2ACB"
+  },
+  {
+    "suite": "golden",
+    "line": 857,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+2ACC"
+  },
+  {
+    "suite": "golden",
+    "line": 891,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 891,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 891,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 891,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 923,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+9178"
+  },
+  {
+    "suite": "golden",
+    "line": 923,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+9178"
+  },
+  {
+    "suite": "golden",
+    "line": 923,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+9178"
+  },
+  {
+    "suite": "golden",
+    "line": 974,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 974,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 974,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 974,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "golden",
+    "line": 988,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+4F60"
+  },
+  {
+    "suite": "golden",
+    "line": 988,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+4F60"
+  },
+  {
+    "suite": "golden",
+    "line": 988,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+4F60"
+  },
+  {
+    "suite": "golden",
+    "line": 989,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1F60A"
+  },
+  {
+    "suite": "golden",
+    "line": 989,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1F60A"
+  },
+  {
+    "suite": "golden",
+    "line": 989,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1F60A"
+  },
+  {
+    "suite": "parser",
+    "line": 77,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 77,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 77,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 77,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 83,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 83,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 83,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 83,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 85,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 85,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 85,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 85,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 186,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1D4CD"
+  },
+  {
+    "suite": "parser",
+    "line": 222,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 222,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 222,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 222,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 223,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 223,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 223,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 223,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 224,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 224,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 224,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 224,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 225,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 225,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 225,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 225,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 242,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 242,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 242,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 242,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 243,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 243,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 243,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 243,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 377,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 377,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 377,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 377,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 607,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 607,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 607,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 607,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 609,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 609,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 609,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 609,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 610,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\fracx"
+  },
+  {
+    "suite": "parser",
+    "line": 610,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\fracx"
+  },
+  {
+    "suite": "parser",
+    "line": 610,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\fracx"
+  },
+  {
+    "suite": "parser",
+    "line": 610,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\fracx"
+  },
+  {
+    "suite": "parser",
+    "line": 611,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 611,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 611,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 611,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 614,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\"
+  },
+  {
+    "suite": "parser",
+    "line": 614,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\"
+  },
+  {
+    "suite": "parser",
+    "line": 614,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\"
+  },
+  {
+    "suite": "parser",
+    "line": 614,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\"
+  },
+  {
+    "suite": "parser",
+    "line": 616,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 616,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 616,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 616,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 617,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\foo@bar"
+  },
+  {
+    "suite": "parser",
+    "line": 617,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\foo@bar"
+  },
+  {
+    "suite": "parser",
+    "line": 617,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\foo@bar"
+  },
+  {
+    "suite": "parser",
+    "line": 617,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\foo@bar"
+  },
+  {
+    "suite": "parser",
+    "line": 619,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Undefined control sequence: \\nb"
+  },
+  {
+    "suite": "parser",
+    "line": 619,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Undefined control sequence: \\nb"
+  },
+  {
+    "suite": "parser",
+    "line": 619,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Undefined control sequence: \\nb"
+  },
+  {
+    "suite": "parser",
+    "line": 619,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Undefined control sequence: \\nb"
+  },
+  {
+    "suite": "parser",
+    "line": 620,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Undefined control sequence: \\tb"
+  },
+  {
+    "suite": "parser",
+    "line": 620,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Undefined control sequence: \\tb"
+  },
+  {
+    "suite": "parser",
+    "line": 620,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Undefined control sequence: \\tb"
+  },
+  {
+    "suite": "parser",
+    "line": 620,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Undefined control sequence: \\tb"
+  },
+  {
+    "suite": "parser",
+    "line": 621,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 621,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 621,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 621,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 627,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected 'EOF', got '&'"
+  },
+  {
+    "suite": "parser",
+    "line": 627,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected 'EOF', got '&'"
+  },
+  {
+    "suite": "parser",
+    "line": 627,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected 'EOF', got '&'"
+  },
+  {
+    "suite": "parser",
+    "line": 627,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected 'EOF', got '&'"
+  },
+  {
+    "suite": "parser",
+    "line": 631,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 2: Expected 'EOF', got '&'"
+  },
+  {
+    "suite": "parser",
+    "line": 631,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 2: Expected 'EOF', got '&'"
+  },
+  {
+    "suite": "parser",
+    "line": 631,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 2: Expected 'EOF', got '&'"
+  },
+  {
+    "suite": "parser",
+    "line": 631,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 2: Expected 'EOF', got '&'"
+  },
+  {
+    "suite": "parser",
+    "line": 640,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected group after '^'"
+  },
+  {
+    "suite": "parser",
+    "line": 640,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected group after '^'"
+  },
+  {
+    "suite": "parser",
+    "line": 640,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected group after '^'"
+  },
+  {
+    "suite": "parser",
+    "line": 640,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected group after '^'"
+  },
+  {
+    "suite": "parser",
+    "line": 641,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected group after '^'"
+  },
+  {
+    "suite": "parser",
+    "line": 641,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected group after '^'"
+  },
+  {
+    "suite": "parser",
+    "line": 641,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected group after '^'"
+  },
+  {
+    "suite": "parser",
+    "line": 641,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 1: Expected group after '^'"
+  },
+  {
+    "suite": "parser",
+    "line": 642,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 18: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 642,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 18: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 642,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 18: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 642,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 18: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 643,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Invalid size: '1 '"
+  },
+  {
+    "suite": "parser",
+    "line": 643,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Invalid size: '1 '"
+  },
+  {
+    "suite": "parser",
+    "line": 643,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Invalid size: '1 '"
+  },
+  {
+    "suite": "parser",
+    "line": 643,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 5: Invalid size: '1 '"
+  },
+  {
+    "suite": "parser",
+    "line": 644,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 18: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 644,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 18: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 644,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 18: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 644,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 18: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 650,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 2: Undefined control sequence: \\t"
+  },
+  {
+    "suite": "parser",
+    "line": 650,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 2: Undefined control sequence: \\t"
+  },
+  {
+    "suite": "parser",
+    "line": 650,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 2: Undefined control sequence: \\t"
+  },
+  {
+    "suite": "parser",
+    "line": 650,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 2: Undefined control sequence: \\t"
+  },
+  {
+    "suite": "parser",
+    "line": 691,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0411"
+  },
+  {
+    "suite": "parser",
+    "line": 692,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0411"
+  },
+  {
+    "suite": "parser",
+    "line": 693,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+79C1"
+  },
+  {
+    "suite": "parser",
+    "line": 693,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+79C1"
+  },
+  {
+    "suite": "parser",
+    "line": 693,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+79C1"
+  },
+  {
+    "suite": "parser",
+    "line": 694,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+C5EC"
+  },
+  {
+    "suite": "parser",
+    "line": 694,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+C5EC"
+  },
+  {
+    "suite": "parser",
+    "line": 694,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+C5EC"
+  },
+  {
+    "suite": "parser",
+    "line": 695,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+79C1"
+  },
+  {
+    "suite": "parser",
+    "line": 695,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+79C1"
+  },
+  {
+    "suite": "parser",
+    "line": 695,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+79C1"
+  },
+  {
+    "suite": "parser",
+    "line": 696,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+C5EC"
+  },
+  {
+    "suite": "parser",
+    "line": 696,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+C5EC"
+  },
+  {
+    "suite": "parser",
+    "line": 696,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+C5EC"
+  },
+  {
+    "suite": "parser",
+    "line": 697,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0928"
+  },
+  {
+    "suite": "parser",
+    "line": 697,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0928"
+  },
+  {
+    "suite": "parser",
+    "line": 697,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0928"
+  },
+  {
+    "suite": "parser",
+    "line": 698,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0928"
+  },
+  {
+    "suite": "parser",
+    "line": 698,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0928"
+  },
+  {
+    "suite": "parser",
+    "line": 698,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0928"
+  },
+  {
+    "suite": "parser",
+    "line": 699,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+10D2"
+  },
+  {
+    "suite": "parser",
+    "line": 699,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+10D2"
+  },
+  {
+    "suite": "parser",
+    "line": 699,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+10D2"
+  },
+  {
+    "suite": "parser",
+    "line": 700,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+10D2"
+  },
+  {
+    "suite": "parser",
+    "line": 700,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+10D2"
+  },
+  {
+    "suite": "parser",
+    "line": 700,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+10D2"
+  },
+  {
+    "suite": "parser",
+    "line": 701,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0531"
+  },
+  {
+    "suite": "parser",
+    "line": 701,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0531"
+  },
+  {
+    "suite": "parser",
+    "line": 701,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0531"
+  },
+  {
+    "suite": "parser",
+    "line": 702,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0531"
+  },
+  {
+    "suite": "parser",
+    "line": 702,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0531"
+  },
+  {
+    "suite": "parser",
+    "line": 702,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+0531"
+  },
+  {
+    "suite": "parser",
+    "line": 705,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+270C"
+  },
+  {
+    "suite": "parser",
+    "line": 705,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+270C"
+  },
+  {
+    "suite": "parser",
+    "line": 705,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+270C"
+  },
+  {
+    "suite": "parser",
+    "line": 706,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+270C"
+  },
+  {
+    "suite": "parser",
+    "line": 706,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+270C"
+  },
+  {
+    "suite": "parser",
+    "line": 706,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+270C"
+  },
+  {
+    "suite": "parser",
+    "line": 713,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\''"
+  },
+  {
+    "suite": "parser",
+    "line": 713,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\''"
+  },
+  {
+    "suite": "parser",
+    "line": 713,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\''"
+  },
+  {
+    "suite": "parser",
+    "line": 713,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\''"
+  },
+  {
+    "suite": "parser",
+    "line": 714,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\\"'"
+  },
+  {
+    "suite": "parser",
+    "line": 714,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\\"'"
+  },
+  {
+    "suite": "parser",
+    "line": 714,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\\"'"
+  },
+  {
+    "suite": "parser",
+    "line": 714,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\\"'"
+  },
+  {
+    "suite": "parser",
+    "line": 717,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\`'"
+  },
+  {
+    "suite": "parser",
+    "line": 717,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\`'"
+  },
+  {
+    "suite": "parser",
+    "line": 717,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\`'"
+  },
+  {
+    "suite": "parser",
+    "line": 717,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError: Expected group as argument to '\\`'"
+  },
+  {
+    "suite": "parser",
+    "line": 725,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\n"
+  },
+  {
+    "suite": "parser",
+    "line": 725,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\n"
+  },
+  {
+    "suite": "parser",
+    "line": 725,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\n"
+  },
+  {
+    "suite": "parser",
+    "line": 725,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\n"
+  },
+  {
+    "suite": "parser",
+    "line": 728,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 6: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 728,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 6: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 728,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 6: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 728,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 6: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 729,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Expected 'EOF', got '\\end'"
+  },
+  {
+    "suite": "parser",
+    "line": 729,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Expected 'EOF', got '\\end'"
+  },
+  {
+    "suite": "parser",
+    "line": 729,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Expected 'EOF', got '\\end'"
+  },
+  {
+    "suite": "parser",
+    "line": 729,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Expected 'EOF', got '\\end'"
+  },
+  {
+    "suite": "parser",
+    "line": 733,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1F44B"
+  },
+  {
+    "suite": "parser",
+    "line": 733,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1F44B"
+  },
+  {
+    "suite": "parser",
+    "line": 733,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1F44B"
+  },
+  {
+    "suite": "parser",
+    "line": 734,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1F3AF"
+  },
+  {
+    "suite": "parser",
+    "line": 734,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1F3AF"
+  },
+  {
+    "suite": "parser",
+    "line": 734,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "所选数学字体缺少字形 U+1F3AF"
+  },
+  {
+    "suite": "parser",
+    "line": 735,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\redx"
+  },
+  {
+    "suite": "parser",
+    "line": 735,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\redx"
+  },
+  {
+    "suite": "parser",
+    "line": 735,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\redx"
+  },
+  {
+    "suite": "parser",
+    "line": 735,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\redx"
+  },
+  {
+    "suite": "parser",
+    "line": 738,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Undefined control sequence: \\t"
+  },
+  {
+    "suite": "parser",
+    "line": 738,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Undefined control sequence: \\t"
+  },
+  {
+    "suite": "parser",
+    "line": 738,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Undefined control sequence: \\t"
+  },
+  {
+    "suite": "parser",
+    "line": 738,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 8: Undefined control sequence: \\t"
+  },
+  {
+    "suite": "parser",
+    "line": 739,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 30: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 739,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 30: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 739,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 30: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 739,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 30: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 740,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 30: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 740,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 30: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 740,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 30: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 740,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 30: Unexpected end of input in a macro argument"
+  },
+  {
+    "suite": "parser",
+    "line": 741,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 741,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 741,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 741,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 742,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 742,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 742,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 742,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 752,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Invalid size: '\\t'"
+  },
+  {
+    "suite": "parser",
+    "line": 752,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Invalid size: '\\t'"
+  },
+  {
+    "suite": "parser",
+    "line": 752,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Invalid size: '\\t'"
+  },
+  {
+    "suite": "parser",
+    "line": 752,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 7: Invalid size: '\\t'"
+  },
+  {
+    "suite": "parser",
+    "line": 762,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 762,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 762,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 762,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 763,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 763,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 763,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 763,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 788,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 788,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 788,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 788,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 789,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\expandafter"
+  },
+  {
+    "suite": "parser",
+    "line": 789,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\expandafter"
+  },
+  {
+    "suite": "parser",
+    "line": 789,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\expandafter"
+  },
+  {
+    "suite": "parser",
+    "line": 789,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\expandafter"
+  },
+  {
+    "suite": "parser",
+    "line": 790,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 9: Undefined control sequence: \\foo"
+  },
+  {
+    "suite": "parser",
+    "line": 790,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 9: Undefined control sequence: \\foo"
+  },
+  {
+    "suite": "parser",
+    "line": 790,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 9: Undefined control sequence: \\foo"
+  },
+  {
+    "suite": "parser",
+    "line": 790,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 9: Undefined control sequence: \\foo"
+  },
+  {
+    "suite": "parser",
+    "line": 811,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 811,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 811,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "parser",
+    "line": 811,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "公式包含不允许的命令"
+  },
+  {
+    "suite": "layout",
+    "line": 29,
+    "font": "ratex-katex",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\accentset"
+  },
+  {
+    "suite": "layout",
+    "line": 29,
+    "font": "latinmodern",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\accentset"
+  },
+  {
+    "suite": "layout",
+    "line": 29,
+    "font": "stix",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\accentset"
+  },
+  {
+    "suite": "layout",
+    "line": 29,
+    "font": "xits",
+    "code": "E_FORMULA",
+    "error": "RaTeX 公式解析失败：ParseError at position 0: Undefined control sequence: \\accentset"
+  }
+]

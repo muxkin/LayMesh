@@ -1,2 +1,5 @@
 * text=auto eol=lf
 release/licenses/** -text
+
+# Preserve byte-identical upstream formula fixtures, including intentional whitespace.
+tests/math/ratex-0.1.14/*.txt -whitespace

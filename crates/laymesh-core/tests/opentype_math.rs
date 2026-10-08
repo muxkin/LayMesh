@@ -216,7 +216,7 @@ fn unknown_fonts_missing_math_glyphs_and_unsupported_commands_are_explicit_error
         ("Unavailable Math", "x", "E_MATH_FONT", "不可用"),
         ("/ordinary.ttf", "x", "E_MATH_FONT", "MATH"),
         ("/math.otf", r"\text{中文}", "E_FORMULA", "U+"),
-        ("/math.otf", r"\xrightarrow{x}", "E_FORMULA", "尚不支持"),
+        ("/math.otf", r"\def\a{x}\a", "E_FORMULA", "不允许"),
     ] {
         let e = formula(
             &json!({"source":source,"math_font":font}),
@@ -415,5 +415,168 @@ fn operator_limits_respect_font_baseline_rise_and_drop_minima() {
             jnum(find(0x1D456), "baseline", 0.) - bounds.y1 + 1e-9
                 >= f64::from(c.lower_limit_baseline_drop_min().value) * unit
         );
+    }
+}
+
+#[test]
+fn chemistry_and_units_keep_upright_elements_and_real_script_sizes() {
+    for (_, bytes) in &FONTS[..3] {
+        let n = render_formula(
+            bytes,
+            r"\ce{^{227}_{90}Th+ ->[H2O] ThO2} + \pu{1.2e3 kJ//mol}",
+            true,
+        );
+        let g = glyphs(&n);
+        assert!(g.iter().any(|v| v["mathCodepoint"] == u32::from('T')));
+        assert!(!g.iter().any(|v| v["mathCodepoint"] == 0x1D447_u32));
+        let sizes: Vec<_> = g.iter().map(|v| jnum(v, "fontSize", 0.)).collect();
+        assert!(sizes.iter().any(|s| *s < 4.) && sizes.iter().any(|s| (*s - 5.).abs() < 1e-6));
+    }
+}
+#[test]
+fn proof_rules_labels_and_root_direction_are_preserved() {
+    let bytes = FONTS[2].1;
+    let root =
+        r"\begin{prooftree}\AxiomC{P}\LeftLabel{cut}\RightLabel{r1}\UnaryInfC{Q}\end{prooftree}";
+    let bottom = render_formula(bytes, root, true);
+    let top = render_formula(
+        bytes,
+        &root.replace("\\UnaryInfC", "\\rootAtTop\\UnaryInfC"),
+        true,
+    );
+    let y = |node: &Value, ch: char| {
+        glyphs(node)
+            .iter()
+            .find(|v| v["mathCodepoint"] == u32::from(ch))
+            .unwrap()["baseline"]
+            .as_f64()
+            .unwrap()
+    };
+    assert!(y(&bottom, 'P') < y(&bottom, 'Q'));
+    assert!(y(&top, 'P') > y(&top, 'Q'));
+    let rules = |n: &Value| {
+        n["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|v| v["kind"] == "rule")
+            .count()
+    };
+    assert_eq!(rules(&bottom), 1);
+    assert_eq!(
+        rules(&render_formula(
+            bytes,
+            &root.replace("\\UnaryInfC", "\\noLine\\UnaryInfC"),
+            true
+        )),
+        0
+    );
+    assert!(
+        rules(&render_formula(
+            bytes,
+            &root.replace("\\UnaryInfC", "\\dashedLine\\UnaryInfC"),
+            true
+        )) > 2
+    );
+}
+#[test]
+fn aligned_equalities_share_a_column_and_equation_tags_render() {
+    for (_, bytes) in &FONTS[..3] {
+        let n = render_formula(
+            bytes,
+            r"\begin{aligned}x&=a+b\\longname&=c\end{aligned}",
+            true,
+        );
+        let eq: Vec<_> = glyphs(&n)
+            .into_iter()
+            .filter(|v| v["mathCodepoint"] == u32::from('='))
+            .collect();
+        assert_eq!(eq.len(), 2);
+        assert!((jnum(eq[0], "x", 0.) - jnum(eq[1], "x", 0.)).abs() < 1e-6);
+        let n = render_formula(
+            bytes,
+            r"\begin{align}x&=a\tag{A}\\y&=b\tag{B}\end{align}",
+            true,
+        );
+        for ch in ['A', 'B'] {
+            assert!(
+                glyphs(&n)
+                    .iter()
+                    .any(|v| v["mathCodepoint"] == u32::from(ch))
+            );
+        }
+    }
+}
+#[test]
+fn deep_delimiter_nesting_does_not_repeat_layout_exponentially() {
+    let source = format!("{}x{}", r"\left(".repeat(30), r"\right)".repeat(30));
+    for (_, bytes) in &FONTS[..3] {
+        render_formula(bytes, &source, true);
+    }
+    render_formula(
+        FONTS[2].1,
+        r"\left\{x\in\mathbb{R}\middle|\left(\frac{x}{2}\right)>0\right\}",
+        true,
+    );
+}
+#[test]
+fn unicode_variants_and_negations_do_not_require_katex_private_use_glyphs() {
+    for (_, bytes) in &FONTS[1..3] {
+        let n = render_formula(bytes, r"\imath+\jmath\neq\varsubsetneq\ngeqslant", true);
+        assert!(glyphs(&n).iter().all(|v| {
+            v["mathCodepoint"]
+                .as_u64()
+                .is_none_or(|cp| !(0xE000..=0xF8FF).contains(&cp))
+        }));
+    }
+}
+#[test]
+fn zero_width_break_controls_do_not_change_negation_or_atom_spacing() {
+    for (_, bytes) in &FONTS[..3] {
+        let a = render_formula(bytes, "a+b", true);
+        let b = render_formula(bytes, r"a\allowbreak+\nobreak b", true);
+        assert!((jnum(&a, "width", 0.) - jnum(&b, "width", 0.)).abs() < 1e-8);
+        let eq = render_formula(bytes, "=", true);
+        let ne = render_formula(bytes, r"\neq", true);
+        assert!(
+            (jnum(&eq, "width", 0.) - jnum(&ne, "width", 0.)).abs() < 1e-8,
+            "eq {} ne {}; equals x {:?}",
+            eq["width"],
+            ne["width"],
+            glyphs(&ne)
+                .iter()
+                .map(|v| (&v["mathCodepoint"], &v["x"]))
+                .collect::<Vec<_>>()
+        );
+    }
+}
+#[test]
+fn raw_dsl_strings_preserve_nested_mhchem_math_islands() {
+    let source = r"\ce{CH4 + 2 $\left( \ce{O2 + 79/21 N2} \right)$}";
+    let s = compile(&format!(
+        "page=canvas(size=(120mm,40mm))\npage.add(formula(r\"{source}\",math_font=\"/fonts/2.otf\"))"
+    ));
+    assert_eq!(s.nodes[0]["source"], source);
+    assert!(
+        !glyphs(&s.nodes[0])
+            .iter()
+            .any(|v| v["mathCodepoint"] == 0x1D459_u32)
+    ); // no literal italic l from "left"
+}
+#[test]
+fn combined_alphabets_include_bold_digits_and_keep_their_family() {
+    for (_, bytes) in &FONTS[..3] {
+        let n = render_formula(
+            bytes,
+            r"\bm{1\alpha}+\mathbf{\mathsf{x}}+\mathbf{\mathcal{A}}",
+            true,
+        );
+        let codes: Vec<_> = glyphs(&n)
+            .iter()
+            .filter_map(|v| v["mathCodepoint"].as_u64())
+            .collect();
+        for cp in [0x1D7CF, 0x1D736, 0x1D605, 0x1D4D0] {
+            assert!(codes.contains(&cp), "missing {cp:X}: {codes:X?}");
+        }
     }
 }

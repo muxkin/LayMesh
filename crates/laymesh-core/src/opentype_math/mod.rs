@@ -9,6 +9,7 @@ use crate::{
     model::{FontAsset, base, jnum, jstr},
     text::Outline,
 };
+use kurbo::Shape;
 use ratex_parser::ParseNode;
 use serde_json::{Value as Json, json};
 
@@ -38,19 +39,66 @@ pub(crate) fn formula(
         x_height,
     );
     let b = layout::Engine::new(&font).row(parsed, &ctx).map_err(fail)?;
+    let mut ascent = b.ascent;
+    let mut depth = b.depth;
     let mut left = 0_f64;
-    let mut right = b.width;
+    let mut right = b.width.max(0.);
     for item in &b.items {
-        if let layout::Item::Glyph { id, x, scale, .. } = item {
-            if let Some(bounds) = font.face.glyph_bounding_box(*id) {
-                left = left.min(x + f64::from(bounds.x_min) * scale / font.upem);
-                right = right.max(x + f64::from(bounds.x_max) * scale / font.upem);
-            }
+        let bounds = match item {
+            layout::Item::Glyph {
+                id, x, y, scale, ..
+            } => font.face.glyph_bounding_box(*id).map(|r| {
+                kurbo::Rect::new(
+                    x + f64::from(r.x_min) * scale / font.upem,
+                    y + f64::from(r.y_min) * scale / font.upem,
+                    x + f64::from(r.x_max) * scale / font.upem,
+                    y + f64::from(r.y_max) * scale / font.upem,
+                )
+            }),
+            layout::Item::Rule {
+                x,
+                top,
+                width,
+                height,
+                ..
+            } => Some(kurbo::Rect::new(*x, top - height, x + width, *top)),
+            layout::Item::Path {
+                path,
+                stroke,
+                thickness,
+                ..
+            } => Some(path.bounding_box().inflate(
+                if stroke.is_some() { thickness / 2. } else { 0. },
+                if stroke.is_some() { thickness / 2. } else { 0. },
+            )),
+        };
+        if let Some(r) = bounds {
+            left = left.min(r.x0);
+            right = right.max(r.x1);
+            ascent = ascent.max(r.y1);
+            depth = depth.max(-r.y0);
         }
     }
     let mut items = vec![];
     for item in b.items {
         match item {
+            layout::Item::Path {
+                mut path,
+                fill,
+                stroke,
+                thickness,
+            } => {
+                path.apply_affine(kurbo::Affine::new([
+                    size,
+                    0.,
+                    0.,
+                    -size,
+                    -left * size,
+                    ascent * size,
+                ]));
+                items.push(json!({"kind":"path","d":path.to_svg(),"fill":fill.unwrap_or_else(||"none".into()),
+                "stroke":stroke.unwrap_or_else(||"none".into()),"strokeWidth":thickness*size}));
+            }
             layout::Item::Glyph {
                 id,
                 x,
@@ -62,7 +110,7 @@ pub(crate) fn formula(
                 let mut outline = Outline {
                     scale: size * scale / font.upem,
                     x: (x - left) * size,
-                    y: (b.ascent - y) * size,
+                    y: (ascent - y) * size,
                     ..Default::default()
                 };
                 if font.face.outline_glyph(id, &mut outline).is_none() {
@@ -70,7 +118,7 @@ pub(crate) fn formula(
                 }
                 items.push(json!({"kind":"path","d":outline.d,"fill":color,
                     "glyphId":id.0,"mathCodepoint":codepoint,
-                    "x":(x-left)*size,"baseline":(b.ascent-y)*size,"fontSize":scale*size}));
+                    "x":(x-left)*size,"baseline":(ascent-y)*size,"fontSize":scale*size}));
             }
             layout::Item::Rule {
                 x,
@@ -80,17 +128,13 @@ pub(crate) fn formula(
                 color,
             } => {
                 items.push(json!({"kind":"rule","x":(x-left)*size,
-                    "y":(b.ascent-top)*size,"width":width*size,"height":height*size,"color":color}));
+                    "y":(ascent-top)*size,"width":width*size,"height":height*size,"color":color}));
             }
         }
     }
-    let mut node = base(
-        "formula",
-        (right - left) * size,
-        (b.ascent + b.depth) * size,
-    );
+    let mut node = base("formula", (right - left) * size, (ascent + depth) * size);
     node["source"] = json!(source);
-    node["ascent"] = json!(b.ascent * size);
+    node["ascent"] = json!(ascent * size);
     node["mathFont"] = json!(asset.family);
     node["mathFontFace"] = json!(
         font.face
