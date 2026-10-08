@@ -93,7 +93,7 @@ fn multilingual_formula_text_exports_as_outlines_with_every_math_backend() {
                 include_bytes!("../../../tests/fonts/math/XITSMath-Regular.otf").to_vec(),
             );
             for (name, bytes) in TEXT_FONTS {
-                host.files.insert(format!("/{name}"), bytes.to_vec());
+                host.files.insert((*name).to_owned(), bytes.to_vec());
             }
             let families = serde_json::to_string(TEXT_FAMILY).unwrap();
             let source = format!(
