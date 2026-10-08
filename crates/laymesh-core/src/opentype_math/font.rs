@@ -8,6 +8,14 @@ pub(super) struct MathFont<'a> {
     pub constants: math::Constants<'a>,
     pub upem: f64,
 }
+struct OutlineProbe;
+impl ttf_parser::OutlineBuilder for OutlineProbe {
+    fn move_to(&mut self, _: f32, _: f32) {}
+    fn line_to(&mut self, _: f32, _: f32) {}
+    fn quad_to(&mut self, _: f32, _: f32, _: f32, _: f32) {}
+    fn curve_to(&mut self, _: f32, _: f32, _: f32, _: f32, _: f32, _: f32) {}
+    fn close(&mut self) {}
+}
 impl<'a> MathFont<'a> {
     pub fn new(data: &'a [u8], index: u32) -> MathResult<Self> {
         let face = Face::parse(data, index).map_err(|_| "无效数学字体")?;
@@ -48,15 +56,37 @@ impl<'a> MathFont<'a> {
                 ..Default::default()
             });
         }
-        let id = self
-            .face
-            .glyph_index(ch)
-            .ok_or_else(|| format!("所选数学字体缺少字形 U+{:04X}", ch as u32))?;
+        let Some(id) = self.face.glyph_index(ch).filter(|id| id.0 != 0) else {
+            return Ok(self.missing(ch, ctx));
+        };
         Ok(self.glyph_id(id, Some(ch as u32), ctx))
+    }
+    fn missing(&self, ch: char, ctx: &Context) -> MathBox {
+        let mut path = crate::text::missing_path();
+        path.apply_affine(kurbo::Affine::scale(ctx.scale));
+        MathBox {
+            width: 0.8 * ctx.scale,
+            ascent: 0.8 * ctx.scale,
+            accent: Some(0.325 * ctx.scale),
+            items: vec![Item::Path {
+                path,
+                fill: Some(ctx.color.clone()),
+                stroke: None,
+                thickness: 0.,
+                missing: vec![ch as u32],
+            }],
+            ..Default::default()
+        }
     }
     pub fn glyph_id(&self, id: GlyphId, codepoint: Option<u32>, ctx: &Context) -> MathBox {
         let s = ctx.scale / self.upem;
         let bounds = self.face.glyph_bounding_box(id);
+        if let Some(ch) = codepoint.and_then(char::from_u32)
+            && self.face.outline_glyph(id, &mut OutlineProbe).is_none()
+            && !ch.is_whitespace()
+        {
+            return self.missing(ch, ctx);
+        }
         let info = self.face.tables().math.and_then(|m| m.glyph_info);
         let italic = info
             .and_then(|i| i.italic_corrections)
@@ -94,10 +124,9 @@ impl<'a> MathFont<'a> {
         vertical: bool,
         ctx: &Context,
     ) -> MathResult<MathBox> {
-        let id = self
-            .face
-            .glyph_index(ch)
-            .ok_or_else(|| format!("所选数学字体缺少伸缩符号 U+{:04X}", ch as u32))?;
+        let Some(id) = self.face.glyph_index(ch).filter(|id| id.0 != 0) else {
+            return Ok(self.missing(ch, ctx));
+        };
         let base = self.glyph_id(id, Some(ch as u32), ctx);
         let dimension = |b: &MathBox| {
             if vertical {
@@ -106,7 +135,7 @@ impl<'a> MathFont<'a> {
                 b.width
             }
         };
-        if dimension(&base) >= target {
+        if base.glyph.is_none() || dimension(&base) >= target {
             return Ok(base);
         }
         let variants = self

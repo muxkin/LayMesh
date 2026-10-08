@@ -34,8 +34,9 @@ A font may lack a horizontal arrow assembly, and some installed STIX Two
 arrows and equality only, the backend then extends the shaft region of that
 font's native outline while preserving its end shapes and stroke thickness.
 Other finite stretch constructions use their largest native variant when
-no assembly exists. Missing mathematical glyphs, missing MATH tables, embedding
-restrictions, or unavailable fonts fail explicitly.
+no assembly exists. Missing glyphs use the same measured vector box in every
+backend and emit `W_FONT` with Unicode codepoints. Missing MATH tables, embedding
+restrictions, unavailable math fonts and invalid constructions still fail explicitly.
 
 `mathcal` and `mathscr` currently select the same Unicode script alphabet;
 font-specific GSUB stylistic-set selection is not implemented. Math alphabet
@@ -62,14 +63,16 @@ MIT license are retained under `tests/math/ratex-0.1.14`:
 After deduplicating the overlapping primary math suites, the audit runs 1931
 case entries (1921 distinct formulas), four fonts, and inline/display styles:
 **15,448 layout checks**. Expected parser/policy errors and real font-coverage
-limits are recorded separately; they are not counted as successful renders.
+limits are recorded separately. Placeholder exports are not counted as correct
+glyph rendering. `expected-errors.json` pins parser/policy rejections and
+`expected-placeholders.json` pins missing-codepoint sequences.
 
-| Backend | Rendered checks | Parser/policy rejection | Missing-glyph checks |
+| Backend | Exportable checks | Parser/policy rejection | Exports containing placeholders |
 | --- | ---: | ---: | ---: |
-| KaTeX default | 3742 | 120 | 0 |
-| Latin Modern Math | 3646 | 120 | 96 |
-| STIX Two Math | 3708 | 120 | 34 |
-| XITS Math | 3708 | 120 | 34 |
+| KaTeX default | 3742 | 120 | 100 |
+| Latin Modern Math | 3742 | 120 | 96 |
+| STIX Two Math | 3742 | 120 | 34 |
+| XITS Math | 3742 | 120 | 34 |
 
 All 91 chemistry, 22 physics, 38 proof-tree cases and 32 additional domain
 cases render in every font and style. No unimplemented OpenType node remains
@@ -206,7 +209,9 @@ font installation. Details disclose actual family, face, weight and glyph
 count. `/sources/text-fonts-manifest.json` retains input and output hashes;
 [font fixtures](../../tests/fonts/text/README.md) document rebuilding and licenses.
 The four math font files remain unchanged. Color bitmap emoji are unsupported
-by this outline-only text flow, and missing mathematical symbols still fail.
+by this outline-only text flow. Missing text or math glyphs use vector boxes
+with warnings, including when text fallback is disabled or its font list is
+exhausted; adjacent supported glyphs and mathematical structure remain visible.
 
 The default KaTeX route uses the optional measured-text hook in the
 [muxkin/RaTeX fork](https://github.com/muxkin/RaTeX/blob/9e03b1c0f365a15f51e68649311365c0d62842e1/docs/HOST_TEXT_LAYOUT.md),

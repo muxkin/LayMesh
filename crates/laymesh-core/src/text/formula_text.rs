@@ -48,7 +48,7 @@ impl TextStyle {
 }
 
 #[derive(Default)]
-pub(crate) struct TextFonts(pub Vec<Value>);
+pub(crate) struct TextFonts(pub Vec<Value>, pub Vec<u32>);
 impl TextFonts {
     pub fn record(&mut self, font: Value) {
         if let Some(old) = self.0.iter_mut().find(|old| {
@@ -71,6 +71,24 @@ pub(crate) struct ShapedText {
     pub width: f64,
     pub ascent: f64,
     pub depth: f64,
+}
+
+/// Font-independent tofu, in em units with y pointing above the baseline.
+/// The border is an outline, so every exporter uses the same shape and ink
+/// stays inside the measured box (including in scripts and accents).
+pub(crate) fn missing_path() -> BezPath {
+    let mut path = BezPath::new();
+    path.move_to((0., 0.));
+    path.line_to((0.65, 0.));
+    path.line_to((0.65, 0.8));
+    path.line_to((0., 0.8));
+    path.close_path();
+    path.move_to((0.045, 0.045));
+    path.line_to((0.045, 0.755));
+    path.line_to((0.605, 0.755));
+    path.line_to((0.605, 0.045));
+    path.close_path();
+    path
 }
 
 /// A literal text leaf/group; mathematical and structural nodes delimit runs.
@@ -169,7 +187,7 @@ pub(crate) fn shape_text(
         let (levels, visual) = bidi.visual_runs(paragraph, paragraph.range.clone());
         for run in visual {
             let rtl = levels[run.start].is_rtl();
-            let mut segments: Vec<(String, Script, String)> = vec![];
+            let mut segments: Vec<(Option<String>, Script, String)> = vec![];
             for grapheme in text[run].graphemes(true) {
                 if grapheme
                     .chars()
@@ -177,27 +195,16 @@ pub(crate) fn shape_text(
                 {
                     continue;
                 }
-                let key = fonts
-                    .choose_mode(
-                        &spec["font_family"],
-                        style.weight,
-                        style.italic,
-                        grapheme,
-                        file,
-                        loc,
-                        warnings,
-                        true,
-                    )
-                    .ok_or_else(|| {
-                        format!(
-                            "文本字体列表缺少字形 {}",
-                            grapheme
-                                .chars()
-                                .map(|c| format!("U+{:04X}", c as u32))
-                                .collect::<Vec<_>>()
-                                .join(" ")
-                        )
-                    })?;
+                let key = fonts.choose_mode(
+                    &spec["font_family"],
+                    style.weight,
+                    style.italic,
+                    grapheme,
+                    file,
+                    loc,
+                    warnings,
+                    true,
+                );
                 let script = grapheme
                     .chars()
                     .map(|c| c.script())
@@ -221,6 +228,26 @@ pub(crate) fn shape_text(
                 segments.reverse();
             }
             for (key, _, content) in segments {
+                let Some(key) = key else {
+                    let chars: Vec<_> = content.chars().collect();
+                    let chars: Vec<_> = if rtl {
+                        chars.into_iter().rev().collect()
+                    } else {
+                        chars
+                    };
+                    for ch in chars {
+                        if ch.is_whitespace() {
+                            cursor += 0.25;
+                            continue;
+                        }
+                        let mut p = missing_path();
+                        p.apply_affine(Affine::translate((cursor, 0.)));
+                        path.extend(p.elements().iter().copied());
+                        cursor += 0.8;
+                        used.1.push(ch as u32);
+                    }
+                    continue;
+                };
                 let asset = fonts
                     .assets
                     .get(&key)
@@ -248,14 +275,15 @@ pub(crate) fn shape_text(
                 let mut pen_y = 0.;
                 for (glyph, position) in output.glyph_infos().iter().zip(output.glyph_positions()) {
                     let id = ttf_parser::GlyphId(glyph.glyph_id as u16);
-                    if id.0 == 0 {
-                        return Err(format!("文本字体 {} 排版后出现缺字", asset.family));
-                    }
+                    let source_char = content
+                        .get(glyph.cluster as usize..)
+                        .and_then(|s| s.chars().next());
                     let mut outline = Outline {
                         scale: unit,
                         ..Default::default()
                     };
-                    if face.outline_glyph(id, &mut outline).is_some() {
+                    let mut advance = f64::from(position.x_advance);
+                    if id.0 != 0 && face.outline_glyph(id, &mut outline).is_some() {
                         let mut p =
                             BezPath::from_svg(&outline.d).map_err(|_| "无效文本字形轮廓")?;
                         p.apply_affine(Affine::new([
@@ -267,13 +295,20 @@ pub(crate) fn shape_text(
                             (pen_y + f64::from(position.y_offset)) * unit,
                         ]));
                         path.extend(p.elements().iter().copied());
-                    } else if face.glyph_bounding_box(id).is_some() {
-                        return Err(format!(
-                            "文本字体 {} 的字形 {} 缺少可导出的轮廓",
-                            asset.family, id.0
-                        ));
+                    } else if source_char.is_some_and(|ch| !ch.is_whitespace()
+                        && !matches!(ch as u32, 0x200B..=0x200F | 0x202A..=0x202E | 0x2066..=0x2069 | 0xFE00..=0xFE0F))
+                        && (id.0 == 0 || Some(id) != face.glyph_index(' ')) {
+                        let mut p = missing_path();
+                        p.apply_affine(Affine::translate((cursor + pen_x * unit, pen_y * unit)));
+                        path.extend(p.elements().iter().copied());
+                        // Shaping can produce .notdef even when cmap selection
+                        // succeeded. Use the cluster's source for diagnostics.
+                        if let Some(ch) = source_char {
+                            used.1.push(ch as u32);
+                        }
+                        advance = advance.max(0.8 / unit);
                     }
-                    pen_x += f64::from(position.x_advance);
+                    pen_x += advance;
                     pen_y += f64::from(position.y_advance);
                 }
                 cursor += pen_x * unit;

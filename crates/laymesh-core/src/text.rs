@@ -6,6 +6,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use ttf_parser::OutlineBuilder;
 use unicode_segmentation::UnicodeSegmentation;
 mod formula_text;
+pub(crate) use formula_text::missing_path;
 pub(crate) use formula_text::{TextFonts, TextStyle, literal_text, shape_text};
 
 pub struct FontSystem {
@@ -32,6 +33,20 @@ fn warn(w: &mut Vec<Diagnostic>, s: impl Into<String>, file: &str, loc: Loc) {
         .any(|d| d.code == "W_FONT" && d.message == s && d.file == file && d.loc == loc)
     {
         w.push(Diagnostic::new("W_FONT", s, file, loc));
+    }
+}
+pub(crate) fn warn_missing(w: &mut Vec<Diagnostic>, missing: &[u32], file: &str, loc: Loc) {
+    if !missing.is_empty() {
+        let codes: BTreeSet<_> = missing.iter().map(|c| format!("U+{c:04X}")).collect();
+        warn(
+            w,
+            format!(
+                "公式缺少字形 {}，使用矢量方框替代",
+                codes.into_iter().collect::<Vec<_>>().join(" ")
+            ),
+            file,
+            loc,
+        );
     }
 }
 fn canonical(s: &str) -> String {
@@ -761,7 +776,7 @@ pub fn formula(
         loc,
     };
     let options = ratex_layout::LayoutOptions {
-        text_layout: enabled.then_some(&provider),
+        text_layout: Some(&provider),
         style: if spec
             .get("display")
             .and_then(Json::as_bool)
@@ -779,30 +794,21 @@ pub fn formula(
     if let Some(error) = provider.error.borrow().as_ref() {
         return Err(Diagnostic::new("E_FORMULA", error.clone(), file, loc));
     }
-    let used = std::mem::take(&mut provider.used.borrow_mut().0);
+    let used = std::mem::take(&mut *provider.used.borrow_mut());
     drop(provider);
     let mut items = vec![];
-    let mut missing = BTreeSet::new();
+    let mut missing = used.1;
     for item in dl.items {
         match item{
         D::GlyphPath{x,y,scale,font,char_code,color}=>{let name=format!("KaTeX_{font}.ttf");let char_=char::from_u32(char_code).unwrap_or('\u{fffd}');let data=ratex_katex_fonts::ttf_bytes(&name);let mut rendered=false;if let Some(data)=data{if let Ok(face)=ttf_parser::Face::parse(&data,0){if let Some(gid)=face.glyph_index(char_){let mut outline=Outline{scale:size*scale/face.units_per_em()as f64,x:x*size,y:y*size,..Default::default()};face.outline_glyph(gid,&mut outline);items.push(json!({"kind":"path","d":outline.d,"fill":css(color),"opacity":color.a}));rendered=true;}}}
-            if !rendered{let ch=char_.to_string();if let Some(key)=enabled.then(|| fonts.choose(&spec["font_family"],400,false,&ch,file,loc,w)).flatten(){let asset=&fonts.assets[&key];let (advance,_,_)=measure(asset,&ch,size*scale);items.push(json!({"kind":"glyph","x":x*size,"baseline":y*size,"fontFamily":key,"fontSystemFamily":asset.family,"fontSize":size*scale,"content":ch,"width":advance,"color":css(color)}));}else{missing.insert(format!("U+{char_code:04X}"));items.push(missing_box(x*size,(y-0.8*scale)*size,size*scale,&css(color)));}}
+            if !rendered{let ch=char_.to_string();if let Some(key)=enabled.then(|| fonts.choose(&spec["font_family"],400,false,&ch,file,loc,w)).flatten(){let asset=&fonts.assets[&key];let (advance,_,_)=measure(asset,&ch,size*scale);items.push(json!({"kind":"glyph","x":x*size,"baseline":y*size,"fontFamily":key,"fontSystemFamily":asset.family,"fontSize":size*scale,"content":ch,"width":advance,"color":css(color)}));}else{missing.push(char_code);let mut p=missing_path();p.apply_affine(kurbo::Affine::new([size*scale,0.,0.,-size*scale,x*size,y*size]));items.push(json!({"kind":"path","d":p.to_svg(),"fill":css(color),"opacity":color.a,"missingCodepoint":char_code}));}}
         },D::Line{x,y,width,thickness,color,dashed}=>items.push(json!({"kind":"rule","x":x*size,"y":(if dashed { y } else { y-thickness/2. })*size,"width":width*size,"height":thickness*size,"color":css(color),"opacity":color.a,"dashed":dashed})),D::Rect{x,y,width,height,color}=>items.push(json!({"kind":"rule","x":x*size,"y":y*size,"width":width*size,"height":height*size,"color":css(color),"opacity":color.a})),D::Path{x,y,commands,fill,color}=>{let mut d=String::new();for p in commands{d+=&match p{P::MoveTo{x:a,y:b}=>format!("M{} {}",(x+a)*size,(y+b)*size),P::LineTo{x:a,y:b}=>format!("L{} {}",(x+a)*size,(y+b)*size),P::CubicTo{x1,y1,x2,y2,x:a,y:b}=>format!("C{} {} {} {} {} {}",(x+x1)*size,(y+y1)*size,(x+x2)*size,(y+y2)*size,(x+a)*size,(y+b)*size),P::QuadTo{x1,y1,x:a,y:b}=>format!("Q{} {} {} {}",(x+x1)*size,(y+y1)*size,(x+a)*size,(y+b)*size),P::Close=>"Z".into()};}items.push(json!({"kind":"path","d":d,"fill":if fill{css(color)}else{"none".into()},"stroke":if fill{"none".into()}else{css(color)},"strokeWidth":size*0.04,"opacity":color.a}));}}
     }
-    if !missing.is_empty() {
-        warn(
-            w,
-            format!(
-                "公式缺少字形 {}，使用矢量方框替代",
-                missing.into_iter().collect::<Vec<_>>().join(" ")
-            ),
-            file,
-            loc,
-        );
-    }
+    warn_missing(w, &missing, file, loc);
     let mut node = base("formula", dl.width * size, (dl.height + dl.depth) * size);
     node["mathTextFallback"] = json!(enabled);
-    node["mathTextFonts"] = json!(used);
+    node["mathTextFonts"] = json!(used.0);
+    node["mathMissingGlyphs"] = json!(missing);
     node["source"] = json!(source);
     node["mathFont"] = json!("ratex-katex");
     node["ascent"] = json!(dl.height * size);
@@ -810,6 +816,7 @@ pub fn formula(
     if node["mathTextFonts"]
         .as_array()
         .is_some_and(|a| !a.is_empty())
+        || !missing.is_empty()
     {
         fit_formula_ink(&mut node);
     }
@@ -1643,33 +1650,27 @@ mod policy_tests {
         assert_eq!(w[0].loc.line, 2);
     }
     #[test]
-    fn missing_formula_unicode_reports_fallback_errors_or_strict_vector_boxes() {
+    fn missing_formula_unicode_uses_vector_boxes_with_and_without_text_fallback() {
         let mut f = FontSystem::new(false);
         let mut w = vec![];
-        let error = formula(
-            &json!({"source":r"\text{中文}"}),
-            &mut f,
-            &mut w,
-            "f.lay",
-            Loc::default(),
-        )
-        .unwrap_err();
-        assert!(error.message.contains("文本字体列表缺少字形"));
-        let n = formula(
-            &json!({"source":r"\text{中文}","math_text_fallback":false}),
-            &mut f,
-            &mut w,
-            "f.lay",
-            Loc::default(),
-        )
-        .unwrap();
-        assert!(
-            n["items"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .any(|i| i["kind"] == "box")
-        );
+        for enabled in [true, false] {
+            let n = formula(
+                &json!({"source":r"\text{中文}","math_text_fallback":enabled}),
+                &mut f,
+                &mut w,
+                "f.lay",
+                Loc::default(),
+            )
+            .unwrap();
+            assert_eq!(n["mathMissingGlyphs"], json!(['中' as u32, '文' as u32]));
+            assert!(
+                n["items"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .all(|i| i["kind"] == "path")
+            );
+        }
         assert!(w.iter().any(|d| d.code == "W_FONT"));
         assert!(f.assets.is_empty());
     }

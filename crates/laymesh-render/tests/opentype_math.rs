@@ -130,3 +130,63 @@ fn multilingual_formula_text_exports_as_outlines_with_every_math_backend() {
         }
     }
 }
+
+#[test]
+fn missing_formula_glyphs_export_as_vector_boxes_with_all_math_fonts() {
+    for bytes in [
+        None,
+        Some(include_bytes!("../../../tests/fonts/math/latinmodern-math.otf").as_slice()),
+        Some(include_bytes!("../../../tests/fonts/math/STIX2Math.otf").as_slice()),
+        Some(include_bytes!("../../../tests/fonts/math/XITSMath-Regular.otf").as_slice()),
+    ] {
+        for enabled in [true, false] {
+            let mut host = Host::default();
+            let backend = if let Some(bytes) = bytes {
+                host.files.insert("/math.otf".into(), bytes.to_vec());
+                "/math.otf"
+            } else {
+                "ratex-katex"
+            };
+            host.files
+                .insert(TEXT_FONTS[0].0.to_owned(), TEXT_FONTS[0].1.to_vec());
+            let family = serde_json::to_string(&[TEXT_FAMILY[0]]).unwrap();
+            let source = format!(
+                "page=canvas(size=(100mm,45mm),background=\"#ffffff\")\npage.add(formula(r\"\\text{{Energy 能量}}=E^{{你好}}_{{世界！}}\",math_font=\"{backend}\",font_family={family},math_text_fallback={enabled},font_size=18pt),offset=(5mm,5mm))"
+            );
+            let scene = compile_source(&source, "/missing.lay", host).unwrap();
+            assert_eq!(
+                scene.nodes[0]["mathMissingGlyphs"]
+                    .as_array()
+                    .unwrap()
+                    .len(),
+                7
+            );
+            assert!(
+                scene
+                    .warnings
+                    .iter()
+                    .any(|d| d.code == "W_FONT" && d.message.contains("U+4F60"))
+            );
+            assert!(scene.fonts.is_empty());
+            let svg = render_svg(&scene).unwrap();
+            assert!(svg.contains("<path") && !svg.contains("<text") && !svg.contains("@font-face"));
+            let pdf = render_pdf(&scene).unwrap();
+            assert!(pdf.starts_with(b"%PDF-") && !pdf.windows(14).any(|w| w == b"/Subtype/Image"));
+            let png = render_png(&scene, 120.).unwrap();
+            let mut reader = png::Decoder::new(std::io::Cursor::new(png))
+                .read_info()
+                .unwrap();
+            let mut pixels = vec![0; reader.output_buffer_size().unwrap()];
+            let info = reader.next_frame(&mut pixels).unwrap();
+            assert!(
+                pixels[..info.buffer_size()]
+                    .iter()
+                    .filter(|&&p| p < 128)
+                    .count()
+                    > 500
+            );
+            let (pptx, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
+            assert!(pptx.starts_with(b"PK") && warnings.is_empty());
+        }
+    }
+}

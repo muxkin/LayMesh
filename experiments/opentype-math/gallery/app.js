@@ -151,7 +151,7 @@ function provenance(){
     `RaTeX ${meta.upstream.tag} · 提交 ${meta.upstream.commit}`,
     `保留 ${meta.upstream.files.length} 个原始公式语料文件的 ${format(meta.upstream_entries)} 条非空、非注释用例，包括各套文件中的重复条目。加上 ${meta.case_entries-meta.upstream_entries} 条领域与文本补充，共 ${format(meta.case_entries)} 条。原始文件字节与 SHA-256 均已核验。`,
     `${format(meta.distinct_formulas)} 条不同公式，四套数学字体、两种公式模式、两种文本策略。${format(meta.layout_checks)} 个条目结果，检查 ${format(meta.distinct_layout_checks)} 个不同组合，生成 ${format(meta.svg_files)} 个 SVG；其余结果保留失败原因。重复公式共用相同 SVG。`,
-    `禁用文本回退时，其中 ${format(meta.audit_checks)} 个不同组合与固定审计逐项一致；另 ${format(meta.supplemental_checks)} 个组合涵盖新增用例及启用文本回退的完整语料，并检查几何。解析不支持、禁止命令和字体缺字逐项保留，不当作成功渲染。`,
+    `禁用文本回退时，其中 ${format(meta.audit_checks)} 个不同组合与固定审计逐项一致；另 ${format(meta.supplemental_checks)} 个组合涵盖新增用例及启用文本回退的完整语料，并检查几何。解析不支持和禁止命令保留错误；字体缺字统一方框占位并标出警告，不当作正确字形。`,
     `使用当前 LayMesh 公式排版及 SVG 导出生成矢量轮廓。浏览器调整显示尺寸；字体字形及数学排版来自生成时的渲染器。`,
     `“启用文本回退”使用固定的 Noto 派生测试字体列表（Latin、CJK、Arabic、Indic），在数学排版前完成文本塑形和尺寸测量；“仅数学字体”关闭正文回退，用于核对数学字体的字形覆盖。正文测试字体不会随产品运行库打包。`,
     `快照生成于 ${new Date(meta.generated_at).toLocaleString("zh-CN")} · LayMesh 基于 ${meta.git_revision.slice(0,7)}`,

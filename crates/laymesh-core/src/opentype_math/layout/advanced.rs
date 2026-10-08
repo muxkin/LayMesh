@@ -27,6 +27,7 @@ impl Box {
             fill,
             stroke,
             thickness,
+            missing: vec![],
         });
     }
     fn dashed(&mut self, x: f64, y: f64, width: f64, thickness: f64, c: &Context) {
@@ -325,12 +326,7 @@ impl Engine<'_, '_> {
             let advance = 0.18 * c.scale;
             let w = (n - 1) as f64 * advance;
             let mut dots = Box::default();
-            let ink = self
-                .font
-                .face
-                .glyph_bounding_box(dot.glyph.unwrap().0)
-                .ok_or("重音缺少轮廓")?;
-            let bottom = f64::from(ink.y_min) / self.font.upem * c.scale;
+            let bottom = ink_bounds(&dot, self.font).0;
             for i in 0..n {
                 dots.add(
                     dot.clone(),
@@ -638,7 +634,7 @@ impl Engine<'_, '_> {
     }
 }
 
-fn ink_bounds(b: &Box, font: &MathFont<'_>) -> (f64, f64) {
+pub(super) fn ink_bounds(b: &Box, font: &MathFont<'_>) -> (f64, f64) {
     let (mut bottom, mut top) = (f64::INFINITY, f64::NEG_INFINITY);
     for item in &b.items {
         if let Item::Glyph { id, y, scale, .. } = item {
@@ -646,6 +642,17 @@ fn ink_bounds(b: &Box, font: &MathFont<'_>) -> (f64, f64) {
                 bottom = bottom.min(y + f64::from(r.y_min) * scale / font.upem);
                 top = top.max(y + f64::from(r.y_max) * scale / font.upem);
             }
+        } else if let Item::Path {
+            path,
+            stroke,
+            thickness,
+            ..
+        } = item
+        {
+            let r = path.bounding_box();
+            let extra = if stroke.is_some() { thickness / 2. } else { 0. };
+            bottom = bottom.min(r.y0 - extra);
+            top = top.max(r.y1 + extra);
         }
     }
     if bottom.is_finite() {
@@ -1081,7 +1088,9 @@ impl Engine<'_, '_> {
     ) -> MathResult<Box> {
         use super::super::parse::ChemicalBond;
         let base = self.font.glyph('−', &c.font(Alphabet::Roman))?;
-        let id = base.glyph.ok_or("化学键缺少减号字形")?.0;
+        let Some((id, _)) = base.glyph else {
+            return Ok(base);
+        };
         let mut outline = NativeOutline(BezPath::new());
         self.font
             .face
@@ -1152,7 +1161,9 @@ impl Engine<'_, '_> {
         if base.width >= target {
             return Ok(base);
         }
-        let id = base.glyph.unwrap().0;
+        let Some((id, _)) = base.glyph else {
+            return Ok(base);
+        };
         let mut outline = NativeOutline(BezPath::new());
         self.font
             .face

@@ -111,6 +111,23 @@ fn upstream_corpus() {
             )
         })
         .collect();
+    let placeholders: Vec<Value> = serde_json::from_str(include_str!(
+        "../../../tests/math/ratex-0.1.14/expected-placeholders.json"
+    ))
+    .unwrap();
+    let placeholders: BTreeMap<_, _> = placeholders
+        .iter()
+        .map(|v| {
+            (
+                (
+                    v["suite"].as_str().unwrap().to_string(),
+                    v["line"].as_u64().unwrap() as usize,
+                    v["font"].as_str().unwrap().to_string(),
+                ),
+                &v["missing_glyphs"],
+            )
+        })
+        .collect();
     let mut failures = vec![];
     let mut report = vec![];
     for (suite, line, source) in cases() {
@@ -121,10 +138,11 @@ fn upstream_corpus() {
                 } else {
                     format!("/{font}.otf")
                 };
+                let mut warnings = vec![];
                 let result = formula(
                     &json!({"source":source,"math_font":request,"font_size":5.,"style":style,"math_text_fallback":false}),
                     &mut fonts,
-                    &mut vec![],
+                    &mut warnings,
                     "/corpus.lay",
                     Loc::default(),
                 );
@@ -152,7 +170,7 @@ fn upstream_corpus() {
                                 }
                             }
                         }
-                        json!({"suite":suite,"line":line,"source":source,"font":font,"style":style,"width":w,"height":h,"bounds_errors":errors})
+                        json!({"suite":suite,"line":line,"source":source,"font":font,"style":style,"width":w,"height":h,"bounds_errors":errors,"missing_glyphs":node["mathMissingGlyphs"],"warnings":warnings})
                     }
                 };
                 let key = (suite.clone(), line, font.to_string());
@@ -163,6 +181,25 @@ fn upstream_corpus() {
                     _ => failures.push(format!(
                         "{suite}:{line} {font} {style}: unexpected outcome {row}"
                     )),
+                }
+                if row.get("error").is_none() {
+                    let empty = json!([]);
+                    let missing = placeholders.get(&key).copied().unwrap_or(&empty);
+                    if *missing != row["missing_glyphs"] {
+                        failures.push(format!(
+                            "{suite}:{line} {font} {style}: missing glyphs changed: {row}"
+                        ));
+                    }
+                    if !missing.as_array().unwrap().is_empty()
+                        && !row["warnings"].as_array().unwrap().iter().any(|w| {
+                            w["code"] == "W_FONT"
+                                && w["message"].as_str().unwrap().contains("使用矢量方框替代")
+                        })
+                    {
+                        failures.push(format!(
+                            "{suite}:{line} {font} {style}: placeholder diagnostic missing"
+                        ));
+                    }
                 }
                 if font != "ratex-katex"
                     && row.get("error").is_none()

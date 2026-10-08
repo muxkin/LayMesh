@@ -57,55 +57,6 @@
   },
   {
     "suite": "golden",
-    "line": 105,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2605"
-  },
-  {
-    "suite": "golden",
-    "line": 112,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+29EB"
-  },
-  {
-    "suite": "golden",
-    "line": 145,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1D4B6"
-  },
-  {
-    "suite": "golden",
-    "line": 157,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+263A"
-  },
-  {
-    "suite": "golden",
-    "line": 172,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+24C8"
-  },
-  {
-    "suite": "golden",
-    "line": 225,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+21E0"
-  },
-  {
-    "suite": "golden",
-    "line": 226,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+21E2"
-  },
-  {
-    "suite": "golden",
     "line": 237,
     "font": "ratex-katex",
     "code": "E_FORMULA",
@@ -134,34 +85,6 @@
   },
   {
     "suite": "golden",
-    "line": 243,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+03DD"
-  },
-  {
-    "suite": "golden",
-    "line": 245,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2572"
-  },
-  {
-    "suite": "golden",
-    "line": 246,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2571"
-  },
-  {
-    "suite": "golden",
-    "line": 266,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2A5E"
-  },
-  {
-    "suite": "golden",
     "line": 275,
     "font": "ratex-katex",
     "code": "E_FORMULA",
@@ -187,20 +110,6 @@
     "font": "xits",
     "code": "E_FORMULA",
     "error": "公式包含不允许的命令"
-  },
-  {
-    "suite": "golden",
-    "line": 305,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2132"
-  },
-  {
-    "suite": "golden",
-    "line": 312,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2141"
   },
   {
     "suite": "golden",
@@ -288,20 +197,6 @@
   },
   {
     "suite": "golden",
-    "line": 459,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+23B0"
-  },
-  {
-    "suite": "golden",
-    "line": 495,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1D4B6"
-  },
-  {
-    "suite": "golden",
     "line": 532,
     "font": "ratex-katex",
     "code": "E_FORMULA",
@@ -327,48 +222,6 @@
     "font": "xits",
     "code": "E_FORMULA",
     "error": "公式包含不允许的命令"
-  },
-  {
-    "suite": "golden",
-    "line": 566,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2AC5"
-  },
-  {
-    "suite": "golden",
-    "line": 570,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2AC6"
-  },
-  {
-    "suite": "golden",
-    "line": 625,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+22D4"
-  },
-  {
-    "suite": "golden",
-    "line": 637,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2AB7"
-  },
-  {
-    "suite": "golden",
-    "line": 640,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2AB9"
-  },
-  {
-    "suite": "golden",
-    "line": 641,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2AB5"
   },
   {
     "suite": "golden",
@@ -400,41 +253,6 @@
   },
   {
     "suite": "golden",
-    "line": 692,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+23B1"
-  },
-  {
-    "suite": "golden",
-    "line": 757,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2AC5"
-  },
-  {
-    "suite": "golden",
-    "line": 759,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2ACB"
-  },
-  {
-    "suite": "golden",
-    "line": 796,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+25C3"
-  },
-  {
-    "suite": "golden",
-    "line": 799,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+25B9"
-  },
-  {
-    "suite": "golden",
     "line": 831,
     "font": "ratex-katex",
     "code": "E_FORMULA",
@@ -460,20 +278,6 @@
     "font": "xits",
     "code": "E_FORMULA",
     "error": "公式包含不允许的命令"
-  },
-  {
-    "suite": "golden",
-    "line": 855,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2ACB"
-  },
-  {
-    "suite": "golden",
-    "line": 857,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+2ACC"
   },
   {
     "suite": "golden",
@@ -505,27 +309,6 @@
   },
   {
     "suite": "golden",
-    "line": 923,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+9178"
-  },
-  {
-    "suite": "golden",
-    "line": 923,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+9178"
-  },
-  {
-    "suite": "golden",
-    "line": 923,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+9178"
-  },
-  {
-    "suite": "golden",
     "line": 974,
     "font": "ratex-katex",
     "code": "E_FORMULA",
@@ -551,48 +334,6 @@
     "font": "xits",
     "code": "E_FORMULA",
     "error": "公式包含不允许的命令"
-  },
-  {
-    "suite": "golden",
-    "line": 988,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+4F60"
-  },
-  {
-    "suite": "golden",
-    "line": 988,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+4F60"
-  },
-  {
-    "suite": "golden",
-    "line": 988,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+4F60"
-  },
-  {
-    "suite": "golden",
-    "line": 989,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1F60A"
-  },
-  {
-    "suite": "golden",
-    "line": 989,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1F60A"
-  },
-  {
-    "suite": "golden",
-    "line": 989,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1F60A"
   },
   {
     "suite": "parser",
@@ -677,13 +418,6 @@
     "font": "xits",
     "code": "E_FORMULA",
     "error": "公式包含不允许的命令"
-  },
-  {
-    "suite": "parser",
-    "line": 186,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1D4CD"
   },
   {
     "suite": "parser",
@@ -1387,272 +1121,6 @@
   },
   {
     "suite": "parser",
-    "line": 691,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0411"
-  },
-  {
-    "suite": "parser",
-    "line": 692,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0411"
-  },
-  {
-    "suite": "parser",
-    "line": 693,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+79C1"
-  },
-  {
-    "suite": "parser",
-    "line": 693,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+79C1"
-  },
-  {
-    "suite": "parser",
-    "line": 693,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+79C1"
-  },
-  {
-    "suite": "parser",
-    "line": 694,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+C5EC"
-  },
-  {
-    "suite": "parser",
-    "line": 694,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+C5EC"
-  },
-  {
-    "suite": "parser",
-    "line": 694,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+C5EC"
-  },
-  {
-    "suite": "parser",
-    "line": 695,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+79C1"
-  },
-  {
-    "suite": "parser",
-    "line": 695,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+79C1"
-  },
-  {
-    "suite": "parser",
-    "line": 695,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+79C1"
-  },
-  {
-    "suite": "parser",
-    "line": 696,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+C5EC"
-  },
-  {
-    "suite": "parser",
-    "line": 696,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+C5EC"
-  },
-  {
-    "suite": "parser",
-    "line": 696,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+C5EC"
-  },
-  {
-    "suite": "parser",
-    "line": 697,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0928"
-  },
-  {
-    "suite": "parser",
-    "line": 697,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0928"
-  },
-  {
-    "suite": "parser",
-    "line": 697,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0928"
-  },
-  {
-    "suite": "parser",
-    "line": 698,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0928"
-  },
-  {
-    "suite": "parser",
-    "line": 698,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0928"
-  },
-  {
-    "suite": "parser",
-    "line": 698,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0928"
-  },
-  {
-    "suite": "parser",
-    "line": 699,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+10D2"
-  },
-  {
-    "suite": "parser",
-    "line": 699,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+10D2"
-  },
-  {
-    "suite": "parser",
-    "line": 699,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+10D2"
-  },
-  {
-    "suite": "parser",
-    "line": 700,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+10D2"
-  },
-  {
-    "suite": "parser",
-    "line": 700,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+10D2"
-  },
-  {
-    "suite": "parser",
-    "line": 700,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+10D2"
-  },
-  {
-    "suite": "parser",
-    "line": 701,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0531"
-  },
-  {
-    "suite": "parser",
-    "line": 701,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0531"
-  },
-  {
-    "suite": "parser",
-    "line": 701,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0531"
-  },
-  {
-    "suite": "parser",
-    "line": 702,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0531"
-  },
-  {
-    "suite": "parser",
-    "line": 702,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0531"
-  },
-  {
-    "suite": "parser",
-    "line": 702,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+0531"
-  },
-  {
-    "suite": "parser",
-    "line": 705,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+270C"
-  },
-  {
-    "suite": "parser",
-    "line": 705,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+270C"
-  },
-  {
-    "suite": "parser",
-    "line": 705,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+270C"
-  },
-  {
-    "suite": "parser",
-    "line": 706,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+270C"
-  },
-  {
-    "suite": "parser",
-    "line": 706,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+270C"
-  },
-  {
-    "suite": "parser",
-    "line": 706,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+270C"
-  },
-  {
-    "suite": "parser",
     "line": 713,
     "font": "ratex-katex",
     "code": "E_FORMULA",
@@ -1818,48 +1286,6 @@
     "font": "xits",
     "code": "E_FORMULA",
     "error": "RaTeX 公式解析失败：ParseError at position 0: Expected 'EOF', got '\\end'"
-  },
-  {
-    "suite": "parser",
-    "line": 733,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1F44B"
-  },
-  {
-    "suite": "parser",
-    "line": 733,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1F44B"
-  },
-  {
-    "suite": "parser",
-    "line": 733,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1F44B"
-  },
-  {
-    "suite": "parser",
-    "line": 734,
-    "font": "latinmodern",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1F3AF"
-  },
-  {
-    "suite": "parser",
-    "line": 734,
-    "font": "stix",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1F3AF"
-  },
-  {
-    "suite": "parser",
-    "line": 734,
-    "font": "xits",
-    "code": "E_FORMULA",
-    "error": "所选数学字体缺少字形 U+1F3AF"
   },
   {
     "suite": "parser",

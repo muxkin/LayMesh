@@ -1,6 +1,6 @@
 //! Opt-in OpenType MATH layout. The existing KaTeX backend remains the default.
-//! Unsupported AST nodes and missing glyphs fail explicitly: a selected face
-//! never silently borrows KaTeX metrics, outlines, or stretch constructions.
+//! Missing glyphs use measured vector boxes. A selected face never silently
+//! borrows KaTeX metrics, outlines, or stretch constructions.
 mod font;
 mod layout;
 mod parse;
@@ -66,6 +66,7 @@ pub(crate) fn formula(
                 fill: Some(c.color.clone()),
                 stroke: None,
                 thickness: 0.,
+                missing: vec![],
             }],
             ..Default::default()
         })
@@ -121,6 +122,7 @@ pub(crate) fn formula(
         }
     }
     let mut items = vec![];
+    let mut missing = used.1;
     for item in b.items {
         match item {
             layout::Item::Path {
@@ -128,7 +130,9 @@ pub(crate) fn formula(
                 fill,
                 stroke,
                 thickness,
+                missing: glyphs,
             } => {
+                missing.extend(glyphs);
                 path.apply_affine(kurbo::Affine::new([
                     size,
                     0.,
@@ -188,6 +192,8 @@ pub(crate) fn formula(
     node["mathFontRequest"] = spec["math_font"].clone();
     node["mathTextFallback"] = json!(enabled);
     node["mathTextFonts"] = json!(used.0);
+    node["mathMissingGlyphs"] = json!(missing);
+    crate::text::warn_missing(warnings, &missing, file, loc);
     node["items"] = json!(items);
     Ok(node)
 }

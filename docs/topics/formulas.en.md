@@ -85,7 +85,7 @@ page.add(formula(r"\frac{a}{b}+\bm{\alpha}",math_font="XITS Math",font_size=16pt
 
 For reproducibility, use a file such as `math_font="./fonts/XITSMath-Regular.otf"`. Paths belong to the defining module or LCSS stylesheet. The property inherits through canvas, text, span, and plot styles, including automatic `$...$` math. Browser hosts must load the font bytes first. The backend reads glyph metrics, math constants, italic corrections, and stretch constructions from the selected font and exports vector outlines.
 
-The current implementation covers mhchem `ce/pu`, `prooftree`, labelled arrows, `middle`, aligned equations/tags, array rules, overlap, braces, cancellation, and the ordinary math constructions. The fixed RaTeX 0.1.14 corpus and domain cases run 15,448 layout checks; all 91 chemistry, 22 physics, and 38 proof-tree examples render with four fonts and both styles. Parser/policy rejections and missing font glyphs are recorded separately. Unavailable fonts or missing MATH tables return `E_MATH_FONT`; selected math faces never silently substitute another font. `mathcal` and `mathscr` currently share the Unicode script alphabet. The standalone XITS bold face has incomplete stretch coverage; regular XITS Math supports `mathbf`, `boldsymbol`, and `bm`. Horizontal arrows without valid assemblies extend the shaft region of the selected font's native outline; other finite constructions use their largest native variant. Use raw DSL strings for LaTeX, especially when chemistry contains embedded `$...$` math.
+The current implementation covers mhchem `ce/pu`, `prooftree`, labelled arrows, `middle`, aligned equations/tags, array rules, overlap, braces, cancellation, and the ordinary math constructions. The fixed RaTeX 0.1.14 corpus and domain cases run 15,448 layout checks; all 91 chemistry, 22 physics, and 38 proof-tree examples render with four fonts and both styles. Parser/policy rejections are recorded separately. Missing glyphs use vector boxes and emit `W_FONT`, preserving the rest of the formula. Unavailable fonts or missing MATH tables return `E_MATH_FONT`; selected math faces never silently substitute another font. `mathcal` and `mathscr` currently share the Unicode script alphabet. The standalone XITS bold face has incomplete stretch coverage; regular XITS Math supports `mathbf`, `boldsymbol`, and `bm`. Horizontal arrows without valid assemblies extend the shaft region of the selected font's native outline; other finite constructions use their largest native variant. Use raw DSL strings for LaTeX, especially when chemistry contains embedded `$...$` math.
 
 Inner math alphabet commands override outer ones: `\mathbf{\mathcal A}` selects script A, while `\mathcal{\mathbf A}` selects bold roman A. Use `\mathbf{A1}` for bold letters/digits and `\bm{\alpha x}` for bold italic symbols. Script shapes and stroke weights vary with the selected font.
 
@@ -104,12 +104,14 @@ page.add(formula(r"\text{你好，世界！}\quad E=mc^2",font_size=16pt))
 arrow annotations and proof trees is selected, shaped and measured before math
 placement. Runs retain ligatures, combining marks and bidirectional ordering,
 and export as vector outlines. `\textbf` and `\textit` select actual body-font
-styles; absent glyphs or styles produce errors or warnings. Mathematical bold
+styles; absent styles warn, and missing glyphs use vector boxes with `W_FONT`. Mathematical bold
 continues to use `\mathbf` / `\bm`.
 
 Explicit text font lists are ordered and do not add system fonts implicitly.
 Paths are supported; native hosts can also use system families, while browser
 hosts must supply font files first. `math_text_fallback=false` disables body
-text fallback for math-font coverage checks. OpenType missing glyphs fail;
-default KaTeX retains missing-glyph boxes and warnings. Color bitmap emoji are
-outside this vector text path.
+text fallback for math-font coverage checks. Every backend uses the same vector
+box for missing glyphs, including when an explicit text font list is exhausted.
+The box participates in layout and scales with scripts; `W_FONT` identifies
+the missing Unicode codepoints. Available glyphs and formula structure remain
+visible. Color bitmap emoji without exportable outlines also use boxes.

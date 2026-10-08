@@ -97,6 +97,7 @@ pub(super) enum Item {
         fill: Option<String>,
         stroke: Option<String>,
         thickness: f64,
+        missing: Vec<u32>,
     },
     Glyph {
         id: GlyphId,
@@ -995,16 +996,7 @@ impl<'a, 'f> Engine<'a, 'f> {
         };
         // Combining accents can have their entire ink above the baseline.
         // Their logical depth (zero) is not the ink's lower edge.
-        let mut bottom = f64::INFINITY;
-        let mut top = f64::NEG_INFINITY;
-        for item in &accent.items {
-            if let Item::Glyph { id, y, scale, .. } = item {
-                if let Some(r) = self.font.face.glyph_bounding_box(*id) {
-                    bottom = bottom.min(y + f64::from(r.y_min) * scale / self.font.upem);
-                    top = top.max(y + f64::from(r.y_max) * scale / self.font.upem);
-                }
-            }
-        }
+        let (bottom, top) = advanced::ink_bounds(&accent, self.font);
         if !bottom.is_finite() || !top.is_finite() {
             return Err("数学重音缺少轮廓".into());
         }

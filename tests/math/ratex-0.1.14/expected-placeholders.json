@@ -1,0 +1,1506 @@
+[
+  {
+    "suite": "golden",
+    "line": 7,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      769
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 10,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      776
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 12,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      775
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 16,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      772
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 20,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      771
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 22,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      770
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 24,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      768
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 25,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      778
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 26,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      778
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 105,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      9733
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 112,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      10731
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 145,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      119990,
+      119991
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 157,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      9786
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 157,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      9786
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 172,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      9416
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 225,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      8672
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 226,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      8674
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 243,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      989
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 245,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      9586
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 246,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      9585
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 266,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      10846
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 305,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      8498
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 312,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      8513
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 344,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      779
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 459,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      9136
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 495,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      119990,
+      119991
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 566,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      10949
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 570,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      10950
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 625,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      8916
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 637,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      10935
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 640,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      10937
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 641,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      10933
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 655,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      778
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 692,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      9137
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 757,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      10949
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 759,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      10955
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 796,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      9667
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 799,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      9657
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 804,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      774
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 833,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      780
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 855,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      10955
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 857,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      10956
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 923,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      37240,
+      30897,
+      30416,
+      27700
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 923,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      37240,
+      30897,
+      30416,
+      27700
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 923,
+    "font": "stix",
+    "missing_glyphs": [
+      37240,
+      30897,
+      30416,
+      27700
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 923,
+    "font": "xits",
+    "missing_glyphs": [
+      37240,
+      30897,
+      30416,
+      27700
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 975,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      119808,
+      119833,
+      119834,
+      119859,
+      120782,
+      120791
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 976,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      120120,
+      120156
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 977,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      119912,
+      119937,
+      119938,
+      119963
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 978,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      120276,
+      120301,
+      120302,
+      120327,
+      120812,
+      120821
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 979,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      119964,
+      119989
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 980,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      120068,
+      120094,
+      120119
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 981,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      120432,
+      120457,
+      120458,
+      120483,
+      120822,
+      120831
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 982,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      120172,
+      120197,
+      120198,
+      120223
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 988,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      20320,
+      22909,
+      19990,
+      30028
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 988,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      20320,
+      22909,
+      19990,
+      30028
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 988,
+    "font": "stix",
+    "missing_glyphs": [
+      20320,
+      22909,
+      19990,
+      30028
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 988,
+    "font": "xits",
+    "missing_glyphs": [
+      20320,
+      22909,
+      19990,
+      30028
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 989,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      128522,
+      127881,
+      9989,
+      11088
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 989,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      128522,
+      127881,
+      9989,
+      11088
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 989,
+    "font": "stix",
+    "missing_glyphs": [
+      128522,
+      127881,
+      9989
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 989,
+    "font": "xits",
+    "missing_glyphs": [
+      128522,
+      127881,
+      9989
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 1022,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      57944
+    ]
+  },
+  {
+    "suite": "golden",
+    "line": 1027,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      57950
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 186,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      120013,
+      120014,
+      120015
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 686,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      768,
+      769,
+      770,
+      771,
+      776,
+      778,
+      768,
+      769,
+      770,
+      776,
+      768,
+      769,
+      770,
+      776,
+      771,
+      768,
+      769,
+      770,
+      771,
+      776,
+      768,
+      769,
+      770,
+      776,
+      769,
+      768,
+      769,
+      770,
+      771,
+      776,
+      778,
+      768,
+      769,
+      770,
+      776,
+      768,
+      769,
+      770,
+      776,
+      771,
+      768,
+      769,
+      770,
+      771,
+      776,
+      768,
+      769,
+      770,
+      776,
+      769,
+      776,
+      807,
+      208,
+      222,
+      807,
+      240,
+      254
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 687,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      768,
+      769,
+      770,
+      771,
+      776,
+      778,
+      768,
+      769,
+      770,
+      776,
+      768,
+      769,
+      770,
+      776,
+      771,
+      768,
+      769,
+      770,
+      771,
+      776,
+      768,
+      769,
+      770,
+      776,
+      769,
+      768,
+      769,
+      770,
+      771,
+      776,
+      778,
+      768,
+      769,
+      770,
+      776,
+      768,
+      769,
+      770,
+      776,
+      771,
+      768,
+      769,
+      770,
+      771,
+      776,
+      768,
+      769,
+      770,
+      776,
+      769,
+      776,
+      807,
+      807
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 688,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      208,
+      222,
+      254
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 691,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      1041,
+      1043,
+      1044,
+      1046,
+      1047,
+      1049,
+      1051,
+      1060,
+      1062,
+      1064,
+      1067,
+      1070,
+      1071
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 691,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      1041,
+      1043,
+      1044,
+      1046,
+      1047,
+      1049,
+      1051,
+      1060,
+      1062,
+      1064,
+      1067,
+      1070,
+      1071
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 692,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      1041,
+      1043,
+      1044,
+      1046,
+      1047,
+      1049,
+      1051,
+      1060,
+      1062,
+      1064,
+      1067,
+      1070,
+      1071
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 692,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      1041,
+      1043,
+      1044,
+      1046,
+      1047,
+      1049,
+      1051,
+      1060,
+      1062,
+      1064,
+      1067,
+      1070,
+      1071
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 693,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      31169,
+      12399,
+      12496,
+      12490,
+      12490,
+      12391,
+      12377
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 693,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      31169,
+      12399,
+      12496,
+      12490,
+      12490,
+      12391,
+      12377
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 693,
+    "font": "stix",
+    "missing_glyphs": [
+      31169,
+      12399,
+      12496,
+      12490,
+      12490,
+      12391,
+      12377
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 693,
+    "font": "xits",
+    "missing_glyphs": [
+      31169,
+      12399,
+      12496,
+      12490,
+      12490,
+      12391,
+      12377
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 694,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      50668,
+      48372,
+      49464,
+      50836
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 694,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      50668,
+      48372,
+      49464,
+      50836
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 694,
+    "font": "stix",
+    "missing_glyphs": [
+      50668,
+      48372,
+      49464,
+      50836
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 694,
+    "font": "xits",
+    "missing_glyphs": [
+      50668,
+      48372,
+      49464,
+      50836
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 695,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      31169,
+      12399,
+      12496,
+      12490,
+      12490,
+      12391,
+      12377
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 695,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      31169,
+      12399,
+      12496,
+      12490,
+      12490,
+      12391,
+      12377
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 695,
+    "font": "stix",
+    "missing_glyphs": [
+      31169,
+      12399,
+      12496,
+      12490,
+      12490,
+      12391,
+      12377
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 695,
+    "font": "xits",
+    "missing_glyphs": [
+      31169,
+      12399,
+      12496,
+      12490,
+      12490,
+      12391,
+      12377
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 696,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      50668,
+      48372,
+      49464,
+      50836
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 696,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      50668,
+      48372,
+      49464,
+      50836
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 696,
+    "font": "stix",
+    "missing_glyphs": [
+      50668,
+      48372,
+      49464,
+      50836
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 696,
+    "font": "xits",
+    "missing_glyphs": [
+      50668,
+      48372,
+      49464,
+      50836
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 697,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      2344,
+      2350,
+      2360,
+      2381,
+      2340,
+      2375
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 697,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      2344,
+      2350,
+      2360,
+      2381,
+      2340,
+      2375
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 697,
+    "font": "stix",
+    "missing_glyphs": [
+      2344,
+      2350,
+      2360,
+      2381,
+      2340,
+      2375
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 697,
+    "font": "xits",
+    "missing_glyphs": [
+      2344,
+      2350,
+      2360,
+      2381,
+      2340,
+      2375
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 698,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      2344,
+      2350,
+      2360,
+      2381,
+      2340,
+      2375
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 698,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      2344,
+      2350,
+      2360,
+      2381,
+      2340,
+      2375
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 698,
+    "font": "stix",
+    "missing_glyphs": [
+      2344,
+      2350,
+      2360,
+      2381,
+      2340,
+      2375
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 698,
+    "font": "xits",
+    "missing_glyphs": [
+      2344,
+      2350,
+      2360,
+      2381,
+      2340,
+      2375
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 699,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      4306,
+      4304,
+      4315,
+      4304,
+      4320,
+      4335,
+      4317,
+      4305,
+      4304
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 699,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      4306,
+      4304,
+      4315,
+      4304,
+      4320,
+      4335,
+      4317,
+      4305,
+      4304
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 699,
+    "font": "stix",
+    "missing_glyphs": [
+      4306,
+      4304,
+      4315,
+      4304,
+      4320,
+      4335,
+      4317,
+      4305,
+      4304
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 699,
+    "font": "xits",
+    "missing_glyphs": [
+      4306,
+      4304,
+      4315,
+      4304,
+      4320,
+      4335,
+      4317,
+      4305,
+      4304
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 700,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      4306,
+      4304,
+      4315,
+      4304,
+      4320,
+      4335,
+      4317,
+      4305,
+      4304
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 700,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      4306,
+      4304,
+      4315,
+      4304,
+      4320,
+      4335,
+      4317,
+      4305,
+      4304
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 700,
+    "font": "stix",
+    "missing_glyphs": [
+      4306,
+      4304,
+      4315,
+      4304,
+      4320,
+      4335,
+      4317,
+      4305,
+      4304
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 700,
+    "font": "xits",
+    "missing_glyphs": [
+      4306,
+      4304,
+      4315,
+      4304,
+      4320,
+      4335,
+      4317,
+      4305,
+      4304
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 701,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      1329,
+      1330,
+      1331,
+      1377,
+      1378,
+      1379
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 701,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      1329,
+      1330,
+      1331,
+      1377,
+      1378,
+      1379
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 701,
+    "font": "stix",
+    "missing_glyphs": [
+      1329,
+      1330,
+      1331,
+      1377,
+      1378,
+      1379
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 701,
+    "font": "xits",
+    "missing_glyphs": [
+      1329,
+      1330,
+      1331,
+      1377,
+      1378,
+      1379
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 702,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      1329,
+      1330,
+      1331,
+      1377,
+      1378,
+      1379
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 702,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      1329,
+      1330,
+      1331,
+      1377,
+      1378,
+      1379
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 702,
+    "font": "stix",
+    "missing_glyphs": [
+      1329,
+      1330,
+      1331,
+      1377,
+      1378,
+      1379
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 702,
+    "font": "xits",
+    "missing_glyphs": [
+      1329,
+      1330,
+      1331,
+      1377,
+      1378,
+      1379
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 703,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      780,
+      780,
+      780,
+      780,
+      780,
+      778,
+      780,
+      780,
+      780,
+      780,
+      779,
+      775
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 705,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      9996
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 705,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      9996
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 705,
+    "font": "stix",
+    "missing_glyphs": [
+      9996
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 705,
+    "font": "xits",
+    "missing_glyphs": [
+      9996
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 706,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      9996
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 706,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      9996
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 706,
+    "font": "stix",
+    "missing_glyphs": [
+      9996
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 706,
+    "font": "xits",
+    "missing_glyphs": [
+      9996
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 733,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      128075
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 733,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      128075
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 733,
+    "font": "stix",
+    "missing_glyphs": [
+      128075
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 733,
+    "font": "xits",
+    "missing_glyphs": [
+      128075
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 734,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      127919
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 734,
+    "font": "latinmodern",
+    "missing_glyphs": [
+      127919
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 734,
+    "font": "stix",
+    "missing_glyphs": [
+      127919
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 734,
+    "font": "xits",
+    "missing_glyphs": [
+      127919
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 747,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      120793
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 796,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      120793
+    ]
+  },
+  {
+    "suite": "parser",
+    "line": 797,
+    "font": "ratex-katex",
+    "missing_glyphs": [
+      119808
+    ]
+  }
+]

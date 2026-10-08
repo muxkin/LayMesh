@@ -198,32 +198,23 @@ fn fallback_is_explicit_configurable_and_never_changes_math_alphabets() {
         let mut strict = base.clone();
         strict["math_text_fallback"] = json!(false);
         let result = formula(&strict, &mut f, &mut warnings, "/test.lay", Loc::default());
-        if backend == "ratex-katex" {
-            let n = result.unwrap();
-            assert_eq!(n["mathTextFallback"], false);
-            assert!(
-                n["items"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .any(|p| p["kind"] == "box")
-            );
-        } else {
-            assert!(result.unwrap_err().message.contains("缺少字形"));
-        }
+        let n = result.unwrap();
+        assert_eq!(n["mathTextFallback"], false);
+        assert_eq!(n["mathMissingGlyphs"].as_array().unwrap().len(), 2);
+        assert!(
+            warnings
+                .iter()
+                .any(|d| d.code == "W_FONT" && d.message.contains("U+4E2D"))
+        );
         assert!(f.assets.is_empty());
         let mut narrow = base.clone();
         narrow["font_family"] = json!([TEXT_FAMILY[0]]);
-        let error = formula(&narrow, &mut f, &mut vec![], "/test.lay", Loc::default()).unwrap_err();
-        assert!(error.message.contains("文本字体列表缺少字形"), "{error:?}");
+        let n = formula(&narrow, &mut f, &mut vec![], "/test.lay", Loc::default()).unwrap();
+        assert_eq!(n["mathMissingGlyphs"], json!(['中' as u32, '文' as u32]));
         let mut missing = base.clone();
         missing["source"] = json!("\\text{\u{10ffff}}");
-        assert!(
-            formula(&missing, &mut f, &mut vec![], "/test.lay", Loc::default())
-                .unwrap_err()
-                .message
-                .contains("缺少字形")
-        );
+        let n = formula(&missing, &mut f, &mut vec![], "/test.lay", Loc::default()).unwrap();
+        assert_eq!(n["mathMissingGlyphs"], json!([0x10ffff]));
         // A real math expression must remain byte-identical when text fallback changes.
         let mut math = base.clone();
         math["source"] = json!(r"\mathbf{A}+\bm{\alpha x}+\frac{x}{2}");
@@ -310,5 +301,144 @@ fn isolated_text_leaves_and_explicit_body_styles_use_measured_text() {
                 "E_FONT"
             );
         }
+    }
+}
+
+#[test]
+fn missing_glyphs_preserve_formula_structure_color_scripts_and_exportable_ink() {
+    let cases = [
+        (r"\text{Energy 能量}=mc^2", 2),
+        (r"E^{你好}_{世界！}", 5),
+        (r"\frac{\text{中文}}{x_2}+\sqrt{\text{日文}}", 4),
+        (r"\ce{A ->[中文] B}", 2),
+        (
+            r"\begin{prooftree}\AxiomC{\text{前提}}\UnaryInfC{\text{结论}}\end{prooftree}",
+            4,
+        ),
+        ("\\text{A\u{10ffff}B}+x", 1),
+    ];
+    for backend in backends() {
+        for (source, count) in cases {
+            for enabled in [true, false] {
+                for display in [true, false] {
+                    for size in [2., 5., 12.] {
+                        let mut f = fonts();
+                        let mut warnings = vec![];
+                        let n = formula(
+                            &json!({"source":source,"math_font":backend,"font_family":[TEXT_FAMILY[0]],
+                                "math_text_fallback":enabled,"color":"#b03050","font_size":size,
+                                "style":if display {"display"} else {"inline"}}),
+                            &mut f, &mut warnings, "/missing.lay", Loc {line:7,column:3,offset:0},
+                        ).unwrap_or_else(|e| panic!("{backend} {source}: {e:?}"));
+                        assert_eq!(
+                            n["mathMissingGlyphs"].as_array().unwrap().len(),
+                            count,
+                            "{backend} {source}"
+                        );
+                        let warning = warnings
+                            .iter()
+                            .find(|w| w.message.contains("使用矢量方框替代"))
+                            .unwrap();
+                        assert_eq!(warning.code, "W_FONT");
+                        assert_eq!(warning.file, "/missing.lay");
+                        assert_eq!(warning.loc.line, 7);
+                        assert!(
+                            n["items"].as_array().unwrap().len() > 1,
+                            "remaining formula vanished"
+                        );
+                        let (w, h) = (jnum(&n, "width", 0.), jnum(&n, "height", 0.));
+                        for item in n["items"].as_array().unwrap() {
+                            assert!(item["kind"] == "path" || item["kind"] == "rule");
+                            if item["kind"] == "path" {
+                                assert!(item["fill"] == "#b03050" || item["stroke"] == "#b03050");
+                                let r = kurbo::BezPath::from_svg(item["d"].as_str().unwrap())
+                                    .unwrap()
+                                    .bounding_box();
+                                assert!(
+                                    r.x0 >= -1e-6
+                                        && r.y0 >= -1e-6
+                                        && r.x1 <= w + 1e-6
+                                        && r.y1 <= h + 1e-6,
+                                    "{backend} {source}: {r:?} outside {w}x{h}"
+                                );
+                            }
+                        }
+                        assert!(f.assets.is_empty());
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn placeholder_shapes_are_identical_across_formula_fonts_and_text_policies() {
+    let canonical = kurbo::BezPath::from_svg(
+        "M0 0L0.65 0L0.65 0.8L0 0.8ZM0.045 0.045L0.045 0.755L0.605 0.755L0.605 0.045Z",
+    )
+    .unwrap();
+    for backend in backends() {
+        for enabled in [true, false] {
+            let n = formula(&json!({"source":"\u{10ffff}","math_font":backend,"math_text_fallback":enabled,"font_size":5.}),
+                &mut fonts(), &mut vec![], "/missing.lay", Loc::default()).unwrap();
+            assert_eq!(n["mathMissingGlyphs"], json!([0x10ffff]));
+            let items = n["items"].as_array().unwrap();
+            assert_eq!(items.len(), 1);
+            let mut actual = kurbo::BezPath::from_svg(items[0]["d"].as_str().unwrap()).unwrap();
+            let bounds = actual.bounding_box();
+            actual.apply_affine(kurbo::Affine::new([
+                0.2,
+                0.,
+                0.,
+                -0.2,
+                -bounds.x0 / 5.,
+                bounds.y1 / 5.,
+            ]));
+            for (a, b) in actual.elements().iter().zip(canonical.elements()) {
+                assert_eq!(std::mem::discriminant(a), std::mem::discriminant(b));
+                if let (Some(a), Some(b)) = (a.end_point(), b.end_point()) {
+                    assert!(a.distance(b) < 1e-6);
+                }
+            }
+            assert_eq!(actual.elements().len(), canonical.elements().len());
+        }
+    }
+}
+
+#[test]
+fn a_text_face_with_cmap_coverage_but_no_vector_outlines_uses_boxes() {
+    let mut bytes = TEXT_FONTS[0].1.to_vec();
+    let count = u16::from_be_bytes(bytes[4..6].try_into().unwrap()) as usize;
+    let at = (0..count)
+        .map(|i| 12 + i * 16)
+        .find(|&i| &bytes[i..i + 4] == b"glyf")
+        .unwrap();
+    bytes[at..at + 4].copy_from_slice(b"TEST");
+    let face = ttf_parser::Face::parse(&bytes, 0).unwrap();
+    assert!(face.glyph_index('A').is_some());
+    assert!(
+        face.glyph_bounding_box(face.glyph_index('A').unwrap())
+            .is_none()
+    );
+    for backend in backends() {
+        let mut f = fonts();
+        f.register_font("/no-outlines.ttf", bytes.clone());
+        let mut warnings = vec![];
+        let n = formula(
+            &json!({"source":r"\text{A B}+x^2","math_font":backend,
+            "font_family":["/no-outlines.ttf"],"font_size":5.}),
+            &mut f,
+            &mut warnings,
+            "/missing.lay",
+            Loc::default(),
+        )
+        .unwrap();
+        assert_eq!(n["mathMissingGlyphs"], json!(['A' as u32, 'B' as u32]));
+        assert!(
+            warnings
+                .iter()
+                .any(|w| w.code == "W_FONT" && w.message.contains("U+0041"))
+        );
+        assert!(jnum(&n, "width", 0.) >= 2. * 0.8 * 5.);
     }
 }

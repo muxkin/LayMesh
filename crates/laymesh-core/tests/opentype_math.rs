@@ -208,7 +208,7 @@ fn tall_delimiters_use_the_fonts_assembly_parts() {
     }
 }
 #[test]
-fn unknown_fonts_missing_math_glyphs_and_unsupported_commands_are_explicit_errors() {
+fn unknown_fonts_and_unsupported_commands_are_explicit_errors() {
     let mut fonts = FontSystem::new(false);
     fonts.register_font(
         "/ordinary.ttf",
@@ -218,7 +218,6 @@ fn unknown_fonts_missing_math_glyphs_and_unsupported_commands_are_explicit_error
     for (font, source, code, fragment) in [
         ("Unavailable Math", "x", "E_MATH_FONT", "不可用"),
         ("/ordinary.ttf", "x", "E_MATH_FONT", "MATH"),
-        ("/math.otf", r"\text{中文}", "E_FORMULA", "U+"),
         ("/math.otf", r"\def\a{x}\a", "E_FORMULA", "不允许"),
     ] {
         let e = formula(

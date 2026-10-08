@@ -115,6 +115,8 @@ def main():
                 ref=references.get((record["source"],font,style)) if policy=="variants" else None
                 if ref is not None:
                     assert (ref.get("code"),ref.get("error"))==(result.get("code"),result.get("error")),(record["source"],font,style,result)
+                    if "error" not in ref:
+                        assert result.get("placeholder_glyphs",0)==len(ref["missing_glyphs"]),(record["source"],font,style,"placeholder count changed")
                     audited_checks+=1
                 result["status"]=classify(result)
                 result["audit_checked"]=ref is not None

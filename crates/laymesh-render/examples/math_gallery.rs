@@ -78,7 +78,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                                     fallback_families.insert(name.to_owned());
                                 }
                             }
-                            let mut placeholders = 0;
+                            let placeholders =
+                                node["mathMissingGlyphs"].as_array().map_or(0, Vec::len);
                             for item in node["items"].as_array().ok_or("formula items absent")? {
                                 let ink = if item["kind"] == "path" {
                                     kurbo::BezPath::from_svg(
@@ -86,9 +87,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                                     )?
                                     .bounding_box()
                                 } else if item["kind"] == "rule" || item["kind"] == "box" {
-                                    if item["kind"] == "box" {
-                                        placeholders += 1;
-                                    }
                                     let x = jnum(item, "x", 0.);
                                     let y = jnum(item, "y", 0.);
                                     kurbo::Rect::new(
