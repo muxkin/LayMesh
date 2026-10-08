@@ -23,7 +23,7 @@
   <main>
     <h1>公式测试集</h1>
     <p class="inventory" id="inventory">正在读取完整测试集…</p>
-    <p class="intro">浏览并对比不同字体下的实际渲染结果。搜索源码或编号，筛选类别，放大检查排版。</p>
+    <p class="intro">对比数学字体的实际渲染结果。启用文本回退时，公式文字使用统一正文列表；详情可查看实际字体。</p>
     <form class="toolbar" id="filters" role="search">
       <label class="search"><span class="sr-only">搜索公式源码或编号</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 5 5"/></svg><input id="search" type="search" placeholder="搜索公式源码或编号" autocomplete="off"></label>
       <label><span class="sr-only">渲染结果筛选</span><select id="status"><option value="all">全部结果</option><option value="rendered">全部已渲染</option><option value="failed">有失败或占位</option><option value="font_glyph_missing">字体缺字</option><option value="parse_rejected">解析不支持</option><option value="policy_rejected">禁止命令</option><option value="fallback">文本回退 / 占位</option><option value="invalid_geometry">尺寸异常</option></select></label>
@@ -34,6 +34,7 @@
     <div class="comparison-options">
       <fieldset id="font-options"><legend>对照字体</legend></fieldset>
       <label class="baseline-option"><input type="checkbox" id="baselines">显示基线</label>
+      <div class="segmented" aria-label="文本字体策略"><button type="button" data-text="1" aria-pressed="true">启用文本回退</button><button type="button" data-text="0" aria-pressed="false">仅数学字体</button></div>
     </div>
     <div class="results-summary"><span id="result-count" role="status" aria-live="polite">加载中…</span><span>已渲染表示完成解析与导出，请检查实际排版。</span></div>
     <p class="mobile-scroll-hint">左右滑动查看字体对照，点详情可逐套放大。</p>

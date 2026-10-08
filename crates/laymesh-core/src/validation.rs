@@ -69,6 +69,11 @@ impl Engine {
         {
             return Err(self.error("E_MATH_FONT", "math_font 需要非空字体名称或路径", l));
         }
+        if a.get("math_text_fallback")
+            .is_some_and(|v| !matches!(v, V::Bool(_)))
+        {
+            return Err(self.error("E_FONT", "math_text_fallback 需要布尔值", l));
+        }
         if let Some(V::Number(weight, u)) = a.get("font_weight") {
             if !u.is_empty() || weight.fract() != 0. || !(100.0..=900.0).contains(weight) {
                 return Err(self.error("E_FONT", "font_weight 必须为 100–900 整数", l));

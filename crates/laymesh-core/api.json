@@ -121,6 +121,14 @@
           "example": "\"XITS Math\""
         },
         {
+          "name": "math_text_fallback",
+          "unit": "none",
+          "type": "boolean",
+          "description": "公式文本使用 font_family 与文本字体回退，并按实际字形尺寸排版；false 仅检查数学字体覆盖。数学符号仍使用 math_font。",
+          "descriptionEn": "Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font.",
+          "default": "true (inherit)"
+        },
+        {
           "name": "font_size",
           "unit": "pt",
           "type": "length",
@@ -455,6 +463,14 @@
           "descriptionEn": "Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default.",
           "default": "ratex-katex (inherit)",
           "example": "\"XITS Math\""
+        },
+        {
+          "name": "math_text_fallback",
+          "unit": "none",
+          "type": "boolean",
+          "description": "公式文本使用 font_family 与文本字体回退，并按实际字形尺寸排版；false 仅检查数学字体覆盖。数学符号仍使用 math_font。",
+          "descriptionEn": "Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font.",
+          "default": "true (inherit)"
         },
         {
           "name": "font_size",
@@ -812,6 +828,14 @@
           "example": "\"XITS Math\""
         },
         {
+          "name": "math_text_fallback",
+          "unit": "none",
+          "type": "boolean",
+          "description": "公式文本使用 font_family 与文本字体回退，并按实际字形尺寸排版；false 仅检查数学字体覆盖。数学符号仍使用 math_font。",
+          "descriptionEn": "Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font.",
+          "default": "true (inherit)"
+        },
+        {
           "name": "font_size",
           "unit": "pt",
           "type": "length",
@@ -938,6 +962,14 @@
           "descriptionEn": "Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default.",
           "default": "ratex-katex",
           "example": "\"XITS Math\""
+        },
+        {
+          "name": "math_text_fallback",
+          "unit": "none",
+          "type": "boolean",
+          "description": "公式文本使用 font_family 与文本字体回退，并按实际字形尺寸排版；false 仅检查数学字体覆盖。数学符号仍使用 math_font。",
+          "descriptionEn": "Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font.",
+          "default": "true (inherit)"
         },
         {
           "name": "style",
@@ -1138,6 +1170,44 @@
           "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
           "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
           "default": "[]"
+        },
+        {
+          "name": "font_family",
+          "unit": "none",
+          "type": "string | string[]",
+          "description": "公式中的文本字体名称、路径或有序回退列表；数学符号由 math_font 控制。",
+          "descriptionEn": "Font family, path or ordered fallback list for formula text; math_font controls mathematical symbols.",
+          "default": "继承 / inherit"
+        },
+        {
+          "name": "font_weight",
+          "unit": "none",
+          "type": "integer",
+          "description": "字体字重，100–900",
+          "descriptionEn": "Font weight, 100–900",
+          "default": "继承 / inherit"
+        },
+        {
+          "name": "font_style",
+          "unit": "none",
+          "type": "enum",
+          "description": "正体或斜体",
+          "descriptionEn": "Normal or italic",
+          "default": "继承 / inherit",
+          "values": [
+            "normal",
+            "italic"
+          ],
+          "valueDescriptions": {
+            "normal": {
+              "zh": "正常字形",
+              "en": "Upright font style"
+            },
+            "italic": {
+              "zh": "斜体字形",
+              "en": "Italic font style"
+            }
+          }
         }
       ],
       "positional": [
@@ -5312,6 +5382,14 @@
           "example": "\"XITS Math\""
         },
         {
+          "name": "math_text_fallback",
+          "unit": "none",
+          "type": "boolean",
+          "description": "公式文本使用 font_family 与文本字体回退，并按实际字形尺寸排版；false 仅检查数学字体覆盖。数学符号仍使用 math_font。",
+          "descriptionEn": "Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font.",
+          "default": "true (inherit)"
+        },
+        {
           "name": "font_size",
           "unit": "pt",
           "type": "length",
@@ -6247,6 +6325,14 @@
           "descriptionEn": "Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default.",
           "default": "ratex-katex (inherit)",
           "example": "\"XITS Math\""
+        },
+        {
+          "name": "math_text_fallback",
+          "unit": "none",
+          "type": "boolean",
+          "description": "公式文本使用 font_family 与文本字体回退，并按实际字形尺寸排版；false 仅检查数学字体覆盖。数学符号仍使用 math_font。",
+          "descriptionEn": "Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font.",
+          "default": "true (inherit)"
         },
         {
           "name": "font_size",
@@ -15540,6 +15626,7 @@
   "styleProperties": [
     "font_family",
     "math_font",
+    "math_text_fallback",
     "font_size",
     "font_weight",
     "font_style",

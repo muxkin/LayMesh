@@ -274,3 +274,4 @@ This map covers public functions, geometry members, LCSS properties and integrat
 | `lcss:warp` | [→](art-effects.en.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
 | `lcss:extrude` | [→](art-effects.en.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
 | `lcss:math_font` | [→](lcss.en.md#style-properties) | [→](../../examples/unified.lay) | [→](../../examples/language/paper.lcss) |
+| `lcss:math_text_fallback` | [→](lcss.en.md#style-properties) | [→](../../examples/unified.lay) | [→](../../examples/language/paper.lcss) |

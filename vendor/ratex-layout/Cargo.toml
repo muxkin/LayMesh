@@ -1,0 +1,13 @@
+[package]
+name = "ratex-layout"
+version = "0.1.14"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/erweixin/RaTeX"
+description = "Pinned RaTeX layout with a host text-run layout hook"
+
+[dependencies]
+ratex-types = "=0.1.14"
+ratex-font = "=0.1.14"
+ratex-parser = "=0.1.14"
+serde_json = "1"

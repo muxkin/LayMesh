@@ -92,3 +92,14 @@ page.add(formula(r"\frac{a}{b}+\bm{\alpha}",math_font="XITS Math",font_size=16pt
 OpenType 化学键 `~`、`~-`、`~--`、`~=`、`-~-` 按整体构造排版，以所选字体的减号轮廓确定宽度和线厚。实线与虚线共用左右端点，并继承当前字号、上下标层级和颜色。几何测试直接检查轮廓端点，也覆盖上标、嵌套下标和分数中的化学键。
 
 [可编辑对照图和验证说明](../../experiments/opentype-math/README.md)。默认值仍为 `ratex-katex`，旧 `mathjax-*` 名称保留兼容映射。
+
+公式中的正文文本使用 `font_family`，数学符号使用 `math_font`。例如：
+
+```lay
+page=canvas(size=(140mm,50mm),math_font="XITS Math",font_family=["Noto Serif","Noto Serif CJK SC"])
+page.add(formula(r"\text{你好，世界！}\quad E=mc^2",font_size=16pt))
+```
+
+默认启用 `math_text_fallback=true`。`\text`、中文上下标、化学箭头说明和证明树中的文本在数学排版前完成字体选择、Unicode 塑形和真实尺寸测量，保留连字、结合音标和双向文字；导出文本字形为矢量轮廓。`\textbf`、`\textit` 可选用对应正文字体字重和斜体，缺少对应字形或样式会报错或警告。数学粗体仍用 `\mathbf` / `\bm`。
+
+正文列表按顺序匹配，显式列表不会偷偷加入系统字体。可使用字体路径；原生主机也可匹配系统字体，浏览器主机须先提供字体文件。`math_text_fallback=false` 禁用正文回退，用于检查数学字体自身的覆盖；OpenType 缺字明确报错，默认 KaTeX 保留缺字方框和警告。彩色位图 emoji 尚未纳入此矢量文本流程。

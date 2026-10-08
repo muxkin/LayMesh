@@ -123,8 +123,9 @@ pub struct StyleRule {
     scope: Option<String>,
     specificity: usize,
 }
-const INHERITED: [&str; 7] = [
+const INHERITED: [&str; 8] = [
     "math_font",
+    "math_text_fallback",
     "font_family",
     "font_size",
     "font_weight",
@@ -495,6 +496,13 @@ pub fn validate_stylesheet(source: &str, file: &str, origin: Loc) -> Result<()> 
 
 fn scalar_value(key: &str, s: &str, file: &str, l: Loc) -> Result<V> {
     let fail = |m: &str| Diagnostic::new("E_LCSS", m, file, l);
+    if key == "math_text_fallback" {
+        return match s.trim() {
+            "true" => Ok(V::Bool(true)),
+            "false" => Ok(V::Bool(false)),
+            _ => Err(fail("math_text_fallback 需要 true 或 false")),
+        };
+    }
     let numeric = regex::Regex::new(r"^([+-]?(?:\d*\.)?\d+)(mm|cm|in|inch|pt|px)?$").unwrap();
     let mut values = vec![];
     for token in s.split_whitespace() {

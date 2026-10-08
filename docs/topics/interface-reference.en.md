@@ -148,6 +148,7 @@ Required: `size`.
 | `background` | paint | Background paint for the object region, separate from text or lines | none |
 | `font_family` | string \| string[] | System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes. | system sans-serif |
 | `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex (inherit) |
+| `math_text_fallback` | boolean | Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font. | true (inherit) |
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 继承 / inherit |
 | `font_weight` | integer | Font weight, 100–900 | 400 |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | normal |
@@ -221,6 +222,7 @@ Required: `content / spans`.
 | `class` | string | Space-separated LCSS class names | "" |
 | `font_family` | string \| string[] | System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes. | system sans-serif |
 | `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex (inherit) |
+| `math_text_fallback` | boolean | Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font. | true (inherit) |
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 10pt |
 | `font_weight` | integer | Font weight, 100–900 | 400 |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | normal |
@@ -273,6 +275,7 @@ Required: `content`.
 | `class` | string | Space-separated LCSS class names | "" |
 | `font_family` | string \| string[] | System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes. | system sans-serif |
 | `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex (inherit) |
+| `math_text_fallback` | boolean | Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font. | true (inherit) |
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 继承 / inherit |
 | `font_weight` | integer | Font weight, 100–900 | 400 |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | normal |
@@ -308,6 +311,7 @@ Required: `source`.
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 10pt (inherit in text) |
 | `color` | color | Text color or base series color | #000000 |
 | `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex |
+| `math_text_fallback` | boolean | Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font. | true (inherit) |
 | `style` | "inline" \| "display" | Style object for plots; inline/display for explicit formulas<br>`inline`: Inline mathematical layout<br>`display`: Display mathematical layout | — |
 | `background` | paint | Background paint for the object region, separate from text or lines | none |
 | `padding` | length \| length[] / canvas unit | Inner spacing; one value or top, right, bottom, left | 0 |
@@ -322,6 +326,9 @@ Required: `source`.
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
 | `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `font_family` | string \| string[] | Font family, path or ordered fallback list for formula text; math_font controls mathematical symbols. | 继承 / inherit |
+| `font_weight` | integer | Font weight, 100–900 | 继承 / inherit |
+| `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | 继承 / inherit |
 
 ### Minimal complete example
 
@@ -1124,6 +1131,7 @@ Required: `size`.
 | `class` | string | Space-separated LCSS class names | "" |
 | `font_family` | string \| string[] | System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes. | system sans-serif |
 | `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex (inherit) |
+| `math_text_fallback` | boolean | Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font. | true (inherit) |
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 继承 / inherit |
 | `font_weight` | integer | Font weight, 100–900 | 400 |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | normal |
@@ -1241,6 +1249,7 @@ Returns: plot_style
 | --- | --- | --- | --- |
 | `font_family` | string \| string[] | System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes. | system sans-serif |
 | `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex (inherit) |
+| `math_text_fallback` | boolean | Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font. | true (inherit) |
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 8pt |
 | `font_weight` | integer | Font weight, 100–900 | 400 |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | normal |

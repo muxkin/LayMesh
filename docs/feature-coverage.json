@@ -1970,6 +1970,13 @@
       "reference": "",
       "minimal": "examples/unified.lay",
       "composition": "examples/language/paper.lcss"
+    },
+    "lcss:math_text_fallback": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
     }
   }
 }

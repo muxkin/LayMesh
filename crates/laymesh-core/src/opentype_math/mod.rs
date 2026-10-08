@@ -9,7 +9,7 @@ pub(crate) use parse::parse;
 use crate::{
     Diagnostic, Loc, Result,
     model::{FontAsset, base, jnum, jstr},
-    text::Outline,
+    text::{FontSystem, Outline, TextFonts, TextStyle, shape_text},
 };
 use kurbo::Shape;
 use ratex_parser::ParseNode;
@@ -18,6 +18,8 @@ use serde_json::{Value as Json, json};
 pub(crate) fn formula(
     parsed: &[ParseNode],
     asset: &FontAsset,
+    fonts: &mut FontSystem,
+    warnings: &mut Vec<Diagnostic>,
     spec: &Json,
     source: &str,
     file: &str,
@@ -34,13 +36,50 @@ pub(crate) fn formula(
         .face
         .x_height()
         .map_or(0.43, |h| f64::from(h) / font.upem);
-    let ctx = layout::Context::new(
+    let mut ctx = layout::Context::new(
         display,
         jstr(spec, "color", "#000000"),
         size / crate::model::PT,
         x_height,
     );
-    let b = layout::Engine::new(&font).row(parsed, &ctx).map_err(fail)?;
+    ctx.text_style = TextStyle::from_spec(spec);
+    let mut used = TextFonts::default();
+    let enabled = spec["math_text_fallback"].as_bool().unwrap_or(true);
+    let mut render_text = |text: &str, c: &layout::Context| {
+        let mut shaped = shape_text(
+            fonts,
+            spec,
+            text,
+            c.text_style,
+            file,
+            loc,
+            warnings,
+            &mut used,
+        )?;
+        shaped.path.apply_affine(kurbo::Affine::scale(c.scale));
+        Ok(layout::Box {
+            width: shaped.width * c.scale,
+            ascent: shaped.ascent * c.scale,
+            depth: shaped.depth * c.scale,
+            items: vec![layout::Item::Path {
+                path: shaped.path,
+                fill: Some(c.color.clone()),
+                stroke: None,
+                thickness: 0.,
+            }],
+            ..Default::default()
+        })
+    };
+    let b = layout::Engine::new(
+        &font,
+        enabled.then_some(&mut render_text),
+        !spec["font_family"].is_null()
+            || !spec["font_weight"].is_null()
+            || !spec["font_style"].is_null()
+            || !spec["italic"].is_null(),
+    )
+    .row(parsed, &ctx)
+    .map_err(fail)?;
     let mut ascent = b.ascent;
     let mut depth = b.depth;
     let mut left = 0_f64;
@@ -147,6 +186,8 @@ pub(crate) fn formula(
     );
     node["mathFontBackend"] = json!("opentype-math");
     node["mathFontRequest"] = spec["math_font"].clone();
+    node["mathTextFallback"] = json!(enabled);
+    node["mathTextFonts"] = json!(used.0);
     node["items"] = json!(items);
     Ok(node)
 }

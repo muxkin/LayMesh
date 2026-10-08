@@ -44,6 +44,7 @@ plot::axis(x) { line-color: #444444; line-width: 0.6pt; }
 | --- | --- |
 | `font-family` | `font_family` |
 | `math-font` | `math_font` |
+| `math-text-fallback` | `math_text_fallback`（`true` / `false`） |
 | `font-size` | `font_size` |
 | `font-weight` | `font_weight` |
 | `font-style` | `font_style` |

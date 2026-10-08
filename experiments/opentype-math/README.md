@@ -34,7 +34,7 @@ A font may lack a horizontal arrow assembly, and some installed STIX Two
 arrows and equality only, the backend then extends the shaft region of that
 font's native outline while preserving its end shapes and stroke thickness.
 Other finite stretch constructions use their largest native variant when
-no assembly exists. Missing glyphs, missing MATH tables, embedding
+no assembly exists. Missing mathematical glyphs, missing MATH tables, embedding
 restrictions, or unavailable fonts fail explicitly.
 
 `mathcal` and `mathscr` currently select the same Unicode script alphabet;
@@ -145,17 +145,19 @@ The gallery retains every nonempty, noncomment entry in all eleven formula
 corpus files from the pinned RaTeX v0.1.14 checkout, including duplicates:
 the six primary suites above, lexer comparison (791), website mathematics
 (1048), website proof trees (38), the original chemistry text fixture (103),
-and the Unicode smoke-test script (18). With the 32 domain examples this is
-**4076 entries, 1938 distinct formulas, and 32,608 font/style results**.
+and the Unicode smoke-test script (18). With the 32 domain examples and 24
+text fallback cases this is **4100 entries, 1961 distinct formulas, and
+65,600 font/style/text-policy results**.
 This scope covers the original formula corpus files; it does not claim to
 display every assertion from RaTeX's Rust, platform or application unit tests.
 
 SVGs are exported by the actual LayMesh formula renderer, with KaTeX,
 Latin Modern Math, STIX Two Math and XITS Math in inline and display styles.
-The 15,368 distinct combinations already present in the fixed audit must
-match its exact parser/policy/font-coverage outcomes. The 136 new combinations
-from the Unicode script are rendered and checked for OpenType geometry,
-without assigning them a pre-existing expected-error baseline.
+With body text fallback disabled, the 15,368 distinct combinations already
+present in the fixed audit must match its exact parser/policy/font-coverage
+outcomes. The remaining 16,008 combinations cover supplementary formulas and
+the full corpus with text fallback enabled, and check OpenType geometry without
+assigning new results a pre-existing expected-error baseline.
 Every original fixture and font asset is verified against its SHA-256.
 The page exposes source-file positions, errors, text fallback, missing-glyph
 placeholders and invalid dimensions. A successful export alone is not a
@@ -176,3 +178,52 @@ On this development host the URL is `http://100.64.0.6:8765/`;
 opens the enlarged compound-bond example. `/health` reports the loaded count.
 After frontend-only edits, `build-gallery.py --reuse` refreshes the page while
 checking the renderer fingerprint, all prior outcomes and SVG hashes.
+
+
+## Formula text fallback
+
+`math_text_fallback=true` is inherited by default. Formula `font_family`
+selects literal text, independently of `math_font`. An explicit font list is
+ordered and does not silently add unlisted families. A single family or file
+request retains the existing ordinary-text selection and warning behavior.
+
+Both engines shape adjacent text runs before mathematical placement, using
+actual advances, outline extents, Unicode bidi ordering and Rustybuzz shaping.
+Text in scripts, fractions, chemical annotations, matrices and proof cells
+uses the same flow. Exports use outlines rather than a browser-dependent text
+font. Real bold/italic faces are selected by text commands; missing styles warn.
+Mathematical alphabet commands continue to use the selected math font.
+
+```lay
+page=canvas(size=(140mm,50mm),math_font="XITS Math",
+    font_family=["Noto Serif","Noto Serif CJK SC"])
+page.add(formula(r"\text{你好，世界！}\quad E=mc^2",font_size=16pt))
+```
+
+The gallery defaults to enabled text fallback with eight pinned, renamed Noto
+subsets, and has a switch to disable it. This isolates test results from host
+font installation. Details disclose actual family, face, weight and glyph
+count. `/sources/text-fonts-manifest.json` retains input and output hashes;
+[font fixtures](../../tests/fonts/text/README.md) document rebuilding and licenses.
+The four math font files remain unchanged. Color bitmap emoji are unsupported
+by this outline-only text flow, and missing mathematical symbols still fail.
+
+The default KaTeX route uses the optional measured-text hook in
+[vendor/ratex-layout](../../vendor/ratex-layout/README.md). When the hook is
+absent, the upstream layout is retained. The hook covers literal text groups,
+including proof text passing through explicit font wrappers; it does not match
+source strings or font names to fix individual formulas.
+
+Validation includes 576 multilingual/domain combinations (24 cases × four
+math fonts × inline/display × three sizes), actual font-advance/space metrics,
+script-scale and shared-baseline checks, real bold/italic selection, ligatures,
+combining marks, Arabic joining, explicit-list missing glyphs, disabled fallback,
+LCSS-relative paths and ordinary-text font embedding. SVG/PDF/PNG/PPTX checks
+cover Chinese, scripts, chemical annotations, proof labels, Arabic and Indic.
+
+```sh
+cargo test -p laymesh-core --test formula_text
+cargo test -p laymesh-render --test opentype_math
+# Browse enabled text cases; append &text=0 to compare strict coverage.
+# http://100.64.0.6:8765/?suite=text&baselines=1
+```

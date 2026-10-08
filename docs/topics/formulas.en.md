@@ -92,3 +92,24 @@ Inner math alphabet commands override outer ones: `\mathbf{\mathcal A}` selects 
 OpenType chemical bonds `~`, `~-`, `~--`, `~=`, and `-~-` use a compound construction based on the selected font's minus outline. Solid and dashed rows share their ink endpoints and thickness, and inherit the surrounding math size, script style and color. The geometry tests check endpoints directly, including bonds inside superscripts, nested subscripts and fractions.
 
 See the [editable comparison and verification instructions](../../experiments/opentype-math/README.md). The default remains `ratex-katex`; legacy `mathjax-*` names retain their compatibility mapping.
+
+Formula text uses `font_family`; mathematical symbols use `math_font`:
+
+```lay
+page=canvas(size=(140mm,50mm),math_font="XITS Math",font_family=["Noto Serif","Noto Serif CJK SC"])
+page.add(formula(r"\text{你好，世界！}\quad E=mc^2",font_size=16pt))
+```
+
+`math_text_fallback=true` is the default. Text in `\text`, scripts, chemical
+arrow annotations and proof trees is selected, shaped and measured before math
+placement. Runs retain ligatures, combining marks and bidirectional ordering,
+and export as vector outlines. `\textbf` and `\textit` select actual body-font
+styles; absent glyphs or styles produce errors or warnings. Mathematical bold
+continues to use `\mathbf` / `\bm`.
+
+Explicit text font lists are ordered and do not add system fonts implicitly.
+Paths are supported; native hosts can also use system families, while browser
+hosts must supply font files first. `math_text_fallback=false` disables body
+text fallback for math-font coverage checks. OpenType missing glyphs fail;
+default KaTeX retains missing-glyph boxes and warnings. Color bitmap emoji are
+outside this vector text path.

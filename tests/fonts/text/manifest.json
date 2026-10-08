@@ -1,0 +1,98 @@
+[
+  {
+    "file": "Latin-Regular.ttf",
+    "family": "LayMesh Formula Text Latin",
+    "style": "Regular",
+    "source": "https://github.com/notofonts/latin-greek-cyrillic",
+    "source_file": "truetype/noto/NotoSerif-Regular.ttf",
+    "source_index": 0,
+    "source_version": "Version 2.004; ttfautohint (v1.8.3) -l 8 -r 50 -G 200 -x 14 -D latn -f none -a qsq -X \"\"",
+    "source_sha256": "9d7583b7dc9e812afd32a14280c5cac3160012efe50c8d08938f4fea266ff67f",
+    "sha256": "65111d08209d793ecc1714e12edc4771251b9fb27582d53803634bbdce3fdea1",
+    "derivation": "renamed Unicode subset with shaping tables retained"
+  },
+  {
+    "file": "Latin-Bold.ttf",
+    "family": "LayMesh Formula Text Latin",
+    "style": "Bold",
+    "source": "https://github.com/notofonts/latin-greek-cyrillic",
+    "source_file": "truetype/noto/NotoSerif-Bold.ttf",
+    "source_index": 0,
+    "source_version": "Version 2.004; ttfautohint (v1.8.3) -l 8 -r 50 -G 200 -x 14 -D latn -f none -a qsq -X \"\"",
+    "source_sha256": "0af0ff2be8f84910fb21ec5fe1b6b7395e3073250502a334baf6ca2f860c88fe",
+    "sha256": "38819b23c3be57d9cc7c95e6a857576393b7cd0d04ed255f18f2dd2a0b43dd4a",
+    "derivation": "renamed Unicode subset with shaping tables retained"
+  },
+  {
+    "file": "Latin-Italic.ttf",
+    "family": "LayMesh Formula Text Latin",
+    "style": "Italic",
+    "source": "https://github.com/notofonts/latin-greek-cyrillic",
+    "source_file": "truetype/noto/NotoSerif-Italic.ttf",
+    "source_index": 0,
+    "source_version": "Version 2.004; ttfautohint (v1.8.3) -l 8 -r 50 -G 200 -x 14 -D latn -f none -a qsq -X \"\"",
+    "source_sha256": "bc25600aa27cd409e1e5b3d86340df3a329bb860fcfbe57a03a95070b229e1b0",
+    "sha256": "b092e23b05a144fb584f956cf5d6df3c1e9a7a1f5f7b22b625cc08e276a349c8",
+    "derivation": "renamed Unicode subset with shaping tables retained"
+  },
+  {
+    "file": "Latin-BoldItalic.ttf",
+    "family": "LayMesh Formula Text Latin",
+    "style": "BoldItalic",
+    "source": "https://github.com/notofonts/latin-greek-cyrillic",
+    "source_file": "truetype/noto/NotoSerif-BoldItalic.ttf",
+    "source_index": 0,
+    "source_version": "Version 2.004; ttfautohint (v1.8.3) -l 8 -r 50 -G 200 -x 14 -D latn -f none -a qsq -X \"\"",
+    "source_sha256": "78a6d685e5690b7dcda0f336b689193afc03b6bab5cf18fc1a9ecc3aa0600059",
+    "sha256": "84ab508344fb76ba3cadbabebe6d8e343571e37ab54d13a5017bfe535db2d8b1",
+    "derivation": "renamed Unicode subset with shaping tables retained"
+  },
+  {
+    "file": "CJK-Regular.otf",
+    "family": "LayMesh Formula Text CJK",
+    "style": "Regular",
+    "source": "https://github.com/notofonts/noto-cjk",
+    "source_file": "opentype/noto/NotoSerifCJK-Regular.ttc",
+    "source_index": 2,
+    "source_version": "Version 2.003;hotconv 1.1.1;makeotfexe 2.6.0",
+    "source_sha256": "5d9c31a059600193c9d7968a998bde886ccdc77e934006ad243b41794c496a7d",
+    "sha256": "b75bf3e5a69c2adee9c36343aebc78ad96f3ef98118a2d771df86d4c41609660",
+    "derivation": "renamed Unicode subset with shaping tables retained"
+  },
+  {
+    "file": "CJK-Bold.otf",
+    "family": "LayMesh Formula Text CJK",
+    "style": "Bold",
+    "source": "https://github.com/notofonts/noto-cjk",
+    "source_file": "opentype/noto/NotoSerifCJK-Bold.ttc",
+    "source_index": 2,
+    "source_version": "Version 2.003;hotconv 1.1.1;makeotfexe 2.6.0",
+    "source_sha256": "1505ee3b9c0890fae6302ee0e9c6fd74d690f4a55a6ace1d9944f3f6352d622d",
+    "sha256": "187fe4b38173d1c7bc616e3ebcd3af1e58ea22011748dc0cbbba311819804638",
+    "derivation": "renamed Unicode subset with shaping tables retained"
+  },
+  {
+    "file": "Arabic-Regular.ttf",
+    "family": "LayMesh Formula Text Arabic",
+    "style": "Regular",
+    "source": "https://github.com/notofonts/arabic",
+    "source_file": "truetype/noto/NotoSansArabic-Regular.ttf",
+    "source_index": 0,
+    "source_version": "Version 2.005; ttfautohint (v1.8.3) -l 8 -r 50 -G 200 -x 14 -D arab -f none -a qsq -X \"\"",
+    "source_sha256": "504d7407d86875acf7d04dfaa0fd7524d0b8797723bc4aa18022f29db25b0b6e",
+    "sha256": "b7a3a59e9ad9d62355d5a083c567186de871db5d11f8b2cfe99d615675d900e5",
+    "derivation": "renamed Unicode subset with shaping tables retained"
+  },
+  {
+    "file": "Indic-Regular.ttf",
+    "family": "LayMesh Formula Text Indic",
+    "style": "Regular",
+    "source": "https://github.com/notofonts/devanagari",
+    "source_file": "truetype/noto/NotoSansDevanagari-Regular.ttf",
+    "source_index": 0,
+    "source_version": "Version 2.001; ttfautohint (v1.8.3) -l 8 -r 50 -G 200 -x 14 -D deva -f none -a qsq -X \"\"",
+    "source_sha256": "79a470365ccb210fa3c7d8d8ff2e005ef9d983cfd067f735a0caf7e15070ca9f",
+    "sha256": "5bce1fd319d11f87c56bcda6dce74133b679872b6535fdeae4bcc9597723fcd1",
+    "derivation": "renamed Unicode subset with shaping tables retained"
+  }
+]

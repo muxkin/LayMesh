@@ -122,7 +122,7 @@ fn upstream_corpus() {
                     format!("/{font}.otf")
                 };
                 let result = formula(
-                    &json!({"source":source,"math_font":request,"font_size":5.,"style":style}),
+                    &json!({"source":source,"math_font":request,"font_size":5.,"style":style,"math_text_fallback":false}),
                     &mut fonts,
                     &mut vec![],
                     "/corpus.lay",

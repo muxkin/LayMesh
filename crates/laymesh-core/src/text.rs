@@ -5,11 +5,14 @@ use serde_json::{Value as Json, json};
 use std::collections::{BTreeMap, BTreeSet};
 use ttf_parser::OutlineBuilder;
 use unicode_segmentation::UnicodeSegmentation;
+mod formula_text;
+pub(crate) use formula_text::{TextFonts, TextStyle, literal_text, shape_text};
 
 pub struct FontSystem {
     // Math is exported as outlines, so these faces must not be added to the
     // ordinary text assets embedded by SVG/PDF exporters.
-    math_assets: BTreeMap<String, FontAsset>,
+    math_assets: BTreeMap<String, std::sync::Arc<FontAsset>>,
+    outline_assets: BTreeMap<String, FontAsset>,
     pub(crate) glyph_paths: BTreeMap<(String, u16), kurbo::BezPath>,
     db: Database,
     name_index: Option<BTreeMap<String, Vec<ID>>>,
@@ -97,6 +100,7 @@ impl FontSystem {
         }
         Self {
             math_assets: BTreeMap::new(),
+            outline_assets: BTreeMap::new(),
             glyph_paths: BTreeMap::new(),
             db,
             name_index: None,
@@ -131,7 +135,7 @@ impl FontSystem {
         file: &str,
         loc: Loc,
         warnings: &mut Vec<Diagnostic>,
-    ) -> Result<&FontAsset> {
+    ) -> Result<std::sync::Arc<FontAsset>> {
         let cache_key = format!("{file}:{request}");
         if !self.math_assets.contains_key(&cache_key) {
             self.load_path(request, file, loc, warnings);
@@ -208,14 +212,14 @@ impl FontSystem {
                 .unwrap_or_else(|| request.into());
             self.math_assets.insert(
                 cache_key.clone(),
-                FontAsset {
+                std::sync::Arc::new(FontAsset {
                     data,
                     index: 0,
                     family,
-                },
+                }),
             );
         }
-        Ok(&self.math_assets[&cache_key])
+        Ok(self.math_assets[&cache_key].clone())
     }
     pub fn load_requested(
         &mut self,
@@ -260,8 +264,12 @@ impl FontSystem {
             }
         }
     }
-    fn key(&mut self, id: ID) -> Option<String> {
+    fn key(&mut self, id: ID, outlined: bool) -> Option<String> {
         if let Some(key) = self.keys.get(&id) {
+            if !outlined && !self.assets.contains_key(key) {
+                self.assets
+                    .insert(key.clone(), self.outline_assets.get(key)?.clone());
+            }
             return Some(key.clone());
         }
         let face = self.db.face(id)?.clone();
@@ -288,7 +296,12 @@ impl FontSystem {
         self.origins.insert(key.clone(), origin);
         self.face_names
             .insert(key.clone(), face.post_script_name.clone());
-        self.assets.insert(
+        let assets = if outlined {
+            &mut self.outline_assets
+        } else {
+            &mut self.assets
+        };
+        assets.insert(
             key.clone(),
             FontAsset {
                 data,
@@ -313,8 +326,21 @@ impl FontSystem {
         loc: Loc,
         w: &mut Vec<Diagnostic>,
     ) -> Option<String> {
+        self.choose_mode(request, weight, italic, content, file, loc, w, false)
+    }
+    fn choose_mode(
+        &mut self,
+        request: &Json,
+        weight: u16,
+        italic: bool,
+        content: &str,
+        file: &str,
+        loc: Loc,
+        w: &mut Vec<Diagnostic>,
+        outlined: bool,
+    ) -> Option<String> {
         let choice_key = format!(
-            "{request}:{weight}:{italic}:{content}:{file}:{}:{}",
+            "{request}:{weight}:{italic}:{content}:{file}:{}:{}:{outlined}",
             loc.line, loc.column
         );
         if let Some(choice) = self.choices.get(&choice_key) {
@@ -491,7 +517,7 @@ impl FontSystem {
                         loc,
                     );
                 }
-                let key = self.key(id);
+                let key = self.key(id, outlined);
                 self.choices.insert(choice_key, key.clone());
                 return key;
             }
@@ -634,6 +660,57 @@ pub fn formula(
         return Err(Diagnostic::new("E_FORMULA", "公式字号须为正数", file, loc));
     }
     let font = jstr(spec, "math_font", "ratex-katex");
+    if spec
+        .get("math_text_fallback")
+        .is_some_and(|v| !v.is_boolean())
+    {
+        return Err(Diagnostic::new(
+            "E_FONT",
+            "math_text_fallback 需要布尔值",
+            file,
+            loc,
+        ));
+    }
+    let request = &spec["font_family"];
+    if !request.is_null()
+        && !(request.as_str().is_some_and(|s| !s.trim().is_empty())
+            || request.as_array().is_some_and(|a| {
+                !a.is_empty()
+                    && a.iter()
+                        .all(|v| v.as_str().is_some_and(|s| !s.trim().is_empty()))
+            }))
+    {
+        return Err(Diagnostic::new(
+            "E_FONT",
+            "font_family 需要非空字体名称、路径或字符串列表",
+            file,
+            loc,
+        ));
+    }
+    let weight = jnum(spec, "font_weight", 400.);
+    if (!spec["font_weight"].is_null() && !spec["font_weight"].is_number())
+        || !weight.is_finite()
+        || weight.fract() != 0.
+        || !(100.0..=900.0).contains(&weight)
+    {
+        return Err(Diagnostic::new(
+            "E_FONT",
+            "字重须为 100 到 900 的整数",
+            file,
+            loc,
+        ));
+    }
+    if !spec["font_style"].is_null()
+        && spec["font_style"] != "normal"
+        && spec["font_style"] != "italic"
+    {
+        return Err(Diagnostic::new(
+            "E_FONT",
+            "font_style 需要 normal 或 italic",
+            file,
+            loc,
+        ));
+    }
     let legacy_font = font.starts_with("mathjax-");
     if legacy_font {
         warn(w, format!("公式字体 {font} 映射到 ratex-katex"), file, loc);
@@ -671,9 +748,20 @@ pub fn formula(
             ));
         }
         let asset = fonts.math_face(font, file, loc, w)?;
-        return crate::opentype_math::formula(&parsed, asset, spec, &source, file, loc);
+        return crate::opentype_math::formula(&parsed, &asset, fonts, w, spec, &source, file, loc);
     }
+    let enabled = spec["math_text_fallback"].as_bool().unwrap_or(true);
+    let provider = formula_text::KaTexText {
+        fonts: std::cell::RefCell::new(&mut *fonts),
+        warnings: std::cell::RefCell::new(&mut *w),
+        used: std::cell::RefCell::new(TextFonts::default()),
+        error: std::cell::RefCell::new(None),
+        spec,
+        file,
+        loc,
+    };
     let options = ratex_layout::LayoutOptions {
+        text_layout: enabled.then_some(&provider),
         style: if spec
             .get("display")
             .and_then(Json::as_bool)
@@ -688,12 +776,17 @@ pub fn formula(
         ..Default::default()
     };
     let dl = ratex_layout::to_display_list(&ratex_layout::layout(&parsed, &options));
+    if let Some(error) = provider.error.borrow().as_ref() {
+        return Err(Diagnostic::new("E_FORMULA", error.clone(), file, loc));
+    }
+    let used = std::mem::take(&mut provider.used.borrow_mut().0);
+    drop(provider);
     let mut items = vec![];
     let mut missing = BTreeSet::new();
     for item in dl.items {
         match item{
         D::GlyphPath{x,y,scale,font,char_code,color}=>{let name=format!("KaTeX_{font}.ttf");let char_=char::from_u32(char_code).unwrap_or('\u{fffd}');let data=ratex_katex_fonts::ttf_bytes(&name);let mut rendered=false;if let Some(data)=data{if let Ok(face)=ttf_parser::Face::parse(&data,0){if let Some(gid)=face.glyph_index(char_){let mut outline=Outline{scale:size*scale/face.units_per_em()as f64,x:x*size,y:y*size,..Default::default()};face.outline_glyph(gid,&mut outline);items.push(json!({"kind":"path","d":outline.d,"fill":css(color),"opacity":color.a}));rendered=true;}}}
-            if !rendered{let ch=char_.to_string();if let Some(key)=fonts.choose(&spec["font_family"],400,false,&ch,file,loc,w){let asset=&fonts.assets[&key];let (advance,_,_)=measure(asset,&ch,size*scale);items.push(json!({"kind":"glyph","x":x*size,"baseline":y*size,"fontFamily":key,"fontSystemFamily":asset.family,"fontSize":size*scale,"content":ch,"width":advance,"color":css(color)}));}else{missing.insert(format!("U+{char_code:04X}"));items.push(missing_box(x*size,(y-0.8*scale)*size,size*scale,&css(color)));}}
+            if !rendered{let ch=char_.to_string();if let Some(key)=enabled.then(|| fonts.choose(&spec["font_family"],400,false,&ch,file,loc,w)).flatten(){let asset=&fonts.assets[&key];let (advance,_,_)=measure(asset,&ch,size*scale);items.push(json!({"kind":"glyph","x":x*size,"baseline":y*size,"fontFamily":key,"fontSystemFamily":asset.family,"fontSize":size*scale,"content":ch,"width":advance,"color":css(color)}));}else{missing.insert(format!("U+{char_code:04X}"));items.push(missing_box(x*size,(y-0.8*scale)*size,size*scale,&css(color)));}}
         },D::Line{x,y,width,thickness,color,dashed}=>items.push(json!({"kind":"rule","x":x*size,"y":(if dashed { y } else { y-thickness/2. })*size,"width":width*size,"height":thickness*size,"color":css(color),"opacity":color.a,"dashed":dashed})),D::Rect{x,y,width,height,color}=>items.push(json!({"kind":"rule","x":x*size,"y":y*size,"width":width*size,"height":height*size,"color":css(color),"opacity":color.a})),D::Path{x,y,commands,fill,color}=>{let mut d=String::new();for p in commands{d+=&match p{P::MoveTo{x:a,y:b}=>format!("M{} {}",(x+a)*size,(y+b)*size),P::LineTo{x:a,y:b}=>format!("L{} {}",(x+a)*size,(y+b)*size),P::CubicTo{x1,y1,x2,y2,x:a,y:b}=>format!("C{} {} {} {} {} {}",(x+x1)*size,(y+y1)*size,(x+x2)*size,(y+y2)*size,(x+a)*size,(y+b)*size),P::QuadTo{x1,y1,x:a,y:b}=>format!("Q{} {} {} {}",(x+x1)*size,(y+y1)*size,(x+a)*size,(y+b)*size),P::Close=>"Z".into()};}items.push(json!({"kind":"path","d":d,"fill":if fill{css(color)}else{"none".into()},"stroke":if fill{"none".into()}else{css(color)},"strokeWidth":size*0.04,"opacity":color.a}));}}
     }
     if !missing.is_empty() {
@@ -708,11 +801,82 @@ pub fn formula(
         );
     }
     let mut node = base("formula", dl.width * size, (dl.height + dl.depth) * size);
+    node["mathTextFallback"] = json!(enabled);
+    node["mathTextFonts"] = json!(used);
     node["source"] = json!(source);
     node["mathFont"] = json!("ratex-katex");
     node["ascent"] = json!(dl.height * size);
     node["items"] = json!(items);
+    if node["mathTextFonts"]
+        .as_array()
+        .is_some_and(|a| !a.is_empty())
+    {
+        fit_formula_ink(&mut node);
+    }
     Ok(node)
+}
+/// Include actual outline overhangs in the formula box without changing the
+/// relative placement performed by RaTeX. The shared baseline moves with ink.
+fn fit_formula_ink(node: &mut Json) {
+    use kurbo::Shape;
+    let mut bounds = kurbo::Rect::new(0., 0., jnum(node, "width", 0.), jnum(node, "height", 0.));
+    for item in node["items"].as_array().unwrap() {
+        let ink = if item["kind"] == "path" {
+            let Ok(path) = kurbo::BezPath::from_svg(jstr(item, "d", "")) else {
+                continue;
+            };
+            if path.elements().is_empty() {
+                continue;
+            }
+            path.bounding_box().inflate(
+                if item["fill"] == "none" {
+                    jnum(item, "strokeWidth", 0.) / 2.
+                } else {
+                    0.
+                },
+                if item["fill"] == "none" {
+                    jnum(item, "strokeWidth", 0.) / 2.
+                } else {
+                    0.
+                },
+            )
+        } else if item["kind"] == "rule" || item["kind"] == "box" {
+            let (x, y) = (jnum(item, "x", 0.), jnum(item, "y", 0.));
+            kurbo::Rect::new(
+                x,
+                y,
+                x + jnum(item, "width", 0.),
+                y + jnum(item, "height", 0.),
+            )
+        } else {
+            continue;
+        };
+        bounds = bounds.union(ink);
+    }
+    let (dx, dy) = (-bounds.x0, -bounds.y0);
+    if dx != 0. || dy != 0. {
+        for item in node["items"].as_array_mut().unwrap() {
+            if item["kind"] == "path" {
+                if let Ok(mut path) = kurbo::BezPath::from_svg(jstr(item, "d", "")) {
+                    path.apply_affine(kurbo::Affine::translate((dx, dy)));
+                    item["d"] = json!(path.to_svg());
+                }
+            } else {
+                if item.get("x").is_some() {
+                    item["x"] = json!(jnum(item, "x", 0.) + dx);
+                }
+                if item.get("y").is_some() {
+                    item["y"] = json!(jnum(item, "y", 0.) + dy);
+                }
+                if item.get("baseline").is_some() {
+                    item["baseline"] = json!(jnum(item, "baseline", 0.) + dy);
+                }
+            }
+        }
+    }
+    node["width"] = json!(bounds.width());
+    node["height"] = json!(bounds.height());
+    node["ascent"] = json!(jnum(node, "ascent", 0.) + dy);
 }
 fn measure(font: &FontAsset, text: &str, size: f64) -> (f64, f64, f64) {
     let Some(face) = rustybuzz::Face::from_slice(&font.data, font.index) else {
@@ -1479,11 +1643,20 @@ mod policy_tests {
         assert_eq!(w[0].loc.line, 2);
     }
     #[test]
-    fn missing_formula_unicode_uses_vector_boxes() {
+    fn missing_formula_unicode_reports_fallback_errors_or_strict_vector_boxes() {
         let mut f = FontSystem::new(false);
         let mut w = vec![];
-        let n = formula(
+        let error = formula(
             &json!({"source":r"\text{中文}"}),
+            &mut f,
+            &mut w,
+            "f.lay",
+            Loc::default(),
+        )
+        .unwrap_err();
+        assert!(error.message.contains("文本字体列表缺少字形"));
+        let n = formula(
+            &json!({"source":r"\text{中文}","math_text_fallback":false}),
             &mut f,
             &mut w,
             "f.lay",

@@ -14,14 +14,17 @@ HERE = Path(__file__).resolve().parent
 FIXTURES = ROOT / "tests/math/ratex-0.1.14"
 FONT_LABELS = {"ratex-katex":"KaTeX", "latinmodern":"Latin Modern Math", "stix":"STIX Two Math", "xits":"XITS Math"}
 SUITES = {"golden":"基础数学", "parser":"解析器", "layout":"布局", "chemistry":"化学", "physics":"物理", "proofs":"证明树",
-    "lexer":"词法器", "website-math":"官网数学", "website-proofs":"官网证明树", "chemistry-golden":"化学原始测试", "unicode":"多语言脚本", "domain":"领域补充"}
+    "lexer":"词法器", "website-math":"官网数学", "website-proofs":"官网证明树", "chemistry-golden":"化学原始测试", "unicode":"多语言脚本", "domain":"领域补充", "text":"文本回退测试"}
 
 
 def cases(provenance):
     result = []
     files = {f["file"]:f for f in provenance["files"]}
     for suite in SUITES:
-        if suite == "domain":
+        if suite == "text":
+            rows=[(i,source,title) for i,(title,source) in enumerate(json.loads((HERE/"text-fallback-cases.json").read_text()),1)]
+            kind,fixture,upstream="text-test","text-fallback-cases.json",None
+        elif suite == "domain":
             domain = json.loads((HERE/"domain-cases.json").read_text())
             rows = [(i, source, title+" / "+label) for i, (title,label,source) in enumerate(
                 [(title,label,source) for title,items in domain.items() for label,source in items],1)]
@@ -74,7 +77,8 @@ def main():
     output.mkdir(parents=True,exist_ok=True)
     provenance=json.loads((FIXTURES/"provenance.json").read_text())
     fonts=json.loads((ROOT/"tests/fonts/math/manifest.json").read_text())
-    for directory,entries in [(FIXTURES,provenance["files"]),(ROOT/"tests/fonts/math",fonts)]:
+    text_fonts=json.loads((ROOT/"tests/fonts/text/manifest.json").read_text())
+    for directory,entries in [(FIXTURES,provenance["files"]),(ROOT/"tests/fonts/math",fonts),(ROOT/"tests/fonts/text",text_fonts)]:
         for entry in entries:
             assert hashlib.sha256((directory/entry["file"]).read_bytes()).hexdigest()==entry["sha256"]
     entries=cases(provenance)
@@ -82,7 +86,7 @@ def main():
     inputs=output/"inputs.json"
     inputs.write_text(json.dumps(unique,ensure_ascii=False))
     engine=[ROOT/"Cargo.lock",ROOT/"Cargo.toml",ROOT/"rust-toolchain.toml"]+sorted(
-        p for p in (ROOT/"crates").rglob("*") if p.is_file() and p.suffix in {".rs",".toml"})
+        p for base in [ROOT/"crates",ROOT/"vendor"] for p in base.rglob("*") if p.is_file() and p.suffix in {".rs",".toml",".json"})+[ROOT/"tests/fonts/text/fixtures.rs",ROOT/"tests/fonts/text/manifest.json",ROOT/"tests/fonts/math/manifest.json"]
     fingerprint=hashlib.sha256()
     for path in engine:
         fingerprint.update(str(path.relative_to(ROOT)).encode())
@@ -100,21 +104,22 @@ def main():
         key=(row["source"],row["font"],row["style"])
         if key in references: assert references[key].get("error")==row.get("error")
         references[key]=row
-    checked=Counter()
+    checked={policy:Counter() for policy in ("variants","text_variants")}
     audited_checks=0
     exported=0
     preview_errors=0
     for record in rendered:
-        for font,styles in record["variants"].items():
+      for policy in checked:
+        for font,styles in record[policy].items():
             for style,result in styles.items():
-                ref=references.get((record["source"],font,style))
+                ref=references.get((record["source"],font,style)) if policy=="variants" else None
                 if ref is not None:
                     assert (ref.get("code"),ref.get("error"))==(result.get("code"),result.get("error")),(record["source"],font,style,result)
                     audited_checks+=1
                 result["status"]=classify(result)
                 result["audit_checked"]=ref is not None
                 result["expected"]=ref is not None and bool(result.get("error"))
-                checked[result["status"]]+=1
+                checked[policy][result["status"]]+=1
                 if "svg" in result:
                     exported+=1
                     file=output/result["svg"]
@@ -127,20 +132,22 @@ def main():
     assert audited_checks==len(references),"Fixed audit coverage was lost"
     lookup={r["source"]:i for i,r in enumerate(rendered)}
     for c in entries: c["render_index"]=lookup[c["source"]]
-    expanded=Counter()
+    expanded={policy:Counter() for policy in checked}
     for c in entries:
+      for policy in checked:
         for font in FONT_LABELS:
             for style in ("display","inline"):
-                expanded[rendered[c["render_index"]]["variants"][font][style]["status"]]+=1
+                expanded[policy][rendered[c["render_index"]][policy][font][style]["status"]]+=1
     metadata={"generated_at":datetime.now(timezone.utc).isoformat(),"renderer_fingerprint":digest,
         "git_revision":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),
-        "upstream":provenance,"font_fixtures":fonts,"suites":[{"id":suite,"label":label,"count":sum(c["suite"]==suite for c in entries)} for suite,label in SUITES.items()],
+        "upstream":provenance,"font_fixtures":fonts,"text_font_fixtures":text_fonts,"suites":[{"id":suite,"label":label,"count":sum(c["suite"]==suite for c in entries)} for suite,label in SUITES.items()],
         "fonts":[{"id":id,"label":label} for id,label in FONT_LABELS.items()],
-        "case_entries":len(entries),"upstream_entries":sum(c["suite"]!="domain" for c in entries),
-        "distinct_formulas":len(unique),"styles":["display","inline"],"layout_checks":len(entries)*8,
-        "distinct_layout_checks":len(unique)*8,"outcomes":dict(expanded),"distinct_outcomes":dict(checked),
+        "case_entries":len(entries),"upstream_entries":sum(c["upstream_path"] is not None for c in entries),
+        "distinct_formulas":len(unique),"styles":["display","inline"],"text_policies":["strict","text"],"layout_checks":len(entries)*16,
+        "distinct_layout_checks":len(unique)*16,"outcomes":dict(expanded["text_variants"]),"distinct_outcomes":dict(checked["text_variants"]),
+        "policy_outcomes":{policy:dict(counts) for policy,counts in expanded.items()},
         "duplicate_entries_retained":len(entries)-len(unique),"all_audited_outcomes_match":True,
-        "audit_checks":audited_checks,"supplemental_checks":len(unique)*8-audited_checks,
+        "audit_checks":audited_checks,"supplemental_checks":len(unique)*16-audited_checks,
         "svg_files":exported,"preview_errors":preview_errors}
     data={"meta":metadata,"cases":entries,"renders":rendered}
     (output/"data.json").write_text(json.dumps(data,ensure_ascii=False,separators=(",",":"))+"\n")
@@ -150,12 +157,16 @@ def main():
     for file in ["provenance.json","LICENSE"]+[f["file"] for f in provenance["files"]]:
         shutil.copyfile(FIXTURES/file,public/file)
     shutil.copyfile(HERE/"domain-cases.json",public/"domain-cases.json")
+    shutil.copyfile(HERE/"text-fallback-cases.json",public/"text-fallback-cases.json")
+    shutil.copyfile(ROOT/"tests/fonts/text/manifest.json",public/"text-fonts-manifest.json")
+    for file in (ROOT/"tests/fonts/text").glob("*.txt"):
+        shutil.copyfile(file,public/file.name)
     for file in (ROOT/"tests/fonts/math").glob("*.txt"):
         shutil.copyfile(file,public/file.name)
     for file in (HERE/"gallery").iterdir():
         if file.is_file(): shutil.copyfile(file,output/file.name)
     print(json.dumps({"directory":str(output),"cases":len(entries),"upstream_cases":metadata["upstream_entries"],
-        "distinct_formulas":len(unique),"checks":len(entries)*8,"svg_files":exported,"preview_errors":preview_errors,"outcomes":dict(expanded)},ensure_ascii=False,indent=2))
+        "distinct_formulas":len(unique),"checks":len(entries)*16,"svg_files":exported,"preview_errors":preview_errors,"outcomes":{policy:dict(counts) for policy,counts in expanded.items()}},ensure_ascii=False,indent=2))
 
 
 if __name__=="__main__": main()

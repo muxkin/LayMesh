@@ -1,13 +1,13 @@
 const $ = (id) => document.getElementById(id);
 const STATUS = {rendered:"已渲染",font_glyph_missing:"字体缺字",parse_rejected:"解析不支持",policy_rejected:"禁止命令",invalid_geometry:"尺寸异常"};
 let data, filtered = [], detailCase;
-const state = {suite:"all",query:"",status:"all",style:"display",size:24,limit:20,page:1,fonts:[],baselines:false};
+const state = {suite:"all",query:"",status:"all",style:"display",size:24,limit:20,page:1,fonts:[],baselines:false,textFallback:true};
 const element = (tag, cls, text) => {const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node;};
 const format = (value) => value.toLocaleString("zh-CN");
-const variants = (c) => data.renders[c.render_index].variants;
+const variants = (c) => data.renders[c.render_index][state.textFallback?"text_variants":"variants"];
 const suiteLabel = (id) => data.meta.suites.find(s=>s.id===id)?.label || id;
 const positionLabel = (c) => c.position_kind==="text" ? `第 ${c.position} 行` : `第 ${c.position} 条`;
-const sourceURL = (c) => c.upstream_path ? `${data.meta.upstream.repository}/blob/${data.meta.upstream.commit}/${c.upstream_path}${c.position_kind==="text"?`#L${c.position}`:""}` : "sources/domain-cases.json";
+const sourceURL = (c) => c.upstream_path ? `${data.meta.upstream.repository}/blob/${data.meta.upstream.commit}/${c.upstream_path}${c.position_kind==="text"?`#L${c.position}`:""}` : `sources/${c.fixture}`;
 
 function loadState(){
   const q=new URLSearchParams(location.search);
@@ -21,6 +21,7 @@ function loadState(){
   const chosen=(q.get("fonts") || "").split(",");state.fonts=data.meta.fonts.filter(f=>chosen.includes(f.id)).map(f=>f.id);
   if(!state.fonts.length)state.fonts=data.meta.fonts.map(f=>f.id);
   state.baselines=q.get("baselines")==="1";
+  state.textFallback=q.get("text")!=="0";
 }
 function saveState(){
   const q=new URLSearchParams();
@@ -33,6 +34,7 @@ function saveState(){
   if(state.limit!==20)q.set("limit",state.limit);
   if(state.fonts.length!==data.meta.fonts.length)q.set("fonts",state.fonts.join(","));
   if(state.baselines)q.set("baselines","1");
+  if(!state.textFallback)q.set("text","0");
   history.replaceState(null,"",location.pathname+(q.size?"?"+q:""));
 }
 function selectedFonts(){return data.meta.fonts.filter(f=>state.fonts.includes(f.id));}
@@ -103,6 +105,7 @@ function renderRows(){
   $("size-output").value=`${state.size}px`;
   $("size").style.setProperty("--progress",`${(state.size-16)/56*100}%`);
   for(const button of document.querySelectorAll("[data-style]"))button.setAttribute("aria-pressed",String(button.dataset.style===state.style));
+  for(const button of document.querySelectorAll("[data-text]"))button.setAttribute("aria-pressed",String((button.dataset.text==="1")===state.textFallback));
   for(const button of document.querySelectorAll("[data-suite]")){if(button.dataset.suite===state.suite)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");}
   saveState();document.body.dataset.ready="true";
 }
@@ -125,7 +128,8 @@ function renderDetail(){
       const viewport=element("div","detail-image");viewport.append(imageFor(result,size,`${font.label}：${detailCase.source}`));section.append(viewport);
       if(result.invisible)section.append(element("p","error-message",`此构造没有可见轮廓。原布局宽度 ${result.layout_width.toFixed(4)} mm，高度 ${result.layout_height.toFixed(4)} mm；负宽度可表示负间距。`));
       section.append(element("div","render-status","已渲染"));
-      if(result.text_fallback)section.append(element("p","error-message",`默认后端文本回退：${result.fallback_families.join("、") || "系统字体"}。此字符未使用 KaTeX 数学字形。`));
+      if(result.text_fallback)section.append(element("p",null,`文本字体：${result.fallback_families.join("、")}。使用所选正文列表排版，数学字形保持当前数学字体。`));
+      for(const face of result.text_fonts || [])section.append(element("p","font-metadata",`${face.family} · ${face.face} · 字重 ${face.weight}${face.italic?" · 斜体":""} · ${face.glyph_count} 个字形 / ${face.character_count} 个字符`));
       if(result.placeholder_glyphs)section.append(element("p","error-message",`${result.placeholder_glyphs} 个字符以缺字方框占位，并非正确字形。`));
       for(const warning of result.warnings)section.append(element("p","error-message",`${warning.code}：${warning.message}`));
       if(result.bounds_errors.length)section.append(element("pre","source-code",`原布局边界记录（预览包含完整轮廓）：\n${result.bounds_errors.join("\n")}`));
@@ -145,15 +149,19 @@ function provenance(){
   const meta=data.meta,content=$("provenance-content");content.replaceChildren();
   for(const text of [
     `RaTeX ${meta.upstream.tag} · 提交 ${meta.upstream.commit}`,
-    `保留 ${meta.upstream.files.length} 个原始公式语料文件的 ${format(meta.upstream_entries)} 条非空、非注释用例，包括各套文件中的重复条目。加上 ${meta.case_entries-meta.upstream_entries} 条领域补充，共 ${format(meta.case_entries)} 条。原始文件字节与 SHA-256 均已核验。`,
-    `${format(meta.distinct_formulas)} 条不同公式，四套字体、两种模式。${format(meta.layout_checks)} 个条目结果，检查 ${format(meta.distinct_layout_checks)} 个不同组合，生成 ${format(meta.svg_files)} 个 SVG；其余结果保留失败原因。重复公式共用相同 SVG。`,
-    `其中 ${format(meta.audit_checks)} 个不同组合与固定审计逐项一致，另 ${format(meta.supplemental_checks)} 个新补脚本组合由当前渲染器生成并检查几何。解析不支持、禁止命令和字体缺字逐项保留，不当作成功渲染。`,
+    `保留 ${meta.upstream.files.length} 个原始公式语料文件的 ${format(meta.upstream_entries)} 条非空、非注释用例，包括各套文件中的重复条目。加上 ${meta.case_entries-meta.upstream_entries} 条领域与文本补充，共 ${format(meta.case_entries)} 条。原始文件字节与 SHA-256 均已核验。`,
+    `${format(meta.distinct_formulas)} 条不同公式，四套数学字体、两种公式模式、两种文本策略。${format(meta.layout_checks)} 个条目结果，检查 ${format(meta.distinct_layout_checks)} 个不同组合，生成 ${format(meta.svg_files)} 个 SVG；其余结果保留失败原因。重复公式共用相同 SVG。`,
+    `禁用文本回退时，其中 ${format(meta.audit_checks)} 个不同组合与固定审计逐项一致；另 ${format(meta.supplemental_checks)} 个组合涵盖新增用例及启用文本回退的完整语料，并检查几何。解析不支持、禁止命令和字体缺字逐项保留，不当作成功渲染。`,
     `使用当前 LayMesh 公式排版及 SVG 导出生成矢量轮廓。浏览器调整显示尺寸；字体字形及数学排版来自生成时的渲染器。`,
+    `“启用文本回退”使用固定的 Noto 派生测试字体列表（Latin、CJK、Arabic、Indic），在数学排版前完成文本塑形和尺寸测量；“仅数学字体”关闭正文回退，用于核对数学字体的字形覆盖。正文测试字体不会随产品运行库打包。`,
     `快照生成于 ${new Date(meta.generated_at).toLocaleString("zh-CN")} · LayMesh 基于 ${meta.git_revision.slice(0,7)}`,
   ])content.append(element("p",null,text));
   content.append(element("h3",null,"原始用例与校验值"));const list=element("ul","source-list");
   for(const file of meta.upstream.files){const item=element("li"),link=element("a",null,file.path);link.href=`sources/${file.file}`;link.target="_blank";link.rel="noreferrer";item.append(link,element("br"),element("code",null,file.sha256));list.append(item);}content.append(list);
   const license=element("a",null,"RaTeX MIT 许可证");license.href="sources/LICENSE";license.target="_blank";content.append(license);
+  content.append(element("h3",null,"正文测试字体与校验值"));
+  for(const font of meta.text_font_fixtures)content.append(element("p",null,`${font.family} ${font.style} · ${font.sha256}`));
+  const fontManifest=element("a",null,"正文测试字体来源与派生记录");fontManifest.href="sources/text-fonts-manifest.json";fontManifest.target="_blank";content.append(fontManifest);
   $("provenance-dialog").showModal();
 }
 function initialize(){
@@ -171,6 +179,7 @@ function initialize(){
   let searchTimer;$("search").addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>{state.query=$("search").value;state.page=1;renderRows();},120);});
   $("status").addEventListener("change",()=>{state.status=$("status").value;state.page=1;renderRows();});
   for(const button of document.querySelectorAll("[data-style]"))button.addEventListener("click",()=>{state.style=button.dataset.style;state.page=1;renderRows();});
+  for(const button of document.querySelectorAll("[data-text]"))button.addEventListener("click",()=>{state.textFallback=button.dataset.text==="1";state.page=1;renderRows();});
   $("size").addEventListener("input",()=>{state.size=Number($("size").value);renderRows();});
   $("page-size").addEventListener("change",()=>{state.limit=Number($("page-size").value);state.page=1;renderRows();});
   $("baselines").addEventListener("change",()=>{state.baselines=$("baselines").checked;renderRows();});

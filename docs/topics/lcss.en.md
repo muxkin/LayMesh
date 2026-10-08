@@ -44,6 +44,7 @@ Each property maps to the following DSL parameter. Types, units and inheritance 
 | --- | --- |
 | `font-family` | `font_family` |
 | `math-font` | `math_font` |
+| `math-text-fallback` | `math_text_fallback` (`true` / `false`) |
 | `font-size` | `font_size` |
 | `font-weight` | `font_weight` |
 | `font-style` | `font_style` |

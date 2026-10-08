@@ -14,6 +14,7 @@ pub(super) struct Context {
     pub cramped: bool,
     pub alphabet: Alphabet,
     pub color: String,
+    pub text_style: crate::text::TextStyle,
     em_pt: f64,
     x_height: f64,
     sizing: f64,
@@ -29,6 +30,10 @@ impl Context {
             cramped: false,
             alphabet: Alphabet::Auto,
             color: color.into(),
+            text_style: crate::text::TextStyle {
+                weight: 400,
+                italic: false,
+            },
             em_pt,
             x_height,
             sizing: 1.,
@@ -177,10 +182,21 @@ impl Box {
 pub(super) struct Engine<'a, 'f> {
     font: &'f MathFont<'a>,
     steps: usize,
+    text: Option<&'f mut dyn FnMut(&str, &Context) -> MathResult<Box>>,
+    text_family: bool,
 }
 impl<'a, 'f> Engine<'a, 'f> {
-    pub fn new(font: &'f MathFont<'a>) -> Self {
-        Self { font, steps: 0 }
+    pub fn new(
+        font: &'f MathFont<'a>,
+        text: Option<&'f mut dyn FnMut(&str, &Context) -> MathResult<Box>>,
+        text_family: bool,
+    ) -> Self {
+        Self {
+            font,
+            steps: 0,
+            text,
+            text_family,
+        }
     }
     pub fn row(&mut self, nodes: &[N], c: &Context) -> MathResult<Box> {
         if nodes
@@ -189,10 +205,40 @@ impl<'a, 'f> Engine<'a, 'f> {
         {
             return self.multiline(nodes, c);
         }
-        let mut boxes = nodes
-            .iter()
-            .map(|n| self.node(n, c))
-            .collect::<MathResult<Vec<_>>>()?;
+        let mut boxes = vec![];
+        let mut i = 0;
+        while i < nodes.len() {
+            let mut end = i;
+            let mut plain = String::new();
+            if self.text.is_some() {
+                while end < nodes.len() {
+                    let Some(s) = crate::text::literal_text(&nodes[end]) else {
+                        break;
+                    };
+                    plain.push_str(&s);
+                    end += 1;
+                }
+            }
+            let needs_text = self.text_family
+                || plain.chars().any(|ch| {
+                    !ch.is_whitespace()
+                        && self
+                            .font
+                            .face
+                            .glyph_index(super::font::alphabet(ch, c.alphabet))
+                            .is_none()
+                });
+            if end > i && needs_text {
+                boxes.push(self.text.as_mut().unwrap()(&plain, c)?);
+                i = end;
+            } else {
+                let end = end.max(i + 1);
+                for node in &nodes[i..end] {
+                    boxes.push(self.node(node, c)?);
+                }
+                i = end;
+            }
+        }
         // Explicit glue/kerns do not participate in atom classification.
         for i in 0..boxes.len() {
             if boxes[i].class != Class::Bin {
@@ -256,6 +302,24 @@ impl<'a, 'f> Engine<'a, 'f> {
         let mut c = c.clone();
         c.depth += 1;
         let c = &c;
+        // Structural parents (script bases, accents, overlaps) may place one
+        // text leaf directly instead of going through row grouping.
+        if self.text.is_some()
+            && let Some(plain) = crate::text::literal_text(n)
+            && (self.text_family
+                || plain.chars().any(|ch| {
+                    !ch.is_whitespace()
+                        && self
+                            .font
+                            .face
+                            .glyph_index(super::font::alphabet(ch, c.alphabet))
+                            .is_none()
+                }))
+        {
+            let mut b = self.text.as_mut().unwrap()(&plain, c)?;
+            b.class = class(n);
+            return Ok(b);
+        }
         match n {
             N::MathOrd { mode, text, .. }
             | N::TextOrd { mode, text, .. }
@@ -267,15 +331,18 @@ impl<'a, 'f> Engine<'a, 'f> {
             }
             N::OrdGroup { body, .. } => self.row(body, c),
             N::Font { font, body, .. } => self.node(body, &c.math_font(font_style(font)?)),
-            N::Text { font, body, .. } => self.row(
-                body,
-                &c.font(
+            N::Text { font, body, .. } => {
+                let mut text_ctx = c.font(
                     font.as_deref()
                         .map(font_style)
                         .transpose()?
                         .unwrap_or(Alphabet::Roman),
-                ),
-            ),
+                );
+                if let Some(command) = font {
+                    text_ctx.text_style = c.text_style.command(command);
+                }
+                self.row(body, &text_ctx)
+            }
             N::Color { color, body, .. } => {
                 let mut c = c.clone();
                 c.color = color.clone();

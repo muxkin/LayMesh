@@ -1,6 +1,10 @@
 [workspace]
 resolver = "2"
 members = ["crates/laymesh-core", "crates/laymesh-render", "crates/laymesh-cli", "crates/laymesh-language", "crates/laymesh-wasm"]
+exclude = ["vendor/ratex-layout"]
+
+[patch.crates-io]
+ratex-layout = { path = "vendor/ratex-layout" }
 
 [workspace.package]
 version = "0.5.0"
