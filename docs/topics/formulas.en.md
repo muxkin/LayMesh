@@ -89,4 +89,6 @@ This branch covers mhchem `ce/pu`, `prooftree`, labelled arrows, `middle`, align
 
 Inner math alphabet commands override outer ones: `\mathbf{\mathcal A}` selects script A, while `\mathcal{\mathbf A}` selects bold roman A. Use `\mathbf{A1}` for bold letters/digits and `\bm{\alpha x}` for bold italic symbols. Script shapes and stroke weights vary with the selected font.
 
+OpenType chemical bonds `~`, `~-`, `~--`, `~=`, and `-~-` use a compound construction based on the selected font's minus outline. Solid and dashed rows share their ink endpoints and thickness, and inherit the surrounding math size, script style and color. The geometry tests check endpoints directly, including bonds inside superscripts, nested subscripts and fractions.
+
 See the [editable comparison and verification instructions](../../experiments/opentype-math/README.md). The default remains `ratex-katex`; legacy `mathjax-*` names retain their compatibility mapping.

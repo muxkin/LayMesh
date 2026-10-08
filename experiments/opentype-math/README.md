@@ -84,11 +84,30 @@ baselines, plot labels, accent/operator placement, proof rules/root direction,
 alignment/tag placement, 30-level delimiter nesting, zero-width spacing,
 cache invalidation, embedding restrictions, and explicit errors.
 
-The focused bond regressions check that math `-` selects the native U+2212
-minus, text `-` stays a hyphen, and the solid/dashed layers of `~-`, `~--`,
-`~=`, and `-~-` stay clear of the next atom. Nested math alphabets are tested
-in both command orders, independently of the real bold-letter cases.
-`regressions.lay` provides an enlarged, editable comparison of these cases.
+OpenType partial bonds (`~`, `~-`, `~--`, `~=`, `-~-`) are native compound
+constructions. A per-parser adapter retains the bond semantics from RaTeX
+0.1.14's mhchem token productions before their KaTeX lap/raise/tiny-hyphen
+recipes expand. It delegates to the original `ce` handler, preserving the
+shared recursion limit. No formula text or font name selects a special case.
+The native minus outline supplies the ink endpoints, advance, axis and
+thickness; the dashed row uses three horizontally shortened copies of that
+outline. Every layer inherits the current math style, size and color.
+This adapter is tied to the pinned upstream productions, covered by tests;
+ordinary overlays and the default RaTeX backend keep their existing behavior.
+
+The bond tests measure actual outline endpoints and thickness in **1,280
+cases**: four font files (including XITS Bold), four sizes (6–48 pt), both
+formula styles, four mixed-bond spellings, and ten contexts including
+superscripts, two levels of subscripts, fractions and explicit script styles.
+Another 48 chain cases include the bare dashed bond, nested chemistry and
+color; they verify the native axis, consistent atom/bond scale, layer spacing
+and clearance from adjacent atoms. Separate parser tests preserve ordinary
+ASTs and upstream recursion errors. Rendering checks cover these paths in
+SVG, PDF, PNG and PPTX. Math minus and text hyphen remain distinct.
+
+Nested math alphabets are tested in both command orders, independently of
+the real bold-letter cases. `regressions.lay` provides an enlarged, editable
+comparison; `chemical-bonds.lay` adds compound bonds in different math styles.
 The existing default RaTeX backend does not select its sans italic face for
 `\mathsfit`; the OpenType backend selects the correct Unicode alphabet.
 
@@ -106,6 +125,8 @@ python3 experiments/opentype-math/verify.py
 .venv/bin/python experiments/opentype-math/build-atlas.py
 target/debug/laymesh render experiments/opentype-math/regressions.lay \
   -o target/opentype-math-validation/regressions.png --dpi 160
+target/debug/laymesh render experiments/opentype-math/chemical-bonds.lay \
+  -o target/opentype-math-validation/chemical-bonds.png --dpi 180
 ```
 
 Outputs go to `target/opentype-math-validation`: the original comparison,

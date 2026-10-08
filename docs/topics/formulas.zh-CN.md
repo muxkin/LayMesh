@@ -89,4 +89,6 @@ page.add(formula(r"\frac{a}{b}+\bm{\alpha}",math_font="XITS Math",font_size=16pt
 
 数学字体命令由内层命令覆盖：`\mathbf{\mathcal A}` 选择花体 A，`\mathcal{\mathbf A}` 选择粗体正体 A。使用 `\mathbf{A1}` 写粗体字母和数字，使用 `\bm{\alpha x}` 写粗斜体符号。不同字体的花体造型与笔画粗细会不同。
 
+OpenType 化学键 `~`、`~-`、`~--`、`~=`、`-~-` 按整体构造排版，以所选字体的减号轮廓确定宽度和线厚。实线与虚线共用左右端点，并继承当前字号、上下标层级和颜色。几何测试直接检查轮廓端点，也覆盖上标、嵌套下标和分数中的化学键。
+
 [可编辑对照图和验证说明](../../experiments/opentype-math/README.md)。默认值仍为 `ratex-katex`，旧 `mathjax-*` 名称保留兼容映射。

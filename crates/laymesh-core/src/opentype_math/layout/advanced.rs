@@ -51,7 +51,16 @@ impl Engine<'_, '_> {
             N::HtmlMathMl { html, .. } => self.row(html, c),
             N::Html {
                 attributes, body, ..
-            } => self.html(attributes, body, c),
+            } => {
+                if let Some(bond) = attributes
+                    .get("style")
+                    .and_then(|s| super::super::parse::ChemicalBond::from_tag(s))
+                {
+                    self.chemical_bond(bond, c)
+                } else {
+                    self.html(attributes, body, c)
+                }
+            }
             N::ProofTree { tree, .. } => Ok(self.proof(tree, c)?.node),
             N::XArrow {
                 label, body, below, ..
@@ -1062,6 +1071,60 @@ impl ttf_parser::OutlineBuilder for NativeOutline {
     }
 }
 impl Engine<'_, '_> {
+    /// Use the native minus's advance, ink endpoints, baseline and thickness
+    /// for every partial bond. Only the horizontal extent of each of the
+    /// three segments changes; all y coordinates and the font's outline stay.
+    fn chemical_bond(
+        &self,
+        bond: super::super::parse::ChemicalBond,
+        c: &Context,
+    ) -> MathResult<Box> {
+        use super::super::parse::ChemicalBond;
+        let base = self.font.glyph('−', &c.font(Alphabet::Roman))?;
+        let id = base.glyph.ok_or("化学键缺少减号字形")?.0;
+        let mut outline = NativeOutline(BezPath::new());
+        self.font
+            .face
+            .outline_glyph(id, &mut outline)
+            .ok_or("化学键缺少减号轮廓")?;
+        outline
+            .0
+            .apply_affine(kurbo::Affine::scale(c.scale / self.font.upem));
+        let ink = outline.0.bounding_box();
+        if ink.width() <= 0. || ink.height() <= 0. {
+            return Err("化学键减号轮廓无效".into());
+        }
+        let segment = ink.width() / 5.;
+        let mut out = Box {
+            width: base.width,
+            ascent: base.ascent,
+            depth: base.depth,
+            ..Default::default()
+        };
+        let (solid, dashed): (&[f64], f64) = match bond {
+            ChemicalBond::Dashed => (&[], 0.),
+            ChemicalBond::PartialDouble => (&[-0.1], 0.1),
+            ChemicalBond::PartialTriple => (&[-0.2, 0.], 0.2),
+            ChemicalBond::DashedMiddle => (&[-0.2, 0.2], 0.),
+        };
+        for shift in solid {
+            out.add(base.clone(), 0., shift * c.scale);
+        }
+        for i in 0..3 {
+            let mut path = outline.0.clone();
+            path.apply_affine(kurbo::Affine::new([
+                0.2,
+                0.,
+                0.,
+                1.,
+                0.8 * ink.x0 + 2. * f64::from(i) * segment,
+                dashed * c.scale,
+            ]));
+            out.path(path, Some(c.color.clone()), None, 0.);
+        }
+        Ok(out)
+    }
+
     fn literal(&mut self, text: &str, c: &Context) -> MathResult<Box> {
         let mut out = Box::default();
         let mut x = 0.;

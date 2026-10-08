@@ -3,6 +3,8 @@
 //! never silently borrows KaTeX metrics, outlines, or stretch constructions.
 mod font;
 mod layout;
+mod parse;
+pub(crate) use parse::parse;
 
 use crate::{
     Diagnostic, Loc, Result,

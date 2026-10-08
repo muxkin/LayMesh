@@ -42,11 +42,14 @@ const CORPUS: [&str; 14] = [
     r"\sin(x)+\operatorname{erf}(x)",
 ];
 fn render_formula(bytes: &[u8], source: &str, display: bool) -> Value {
+    render_formula_at_size(bytes, source, display, 5.)
+}
+fn render_formula_at_size(bytes: &[u8], source: &str, display: bool, size: f64) -> Value {
     let mut fonts = FontSystem::new(false);
     fonts.register_font("/math.otf", bytes.to_vec());
     let mut warnings = vec![];
     let result = formula(
-        &json!({"source":source,"math_font":"/math.otf","font_size":5.,
+        &json!({"source":source,"math_font":"/math.otf","font_size":size,
         "style":if display{"display"}else{"inline"}}),
         &mut fonts,
         &mut warnings,
@@ -618,7 +621,7 @@ fn styled_unicode_letters_keep_their_native_math_glyphs() {
 }
 
 #[test]
-fn chemistry_bonds_use_math_minus_and_text_hyphens_in_separate_layers() {
+fn chemistry_bonds_use_native_minus_geometry_and_preserve_text_hyphens() {
     for (font, bytes) in &FONTS[..3] {
         let minus = render_formula(bytes, "-", true);
         let hyphen = render_formula(bytes, r"\text{-}", true);
@@ -633,7 +636,7 @@ fn chemistry_bonds_use_math_minus_and_text_hyphens_in_separate_layers() {
                 .collect();
             let dashed: Vec<_> = items
                 .iter()
-                .filter(|v| v["mathCodepoint"] == 0x2D_u32)
+                .filter(|v| v.get("glyphId").is_none())
                 .collect();
             assert_eq!(solid.len(), solid_count, "{bond}");
             assert_eq!(dashed.len(), 3, "{bond}");
@@ -654,9 +657,180 @@ fn chemistry_bonds_use_math_minus_and_text_hyphens_in_separate_layers() {
                     .bounding_box();
                 assert!(
                     bounds.x1 <= next_ink.x0 + 1e-6,
-                    "{font} {bond}: U+{:X} bounds {bounds:?}, next atom ink {next_ink:?}",
-                    s["mathCodepoint"].as_u64().unwrap(),
+                    "{font} {bond}: codepoint {:?} bounds {bounds:?}, next atom ink {next_ink:?}",
+                    s["mathCodepoint"],
                 );
+            }
+        }
+    }
+}
+
+#[test]
+fn chemical_bond_layers_share_endpoints_at_every_size_and_math_style() {
+    let mut checks = 0;
+    for (font, bytes) in FONTS {
+        for size in [6., 12., 24., 48.] {
+            for display in [false, true] {
+                for bond in ["~-", "~--", "~=", "-~-"] {
+                    let chemistry = format!(r"\ce{{A\bond{{{bond}}}B}}");
+                    for source in [
+                        chemistry.clone(),
+                        format!("X_{{{chemistry}}}"),
+                        format!("X^{{{chemistry}}}"),
+                        format!("X_{{Y_{{{chemistry}}}}}"),
+                        format!(r"\scriptstyle {chemistry}"),
+                        format!(r"\scriptscriptstyle {chemistry}"),
+                        format!(r"\frac{{{chemistry}}}{{2}}"),
+                        format!(r"\small {chemistry}"),
+                        format!(r"\Huge {chemistry}"),
+                        format!(r"\color{{#2468ac}}{{{chemistry}}}"),
+                    ] {
+                        let n = render_formula_at_size(
+                            bytes,
+                            &source,
+                            display,
+                            size * laymesh_core::model::PT,
+                        );
+                        let paths = glyphs(&n);
+                        let bounds = |v: &&Value| {
+                            kurbo::BezPath::from_svg(v["d"].as_str().unwrap())
+                                .unwrap()
+                                .bounding_box()
+                        };
+                        let dashed: Vec<_> = paths
+                            .iter()
+                            .filter(|v| v.get("glyphId").is_none())
+                            .collect();
+                        assert_eq!(dashed.len(), 3, "{font} {source}");
+                        let dash = dashed
+                            .iter()
+                            .map(|v| bounds(v))
+                            .reduce(|a, b| a.union(b))
+                            .unwrap();
+                        for solid in paths.iter().filter(|v| v["mathCodepoint"] == 0x2212_u32) {
+                            let solid = bounds(&solid);
+                            assert!(
+                                (solid.x0 - dash.x0).abs() < 1e-7
+                                    && (solid.x1 - dash.x1).abs() < 1e-7,
+                                "{font} {size}pt display={display} {source}: solid {solid:?}, dashed {dash:?}"
+                            );
+                            assert!(
+                                (solid.height() - dash.height()).abs() < 1e-7,
+                                "{font} {source}: line thickness changed"
+                            );
+                        }
+                        checks += 1;
+                    }
+                }
+            }
+        }
+    }
+    assert_eq!(checks, 1280);
+}
+
+#[test]
+fn chemical_bond_chains_keep_the_native_axis_style_and_clear_atom_spacing() {
+    let chemistry = r"\ce{A\bond{~}B\bond{~-}C\bond{~--}D\bond{~=}E\bond{-~-}F}";
+    for (font, bytes) in FONTS {
+        let face = ttf_parser::Face::parse(bytes, 0).unwrap();
+        let minus = face
+            .glyph_bounding_box(face.glyph_index('−').unwrap())
+            .unwrap();
+        for source in [
+            chemistry.to_string(),
+            format!("X_{{{chemistry}}}"),
+            format!("X_{{Y_{{{chemistry}}}}}"),
+            format!(r"\frac{{{chemistry}}}{{2}}"),
+            format!(r"\ce{{H + ${chemistry}$}}"),
+            format!(r"\color{{#2468ac}}{{{chemistry}}}"),
+        ] {
+            for display in [false, true] {
+                let n = render_formula(bytes, &source, display);
+                let paths = glyphs(&n);
+                let bounds = |v: &Value| {
+                    kurbo::BezPath::from_svg(v["d"].as_str().unwrap())
+                        .unwrap()
+                        .bounding_box()
+                };
+                let dashed: Vec<_> = paths
+                    .iter()
+                    .filter(|v| v.get("glyphId").is_none())
+                    .collect();
+                assert_eq!(dashed.len(), 15, "{font} {source}");
+                let solids: Vec<_> = paths
+                    .iter()
+                    .filter(|v| v["mathCodepoint"] == 0x2212_u32)
+                    .collect();
+                assert_eq!(solids.len(), 7, "{font} {source}");
+                let atoms: Vec<_> = ('A'..='F')
+                    .map(|ch| {
+                        paths
+                            .iter()
+                            .find(|v| v["mathCodepoint"] == u32::from(ch))
+                            .unwrap()
+                    })
+                    .collect();
+                let atom_size = atoms[0]["fontSize"].as_f64().unwrap();
+                let baseline = atoms[0]["baseline"].as_f64().unwrap();
+                let unit = atom_size / f64::from(face.units_per_em());
+                let native_axis = baseline - f64::from(minus.y_min + minus.y_max) * unit / 2.;
+                for atom in &atoms {
+                    assert!((atom["baseline"].as_f64().unwrap() - baseline).abs() < 1e-7);
+                }
+                for (i, segments) in dashed.chunks_exact(3).enumerate() {
+                    let dash = segments
+                        .iter()
+                        .map(|p| bounds(p))
+                        .reduce(|a, b| a.union(b))
+                        .unwrap();
+                    let solid: Vec<_> = solids
+                        .iter()
+                        .filter(|p| (bounds(p).x0 - dash.x0).abs() < 1e-7)
+                        .collect();
+                    assert_eq!(solid.len(), [0, 1, 2, 2, 2][i], "{font} {source}");
+                    let mut layers = vec![dash];
+                    for p in &solid {
+                        assert!(
+                            (p["fontSize"].as_f64().unwrap() - atom_size).abs() < 1e-7,
+                            "bond and atoms use different styles: {font} {source}"
+                        );
+                        layers.push(bounds(p));
+                    }
+                    layers.sort_by(|a, b| a.y0.total_cmp(&b.y0));
+                    let all = layers.iter().copied().reduce(|a, b| a.union(b)).unwrap();
+                    assert!(
+                        (all.center().y - native_axis).abs() < 1e-7,
+                        "bond is off the native minus axis: {font} {source}: {all:?}"
+                    );
+                    assert!(
+                        all.x0 >= bounds(atoms[i]).x1 && all.x1 <= bounds(atoms[i + 1]).x0,
+                        "bond overlaps adjacent atoms: {font} {source}"
+                    );
+                    for pair in layers.windows(2) {
+                        assert!(
+                            pair[0].y1 < pair[1].y0,
+                            "bond layers overlap: {font} {source}"
+                        );
+                    }
+                    if layers.len() == 3 {
+                        assert!(
+                            ((layers[1].center().y - layers[0].center().y)
+                                - (layers[2].center().y - layers[1].center().y))
+                                .abs()
+                                < 1e-7
+                        );
+                    }
+                    for p in segments.iter().chain(solid.iter().copied()) {
+                        assert_eq!(
+                            p["fill"],
+                            if source.contains("#2468ac") {
+                                "#2468ac"
+                            } else {
+                                "#000000"
+                            }
+                        );
+                    }
+                }
             }
         }
     }

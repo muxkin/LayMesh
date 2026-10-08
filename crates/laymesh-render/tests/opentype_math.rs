@@ -41,6 +41,7 @@ fn chemical_physical_and_proof_constructions_export_without_text_or_font_substit
     ] {
         for math in [
             r"\ce{Zn^2+ <=>[+ 2OH-][+ 2H+] Zn(OH)2}",
+            r"\color{#2468ac}{\ce{A\bond{~}B\bond{~-}C\bond{~--}D\bond{~=}E\bond{-~-}F}}+X_{\ce{A\bond{-~-}B}}",
             r"\Braket{\psi|\hat{H}|\psi}=\frac{1}{2}m\dot{x}^2",
             r"\begin{prooftree}\AxiomC{A}\AxiomC{B}\RightLabel{cut}\dashedLine\BinaryInfC{C}\rootAtTop\UnaryInfC{D}\end{prooftree}",
             r"\boxed{E=mc^2}+\cancel{\frac{a}{b}}+\begin{array}{|c|c|}\hline a&b\\\hdashline c&d\end{array}",

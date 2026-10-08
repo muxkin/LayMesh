@@ -655,8 +655,12 @@ pub fn formula(
             loc,
         ));
     }
-    let parsed = ratex_parser::parse(&source)
-        .map_err(|e| Diagnostic::new("E_FORMULA", format!("RaTeX 公式解析失败：{e}"), file, loc))?;
+    let parsed = if font != "ratex-katex" && !legacy_font {
+        crate::opentype_math::parse(&source)
+    } else {
+        ratex_parser::parse(&source)
+    }
+    .map_err(|e| Diagnostic::new("E_FORMULA", format!("RaTeX 公式解析失败：{e}"), file, loc))?;
     if font != "ratex-katex" && !legacy_font {
         if font.trim().is_empty() {
             return Err(Diagnostic::new(
