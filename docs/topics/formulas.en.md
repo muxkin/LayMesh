@@ -64,7 +64,7 @@ Braces accept DSL expressions. Numeric formatting supports common `f`, `e`, `g`,
 
 ### Mixed content and inheritance
 
-In `text(spans=[span("Ratio: "), formula(r"\frac{a}{b}")], font_size=12, color="#245447")`, a formula without an explicit size or color inherits those of its text. An explicit span font list replaces its parent's list. Math uses the KaTeX formula fonts embedded by RaTeX; `font_family` controls ordinary text.
+In `text(spans=[span("Ratio: "), formula(r"\frac{a}{b}")], font_size=12, color="#245447")`, a formula without an explicit size or color inherits those of its text. An explicit span font list replaces its parent's list. By default, math uses the KaTeX formula fonts embedded by RaTeX; `font_family` controls ordinary text.
 
 SVG/PDF formulas are vectors; SVG metadata retains LaTeX source. Formula errors carry source locations. RaTeX limitations apply: custom macro definitions and external-resource commands are unavailable. Python `{{name}}` binding applies only outside DSL strings and comments, so it does not replace these f-string contents.
 
@@ -73,3 +73,18 @@ SVG/PDF formulas are vectors; SVG metadata retains LaTeX source. Formula errors 
 ## workflow
 
 Complete sources and executable verification fixtures for this workflow are listed in the [feature coverage map](feature-map.en.md). Follow this page’s input conditions and limits when composing features.
+
+## OpenType math fonts (experimental)
+
+`math_font` also accepts an installed OpenType math font name or a font file path:
+
+```lay
+page=canvas(size=(100mm,50mm))
+page.add(formula(r"\frac{a}{b}+\bm{\alpha}",math_font="XITS Math",font_size=16pt))
+```
+
+For reproducibility, use a file such as `math_font="./fonts/XITSMath-Regular.otf"`. Paths belong to the defining module or LCSS stylesheet. The property inherits through canvas, text, span, and plot styles, including automatic `$...$` math. Browser hosts must load the font bytes first. The backend reads glyph metrics, math constants, italic corrections, and stretch constructions from the selected font and exports vector outlines.
+
+This backend is experimental. Latin Modern Math, STIX Two Math, and XITS Math are tested with fractions, scripts, roots, sums/integrals, matrices, common accents, and math alphabets. Unsupported commands return `E_FORMULA`; unavailable fonts or missing MATH tables return `E_MATH_FONT`. An explicitly selected face never silently falls back to another font. `mathcal` and `mathscr` currently share the Unicode script alphabet. The standalone XITS bold face has incomplete stretch coverage; regular XITS Math supports `mathbf`, `boldsymbol`, and `bm`. A font without an assembly recipe uses its largest native variant.
+
+See the [editable comparison and verification instructions](../../experiments/opentype-math/README.md). The default remains `ratex-katex`; legacy `mathjax-*` names retain their compatibility mapping.

@@ -216,9 +216,11 @@ fn label(e: &mut Engine, value: &V, style: &Args, size: f64, o: &Object) -> Resu
         }
     }
 
-    if let Some(font) = style.get("font_family") {
-        e.fonts
-            .load_requested(font, &e.host, &o.file, o.loc, &mut e.warnings);
+    for key in ["font_family", "math_font"] {
+        if let Some(font) = style.get(key) {
+            e.fonts
+                .load_requested(font, &e.host, &o.file, o.loc, &mut e.warnings);
+        }
     }
     crate::text::layout_text(&spec, None, &mut e.fonts, &mut e.warnings, &o.file, o.loc)
 }
@@ -240,7 +242,7 @@ fn label_at(
     label(e, value, &st, size, o)
 }
 fn formula(e: &mut Engine, source: String, style: &Args, size: f64, o: &Object) -> Result<Json> {
-    let mut spec = args_json(style);
+    let mut spec = e.text_spec(style, &o.file, o.loc)?;
     spec["font_size"] = json!(size);
     spec["source"] = json!(source);
     crate::text::formula(&spec, &mut e.fonts, &mut e.warnings, &o.file, o.loc)

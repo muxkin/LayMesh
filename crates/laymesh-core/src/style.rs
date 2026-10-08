@@ -123,7 +123,8 @@ pub struct StyleRule {
     scope: Option<String>,
     specificity: usize,
 }
-const INHERITED: [&str; 6] = [
+const INHERITED: [&str; 7] = [
+    "math_font",
     "font_family",
     "font_size",
     "font_weight",
@@ -480,6 +481,7 @@ pub fn validate_stylesheet(source: &str, file: &str, origin: Loc) -> Result<()> 
                         | "border"
                         | "line"
                         | "font_family"
+                        | "math_font"
                 )
                 || key.ends_with("color")
             {
@@ -576,6 +578,23 @@ impl Engine {
     fn css_value(&self, key: &str, s: &str, file: &str, l: Loc) -> Result<V> {
         let fail = |m: &str| Diagnostic::new("E_LCSS", m, file, l);
         let s = s.trim();
+        if key == "math_font" {
+            let name = s.trim_matches(['\'', '"']);
+            if name.is_empty() {
+                return Err(fail("math_font 需要非空字体名称或路径"));
+            }
+            return Ok(V::text(
+                if name.contains('/')
+                    || [".ttf", ".otf", ".ttc", ".otc"]
+                        .iter()
+                        .any(|ext| name.contains(ext))
+                {
+                    resolve(file, name)
+                } else {
+                    name.into()
+                },
+            ));
+        }
         if matches!(key, "start_head" | "end_head") {
             return crate::endpoints::css_head(s, file, l);
         }

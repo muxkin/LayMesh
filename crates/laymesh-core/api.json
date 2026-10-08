@@ -112,6 +112,15 @@
           "default": "system sans-serif"
         },
         {
+          "name": "math_font",
+          "unit": "none",
+          "type": "string",
+          "description": "数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。",
+          "descriptionEn": "Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default.",
+          "default": "ratex-katex (inherit)",
+          "example": "\"XITS Math\""
+        },
+        {
           "name": "font_size",
           "unit": "pt",
           "type": "length",
@@ -437,6 +446,15 @@
           "description": "系统字体族名、字体文件路径或有序列表；不内置正文字体；缺字警告并显示方框。",
           "descriptionEn": "System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes.",
           "default": "system sans-serif"
+        },
+        {
+          "name": "math_font",
+          "unit": "none",
+          "type": "string",
+          "description": "数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。",
+          "descriptionEn": "Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default.",
+          "default": "ratex-katex (inherit)",
+          "example": "\"XITS Math\""
         },
         {
           "name": "font_size",
@@ -785,6 +803,15 @@
           "default": "system sans-serif"
         },
         {
+          "name": "math_font",
+          "unit": "none",
+          "type": "string",
+          "description": "数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。",
+          "descriptionEn": "Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default.",
+          "default": "ratex-katex (inherit)",
+          "example": "\"XITS Math\""
+        },
+        {
           "name": "font_size",
           "unit": "pt",
           "type": "length",
@@ -906,29 +933,11 @@
         {
           "name": "math_font",
           "unit": "none",
-          "type": "value",
-          "description": "RaTeX 内置 KaTeX 公式字体；旧 mathjax-* 名称仅用于兼容，产生警告后映射至 ratex-katex。",
-          "descriptionEn": "RaTeX KaTeX formula fonts. Legacy mathjax-* names warn and map to ratex-katex.",
+          "type": "string",
+          "description": "数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。",
+          "descriptionEn": "Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default.",
           "default": "ratex-katex",
-          "values": [
-            "ratex-katex",
-            "mathjax-newcm",
-            "mathjax-tex"
-          ],
-          "valueDescriptions": {
-            "ratex-katex": {
-              "zh": "当前默认的 RaTeX 数学字体",
-              "en": "Current default RaTeX mathematical font"
-            },
-            "mathjax-newcm": {
-              "zh": "兼容旧名称；会映射到当前默认字体",
-              "en": "Legacy name mapped to the current default font"
-            },
-            "mathjax-tex": {
-              "zh": "兼容旧名称；会映射到当前默认字体",
-              "en": "Legacy name mapped to the current default font"
-            }
-          }
+          "example": "\"XITS Math\""
         },
         {
           "name": "style",
@@ -5294,6 +5303,15 @@
           "default": "system sans-serif"
         },
         {
+          "name": "math_font",
+          "unit": "none",
+          "type": "string",
+          "description": "数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。",
+          "descriptionEn": "Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default.",
+          "default": "ratex-katex (inherit)",
+          "example": "\"XITS Math\""
+        },
+        {
           "name": "font_size",
           "unit": "pt",
           "type": "length",
@@ -6220,6 +6238,15 @@
           "description": "系统字体族名、字体文件路径或有序列表；不内置正文字体；缺字警告并显示方框。",
           "descriptionEn": "System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes.",
           "default": "system sans-serif"
+        },
+        {
+          "name": "math_font",
+          "unit": "none",
+          "type": "string",
+          "description": "数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。",
+          "descriptionEn": "Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default.",
+          "default": "ratex-katex (inherit)",
+          "example": "\"XITS Math\""
         },
         {
           "name": "font_size",
@@ -15512,6 +15539,7 @@
   ],
   "styleProperties": [
     "font_family",
+    "math_font",
     "font_size",
     "font_weight",
     "font_style",

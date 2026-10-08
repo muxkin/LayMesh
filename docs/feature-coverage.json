@@ -1963,6 +1963,13 @@
       "reference": "extrude",
       "minimal": "examples/effects/art-text.lay",
       "composition": "examples/effects/shadow-glow.lay"
+    },
+    "lcss:math_font": {
+      "topic": "lcss",
+      "anchor": "style-properties",
+      "reference": "",
+      "minimal": "examples/unified.lay",
+      "composition": "examples/language/paper.lcss"
     }
   }
 }

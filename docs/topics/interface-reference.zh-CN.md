@@ -147,6 +147,7 @@
 | `class` | string | 空格分隔的 LCSS 类名 | "" |
 | `background` | paint | 对象区域的底色或填充，不是文字或轴线颜色 | none |
 | `font_family` | string \| string[] | 系统字体族名、字体文件路径或有序列表；不内置正文字体；缺字警告并显示方框。 | system sans-serif |
+| `math_font` | string | 数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。 | ratex-katex (inherit) |
 | `font_size` | length / pt | 字号；省略单位时为 pt；未指定时继承 | 继承 / inherit |
 | `font_weight` | integer | 字体字重，100–900 | 400 |
 | `font_style` | "normal" \| "italic" | 正体或斜体<br>`normal`: 正常字形<br>`italic`: 斜体字形 | normal |
@@ -219,6 +220,7 @@ page.add(image(src="../assets/photo.png"),size=(55mm,auto),offset=(8mm,8mm))
 | `size` | (length \| auto, length \| auto) / 画布单位 | 二维物理尺寸 (宽,高)；auto 保持比例或自然排版 | — |
 | `class` | string | 空格分隔的 LCSS 类名 | "" |
 | `font_family` | string \| string[] | 系统字体族名、字体文件路径或有序列表；不内置正文字体；缺字警告并显示方框。 | system sans-serif |
+| `math_font` | string | 数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。 | ratex-katex (inherit) |
 | `font_size` | length / pt | 字号；省略单位时为 pt；未指定时继承 | 10pt |
 | `font_weight` | integer | 字体字重，100–900 | 400 |
 | `font_style` | "normal" \| "italic" | 正体或斜体<br>`normal`: 正常字形<br>`italic`: 斜体字形 | normal |
@@ -270,6 +272,7 @@ page.add(text("Wrapping preserves physical type size.",size=(45mm,auto),font_siz
 | `content` | string | 文字内容；支持 $…$ 公式，r 字符串禁用自动解析 | — |
 | `class` | string | 空格分隔的 LCSS 类名 | "" |
 | `font_family` | string \| string[] | 系统字体族名、字体文件路径或有序列表；不内置正文字体；缺字警告并显示方框。 | system sans-serif |
+| `math_font` | string | 数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。 | ratex-katex (inherit) |
 | `font_size` | length / pt | 字号；省略单位时为 pt；未指定时继承 | 继承 / inherit |
 | `font_weight` | integer | 字体字重，100–900 | 400 |
 | `font_style` | "normal" \| "italic" | 正体或斜体<br>`normal`: 正常字形<br>`italic`: 斜体字形 | normal |
@@ -304,7 +307,7 @@ page.add(text(spans=[span("Red ",color="#e36b70"),span("bold",font_weight=700)],
 | `class` | string | 空格分隔的 LCSS 类名 | "" |
 | `font_size` | length / pt | 字号；省略单位时为 pt；未指定时继承 | 10pt (inherit in text) |
 | `color` | color | 文字颜色或数据系列基础配色 | #000000 |
-| `math_font` | "ratex-katex" \| "mathjax-newcm" \| "mathjax-tex" | RaTeX 内置 KaTeX 公式字体；旧 mathjax-* 名称仅用于兼容，产生警告后映射至 ratex-katex。<br>`ratex-katex`: 当前默认的 RaTeX 数学字体<br>`mathjax-newcm`: 兼容旧名称；会映射到当前默认字体<br>`mathjax-tex`: 兼容旧名称；会映射到当前默认字体 | ratex-katex |
+| `math_font` | string | 数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。 | ratex-katex |
 | `style` | "inline" \| "display" | 对象的样式配置；plot 使用 plot_style，公式使用 inline/display<br>`inline`: 行内公式排版<br>`display`: 独立公式排版 | — |
 | `background` | paint | 对象区域的底色或填充，不是文字或轴线颜色 | none |
 | `padding` | length \| length[] / 画布单位 | 内部留白；一个值或上、右、下、左四个值 | 0 |
@@ -1120,6 +1123,7 @@ page.add(p,offset=(7mm,6mm))
 | `radar_frame` | value | 雷达框形状 polygon/circle | polygon |
 | `class` | string | 空格分隔的 LCSS 类名 | "" |
 | `font_family` | string \| string[] | 系统字体族名、字体文件路径或有序列表；不内置正文字体；缺字警告并显示方框。 | system sans-serif |
+| `math_font` | string | 数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。 | ratex-katex (inherit) |
 | `font_size` | length / pt | 字号；省略单位时为 pt；未指定时继承 | 继承 / inherit |
 | `font_weight` | integer | 字体字重，100–900 | 400 |
 | `font_style` | "normal" \| "italic" | 正体或斜体<br>`normal`: 正常字形<br>`italic`: 斜体字形 | normal |
@@ -1236,6 +1240,7 @@ page.add(p,offset=(7mm,6mm))
 | 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
 | --- | --- | --- | --- |
 | `font_family` | string \| string[] | 系统字体族名、字体文件路径或有序列表；不内置正文字体；缺字警告并显示方框。 | system sans-serif |
+| `math_font` | string | 数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。 | ratex-katex (inherit) |
 | `font_size` | length / pt | 字号；省略单位时为 pt；未指定时继承 | 8pt |
 | `font_weight` | integer | 字体字重，100–900 | 400 |
 | `font_style` | "normal" \| "italic" | 正体或斜体<br>`normal`: 正常字形<br>`italic`: 斜体字形 | normal |

@@ -1,0 +1,30 @@
+[
+  {
+    "file": "latinmodern-math.otf",
+    "family": "Latin Modern Math",
+    "version": "1.959",
+    "source": "https://www.gust.org.pl/projects/e-foundry/lm-math",
+    "sha256": "6075562b771f8b82f0c179e363389684f2dd09de30038269e2628e504bd7be0f"
+  },
+  {
+    "file": "STIX2Math.otf",
+    "family": "STIX Two Math",
+    "version": "2.02 b142",
+    "source": "https://github.com/stipub/stixfonts",
+    "sha256": "56cc42241cccc86d6d570134aa918fe8ac714f4b340d9916282fcc53c592d546"
+  },
+  {
+    "file": "XITSMath-Regular.otf",
+    "family": "XITS Math",
+    "version": "1.302",
+    "source": "https://github.com/aliftype/xits",
+    "sha256": "3025792adb0b7072ace08bf5726d341de32f2254612ddec6dd98271a8dd29689"
+  },
+  {
+    "file": "XITSMath-Bold.otf",
+    "family": "XITS Math Bold",
+    "version": "1.302",
+    "source": "https://github.com/aliftype/xits",
+    "sha256": "ca2afae05beb0cfb3e8f006c1e4ff01d994c1a56c23c27e7e48bba381f6925d3"
+  }
+]

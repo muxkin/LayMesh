@@ -43,6 +43,7 @@ Each property maps to the following DSL parameter. Types, units and inheritance 
 | LCSS | DSL |
 | --- | --- |
 | `font-family` | `font_family` |
+| `math-font` | `math_font` |
 | `font-size` | `font_size` |
 | `font-weight` | `font_weight` |
 | `font-style` | `font_style` |

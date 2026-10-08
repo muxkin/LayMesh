@@ -667,6 +667,7 @@ dependencies = [
  "indexmap",
  "kurbo",
  "moxcms",
+ "ratex-font",
  "ratex-katex-fonts",
  "ratex-layout",
  "ratex-parser",

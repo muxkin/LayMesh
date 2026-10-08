@@ -64,7 +64,7 @@ literal = rf"结果 {score:.2%}；原样显示 $R^2$"
 
 ### 混排与继承
 
-`text(spans=[span("比例："), formula(r"\frac{a}{b}")], font_size=12, color="#245447")` 中未指定字号和颜色的公式继承周围文字。局部 `span` 的字体列表覆盖父列表，未指定时继承。数学字体使用 RaTeX 的 KaTeX 公式字体；`font_family` 控制正文，不能替代数学字体包。
+`text(spans=[span("比例："), formula(r"\frac{a}{b}")], font_size=12, color="#245447")` 中未指定字号和颜色的公式继承周围文字。局部 `span` 的字体列表覆盖父列表，未指定时继承。数学字体默认使用 RaTeX 的 KaTeX 公式字体；`font_family` 控制正文，不能替代数学字体包。
 
 SVG/PDF 中公式为矢量图形，SVG 元数据保留 LaTeX 源码。公式错误会带文件和位置；自动公式受 RaTeX 支持范围限制，自定义宏定义及外部资源命令不可用。Python `{{变量}}` 仅在 DSL 字符串和注释之外绑定，不会替换本节的 f 字符串内容。
 
@@ -73,3 +73,18 @@ SVG/PDF 中公式为矢量图形，SVG 元数据保留 LaTeX 源码。公式错�
 ## workflow
 
 本流程的完整源码与可执行验证文件列在[功能覆盖清单](feature-map.zh-CN.md)。组合使用时请遵循本页的输入条件与限制。
+
+## OpenType 数学字体（实验）
+
+`math_font` 现在可指定带 OpenType MATH 表的已安装字体名称或字体文件路径，例如：
+
+```lay
+page=canvas(size=(100mm,50mm))
+page.add(formula(r"\frac{a}{b}+\bm{\alpha}",math_font="XITS Math",font_size=16pt))
+```
+
+也可写 `math_font="./fonts/XITSMath-Regular.otf"`；路径相对于定义公式的模块，LCSS 中的路径相对于样式表。该属性可从画布、文字、span 和图表样式继承，适用于显式公式和 `$...$` 自动公式。浏览器需先加载对应字体文件。字体度量、数学间距、斜体修正和伸缩字形均来自所选字体；导出继续使用矢量路径。
+
+本分支的 OpenType 后端仍属实验：已验证 Latin Modern Math、STIX Two Math 和 XITS Math 的分数、上下标、根号、求和/积分、矩阵、常见重音及数学字母表。尚未覆盖的命令会返回 `E_FORMULA`；字体不可用或缺少 MATH 表返回 `E_MATH_FONT`，不自动换成另一套字体。`mathcal` 和 `mathscr` 暂时使用同一 Unicode 花体字母表。XITS 独立粗体文件的伸缩字形覆盖不完整；常规 XITS Math 可使用 `mathbf`、`boldsymbol` 和 `bm`。字体没有拼接构造时使用其最大的原生变体。
+
+[可编辑对照图和验证说明](../../experiments/opentype-math/README.md)。默认值仍为 `ratex-katex`，旧 `mathjax-*` 名称保留兼容映射。

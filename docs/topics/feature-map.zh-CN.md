@@ -273,3 +273,4 @@
 | `lcss:path` | [→](art-effects.zh-CN.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
 | `lcss:warp` | [→](art-effects.zh-CN.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
 | `lcss:extrude` | [→](art-effects.zh-CN.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
+| `lcss:math_font` | [→](lcss.zh-CN.md#style-properties) | [→](../../examples/unified.lay) | [→](../../examples/language/paper.lcss) |

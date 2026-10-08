@@ -1,0 +1,32 @@
+# Opt-in math-font comparison. Fonts below are unmodified test fixtures.
+page=canvas(size=(340mm,348mm),background="#ffffff",font_family="../../tests/fonts/DejaVuSans.ttf")
+fonts=[
+  ["KaTeX (default)","ratex-katex"],
+  ["Latin Modern Math","../../tests/fonts/math/latinmodern-math.otf"],
+  ["STIX Two Math","../../tests/fonts/math/STIX2Math.otf"],
+  ["XITS Math","../../tests/fonts/math/XITSMath-Regular.otf"]
+]
+rows=[
+  ["Algebra",r"E=mc^2"],
+  ["Fraction and root",r"x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}"],
+  ["Nested fractions",r"\frac{1}{1+\frac{1}{x}}"],
+  ["Sum with limits",r"\sum_{i=1}^{n} x_i^2"],
+  ["Integral",r"\int_0^1 e^{-x^2}\,dx"],
+  ["Matrix",r"\begin{pmatrix}a&b\\c&d\end{pmatrix}"],
+  ["Indexed radical",r"\sqrt[3]{\frac{a}{b}}"],
+  ["Bold symbols",r"\bm{\alpha}+\mathbf{A}\bm{x}"],
+  ["Alphabets",r"\mathcal{F}+\mathbb{R}+\mathfrak{g}+\mathsf{A}+\mathtt{B}"],
+  ["Accents",r"\widehat{ABC}+\vec{x}"],
+  ["Stretch assembly",r"\left(\begin{matrix}a\\b\\c\\d\\e\\f\end{matrix}\right)"]
+]
+page.add(text("Mathematical font comparison",font_size=18pt),offset=(8mm,6mm))
+for col in range(len(fonts)) {
+  x=8mm+col*83mm
+  page.add(text(fonts[col][0],font_size=11pt,color="#27364a"),offset=(x,20mm))
+  for row in range(len(rows)) {
+    y=32mm+row*26mm
+    page.add(text(rows[row][0],font_size=7pt,color="#6b7280"),offset=(x,y))
+    page.add(formula(rows[row][1],math_font=fonts[col][1],style=display,font_size=16pt),offset=(x,y+5mm))
+  }
+}
+page.add(text("OpenType MATH experiment / font-specific metrics and vector outlines",font_size=8pt,color="#6b7280"),offset=(8mm,338mm))

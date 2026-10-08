@@ -7,6 +7,9 @@ use ttf_parser::OutlineBuilder;
 use unicode_segmentation::UnicodeSegmentation;
 
 pub struct FontSystem {
+    // Math is exported as outlines, so these faces must not be added to the
+    // ordinary text assets embedded by SVG/PDF exporters.
+    math_assets: BTreeMap<String, FontAsset>,
     pub(crate) glyph_paths: BTreeMap<(String, u16), kurbo::BezPath>,
     db: Database,
     name_index: Option<BTreeMap<String, Vec<ID>>>,
@@ -93,6 +96,7 @@ impl FontSystem {
                 .clone();
         }
         Self {
+            math_assets: BTreeMap::new(),
             glyph_paths: BTreeMap::new(),
             db,
             name_index: None,
@@ -111,6 +115,7 @@ impl FontSystem {
     }
     /// Add user-provided font bytes (including TTC/OTC collections), without accessing the filesystem.
     pub fn register_font(&mut self, name: &str, data: Vec<u8>) {
+        self.math_assets.clear();
         self.glyph_paths.clear();
         self.choices.clear();
         self.name_index = None;
@@ -119,6 +124,98 @@ impl FontSystem {
             .db
             .load_font_source(fontdb::Source::Binary(std::sync::Arc::new(data)));
         self.paths.insert(name.into(), ids.to_vec());
+    }
+    pub(crate) fn math_face(
+        &mut self,
+        request: &str,
+        file: &str,
+        loc: Loc,
+        warnings: &mut Vec<Diagnostic>,
+    ) -> Result<&FontAsset> {
+        let cache_key = format!("{file}:{request}");
+        if !self.math_assets.contains_key(&cache_key) {
+            self.load_path(request, file, loc, warnings);
+            let mut ids: Vec<ID> = if font_path(request) {
+                self.paths
+                    .get(&resolve(file, request.split('#').next().unwrap_or(request)))
+                    .cloned()
+                    .unwrap_or_default()
+            } else {
+                let name = canonical(request);
+                self.db
+                    .faces()
+                    .filter(|f| {
+                        canonical(&f.post_script_name) == name
+                            || f.families.iter().any(|(s, _)| canonical(s) == name)
+                    })
+                    .map(|f| f.id)
+                    .collect()
+            };
+            if let Some((_, name)) = request.split_once('#') {
+                let name = canonical(name);
+                ids.retain(|id| {
+                    self.db.face(*id).is_some_and(|f| {
+                        canonical(&f.post_script_name) == name
+                            || f.families.iter().any(|(s, _)| canonical(s) == name)
+                    })
+                });
+            }
+            ids.sort_by_key(|id| {
+                self.db.face(*id).map_or(u32::MAX, |f| {
+                    u32::from(f.weight.0.abs_diff(400))
+                        + if f.style == fontdb::Style::Normal {
+                            0
+                        } else {
+                            2000
+                        }
+                })
+            });
+            let mut reason = "字体未安装或文件不可用";
+            let mut selected = None;
+            for id in ids {
+                let result = self.db.with_face_data(id, |data, index| {
+                    let face = ttf_parser::Face::parse(data, index).map_err(|_| "无效字体文件")?;
+                    if let Some(reason) = embedding_restriction(&face) {
+                        return Err(reason);
+                    }
+                    if face.tables().math.and_then(|m| m.constants).is_none() {
+                        return Err("字体缺少有效的 OpenType MATH 表");
+                    }
+                    extract_face(data, index).ok_or("无法读取字体字面")
+                });
+                match result {
+                    Some(Ok(data)) => {
+                        selected = Some((id, data));
+                        break;
+                    }
+                    Some(Err(r)) => reason = r,
+                    None => {}
+                }
+            }
+            let Some((id, data)) = selected else {
+                return Err(Diagnostic::new(
+                    "E_MATH_FONT",
+                    format!("数学字体 {request} 不可用：{reason}"),
+                    file,
+                    loc,
+                ));
+            };
+            let family = self
+                .db
+                .face(id)
+                .and_then(|f| f.families.first())
+                .map(|(s, _)| s.clone())
+                .unwrap_or_else(|| request.into());
+            self.math_assets.insert(
+                cache_key.clone(),
+                FontAsset {
+                    data,
+                    index: 0,
+                    family,
+                },
+            );
+        }
+        Ok(&self.math_assets[&cache_key])
     }
     pub fn load_requested(
         &mut self,
@@ -444,11 +541,11 @@ fn extract_face(data: &[u8], index: u32) -> Option<Vec<u8>> {
     Some(out)
 }
 #[derive(Default)]
-struct Outline {
-    d: String,
-    scale: f64,
-    x: f64,
-    y: f64,
+pub(crate) struct Outline {
+    pub(crate) d: String,
+    pub(crate) scale: f64,
+    pub(crate) x: f64,
+    pub(crate) y: f64,
 }
 impl OutlineBuilder for Outline {
     fn move_to(&mut self, x: f32, y: f32) {
@@ -537,7 +634,8 @@ pub fn formula(
         return Err(Diagnostic::new("E_FORMULA", "公式字号须为正数", file, loc));
     }
     let font = jstr(spec, "math_font", "ratex-katex");
-    if font != "ratex-katex" {
+    let legacy_font = font.starts_with("mathjax-");
+    if legacy_font {
         warn(w, format!("公式字体 {font} 映射到 ratex-katex"), file, loc);
     }
     if source.trim().is_empty() || source.chars().count() > 4000 {
@@ -559,6 +657,18 @@ pub fn formula(
     }
     let parsed = ratex_parser::parse(&source)
         .map_err(|e| Diagnostic::new("E_FORMULA", format!("RaTeX 公式解析失败：{e}"), file, loc))?;
+    if font != "ratex-katex" && !legacy_font {
+        if font.trim().is_empty() {
+            return Err(Diagnostic::new(
+                "E_MATH_FONT",
+                "math_font 需要非空字体名称或路径",
+                file,
+                loc,
+            ));
+        }
+        let asset = fonts.math_face(font, file, loc, w)?;
+        return crate::opentype_math::formula(&parsed, asset, spec, &source, file, loc);
+    }
     let options = ratex_layout::LayoutOptions {
         style: if spec
             .get("display")

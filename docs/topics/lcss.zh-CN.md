@@ -43,6 +43,7 @@ plot::axis(x) { line-color: #444444; line-width: 0.6pt; }
 | LCSS | DSL |
 | --- | --- |
 | `font-family` | `font_family` |
+| `math-font` | `math_font` |
 | `font-size` | `font_size` |
 | `font-weight` | `font_weight` |
 | `font-style` | `font_style` |

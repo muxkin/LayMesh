@@ -376,9 +376,11 @@ impl Engine {
                 spec[key] = json!(value_length(v, "pt", self.dpi).unwrap_or(10. * PT));
             }
         }
-        if let Some(v) = a.get("font_family") {
-            self.fonts
-                .load_requested(v, &self.host, file, l, &mut self.warnings);
+        for key in ["font_family", "math_font"] {
+            if let Some(v) = a.get(key) {
+                self.fonts
+                    .load_requested(v, &self.host, file, l, &mut self.warnings);
+            }
         }
         if let Some(V::List(spans)) = a.get("spans") {
             let mut output = vec![];

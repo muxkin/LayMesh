@@ -13,6 +13,7 @@ pub mod geometry_query;
 mod geometry_recipe;
 pub mod migration;
 pub mod model;
+mod opentype_math;
 pub mod parser;
 pub mod plot;
 mod query_path;

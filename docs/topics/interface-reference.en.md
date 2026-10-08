@@ -147,6 +147,7 @@ Required: `size`.
 | `class` | string | Space-separated LCSS class names | "" |
 | `background` | paint | Background paint for the object region, separate from text or lines | none |
 | `font_family` | string \| string[] | System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes. | system sans-serif |
+| `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex (inherit) |
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 继承 / inherit |
 | `font_weight` | integer | Font weight, 100–900 | 400 |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | normal |
@@ -219,6 +220,7 @@ Required: `content / spans`.
 | `size` | (length \| auto, length \| auto) / canvas unit | Physical (width,height); auto preserves aspect or natural layout | — |
 | `class` | string | Space-separated LCSS class names | "" |
 | `font_family` | string \| string[] | System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes. | system sans-serif |
+| `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex (inherit) |
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 10pt |
 | `font_weight` | integer | Font weight, 100–900 | 400 |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | normal |
@@ -270,6 +272,7 @@ Required: `content`.
 | `content` | string | Text content; $…$ enables math, raw strings disable automatic math | — |
 | `class` | string | Space-separated LCSS class names | "" |
 | `font_family` | string \| string[] | System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes. | system sans-serif |
+| `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex (inherit) |
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 继承 / inherit |
 | `font_weight` | integer | Font weight, 100–900 | 400 |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | normal |
@@ -304,7 +307,7 @@ Required: `source`.
 | `class` | string | Space-separated LCSS class names | "" |
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 10pt (inherit in text) |
 | `color` | color | Text color or base series color | #000000 |
-| `math_font` | "ratex-katex" \| "mathjax-newcm" \| "mathjax-tex" | RaTeX KaTeX formula fonts. Legacy mathjax-* names warn and map to ratex-katex.<br>`ratex-katex`: Current default RaTeX mathematical font<br>`mathjax-newcm`: Legacy name mapped to the current default font<br>`mathjax-tex`: Legacy name mapped to the current default font | ratex-katex |
+| `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex |
 | `style` | "inline" \| "display" | Style object for plots; inline/display for explicit formulas<br>`inline`: Inline mathematical layout<br>`display`: Display mathematical layout | — |
 | `background` | paint | Background paint for the object region, separate from text or lines | none |
 | `padding` | length \| length[] / canvas unit | Inner spacing; one value or top, right, bottom, left | 0 |
@@ -1120,6 +1123,7 @@ Required: `size`.
 | `radar_frame` | value | Radar frame shape: polygon/circle | polygon |
 | `class` | string | Space-separated LCSS class names | "" |
 | `font_family` | string \| string[] | System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes. | system sans-serif |
+| `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex (inherit) |
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 继承 / inherit |
 | `font_weight` | integer | Font weight, 100–900 | 400 |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | normal |
@@ -1236,6 +1240,7 @@ Returns: plot_style
 | Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
 | --- | --- | --- | --- |
 | `font_family` | string \| string[] | System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes. | system sans-serif |
+| `math_font` | string | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. | ratex-katex (inherit) |
 | `font_size` | length / pt | Font size in pt when unitless; inherits when omitted | 8pt |
 | `font_weight` | integer | Font weight, 100–900 | 400 |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | normal |
