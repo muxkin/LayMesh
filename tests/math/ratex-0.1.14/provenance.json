@@ -32,6 +32,31 @@
       "path": "website/public/data/physics.json",
       "file": "physics.json",
       "sha256": "8920b1243dfe1ac006231d8aed4e53858a01867984e6b83cf7eec379449dbf32"
+    },
+    {
+      "path": "tools/lexer_compare/test_cases.txt",
+      "file": "lexer.txt",
+      "sha256": "c88de8e20463f75adea17b1ee9a95b6e7e698c0a0f6f0dbae5fdfb1703a41f7e"
+    },
+    {
+      "path": "website/public/data/math.json",
+      "file": "website-math.json",
+      "sha256": "f7892845b5c139a31ef63e84e5781ca3f242e5be1bf3f83309466b888409e028"
+    },
+    {
+      "path": "website/public/data/prooftree.json",
+      "file": "website-proofs.json",
+      "sha256": "5ec96fc20ce4fbc88b066059a7803c80a28eae91d05861eb9276453b272868a7"
+    },
+    {
+      "path": "tests/golden/test_case_ce.txt",
+      "file": "chemistry-golden.txt",
+      "sha256": "333955e024cdd623c77d79e21108cff89cabfab77a4249edc93fe9cc3bb0b52e"
+    },
+    {
+      "path": "scripts/test-formulas.txt",
+      "file": "unicode.txt",
+      "sha256": "b42de965bf7bc37d239c7ffa3b7592c968ad981dd336e4639eed6adb04eee683"
     }
   ]
 }

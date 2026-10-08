@@ -55,7 +55,7 @@ Fixtures come from [RaTeX v0.1.14](https://github.com/erweixin/RaTeX/tree/ae391d
 the version used by LayMesh. The original source files, SHA-256 hashes, and
 MIT license are retained under `tests/math/ratex-0.1.14`:
 
-- Golden formulas: 1075 entries; parser comparison: 813; layout comparison: 29.
+- Golden formulas: 1075 entries; parser comparison: 791; layout comparison: 29.
 - Chemistry: 91; physics: 22; proof trees: 38.
 - Additional editable domain cases: 32, under `domain-cases.json`.
 
@@ -138,3 +138,41 @@ builder needs PyMuPDF and Poppler. A release binary can be selected with
 The deterministic font fixtures are unmodified Latin Modern Math 1.959,
 STIX Two Math 2.02 b142, and XITS Math 1.302 regular/bold, with license notices.
 They are test assets and are not bundled into distribution packages.
+
+## Browser corpus gallery
+
+The gallery retains every nonempty, noncomment entry in all eleven formula
+corpus files from the pinned RaTeX v0.1.14 checkout, including duplicates:
+the six primary suites above, lexer comparison (791), website mathematics
+(1048), website proof trees (38), the original chemistry text fixture (103),
+and the Unicode smoke-test script (18). With the 32 domain examples this is
+**4076 entries, 1938 distinct formulas, and 32,608 font/style results**.
+This scope covers the original formula corpus files; it does not claim to
+display every assertion from RaTeX's Rust, platform or application unit tests.
+
+SVGs are exported by the actual LayMesh formula renderer, with KaTeX,
+Latin Modern Math, STIX Two Math and XITS Math in inline and display styles.
+The 15,368 distinct combinations already present in the fixed audit must
+match its exact parser/policy/font-coverage outcomes. The 136 new combinations
+from the Unicode script are rendered and checked for OpenType geometry,
+without assigning them a pre-existing expected-error baseline.
+Every original fixture and font asset is verified against its SHA-256.
+The page exposes source-file positions, errors, text fallback, missing-glyph
+placeholders and invalid dimensions. A successful export alone is not a
+visual-quality assertion. Baseline guides, vector zoom, source search,
+category/status/font filters, pagination and detail views support manual review.
+
+```sh
+# First generate corpus.json using the audit command above.
+cargo build -p laymesh-render --example math_gallery --release
+python3 experiments/opentype-math/build-gallery.py
+python3 experiments/opentype-math/serve-gallery.py --port 8765
+```
+
+The server binds to the machine's Tailscale IPv4 address by default and serves
+only `target/opentype-math-gallery`. It does not publish through Funnel.
+On this development host the URL is `http://100.64.0.6:8765/`;
+`?suite=chemistry` opens chemistry and `?suite=domain&q=bond&size=48`
+opens the enlarged compound-bond example. `/health` reports the loaded count.
+After frontend-only edits, `build-gallery.py --reuse` refreshes the page while
+checking the renderer fingerprint, all prior outcomes and SVG hashes.
