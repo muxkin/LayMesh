@@ -76,6 +76,14 @@ impl Context {
         };
         c
     }
+    fn math_font(&self, alphabet: Alphabet) -> Self {
+        // Math alphabet commands replace one another. Text font commands
+        // may combine family, weight and shape, but \mathbf{\mathcal A}
+        // still selects the inner script alphabet, not bold script.
+        let mut c = self.clone();
+        c.alphabet = alphabet;
+        c
+    }
 }
 #[derive(Clone)]
 pub(super) enum Item {
@@ -258,7 +266,7 @@ impl<'a, 'f> Engine<'a, 'f> {
                 Ok(b)
             }
             N::OrdGroup { body, .. } => self.row(body, c),
-            N::Font { font, body, .. } => self.node(body, &c.font(font_style(font)?)),
+            N::Font { font, body, .. } => self.node(body, &c.math_font(font_style(font)?)),
             N::Text { font, body, .. } => self.row(
                 body,
                 &c.font(
@@ -519,7 +527,10 @@ impl<'a, 'f> Engine<'a, 'f> {
             c.clone()
         };
         let c = &resolved_context;
-        if text.starts_with('\\') {
+        // Single-character tokens also have mode-specific replacements:
+        // math '-' is U+2212, while text '-' remains a hyphen. mhchem uses
+        // both to overlay full-width solid bonds and tiny dashed bonds.
+        if text.starts_with('\\') || text.chars().count() == 1 {
             return self.font.glyph(symbol(text, mode)?, c);
         }
         let mut result = Box::default();
@@ -949,6 +960,14 @@ impl<'a, 'f> Engine<'a, 'f> {
     }
 }
 fn symbol(text: &str, mode: Mode) -> MathResult<char> {
+    // RaTeX's bundled-font table maps styled Unicode letters to ASCII metric
+    // slots. An OpenType math font instead stores their native Unicode glyphs.
+    if let Some(ch) = text.chars().next()
+        && text.chars().count() == 1
+        && (0x1D400..=0x1D7FF).contains(&(ch as u32))
+    {
+        return Ok(ch);
+    }
     let mode = if mode == Mode::Math {
         ratex_font::Mode::Math
     } else {

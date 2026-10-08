@@ -132,7 +132,7 @@
     ],
     [
       "Bold alphabets",
-      "\\mathbf{\\mathcal A}+\\mathbf{\\mathfrak g}+\\mathbf{\\mathsfit x}"
+      "\\mathbf{A1}+\\bm{\\alpha x}"
     ]
   ]
 }

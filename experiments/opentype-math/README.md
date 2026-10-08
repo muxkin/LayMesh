@@ -38,8 +38,13 @@ no assembly exists. Missing glyphs, missing MATH tables, embedding
 restrictions, or unavailable fonts fail explicitly.
 
 `mathcal` and `mathscr` currently select the same Unicode script alphabet;
-font-specific GSUB stylistic-set selection is not implemented. Nested bold
-script/fraktur/sans alphabets and bold digits are supported. XITS Math Bold
+font-specific GSUB stylistic-set selection is not implemented. Math alphabet
+commands follow the inner-command override used by
+[KaTeX](https://github.com/KaTeX/KaTeX/blob/v0.16.22/src/Options.js):
+`\mathbf{\mathcal A}` is script A, not bold script A, while
+`\mathcal{\mathbf A}` is bold roman A. Use `\mathbf{A1}` for bold roman
+letters/digits and `\bm{\alpha x}` for bold italic symbols. Native styled
+Unicode letters also retain their selected-font glyphs. XITS Math Bold
 is a supplementary face with incomplete stretch coverage: algebra works,
 and missing radical constructions report an error. Regular XITS Math supports
 `mathbf`, `boldsymbol`, and `bm` without selecting the standalone bold face.
@@ -79,6 +84,14 @@ baselines, plot labels, accent/operator placement, proof rules/root direction,
 alignment/tag placement, 30-level delimiter nesting, zero-width spacing,
 cache invalidation, embedding restrictions, and explicit errors.
 
+The focused bond regressions check that math `-` selects the native U+2212
+minus, text `-` stays a hyphen, and the solid/dashed layers of `~-`, `~--`,
+`~=`, and `-~-` stay clear of the next atom. Nested math alphabets are tested
+in both command orders, independently of the real bold-letter cases.
+`regressions.lay` provides an enlarged, editable comparison of these cases.
+The existing default RaTeX backend does not select its sans italic face for
+`\mathsfit`; the OpenType backend selects the correct Unicode alphabet.
+
 ## Reproduce
 
 ```sh
@@ -91,6 +104,8 @@ cargo test -p laymesh-render --test opentype_math
 cargo build -p laymesh-cli
 python3 experiments/opentype-math/verify.py
 .venv/bin/python experiments/opentype-math/build-atlas.py
+target/debug/laymesh render experiments/opentype-math/regressions.lay \
+  -o target/opentype-math-validation/regressions.png --dpi 160
 ```
 
 Outputs go to `target/opentype-math-validation`: the original comparison,

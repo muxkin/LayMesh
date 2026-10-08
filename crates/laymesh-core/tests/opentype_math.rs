@@ -564,19 +564,100 @@ fn raw_dsl_strings_preserve_nested_mhchem_math_islands() {
     ); // no literal italic l from "left"
 }
 #[test]
-fn combined_alphabets_include_bold_digits_and_keep_their_family() {
+fn bold_commands_include_real_bold_digits_and_letters() {
     for (_, bytes) in &FONTS[..3] {
-        let n = render_formula(
-            bytes,
-            r"\bm{1\alpha}+\mathbf{\mathsf{x}}+\mathbf{\mathcal{A}}",
-            true,
-        );
+        let n = render_formula(bytes, r"\bm{1\alpha x}+\mathbf{Ax1}", true);
         let codes: Vec<_> = glyphs(&n)
             .iter()
             .filter_map(|v| v["mathCodepoint"].as_u64())
             .collect();
-        for cp in [0x1D7CF, 0x1D736, 0x1D605, 0x1D4D0] {
+        for cp in [0x1D7CF, 0x1D736, 0x1D499, 0x1D400, 0x1D431] {
             assert!(codes.contains(&cp), "missing {cp:X}: {codes:X?}");
+        }
+    }
+}
+
+#[test]
+fn inner_math_alphabet_commands_override_outer_commands() {
+    for (_, bytes) in &FONTS[..3] {
+        for (inner, ch) in [
+            ("mathcal", "A"),
+            ("mathfrak", "g"),
+            ("mathsfit", "x"),
+            ("mathsf", "x"),
+            ("mathbf", "A"),
+            ("mathit", "x"),
+            ("mathrm", "x"),
+            ("mathnormal", "x"),
+        ] {
+            let expected = render_formula(bytes, &format!("\\{inner}{{{ch}}}"), true);
+            for outer in ["mathbf", "mathcal", "mathit", "mathsf", "bm"] {
+                let source = format!("\\{outer}{{\\{inner}{{{ch}}}}}");
+                let n = render_formula(bytes, &source, true);
+                assert_eq!(n["items"], expected["items"], "{source}");
+                assert_eq!(n["width"], expected["width"], "{source}");
+            }
+        }
+    }
+}
+
+#[test]
+fn styled_unicode_letters_keep_their_native_math_glyphs() {
+    for (_, bytes) in &FONTS[..3] {
+        for cp in [0x1D400, 0x1D4D0, 0x1D58C, 0x1D639, 0x1D66D, 0x1D7CF] {
+            let source = char::from_u32(cp).unwrap().to_string();
+            let n = render_formula(bytes, &source, true);
+            assert_eq!(glyphs(&n)[0]["mathCodepoint"], cp);
+            let face = ttf_parser::Face::parse(bytes, 0).unwrap();
+            assert_eq!(
+                glyphs(&n)[0]["glyphId"],
+                face.glyph_index(char::from_u32(cp).unwrap()).unwrap().0
+            );
+        }
+    }
+}
+
+#[test]
+fn chemistry_bonds_use_math_minus_and_text_hyphens_in_separate_layers() {
+    for (font, bytes) in &FONTS[..3] {
+        let minus = render_formula(bytes, "-", true);
+        let hyphen = render_formula(bytes, r"\text{-}", true);
+        assert_eq!(glyphs(&minus)[0]["mathCodepoint"], 0x2212_u32);
+        assert_eq!(glyphs(&hyphen)[0]["mathCodepoint"], 0x2D_u32);
+        for (bond, solid_count) in [("~-", 1), ("~--", 2), ("~=", 2), ("-~-", 2)] {
+            let n = render_formula(bytes, &format!(r"\ce{{A\bond{{{bond}}}B}}"), true);
+            let items = glyphs(&n);
+            let solid: Vec<_> = items
+                .iter()
+                .filter(|v| v["mathCodepoint"] == 0x2212_u32)
+                .collect();
+            let dashed: Vec<_> = items
+                .iter()
+                .filter(|v| v["mathCodepoint"] == 0x2D_u32)
+                .collect();
+            assert_eq!(solid.len(), solid_count, "{bond}");
+            assert_eq!(dashed.len(), 3, "{bond}");
+            for s in &solid {
+                assert_eq!(s["glyphId"], glyphs(&minus)[0]["glyphId"], "{bond}");
+                assert_eq!(s["x"], solid[0]["x"], "{bond}");
+            }
+            let b = items
+                .iter()
+                .find(|v| v["mathCodepoint"] == u32::from('B'))
+                .unwrap();
+            let next_ink = kurbo::BezPath::from_svg(b["d"].as_str().unwrap())
+                .unwrap()
+                .bounding_box();
+            for s in solid.iter().chain(dashed.iter()) {
+                let bounds = kurbo::BezPath::from_svg(s["d"].as_str().unwrap())
+                    .unwrap()
+                    .bounding_box();
+                assert!(
+                    bounds.x1 <= next_ink.x0 + 1e-6,
+                    "{font} {bond}: U+{:X} bounds {bounds:?}, next atom ink {next_ink:?}",
+                    s["mathCodepoint"].as_u64().unwrap(),
+                );
+            }
         }
     }
 }
