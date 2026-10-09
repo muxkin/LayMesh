@@ -68,7 +68,7 @@ tr:last-child td{border-bottom:0}
 .detail-button{border:0;color:var(--accent);font-size:12px;padding:0;border-radius:0;background:transparent;font-weight:600}
 .detail-button:hover:not(:disabled){background:transparent;text-decoration:underline}
 .formula-stage{position:relative;overflow-x:auto;overflow-y:hidden;min-height:72px;margin-bottom:8px}
-.formula-stage img{position:absolute;left:0;max-width:none;display:block}
+.formula-stage canvas{position:absolute;left:0;max-width:none;display:block}
 .scroll-note{font-size:10px;color:var(--muted);margin:0 0 4px}
 .mobile-scroll-hint{display:none}
 .invisible-note{display:block;padding-top:25px;font-size:11px;color:var(--muted)}
@@ -100,7 +100,7 @@ dialog::backdrop{background:#15203459}
 .detail-font h3{font-size:14px;margin:0 0 13px;display:flex;align-items:center;justify-content:space-between}
 .detail-font h3 a{font-size:12px;font-weight:400}
 .detail-image{overflow:auto;padding:7px 0}
-.detail-image img{display:block;max-width:none}
+.detail-image canvas{display:block;max-width:none}
 #provenance-content p{margin:0 0 15px}
 #provenance-content h3{margin:24px 0 12px;font-size:15px}
 .source-list{padding-left:20px;line-height:2}

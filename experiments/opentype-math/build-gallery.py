@@ -75,6 +75,7 @@ def main():
     args=parser.parse_args()
     output=args.output.resolve()
     output.mkdir(parents=True,exist_ok=True)
+    shutil.copytree(ROOT/"extensions/vscode/dist/wasm",output/"wasm",dirs_exist_ok=True)
     provenance=json.loads((FIXTURES/"provenance.json").read_text())
     fonts=json.loads((ROOT/"tests/fonts/math/manifest.json").read_text())
     text_fonts=json.loads((ROOT/"tests/fonts/text/manifest.json").read_text())
@@ -127,6 +128,15 @@ def main():
                     file=output/result["svg"]
                     assert file.is_file() and file.stat().st_size>100
                     result["sha256"]=hashlib.sha256(file.read_bytes()).hexdigest()
+                    drawing=output/result["drawing"]
+                    result["drawing_sha256"]=hashlib.sha256(drawing.read_bytes()).hexdigest()
+                    commands=json.loads(drawing.read_bytes())
+                    assert commands["schemaVersion"]==1
+                    for resource in commands["resources"]:
+                        assert (output/"resources"/resource).is_file()
+                    reference=output/result["native_reference"]
+                    assert reference.stat().st_size==result["native_width"]*result["native_height"]*4
+                    result["native_sha256"]=hashlib.sha256(reference.read_bytes()).hexdigest()
                 elif result["status"]=="rendered":
                     assert result.get("preview_error") and (ref is None or ref["bounds_errors"]),result
                     preview_errors+=1

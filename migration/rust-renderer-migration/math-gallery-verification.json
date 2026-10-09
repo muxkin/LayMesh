@@ -1,0 +1,290 @@
+{
+  "url": "http://100.64.0.6:8768/",
+  "case_entries": 4100,
+  "distinct_formulas": 1961,
+  "canvas_checks": 30412,
+  "failures": [],
+  "native_hash_mismatches": [
+    {
+      "drawing": "draw/142-xits-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/142-xits-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/142-xits-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/142-xits-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/160-xits-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/160-xits-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/491-xits-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/491-xits-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/491-xits-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/491-xits-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/645-xits-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/645-xits-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/645-xits-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/645-xits-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/753-ratex-katex-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/753-ratex-katex-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/753-ratex-katex-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/753-ratex-katex-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/860-stix-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/860-stix-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1044-stix-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1170-stix-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1170-stix-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1170-stix-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1170-stix-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1171-stix-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1171-stix-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1543-stix-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1543-stix-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1756-xits-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1756-xits-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1756-xits-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1756-xits-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1757-xits-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1757-xits-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1757-xits-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1757-xits-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1766-xits-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1766-xits-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1766-xits-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1766-xits-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1767-xits-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1767-xits-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1767-xits-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1767-xits-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1780-stix-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1780-stix-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1780-stix-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1780-stix-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1799-stix-strict-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1799-stix-strict-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1799-stix-text-display.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1799-stix-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    },
+    {
+      "drawing": "draw/1903-ratex-katex-text-inline.json",
+      "maximum_delta": 1,
+      "different_channels": 1
+    }
+  ],
+  "seconds": 70.82189362100326,
+  "renderer_fingerprint": "750cf9c9d2df9c5f31dff4153c12bd6762987f57850e10747c7f91d1a33d17b8",
+  "interaction": {
+    "url": "http://100.64.0.6:8768/?suite=text&style=inline&size=48&baselines=1",
+    "count": "24 条匹配 · 显示 1–20",
+    "inline": "true",
+    "baseline": true,
+    "canvases": 80
+  },
+  "console_errors": [],
+  "page_failures": []
+}

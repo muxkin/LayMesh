@@ -1,4 +1,4 @@
-//! Export every distinct gallery formula through the real formula/SVG pipeline.
+//! Export every distinct gallery formula through the shared drawing pipeline (SVG is an export only).
 //! Input and metadata assembly live in experiments/opentype-math/build-gallery.py.
 use kurbo::Shape;
 use laymesh_core::{
@@ -18,6 +18,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let input: Vec<String> = serde_json::from_slice(&fs::read(&args[0])?)?;
     let output = PathBuf::from(&args[1]);
     fs::create_dir_all(output.join("svg"))?;
+    fs::create_dir_all(output.join("draw"))?;
+    fs::create_dir_all(output.join("native"))?;
+    fs::create_dir_all(output.join("resources"))?;
     let mut strict_fonts = FontSystem::new(false);
     let mut text_fonts = FontSystem::new(false);
     for (name, bytes) in [
@@ -149,7 +152,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 schema_version: 1,
                                 width: bounds.width() + 1.,
                                 height: bounds.height() + 1.,
-                                background: json!("transparent"),
+                                background: json!("none"),
                                 layout_dpi: 96.,
                                 canvas_unit: "mm".into(),
                                 export_dpi: 1200.,
@@ -162,6 +165,30 @@ fn main() -> Result<(), Box<dyn Error>> {
                                     .map(|(key, value)| (key.clone(), value.clone()))
                                     .collect(),
                             };
+                            let mut list = laymesh_render::display_list::to_display_list(&scene)?;
+                            let pixel_width = (scene.width * 3.2).ceil().max(1.) as u32;
+                            let pixel_height = (scene.height * 3.2).ceil().max(1.) as u32;
+                            let frame = laymesh_render::raster::render_region(
+                                &list,
+                                kurbo::Rect::new(0., 0., scene.width, scene.height),
+                                pixel_width,
+                                pixel_height,
+                            )?;
+                            let reference = format!("native/{index}-{font}-{policy}-{style}.rgba");
+                            fs::write(output.join(&reference), &frame.rgba)?;
+                            let native_hash =
+                                frame.rgba.iter().fold(2166136261u32, |hash, byte| {
+                                    (hash ^ *byte as u32).wrapping_mul(16777619)
+                                });
+                            for (id, resource) in &mut list.resources {
+                                let path = output.join("resources").join(id);
+                                if !path.exists() {
+                                    fs::write(path, &resource.data)?;
+                                }
+                                resource.data.clear();
+                            }
+                            let drawing = format!("draw/{index}-{font}-{policy}-{style}.json");
+                            fs::write(output.join(&drawing), serde_json::to_vec(&list)?)?;
                             let svg = laymesh_render::render_svg(&scene)?;
                             if font != "ratex-katex"
                                 && (svg.contains("<text") || svg.contains("@font-face"))
@@ -172,7 +199,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             }
                             let file = format!("svg/{index}-{font}-{policy}-{style}.svg");
                             fs::write(output.join(&file), svg)?;
-                            json!({"svg":file,"width":scene.width,"height":scene.height,"ascent":ascent,
+                            json!({"native_reference":reference,"native_hash":native_hash,"native_width":pixel_width,"native_height":pixel_height,"drawing":drawing,"svg":file,"width":scene.width,"height":scene.height,"ascent":ascent,
                             "layout_width":w,"layout_height":h,"bounds_errors":violations,"warnings":warnings,
                             "text_fallback":!fallback_families.is_empty(),"fallback_families":fallback_families,
                             "text_fonts":used_text_fonts,"text_policy":policy,

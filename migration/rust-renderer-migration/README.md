@@ -92,3 +92,27 @@ python scripts/benchmark-renderers.py --baseline /path/to/main-laymesh --output 
 精简指标和代表性对照图片随实验分支保存。完整原始验证日志、PDF/PPTX/PNG/SVG 输出、旧引擎和实验安装包保存在本地 `release/verification/rust-renderer-migration/`，不提交安装二进制和原始日志。
 
 本次本机验证平台为 Linux x64、Chromium、VS Code 与 LibreOffice；Windows/macOS 的实际宿主及 Microsoft PowerPoint 尚未在本轮执行。CI 构建前提已更新，不能将本地通过等同于远端 CI 通过。未增加 GPU、公开混合模式或新滤镜。
+
+
+## 完整公式网页复核（2026-10-09）
+
+公式画廊已改用共享绘制指令与 Vello CPU WASM Canvas，SVG 仅提供文件下载。
+[Tailscale 画廊](http://100.64.0.6:8768/)保留此前优化使用的全部 4,100 条记录、1,961 个不同公式，
+四种字体、行内/独立模式与两种文字策略，共 65,600 个条目结果。
+原始文件及字体 SHA-256、15,368 个固定审计组合的预期错误和缺字数量均通过核验。
+其余结果保留解析/策略错误、缺字占位与 4 个既有尺寸异常，不将占位符记为正确字形。
+
+实际 Chromium 全量绘制 30,412 个可绘制组合，无失败、无相关控制台错误。
+在 16 px、DPR=1 的相同视口下，30,358 个组合的 RGBA 哈希相同；其余 54 个逐字节核对后，
+每个只差一个通道的一个数值单位（1/255），保留为抗锯齿舍入差异。
+检查了分类、行内模式、字号、基线与手机 DPR=2 重绘；截图见
+[桌面](comparisons/math-gallery-desktop.png)、[手机](comparisons/math-gallery-mobile.png)，
+[逐项验证记录](math-gallery-verification.json)包含差异路径及运行指纹。
+全量检查使用仓库 Chromium CDP 工具；本会话未提供 Browser 插件所需的 Node REPL。
+
+此次补充测试发现并修复了 RaTeX `\colorbox{red}{…}` 等 CSS 命名颜色的绘制兼容问题。
+渲染库 7 项测试通过，包括颜色、透明 PNG、字体与直接 PDF 检查。
+复现入口是 `experiments/opentype-math/verify-gallery.py`；生成方式见公式实验说明。
+
+文档媒体已重新生成并通过 186 项指纹检查，615 个文档页面检查通过；
+图片与组的普通网页预览重新验证了 Canvas、编辑刷新、字体文件载入及桌面/手机布局，无相关控制台错误。

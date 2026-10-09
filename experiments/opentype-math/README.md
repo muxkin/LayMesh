@@ -154,7 +154,7 @@ text fallback cases this is **4100 entries, 1961 distinct formulas, and
 This scope covers the original formula corpus files; it does not claim to
 display every assertion from RaTeX's Rust, platform or application unit tests.
 
-SVGs are exported by the actual LayMesh formula renderer, with KaTeX,
+Previews use the shared DisplayList and Vello CPU WASM Canvas renderer, with KaTeX,
 Latin Modern Math, STIX Two Math and XITS Math in inline and display styles.
 With body text fallback disabled, the 15,368 distinct combinations already
 present in the fixed audit must match its exact parser/policy/font-coverage
@@ -164,19 +164,24 @@ assigning new results a pre-existing expected-error baseline.
 Every original fixture and font asset is verified against its SHA-256.
 The page exposes source-file positions, errors, text fallback, missing-glyph
 placeholders and invalid dimensions. A successful export alone is not a
-visual-quality assertion. Baseline guides, vector zoom, source search,
+visual-quality assertion. SVG is retained only as a downloadable file export. Native RGBA references at
+16 px are compared to every successful distinct WASM rendering.
+Baseline guides, DPR-aware Canvas zoom, source search,
 category/status/font filters, pagination and detail views support manual review.
 
 ```sh
 # First generate corpus.json using the audit command above.
 cargo build -p laymesh-render --example math_gallery --release
-python3 experiments/opentype-math/build-gallery.py
-python3 experiments/opentype-math/serve-gallery.py --port 8765
+cargo build --release --locked --target wasm32-unknown-unknown -p laymesh-wasm --no-default-features
+wasm-bindgen --target web --out-dir extensions/vscode/dist/wasm target/wasm32-unknown-unknown/release/laymesh_wasm.wasm
+python3 experiments/opentype-math/build-gallery.py --output target/rust-renderer-math-gallery
+python3 experiments/opentype-math/serve-gallery.py --directory target/rust-renderer-math-gallery --port 8768
+python3 experiments/opentype-math/verify-gallery.py --url http://100.64.0.6:8768/
 ```
 
 The server binds to the machine's Tailscale IPv4 address by default and serves
-only `target/opentype-math-gallery`. It does not publish through Funnel.
-On this development host the URL is `http://100.64.0.6:8765/`;
+only the selected generated directory. It does not publish through Funnel.
+On this development host the URL is `http://100.64.0.6:8768/`;
 `?suite=chemistry` opens chemistry and `?suite=domain&q=bond&size=48`
 opens the enlarged compound-bond example. `/health` reports the loaded count.
 After frontend-only edits, `build-gallery.py --reuse` refreshes the page while
@@ -241,5 +246,5 @@ cover Chinese, scripts, chemical annotations, proof labels, Arabic and Indic.
 cargo test -p laymesh-core --test formula_text
 cargo test -p laymesh-render --test opentype_math
 # Browse enabled text cases; append &text=0 to compare strict coverage.
-# http://100.64.0.6:8765/?suite=text&baselines=1
+# http://100.64.0.6:8768/?suite=text&baselines=1
 ```

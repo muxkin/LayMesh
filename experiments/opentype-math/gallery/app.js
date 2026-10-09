@@ -1,3 +1,31 @@
+import init, {prepare_display_list, register_render_resource} from "./wasm/laymesh_wasm.js";
+const resourceLoads=new Map();
+const drawingLoads=new Map();
+window.mathCanvasFailures=[];
+window.mathCanvasRendered=0;
+async function drawFormula(canvas,result,size){
+  try {
+    if(!result.drawing)throw Error("Missing drawing commands; rebuild the gallery");
+    if(!drawingLoads.has(result.drawing))drawingLoads.set(result.drawing,fetch(result.drawing).then(r=>{if(!r.ok)throw Error(`Drawing HTTP ${r.status}`);return r.json();}));
+    const list=await drawingLoads.get(result.drawing);
+    if(drawingLoads.size>256)drawingLoads.delete(drawingLoads.keys().next().value);
+    await Promise.all(Object.keys(list.resources).map(id=>{
+      if(!resourceLoads.has(id))resourceLoads.set(id,fetch(`resources/${id}`).then(r=>{if(!r.ok)throw Error(`Resource HTTP ${r.status}`);return r.arrayBuffer();}).then(b=>register_render_resource(id,new Uint8Array(b))));
+      return resourceLoads.get(id);
+    }));
+    const ratio=devicePixelRatio||1;
+    canvas.width=Math.max(1,Math.ceil(result.width*size/5*ratio));
+    canvas.height=Math.max(1,Math.ceil(result.height*size/5*ratio));
+    const job=prepare_display_list(JSON.stringify(list));
+    let frame;
+    try {frame=job.raster(JSON.stringify([0,0,result.width,result.height]),canvas.width,canvas.height);
+      canvas.getContext("2d").putImageData(new ImageData(new Uint8ClampedArray(frame.rgba),frame.width,frame.height),0,0);
+      canvas.dataset.rendered="true";window.mathCanvasRendered++;
+      if(size===16 && ratio===1){let hash=2166136261;for(const byte of frame.rgba)hash=Math.imul(hash^byte,16777619)>>>0;canvas.dataset.nativeMatch=String(hash===result.native_hash);
+        if(hash!==result.native_hash){const response=await fetch(result.native_reference);if(!response.ok)throw Error(`Native reference HTTP ${response.status}`);const native=new Uint8Array(await response.arrayBuffer()),actual=frame.rgba;if(native.length!==actual.length)throw Error("Native reference dimensions differ");let maximum=0,channels=0;for(let i=0;i<actual.length;i++){const delta=Math.abs(actual[i]-native[i]);if(delta)channels++;maximum=Math.max(maximum,delta);}canvas.dataset.maximumDelta=String(maximum);canvas.dataset.differentChannels=String(channels);}}
+    }finally{frame?.free();job.free();}
+  }catch(error){canvas.dataset.error=String(error);canvas.title=String(error);window.mathCanvasFailures.push({drawing:result.drawing,error:String(error)});console.error(error);const message=document.createElement("span");message.textContent=`Canvas 渲染失败：${error}`;canvas.replaceWith(message);}
+}
 const $ = (id) => document.getElementById(id);
 const STATUS = {rendered:"已渲染",font_glyph_missing:"字体缺字",parse_rejected:"解析不支持",policy_rejected:"禁止命令",invalid_geometry:"尺寸异常"};
 let data, filtered = [], detailCase;
@@ -55,10 +83,13 @@ function errorContent(result){
   const node=element("div","error-cell");node.append(element("div","error-title",result.preview_error?"尺寸异常":STATUS[result.status] || "渲染失败"),element("p","error-message",result.preview_error || result.error),element("div","error-code",`${result.preview_error_code || result.code} · 已记录的限制`));return node;
 }
 function imageFor(result,size,alt){
-  const img=element("img");img.src=result.svg;img.alt=alt;img.loading="lazy";img.decoding="async";
+  const img=element("canvas");img.setAttribute("role","img");img.setAttribute("aria-label",alt);
   img.style.width=`${result.width*size/5}px`;img.style.height=`${result.height*size/5}px`;
+  drawFormula(img,result,size);
   return img;
 }
+let lastPixelRatio=devicePixelRatio||1;
+window.addEventListener("resize",()=>{if(data && lastPixelRatio!==(devicePixelRatio||1)){lastPixelRatio=devicePixelRatio||1;renderRows();if(detailCase)renderDetail();}});
 function renderRows(){
   filterCases();
   const pages=Math.max(1,Math.ceil(filtered.length/state.limit));state.page=Math.min(pages,state.page);
@@ -150,9 +181,9 @@ function provenance(){
   for(const text of [
     `RaTeX ${meta.upstream.tag} · 提交 ${meta.upstream.commit}`,
     `保留 ${meta.upstream.files.length} 个原始公式语料文件的 ${format(meta.upstream_entries)} 条非空、非注释用例，包括各套文件中的重复条目。加上 ${meta.case_entries-meta.upstream_entries} 条领域与文本补充，共 ${format(meta.case_entries)} 条。原始文件字节与 SHA-256 均已核验。`,
-    `${format(meta.distinct_formulas)} 条不同公式，四套数学字体、两种公式模式、两种文本策略。${format(meta.layout_checks)} 个条目结果，检查 ${format(meta.distinct_layout_checks)} 个不同组合，生成 ${format(meta.svg_files)} 个 SVG；其余结果保留失败原因。重复公式共用相同 SVG。`,
+    `${format(meta.distinct_formulas)} 条不同公式，四套数学字体、两种公式模式、两种文本策略。${format(meta.layout_checks)} 个条目结果，检查 ${format(meta.distinct_layout_checks)} 个不同组合，生成 ${format(meta.svg_files)} 个 SVG；其余结果保留失败原因。重复公式共用相同绘制指令；SVG 仅用于文件下载。`,
     `禁用文本回退时，其中 ${format(meta.audit_checks)} 个不同组合与固定审计逐项一致；另 ${format(meta.supplemental_checks)} 个组合涵盖新增用例及启用文本回退的完整语料，并检查几何。解析不支持和禁止命令保留错误；字体缺字统一方框占位并标出警告，不当作正确字形。`,
-    `使用当前 LayMesh 公式排版及 SVG 导出生成矢量轮廓。浏览器调整显示尺寸；字体字形及数学排版来自生成时的渲染器。`,
+    `使用当前 LayMesh 公式排版生成绘制指令，由 Vello CPU WASM 绘制 Canvas。浏览器按显示尺寸与设备像素比重绘；字体字形及数学排版来自生成时的渲染器。`,
     `“启用文本回退”使用固定的 Noto 派生测试字体列表（Latin、CJK、Arabic、Indic），在数学排版前完成文本塑形和尺寸测量；“仅数学字体”关闭正文回退，用于核对数学字体的字形覆盖。正文测试字体不会随产品运行库打包。`,
     `快照生成于 ${new Date(meta.generated_at).toLocaleString("zh-CN")} · LayMesh 基于 ${meta.git_revision.slice(0,7)}`,
   ])content.append(element("p",null,text));
@@ -193,5 +224,6 @@ function initialize(){
   renderRows();
 }
 try{
-  const response=await fetch("data.json");if(!response.ok)throw Error(`HTTP ${response.status}`);data=await response.json();initialize();
+  await init();
+  const response=await fetch("data.json");if(!response.ok)throw Error(`HTTP ${response.status}`);data=await response.json();window.mathGalleryData=data;window.mathGalleryDraw=drawFormula;initialize();
 }catch(error){$("inventory").textContent="测试集加载失败";$("result-count").textContent="请刷新页面重试";$("rows").replaceChildren();const row=element("tr"),cell=element("td","empty",String(error));row.append(cell);$("rows").append(row);console.error(error);}

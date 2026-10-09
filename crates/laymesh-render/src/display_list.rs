@@ -134,9 +134,19 @@ pub(crate) fn rgba(s: &str) -> Result<[f64; 4]> {
     if s == "none" {
         return Ok([0.; 4]);
     }
-    laymesh_core::color::Color::parse(s)
-        .map(|c| c.rgba)
-        .map_err(error)
+    match laymesh_core::color::Color::parse(s) {
+        Ok(color) => Ok(color.rgba),
+        Err(message) => {
+            // RaTeX color commands preserve CSS color names in formula items.
+            let color: svgtypes::Color = s.parse().map_err(|_| error(message))?;
+            Ok([
+                color.red as f64 / 255.,
+                color.green as f64 / 255.,
+                color.blue as f64 / 255.,
+                color.alpha as f64 / 255.,
+            ])
+        }
+    }
 }
 impl DrawNode {
     pub fn new(kind: DrawKind) -> Self {
@@ -922,4 +932,16 @@ pub fn to_display_list(scene: &Scene) -> Result<DisplayList> {
         nodes,
         resources: b.resources,
     })
+}
+
+#[cfg(test)]
+mod color_tests {
+    use super::*;
+    #[test]
+    fn formula_css_colors_preserve_svg_semantics() {
+        assert_eq!(rgba("red").unwrap(), rgba("#ff0000").unwrap());
+        assert_eq!(rgba("aliceblue").unwrap(), rgba("#f0f8ff").unwrap());
+        assert_eq!(rgba("transparent").unwrap(), [0.; 4]);
+        assert!(rgba("not-a-color").is_err());
+    }
 }
