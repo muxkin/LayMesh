@@ -2,6 +2,14 @@
 const vscode=require('vscode'),fs=require('fs'),path=require('path'),os=require('os'),assert=require('assert/strict');
 const {pathToFileURL}=require('url');
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
+const observed=message=>{
+ if(!message.displayListCompressed)return message;
+ const data=message.displayListCompressed.data;
+ const bytes=require('zlib').gunzipSync(typeof data==='string'?Buffer.from(data,'base64'):Buffer.from(data));
+ assert.equal(bytes.length,message.displayListCompressed.uncompressedBytes);
+ assert.equal(require('crypto').createHash('sha256').update(bytes).digest('hex'),message.displayListCompressed.id);
+ return {...message,displayList:JSON.parse(bytes.toString('utf8'))};
+};
 exports.run=async()=>{
  const evidence={status:'passed',host:'VS Code actual preview webview',checks:[]};
  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'laymesh-preview-'));
@@ -18,7 +26,7 @@ exports.run=async()=>{
  api.window.createWebviewPanel=(...args)=>{const panel=create(...args);if(args[0]==='laymeshPreview'){
   panels++;host={panel,messages:[],received:[]};const listen=panel.webview.onDidReceiveMessage,post=panel.webview.postMessage;
   panel.webview.onDidReceiveMessage=(handler,...rest)=>{host.receive=handler;return listen.call(panel.webview,message=>{host.received.push(message);return handler(message)},...rest);};
-  panel.webview.postMessage=message=>{host.messages.push(message);return post.call(panel.webview,message);};
+  panel.webview.postMessage=message=>{host.messages.push(observed(message));return post.call(panel.webview,message);};
  }return panel;};
  const until=async(fn,label,attempts=300)=>{for(let i=0;i<attempts;i++){if(fn())return fn();await pause(50);}throw Error('Timeout: '+label+' '+String(JSON.stringify(host?.messages.slice(-2))).slice(0,1000));};
  const replace=async(document,text)=>{const edit=new vscode.WorkspaceEdit();edit.replace(document.uri,new vscode.Range(document.positionAt(0),document.positionAt(document.getText().length)),text);assert(await vscode.workspace.applyEdit(edit));};
@@ -104,7 +112,7 @@ exports.run=async()=>{
   fs.writeFileSync(binary,'#!/bin/sh\nif test -f '+quote(marker)+'; then exec '+quote(path.join(extension.extensionPath,'bin','laymesh'))+' preview --stdio; fi\n: > '+quote(marker)+'\nELECTRON_RUN_AS_NODE=1 exec '+quote(process.execPath)+' '+quote(slow)+'\n');fs.chmodSync(binary,0o755);
   const worker=new PreviewWorker(binary,{append(){}});let response;worker.enqueue({file,source,overlays:{},timeout:100,done:r=>response=r});const firstPid=worker.process.pid;await until(()=>response,'Timeout');assert(response.error.message.includes('timed out'));await until(()=>worker.ready,'Automatic restart');assert.notEqual(worker.process.pid,firstPid);
   assert(!response.error.message.includes('超时'));assert(response.error.messageZh.includes('超时'));
-  response=null;worker.enqueue({file,source,overlays:{},timeout:30000,done:r=>response=r});await until(()=>response,'Render after automatic restart');assert(response.displayList);worker.dispose();assert.equal(worker.process,null);evidence.checks.push('Timeout kills isolated worker, automatically starts a new worker, and subsequent rendering succeeds');
+  response=null;worker.enqueue({file,source,overlays:{},timeout:30000,done:r=>response=r});await until(()=>response,'Render after automatic restart');assert(observed(response).displayList);worker.dispose();assert.equal(worker.process,null);evidence.checks.push('Timeout kills isolated worker, automatically starts a new worker, and subsequent rendering succeeds');
  }
  host.panel.dispose();await pause(100);await vscode.commands.executeCommand('laymesh.openPreview',doc.uri);await until(()=>host.messages.find(m=>m.displayList),'Reopen after dispose');assert.equal(panels,2);host.panel.dispose();
  evidence.checks.push('Panel disposal and fresh native worker after reopening');

@@ -1,4 +1,4 @@
-import init,{prepare_display_list,register_render_resource,retain_render_resources} from './wasm/laymesh_wasm.js';
+import init,{prepare_display_list,register_render_resource,retain_render_resources,set_render_cache_budget} from './wasm/laymesh_wasm.js';
 import {mmPerUnit,canvasAt,niceStep,preparePlots,plotAt,formatData} from './preview-math.mjs';
 
 const bridge=typeof acquireVsCodeApi==='function'?acquireVsCodeApi():{getState:()=>null,setState(){},postMessage(){}};
@@ -11,7 +11,7 @@ const zoom=el('output','zoom',toolbar),status=el('span','status',toolbar);
 const workspace=el('div','workspace',root),corner=el('span','corner',workspace),hr=el('canvas','ruler horizontal',workspace),vr=el('canvas','ruler vertical',workspace),viewport=el('div','viewport',workspace);
 viewport.tabIndex=0;viewport.setAttribute('role','region');
 const figure=el('div','figure',viewport);let image=el('canvas','figure-pixels',figure);image.style.position='absolute';image.setAttribute('role','img');
-let wasmMemory;const wasmReady=init().then(exports=>{wasmMemory=exports.memory;return exports;});let drawJob,drawKey='',drawGeneration=0,paintSequence=0;const resources=new Map();
+let wasmMemory;const wasmReady=init().then(exports=>{wasmMemory=exports.memory;return exports;});let drawJob,drawJobId='',drawKey='',drawGeneration=0,paintSequence=0;const resources=new Map();
 const vertical=el('div','crosshair vertical',viewport),horizontal=el('div','crosshair horizontal',viewport);
 vertical.hidden=horizontal.hidden=true;
 const errors=el('div','errors',root),errorButton=el('button','error-location',errors),warnings=el('div','warnings',errors),readout=el('output','coordinates',root);
@@ -102,7 +102,7 @@ new ResizeObserver(schedule).observe(viewport);
 let renderSequence=0,frameTimings={};
 async function installFrame(data){
  const sequence=++renderSequence;
- if(data.protocol!==3||!data.displayList)throw Error('Expected drawing protocol 3');
+ if(data.protocol!==3||(!data.displayList&&!data.displayListCompressed))throw Error('Expected drawing protocol 3');
  const beforeReady=performance.now();
  await wasmReady;
  const beforeResources=performance.now();
@@ -112,8 +112,22 @@ async function installFrame(data){
  }));
  if(sequence!==renderSequence)return;
  const beforeInstall=performance.now();
- const next=prepare_display_list(JSON.stringify(data.displayList));drawJob?.free();drawJob=next;drawKey='';drawGeneration=data.generation;
- const ids=Object.keys(data.displayList.resources);retain_render_resources(JSON.stringify(ids));for(const id of resources.keys())if(!ids.includes(id))resources.delete(id);
+ set_render_cache_budget(data.previewSettings?.cache_mb??256);
+ const compressed=data.displayListCompressed,reuse=!!drawJob&&compressed?.id===drawJobId;
+ if(!reuse){
+  let json;
+  if(compressed){
+   if(compressed.codec!=='gzip'||!Number.isSafeInteger(compressed.uncompressedBytes)||compressed.uncompressedBytes<0)throw Error('Invalid compressed drawing commands');
+   const bytes=typeof compressed.data==='string'?Uint8Array.from(atob(compressed.data),c=>c.charCodeAt(0)):compressed.data;
+   const decoded=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
+   if(decoded.byteLength!==compressed.uncompressedBytes)throw Error('Drawing command length mismatch');
+   json=new TextDecoder('utf-8',{fatal:true}).decode(decoded);
+  }else json=JSON.stringify(data.displayList);
+  if(sequence!==renderSequence)return;
+  const next=prepare_display_list(json);drawJob?.free();drawJob=next;drawJobId=compressed?.id||'';drawKey='';
+ }
+ drawGeneration=data.generation;
+ const ids=Object.keys(data.drawingResources||data.displayList.resources);retain_render_resources(JSON.stringify(ids));for(const id of resources.keys())if(!ids.includes(id))resources.delete(id);
  page=data.inspection.page;plots=preparePlots(data.inspection);pathCache=new WeakMap();
  warnings.textContent=(data.inspection.warnings||[]).map(w=>`${w.code}: ${w.message}`).join('\n');
  frameTimings={initializationWaitMs:beforeResources-beforeReady,resourcesMs:beforeInstall-beforeResources,installMs:performance.now()-beforeInstall};
@@ -121,7 +135,9 @@ async function installFrame(data){
  // Present a newly installed frame immediately. Background webviews can defer
  // animation callbacks; pointer/zoom updates remain coalesced by schedule().
  if(frame)cancelAnimationFrame(frame);
+ const previousKey=drawKey;
  layout();
+ if(reuse&&previousKey&&previousKey===drawKey){root.dataset.painted='true';bridge.postMessage({type:'painted',generation:drawGeneration,at:Date.now(),rasterMs:0,wasmMemoryBytes:wasmMemory.buffer.byteLength,...frameTimings,width:image.width,height:image.height});}
 }
 function paint(r){
  if(!drawJob)return;
@@ -130,7 +146,7 @@ function paint(r){
  const crop=[(left-r.left)/view.scale,(top-r.top)/view.scale,(right-r.left)/view.scale,(bottom-r.top)/view.scale];
  const dpr=devicePixelRatio||1,width=Math.max(1,Math.ceil((right-left)*dpr)),height=Math.max(1,Math.ceil((bottom-top)*dpr));
  image.style.width=(right-left)+'px';image.style.height=(bottom-top)+'px';image.style.left=(left-r.left)+'px';image.style.top=(top-r.top)+'px';
- const key=JSON.stringify([drawGeneration,crop,width,height]);if(key===drawKey)return;drawKey=key;
+ const key=JSON.stringify([drawJobId||drawGeneration,crop,width,height]);if(key===drawKey)return;drawKey=key;
  try{const before=performance.now(),pixels=drawJob.raster(JSON.stringify(crop),width,height);
   try{image.width=width;image.height=height;image.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(pixels.rgba),width,height),0,0);}finally{pixels.free();}
   root.dataset.painted='true';root.dataset.rasterMs=String(performance.now()-before);bridge.postMessage({type:'painted',generation:drawGeneration,at:Date.now(),rasterMs:Number(root.dataset.rasterMs),wasmMemoryBytes:wasmMemory.buffer.byteLength,...frameTimings,width,height});
@@ -147,7 +163,7 @@ window.addEventListener('message',({data})=>{
  else if(data?.type==='result'){
   diagnostic=data.error;showDiagnostic();
   if(diagnostic){showStatus('error');}
-  else if(data.protocol===3&&data.displayList&&data.inspection){installFrame(data).catch(error=>{diagnostic={code:'E_PREVIEW_RESOURCE',message:String(error)};showDiagnostic();showStatus('error');});}
+  else if(data.protocol===3&&(data.displayList||data.displayListCompressed)&&data.inspection){installFrame(data).catch(error=>{diagnostic={code:'E_PREVIEW_RESOURCE',message:String(error)};showDiagnostic();showStatus('error');});}
   else{diagnostic={code:'E_PREVIEW_PROTOCOL',message:'Expected drawing protocol 3'};showDiagnostic();showStatus('error');}
  }
 });

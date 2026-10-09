@@ -1,6 +1,6 @@
 //! Browser bindings share native layout and CPU drawing; SVG is an export format.
 use laymesh_core::{
-    engine::compile_source,
+    engine::compile_preview_source,
     model::{Host, Scene},
 };
 use laymesh_language::{LanguageService, byte_offset, utf16_offset};
@@ -16,6 +16,10 @@ thread_local! {
 #[wasm_bindgen]
 pub fn register_render_resource(id: &str, bytes: &[u8]) {
     DRAW_RESOURCES.with(|resources| resources.borrow_mut().insert(id.into(), bytes.to_vec()));
+}
+#[wasm_bindgen]
+pub fn set_render_cache_budget(mib: usize) {
+    laymesh_render::raster::set_image_cache_budget(mib);
 }
 #[wasm_bindgen]
 pub fn retain_render_resources(ids: &str) -> Result<(), JsValue> {
@@ -164,7 +168,7 @@ pub fn prepare_render(
                 .map(|(name, data)| (name.clone(), data.clone())),
         );
     });
-    let scene = compile_source(source, filename, host).map_err(|e| {
+    let scene = compile_preview_source(source, filename, host).map_err(|e| {
         let mut diagnostic = serde_json::to_value(&e).unwrap();
         // Native errors remain unchanged. This extra field is a browser resource
         // request; the worker only honors paths in its local resource manifest.

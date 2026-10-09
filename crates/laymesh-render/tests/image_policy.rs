@@ -71,6 +71,48 @@ fn preview_uses_full_resolution_jpeg_and_only_actual_alpha_uses_webp() {
     std::fs::remove_dir_all(dir).unwrap();
 }
 #[test]
+fn canvas_preview_reuses_pixels_crops_and_derivatives_across_refreshes() {
+    let dir = std::env::temp_dir().join(format!("laymesh-canvas-policy-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let mut image = image::RgbaImage::from_pixel(16, 8, image::Rgba([255, 0, 0, 255]));
+    for x in 8..16 {
+        for y in 0..8 {
+            image.put_pixel(x, y, image::Rgba([0, 0, 255, 128]));
+        }
+    }
+    let mut n = node(image::DynamicImage::ImageRgba8(image));
+    n["crop"] = json!({"x":8.,"y":0.,"width":8.,"height":8.});
+    let s = scene(n);
+    let settings = config::PreviewSettings::default();
+    let (first, resources) = preview_assets::display_frame(&s, &dir, &settings).unwrap();
+    let r = resources
+        .iter()
+        .find(|r| r["mime"] == "image/webp")
+        .unwrap();
+    let path = std::path::Path::new(r["path"].as_str().unwrap());
+    let bytes = std::fs::read(path).unwrap();
+    let decoded = image::load_from_memory(&bytes).unwrap().to_rgba8();
+    assert_eq!(decoded.dimensions(), (8, 8));
+    assert!(
+        decoded
+            .pixels()
+            .all(|p| p[0] < 8 && p[2] > 245 && p[3] == 128)
+    );
+    assert!(first.resources.values().all(|r| r.data.is_empty()));
+    let modified = path.metadata().unwrap().modified().unwrap();
+    let (second, again) = preview_assets::display_frame(&s, &dir, &settings).unwrap();
+    assert_eq!(
+        serde_json::to_value(first).unwrap(),
+        serde_json::to_value(second).unwrap()
+    );
+    assert_eq!(resources, again);
+    assert_eq!(modified, path.metadata().unwrap().modified().unwrap());
+    std::fs::remove_file(path).unwrap();
+    preview_assets::display_frame(&s, &dir, &settings).unwrap();
+    assert_eq!(bytes, std::fs::read(path).unwrap());
+    std::fs::remove_dir_all(dir).unwrap();
+}
+#[test]
 fn pdf_content_choice_depth_alpha_direct_jpeg_and_downsample() {
     let small = image::DynamicImage::ImageRgb8(image::RgbImage::from_fn(12, 12, |x, y| {
         image::Rgb([

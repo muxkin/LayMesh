@@ -111,7 +111,7 @@ pub fn display_frame(
             }
         }
     }
-    let mut list = to_display_list(scene)?;
+    let mut list = crate::display_list::preview_display_list(scene)?;
     let mut resources = Vec::new();
     let mut ids = HashMap::new();
     let mut tasks = Vec::new();
@@ -123,16 +123,39 @@ pub fn display_frame(
                 settings.jpeg_quality, settings.webp_quality, settings.webp_method
             );
             let path = directory.join(format!("{id}.resource"));
-            let pixels = Arc::new(
-                image::load_from_memory(&resource.data).map_err(|e| error(e.to_string()))?,
-            );
-            resource.mime = if raster_policy::has_transparency(&pixels) {
-                "image/webp"
+            // Immutable derivatives include their encoding settings in the
+            // key. Recover MIME from the file header on warm refreshes without
+            // decoding the original full-resolution image again.
+            if path.is_file() {
+                use std::io::Read;
+                let mut header = [0; 12];
+                let mut file = std::fs::File::open(&path).map_err(|e| error(e.to_string()))?;
+                file.read_exact(&mut header)
+                    .map_err(|e| error(e.to_string()))?;
+                resource.mime = if &header[..4] == b"RIFF" && &header[8..] == b"WEBP" {
+                    "image/webp"
+                } else if header[..2] == [0xff, 0xd8] {
+                    "image/jpeg"
+                } else {
+                    return Err(error("无效预览图片缓存"));
+                }
+                .into();
             } else {
-                "image/jpeg"
-            }
-            .into();
-            if !path.is_file() {
+                let pixels = if let Some(key) = original.strip_prefix("pixels-") {
+                    laymesh_core::asset_cache::pixels(key)
+                        .ok_or_else(|| error("预览图片缓存已过期"))?
+                } else {
+                    Arc::new(
+                        image::load_from_memory(&resource.data)
+                            .map_err(|e| error(e.to_string()))?,
+                    )
+                };
+                resource.mime = if raster_policy::has_transparency(&pixels) {
+                    "image/webp"
+                } else {
+                    "image/jpeg"
+                }
+                .into();
                 tasks.push(ImageTask { pixels, path });
             }
             ids.insert(original, id.clone());

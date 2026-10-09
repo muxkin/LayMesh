@@ -12,16 +12,19 @@ class PreviewWorker {
   if(this.process)return;
   fs.mkdirSync(this.resourceDir,{recursive:true});
   const proc=spawn(this.binary,['preview','--stdio'],{stdio:['pipe','pipe','pipe']});
-  this.process=proc;this.ready=false;let buffer='',stderr='';
+  this.process=proc;this.ready=false;let parts=[],stderr='';
   proc.stdout.setEncoding('utf8');
   this.startTimer=setTimeout(()=>this.fail(messageError('Preview worker did not start; update the configured LayMesh executable','预览进程未启动，请更新 LayMesh 可执行文件')),5000);
   proc.stdout.on('data',data=>{
-   if(this.process!==proc)return;buffer+=data.toString();let at;
-   while((at=buffer.indexOf('\n'))>=0){const line=buffer.slice(0,at);buffer=buffer.slice(at+1);let result;
+   if(this.process!==proc)return;let start=0,at;
+   // Scan only the incoming chunk. Repeatedly searching a growing 10 MB
+   // response flattens ropes and copies hundreds of megabytes per refresh.
+   while((at=data.indexOf('\n',start))>=0){parts.push(data.slice(start,at));const line=parts.join('');parts=[];start=at+1;let result;
     try{result=JSON.parse(line);}catch{this.fail(messageError('Invalid response from LayMesh preview worker','预览进程返回无效数据'));return;}
     if(result.type==='ready'&&result.protocol===1){clearTimeout(this.startTimer);this.capabilities=result.capabilities||[];this.ready=true;this.pump();}
     else if(this.active&&result.id===this.active.id){const job=this.active;clearTimeout(this.renderTimer);this.active=null;job.done(result);this.pump();}
    }
+   if(start<data.length)parts.push(data.slice(start));
   });
   proc.stderr.on('data',data=>{stderr=(stderr+data.toString()).slice(-1200);this.output.append(data.toString());});
   proc.on('error',error=>{if(this.process===proc)this.fail(messageError(error.message));});
@@ -38,6 +41,7 @@ class PreviewWorker {
    if(this.enabled)this.start();
   },job.timeout);
   const request={protocol:3,resource_dir:this.resourceDir,...job.request};if(request.protocol===3&&!this.capabilities.includes('display-list-v3')){clearTimeout(this.renderTimer);this.active=null;job.done({error:{code:'E_PREVIEW_PROTOCOL',message:'Native engine does not support drawing protocol 3'},dependencies:[]});this.pump();return;}
+  if(request.protocol===3&&this.capabilities.includes('display-list-gzip-v3'))request.compressed_display_list=true;
   this.process.stdin.write(JSON.stringify({...request,id:this.active.id,file:job.file,source:job.source,overlays:job.overlays})+'\n');
  }
  cancel(file){this.queue.delete(file);}
@@ -146,8 +150,9 @@ function activatePreview(context,binary,output){
     if(state.disposed||generation!==state.generation)return;
     watch(state,result.dependencies||[],!!result.error);
     try{
-     if(!result.error){if(result.protocol!==3||!result.displayList)throw new Error('Expected drawing protocol 3');for(const item of result.resources||[])resource(state,item);result.resources=Object.entries(result.displayList.resources).map(([id,meta])=>{const uri=state.resources.get(id);if(!uri)throw Error('Missing drawing resource');return {id,...meta,data:undefined,uri};});}
-     const frame={type:'result',...result,generation};state.pending=false;state.last=frame;if(result.displayList)state.lastSuccess=frame;post(state,frame);
+     if(!result.error){if(result.protocol!==3||(!result.displayList&&!result.displayListCompressed))throw new Error('Expected drawing protocol 3');for(const item of result.resources||[])resource(state,item);result.resources=Object.entries(result.drawingResources||result.displayList.resources).map(([id,meta])=>{const uri=state.resources.get(id);if(!uri)throw Error('Missing drawing resource');return {id,...meta,data:undefined,uri};});}
+     if(result.displayListCompressed){const bytes=Buffer.from(result.displayListCompressed.data,'base64');result.displayListCompressed.data=new Uint8Array(bytes.buffer,bytes.byteOffset,bytes.byteLength);}
+     const frame={type:'result',...result,generation};state.pending=false;state.last=frame;if(result.displayList||result.displayListCompressed)state.lastSuccess=frame;post(state,frame);
     }catch(error){state.pending=false;post(state,{type:'result',error:messageError(error.message)});}
    }});
   }catch(error){if(!state.disposed&&generation===state.generation){state.last={type:'result',error:messageError(error.message)};post(state,state.last);}}

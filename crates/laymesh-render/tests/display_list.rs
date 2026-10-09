@@ -59,6 +59,46 @@ p.add(ellipse(size=(200mm,12mm),fill=linear_gradient(stops=[(0,"#ff000080"),(1,"
     ));
 }
 #[test]
+fn decoded_image_cache_tracks_bytes_instead_of_caller_ids() {
+    use laymesh_render::display_list::Resource;
+    use std::io::Cursor;
+    let bytes = |color| {
+        let mut out = Cursor::new(Vec::new());
+        image::DynamicImage::ImageRgba8(image::RgbaImage::from_pixel(2, 2, image::Rgba(color)))
+            .write_to(&mut out, image::ImageFormat::Png)
+            .unwrap();
+        out.into_inner()
+    };
+    let mut list = compile("p=canvas(size=(25.4mm,25.4mm))");
+    list.nodes.push(laymesh_render::display_list::DrawNode::new(
+        DrawKind::Image {
+            resource: "replaceable".into(),
+            rect: Rect::new(0., 0., 25.4, 25.4),
+            nearest: true,
+        },
+    ));
+    list.resources.insert(
+        "replaceable".into(),
+        Resource {
+            mime: "image/png".into(),
+            data: bytes([255, 0, 0, 128]),
+            font_index: None,
+            family: None,
+        },
+    );
+    let red = render_rgba(&list, 10.).unwrap().rgba;
+    assert_eq!(render_rgba(&list, 10.).unwrap().rgba, red);
+    list.resources.get_mut("replaceable").unwrap().data = bytes([0, 0, 255, 128]);
+    let blue = render_rgba(&list, 10.).unwrap().rgba;
+    assert_ne!(red, blue);
+    assert_eq!(&blue[..4], &[0, 0, 255, 128]);
+    raster::set_image_cache_budget(0);
+    assert_eq!(render_rgba(&list, 10.).unwrap().rgba, blue);
+    list.resources.get_mut("replaceable").unwrap().data = vec![0, 1, 2];
+    assert!(render_rgba(&list, 10.).is_err());
+    raster::set_image_cache_budget(256);
+}
+#[test]
 fn very_wide_translucent_images_have_no_internal_edges() {
     use laymesh_render::display_list::{DrawNode, Resource};
     use std::io::Cursor;

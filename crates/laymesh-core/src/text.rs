@@ -245,6 +245,28 @@ impl FontSystem {
         warnings: &mut Vec<Diagnostic>,
     ) {
         self.host = host.clone();
+        self.load_bound_requested(v, file, loc, warnings);
+    }
+    /// Bind the immutable resource snapshot once per compilation, rather than
+    /// copying all registered font and image bytes for every text object.
+    pub(crate) fn bind_host(&mut self, host: &Host) {
+        let same_journal = match (&self.host.dependencies, &host.dependencies) {
+            (Some(a), Some(b)) => std::rc::Rc::ptr_eq(a, b),
+            (None, None) => true,
+            _ => false,
+        };
+        if self.host.native == host.native && same_journal && self.host.files == host.files {
+            return;
+        }
+        self.host = host.clone();
+    }
+    pub(crate) fn load_bound_requested(
+        &mut self,
+        v: &V,
+        file: &str,
+        loc: Loc,
+        warnings: &mut Vec<Diagnostic>,
+    ) {
         let requests = match v {
             V::Text(s, _) => vec![s.clone()],
             V::List(v) => v.iter().map(V::as_str).collect(),
@@ -254,7 +276,7 @@ impl FontSystem {
             if font_path(&s) {
                 let path = resolve(file, s.split('#').next().unwrap_or(&s));
                 if !self.paths.contains_key(&path) {
-                    if let Ok(data) = host.read(&path, file, loc) {
+                    if let Ok(data) = self.host.read(&path, file, loc) {
                         self.register_font(&path, data);
                     }
                 }

@@ -21,6 +21,11 @@ pub fn predefined_variables() -> &'static Vec<Json> {
 pub fn predefined_value(name: &str) -> Option<&'static str> {
     predefined_variables().iter().find(|v| v["name"] == name)?["value"].as_str()
 }
+/// Interactive compilation reuses pure geometry without changing the asset
+/// lifetime contract of the returned scene or caching diagnostics and IDs.
+pub fn compile_preview_source(source: &str, file: &str, host: Host) -> Result<Scene> {
+    crate::geometry_cache::interactive(|| compile_source(source, file, host))
+}
 pub struct Engine {
     pub host: Host,
     pub warnings: Vec<Diagnostic>,
@@ -85,6 +90,7 @@ impl Engine {
     pub fn new(host: Host) -> Self {
         let native = host.native;
         let mut fonts = crate::text::FontSystem::new(native);
+        fonts.bind_host(&host);
         for (name, data) in &host.files {
             if Path::new(name)
                 .extension()
@@ -165,6 +171,9 @@ impl Engine {
         }
     }
     pub fn compile(&mut self, source: &str, file: &str) -> Result<Scene> {
+        // Public Engine users can update Host buffers after construction.
+        // Refresh the context at entry, reusing an unchanged snapshot.
+        self.fonts.bind_host(&self.host);
         self.preview_images.clear();
         self.file = file.into();
         let stmts = parser::parse(source, file)?;

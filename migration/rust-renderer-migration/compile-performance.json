@@ -1,0 +1,908 @@
+{
+  "measured_at": "2026-10-09T17:16:47.809423+00:00",
+  "platform": "Linux x64, Chromium, VS Code; same local machine",
+  "fixtures": {
+    "scientific_layout": {
+      "label": "actual scientific layout, read without modifications",
+      "sha256": "0f76ae48abf1612798cf064a7739b619d5534386bb5bc93f63c8b7e377c6c4ab"
+    },
+    "showcase": "examples/showcase.lay"
+  },
+  "scope": "Observed local timings for these fixtures; independent native worker, isolated WASM and actual VS Code tests; excludes edit debounce. Cold and warm observations are separate. Raw private figure paths and payloads remain local.",
+  "cpu_profile": {
+    "fixture": "examples/showcase.lay",
+    "sampling": "Chromium symbolized WASM call-stack time, repeated compilation",
+    "inclusive_time_percent": {
+      "round_fuse_outline": 59.5,
+      "font_host_snapshot_copy": 26.4
+    }
+  },
+  "native_worker": [
+    {
+      "variant": "SVG 0.5.0",
+      "protocol": 2,
+      "binary_sha256": "50f094657635f8c92c43b95bb7e4ed646cb85c9f81b5e1773ad3662c40673c41",
+      "cold_ms": 2659.717,
+      "hot_median_ms": 1063.5265,
+      "peak_rss_kib": 476712,
+      "rows": [
+        {
+          "ms": 2659.717,
+          "bytes": 992369,
+          "new_resources": 11,
+          "peak_rss_kib": 476712
+        },
+        {
+          "ms": 1123.535,
+          "bytes": 988755,
+          "new_resources": 0,
+          "peak_rss_kib": 476712
+        },
+        {
+          "ms": 1060.625,
+          "bytes": 988755,
+          "new_resources": 0,
+          "peak_rss_kib": 476712
+        },
+        {
+          "ms": 1070.002,
+          "bytes": 988755,
+          "new_resources": 0,
+          "peak_rss_kib": 476712
+        },
+        {
+          "ms": 1063.943,
+          "bytes": 988755,
+          "new_resources": 0,
+          "peak_rss_kib": 476712
+        },
+        {
+          "ms": 1063.11,
+          "bytes": 988755,
+          "new_resources": 0,
+          "peak_rss_kib": 476712
+        },
+        {
+          "ms": 1059.614,
+          "bytes": 988755,
+          "new_resources": 0,
+          "peak_rss_kib": 476712
+        }
+      ],
+      "definition": "write request through full JSON line received; excludes JSON parsing, edit debounce and browser drawing; fresh process and resource directory"
+    },
+    {
+      "variant": "CPU migration before optimization",
+      "protocol": 3,
+      "binary_sha256": "aa847007990623b6be08bff7cf1e7ba0d2b3bd41ac11c5e1dc27e6e67fa2457d",
+      "cold_ms": 4301.871,
+      "hot_median_ms": 2460.3015,
+      "peak_rss_kib": 680172,
+      "rows": [
+        {
+          "ms": 4301.871,
+          "bytes": 10219412,
+          "new_resources": 11,
+          "peak_rss_kib": 680172
+        },
+        {
+          "ms": 2465.643,
+          "bytes": 10216265,
+          "new_resources": 0,
+          "peak_rss_kib": 680172
+        },
+        {
+          "ms": 2459.838,
+          "bytes": 10216265,
+          "new_resources": 0,
+          "peak_rss_kib": 680172
+        },
+        {
+          "ms": 2460.765,
+          "bytes": 10216265,
+          "new_resources": 0,
+          "peak_rss_kib": 680172
+        },
+        {
+          "ms": 2460.863,
+          "bytes": 10216265,
+          "new_resources": 0,
+          "peak_rss_kib": 680172
+        },
+        {
+          "ms": 2447.028,
+          "bytes": 10216265,
+          "new_resources": 0,
+          "peak_rss_kib": 680172
+        },
+        {
+          "ms": 2455.858,
+          "bytes": 10216265,
+          "new_resources": 0,
+          "peak_rss_kib": 680172
+        }
+      ],
+      "definition": "write request through full JSON line received; excludes JSON parsing, edit debounce and browser drawing; fresh process and resource directory"
+    },
+    {
+      "variant": "optimized",
+      "protocol": 3,
+      "binary_sha256": "c3bb2d0fad00f503268a08dc7770814ee4adaac1514ad4cee031e841448f3e74",
+      "cold_ms": 1534.592,
+      "hot_median_ms": 101.12950000000001,
+      "peak_rss_kib": 481308,
+      "rows": [
+        {
+          "ms": 1534.592,
+          "bytes": 10219662,
+          "new_resources": 11,
+          "peak_rss_kib": 481308
+        },
+        {
+          "ms": 101.873,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481308
+        },
+        {
+          "ms": 99.905,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481308
+        },
+        {
+          "ms": 102.108,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481308
+        },
+        {
+          "ms": 99.432,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481308
+        },
+        {
+          "ms": 100.386,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481308
+        },
+        {
+          "ms": 102.4,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481308
+        }
+      ],
+      "definition": "write request through full JSON line received; excludes JSON parsing, edit debounce and browser drawing; fresh process and resource directory"
+    }
+  ],
+  "wasm_showcase": [
+    {
+      "variant": "before optimization",
+      "example": "showcase",
+      "files_json_bytes": 14596,
+      "rows": [
+        {
+          "compile": 721.3999999761581,
+          "lower": 44.40000003576279,
+          "metadata": 5.899999976158142,
+          "raster": 69.90000003576279,
+          "total": 841.6000000238419,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 143785984
+        },
+        {
+          "compile": 617.6999999880791,
+          "lower": 19.69999998807907,
+          "metadata": 3.700000047683716,
+          "raster": 56.19999998807907,
+          "total": 697.3000000119209,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 143785984
+        },
+        {
+          "compile": 616.8000000119209,
+          "lower": 19.19999998807907,
+          "metadata": 3.600000023841858,
+          "raster": 55.30000001192093,
+          "total": 694.9000000357628,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 143785984
+        },
+        {
+          "compile": 616,
+          "lower": 19,
+          "metadata": 3.599999964237213,
+          "raster": 54.30000001192093,
+          "total": 692.8999999761581,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 143785984
+        },
+        {
+          "compile": 618.6999999880791,
+          "lower": 18.600000023841858,
+          "metadata": 3.5,
+          "raster": 54.59999996423721,
+          "total": 695.3999999761581,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 143785984
+        },
+        {
+          "compile": 614.5999999642372,
+          "lower": 19.100000023841858,
+          "metadata": 3.600000023841858,
+          "raster": 54.19999998807907,
+          "total": 691.5,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 143785984
+        },
+        {
+          "compile": 613.1000000238419,
+          "lower": 18.80000001192093,
+          "metadata": 3.699999988079071,
+          "raster": 54.59999996423721,
+          "total": 690.1999999880791,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 143785984
+        },
+        {
+          "compile": 613,
+          "lower": 18.899999976158142,
+          "metadata": 3.5,
+          "raster": 54.80000001192093,
+          "total": 690.1999999880791,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 143785984
+        }
+      ],
+      "wasm_sha256": "ed4ec52fd9cce4c7f8bf44acd20cb317ece94c2c6e98631c65ef0b227d150c52",
+      "definition": "Same dependencies/fonts; isolated Chromium; 960 px paint; first compile and seven comment edits; excludes initialization/network/debounce",
+      "hot_median_ms": {
+        "compile": 616,
+        "lower": 19,
+        "metadata": 3.600000023841858,
+        "raster": 54.59999996423721,
+        "total": 692.8999999761581
+      }
+    },
+    {
+      "variant": "optimized",
+      "example": "showcase",
+      "files_json_bytes": 14596,
+      "rows": [
+        {
+          "compile": 527.5999999642372,
+          "lower": 11,
+          "metadata": 6.300000011920929,
+          "raster": 70.30000001192093,
+          "total": 615.1999999880791,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 138870784
+        },
+        {
+          "compile": 45.40000003576279,
+          "lower": 5,
+          "metadata": 5.800000011920929,
+          "raster": 56.19999998807907,
+          "total": 112.40000003576279,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 138870784
+        },
+        {
+          "compile": 45.10000002384186,
+          "lower": 5,
+          "metadata": 4,
+          "raster": 55.19999998807907,
+          "total": 109.30000001192093,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 138870784
+        },
+        {
+          "compile": 46.60000002384186,
+          "lower": 4.800000011920929,
+          "metadata": 3.800000011920929,
+          "raster": 55,
+          "total": 110.20000004768372,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 138870784
+        },
+        {
+          "compile": 42.700000047683716,
+          "lower": 4.799999952316284,
+          "metadata": 4.200000047683716,
+          "raster": 55.59999996423721,
+          "total": 107.30000001192093,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 138870784
+        },
+        {
+          "compile": 41.90000003576279,
+          "lower": 4.799999952316284,
+          "metadata": 4.200000047683716,
+          "raster": 55,
+          "total": 105.90000003576279,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 138870784
+        },
+        {
+          "compile": 41.69999998807907,
+          "lower": 4.600000023841858,
+          "metadata": 4,
+          "raster": 58.30000001192093,
+          "total": 108.60000002384186,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 138870784
+        },
+        {
+          "compile": 41,
+          "lower": 5.100000023841858,
+          "metadata": 3.5,
+          "raster": 54.89999997615814,
+          "total": 104.5,
+          "display_list_bytes": 1207825,
+          "rgba_hash": "14f8fd01",
+          "wasm_memory_bytes": 138870784
+        }
+      ],
+      "wasm_sha256": "833859f7856ec9d61125cdcde8221701167874f5c96f6732778a1e126fda8ce9",
+      "definition": "Same dependencies/fonts; isolated Chromium; 960 px paint; first compile and seven comment edits; excludes initialization/network/debounce",
+      "hot_median_ms": {
+        "compile": 42.700000047683716,
+        "lower": 4.800000011920929,
+        "metadata": 4,
+        "raster": 55.19999998807907,
+        "total": 108.60000002384186
+      }
+    }
+  ],
+  "vscode_scientific_layout": [
+    {
+      "variant": "SVG 0.5.0",
+      "edit": "panel label",
+      "cold_ms": 2884,
+      "hot_median_ms": 1174,
+      "rows": [
+        {
+          "generation": 1,
+          "native_ms": 2517,
+          "native_peak_rss_kib": 478952,
+          "bytes": 992553,
+          "resources": 11,
+          "protocol": 2,
+          "elapsed_ms": 2884
+        },
+        {
+          "generation": 4,
+          "native_ms": 1139,
+          "native_peak_rss_kib": 478952,
+          "bytes": 988572,
+          "resources": 0,
+          "protocol": 2,
+          "elapsed_ms": 1176
+        },
+        {
+          "generation": 5,
+          "native_ms": 1126,
+          "native_peak_rss_kib": 478952,
+          "bytes": 988572,
+          "resources": 0,
+          "protocol": 2,
+          "elapsed_ms": 1160
+        },
+        {
+          "generation": 6,
+          "native_ms": 1142,
+          "native_peak_rss_kib": 478952,
+          "bytes": 988572,
+          "resources": 0,
+          "protocol": 2,
+          "elapsed_ms": 1179
+        },
+        {
+          "generation": 7,
+          "native_ms": 1132,
+          "native_peak_rss_kib": 478952,
+          "bytes": 988572,
+          "resources": 0,
+          "protocol": 2,
+          "elapsed_ms": 1174
+        },
+        {
+          "generation": 8,
+          "native_ms": 1135,
+          "native_peak_rss_kib": 478952,
+          "bytes": 988572,
+          "resources": 0,
+          "protocol": 2,
+          "elapsed_ms": 1171
+        }
+      ],
+      "artifact_sha256": {
+        "native": "50f094657635f8c92c43b95bb7e4ed646cb85c9f81b5e1773ad3662c40673c41",
+        "wasm": null
+      },
+      "definition": "native request enqueue to resources loaded and SVG visible in VS Code; excludes edit debounce"
+    },
+    {
+      "variant": "CPU migration before optimization",
+      "edit": "panel label",
+      "cold_ms": 6600,
+      "hot_median_ms": 4161,
+      "rows": [
+        {
+          "generation": 1,
+          "native_ms": 4830,
+          "native_peak_rss_kib": 680704,
+          "bytes": 10191282,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 98,
+          "install_ms": 108.79999995231628,
+          "initialization_wait_ms": 0,
+          "raster_ms": 928.1999999880791,
+          "wasm_memory_bytes": 208666624,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 6600
+        },
+        {
+          "generation": 4,
+          "native_ms": 2777,
+          "native_peak_rss_kib": 680704,
+          "bytes": 10193122,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 86.59999996423721,
+          "initialization_wait_ms": 0,
+          "raster_ms": 822.0999999642372,
+          "wasm_memory_bytes": 249692160,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 4192
+        },
+        {
+          "generation": 5,
+          "native_ms": 2789,
+          "native_peak_rss_kib": 680704,
+          "bytes": 10193413,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 86.19999998807907,
+          "initialization_wait_ms": 0,
+          "raster_ms": 819.6000000238419,
+          "wasm_memory_bytes": 249692160,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 4158
+        },
+        {
+          "generation": 6,
+          "native_ms": 2768,
+          "native_peak_rss_kib": 680704,
+          "bytes": 10194537,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0.09999996423721313,
+          "install_ms": 86.90000003576279,
+          "initialization_wait_ms": 0,
+          "raster_ms": 827.3999999761581,
+          "wasm_memory_bytes": 249692160,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 4161
+        },
+        {
+          "generation": 7,
+          "native_ms": 2771,
+          "native_peak_rss_kib": 680704,
+          "bytes": 10192364,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 86.89999997615814,
+          "initialization_wait_ms": 0.10000002384185791,
+          "raster_ms": 838.4000000357628,
+          "wasm_memory_bytes": 249692160,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 4177
+        },
+        {
+          "generation": 8,
+          "native_ms": 2751,
+          "native_peak_rss_kib": 680704,
+          "bytes": 10193740,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 86.19999998807907,
+          "initialization_wait_ms": 0,
+          "raster_ms": 826.6000000238419,
+          "wasm_memory_bytes": 249692160,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 4145
+        }
+      ],
+      "artifact_sha256": {
+        "native": "aa847007990623b6be08bff7cf1e7ba0d2b3bd41ac11c5e1dc27e6e67fa2457d",
+        "wasm": "ed4ec52fd9cce4c7f8bf44acd20cb317ece94c2c6e98631c65ef0b227d150c52"
+      },
+      "definition": "native request enqueue to resources loaded and WASM Canvas drawn in VS Code; excludes edit debounce"
+    },
+    {
+      "variant": "optimized",
+      "edit": "panel label",
+      "cold_ms": 2513,
+      "hot_median_ms": 404,
+      "rows": [
+        {
+          "generation": 1,
+          "native_ms": 1434,
+          "native_peak_rss_kib": 481956,
+          "bytes": 3455752,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 52.40000003576279,
+          "install_ms": 131.30000001192093,
+          "initialization_wait_ms": 0,
+          "raster_ms": 866.3000000119209,
+          "wasm_memory_bytes": 192675840,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 2513
+        },
+        {
+          "generation": 4,
+          "native_ms": 100,
+          "native_peak_rss_kib": 481956,
+          "bytes": 3456275,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 120.69999998807907,
+          "initialization_wait_ms": 0,
+          "raster_ms": 161,
+          "wasm_memory_bytes": 213516288,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 407
+        },
+        {
+          "generation": 5,
+          "native_ms": 99,
+          "native_peak_rss_kib": 481956,
+          "bytes": 3455801,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 113.30000001192093,
+          "initialization_wait_ms": 0,
+          "raster_ms": 159.4000000357628,
+          "wasm_memory_bytes": 213516288,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 395
+        },
+        {
+          "generation": 6,
+          "native_ms": 98,
+          "native_peak_rss_kib": 481956,
+          "bytes": 3456563,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0.10000002384185791,
+          "install_ms": 113,
+          "initialization_wait_ms": 0,
+          "raster_ms": 160.39999997615814,
+          "wasm_memory_bytes": 213516288,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 396
+        },
+        {
+          "generation": 7,
+          "native_ms": 100,
+          "native_peak_rss_kib": 481956,
+          "bytes": 3455961,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 119.19999998807907,
+          "initialization_wait_ms": 0,
+          "raster_ms": 159.39999997615814,
+          "wasm_memory_bytes": 213516288,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 404
+        },
+        {
+          "generation": 8,
+          "native_ms": 107,
+          "native_peak_rss_kib": 481956,
+          "bytes": 3455964,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 116.59999996423721,
+          "initialization_wait_ms": 0,
+          "raster_ms": 159.80000001192093,
+          "wasm_memory_bytes": 213516288,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 406
+        }
+      ],
+      "artifact_sha256": {
+        "native": "c3bb2d0fad00f503268a08dc7770814ee4adaac1514ad4cee031e841448f3e74",
+        "wasm": "833859f7856ec9d61125cdcde8221701167874f5c96f6732778a1e126fda8ce9"
+      },
+      "definition": "native request enqueue to resources loaded and WASM Canvas drawn in VS Code; excludes edit debounce"
+    },
+    {
+      "variant": "CPU migration before optimization",
+      "edit": "comment",
+      "cold_ms": 5657,
+      "hot_median_ms": 3981,
+      "rows": [
+        {
+          "generation": 1,
+          "native_ms": 4104,
+          "native_peak_rss_kib": 684940,
+          "bytes": 10191282,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 69.30000001192093,
+          "install_ms": 100.80000001192093,
+          "initialization_wait_ms": 0,
+          "raster_ms": 852.7999999523163,
+          "wasm_memory_bytes": 210042880,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 5657
+        },
+        {
+          "generation": 4,
+          "native_ms": 2610,
+          "native_peak_rss_kib": 684940,
+          "bytes": 10191282,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 83.80000001192093,
+          "initialization_wait_ms": 0,
+          "raster_ms": 798,
+          "wasm_memory_bytes": 251068416,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 3974
+        },
+        {
+          "generation": 5,
+          "native_ms": 2635,
+          "native_peak_rss_kib": 684940,
+          "bytes": 10191282,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 83.80000001192093,
+          "initialization_wait_ms": 0,
+          "raster_ms": 823.5,
+          "wasm_memory_bytes": 251068416,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 3981
+        },
+        {
+          "generation": 6,
+          "native_ms": 2647,
+          "native_peak_rss_kib": 684940,
+          "bytes": 10191282,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 85,
+          "initialization_wait_ms": 0.09999996423721313,
+          "raster_ms": 800.0999999642372,
+          "wasm_memory_bytes": 251068416,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 3979
+        },
+        {
+          "generation": 7,
+          "native_ms": 2670,
+          "native_peak_rss_kib": 684940,
+          "bytes": 10191282,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 87.40000003576279,
+          "initialization_wait_ms": 0,
+          "raster_ms": 798.6000000238419,
+          "wasm_memory_bytes": 251068416,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 4006
+        },
+        {
+          "generation": 8,
+          "native_ms": 2659,
+          "native_peak_rss_kib": 684940,
+          "bytes": 10191282,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 84.60000002384186,
+          "initialization_wait_ms": 0,
+          "raster_ms": 799.1000000238419,
+          "wasm_memory_bytes": 251068416,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 3992
+        }
+      ],
+      "artifact_sha256": {
+        "native": "aa847007990623b6be08bff7cf1e7ba0d2b3bd41ac11c5e1dc27e6e67fa2457d",
+        "wasm": "ed4ec52fd9cce4c7f8bf44acd20cb317ece94c2c6e98631c65ef0b227d150c52"
+      },
+      "definition": "native request enqueue to resources loaded and WASM Canvas drawn in VS Code; excludes edit debounce"
+    },
+    {
+      "variant": "optimized",
+      "edit": "comment",
+      "cold_ms": 2533,
+      "hot_median_ms": 85,
+      "rows": [
+        {
+          "generation": 1,
+          "native_ms": 1437,
+          "native_peak_rss_kib": 481684,
+          "bytes": 3455752,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 58.69999998807907,
+          "install_ms": 132.5,
+          "initialization_wait_ms": 0,
+          "raster_ms": 875.8000000119209,
+          "wasm_memory_bytes": 192675840,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 2533
+        },
+        {
+          "generation": 4,
+          "native_ms": 64,
+          "native_peak_rss_kib": 481684,
+          "bytes": 3455752,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 0.10000002384185791,
+          "initialization_wait_ms": 0,
+          "raster_ms": 0,
+          "wasm_memory_bytes": 192675840,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 84
+        },
+        {
+          "generation": 5,
+          "native_ms": 65,
+          "native_peak_rss_kib": 481684,
+          "bytes": 3455752,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 0,
+          "initialization_wait_ms": 0,
+          "raster_ms": 0,
+          "wasm_memory_bytes": 192675840,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 87
+        },
+        {
+          "generation": 6,
+          "native_ms": 59,
+          "native_peak_rss_kib": 481684,
+          "bytes": 3455752,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 0.10000002384185791,
+          "initialization_wait_ms": 0,
+          "raster_ms": 0,
+          "wasm_memory_bytes": 192675840,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 79
+        },
+        {
+          "generation": 7,
+          "native_ms": 60,
+          "native_peak_rss_kib": 481684,
+          "bytes": 3455752,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 0.10000002384185791,
+          "initialization_wait_ms": 0,
+          "raster_ms": 0,
+          "wasm_memory_bytes": 192675840,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 86
+        },
+        {
+          "generation": 8,
+          "native_ms": 64,
+          "native_peak_rss_kib": 481684,
+          "bytes": 3455752,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 0.10000002384185791,
+          "initialization_wait_ms": 0,
+          "raster_ms": 0,
+          "wasm_memory_bytes": 192675840,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 85
+        }
+      ],
+      "artifact_sha256": {
+        "native": "c3bb2d0fad00f503268a08dc7770814ee4adaac1514ad4cee031e841448f3e74",
+        "wasm": "833859f7856ec9d61125cdcde8221701167874f5c96f6732778a1e126fda8ce9"
+      },
+      "definition": "native request enqueue to resources loaded and WASM Canvas drawn in VS Code; excludes edit debounce"
+    }
+  ],
+  "vscode_viewport": {
+    "workbench_css": [
+      1440,
+      1000
+    ],
+    "dpr": 2,
+    "canvas_pixels": [
+      1200,
+      800
+    ]
+  },
+  "cache_limits": {
+    "geometry_mib": 16,
+    "geometry_entries": 256,
+    "decoded_images_default_mib": 256,
+    "decoded_images_entries": 128,
+    "compressed_display_lists": 1,
+    "compressed_list_budget": "preview cache_mb; caching disabled if encoded list exceeds budget",
+    "invalidation": "SHA-256 of actual geometry/settings/affine, actual image bytes and serialized drawing commands; no cached diagnostics or source IDs"
+  },
+  "package": {
+    "name": "laymesh-renderer-optimized-linux-x64.vsix",
+    "bytes": 11420725,
+    "sha256": "fefa63ccc123b90043a65db8e37869566b1b24ac18eebe030426915215360c9f",
+    "previous_migration_bytes": 11389096,
+    "wasm_bytes": 10796198
+  },
+  "media_engine_fingerprint": "eaef7afb0208db3a46875ebfbdc62cb930614101b63234c81336551ce089a219"
+}

@@ -25,6 +25,50 @@ fn preview(requests: &[Value]) -> Vec<Value> {
         .map(|line| serde_json::from_str(line).unwrap())
         .collect()
 }
+#[test]
+fn negotiated_compressed_commands_preserve_exact_lists_and_changed_frames() {
+    use base64::Engine;
+    use std::io::Read;
+    let root = std::env::temp_dir().join(format!("laymesh-gzip-preview-{}", std::process::id()));
+    std::fs::create_dir_all(&root).unwrap();
+    let source = "p=canvas(size=(30mm,20mm))\np.add(rect(size=(10mm,10mm),fill=\"#f00\"))";
+    let requests=[(source.to_owned(),false),(source.to_owned(),true),(format!("{source}\n# edit"),true),(source.replace("#f00","#00f"),true)].map(|(source,compressed)|json!({"id":1,"generation":7,"protocol":3,"file":root.join("main.lay"),"source":source,"resource_dir":root,"compressed_display_list":compressed}));
+    let results = preview(&requests);
+    assert!(
+        results[0]["capabilities"]
+            .as_array()
+            .unwrap()
+            .contains(&json!("display-list-gzip-v3"))
+    );
+    let decode = |result: &Value| {
+        let payload = &result["displayListCompressed"];
+        assert_eq!(payload["codec"], "gzip");
+        let bytes = base64::engine::general_purpose::STANDARD
+            .decode(payload["data"].as_str().unwrap())
+            .unwrap();
+        let mut decoded = Vec::new();
+        flate2::read::GzDecoder::new(bytes.as_slice())
+            .read_to_end(&mut decoded)
+            .unwrap();
+        assert_eq!(
+            decoded.len(),
+            payload["uncompressedBytes"].as_u64().unwrap() as usize
+        );
+        assert_eq!(laymesh_core::asset_cache::digest(&decoded), payload["id"]);
+        let list: Value = serde_json::from_slice(&decoded).unwrap();
+        assert_eq!(list["resources"], result["drawingResources"]);
+        assert_eq!(result["generation"], 7);
+        assert!(result.get("svg").is_none());
+        list
+    };
+    assert_eq!(results[1]["displayList"], decode(&results[2]));
+    assert_eq!(
+        results[2]["displayListCompressed"],
+        results[3]["displayListCompressed"]
+    );
+    assert_ne!(decode(&results[2]), decode(&results[4]));
+    std::fs::remove_dir_all(root).unwrap();
+}
 
 #[test]
 fn preview_units_overlays_failed_dependencies_and_recovery() {

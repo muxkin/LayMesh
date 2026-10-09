@@ -10,6 +10,7 @@ pub mod endpoints;
 pub mod engine;
 mod formatting;
 pub mod geometry;
+mod geometry_cache;
 pub mod geometry_query;
 mod geometry_recipe;
 pub mod migration;

@@ -11,11 +11,18 @@ use std::{
     sync::mpsc,
 };
 pub fn serve() -> io::Result<()> {
+    let mut compressed_cache: Option<(String, Value)> = None;
     let (sender, receiver) = mpsc::channel::<Value>();
     let writer = std::thread::spawn(move || {
         let mut stdout = io::stdout().lock();
         for message in receiver {
-            if writeln!(stdout, "{message}")
+            // Serialize once, then write the complete JSON line. Formatting a
+            // large display list directly into line-buffered stdout fragments
+            // it into thousands of small writes.
+            let mut bytes = serde_json::to_vec(&message).unwrap();
+            bytes.push(b'\n');
+            if stdout
+                .write_all(&bytes)
                 .and_then(|_| stdout.flush())
                 .is_err()
             {
@@ -24,7 +31,7 @@ pub fn serve() -> io::Result<()> {
         }
     });
     sender
-        .send(json!({"type":"ready","protocol":1,"capabilities":["resources-v2","display-list-v3","defaults"]}))
+        .send(json!({"type":"ready","protocol":1,"capabilities":["resources-v2","display-list-v3","display-list-gzip-v3","defaults"]}))
         .unwrap();
     for line in io::stdin().lock().lines() {
         let request: Value = match serde_json::from_str(&line?) {
@@ -48,6 +55,12 @@ pub fn serve() -> io::Result<()> {
             )?;
             dependencies.borrow_mut().extend(paths);
             let settings = config::preview_settings(&defaults, &request["preview"])?;
+            if compressed_cache.as_ref().is_some_and(|(_, value)| {
+                value["data"].as_str().unwrap().len()
+                    > settings.cache_mb.saturating_mul(1024 * 1024)
+            }) {
+                compressed_cache = None;
+            }
             if request["type"] == "defaults" {
                 let options = config::export_options(
                     &defaults,
@@ -74,6 +87,7 @@ pub fn serve() -> io::Result<()> {
                             .is_some_and(|p| p.to_ascii_lowercase().ends_with(".pdf"))),
             );
             laymesh_core::asset_cache::set_budget(settings.cache_mb);
+            laymesh_render::raster::set_image_cache_budget(settings.cache_mb);
             let mut host = Host {
                 native: true,
                 dependencies: Some(dependencies.clone()),
@@ -112,6 +126,34 @@ pub fn serve() -> io::Result<()> {
                         preview_assets::display_frame(&scene, directory, &settings)?;
                     if let Some(known) = request["known_resources"].as_array() {
                         resources.retain(|item| !known.contains(&item["id"]));
+                    }
+                    if request["compressed_display_list"] == true {
+                        use base64::Engine;
+                        let bytes = serde_json::to_vec(&list)?;
+                        let id = laymesh_core::asset_cache::digest(&bytes);
+                        let compressed = if let Some((key, value)) = &compressed_cache
+                            && key == &id
+                        {
+                            value.clone()
+                        } else {
+                            let mut encoder = flate2::write::GzEncoder::new(
+                                Vec::new(),
+                                flate2::Compression::fast(),
+                            );
+                            encoder.write_all(&bytes)?;
+                            let value = json!({"id":id,"codec":"gzip","uncompressedBytes":bytes.len(),"data":base64::engine::general_purpose::STANDARD.encode(encoder.finish()?)});
+                            if value["data"].as_str().unwrap().len()
+                                <= settings.cache_mb.saturating_mul(1024 * 1024)
+                            {
+                                compressed_cache = Some((id, value.clone()));
+                            } else {
+                                compressed_cache = None;
+                            }
+                            value
+                        };
+                        return Ok(
+                            json!({"protocol":3,"displayListCompressed":compressed,"drawingResources":list.resources,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)}),
+                        );
                     }
                     return Ok(
                         json!({"protocol":3,"displayList":list,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)}),

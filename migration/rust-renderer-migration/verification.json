@@ -1,7 +1,7 @@
 {
   "branch": "codex/rust-renderer-migration",
   "base_commit": "9c6f26f",
-  "rust_tests_passed": 516,
+  "rust_tests_passed": 522,
   "python_tests_passed": 51,
   "legacy_assertions_verified": 891,
   "execution_verified": true,
@@ -11,7 +11,7 @@
         "name": "examples/typography.lay",
         "width": 605,
         "height": 378,
-        "rasterMs": 21.600000023841858,
+        "rasterMs": 19.599999964237213,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -21,7 +21,7 @@
         "name": "examples/vector.lay",
         "width": 680,
         "height": 454,
-        "rasterMs": 18.100000023841858,
+        "rasterMs": 20.30000001192093,
         "maximumDelta": 1,
         "meanDelta": 4.048976418761337e-06,
         "channelsAboveTwo": 0,
@@ -31,7 +31,7 @@
         "name": "examples/effects/art-text.lay",
         "width": 680,
         "height": 567,
-        "rasterMs": 45.299999952316284,
+        "rasterMs": 49.89999997615814,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -41,7 +41,7 @@
         "name": "examples/effects/shadow-glow.lay",
         "width": 567,
         "height": 359,
-        "rasterMs": 24.399999976158142,
+        "rasterMs": 25.900000035762787,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -51,7 +51,7 @@
         "name": "examples/effects/images-groups.lay",
         "width": 605,
         "height": 302,
-        "rasterMs": 50.59999996423721,
+        "rasterMs": 50,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -61,7 +61,7 @@
         "name": "examples/gallery/images/svg.lay",
         "width": 454,
         "height": 302,
-        "rasterMs": 10.400000035762787,
+        "rasterMs": 11.199999988079071,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -71,7 +71,7 @@
         "name": "examples/plot/scientific.lay",
         "width": 680,
         "height": 310,
-        "rasterMs": 20.899999976158142,
+        "rasterMs": 21.099999964237213,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -81,7 +81,7 @@
         "name": "wide-70000x2",
         "width": 70000,
         "height": 2,
-        "rasterMs": 12.599999964237213,
+        "rasterMs": 13.300000011920929,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -161,29 +161,29 @@
       ],
       "unknown_rejected": true
     },
-    "native_oracle_sha256": "c8ca2b406bb9d4cfe30add128135eb3794eab7d7fc7cb04ed4944ebf3745cbc3",
-    "wasm_sha256": "6c499a820b35d2afb7c5c7de10f8d79a17883f28571e998d52f11468db44e26b"
+    "native_oracle_sha256": "234e2206bec227f939ede7e0f188ed041de4bc68d2652acb8c3dd3767a007db7",
+    "wasm_sha256": "833859f7856ec9d61125cdcde8221701167874f5c96f6732778a1e126fda8ce9"
   },
   "browser": {
     "examples": 186,
     "failures": 0,
-    "maximum_wasm_linear_memory_bytes": 222167040,
+    "maximum_wasm_linear_memory_bytes": 220200960,
     "typography": {
       "example": "typography",
-      "elapsed_ms": 402.60000002384186,
+      "elapsed_ms": 112,
       "width": 160,
       "height": 100,
       "warnings": 0,
       "metrics": {
-        "initialization": 5352.5,
+        "initialization": 375.89999997615814,
         "resources": 0,
-        "compile": 67.39999997615814,
-        "lower": 313.39999997615814,
+        "compile": 52.59999996423721,
+        "lower": 39.90000003576279,
         "raster": 0,
-        "total": 380.7999999523163
+        "total": 92.5
       },
-      "raster_ms": 11.899999976158142,
-      "wasm_memory_bytes": 222167040
+      "raster_ms": 12.300000011920929,
+      "wasm_memory_bytes": 220200960
     },
     "viewports": [
       [
@@ -194,14 +194,61 @@
         390,
         844
       ]
-    ]
+    ],
+    "wasm_sha256": "833859f7856ec9d61125cdcde8221701167874f5c96f6732778a1e126fda8ce9"
   },
   "pptx": {
     "cases": 10,
     "libreoffice_roundtrip": true,
-    "powerpoint_native_tested": false
+    "powerpoint_native_tested": false,
+    "scope": "Migration acceptance retained; performance follow-up reran Rust/Python export contracts and native/WASM pixel parity."
   },
   "vsix": {
+    "file": "laymesh-renderer-optimized-linux-x64.vsix",
+    "publisher": "Hyacine",
+    "version": "0.5.1",
+    "target": "linux-x64",
+    "prerelease": false,
+    "marketplace_checks": true,
+    "bytes": 11420725,
+    "installed_bytes": 29332620,
+    "native_binary": "extension/bin/laymesh",
+    "client_modules": [
+      "vscode",
+      "child_process",
+      "path"
+    ],
+    "bundled_text_fonts": false
+  },
+  "package_baseline_bytes": 7624526,
+  "native_binary_sha256": "c3bb2d0fad00f503268a08dc7770814ee4adaac1514ad4cee031e841448f3e74",
+  "media_engine_fingerprint": "eaef7afb0208db3a46875ebfbdc62cb930614101b63234c81336551ce089a219",
+  "ring": {
+    "original_pixels": [
+      128,
+      128
+    ],
+    "original_alpha_levels": 2,
+    "current_pixels": [
+      1024,
+      1024
+    ],
+    "current_alpha_levels": 225
+  },
+  "publication_performed": false,
+  "performance_optimization": {
+    "status": "passed",
+    "metrics": "compile-performance.json",
+    "formula_checks": 30412,
+    "formula_renderer_fingerprint": "e142d85cc92770970dbe74a55d0c637790fa3f770eed1f9f5a135f10cbec9f11",
+    "browser_examples": 186,
+    "vscode_bridge": "passed",
+    "package_bytes": 11420725,
+    "package_sha256": "fefa63ccc123b90043a65db8e37869566b1b24ac18eebe030426915215360c9f",
+    "source_qualified_assertion_gate": "passed"
+  },
+  "rust_tests_ignored": 1,
+  "previous_migration_vsix": {
     "file": "laymesh-rust-renderer-linux-x64.vsix",
     "publisher": "Hyacine",
     "version": "0.5.1",
@@ -217,21 +264,5 @@
       "path"
     ],
     "bundled_text_fonts": false
-  },
-  "package_baseline_bytes": 7624526,
-  "native_binary_sha256": "aa847007990623b6be08bff7cf1e7ba0d2b3bd41ac11c5e1dc27e6e67fa2457d",
-  "media_engine_fingerprint": "f5eb69b57eb48d526e6c0b6ab721265ab5e8971df9c7ecdb7d9f5d21da2fa113",
-  "ring": {
-    "original_pixels": [
-      128,
-      128
-    ],
-    "original_alpha_levels": 2,
-    "current_pixels": [
-      1024,
-      1024
-    ],
-    "current_alpha_levels": 225
-  },
-  "publication_performed": false
+  }
 }

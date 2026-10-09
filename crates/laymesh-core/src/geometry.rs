@@ -58,7 +58,9 @@ fn from_contours(cs: Vec<Vec<Vec<[f64; 2]>>>) -> BezPath {
     p
 }
 fn boolean(a: &BezPath, b: &BezPath, op: OverlayRule) -> BezPath {
-    from_contours(points(a, 0.0001).overlay(&points(b, 0.0001), op, FillRule::EvenOdd))
+    crate::geometry_cache::memo(b"boolean", &[a, b], &[op as u8], Affine::IDENTITY, || {
+        from_contours(points(a, 0.0001).overlay(&points(b, 0.0001), op, FillRule::EvenOdd))
+    })
 }
 pub fn union(a: &BezPath, b: &BezPath) -> BezPath {
     boolean(a, b, OverlayRule::Union)
@@ -95,6 +97,18 @@ pub fn outline(path: &BezPath, s: &Json) -> BezPath {
     outline_transformed(path, s, Affine::IDENTITY)
 }
 pub fn outline_transformed(path: &BezPath, s: &Json, transform: Affine) -> BezPath {
+    if !crate::geometry_cache::enabled() {
+        return outline_uncached(path, s, transform);
+    }
+    crate::geometry_cache::memo(
+        b"outline",
+        &[path],
+        &serde_json::to_vec(s).unwrap(),
+        transform,
+        || outline_uncached(path, s, transform),
+    )
+}
+fn outline_uncached(path: &BezPath, s: &Json, transform: Affine) -> BezPath {
     let [a, b, c, d, _, _] = transform.as_coeffs();
     // Largest singular value: a conservative local tolerance also covers
     // rotations between different nonuniform scales (which introduce shear).
@@ -379,7 +393,7 @@ impl Engine {
         for key in ["font_family", "math_font"] {
             if let Some(v) = a.get(key) {
                 self.fonts
-                    .load_requested(v, &self.host, file, l, &mut self.warnings);
+                    .load_bound_requested(v, file, l, &mut self.warnings);
             }
         }
         if let Some(V::List(spans)) = a.get("spans") {
@@ -807,10 +821,6 @@ impl Engine {
                     if let Some(v) = a.get(key) {
                         spec[key] = json!(value_length(v, "pt", self.dpi).unwrap_or(10. * PT));
                     }
-                }
-                if let Some(v) = a.get("font_family") {
-                    self.fonts
-                        .load_requested(v, &self.host, &o.file, l, &mut self.warnings);
                 }
                 crate::text::layout_text(
                     &spec,

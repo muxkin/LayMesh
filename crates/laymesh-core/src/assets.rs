@@ -4,6 +4,12 @@ use base64::Engine;
 use image::{ImageDecoder, ImageFormat};
 use serde_json::{Value as Json, json};
 use std::io::Cursor;
+use std::sync::LazyLock;
+
+static SVG_URL: LazyLock<regex::Regex> =
+    LazyLock::new(|| regex::Regex::new(r"(?i)url\(([^)]*)\)").unwrap());
+static SVG_FRAGMENT: LazyLock<regex::Regex> =
+    LazyLock::new(|| regex::Regex::new(r"^#[A-Za-z_][\w.-]*$").unwrap());
 
 fn error(code: &str, message: impl Into<String>, file: &str, loc: Loc) -> Diagnostic {
     Diagnostic::new(code, message, file, loc)
@@ -16,10 +22,9 @@ fn allowed_value(s: &str) -> bool {
     {
         return false;
     }
-    let re = regex::Regex::new(r"(?i)url\(([^)]*)\)").unwrap();
-    let fragment = regex::Regex::new(r"^#[A-Za-z_][\w.-]*$").unwrap();
-    re.captures_iter(s)
-        .all(|m| fragment.is_match(m[1].trim().trim_matches(['\'', '"'])))
+    SVG_URL
+        .captures_iter(s)
+        .all(|m| SVG_FRAGMENT.is_match(m[1].trim().trim_matches(['\'', '"'])))
 }
 pub fn sanitize_svg(xml: &str, file: &str, loc: Loc) -> Result<String> {
     let lower = xml.to_ascii_lowercase();
@@ -171,11 +176,7 @@ pub fn sanitize_svg(xml: &str, file: &str, loc: Loc) -> Result<String> {
                     loc,
                 ));
             }
-            if a.name() == "href"
-                && !regex::Regex::new(r"^#[A-Za-z_][\w.-]*$")
-                    .unwrap()
-                    .is_match(a.value())
-            {
+            if a.name() == "href" && !SVG_FRAGMENT.is_match(a.value()) {
                 return Err(error("E_SVG", "SVG 仅允许内部片段引用", file, loc));
             }
             if a.name() == "style" {
@@ -782,6 +783,10 @@ mod tests {
             "<svg><path fill='url(//example.com/x)'/></svg>",
             "<!DOCTYPE svg><svg/>",
             "<svg onload='alert(1)'/>",
+            "<svg><path fill='URL(https://example.com/a)'/></svg>",
+            "<svg><path style='fill:url(&quot;other.svg#paint&quot;)'/></svg>",
+            "<svg><use href='#1bad'/></svg>",
+            "<svg><use href='file:///tmp/a'/></svg>",
         ] {
             assert_eq!(
                 sanitize_svg(input, "x.lay", Loc::default())
@@ -797,6 +802,12 @@ mod tests {
         let a = load(input, "x.svg", "x.lay", Loc::default()).unwrap();
         assert_eq!(a["width"], 96.);
         assert_eq!(a["height"], 48.);
+        for reference in ["url(#paint)", "URL( '#paint' )", "url(&quot;#paint&quot;)"] {
+            let xml = format!("<svg><path fill='{reference}'/></svg>");
+            // Quotes inside a quoted attribute must be XML escaped.
+            let xml = xml.replace("URL( '#paint' )", "URL( &quot;#paint&quot; )");
+            assert!(sanitize_svg(&xml, "x.lay", Loc::default()).is_ok());
+        }
     }
     #[test]
     fn tiff_boundary() {

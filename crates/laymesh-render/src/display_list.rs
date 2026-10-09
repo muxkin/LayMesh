@@ -254,6 +254,7 @@ pub(crate) fn solid(s: &str) -> Result<Paint> {
 }
 struct Builder<'a> {
     scene: &'a Scene,
+    preview: bool,
     resources: BTreeMap<String, Resource>,
     font_resources: BTreeMap<String, String>,
 }
@@ -474,7 +475,20 @@ impl Builder<'_> {
             cropped["intrinsicHeight"] = asset["height"].clone();
             return self.image(&cropped);
         }
-        let data = if jstr(n, "data", "").is_empty() {
+        let mime = jstr(n, "mime", "image/png");
+        // Native previews already own normalized source pixels. Keep their
+        // content key until preview_assets encodes the configured derivative;
+        // a PNG encode/decode round trip here only duplicates that work.
+        let cached_pixels = if self.preview && mime != "image/svg+xml" {
+            n["rasterKey"]
+                .as_str()
+                .filter(|key| laymesh_core::asset_cache::pixels(key).is_some())
+        } else {
+            None
+        };
+        let data = if cached_pixels.is_some() {
+            Vec::new()
+        } else if jstr(n, "data", "").is_empty() {
             let key = n["rasterKey"]
                 .as_str()
                 .ok_or_else(|| error("缺少图片资源"))?;
@@ -484,7 +498,6 @@ impl Builder<'_> {
                 .decode(jstr(n, "data", ""))
                 .map_err(|e| error(e.to_string()))?
         };
-        let mime = jstr(n, "mime", "image/png");
         let w = jnum(n, "width", 0.);
         let h = jnum(n, "height", 0.);
         let iw = jnum(n, "intrinsicWidth", w).max(1e-12);
@@ -510,7 +523,20 @@ impl Builder<'_> {
         let mut result = if mime == "image/svg+xml" {
             super::svg_import::import(&data, self.scene, &mut self.resources)?
         } else {
-            let resource = self.resource(mime, data, None);
+            let resource = if let Some(key) = cached_pixels {
+                let id = format!("pixels-{key}");
+                self.resources
+                    .entry(id.clone())
+                    .or_insert_with(|| Resource {
+                        mime: mime.into(),
+                        data: Vec::new(),
+                        font_index: None,
+                        family: None,
+                    });
+                id
+            } else {
+                self.resource(mime, data, None)
+            };
             DrawNode::new(DrawKind::Image {
                 resource,
                 rect: Rect::new(0., 0., iw, ih),
@@ -904,6 +930,13 @@ impl ttf_parser::OutlineBuilder for OutlinePath {
     }
 }
 pub fn to_display_list(scene: &Scene) -> Result<DisplayList> {
+    build(scene, false)
+}
+#[cfg(feature = "native")]
+pub(crate) fn preview_display_list(scene: &Scene) -> Result<DisplayList> {
+    build(scene, true)
+}
+fn build(scene: &Scene, preview: bool) -> Result<DisplayList> {
     if !scene.width.is_finite()
         || !scene.height.is_finite()
         || scene.width <= 0.
@@ -913,6 +946,7 @@ pub fn to_display_list(scene: &Scene) -> Result<DisplayList> {
     }
     let mut b = Builder {
         scene,
+        preview,
         resources: BTreeMap::new(),
         font_resources: BTreeMap::new(),
     };

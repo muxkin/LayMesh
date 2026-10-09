@@ -2,7 +2,11 @@
 use super::*;
 use display_list::*;
 use kurbo::{Affine, Rect};
-use std::{collections::BTreeMap, sync::Arc};
+use std::{
+    cell::RefCell,
+    collections::{BTreeMap, HashMap},
+    sync::Arc,
+};
 use vello_cpu::{Image, ImageSource, PixelMetadata, Pixmap, RenderContext, Resources, peniko};
 
 pub const MAX_PIXELS: u64 = 100_000_000;
@@ -30,7 +34,39 @@ struct DecodedImage {
     height: u32,
     tiles: Vec<ImageTile>,
 }
-type Images = BTreeMap<String, DecodedImage>;
+type Images = BTreeMap<String, Arc<DecodedImage>>;
+struct ImageCache {
+    entries: HashMap<String, (Arc<DecodedImage>, usize, u64)>,
+    bytes: usize,
+    tick: u64,
+    budget: usize,
+}
+thread_local! {
+    static IMAGE_CACHE: RefCell<ImageCache> = RefCell::new(ImageCache {
+        entries: HashMap::new(), bytes: 0, tick: 0, budget: 256 * 1024 * 1024,
+    });
+}
+/// Bound reusable decoded image storage; current renders own their pixels
+/// independently, so eviction never invalidates an in-flight drawing job.
+pub fn set_image_cache_budget(mib: usize) {
+    IMAGE_CACHE.with_borrow_mut(|cache| {
+        cache.budget = mib.saturating_mul(1024 * 1024);
+        trim_images(cache, 0);
+    });
+}
+fn trim_images(cache: &mut ImageCache, incoming: usize) {
+    while cache.bytes.saturating_add(incoming) > cache.budget || cache.entries.len() >= 128 {
+        let Some(oldest) = cache
+            .entries
+            .iter()
+            .min_by_key(|(_, e)| e.2)
+            .map(|(key, _)| key.clone())
+        else {
+            break;
+        };
+        cache.bytes -= cache.entries.remove(&oldest).unwrap().1;
+    }
+}
 fn color(r: [f64; 4]) -> peniko::Color {
     peniko::Color::new(r.map(|c| c as f32))
 }
@@ -57,6 +93,20 @@ fn decode(resources: &BTreeMap<String, Resource>) -> Result<Images> {
     let mut out = Images::new();
     for (id, r) in resources {
         if !r.mime.starts_with("image/") {
+            continue;
+        }
+        // Caller IDs are not trusted as content keys: replacing bytes under
+        // the same ID must replace the decoded pixels, on native and WASM.
+        let key = laymesh_core::asset_cache::digest(&r.data);
+        if let Some(image) = IMAGE_CACHE.with_borrow_mut(|cache| {
+            cache.tick += 1;
+            let tick = cache.tick;
+            cache.entries.get_mut(&key).map(|(image, _, used)| {
+                *used = tick;
+                image.clone()
+            })
+        }) {
+            out.insert(id.clone(), image);
             continue;
         }
         let im = image::load_from_memory(&r.data)
@@ -95,14 +145,26 @@ fn decode(resources: &BTreeMap<String, Resource>) -> Result<Images> {
                 }
             }
         }
-        out.insert(
-            id.clone(),
-            DecodedImage {
-                width: w,
-                height: h,
-                tiles,
-            },
-        );
+        let image = Arc::new(DecodedImage {
+            width: w,
+            height: h,
+            tiles,
+        });
+        let bytes = image
+            .tiles
+            .iter()
+            .map(|tile| tile.pixels.width() as usize * tile.pixels.height() as usize * 4)
+            .sum();
+        IMAGE_CACHE.with_borrow_mut(|cache| {
+            if bytes <= cache.budget {
+                trim_images(cache, bytes);
+                cache.tick += 1;
+                let tick = cache.tick;
+                cache.entries.insert(key, (image.clone(), bytes, tick));
+                cache.bytes += bytes;
+            }
+        });
+        out.insert(id.clone(), image);
     }
     Ok(out)
 }

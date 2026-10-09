@@ -14,7 +14,7 @@ def main():
     parser.add_argument("--url",required=True)
     parser.add_argument("--output",type=Path,default=ROOT/"release/verification/rust-renderer-migration/math-gallery")
     args=parser.parse_args(); args.output.mkdir(parents=True,exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="laymesh-math-chrome-") as profile:
+    with tempfile.TemporaryDirectory(prefix="laymesh-math-chrome-",ignore_cleanup_errors=True) as profile:
         chrome=subprocess.Popen(["/usr/bin/google-chrome","--headless=new","--no-sandbox","--disable-gpu","--no-proxy-server","--remote-debugging-port=0","--remote-allow-origins=*","--user-data-dir="+profile,"about:blank"],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
         try:
             active=Path(profile)/"DevToolsActivePort";deadline=time.monotonic()+30
