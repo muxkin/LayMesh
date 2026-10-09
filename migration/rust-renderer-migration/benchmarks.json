@@ -1,0 +1,1924 @@
+{
+  "method": "One unrecorded warmup, then alternating fresh CLI processes; wall time includes compilation, rendering and encoding. RSS is wait4 ru_maxrss in KiB on Linux.",
+  "dpi": 144,
+  "repetitions": 5,
+  "binary_sha256": {
+    "baseline": "1615f1efcc9bac4d22fe87d14df5f494a8884904d1d400abf6c0583d96e209f3",
+    "current": "aa847007990623b6be08bff7cf1e7ba0d2b3bd41ac11c5e1dc27e6e67fa2457d"
+  },
+  "input_fingerprints": {
+    "examples/typography.lay": "2b2b32beb0d93b814b97ecca263de7eed236ebc3b39d2f2ce58a40a86f9ef436",
+    "examples/vector.lay": "78b4f5cf9704aefd5ccc317e8f364b6af04a9702fdfabe95afff7764077771b9",
+    "examples/effects/art-text.lay": "debc3e9fac4faa5e91ee534de4167973be1d0a1ab9a17679adf058c12512b607",
+    "examples/effects/shadow-glow.lay": "cecc4f603964dc810275b7141d3968c9fae457cde6b2850292198164d44966f8",
+    "examples/effects/images-groups.lay": "b8df1899c24489a54785f62c61574aa3e1b0ce9df8f762f7fe72bdbfe1485518",
+    "examples/gallery/images/svg.lay": "739f4039d0f4a326fa7171db5b265e37d82ad953a8351d2e5ed3af6e7223c1d4",
+    "examples/plot/scientific.lay": "92f33ec9877b1ab4701a22abd08d6c5c77c9324cc707b7c90f349d924ce15273"
+  },
+  "cases": [
+    {
+      "source": "examples/typography.lay",
+      "format": "png",
+      "baseline": {
+        "median_ms": 72.4064190289937,
+        "peak_rss_kib": 55496,
+        "bytes": 33608,
+        "runs": [
+          {
+            "elapsed_ms": 77.06577400676906,
+            "peak_rss_kib": 55268,
+            "bytes": 33608
+          },
+          {
+            "elapsed_ms": 72.4064190289937,
+            "peak_rss_kib": 55300,
+            "bytes": 33608
+          },
+          {
+            "elapsed_ms": 74.74352495046332,
+            "peak_rss_kib": 55496,
+            "bytes": 33608
+          },
+          {
+            "elapsed_ms": 72.22733402159065,
+            "peak_rss_kib": 55124,
+            "bytes": 33608
+          },
+          {
+            "elapsed_ms": 71.14096399163827,
+            "peak_rss_kib": 55232,
+            "bytes": 33608
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 87.56673999596387,
+        "peak_rss_kib": 55680,
+        "bytes": 50884,
+        "runs": [
+          {
+            "elapsed_ms": 88.5115279816091,
+            "peak_rss_kib": 55284,
+            "bytes": 50884
+          },
+          {
+            "elapsed_ms": 87.92608202202246,
+            "peak_rss_kib": 55324,
+            "bytes": 50884
+          },
+          {
+            "elapsed_ms": 87.56673999596387,
+            "peak_rss_kib": 55412,
+            "bytes": 50884
+          },
+          {
+            "elapsed_ms": 83.91663699876517,
+            "peak_rss_kib": 55580,
+            "bytes": 50884
+          },
+          {
+            "elapsed_ms": 85.4508180054836,
+            "peak_rss_kib": 55680,
+            "bytes": 50884
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/typography.lay",
+      "format": "pdf",
+      "baseline": {
+        "median_ms": 69.04044200200588,
+        "peak_rss_kib": 69928,
+        "bytes": 43030,
+        "runs": [
+          {
+            "elapsed_ms": 71.73700100975111,
+            "peak_rss_kib": 69928,
+            "bytes": 43030
+          },
+          {
+            "elapsed_ms": 68.62251798156649,
+            "peak_rss_kib": 69528,
+            "bytes": 43030
+          },
+          {
+            "elapsed_ms": 69.04044200200588,
+            "peak_rss_kib": 69768,
+            "bytes": 43030
+          },
+          {
+            "elapsed_ms": 70.02360402839258,
+            "peak_rss_kib": 69488,
+            "bytes": 43030
+          },
+          {
+            "elapsed_ms": 68.8190350192599,
+            "peak_rss_kib": 69796,
+            "bytes": 43030
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 83.8674419792369,
+        "peak_rss_kib": 86448,
+        "bytes": 41932,
+        "runs": [
+          {
+            "elapsed_ms": 83.8674419792369,
+            "peak_rss_kib": 86412,
+            "bytes": 41932
+          },
+          {
+            "elapsed_ms": 84.54110595630482,
+            "peak_rss_kib": 86448,
+            "bytes": 41932
+          },
+          {
+            "elapsed_ms": 84.6409709774889,
+            "peak_rss_kib": 86280,
+            "bytes": 41932
+          },
+          {
+            "elapsed_ms": 83.5009150323458,
+            "peak_rss_kib": 86140,
+            "bytes": 41932
+          },
+          {
+            "elapsed_ms": 82.00984704308212,
+            "peak_rss_kib": 86040,
+            "bytes": 41932
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/typography.lay",
+      "format": "pptx",
+      "baseline": {
+        "median_ms": 63.34898096974939,
+        "peak_rss_kib": 51408,
+        "bytes": 13996,
+        "runs": [
+          {
+            "elapsed_ms": 64.30442002601922,
+            "peak_rss_kib": 50728,
+            "bytes": 13996
+          },
+          {
+            "elapsed_ms": 62.9786400240846,
+            "peak_rss_kib": 51068,
+            "bytes": 13996
+          },
+          {
+            "elapsed_ms": 62.144485011231154,
+            "peak_rss_kib": 50720,
+            "bytes": 13996
+          },
+          {
+            "elapsed_ms": 63.34898096974939,
+            "peak_rss_kib": 51408,
+            "bytes": 13996
+          },
+          {
+            "elapsed_ms": 64.21946495538577,
+            "peak_rss_kib": 50720,
+            "bytes": 13996
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 79.05450003454462,
+        "peak_rss_kib": 68388,
+        "bytes": 14046,
+        "runs": [
+          {
+            "elapsed_ms": 78.8912660209462,
+            "peak_rss_kib": 68156,
+            "bytes": 14046
+          },
+          {
+            "elapsed_ms": 79.05450003454462,
+            "peak_rss_kib": 67744,
+            "bytes": 14046
+          },
+          {
+            "elapsed_ms": 79.99603200005367,
+            "peak_rss_kib": 67832,
+            "bytes": 14046
+          },
+          {
+            "elapsed_ms": 78.95858603296801,
+            "peak_rss_kib": 68388,
+            "bytes": 14046
+          },
+          {
+            "elapsed_ms": 79.05952096916735,
+            "peak_rss_kib": 68064,
+            "bytes": 14046
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/typography.lay",
+      "format": "svg",
+      "baseline": {
+        "median_ms": 98.31970796221867,
+        "peak_rss_kib": 124544,
+        "bytes": 22972420,
+        "runs": [
+          {
+            "elapsed_ms": 98.30079000676051,
+            "peak_rss_kib": 122720,
+            "bytes": 22972420
+          },
+          {
+            "elapsed_ms": 102.04234201228246,
+            "peak_rss_kib": 121416,
+            "bytes": 22972420
+          },
+          {
+            "elapsed_ms": 100.47983500408009,
+            "peak_rss_kib": 122680,
+            "bytes": 22972420
+          },
+          {
+            "elapsed_ms": 98.31970796221867,
+            "peak_rss_kib": 124544,
+            "bytes": 22972420
+          },
+          {
+            "elapsed_ms": 97.07715804688632,
+            "peak_rss_kib": 122920,
+            "bytes": 22972420
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 105.12720799306408,
+        "peak_rss_kib": 125048,
+        "bytes": 22972420,
+        "runs": [
+          {
+            "elapsed_ms": 108.89104095986113,
+            "peak_rss_kib": 121720,
+            "bytes": 22972420
+          },
+          {
+            "elapsed_ms": 105.12720799306408,
+            "peak_rss_kib": 125048,
+            "bytes": 22972420
+          },
+          {
+            "elapsed_ms": 103.68834802648053,
+            "peak_rss_kib": 122516,
+            "bytes": 22972420
+          },
+          {
+            "elapsed_ms": 102.15447697555646,
+            "peak_rss_kib": 124148,
+            "bytes": 22972420
+          },
+          {
+            "elapsed_ms": 105.68311699898914,
+            "peak_rss_kib": 124060,
+            "bytes": 22972420
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/vector.lay",
+      "format": "png",
+      "baseline": {
+        "median_ms": 378.9125590119511,
+        "peak_rss_kib": 62348,
+        "bytes": 55068,
+        "runs": [
+          {
+            "elapsed_ms": 377.31137103401124,
+            "peak_rss_kib": 62156,
+            "bytes": 55068
+          },
+          {
+            "elapsed_ms": 376.1112000211142,
+            "peak_rss_kib": 62160,
+            "bytes": 55068
+          },
+          {
+            "elapsed_ms": 378.9125590119511,
+            "peak_rss_kib": 61588,
+            "bytes": 55068
+          },
+          {
+            "elapsed_ms": 379.9085450009443,
+            "peak_rss_kib": 61252,
+            "bytes": 55068
+          },
+          {
+            "elapsed_ms": 381.54748803935945,
+            "peak_rss_kib": 62348,
+            "bytes": 55068
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 383.7685420294292,
+        "peak_rss_kib": 61924,
+        "bytes": 68548,
+        "runs": [
+          {
+            "elapsed_ms": 384.8311690380797,
+            "peak_rss_kib": 61732,
+            "bytes": 68548
+          },
+          {
+            "elapsed_ms": 381.248266028706,
+            "peak_rss_kib": 61924,
+            "bytes": 68548
+          },
+          {
+            "elapsed_ms": 381.62123097572476,
+            "peak_rss_kib": 61848,
+            "bytes": 68548
+          },
+          {
+            "elapsed_ms": 383.7685420294292,
+            "peak_rss_kib": 61736,
+            "bytes": 68548
+          },
+          {
+            "elapsed_ms": 385.30173304025084,
+            "peak_rss_kib": 61848,
+            "bytes": 68548
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/vector.lay",
+      "format": "pdf",
+      "baseline": {
+        "median_ms": 369.75700804032385,
+        "peak_rss_kib": 62244,
+        "bytes": 12764,
+        "runs": [
+          {
+            "elapsed_ms": 370.62153400620446,
+            "peak_rss_kib": 61672,
+            "bytes": 12764
+          },
+          {
+            "elapsed_ms": 368.05303097935393,
+            "peak_rss_kib": 62244,
+            "bytes": 12764
+          },
+          {
+            "elapsed_ms": 369.75700804032385,
+            "peak_rss_kib": 62024,
+            "bytes": 12764
+          },
+          {
+            "elapsed_ms": 368.0866140057333,
+            "peak_rss_kib": 61632,
+            "bytes": 12764
+          },
+          {
+            "elapsed_ms": 373.1574209523387,
+            "peak_rss_kib": 62224,
+            "bytes": 12764
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 366.98106600670144,
+        "peak_rss_kib": 62848,
+        "bytes": 12614,
+        "runs": [
+          {
+            "elapsed_ms": 368.38838702533394,
+            "peak_rss_kib": 62168,
+            "bytes": 12614
+          },
+          {
+            "elapsed_ms": 366.97086796630174,
+            "peak_rss_kib": 62376,
+            "bytes": 12614
+          },
+          {
+            "elapsed_ms": 366.8501270003617,
+            "peak_rss_kib": 61360,
+            "bytes": 12614
+          },
+          {
+            "elapsed_ms": 366.98106600670144,
+            "peak_rss_kib": 62848,
+            "bytes": 12614
+          },
+          {
+            "elapsed_ms": 369.37764805043116,
+            "peak_rss_kib": 61660,
+            "bytes": 12614
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/vector.lay",
+      "format": "pptx",
+      "baseline": {
+        "median_ms": 377.93415802298114,
+        "peak_rss_kib": 62620,
+        "bytes": 26708,
+        "runs": [
+          {
+            "elapsed_ms": 382.01129401568323,
+            "peak_rss_kib": 61228,
+            "bytes": 26708
+          },
+          {
+            "elapsed_ms": 374.5586749864742,
+            "peak_rss_kib": 62200,
+            "bytes": 26708
+          },
+          {
+            "elapsed_ms": 377.407043997664,
+            "peak_rss_kib": 62272,
+            "bytes": 26708
+          },
+          {
+            "elapsed_ms": 377.93415802298114,
+            "peak_rss_kib": 61480,
+            "bytes": 26708
+          },
+          {
+            "elapsed_ms": 379.23700298415497,
+            "peak_rss_kib": 62620,
+            "bytes": 26708
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 373.4460929990746,
+        "peak_rss_kib": 62628,
+        "bytes": 30137,
+        "runs": [
+          {
+            "elapsed_ms": 373.4460929990746,
+            "peak_rss_kib": 62340,
+            "bytes": 30137
+          },
+          {
+            "elapsed_ms": 373.8228279980831,
+            "peak_rss_kib": 61336,
+            "bytes": 30137
+          },
+          {
+            "elapsed_ms": 374.46886202087626,
+            "peak_rss_kib": 62088,
+            "bytes": 30137
+          },
+          {
+            "elapsed_ms": 373.26499400660396,
+            "peak_rss_kib": 62628,
+            "bytes": 30137
+          },
+          {
+            "elapsed_ms": 373.3794330037199,
+            "peak_rss_kib": 62556,
+            "bytes": 30137
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/vector.lay",
+      "format": "svg",
+      "baseline": {
+        "median_ms": 372.06450098892674,
+        "peak_rss_kib": 62344,
+        "bytes": 1024671,
+        "runs": [
+          {
+            "elapsed_ms": 368.7957620131783,
+            "peak_rss_kib": 60568,
+            "bytes": 1024671
+          },
+          {
+            "elapsed_ms": 370.9708870155737,
+            "peak_rss_kib": 61996,
+            "bytes": 1024671
+          },
+          {
+            "elapsed_ms": 372.06450098892674,
+            "peak_rss_kib": 62316,
+            "bytes": 1024671
+          },
+          {
+            "elapsed_ms": 374.2773660342209,
+            "peak_rss_kib": 62344,
+            "bytes": 1024671
+          },
+          {
+            "elapsed_ms": 377.76927498634905,
+            "peak_rss_kib": 61556,
+            "bytes": 1024671
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 370.7911509554833,
+        "peak_rss_kib": 62476,
+        "bytes": 1024671,
+        "runs": [
+          {
+            "elapsed_ms": 370.65063999034464,
+            "peak_rss_kib": 60948,
+            "bytes": 1024671
+          },
+          {
+            "elapsed_ms": 370.7911509554833,
+            "peak_rss_kib": 61544,
+            "bytes": 1024671
+          },
+          {
+            "elapsed_ms": 374.139743973501,
+            "peak_rss_kib": 62476,
+            "bytes": 1024671
+          },
+          {
+            "elapsed_ms": 373.6631849897094,
+            "peak_rss_kib": 61224,
+            "bytes": 1024671
+          },
+          {
+            "elapsed_ms": 370.2962070237845,
+            "peak_rss_kib": 61556,
+            "bytes": 1024671
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/art-text.lay",
+      "format": "png",
+      "baseline": {
+        "median_ms": 90.41196899488568,
+        "peak_rss_kib": 33776,
+        "bytes": 96923,
+        "runs": [
+          {
+            "elapsed_ms": 90.41196899488568,
+            "peak_rss_kib": 33776,
+            "bytes": 96923
+          },
+          {
+            "elapsed_ms": 89.09711899468675,
+            "peak_rss_kib": 33776,
+            "bytes": 96923
+          },
+          {
+            "elapsed_ms": 90.58101498521864,
+            "peak_rss_kib": 33776,
+            "bytes": 96923
+          },
+          {
+            "elapsed_ms": 90.49939701799303,
+            "peak_rss_kib": 33776,
+            "bytes": 96923
+          },
+          {
+            "elapsed_ms": 88.03930302383378,
+            "peak_rss_kib": 33776,
+            "bytes": 96923
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 82.04776601633057,
+        "peak_rss_kib": 34308,
+        "bytes": 113391,
+        "runs": [
+          {
+            "elapsed_ms": 83.38607096811756,
+            "peak_rss_kib": 34152,
+            "bytes": 113391
+          },
+          {
+            "elapsed_ms": 82.04776601633057,
+            "peak_rss_kib": 33776,
+            "bytes": 113391
+          },
+          {
+            "elapsed_ms": 81.94006804842502,
+            "peak_rss_kib": 33812,
+            "bytes": 113391
+          },
+          {
+            "elapsed_ms": 81.011803005822,
+            "peak_rss_kib": 34308,
+            "bytes": 113391
+          },
+          {
+            "elapsed_ms": 84.84543801750988,
+            "peak_rss_kib": 33860,
+            "bytes": 113391
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/art-text.lay",
+      "format": "pdf",
+      "baseline": {
+        "median_ms": 139.1085130162537,
+        "peak_rss_kib": 33776,
+        "bytes": 361911,
+        "runs": [
+          {
+            "elapsed_ms": 139.1085130162537,
+            "peak_rss_kib": 33776,
+            "bytes": 361911
+          },
+          {
+            "elapsed_ms": 138.14809801988304,
+            "peak_rss_kib": 33776,
+            "bytes": 361911
+          },
+          {
+            "elapsed_ms": 146.93511195946485,
+            "peak_rss_kib": 33776,
+            "bytes": 361911
+          },
+          {
+            "elapsed_ms": 144.602777028922,
+            "peak_rss_kib": 33776,
+            "bytes": 361911
+          },
+          {
+            "elapsed_ms": 138.112946995534,
+            "peak_rss_kib": 33776,
+            "bytes": 361911
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 106.9881419534795,
+        "peak_rss_kib": 33776,
+        "bytes": 362321,
+        "runs": [
+          {
+            "elapsed_ms": 105.42385198641568,
+            "peak_rss_kib": 33776,
+            "bytes": 362321
+          },
+          {
+            "elapsed_ms": 110.48248503357172,
+            "peak_rss_kib": 33776,
+            "bytes": 362321
+          },
+          {
+            "elapsed_ms": 109.25872100051492,
+            "peak_rss_kib": 33776,
+            "bytes": 362321
+          },
+          {
+            "elapsed_ms": 106.9881419534795,
+            "peak_rss_kib": 33776,
+            "bytes": 362321
+          },
+          {
+            "elapsed_ms": 104.60753197548911,
+            "peak_rss_kib": 33776,
+            "bytes": 362321
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/art-text.lay",
+      "format": "pptx",
+      "baseline": {
+        "median_ms": 121.35515495901927,
+        "peak_rss_kib": 40024,
+        "bytes": 342238,
+        "runs": [
+          {
+            "elapsed_ms": 121.35515495901927,
+            "peak_rss_kib": 37424,
+            "bytes": 342238
+          },
+          {
+            "elapsed_ms": 121.97178101632744,
+            "peak_rss_kib": 39100,
+            "bytes": 342238
+          },
+          {
+            "elapsed_ms": 120.50665204878896,
+            "peak_rss_kib": 38768,
+            "bytes": 342238
+          },
+          {
+            "elapsed_ms": 120.51703198812902,
+            "peak_rss_kib": 38324,
+            "bytes": 342238
+          },
+          {
+            "elapsed_ms": 121.77940900437534,
+            "peak_rss_kib": 40024,
+            "bytes": 342238
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 99.08074798295274,
+        "peak_rss_kib": 37384,
+        "bytes": 309811,
+        "runs": [
+          {
+            "elapsed_ms": 97.5093049928546,
+            "peak_rss_kib": 36028,
+            "bytes": 309811
+          },
+          {
+            "elapsed_ms": 105.04262696485966,
+            "peak_rss_kib": 36112,
+            "bytes": 309811
+          },
+          {
+            "elapsed_ms": 99.26178702153265,
+            "peak_rss_kib": 36656,
+            "bytes": 309811
+          },
+          {
+            "elapsed_ms": 95.79652902903035,
+            "peak_rss_kib": 37384,
+            "bytes": 309811
+          },
+          {
+            "elapsed_ms": 99.08074798295274,
+            "peak_rss_kib": 37168,
+            "bytes": 309811
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/art-text.lay",
+      "format": "svg",
+      "baseline": {
+        "median_ms": 51.93737003719434,
+        "peak_rss_kib": 33776,
+        "bytes": 2009754,
+        "runs": [
+          {
+            "elapsed_ms": 51.93737003719434,
+            "peak_rss_kib": 33776,
+            "bytes": 2009754
+          },
+          {
+            "elapsed_ms": 52.250862994696945,
+            "peak_rss_kib": 33776,
+            "bytes": 2009754
+          },
+          {
+            "elapsed_ms": 51.712356973439455,
+            "peak_rss_kib": 33776,
+            "bytes": 2009754
+          },
+          {
+            "elapsed_ms": 50.080037966836244,
+            "peak_rss_kib": 33776,
+            "bytes": 2009754
+          },
+          {
+            "elapsed_ms": 52.227178995963186,
+            "peak_rss_kib": 33776,
+            "bytes": 2009754
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 52.02741298126057,
+        "peak_rss_kib": 33776,
+        "bytes": 2009754,
+        "runs": [
+          {
+            "elapsed_ms": 56.15460604894906,
+            "peak_rss_kib": 33776,
+            "bytes": 2009754
+          },
+          {
+            "elapsed_ms": 51.825136004481465,
+            "peak_rss_kib": 33776,
+            "bytes": 2009754
+          },
+          {
+            "elapsed_ms": 52.70929605467245,
+            "peak_rss_kib": 33776,
+            "bytes": 2009754
+          },
+          {
+            "elapsed_ms": 52.02741298126057,
+            "peak_rss_kib": 33776,
+            "bytes": 2009754
+          },
+          {
+            "elapsed_ms": 51.66241095867008,
+            "peak_rss_kib": 33776,
+            "bytes": 2009754
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/shadow-glow.lay",
+      "format": "png",
+      "baseline": {
+        "median_ms": 66.95013702847064,
+        "peak_rss_kib": 33776,
+        "bytes": 54840,
+        "runs": [
+          {
+            "elapsed_ms": 66.66501599829644,
+            "peak_rss_kib": 33776,
+            "bytes": 54840
+          },
+          {
+            "elapsed_ms": 67.54597194958478,
+            "peak_rss_kib": 33776,
+            "bytes": 54840
+          },
+          {
+            "elapsed_ms": 66.13640894647688,
+            "peak_rss_kib": 33776,
+            "bytes": 54840
+          },
+          {
+            "elapsed_ms": 68.27180000254884,
+            "peak_rss_kib": 33776,
+            "bytes": 54840
+          },
+          {
+            "elapsed_ms": 66.95013702847064,
+            "peak_rss_kib": 33776,
+            "bytes": 54840
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 52.23487300099805,
+        "peak_rss_kib": 33776,
+        "bytes": 54393,
+        "runs": [
+          {
+            "elapsed_ms": 52.35841200919822,
+            "peak_rss_kib": 33776,
+            "bytes": 54393
+          },
+          {
+            "elapsed_ms": 52.736870013177395,
+            "peak_rss_kib": 33776,
+            "bytes": 54393
+          },
+          {
+            "elapsed_ms": 50.980499014258385,
+            "peak_rss_kib": 33776,
+            "bytes": 54393
+          },
+          {
+            "elapsed_ms": 52.23487300099805,
+            "peak_rss_kib": 33776,
+            "bytes": 54393
+          },
+          {
+            "elapsed_ms": 51.258163002785295,
+            "peak_rss_kib": 33776,
+            "bytes": 54393
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/shadow-glow.lay",
+      "format": "pdf",
+      "baseline": {
+        "median_ms": 104.92067399900407,
+        "peak_rss_kib": 33776,
+        "bytes": 76919,
+        "runs": [
+          {
+            "elapsed_ms": 106.97781998896971,
+            "peak_rss_kib": 33776,
+            "bytes": 76919
+          },
+          {
+            "elapsed_ms": 104.92067399900407,
+            "peak_rss_kib": 33776,
+            "bytes": 76919
+          },
+          {
+            "elapsed_ms": 105.49380700103939,
+            "peak_rss_kib": 33776,
+            "bytes": 76919
+          },
+          {
+            "elapsed_ms": 103.47782599274069,
+            "peak_rss_kib": 33776,
+            "bytes": 76919
+          },
+          {
+            "elapsed_ms": 104.84852502122521,
+            "peak_rss_kib": 33776,
+            "bytes": 76919
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 46.68321099597961,
+        "peak_rss_kib": 33776,
+        "bytes": 76606,
+        "runs": [
+          {
+            "elapsed_ms": 45.47752300277352,
+            "peak_rss_kib": 33776,
+            "bytes": 76606
+          },
+          {
+            "elapsed_ms": 47.70589800318703,
+            "peak_rss_kib": 33776,
+            "bytes": 76606
+          },
+          {
+            "elapsed_ms": 46.638102969154716,
+            "peak_rss_kib": 33776,
+            "bytes": 76606
+          },
+          {
+            "elapsed_ms": 46.885329007636756,
+            "peak_rss_kib": 33776,
+            "bytes": 76606
+          },
+          {
+            "elapsed_ms": 46.68321099597961,
+            "peak_rss_kib": 33776,
+            "bytes": 76606
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/shadow-glow.lay",
+      "format": "pptx",
+      "baseline": {
+        "median_ms": 72.66952999634668,
+        "peak_rss_kib": 33776,
+        "bytes": 71307,
+        "runs": [
+          {
+            "elapsed_ms": 72.87612895015627,
+            "peak_rss_kib": 33776,
+            "bytes": 71307
+          },
+          {
+            "elapsed_ms": 71.40294299460948,
+            "peak_rss_kib": 33776,
+            "bytes": 71307
+          },
+          {
+            "elapsed_ms": 73.09869601158425,
+            "peak_rss_kib": 33776,
+            "bytes": 71307
+          },
+          {
+            "elapsed_ms": 72.26653600810096,
+            "peak_rss_kib": 33776,
+            "bytes": 71307
+          },
+          {
+            "elapsed_ms": 72.66952999634668,
+            "peak_rss_kib": 33776,
+            "bytes": 71307
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 42.496265028603375,
+        "peak_rss_kib": 33776,
+        "bytes": 80751,
+        "runs": [
+          {
+            "elapsed_ms": 42.496265028603375,
+            "peak_rss_kib": 33776,
+            "bytes": 80751
+          },
+          {
+            "elapsed_ms": 42.32215997762978,
+            "peak_rss_kib": 33776,
+            "bytes": 80751
+          },
+          {
+            "elapsed_ms": 42.2781549859792,
+            "peak_rss_kib": 33776,
+            "bytes": 80751
+          },
+          {
+            "elapsed_ms": 42.68616100307554,
+            "peak_rss_kib": 33776,
+            "bytes": 80751
+          },
+          {
+            "elapsed_ms": 43.684009986463934,
+            "peak_rss_kib": 33776,
+            "bytes": 80751
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/shadow-glow.lay",
+      "format": "svg",
+      "baseline": {
+        "median_ms": 28.567734989337623,
+        "peak_rss_kib": 33776,
+        "bytes": 1023369,
+        "runs": [
+          {
+            "elapsed_ms": 29.03271996183321,
+            "peak_rss_kib": 33776,
+            "bytes": 1023369
+          },
+          {
+            "elapsed_ms": 26.594480965286493,
+            "peak_rss_kib": 33776,
+            "bytes": 1023369
+          },
+          {
+            "elapsed_ms": 30.364752979949117,
+            "peak_rss_kib": 33776,
+            "bytes": 1023369
+          },
+          {
+            "elapsed_ms": 28.567734989337623,
+            "peak_rss_kib": 33776,
+            "bytes": 1023369
+          },
+          {
+            "elapsed_ms": 28.019100020173937,
+            "peak_rss_kib": 33776,
+            "bytes": 1023369
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 28.708997007925063,
+        "peak_rss_kib": 33776,
+        "bytes": 1023369,
+        "runs": [
+          {
+            "elapsed_ms": 28.708997007925063,
+            "peak_rss_kib": 33776,
+            "bytes": 1023369
+          },
+          {
+            "elapsed_ms": 28.58703298261389,
+            "peak_rss_kib": 33776,
+            "bytes": 1023369
+          },
+          {
+            "elapsed_ms": 29.286096978466958,
+            "peak_rss_kib": 33776,
+            "bytes": 1023369
+          },
+          {
+            "elapsed_ms": 29.26463703624904,
+            "peak_rss_kib": 33776,
+            "bytes": 1023369
+          },
+          {
+            "elapsed_ms": 27.73463196353987,
+            "peak_rss_kib": 33776,
+            "bytes": 1023369
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/images-groups.lay",
+      "format": "png",
+      "baseline": {
+        "median_ms": 96.91093099536374,
+        "peak_rss_kib": 33776,
+        "bytes": 51308,
+        "runs": [
+          {
+            "elapsed_ms": 95.30845901463181,
+            "peak_rss_kib": 33776,
+            "bytes": 51308
+          },
+          {
+            "elapsed_ms": 97.66600403236225,
+            "peak_rss_kib": 33776,
+            "bytes": 51308
+          },
+          {
+            "elapsed_ms": 96.91093099536374,
+            "peak_rss_kib": 33776,
+            "bytes": 51308
+          },
+          {
+            "elapsed_ms": 96.8439819989726,
+            "peak_rss_kib": 33776,
+            "bytes": 51308
+          },
+          {
+            "elapsed_ms": 97.42913901573047,
+            "peak_rss_kib": 33776,
+            "bytes": 51308
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 56.41773098614067,
+        "peak_rss_kib": 33776,
+        "bytes": 39556,
+        "runs": [
+          {
+            "elapsed_ms": 56.86725699342787,
+            "peak_rss_kib": 33776,
+            "bytes": 39556
+          },
+          {
+            "elapsed_ms": 57.871897995937616,
+            "peak_rss_kib": 33776,
+            "bytes": 39556
+          },
+          {
+            "elapsed_ms": 56.41773098614067,
+            "peak_rss_kib": 33776,
+            "bytes": 39556
+          },
+          {
+            "elapsed_ms": 55.31027098186314,
+            "peak_rss_kib": 33776,
+            "bytes": 39556
+          },
+          {
+            "elapsed_ms": 55.94413896324113,
+            "peak_rss_kib": 33776,
+            "bytes": 39556
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/images-groups.lay",
+      "format": "pdf",
+      "baseline": {
+        "median_ms": 116.42961599864066,
+        "peak_rss_kib": 33776,
+        "bytes": 64971,
+        "runs": [
+          {
+            "elapsed_ms": 147.38917403155938,
+            "peak_rss_kib": 33776,
+            "bytes": 64971
+          },
+          {
+            "elapsed_ms": 116.42961599864066,
+            "peak_rss_kib": 33776,
+            "bytes": 64971
+          },
+          {
+            "elapsed_ms": 116.55070894630626,
+            "peak_rss_kib": 33776,
+            "bytes": 64971
+          },
+          {
+            "elapsed_ms": 114.42235397407785,
+            "peak_rss_kib": 33776,
+            "bytes": 64971
+          },
+          {
+            "elapsed_ms": 113.12712199287489,
+            "peak_rss_kib": 33776,
+            "bytes": 64971
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 62.3609849717468,
+        "peak_rss_kib": 33776,
+        "bytes": 44442,
+        "runs": [
+          {
+            "elapsed_ms": 86.70049597276375,
+            "peak_rss_kib": 33776,
+            "bytes": 44442
+          },
+          {
+            "elapsed_ms": 61.896309023723006,
+            "peak_rss_kib": 33776,
+            "bytes": 44442
+          },
+          {
+            "elapsed_ms": 62.39148398162797,
+            "peak_rss_kib": 33776,
+            "bytes": 44442
+          },
+          {
+            "elapsed_ms": 62.3609849717468,
+            "peak_rss_kib": 33776,
+            "bytes": 44442
+          },
+          {
+            "elapsed_ms": 62.29958694893867,
+            "peak_rss_kib": 33776,
+            "bytes": 44442
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/images-groups.lay",
+      "format": "pptx",
+      "baseline": {
+        "median_ms": 103.4123389981687,
+        "peak_rss_kib": 33776,
+        "bytes": 105648,
+        "runs": [
+          {
+            "elapsed_ms": 105.51297204801813,
+            "peak_rss_kib": 33776,
+            "bytes": 105648
+          },
+          {
+            "elapsed_ms": 104.36194797512144,
+            "peak_rss_kib": 33776,
+            "bytes": 105648
+          },
+          {
+            "elapsed_ms": 102.4348689825274,
+            "peak_rss_kib": 33776,
+            "bytes": 105648
+          },
+          {
+            "elapsed_ms": 103.4123389981687,
+            "peak_rss_kib": 33776,
+            "bytes": 105648
+          },
+          {
+            "elapsed_ms": 102.60136995930225,
+            "peak_rss_kib": 33776,
+            "bytes": 105648
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 50.84077001083642,
+        "peak_rss_kib": 33776,
+        "bytes": 56793,
+        "runs": [
+          {
+            "elapsed_ms": 52.21373098902404,
+            "peak_rss_kib": 33776,
+            "bytes": 56793
+          },
+          {
+            "elapsed_ms": 50.49012502422556,
+            "peak_rss_kib": 33776,
+            "bytes": 56793
+          },
+          {
+            "elapsed_ms": 52.66852700151503,
+            "peak_rss_kib": 33776,
+            "bytes": 56793
+          },
+          {
+            "elapsed_ms": 50.84077001083642,
+            "peak_rss_kib": 33776,
+            "bytes": 56793
+          },
+          {
+            "elapsed_ms": 49.826178001239896,
+            "peak_rss_kib": 33776,
+            "bytes": 56793
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/effects/images-groups.lay",
+      "format": "svg",
+      "baseline": {
+        "median_ms": 33.814360038377345,
+        "peak_rss_kib": 33776,
+        "bytes": 1204101,
+        "runs": [
+          {
+            "elapsed_ms": 33.814360038377345,
+            "peak_rss_kib": 33776,
+            "bytes": 1204101
+          },
+          {
+            "elapsed_ms": 32.94398600701243,
+            "peak_rss_kib": 33776,
+            "bytes": 1204101
+          },
+          {
+            "elapsed_ms": 34.28764099953696,
+            "peak_rss_kib": 33776,
+            "bytes": 1204101
+          },
+          {
+            "elapsed_ms": 33.460168982855976,
+            "peak_rss_kib": 33776,
+            "bytes": 1204101
+          },
+          {
+            "elapsed_ms": 34.60210602497682,
+            "peak_rss_kib": 33776,
+            "bytes": 1204101
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 33.56964897830039,
+        "peak_rss_kib": 33776,
+        "bytes": 1204101,
+        "runs": [
+          {
+            "elapsed_ms": 33.98061101324856,
+            "peak_rss_kib": 33776,
+            "bytes": 1204101
+          },
+          {
+            "elapsed_ms": 33.240837045013905,
+            "peak_rss_kib": 33776,
+            "bytes": 1204101
+          },
+          {
+            "elapsed_ms": 33.18077203584835,
+            "peak_rss_kib": 33776,
+            "bytes": 1204101
+          },
+          {
+            "elapsed_ms": 33.56964897830039,
+            "peak_rss_kib": 33776,
+            "bytes": 1204101
+          },
+          {
+            "elapsed_ms": 34.00999499717727,
+            "peak_rss_kib": 33776,
+            "bytes": 1204101
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/gallery/images/svg.lay",
+      "format": "png",
+      "baseline": {
+        "median_ms": 66.40131899621338,
+        "peak_rss_kib": 33776,
+        "bytes": 23388,
+        "runs": [
+          {
+            "elapsed_ms": 66.40131899621338,
+            "peak_rss_kib": 33776,
+            "bytes": 23388
+          },
+          {
+            "elapsed_ms": 68.04345798445866,
+            "peak_rss_kib": 33776,
+            "bytes": 23388
+          },
+          {
+            "elapsed_ms": 65.5113470274955,
+            "peak_rss_kib": 33776,
+            "bytes": 23388
+          },
+          {
+            "elapsed_ms": 67.88153597153723,
+            "peak_rss_kib": 33776,
+            "bytes": 23388
+          },
+          {
+            "elapsed_ms": 66.219219006598,
+            "peak_rss_kib": 33776,
+            "bytes": 23388
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 80.39208798436448,
+        "peak_rss_kib": 33776,
+        "bytes": 27145,
+        "runs": [
+          {
+            "elapsed_ms": 82.41958904545754,
+            "peak_rss_kib": 33776,
+            "bytes": 27145
+          },
+          {
+            "elapsed_ms": 80.57060098508373,
+            "peak_rss_kib": 33776,
+            "bytes": 27145
+          },
+          {
+            "elapsed_ms": 80.2057390101254,
+            "peak_rss_kib": 33776,
+            "bytes": 27145
+          },
+          {
+            "elapsed_ms": 80.11348196305335,
+            "peak_rss_kib": 33776,
+            "bytes": 27145
+          },
+          {
+            "elapsed_ms": 80.39208798436448,
+            "peak_rss_kib": 33776,
+            "bytes": 27145
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/gallery/images/svg.lay",
+      "format": "pdf",
+      "baseline": {
+        "median_ms": 43.49144903244451,
+        "peak_rss_kib": 33776,
+        "bytes": 10881,
+        "runs": [
+          {
+            "elapsed_ms": 41.92878300091252,
+            "peak_rss_kib": 33776,
+            "bytes": 10881
+          },
+          {
+            "elapsed_ms": 43.29840902937576,
+            "peak_rss_kib": 33776,
+            "bytes": 10881
+          },
+          {
+            "elapsed_ms": 43.50564698688686,
+            "peak_rss_kib": 33776,
+            "bytes": 10881
+          },
+          {
+            "elapsed_ms": 45.244212029501796,
+            "peak_rss_kib": 33776,
+            "bytes": 10881
+          },
+          {
+            "elapsed_ms": 43.49144903244451,
+            "peak_rss_kib": 33776,
+            "bytes": 10881
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 59.652221971191466,
+        "peak_rss_kib": 33776,
+        "bytes": 10931,
+        "runs": [
+          {
+            "elapsed_ms": 60.13697700109333,
+            "peak_rss_kib": 33776,
+            "bytes": 10931
+          },
+          {
+            "elapsed_ms": 58.905808022245765,
+            "peak_rss_kib": 33776,
+            "bytes": 10931
+          },
+          {
+            "elapsed_ms": 59.652221971191466,
+            "peak_rss_kib": 33776,
+            "bytes": 10931
+          },
+          {
+            "elapsed_ms": 61.15938402945176,
+            "peak_rss_kib": 33776,
+            "bytes": 10931
+          },
+          {
+            "elapsed_ms": 59.636412013787776,
+            "peak_rss_kib": 33776,
+            "bytes": 10931
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/gallery/images/svg.lay",
+      "format": "pptx",
+      "baseline": {
+        "median_ms": 63.289622019510716,
+        "peak_rss_kib": 33776,
+        "bytes": 23403,
+        "runs": [
+          {
+            "elapsed_ms": 63.289622019510716,
+            "peak_rss_kib": 33776,
+            "bytes": 23403
+          },
+          {
+            "elapsed_ms": 63.53737897006795,
+            "peak_rss_kib": 33776,
+            "bytes": 23403
+          },
+          {
+            "elapsed_ms": 64.07209701137617,
+            "peak_rss_kib": 33776,
+            "bytes": 23403
+          },
+          {
+            "elapsed_ms": 62.53298500087112,
+            "peak_rss_kib": 33776,
+            "bytes": 23403
+          },
+          {
+            "elapsed_ms": 63.16552095813677,
+            "peak_rss_kib": 33776,
+            "bytes": 23403
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 76.65219000773504,
+        "peak_rss_kib": 33776,
+        "bytes": 12649,
+        "runs": [
+          {
+            "elapsed_ms": 76.43380999797955,
+            "peak_rss_kib": 33776,
+            "bytes": 12649
+          },
+          {
+            "elapsed_ms": 76.65219000773504,
+            "peak_rss_kib": 33776,
+            "bytes": 12649
+          },
+          {
+            "elapsed_ms": 75.87978697847575,
+            "peak_rss_kib": 33776,
+            "bytes": 12649
+          },
+          {
+            "elapsed_ms": 76.84496295405552,
+            "peak_rss_kib": 33776,
+            "bytes": 12649
+          },
+          {
+            "elapsed_ms": 77.07637798739597,
+            "peak_rss_kib": 33776,
+            "bytes": 12649
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/gallery/images/svg.lay",
+      "format": "svg",
+      "baseline": {
+        "median_ms": 59.945417975541204,
+        "peak_rss_kib": 33776,
+        "bytes": 1015619,
+        "runs": [
+          {
+            "elapsed_ms": 59.45046502165496,
+            "peak_rss_kib": 33776,
+            "bytes": 1015619
+          },
+          {
+            "elapsed_ms": 60.79015199793503,
+            "peak_rss_kib": 33776,
+            "bytes": 1015619
+          },
+          {
+            "elapsed_ms": 59.37597999582067,
+            "peak_rss_kib": 33776,
+            "bytes": 1015619
+          },
+          {
+            "elapsed_ms": 61.3276680232957,
+            "peak_rss_kib": 33776,
+            "bytes": 1015619
+          },
+          {
+            "elapsed_ms": 59.945417975541204,
+            "peak_rss_kib": 33776,
+            "bytes": 1015619
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 60.236026998609304,
+        "peak_rss_kib": 33776,
+        "bytes": 1015619,
+        "runs": [
+          {
+            "elapsed_ms": 60.42580201756209,
+            "peak_rss_kib": 33776,
+            "bytes": 1015619
+          },
+          {
+            "elapsed_ms": 59.68281300738454,
+            "peak_rss_kib": 33776,
+            "bytes": 1015619
+          },
+          {
+            "elapsed_ms": 60.26991200633347,
+            "peak_rss_kib": 33776,
+            "bytes": 1015619
+          },
+          {
+            "elapsed_ms": 60.236026998609304,
+            "peak_rss_kib": 33776,
+            "bytes": 1015619
+          },
+          {
+            "elapsed_ms": 60.028656967915595,
+            "peak_rss_kib": 33776,
+            "bytes": 1015619
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/plot/scientific.lay",
+      "format": "png",
+      "baseline": {
+        "median_ms": 48.183587030507624,
+        "peak_rss_kib": 33776,
+        "bytes": 26161,
+        "runs": [
+          {
+            "elapsed_ms": 48.698569007683545,
+            "peak_rss_kib": 33776,
+            "bytes": 26161
+          },
+          {
+            "elapsed_ms": 47.66488802852109,
+            "peak_rss_kib": 33776,
+            "bytes": 26161
+          },
+          {
+            "elapsed_ms": 47.055887000169605,
+            "peak_rss_kib": 33776,
+            "bytes": 26161
+          },
+          {
+            "elapsed_ms": 48.183587030507624,
+            "peak_rss_kib": 33776,
+            "bytes": 26161
+          },
+          {
+            "elapsed_ms": 49.35019201366231,
+            "peak_rss_kib": 33776,
+            "bytes": 26161
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 49.25945703871548,
+        "peak_rss_kib": 33776,
+        "bytes": 36391,
+        "runs": [
+          {
+            "elapsed_ms": 49.56723900977522,
+            "peak_rss_kib": 33776,
+            "bytes": 36391
+          },
+          {
+            "elapsed_ms": 48.980471037793905,
+            "peak_rss_kib": 33776,
+            "bytes": 36391
+          },
+          {
+            "elapsed_ms": 49.25945703871548,
+            "peak_rss_kib": 33776,
+            "bytes": 36391
+          },
+          {
+            "elapsed_ms": 52.19171795761213,
+            "peak_rss_kib": 33776,
+            "bytes": 36391
+          },
+          {
+            "elapsed_ms": 49.01225201319903,
+            "peak_rss_kib": 33776,
+            "bytes": 36391
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/plot/scientific.lay",
+      "format": "pdf",
+      "baseline": {
+        "median_ms": 36.702768004033715,
+        "peak_rss_kib": 33776,
+        "bytes": 39873,
+        "runs": [
+          {
+            "elapsed_ms": 36.702768004033715,
+            "peak_rss_kib": 33776,
+            "bytes": 39873
+          },
+          {
+            "elapsed_ms": 36.403180041816086,
+            "peak_rss_kib": 33776,
+            "bytes": 39873
+          },
+          {
+            "elapsed_ms": 37.14928700355813,
+            "peak_rss_kib": 33776,
+            "bytes": 39873
+          },
+          {
+            "elapsed_ms": 36.96269600186497,
+            "peak_rss_kib": 33776,
+            "bytes": 39873
+          },
+          {
+            "elapsed_ms": 35.82539898343384,
+            "peak_rss_kib": 33776,
+            "bytes": 39873
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 37.65973902773112,
+        "peak_rss_kib": 33776,
+        "bytes": 38830,
+        "runs": [
+          {
+            "elapsed_ms": 38.89800194883719,
+            "peak_rss_kib": 33776,
+            "bytes": 38830
+          },
+          {
+            "elapsed_ms": 37.65973902773112,
+            "peak_rss_kib": 33776,
+            "bytes": 38830
+          },
+          {
+            "elapsed_ms": 37.82734205015004,
+            "peak_rss_kib": 33776,
+            "bytes": 38830
+          },
+          {
+            "elapsed_ms": 37.48507297132164,
+            "peak_rss_kib": 33776,
+            "bytes": 38830
+          },
+          {
+            "elapsed_ms": 37.53137303283438,
+            "peak_rss_kib": 33776,
+            "bytes": 38830
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/plot/scientific.lay",
+      "format": "pptx",
+      "baseline": {
+        "median_ms": 47.27005900349468,
+        "peak_rss_kib": 33776,
+        "bytes": 19559,
+        "runs": [
+          {
+            "elapsed_ms": 47.24127397639677,
+            "peak_rss_kib": 33776,
+            "bytes": 19559
+          },
+          {
+            "elapsed_ms": 47.333291033282876,
+            "peak_rss_kib": 33776,
+            "bytes": 19559
+          },
+          {
+            "elapsed_ms": 47.27005900349468,
+            "peak_rss_kib": 33776,
+            "bytes": 19559
+          },
+          {
+            "elapsed_ms": 45.97694199765101,
+            "peak_rss_kib": 33776,
+            "bytes": 19559
+          },
+          {
+            "elapsed_ms": 47.29239299194887,
+            "peak_rss_kib": 33776,
+            "bytes": 19559
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 41.43842699704692,
+        "peak_rss_kib": 33776,
+        "bytes": 25297,
+        "runs": [
+          {
+            "elapsed_ms": 40.787634963635355,
+            "peak_rss_kib": 33776,
+            "bytes": 25297
+          },
+          {
+            "elapsed_ms": 41.60128196235746,
+            "peak_rss_kib": 33776,
+            "bytes": 25297
+          },
+          {
+            "elapsed_ms": 42.81239298870787,
+            "peak_rss_kib": 33776,
+            "bytes": 25297
+          },
+          {
+            "elapsed_ms": 40.47401301795617,
+            "peak_rss_kib": 33776,
+            "bytes": 25297
+          },
+          {
+            "elapsed_ms": 41.43842699704692,
+            "peak_rss_kib": 33776,
+            "bytes": 25297
+          }
+        ]
+      }
+    },
+    {
+      "source": "examples/plot/scientific.lay",
+      "format": "svg",
+      "baseline": {
+        "median_ms": 36.47398599423468,
+        "peak_rss_kib": 33776,
+        "bytes": 1057110,
+        "runs": [
+          {
+            "elapsed_ms": 36.326714034657925,
+            "peak_rss_kib": 33776,
+            "bytes": 1057110
+          },
+          {
+            "elapsed_ms": 36.204578005708754,
+            "peak_rss_kib": 33776,
+            "bytes": 1057110
+          },
+          {
+            "elapsed_ms": 36.47398599423468,
+            "peak_rss_kib": 33776,
+            "bytes": 1057110
+          },
+          {
+            "elapsed_ms": 37.38240501843393,
+            "peak_rss_kib": 33776,
+            "bytes": 1057110
+          },
+          {
+            "elapsed_ms": 37.64707501977682,
+            "peak_rss_kib": 33776,
+            "bytes": 1057110
+          }
+        ]
+      },
+      "current": {
+        "median_ms": 37.06090699415654,
+        "peak_rss_kib": 33776,
+        "bytes": 1057110,
+        "runs": [
+          {
+            "elapsed_ms": 38.06274401722476,
+            "peak_rss_kib": 33776,
+            "bytes": 1057110
+          },
+          {
+            "elapsed_ms": 37.06090699415654,
+            "peak_rss_kib": 33776,
+            "bytes": 1057110
+          },
+          {
+            "elapsed_ms": 36.76333400653675,
+            "peak_rss_kib": 33776,
+            "bytes": 1057110
+          },
+          {
+            "elapsed_ms": 36.24498698627576,
+            "peak_rss_kib": 33776,
+            "bytes": 1057110
+          },
+          {
+            "elapsed_ms": 37.573851994238794,
+            "peak_rss_kib": 33776,
+            "bytes": 1057110
+          }
+        ]
+      }
+    }
+  ]
+}

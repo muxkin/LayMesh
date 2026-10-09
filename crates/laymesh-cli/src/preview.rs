@@ -24,7 +24,7 @@ pub fn serve() -> io::Result<()> {
         }
     });
     sender
-        .send(json!({"type":"ready","protocol":1,"capabilities":["resources-v2","defaults"]}))
+        .send(json!({"type":"ready","protocol":1,"capabilities":["resources-v2","display-list-v3","defaults"]}))
         .unwrap();
     for line in io::stdin().lock().lines() {
         let request: Value = match serde_json::from_str(&line?) {
@@ -61,7 +61,11 @@ pub fn serve() -> io::Result<()> {
             let source = request["source"]
                 .as_str()
                 .ok_or("Preview requires source text")?;
-            let resources = request["protocol"] == 2 && request["type"] != "export";
+            let protocol = request["protocol"].as_u64().unwrap_or(3);
+            if ![1, 2, 3].contains(&protocol) {
+                return Err("Unsupported preview protocol".into());
+            }
+            let resources = protocol >= 2 && request["type"] != "export";
             laymesh_core::asset_cache::preview_mode(
                 resources
                     || (request["type"] == "export"
@@ -103,6 +107,16 @@ pub fn serve() -> io::Result<()> {
                     return Err("Resource directory must be absolute".into());
                 }
                 std::fs::create_dir_all(directory)?;
+                if protocol == 3 {
+                    let (list, mut resources) =
+                        preview_assets::display_frame(&scene, directory, &settings)?;
+                    if let Some(known) = request["known_resources"].as_array() {
+                        resources.retain(|item| !known.contains(&item["id"]));
+                    }
+                    return Ok(
+                        json!({"protocol":3,"displayList":list,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)}),
+                    );
+                }
                 let (svg, mut resources) = preview_assets::frame(&scene, directory, &settings)?;
                 if let Some(known) = request["known_resources"].as_array() {
                     resources.retain(|item| !known.contains(&item["id"]));

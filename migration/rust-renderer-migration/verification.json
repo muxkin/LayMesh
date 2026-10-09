@@ -1,0 +1,237 @@
+{
+  "branch": "codex/rust-renderer-migration",
+  "base_commit": "9c6f26f",
+  "rust_tests_passed": 516,
+  "python_tests_passed": 51,
+  "legacy_assertions_verified": 891,
+  "execution_verified": true,
+  "native_wasm_parity": {
+    "cases": [
+      {
+        "name": "examples/typography.lay",
+        "width": 605,
+        "height": 378,
+        "rasterMs": 21.600000023841858,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/vector.lay",
+        "width": 680,
+        "height": 454,
+        "rasterMs": 18.100000023841858,
+        "maximumDelta": 1,
+        "meanDelta": 4.048976418761337e-06,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/effects/art-text.lay",
+        "width": 680,
+        "height": 567,
+        "rasterMs": 45.299999952316284,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/effects/shadow-glow.lay",
+        "width": 567,
+        "height": 359,
+        "rasterMs": 24.399999976158142,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/effects/images-groups.lay",
+        "width": 605,
+        "height": 302,
+        "rasterMs": 50.59999996423721,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/gallery/images/svg.lay",
+        "width": 454,
+        "height": 302,
+        "rasterMs": 10.400000035762787,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/plot/scientific.lay",
+        "width": 680,
+        "height": 310,
+        "rasterMs": 20.899999976158142,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "wide-70000x2",
+        "width": 70000,
+        "height": 2,
+        "rasterMs": 12.599999964237213,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": [
+          {
+            "x": 1023,
+            "rgba": [
+              0,
+              249,
+              6,
+              129
+            ]
+          },
+          {
+            "x": 1024,
+            "rgba": [
+              0,
+              249,
+              6,
+              129
+            ]
+          },
+          {
+            "x": 2047,
+            "rgba": [
+              0,
+              241,
+              14,
+              131
+            ]
+          },
+          {
+            "x": 2048,
+            "rgba": [
+              0,
+              241,
+              14,
+              131
+            ]
+          },
+          {
+            "x": 65534,
+            "rgba": [
+              0,
+              9,
+              245,
+              247
+            ]
+          },
+          {
+            "x": 65535,
+            "rgba": [
+              0,
+              9,
+              245,
+              247
+            ]
+          },
+          {
+            "x": 65536,
+            "rgba": [
+              0,
+              9,
+              245,
+              247
+            ]
+          }
+        ]
+      }
+    ],
+    "status": "passed",
+    "protocols": {
+      "default_client": 3,
+      "explicit_compatibility": [
+        1,
+        2
+      ],
+      "unknown_rejected": true
+    },
+    "native_oracle_sha256": "c8ca2b406bb9d4cfe30add128135eb3794eab7d7fc7cb04ed4944ebf3745cbc3",
+    "wasm_sha256": "6c499a820b35d2afb7c5c7de10f8d79a17883f28571e998d52f11468db44e26b"
+  },
+  "browser": {
+    "examples": 186,
+    "failures": 0,
+    "maximum_wasm_linear_memory_bytes": 222167040,
+    "typography": {
+      "example": "typography",
+      "elapsed_ms": 402.60000002384186,
+      "width": 160,
+      "height": 100,
+      "warnings": 0,
+      "metrics": {
+        "initialization": 5352.5,
+        "resources": 0,
+        "compile": 67.39999997615814,
+        "lower": 313.39999997615814,
+        "raster": 0,
+        "total": 380.7999999523163
+      },
+      "raster_ms": 11.899999976158142,
+      "wasm_memory_bytes": 222167040
+    },
+    "viewports": [
+      [
+        1440,
+        1000
+      ],
+      [
+        390,
+        844
+      ]
+    ]
+  },
+  "pptx": {
+    "cases": 10,
+    "libreoffice_roundtrip": true,
+    "powerpoint_native_tested": false
+  },
+  "vsix": {
+    "file": "laymesh-rust-renderer-linux-x64.vsix",
+    "publisher": "Hyacine",
+    "version": "0.5.1",
+    "target": "linux-x64",
+    "prerelease": false,
+    "marketplace_checks": true,
+    "bytes": 11389096,
+    "installed_bytes": 29249542,
+    "native_binary": "extension/bin/laymesh",
+    "client_modules": [
+      "vscode",
+      "child_process",
+      "path"
+    ],
+    "bundled_text_fonts": false
+  },
+  "package_baseline_bytes": 7624526,
+  "native_binary_sha256": "aa847007990623b6be08bff7cf1e7ba0d2b3bd41ac11c5e1dc27e6e67fa2457d",
+  "media_engine_fingerprint": "f5eb69b57eb48d526e6c0b6ab721265ab5e8971df9c7ecdb7d9f5d21da2fa113",
+  "ring": {
+    "original_pixels": [
+      128,
+      128
+    ],
+    "original_alpha_levels": 2,
+    "current_pixels": [
+      1024,
+      1024
+    ],
+    "current_alpha_levels": 225
+  },
+  "publication_performed": false
+}

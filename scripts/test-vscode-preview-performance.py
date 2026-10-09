@@ -3,7 +3,7 @@
 import argparse, json, os, subprocess, tempfile, socket, time, urllib.request, importlib.util
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',required=True,type=Path);p.add_argument('--binary',type=Path);p.add_argument('--code',default='/usr/share/code/code');a=p.parse_args()
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',required=True,type=Path);p.add_argument('--binary',type=Path);p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--code',default='/usr/share/code/code');a=p.parse_args()
 a.output=a.output.resolve();a.output.parent.mkdir(parents=True,exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='laymesh-perf-host-') as temp:
  root=Path(temp);user=root/'profile/User';user.mkdir(parents=True)
@@ -12,7 +12,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-perf-host-') as temp:
  (user/'settings.json').write_text(json.dumps(settings))
  env={**os.environ,'LAYMESH_PERFORMANCE_OUTPUT':str(a.output),'LAYMESH_PERFORMANCE_BINARY':str(a.binary or 'bundled')};env.pop('ELECTRON_RUN_AS_NODE',None)
  with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
- command=[a.code,'--remote-debugging-port='+str(port),'--remote-allow-origins=*','--no-sandbox','--disable-gpu','--disable-updates','--ozone-platform=headless','--force-device-scale-factor=2','--user-data-dir='+str(root/'profile'),'--extensions-dir='+str(root/'extensions'),'--extensionDevelopmentPath='+str(ROOT/'extensions/vscode'),'--extensionTestsPath='+str(ROOT/'scripts/vscode-preview-performance.cjs'),'--skip-welcome','--skip-release-notes','--new-window']
+ command=[a.code,'--remote-debugging-port='+str(port),'--remote-allow-origins=*','--no-sandbox','--disable-gpu','--disable-updates','--disable-background-timer-throttling','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows','--ozone-platform=headless','--force-device-scale-factor=2','--user-data-dir='+str(root/'profile'),'--extensions-dir='+str(root/'extensions'),'--extensionDevelopmentPath='+str(a.extension_dir.resolve()),'--extensionTestsPath='+str(ROOT/'scripts/vscode-preview-performance.cjs'),'--skip-welcome','--skip-release-notes','--new-window']
  process=subprocess.Popen(command,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
  spec=importlib.util.spec_from_file_location('native_cdp',ROOT/'scripts/smoke-browser.py');native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
  opener=urllib.request.build_opener(urllib.request.ProxyHandler({}));connected=False;debug={}

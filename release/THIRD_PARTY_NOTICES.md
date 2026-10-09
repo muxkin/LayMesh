@@ -23,6 +23,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | byteorder-lite | 0.1.0 | Unlicense OR MIT |
 | cc | 1.6.0 | MIT OR Apache-2.0 |
 | cfg-if | 1.0.5 | MIT OR Apache-2.0 |
+| color | 0.3.3 | Apache-2.0 OR MIT |
 | color_quant | 1.1.0 | MIT |
 | const-oid | 0.10.2 | Apache-2.0 OR MIT |
 | contour | 0.13.1 | MIT OR Apache-2.0 |
@@ -46,17 +47,22 @@ The native executable and WebAssembly module contain the following locked Rust d
 | fancy-regex | 0.14.0 | MIT |
 | fax | 0.2.7 | MIT |
 | fdeflate | 0.3.7 | MIT OR Apache-2.0 |
+| fearless_simd | 0.7.0 | Apache-2.0 OR MIT |
 | find-msvc-tools | 0.1.14 | MIT OR Apache-2.0 |
 | flate2 | 1.1.10 | MIT OR Apache-2.0 |
 | float-cmp | 0.9.0 | MIT |
+| foldhash | 0.2.0 | Zlib |
 | font-types | 0.11.3 | MIT OR Apache-2.0 |
+| font-types | 0.12.6 | MIT OR Apache-2.0 |
 | fontconfig-parser | 0.5.8 | MIT |
 | fontdb | 0.23.0 | MIT |
 | generic-array | 0.14.7 | MIT |
 | geo-types | 0.7.20 | MIT OR Apache-2.0 |
 | getrandom | 0.4.3 | MIT OR Apache-2.0 |
 | gif | 0.14.2 | MIT OR Apache-2.0 |
+| glifo | 0.4.0 | Apache-2.0 OR MIT |
 | glob | 0.3.4 | MIT OR Apache-2.0 |
+| guillotiere | 0.7.0 | MIT/Apache-2.0 |
 | half | 2.7.1 | MIT OR Apache-2.0 |
 | hashbrown | 0.17.1 | MIT OR Apache-2.0 |
 | hybrid-array | 0.4.15 | MIT OR Apache-2.0 |
@@ -72,12 +78,12 @@ The native executable and WebAssembly module contain the following locked Rust d
 | itoa | 1.0.18 | MIT OR Apache-2.0 |
 | jobserver | 0.1.35 | MIT OR Apache-2.0 |
 | krilla | 0.8.2 | MIT OR Apache-2.0 |
-| krilla-svg | 0.8.1 | MIT OR Apache-2.0 |
 | kurbo | 0.13.1 | Apache-2.0 OR MIT |
 | lazy_static | 1.5.1 | MIT OR Apache-2.0 |
 | libc | 0.2.190 | MIT OR Apache-2.0 |
 | libm | 0.2.16 | MIT |
 | libwebp-sys | 0.9.6 | MIT AND BSD-3-Clause |
+| linebender_resource_handle | 0.1.1 | Apache-2.0 OR MIT |
 | log | 0.4.34 | MIT OR Apache-2.0 |
 | memchr | 2.8.3 | Unlicense OR MIT |
 | memmap2 | 0.9.11 | MIT OR Apache-2.0 |
@@ -89,6 +95,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | num-traits | 0.2.19 | MIT OR Apache-2.0 |
 | once_cell | 1.21.4 | MIT OR Apache-2.0 |
 | pdf-writer | 0.15.0 | MIT OR Apache-2.0 |
+| peniko | 0.6.1 | Apache-2.0 OR MIT |
 | phf | 0.11.3 | MIT |
 | phf_generator | 0.11.3 | MIT |
 | phf_macros | 0.11.3 | MIT |
@@ -110,12 +117,11 @@ The native executable and WebAssembly module contain the following locked Rust d
 | ratex-parser | 0.1.14 | MIT |
 | ratex-types | 0.1.14 | MIT |
 | read-fonts | 0.39.2 | MIT OR Apache-2.0 |
+| read-fonts | 0.41.0 | MIT OR Apache-2.0 |
 | regex | 1.13.1 | MIT OR Apache-2.0 |
 | regex-automata | 0.4.18 | MIT OR Apache-2.0 |
 | regex-lite | 0.1.9 | MIT OR Apache-2.0 |
 | regex-syntax | 0.8.11 | MIT OR Apache-2.0 |
-| resvg | 0.47.0 | Apache-2.0 OR MIT |
-| rgb | 0.8.53 | MIT |
 | roxmltree | 0.20.0 | MIT OR Apache-2.0 |
 | roxmltree | 0.21.1 | MIT OR Apache-2.0 |
 | rust-embed | 8.12.0 | MIT |
@@ -138,6 +144,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | simplecss | 0.2.2 | Apache-2.0 OR MIT |
 | siphasher | 1.0.4 | MIT OR Apache-2.0 |
 | skrifa | 0.42.1 | MIT OR Apache-2.0 |
+| skrifa | 0.44.0 | MIT OR Apache-2.0 |
 | slab | 0.4.12 | MIT |
 | slotmap | 1.1.1 | Zlib |
 | smallvec | 1.16.2 | MIT OR Apache-2.0 |
@@ -153,7 +160,6 @@ The native executable and WebAssembly module contain the following locked Rust d
 | thiserror-impl | 1.0.69 | MIT OR Apache-2.0 |
 | thiserror-impl | 2.0.21 | MIT OR Apache-2.0 |
 | tiff | 0.11.3 | MIT |
-| tiny-skia | 0.12.0 | BSD-3-Clause |
 | tiny-skia-path | 0.12.0 | BSD-3-Clause |
 | tinyvec | 1.13.3 | Zlib OR Apache-2.0 OR MIT |
 | ttf-parser | 0.25.1 | MIT OR Apache-2.0 |
@@ -170,6 +176,8 @@ The native executable and WebAssembly module contain the following locked Rust d
 | unicode-segmentation | 1.13.3 | MIT OR Apache-2.0 |
 | unicode-vo | 0.1.0 | MIT/Apache-2.0 |
 | usvg | 0.47.0 | Apache-2.0 OR MIT |
+| vello_common | 0.3.0 | Apache-2.0 OR MIT |
+| vello_cpu | 0.3.0 | Apache-2.0 OR MIT |
 | version_check | 0.9.5 | MIT/Apache-2.0 |
 | walkdir | 2.5.0 | Unlicense/MIT |
 | wasm-bindgen | 0.2.129 | MIT OR Apache-2.0 |

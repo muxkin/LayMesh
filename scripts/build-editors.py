@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stage the host-only VS Code client plus a native Rust language server."""
+"""Stage native Rust services and the offline WASM CPU Canvas renderer."""
 import argparse,json,re,shutil,subprocess,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
@@ -26,6 +26,8 @@ def build(binary=None,extension_dir=None):
  grammar.write_text(json.dumps(syntax,ensure_ascii=False,indent=2)+'\n')
  shutil.copy2(ROOT/'site/live/color-panel.mjs',extension/'dist/color-panel.mjs');shutil.copy2(ROOT/'site/live/color-math.mjs',extension/'dist/color-math.mjs');shutil.copy2(source/'src/color-webview.mjs',extension/'dist/color-webview.mjs')
  for name in ['preview-host.cjs','preview-math.mjs','preview-webview.mjs','preview.css']:shutil.copy2(source/'src'/name,extension/'dist'/name)
+ subprocess.run(['cargo','build','--release','--locked','--target','wasm32-unknown-unknown','-p','laymesh-wasm','--no-default-features'],cwd=ROOT,check=True)
+ subprocess.run(['wasm-bindgen','--target','web','--out-dir',str(extension/'dist/wasm'),str(ROOT/'target/wasm32-unknown-unknown/release/laymesh_wasm.wasm')],check=True)
  # A platform package contains exactly one engine, even when reusing a staging directory.
  stale=extension/'bin'/('laymesh' if binary.name=='laymesh.exe' else 'laymesh.exe')
  if stale.exists():stale.unlink()
@@ -36,6 +38,6 @@ def build(binary=None,extension_dir=None):
  if stale.exists():stale.unlink()
  if (ROOT/'release/licenses').is_dir():shutil.copytree(ROOT/'release/licenses',extension/'licenses',dirs_exist_ok=True)
  if (ROOT/'release/THIRD_PARTY_NOTICES.md').is_file():shutil.copy2(ROOT/'release/THIRD_PARTY_NOTICES.md',extension/'THIRD_PARTY_NOTICES.md')
- print(f'Built thin VS Code client + native Rust services at {extension} (no npm packages)')
+ print(f'Built offline WASM CPU preview + native Rust services at {extension} (no npm packages)')
 if __name__=='__main__':
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--binary',type=Path);p.add_argument('--extension-dir',type=Path,help='Stage a platform package separately from the local extension');a=p.parse_args();build(a.binary,a.extension_dir)

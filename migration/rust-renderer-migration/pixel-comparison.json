@@ -1,0 +1,65 @@
+[
+  {
+    "source": "examples/typography.lay",
+    "size": [
+      907,
+      567
+    ],
+    "composited_rgb_mae": 0.30236251196682407,
+    "alpha_mae": 0.0
+  },
+  {
+    "source": "examples/vector.lay",
+    "size": [
+      1020,
+      680
+    ],
+    "composited_rgb_mae": 0.3483895617070358,
+    "alpha_mae": 0.0
+  },
+  {
+    "source": "examples/effects/art-text.lay",
+    "size": [
+      1020,
+      850
+    ],
+    "composited_rgb_mae": 0.3050738177623991,
+    "alpha_mae": 0.0
+  },
+  {
+    "source": "examples/effects/shadow-glow.lay",
+    "size": [
+      850,
+      539
+    ],
+    "composited_rgb_mae": 0.19643930299392484,
+    "alpha_mae": 0.0
+  },
+  {
+    "source": "examples/effects/images-groups.lay",
+    "size": [
+      907,
+      454
+    ],
+    "composited_rgb_mae": 1.5085806753477196,
+    "alpha_mae": 0.0
+  },
+  {
+    "source": "examples/gallery/images/svg.lay",
+    "size": [
+      680,
+      454
+    ],
+    "composited_rgb_mae": 0.15292606029195818,
+    "alpha_mae": 0.0
+  },
+  {
+    "source": "examples/plot/scientific.lay",
+    "size": [
+      1020,
+      465
+    ],
+    "composited_rgb_mae": 0.2319481340923466,
+    "alpha_mae": 0.0
+  }
+]

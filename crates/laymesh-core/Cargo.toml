@@ -6,7 +6,7 @@ license.workspace = true
 
 [features]
 default = ["system-fonts"]
-system-fonts = ["fontdb/fs", "fontdb/fontconfig"]
+system-fonts = ["fontdb/fs", "fontdb/fontconfig", "fontdb/memmap"]
 
 [dependencies]
 serde.workspace = true

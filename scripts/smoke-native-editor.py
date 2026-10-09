@@ -75,6 +75,8 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-editor-') as temporary:
         requests.append({'id': len(requests), 'file': file.replace('/', '\\'),
             'source': requests[0]['source'], 'overlays': {module.replace('/', '\\'): 'export width=8'}})
     # CRLF is normal on Windows; a malformed request must not kill the server.
+    for request in requests:
+        request['protocol'] = 1  # Explicitly exercise the legacy SVG export contract.
     payload = '\r\n'.join(['{bad JSON}'] + [json.dumps(r, ensure_ascii=False) for r in requests]) + '\r\n'
     results = [json.loads(line) for line in run(['preview', '--stdio'], payload.encode()).decode().splitlines()]
     assert results[0]['type'] == 'ready' and results[0]['protocol'] == 1

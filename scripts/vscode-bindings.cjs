@@ -71,7 +71,7 @@ exports.run=async function(){
   const child=spawn(binary,['preview','--stdio'],{stdio:['pipe','pipe','pipe']});let buffer='';
   const timeout=setTimeout(()=>{child.kill();reject(new Error('Native BMP preview timed out'));},20000);
   child.on('error',reject);child.stdout.on('data',data=>{buffer+=data;let end;while((end=buffer.indexOf('\n'))>=0){const line=buffer.slice(0,end);buffer=buffer.slice(end+1);const msg=JSON.parse(line);if(msg.id===1){clearTimeout(timeout);child.stdin.end();resolve(msg);}}});
-  child.stdin.write(JSON.stringify({id:1,file:mainUri.fsPath,source})+'\n');
+  child.stdin.write(JSON.stringify({protocol:1,id:1,file:mainUri.fsPath,source})+'\n');
  });
  assert(result.svg?.includes('data:image/png;base64,'),JSON.stringify(result.error));
  assert(result.dependencies.some(p=>p.includes('中文 # assets')&&p.endsWith('.bmp')));

@@ -73,73 +73,7 @@ pub(super) fn custom(path: &BezPath, b: Rect, stroke: bool) -> String {
         u8::from(stroke)
     )
 }
-pub(super) fn svg_path(n: Node<'_, '_>) -> Result<BezPath> {
-    Ok(match n.tag_name().name() {
-        "path" => {
-            BezPath::from_svg(n.attribute("d").unwrap_or("")).map_err(|_| error("PPTX 无效路径"))?
-        }
-        "rect" => {
-            let r = Rect::new(
-                attr(n, "x", 0.),
-                attr(n, "y", 0.),
-                attr(n, "x", 0.) + attr(n, "width", 0.),
-                attr(n, "y", 0.) + attr(n, "height", 0.),
-            );
-            let rx = attr(n, "rx", attr(n, "ry", 0.)).min(r.width() / 2.);
-            let ry = attr(n, "ry", rx).min(r.height() / 2.);
-            if rx > 0. && ry > 0. {
-                // Elliptical corners, including those produced by unequal scaling.
-                let k = 0.5522847498307936;
-                let mut p = BezPath::new();
-                p.move_to((r.x0 + rx, r.y0));
-                p.line_to((r.x1 - rx, r.y0));
-                p.curve_to(
-                    (r.x1 - rx + k * rx, r.y0),
-                    (r.x1, r.y0 + ry - k * ry),
-                    (r.x1, r.y0 + ry),
-                );
-                p.line_to((r.x1, r.y1 - ry));
-                p.curve_to(
-                    (r.x1, r.y1 - ry + k * ry),
-                    (r.x1 - rx + k * rx, r.y1),
-                    (r.x1 - rx, r.y1),
-                );
-                p.line_to((r.x0 + rx, r.y1));
-                p.curve_to(
-                    (r.x0 + rx - k * rx, r.y1),
-                    (r.x0, r.y1 - ry + k * ry),
-                    (r.x0, r.y1 - ry),
-                );
-                p.line_to((r.x0, r.y0 + ry));
-                p.curve_to(
-                    (r.x0, r.y0 + ry - k * ry),
-                    (r.x0 + rx - k * rx, r.y0),
-                    (r.x0 + rx, r.y0),
-                );
-                p.close_path();
-                p
-            } else {
-                r.to_path(0.001)
-            }
-        }
-        _ => kurbo::Ellipse::new(
-            (attr(n, "cx", 0.), attr(n, "cy", 0.)),
-            (
-                attr(n, "rx", attr(n, "r", 0.)),
-                attr(n, "ry", attr(n, "r", 0.)),
-            ),
-            0.,
-        )
-        .to_path(0.001),
-    })
-}
-pub(super) fn geometry(
-    n: Node<'_, '_>,
-    path: &BezPath,
-    t: Affine,
-    stroke: bool,
-    hint: Option<&Json>,
-) -> Geometry {
+pub(super) fn geometry(path: &BezPath, t: Affine, stroke: bool, hint: Option<&Json>) -> Geometry {
     let local = path.bounding_box();
     if let Some((b, xfrm, paint)) = frame(t, local) {
         let (sx, sy, _, _) = orthogonal(t).unwrap();
@@ -149,21 +83,9 @@ pub(super) fn geometry(
             .filter(|e| matches!(e, PathEl::MoveTo(_)))
             .count()
             == 1;
-        let kind = match n.tag_name().name() {
+        let kind = match semantic {
             "ellipse" | "circle" => Some(("ellipse", 0.)),
-            "rect" => {
-                let rx = attr(n, "rx", attr(n, "ry", 0.)).min(local.width() / 2.) * sx;
-                let ry = attr(n, "ry", attr(n, "rx", 0.)).min(local.height() / 2.) * sy;
-                if rx == 0. && ry == 0. {
-                    Some(("rect", 0.))
-                } else if (rx - ry).abs() < 1e-8 {
-                    Some(("roundRect", rx))
-                } else {
-                    None
-                }
-            }
-            "path" if single && semantic == "ellipse" => Some(("ellipse", 0.)),
-            "path" if single && semantic == "rect" => {
+            "rect" if single => {
                 let mut rx = f64::INFINITY;
                 let mut ry = f64::INFINITY;
                 for e in path.iter() {
@@ -243,47 +165,32 @@ pub(super) fn geometry(
 }
 // Native stroke widths have one scalar; anisotropic/sheared stroke footprints
 // and shifted dash patterns retain the existing exact vector-outline lowering.
-pub(super) fn native_stroke(n: Node<'_, '_>, t: Affine, opacity: f64) -> Result<Option<String>> {
-    let color = n.attribute("stroke").unwrap_or("none");
-    let width = attr(n, "stroke-width", 1.);
-    if color == "none" || width <= 0. {
+pub(super) fn native_stroke(s: Option<&Stroke>, t: Affine, opacity: f64) -> Result<Option<String>> {
+    let Some(s) = s else {
         return Ok(Some("<a:ln><a:noFill/></a:ln>".into()));
-    }
+    };
     let Some((sx, sy, _, _)) = orthogonal(t) else {
         return Ok(None);
     };
     if (sx - sy).abs() > sx * 1e-8
-        || attr(n, "stroke-dashoffset", 0.) != 0.
-        || color.starts_with("url(")
+        || s.offset != 0.
+        || s.dash.iter().any(|v| !v.is_finite() || *v <= 0.)
     {
         return Ok(None);
     }
-    let mut dash = n
-        .attribute("stroke-dasharray")
-        .unwrap_or("")
-        .split([' ', ','])
-        .filter(|s| !s.is_empty() && *s != "none")
-        .map(str::parse::<f64>)
-        .collect::<std::result::Result<Vec<_>, _>>()
-        .map_err(|_| error("PPTX 无效虚线"))?;
-    if dash.iter().any(|v| !v.is_finite() || *v <= 0.) {
-        return Ok(None);
-    }
+    let mut dash = s.dash.clone();
     if dash.len() % 2 == 1 {
         dash.extend(dash.clone());
     }
-    let cap = match n.attribute("stroke-linecap").unwrap_or("butt") {
+    let cap = match s.cap.as_str() {
         "round" => "rnd",
         "square" => "sq",
         _ => "flat",
     };
-    let join = match n.attribute("stroke-linejoin").unwrap_or("miter") {
+    let join = match s.join.as_str() {
         "round" => "<a:round/>".into(),
         "bevel" => "<a:bevel/>".into(),
-        _ => format!(
-            "<a:miter lim=\"{}\"/>",
-            (attr(n, "stroke-miterlimit", 4.) * 100_000.).round() as i64
-        ),
+        _ => format!("<a:miter lim=\"{}\"/>", (s.miter * 100000.).round() as i64),
     };
     let dashes = if dash.is_empty() {
         "<a:prstDash val=\"solid\"/>".into()
@@ -293,29 +200,18 @@ pub(super) fn native_stroke(n: Node<'_, '_>, t: Affine, opacity: f64) -> Result<
             dash.chunks_exact(2)
                 .map(|v| format!(
                     "<a:ds d=\"{}\" sp=\"{}\"/>",
-                    (v[0] / width * 100_000.).round().max(1.) as i64,
-                    (v[1] / width * 100_000.).round().max(1.) as i64
+                    (v[0] / s.width * 100000.).round().max(1.) as i64,
+                    (v[1] / s.width * 100000.).round().max(1.) as i64
                 ))
                 .collect::<String>()
         )
     };
     Ok(Some(format!(
         "<a:ln w=\"{}\" cap=\"{cap}\" cmpd=\"sng\" algn=\"ctr\">{}{dashes}{join}<a:headEnd type=\"none\"/><a:tailEnd type=\"none\"/></a:ln>",
-        emu(width * sx).max(1),
-        solid(color, opacity * attr(n, "stroke-opacity", 1.))?
+        emu(s.width * sx).max(1),
+        solid(s.rgba, opacity)?
     )))
 }
-
-pub(super) fn stroke_style(n: Node<'_, '_>) -> Result<Json> {
-    let dash = n
-        .attribute("stroke-dasharray")
-        .unwrap_or("")
-        .split([' ', ','])
-        .filter(|s| !s.is_empty() && *s != "none")
-        .map(str::parse::<f64>)
-        .collect::<std::result::Result<Vec<_>, _>>()
-        .map_err(|_| error("PPTX 无效虚线"))?;
-    Ok(
-        json!({"width":attr(n,"stroke-width",1.),"dash":dash,"dashOffset":attr(n,"stroke-dashoffset",0.),"cap":n.attribute("stroke-linecap").unwrap_or("butt"),"join":n.attribute("stroke-linejoin").unwrap_or("miter"),"miterLimit":attr(n,"stroke-miterlimit",4.)}),
-    )
+pub(super) fn stroke_style(s: &Stroke) -> Json {
+    json!({"width":s.width,"dash":s.dash,"dashOffset":s.offset,"cap":s.cap,"join":s.join,"miterLimit":s.miter})
 }

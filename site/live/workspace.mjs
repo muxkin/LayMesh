@@ -56,6 +56,7 @@ export class Workspace {
   // Assigning sizes again can reload an image even when its URL is unchanged.
   // The load listener calls fit(), so an unconditional assignment loops forever.
   const sizes=`${Math.ceil(w)}px`;if(img.sizes!==sizes)img.sizes=sizes;
+  this.module.dispatchEvent(new CustomEvent('laymesh:draw'));
   this.viewport.style.touchAction=this.zoom>1?'none':'pan-y';
   this.module.querySelector('.preview-fit').textContent=this.zoom===1?t('适应','Fit'):`${Math.round(this.zoom*100)}%`;
  }
@@ -74,7 +75,7 @@ export class Workspace {
   this.viewport.addEventListener('keydown',e=>{if(['+','=','-','0'].includes(e.key)){e.preventDefault();this.zoomTo(e.key==='0'?1:this.zoom*(e.key==='-'?1/1.5:1.5));}else if(e.key.startsWith('Arrow')){e.preventDefault();this.pan.x+=e.key==='ArrowLeft'?30:e.key==='ArrowRight'?-30:0;this.pan.y+=e.key==='ArrowUp'?30:e.key==='ArrowDown'?-30:0;this.fit();}});
  }
  enlargeFigure(){
-  const img=this.activeImage();if(!img.src)return;
+  const img=this.activeImage();if(img.localName==='canvas'){this.expand();return;}if(!img.src)return;
   const dialog=document.querySelector('.image-dialog'),image=dialog.querySelector('img'),stage=dialog.querySelector('.image-stage');
   image.src=img.dataset.full||img.currentSrc||img.src;image.alt=img.alt;dialog.querySelector('p').textContent=img.alt;
   const style=getComputedStyle(this.viewport);stage.style.backgroundColor=style.backgroundColor;stage.style.backgroundImage=style.backgroundImage;stage.style.backgroundSize=style.backgroundSize;

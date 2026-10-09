@@ -1,45 +1,8 @@
 use super::*;
 use geometry::Geometry;
-
-pub(super) fn definition<'a, 'i>(n: Node<'a, 'i>, url: &str) -> Option<Node<'a, 'i>> {
-    let id = url
-        .strip_prefix("url(")?
-        .strip_suffix(')')?
-        .trim()
-        .trim_matches(['\'', '"'])
-        .strip_prefix('#')?;
-    n.document()
-        .descendants()
-        .find(|d| d.attribute("id") == Some(id))
-}
 pub(super) struct ImageData {
     pub bytes: Vec<u8>,
     pub extension: &'static str,
-    pub width: f64,
-    pub height: f64,
-}
-pub(super) fn image_data(n: Node<'_, '_>) -> Result<Option<ImageData>> {
-    let href = n
-        .attribute("href")
-        .or_else(|| n.attribute(("http://www.w3.org/1999/xlink", "href")))
-        .unwrap_or("");
-    let (extension, data) = if let Some(data) = href.strip_prefix("data:image/png;base64,") {
-        ("png", data)
-    } else if let Some(data) = href.strip_prefix("data:image/jpeg;base64,") {
-        ("jpeg", data)
-    } else {
-        return Ok(None);
-    };
-    let bytes = base64::engine::general_purpose::STANDARD
-        .decode(data)
-        .map_err(|e| error(format!("PPTX 无效图片：{e}")))?;
-    let im = image::load_from_memory(&bytes).map_err(|e| error(format!("PPTX 无效图片：{e}")))?;
-    Ok(Some(ImageData {
-        bytes,
-        extension,
-        width: im.width() as f64,
-        height: im.height() as f64,
-    }))
 }
 fn relative_rect(tag: &str, r: [f64; 4]) -> String {
     format!(
@@ -77,81 +40,6 @@ impl Writer<'_> {
             relative_rect("fillRect", inset)
         )
     }
-    pub(super) fn fill(
-        &mut self,
-        n: Node<'_, '_>,
-        opacity: f64,
-        local: Rect,
-        g: &Geometry,
-    ) -> Result<Option<String>> {
-        let value = n.attribute("fill").unwrap_or("#000000");
-        let opacity = opacity * attr(n, "fill-opacity", 1.);
-        if !value.starts_with("url(") {
-            return Ok(Some(solid(value, opacity)?));
-        }
-        let Some(def) = definition(n, value) else {
-            return Ok(None);
-        };
-        match def.tag_name().name() {
-            "linearGradient" => linear_gradient(def, opacity, local, g),
-            "pattern" => {
-                if geometry::orthogonal(g.paint_transform).is_none() {
-                    return Ok(None);
-                }
-                if def.attribute("patternTransform").is_some()
-                    || def.attribute("patternContentUnits") != Some("objectBoundingBox")
-                    || attr(def, "width", 0.) != 1.
-                    || attr(def, "height", 0.) != 1.
-                {
-                    return Ok(None);
-                }
-                let mut children = def.children().filter(Node::is_element);
-                let Some(viewport) = children.next().filter(|n| n.has_tag_name("svg")) else {
-                    return Ok(None);
-                };
-                if children.next().is_some() {
-                    return Ok(None);
-                }
-                let mut images = viewport.children().filter(Node::is_element);
-                let Some(image) = images.next().filter(|n| n.has_tag_name("image")) else {
-                    return Ok(None);
-                };
-                if images.next().is_some() {
-                    return Ok(None);
-                }
-                let Some(data) = image_data(image)? else {
-                    return Ok(None);
-                };
-                let mut crop = [0.; 4];
-                let mut inset = [0.; 4];
-                let aspect = image
-                    .attribute("preserveAspectRatio")
-                    .or_else(|| viewport.attribute("preserveAspectRatio"))
-                    .unwrap_or("xMidYMid meet");
-                let ratio = data.width / data.height;
-                let target = local.width() / local.height();
-                if aspect.contains("slice") {
-                    if ratio > target {
-                        crop[0] = (1. - target / ratio) / 2.;
-                        crop[2] = crop[0];
-                    } else {
-                        crop[1] = (1. - ratio / target) / 2.;
-                        crop[3] = crop[1];
-                    }
-                } else if aspect != "none" {
-                    if ratio > target {
-                        inset[1] = (1. - target / ratio) / 2.;
-                        inset[3] = inset[1];
-                    } else {
-                        inset[0] = (1. - ratio / target) / 2.;
-                        inset[2] = inset[0];
-                    }
-                }
-                Ok(Some(self.blip_fill(data, opacity, crop, inset)))
-            }
-            _ => Ok(None),
-        }
-    }
     pub(super) fn emit_shape(&mut self, name: &str, g: Geometry, fill: &str, line: &str) -> String {
         let id = self.id();
         self.bounds.push(g.bounds);
@@ -175,94 +63,140 @@ impl Writer<'_> {
             )
         }
     }
-    // SVG's rectangle clip around an image can be expressed by source cropping
-    // plus fill insets, without decoding/re-encoding or flattening the picture.
+
+    pub(super) fn image_data(&self, id: &str) -> Result<ImageData> {
+        let resource = self
+            .list
+            .resources
+            .get(id)
+            .ok_or_else(|| error("PPTX 缺少图片资源"))?;
+        let mut bytes = resource.data.clone();
+        let im = image::load_from_memory(&bytes).map_err(|e| error(e.to_string()))?;
+        let extension = if resource.mime == "image/jpeg" {
+            "jpeg"
+        } else {
+            if resource.mime != "image/png" {
+                let mut out = Cursor::new(Vec::new());
+                im.write_to(&mut out, image::ImageFormat::Png)
+                    .map_err(|e| error(e.to_string()))?;
+                bytes = out.into_inner();
+            }
+            "png"
+        };
+        Ok(ImageData { bytes, extension })
+    }
+    pub(super) fn fill(
+        &mut self,
+        p: &Paint,
+        opacity: f64,
+        local: Rect,
+        g: &Geometry,
+    ) -> Result<Option<String>> {
+        match p {
+            Paint::None => Ok(Some("<a:noFill/>".into())),
+            Paint::Solid { rgba } => Ok(Some(solid(*rgba, opacity)?)),
+            Paint::Linear {
+                start,
+                end,
+                stops,
+                transform,
+                spread,
+            } if *transform == Affine::IDENTITY && spread == "pad" => {
+                linear_gradient(*start, *end, stops, opacity, local, g)
+            }
+            Paint::Pattern {
+                width,
+                height,
+                transform,
+                nodes,
+            } if nodes.len() == 1 && geometry::orthogonal(g.paint_transform).is_some() => {
+                let mut node = &nodes[0];
+                let mut tr = *transform;
+                let mut alpha = opacity;
+                loop {
+                    tr *= node.transform;
+                    alpha *= node.opacity;
+                    if !node.effects.is_empty() {
+                        return Ok(None);
+                    }
+                    match &node.kind {
+                        DrawKind::Group {
+                            children,
+                            clip,
+                            mask,
+                        } if children.len() == 1 && mask.is_none() => {
+                            if let Some(c) = clip {
+                                let r = c.path.bounding_box();
+                                if !rectangular(&c.path) || r != Rect::new(0., 0., *width, *height)
+                                {
+                                    return Ok(None);
+                                }
+                            }
+                            node = &children[0];
+                        }
+                        _ => break,
+                    }
+                }
+                let DrawKind::Image { resource, rect, .. } = &node.kind else {
+                    return Ok(None);
+                };
+                let [a, b, c, d, _, _] = tr.as_coeffs();
+                if b.abs() > 1e-10 || c.abs() > 1e-10 || a <= 0. || d <= 0. {
+                    return Ok(None);
+                }
+                let image = tr.transform_rect_bbox(*rect);
+                let (crop, inset) = crop_inset(image, local);
+                let data = self.image_data(resource)?;
+                Ok(Some(self.blip_fill(data, alpha, crop, inset)))
+            }
+            _ => Ok(None),
+        }
+    }
     pub(super) fn clipped_image(
         &mut self,
-        n: Node<'_, '_>,
-        transform: Affine,
+        children: &[DrawNode],
+        path: &BezPath,
+        t: Affine,
         opacity: f64,
         name: &str,
     ) -> Result<Option<String>> {
-        let Some(clip) = n.attribute("clip-path").and_then(|u| definition(n, u)) else {
-            return Ok(None);
-        };
-        let mut shapes = clip.children().filter(Node::is_element);
-        let Some(rect) = shapes
-            .next()
-            .filter(|r| r.has_tag_name("rect") && r.attribute("transform").is_none())
-        else {
-            return Ok(None);
-        };
-        if shapes.next().is_some() {
+        if !rectangular(path) || children.len() != 1 {
             return Ok(None);
         }
-        let mut current = n;
-        let mut inner = Affine::IDENTITY;
+        let mut node = &children[0];
+        let mut tr = Affine::IDENTITY;
         let mut alpha = opacity;
         loop {
-            let mut children = current.children().filter(Node::is_element);
-            let Some(child) = children.next() else {
-                return Ok(None);
-            };
-            if children.next().is_some()
-                || child.attribute("filter").is_some()
-                || child.attribute("mask").is_some()
-                || child.attribute("clip-path").is_some()
-            {
+            tr *= node.transform;
+            alpha *= node.opacity;
+            if !node.effects.is_empty() {
                 return Ok(None);
             }
-            inner *= affine(child)?;
-            alpha *= attr(child, "opacity", 1.);
-            if child.has_tag_name("image") {
-                current = child;
-                break;
+            match &node.kind {
+                DrawKind::Group {
+                    children,
+                    clip: None,
+                    mask: None,
+                } if children.len() == 1 => node = &children[0],
+                _ => break,
             }
-            if !child.has_tag_name("g") {
-                return Ok(None);
-            }
-            current = child;
         }
-        let [a, b, c, d, _, _] = inner.as_coeffs();
+        let DrawKind::Image { resource, rect, .. } = &node.kind else {
+            return Ok(None);
+        };
+        let [a, b, c, d, _, _] = tr.as_coeffs();
         if b.abs() > 1e-10 || c.abs() > 1e-10 || a <= 0. || d <= 0. {
             return Ok(None);
         }
-        let Some(data) = image_data(current)? else {
-            return Ok(None);
-        };
-        if current
-            .attribute("preserveAspectRatio")
-            .unwrap_or("xMidYMid meet")
-            != "none"
-        {
-            return Ok(None);
-        }
-        let image = inner.transform_rect_bbox(Rect::new(
-            attr(current, "x", 0.),
-            attr(current, "y", 0.),
-            attr(current, "x", 0.) + attr(current, "width", 0.),
-            attr(current, "y", 0.) + attr(current, "height", 0.),
-        ));
-        let path = geometry::svg_path(rect)?;
         let viewport = path.bounding_box();
-        let visible = image.intersect(viewport);
-        if visible.width() <= 0. || visible.height() <= 0. {
+        let image = tr.transform_rect_bbox(*rect);
+        let (crop, inset) = crop_inset(image, viewport);
+        if image.intersect(viewport).area() <= 0. {
             return Ok(Some(String::new()));
         }
-        let crop = [
-            (visible.x0 - image.x0) / image.width(),
-            (visible.y0 - image.y0) / image.height(),
-            (image.x1 - visible.x1) / image.width(),
-            (image.y1 - visible.y1) / image.height(),
-        ];
-        let inset = [
-            (visible.x0 - viewport.x0) / viewport.width(),
-            (visible.y0 - viewport.y0) / viewport.height(),
-            (viewport.x1 - visible.x1) / viewport.width(),
-            (viewport.y1 - visible.y1) / viewport.height(),
-        ];
-        let g = geometry::geometry(rect, &path, transform, false, None);
+        let data = self.image_data(resource)?;
         let fill = self.blip_fill(data, alpha, crop, inset);
+        let g = geometry::geometry(path, t, false, Some(&json!({"kind":"rect"})));
         Ok(Some(self.emit_shape(
             name,
             g,
@@ -271,51 +205,61 @@ impl Writer<'_> {
         )))
     }
 }
-fn coordinate(n: Node<'_, '_>, key: &str, default: f64) -> Option<f64> {
-    let s = n.attribute(key);
-    match s {
-        None => Some(default),
-        Some(s) => s
-            .strip_suffix('%')
-            .map(|v| v.parse::<f64>().ok().map(|v| v / 100.))
-            .unwrap_or_else(|| s.parse::<f64>().ok()),
-    }
+fn rectangular(path: &BezPath) -> bool {
+    let b = path.bounding_box();
+    path.elements().len() <= 5
+        && path.iter().all(|el| match el {
+            PathEl::MoveTo(p) | PathEl::LineTo(p) => {
+                (p.x == b.x0 || p.x == b.x1) && (p.y == b.y0 || p.y == b.y1)
+            }
+            PathEl::ClosePath => true,
+            _ => false,
+        })
+}
+fn crop_inset(image: Rect, viewport: Rect) -> ([f64; 4], [f64; 4]) {
+    let v = image.intersect(viewport);
+    (
+        [
+            (v.x0 - image.x0) / image.width(),
+            (v.y0 - image.y0) / image.height(),
+            (image.x1 - v.x1) / image.width(),
+            (image.y1 - v.y1) / image.height(),
+        ],
+        [
+            (v.x0 - viewport.x0) / viewport.width(),
+            (v.y0 - viewport.y0) / viewport.height(),
+            (viewport.x1 - v.x1) / viewport.width(),
+            (viewport.y1 - v.y1) / viewport.height(),
+        ],
+    )
 }
 fn linear_gradient(
-    n: Node<'_, '_>,
+    start: [f64; 2],
+    end: [f64; 2],
+    source: &[display_list::Stop],
     opacity: f64,
     local: Rect,
     g: &Geometry,
 ) -> Result<Option<String>> {
-    if n.attribute("gradientTransform").is_some()
-        || n.attribute("spreadMethod").is_some_and(|s| s != "pad")
-    {
-        return Ok(None);
-    }
-    let (Some(x1), Some(y1), Some(x2), Some(y2)) = (
-        coordinate(n, "x1", 0.),
-        coordinate(n, "y1", 0.),
-        coordinate(n, "x2", 1.),
-        coordinate(n, "y2", 0.),
-    ) else {
-        return Ok(None);
-    };
-    let (dx, dy) = (x2 - x1, y2 - y1);
+    let (dx, dy) = (end[0] - start[0], end[1] - start[1]);
     let norm = dx * dx + dy * dy;
     if norm <= 1e-20 || local.width() <= 0. || local.height() <= 0. {
         return Ok(None);
     }
-    let (qx, qy, c) = if n.attribute("gradientUnits") == Some("userSpaceOnUse") {
-        (dx / norm, dy / norm, -(x1 * dx + y1 * dy) / norm)
-    } else {
-        let qx = dx / norm / local.width();
-        let qy = dy / norm / local.height();
-        (
-            qx,
-            qy,
-            -qx * local.x0 - qy * local.y0 - (x1 * dx + y1 * dy) / norm,
-        )
-    };
+    let (qx, qy, c) = (
+        dx / norm,
+        dy / norm,
+        -(start[0] * dx + start[1] * dy) / norm,
+    );
+    let mut previous = 0.;
+    let stops: Vec<_> = source
+        .iter()
+        .map(|s| {
+            let at = s.offset.clamp(previous, 1.);
+            previous = at;
+            (at, s.rgba)
+        })
+        .collect();
     let inv = g.paint_transform.inverse();
     let [a, b, cx, d, e, f] = inv.as_coeffs();
     let (qx, qy, c) = (a * qx + b * qy, cx * qx + d * qy, c + e * qx + f * qy);
@@ -328,40 +272,18 @@ fn linear_gradient(
     if span <= 1e-12 || !lo.is_finite() || !span.is_finite() {
         return Ok(None);
     }
-    let mut stops = Vec::<(f64, svgtypes::Color)>::new();
-    let mut previous = 0.;
-    for s in n.children().filter(|s| s.has_tag_name("stop")) {
-        let Some(at) = coordinate(s, "offset", 0.) else {
-            return Ok(None);
-        };
-        let at = at.clamp(previous, 1.);
-        previous = at;
-        let mut color: svgtypes::Color = s
-            .attribute("stop-color")
-            .unwrap_or("#000000")
-            .parse()
-            .map_err(|_| error("PPTX 无效渐变颜色"))?;
-        color.alpha =
-            (color.alpha as f64 * attr(s, "stop-opacity", 1.).clamp(0., 1.)).round() as u8;
-        stops.push((at, color));
-    }
-    if stops.len() < 2 || stops.iter().any(|(_, c)| c.alpha != stops[0].1.alpha) {
+    if stops.len() < 2 || stops.iter().any(|(_, c)| c[3] != stops[0].1[3]) {
         return Ok(None);
     }
-    let sample = |at: f64| -> svgtypes::Color {
+    let sample = |at: f64| -> [f64; 4] {
         if at < stops[0].0 {
             return stops[0].1;
         }
         for pair in stops.windows(2) {
             if at < pair[1].0 {
                 let t = ((at - pair[0].0) / (pair[1].0 - pair[0].0)).clamp(0., 1.);
-                let lerp = |a: u8, b: u8| (a as f64 + (b as f64 - a as f64) * t).round() as u8;
-                return svgtypes::Color {
-                    red: lerp(pair[0].1.red, pair[1].1.red),
-                    green: lerp(pair[0].1.green, pair[1].1.green),
-                    blue: lerp(pair[0].1.blue, pair[1].1.blue),
-                    alpha: pair[0].1.alpha,
-                };
+                let lerp = |a: f64, b: f64| a + (b - a) * t;
+                return std::array::from_fn(|i| lerp(pair[0].1[i], pair[1].1[i]));
             }
         }
         stops.last().unwrap().1
@@ -374,10 +296,7 @@ fn linear_gradient(
     mapped.push((1., sample(lo + span)));
     let mut gs = String::new();
     for (pos, c) in mapped {
-        let fill = solid(
-            &format!("#{:02x}{:02x}{:02x}{:02x}", c.red, c.green, c.blue, c.alpha),
-            opacity,
-        )?;
+        let fill = solid(c, opacity)?;
         let color = fill
             .strip_prefix("<a:solidFill>")
             .unwrap()

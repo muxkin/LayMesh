@@ -37,7 +37,7 @@ class PreviewWorker {
    active.done({error:messageError('Preview timed out; restarting the worker','预览超时，正在重启渲染进程'),dependencies:[]});
    if(this.enabled)this.start();
   },job.timeout);
-  const request={...job.request};if(request.protocol===2&&!this.capabilities.includes('resources-v2')){delete request.protocol;}
+  const request={protocol:3,resource_dir:this.resourceDir,...job.request};if(request.protocol===3&&!this.capabilities.includes('display-list-v3')){clearTimeout(this.renderTimer);this.active=null;job.done({error:{code:'E_PREVIEW_PROTOCOL',message:'Native engine does not support drawing protocol 3'},dependencies:[]});this.pump();return;}
   this.process.stdin.write(JSON.stringify({...request,id:this.active.id,file:job.file,source:job.source,overlays:job.overlays})+'\n');
  }
  cancel(file){this.queue.delete(file);}
@@ -142,12 +142,12 @@ function activatePreview(context,binary,output){
    if(state.disposed||generation!==state.generation)return;
    const overlays={};for(const doc of vscode.workspace.textDocuments)if(doc.uri.scheme==='file'&&doc.isDirty)overlays[keyOf(doc.uri)]=doc.getText();
    state.dirty=false;state.pending=true;post(state,{type:'status',status:'rendering'});
-   worker.enqueue({file:state.file,source:doc.getText(),overlays,request:{protocol:2,generation,resource_dir:worker.resourceDir,known_resources:[...state.resources.keys()],...editorDefaults(state.uri)},timeout:config().get('renderTimeoutMs',30000),done:result=>{
+   worker.enqueue({file:state.file,source:doc.getText(),overlays,request:{protocol:3,generation,resource_dir:worker.resourceDir,known_resources:[...state.resources.keys()],...editorDefaults(state.uri)},timeout:config().get('renderTimeoutMs',30000),done:result=>{
     if(state.disposed||generation!==state.generation)return;
     watch(state,result.dependencies||[],!!result.error);
     try{
-     if(result.protocol===2){result.resources=(result.resources||[]).map(item=>resource(state,item));result.svg=result.svg.replace(/laymesh-resource:([-a-z0-9]+)/g,(_,id)=>{const uri=state.resources.get(id);if(!uri)throw new Error('Missing preview resource');return uri.replace(/&/g,'&amp;');});}
-     const frame={type:'result',...result,generation};state.pending=false;state.last=frame;if(result.svg)state.lastSuccess=frame;post(state,frame);
+     if(!result.error){if(result.protocol!==3||!result.displayList)throw new Error('Expected drawing protocol 3');for(const item of result.resources||[])resource(state,item);result.resources=Object.entries(result.displayList.resources).map(([id,meta])=>{const uri=state.resources.get(id);if(!uri)throw Error('Missing drawing resource');return {id,...meta,data:undefined,uri};});}
+     const frame={type:'result',...result,generation};state.pending=false;state.last=frame;if(result.displayList)state.lastSuccess=frame;post(state,frame);
     }catch(error){state.pending=false;post(state,{type:'result',error:messageError(error.message)});}
    }});
   }catch(error){if(!state.disposed&&generation===state.generation){state.last={type:'result',error:messageError(error.message)};post(state,state.last);}}
@@ -161,7 +161,7 @@ function activatePreview(context,binary,output){
   const panel=vscode.window.createWebviewPanel('laymeshPreview',`LayMesh · ${path.basename(file)}`,{viewColumn:vscode.ViewColumn.Beside,preserveFocus:true},{enableScripts:true,localResourceRoots:[vscode.Uri.joinPath(context.extensionUri,'dist'),vscode.Uri.file(worker.resourceDir)]});
   const state={uri,file,panel,generation:0,dirty:true,dependencies:new Set(),watchers:[],disposed:false,resources:new Map()};panels.set(file,state);
   const asset=name=>panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri,'dist',name));
-  panel.webview.html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} blob: data:; font-src ${panel.webview.cspSource} data:; script-src ${panel.webview.cspSource}; style-src ${panel.webview.cspSource} 'unsafe-inline';"><link rel="stylesheet" href="${asset('preview.css')}"></head><body><script type="module" src="${asset('preview-webview.mjs')}"></script></body></html>`;
+  panel.webview.html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} blob: data:; font-src ${panel.webview.cspSource} data:; script-src ${panel.webview.cspSource} 'wasm-unsafe-eval'; connect-src ${panel.webview.cspSource}; style-src ${panel.webview.cspSource} 'unsafe-inline';"><link rel="stylesheet" href="${asset('preview.css')}"></head><body><script type="module" src="${asset('preview-webview.mjs')}"></script></body></html>`;
   panel.webview.onDidReceiveMessage(async message=>{
    if(message?.type==='ready'){post(state,{type:'initial',locale:locale(),showRulers:config().get('showRulers',true)});if(state.last?.error&&state.lastSuccess)post(state,state.lastSuccess);if(state.last)post(state,state.last);if(state.dirty)invalidate(state,true);}
    else if(message?.type==='refresh')invalidate(state,true);

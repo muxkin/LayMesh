@@ -304,6 +304,22 @@
     ]
   },
   {
+    "name": "color",
+    "version": "0.3.3",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/color",
+    "texts": [
+      {
+        "file": "color-0.3.3-LICENSE-APACHE",
+        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+      },
+      {
+        "file": "color-0.3.3-LICENSE-MIT",
+        "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1"
+      }
+    ]
+  },
+  {
     "name": "color_quant",
     "version": "1.1.0",
     "license": "MIT",
@@ -652,6 +668,22 @@
     ]
   },
   {
+    "name": "fearless_simd",
+    "version": "0.7.0",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/fearless_simd",
+    "texts": [
+      {
+        "file": "fearless_simd-0.7.0-LICENSE-APACHE",
+        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+      },
+      {
+        "file": "fearless_simd-0.7.0-LICENSE-MIT",
+        "sha256": "23c23145f6eac25c28cdcc03d38506a5712a9a8cffb5bd5301457f6173ea696e"
+      }
+    ]
+  },
+  {
     "name": "find-msvc-tools",
     "version": "0.1.14",
     "license": "MIT OR Apache-2.0",
@@ -696,6 +728,18 @@
     ]
   },
   {
+    "name": "foldhash",
+    "version": "0.2.0",
+    "license": "Zlib",
+    "repository": "https://github.com/orlp/foldhash",
+    "texts": [
+      {
+        "file": "foldhash-0.2.0-LICENSE",
+        "sha256": "b1181a40b2a7b25cf66fd01481713bc1005df082c53ef73e851e55071b102744"
+      }
+    ]
+  },
+  {
     "name": "font-types",
     "version": "0.11.3",
     "license": "MIT OR Apache-2.0",
@@ -708,6 +752,22 @@
       {
         "file": "font-types-0.11.3-LICENSE-MIT",
         "sha256": "8a62fa27ffdccc3df19dce90f8bb3d572e27aecffc1a383d0c2601834dcec434"
+      }
+    ]
+  },
+  {
+    "name": "font-types",
+    "version": "0.12.6",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/googlefonts/fontations",
+    "texts": [
+      {
+        "file": "font-types-0.12.6-LICENSE-APACHE",
+        "sha256": "eba684204073ed715c4abb48129acdfd2bff8ae48339e6a7da3b341d3027b7f0"
+      },
+      {
+        "file": "font-types-0.12.6-LICENSE-MIT",
+        "sha256": "7b4c9a3946dfcea7967582760e963e27799e225dcf20565c8ef55324bb017427"
       }
     ]
   },
@@ -796,6 +856,22 @@
     ]
   },
   {
+    "name": "glifo",
+    "version": "0.4.0",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/vello",
+    "texts": [
+      {
+        "file": "glifo-0.4.0-LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "file": "glifo-0.4.0-LICENSE-MIT",
+        "sha256": "3252fc481fda4d2bad9e1ae675065889abd35c8abb500499ac01e70aaffa02b9"
+      }
+    ]
+  },
+  {
     "name": "glob",
     "version": "0.3.4",
     "license": "MIT OR Apache-2.0",
@@ -808,6 +884,22 @@
       {
         "file": "glob-0.3.4-LICENSE-MIT",
         "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
+      }
+    ]
+  },
+  {
+    "name": "guillotiere",
+    "version": "0.7.0",
+    "license": "MIT/Apache-2.0",
+    "repository": "https://github.com/nical/guillotiere",
+    "texts": [
+      {
+        "file": "guillotiere-0.7.0-LICENSE-APACHE",
+        "sha256": "644d05561bc2dc5993f19d6602894315d925744d854a0413876e203f86c35830"
+      },
+      {
+        "file": "guillotiere-0.7.0-LICENSE-MIT",
+        "sha256": "cab31b979edfb1d6ff72a9a84e1092a9b68954022fc3f253338e64879961b8d2"
       }
     ]
   },
@@ -1037,24 +1129,6 @@
     ]
   },
   {
-    "name": "krilla-svg",
-    "version": "0.8.1",
-    "license": "MIT OR Apache-2.0",
-    "repository": "https://github.com/LaurenzV/krilla",
-    "texts": [
-      {
-        "file": "krilla-svg-0.8.1-LICENSE_MIT",
-        "sha256": "9d1eb142840c7acfd5511b4dd298cece3f0053f5809228906445cd8a3365592f",
-        "source": "https://raw.githubusercontent.com/LaurenzV/krilla/3ffdf0588cf98050aad6edba51ca70162e1fb5b5/LICENSE_MIT"
-      },
-      {
-        "file": "krilla-svg-0.8.1-LICENSE_APACHE",
-        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
-        "source": "https://raw.githubusercontent.com/LaurenzV/krilla/3ffdf0588cf98050aad6edba51ca70162e1fb5b5/LICENSE_APACHE"
-      }
-    ]
-  },
-  {
     "name": "kurbo",
     "version": "0.13.1",
     "license": "Apache-2.0 OR MIT",
@@ -1127,6 +1201,22 @@
       {
         "file": "libwebp-sys-0.9.6-PATENTS",
         "sha256": "cc3273e0694ea5896145e0677699b53471b03ea43021ddc50e7923fbb9f5023c"
+      }
+    ]
+  },
+  {
+    "name": "linebender_resource_handle",
+    "version": "0.1.1",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/raw_resource_handle",
+    "texts": [
+      {
+        "file": "linebender_resource_handle-0.1.1-LICENSE-APACHE",
+        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+      },
+      {
+        "file": "linebender_resource_handle-0.1.1-LICENSE-MIT",
+        "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1"
       }
     ]
   },
@@ -1315,6 +1405,22 @@
       {
         "file": "pdf-writer-0.15.0-LICENSE-MIT",
         "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1"
+      }
+    ]
+  },
+  {
+    "name": "peniko",
+    "version": "0.6.1",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/peniko",
+    "texts": [
+      {
+        "file": "peniko-0.6.1-LICENSE-APACHE",
+        "sha256": "f9946796a8a5bd5981565142fa42e3b0cc36aef6f80e86beaf5905b3c0fef1b5"
+      },
+      {
+        "file": "peniko-0.6.1-LICENSE-MIT",
+        "sha256": "23c23145f6eac25c28cdcc03d38506a5712a9a8cffb5bd5301457f6173ea696e"
       }
     ]
   },
@@ -1616,6 +1722,22 @@
     ]
   },
   {
+    "name": "read-fonts",
+    "version": "0.41.0",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/googlefonts/fontations",
+    "texts": [
+      {
+        "file": "read-fonts-0.41.0-LICENSE-APACHE",
+        "sha256": "eba684204073ed715c4abb48129acdfd2bff8ae48339e6a7da3b341d3027b7f0"
+      },
+      {
+        "file": "read-fonts-0.41.0-LICENSE-MIT",
+        "sha256": "7b4c9a3946dfcea7967582760e963e27799e225dcf20565c8ef55324bb017427"
+      }
+    ]
+  },
+  {
     "name": "regex",
     "version": "1.13.1",
     "license": "MIT OR Apache-2.0",
@@ -1676,34 +1798,6 @@
       {
         "file": "regex-syntax-0.8.11-LICENSE-MIT",
         "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
-      }
-    ]
-  },
-  {
-    "name": "resvg",
-    "version": "0.47.0",
-    "license": "Apache-2.0 OR MIT",
-    "repository": "https://github.com/linebender/resvg",
-    "texts": [
-      {
-        "file": "resvg-0.47.0-LICENSE-APACHE",
-        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
-      },
-      {
-        "file": "resvg-0.47.0-LICENSE-MIT",
-        "sha256": "f5d934dc281b44e0003ee461ac740b18b6629a454decd872c774d34e4ee0b21d"
-      }
-    ]
-  },
-  {
-    "name": "rgb",
-    "version": "0.8.53",
-    "license": "MIT",
-    "repository": "https://github.com/kornelski/rust-rgb",
-    "texts": [
-      {
-        "file": "rgb-0.8.53-LICENSE",
-        "sha256": "457b464bc0fba8a3d67d2458569104f5611869f0c1563a1a12d9c51a0bca9261"
       }
     ]
   },
@@ -2044,6 +2138,22 @@
     ]
   },
   {
+    "name": "skrifa",
+    "version": "0.44.0",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/googlefonts/fontations",
+    "texts": [
+      {
+        "file": "skrifa-0.44.0-LICENSE-APACHE",
+        "sha256": "eba684204073ed715c4abb48129acdfd2bff8ae48339e6a7da3b341d3027b7f0"
+      },
+      {
+        "file": "skrifa-0.44.0-LICENSE-MIT",
+        "sha256": "7b4c9a3946dfcea7967582760e963e27799e225dcf20565c8ef55324bb017427"
+      }
+    ]
+  },
+  {
     "name": "slab",
     "version": "0.4.12",
     "license": "MIT",
@@ -2264,18 +2374,6 @@
       {
         "file": "tiff-0.11.3-LICENSE",
         "sha256": "20c097d0de27e2adc179140a3d542091951a030699c7e1c78655f2a2d08d4e3e"
-      }
-    ]
-  },
-  {
-    "name": "tiny-skia",
-    "version": "0.12.0",
-    "license": "BSD-3-Clause",
-    "repository": "https://github.com/linebender/tiny-skia",
-    "texts": [
-      {
-        "file": "tiny-skia-0.12.0-LICENSE",
-        "sha256": "6d41e05f1d54fe726997cb0334ec539f1dff50600b1d5d90462ec2b392770ced"
       }
     ]
   },
@@ -2536,6 +2634,38 @@
       {
         "file": "usvg-0.47.0-LICENSE-MIT",
         "sha256": "f5d934dc281b44e0003ee461ac740b18b6629a454decd872c774d34e4ee0b21d"
+      }
+    ]
+  },
+  {
+    "name": "vello_common",
+    "version": "0.3.0",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/vello",
+    "texts": [
+      {
+        "file": "vello_common-0.3.0-LICENSE-APACHE",
+        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+      },
+      {
+        "file": "vello_common-0.3.0-LICENSE-MIT",
+        "sha256": "adf157330f722fe7cfd5964a2a6974eff851b718228c6735724a11706e6f4dec"
+      }
+    ]
+  },
+  {
+    "name": "vello_cpu",
+    "version": "0.3.0",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/vello",
+    "texts": [
+      {
+        "file": "vello_cpu-0.3.0-LICENSE-APACHE",
+        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+      },
+      {
+        "file": "vello_cpu-0.3.0-LICENSE-MIT",
+        "sha256": "adf157330f722fe7cfd5964a2a6974eff851b718228c6735724a11706e6f4dec"
       }
     ]
   },

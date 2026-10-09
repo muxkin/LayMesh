@@ -1,7 +1,7 @@
 import init, {prepare_render,register_preview_font} from './wasm/laymesh_wasm.js';
-let initialized, manifest, base;
+let initialized, manifest, base,wasmMemory;
 const assets={}, fonts={};
-let chain=Promise.resolve();
+let chain=Promise.resolve(),drawJob,generation;
 const key=name=>'/'+name.replace(/^\/+/, '');
 const detail=error=>{try{return JSON.parse(String(error));}catch{return {message:error?.message||String(error)};}};
 // SubtleCrypto is unavailable on the HTTP Tailscale preview, so checksum bytes here.
@@ -45,7 +45,7 @@ self.onmessage=({data})=>{
  if(data.type==='init'){
   base=data.base;
   initialized=(async()=>{
-   const start=performance.now();await init();
+   const start=performance.now();wasmMemory=(await init()).memory;
    const response=await fetch(new URL('manifest.json',base));
    if(!response.ok)throw new Error('Preview manifest loading failed');
    manifest=await response.json();await Promise.all(manifest.fonts.map(loadBundledFont));self.postMessage({type:'ready'});
@@ -60,6 +60,11 @@ self.onmessage=({data})=>{
    if(data.type==='font'){
     fonts[`/@local/${id}/${/\.(ttf|otf|ttc|otc)$/i.test(data.name)?data.name:data.name+'.ttf'}`]=Array.from(new Uint8Array(data.bytes));
     self.postMessage({type:'font-added',id,families:[data.alias||data.name]});return;
+   }
+   if(data.type==='paint'){
+    if(!drawJob||data.generation!==generation)return;
+    const before=performance.now(),frame=drawJob.raster(JSON.stringify(data.rect),data.width,data.height);
+    try{const rgba=frame.rgba;self.postMessage({type:'painted',id:data.id,generation,rgba,width:frame.width,height:frame.height,rasterMs:performance.now()-before,wasmMemoryBytes:wasmMemory.buffer.byteLength,rect:data.rect},[rgba.buffer]);}finally{frame.free();}return;
    }
    const edited={};for(const [name,text]of Object.entries(data.files))edited[key(name)]=text;
    let resourcesMs=0, compileMs=0, job;
@@ -86,10 +91,11 @@ self.onmessage=({data})=>{
     }
    }
    try{
-    const before=performance.now(),svg=job.svg(),svgMs=performance.now()-before;
-    const result=JSON.parse(job.inspection());
-    self.postMessage({type:'result',id,...result,svg,metrics:{initialization:initMs,resources:resourcesMs,compile:compileMs,svg:svgMs,total:compileMs+svgMs}});
+    const before=performance.now(),next=job.draw_job(),lowerMs=performance.now()-before;
+    drawJob?.free();drawJob=next;generation=id;
+    const result=JSON.parse(job.inspection()),displayList=JSON.parse(drawJob.display_list());
+    self.postMessage({type:'result',id,generation,protocol:3,...result,displayList,resources:Object.entries(displayList.resources).map(([id,meta])=>({id,...meta,resident:true})),metrics:{initialization:initMs,resources:resourcesMs,compile:compileMs,lower:lowerMs,raster:0,total:compileMs+lowerMs}});
    }finally{job.free();}
-  }catch(error){self.postMessage({type:'error',id,error:detail(error)});}
+  }catch(error){self.postMessage({type:data.type==='paint'?'paint-error':'error',id,generation:data.generation,error:detail(error)});}
  });
 };

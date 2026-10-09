@@ -1,12 +1,12 @@
 # LayMesh
 
-Preview and edit scientific figures in `.lay` and `.lcss`. Get live SVG previews, unit-aware rulers, canvas and plot coordinate readouts, completion, parameter hover, signature help, definitions, workspace references, occurrence highlights, safe rename, diagnostics and color editing. English and Simplified Chinese interfaces are included.
+Preview and edit scientific figures in `.lay` and `.lcss`. Get live Canvas previews, unit-aware rulers, canvas and plot coordinate readouts, completion, parameter hover, signature help, definitions, workspace references, occurrence highlights, safe rename, diagnostics and color editing. English and Simplified Chinese interfaces are included.
 
-支持 `.lay` 与 `.lcss`：实时 SVG 预览、单位标尺、鼠标画布和绘图坐标、代码补全、参数说明、诊断与选色器，界面支持中文和英文。
+支持 `.lay` 与 `.lcss`：实时 Canvas 预览、单位标尺、鼠标画布和绘图坐标、代码补全、参数说明、诊断与选色器，界面支持中文和英文。
 
 Version **0.5.1** shares its version with the Python package and Rust engine. Platform VSIX builds cover **Windows x64**, **Linux x64 / ARM64** and **macOS Intel / Apple Silicon**, including matching remote extension hosts. Preview uses a bundled native Rust program; no Python, Rust toolchain or npm installation is needed by extension users. Windows ARM64 and browser-only VS Code require their own compatible packages. Language analysis is static and never executes figure code; preview rendering is a separate opt-in process in a trusted workspace.
 
-Build from the repository root with `python scripts/build-editors.py`. Create a stable Marketplace package with `python scripts/package-editor.py --target linux-x64 --output release/dist/laymesh-language-0.5.1-linux-x64.vsix`, then audit it with `python scripts/check-editor.py release/dist/laymesh-language-0.5.1-linux-x64.vsix --binary target/release/laymesh --target linux-x64 --marketplace`. No npm packages are needed. To install locally, use VS Code's **Extensions: Install from VSIX** command.
+Build with Rust 1.93.1, `rustup target add wasm32-unknown-unknown` and `cargo install wasm-bindgen-cli --version 0.2.129 --locked`, then run `python scripts/build-editors.py` from the repository root. The extension bundles the WASM CPU Canvas renderer and receives drawing protocol 3 from the native engine; preview works offline. Create a stable Marketplace package with `python scripts/package-editor.py --target linux-x64 --output release/dist/laymesh-language-0.5.1-linux-x64.vsix`, then audit it with `python scripts/check-editor.py release/dist/laymesh-language-0.5.1-linux-x64.vsix --binary target/release/laymesh --target linux-x64 --marketplace`. No npm packages are needed. To install locally, use VS Code's **Extensions: Install from VSIX** command.
 
 Build Windows x64 on Windows with `cargo build --release --locked -p laymesh-cli`, then stage `target/release/laymesh.exe`. A Linux build host with MinGW-w64 can instead run `rustup target add x86_64-pc-windows-gnu` and `cargo build --release --locked -p laymesh-cli --target x86_64-pc-windows-gnu`. Package it in a separate directory to preserve the Linux development binary:
 

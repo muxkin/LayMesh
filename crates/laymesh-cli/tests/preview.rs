@@ -35,10 +35,10 @@ fn preview_units_overlays_failed_dependencies_and_recovery() {
     let file = format!("{root}/main.lay");
     let values = format!("{root}/values.lay");
     let missing = format!("{root}/missing.lay");
-    let requests: Vec<Value> = ["mm","cm","in","inch","pt","px"].iter().enumerate().map(|(id,unit)|json!({"id":id,"file":file,"source":format!("page=canvas(size=(100,80),unit=\"{unit}\",layout_dpi=144)\nimport {{width}} from \"./values.lay\"\npage.add(rect(size=(width,2),fill=\"#ff0000\"))"),"overlays":{values.as_str():"export width=3"}})).collect();
+    let requests: Vec<Value> = ["mm","cm","in","inch","pt","px"].iter().enumerate().map(|(id,unit)|json!({"protocol":1,"id":id,"file":file,"source":format!("page=canvas(size=(100,80),unit=\"{unit}\",layout_dpi=144)\nimport {{width}} from \"./values.lay\"\npage.add(rect(size=(width,2),fill=\"#ff0000\"))"),"overlays":{values.as_str():"export width=3"}})).collect();
     let mut requests = requests;
-    requests.push(json!({"id":6,"file":file,"source":"page=canvas(size=(10,10))\nimport {x} from \"./missing.lay\""}));
-    requests.push(json!({"id":7,"file":file,"source":"page=canvas(size=(10,10))\nimport {x} from \"./missing.lay\"","overlays":{missing.as_str():"export x=1"}}));
+    requests.push(json!({"protocol":1,"id":6,"file":file,"source":"page=canvas(size=(10,10))\nimport {x} from \"./missing.lay\""}));
+    requests.push(json!({"protocol":1,"id":7,"file":file,"source":"page=canvas(size=(10,10))\nimport {x} from \"./missing.lay\"","overlays":{missing.as_str():"export x=1"}}));
     let results = preview(&requests);
     assert_eq!(results[0]["protocol"], 1);
     for (i, unit) in ["mm", "cm", "in", "inch", "pt", "px"].iter().enumerate() {
@@ -132,7 +132,7 @@ fn native_resources_and_unsaved_data_are_journaled() {
     let file = root.join("main.lay").to_string_lossy().replace('\\', "/");
     let source = "page=canvas(size=(40,30),stylesheet=\"style.lcss\",font_family=\"font.ttf\")\na=array(src=\"data.json\")\nt=table(src=\"data.csv\")\npage.add(image(src=\"photo.png\"),size=(10,10))\npage.add(rect(size=(a[0],2)),offset=(12,0))\npage.add(text(\"Preview\"),offset=(0,15))";
     let results = preview(&[
-        json!({"id":1,"file":file,"source":source,"overlays":{root.join("data.json").to_string_lossy().replace('\\',"/"):"[7,8]",root.join("data.csv").to_string_lossy().replace('\\',"/"):"x,y\n3,4\n"}}),
+        json!({"protocol":1,"id":1,"file":file,"source":source,"overlays":{root.join("data.json").to_string_lossy().replace('\\',"/"):"[7,8]",root.join("data.csv").to_string_lossy().replace('\\',"/"):"x,y\n3,4\n"}}),
     ]);
     let result = &results[1];
     assert!(result["svg"].is_string(), "{result}");
@@ -155,4 +155,84 @@ fn native_resources_and_unsaved_data_are_journaled() {
         std::fs::read_to_string(root.join("data.json")).unwrap(),
         "[1,2]"
     );
+}
+#[test]
+fn canvas_protocol_resources_survive_text_edits_without_svg_fallback() {
+    let root = std::env::temp_dir().join(format!("laymesh-drawing-v3-{}", std::process::id()));
+    std::fs::create_dir_all(&root).unwrap();
+    let file = root.join("main.lay");
+    let source = "p=canvas(size=(40mm,30mm))\np.add(rect(size=(10mm,10mm),fill=\"#ff0000\"))";
+    let results = preview(&[
+        json!({"id":1,"file":file,"source":source,"generation":7,"resource_dir":root}),
+        json!({"id":2,"file":file,"source":source,"protocol":99,"resource_dir":root}),
+        json!({"id":3,"file":file,"source":source,"protocol":1}),
+    ]);
+    assert_eq!(results[1]["protocol"], 3);
+    assert_eq!(results[1]["generation"], 7);
+    assert!(results[1].get("svg").is_none());
+    assert_eq!(results[1]["displayList"]["schemaVersion"], 1);
+    assert!(results[1]["inspection"]["page"].is_object());
+    assert!(results[2]["error"].is_object());
+    assert!(results[2].get("svg").is_none());
+    assert!(results[3]["svg"].is_string());
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn canvas_protocol_applies_preview_codecs_and_quality_to_resource_identity() {
+    let root = std::env::temp_dir().join(format!("laymesh-drawing-quality-{}", std::process::id()));
+    std::fs::create_dir_all(&root).unwrap();
+    std::fs::write(
+        root.join("photo.png"),
+        include_bytes!("../../../examples/assets/photo.png"),
+    )
+    .unwrap();
+    std::fs::write(
+        root.join("alpha.png"),
+        include_bytes!("../../../examples/effects/alpha-ring.png"),
+    )
+    .unwrap();
+    let source = "p=canvas(size=(40mm,30mm))\np.add(image(src=\"photo.png\"),size=(10mm,10mm))\np.add(image(src=\"alpha.png\"),size=(10mm,10mm),offset=(15mm,0mm))";
+    let results = preview(&[20, 90].map(|quality| {
+        json!({
+            "protocol":3,"file":root.join("main.lay"),"source":source,"resource_dir":root,
+            "preview":{"jpeg_quality":quality,"webp_quality":quality,"webp_method":4}
+        })
+    }));
+    let first = &results[1];
+    let second = &results[2];
+    for frame in [first, second] {
+        assert!(frame.get("svg").is_none());
+        let resources = frame["resources"].as_array().unwrap();
+        assert_eq!(resources.len(), 2);
+        for mime in ["image/jpeg", "image/webp"] {
+            let r = resources.iter().find(|r| r["mime"] == mime).unwrap();
+            let bytes = std::fs::read(r["path"].as_str().unwrap()).unwrap();
+            assert!(!bytes.is_empty());
+            assert!(
+                frame["displayList"]["resources"]
+                    .get(r["id"].as_str().unwrap())
+                    .is_some()
+            );
+        }
+    }
+    for mime in ["image/jpeg", "image/webp"] {
+        let resource = |f: &Value| {
+            f["resources"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|r| r["mime"] == mime)
+                .unwrap()
+                .clone()
+        };
+        let a = resource(first);
+        let b = resource(second);
+        assert_ne!(a["id"], b["id"]);
+        assert_ne!(
+            std::fs::read(a["path"].as_str().unwrap()).unwrap(),
+            std::fs::read(b["path"].as_str().unwrap()).unwrap()
+        );
+    }
+    std::fs::remove_dir_all(root).unwrap();
 }

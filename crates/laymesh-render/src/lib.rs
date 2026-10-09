@@ -1,10 +1,17 @@
-//! SVG is shared by native and WASM. Native exports use resvg and krilla.
+//! Shared drawing commands, Vello CPU rasterization, direct krilla PDF and
+//! DrawingML exports. The SVG serializer serves file exports and explicit
+//! compatibility calls; SVG imports pass through a separate adapter.
+pub mod display_list;
 mod effects;
+pub mod raster;
+mod svg_import;
 use base64::Engine;
+pub use display_list::{DisplayList, to_display_list};
 use laymesh_core::{
     Diagnostic, Loc, Result,
     model::{Scene, escape, jnum, jstr},
 };
+pub use raster::{RasterFrame, render_rgba};
 use serde_json::{Value as Json, json};
 fn number(n: f64) -> String {
     if n == 0. { "0".into() } else { n.to_string() }
@@ -813,6 +820,8 @@ pub mod config;
 mod export;
 #[cfg(feature = "native")]
 mod native;
+#[cfg(feature = "native")]
+mod pdf;
 #[cfg(feature = "native")]
 pub mod pptx;
 #[cfg(feature = "native")]

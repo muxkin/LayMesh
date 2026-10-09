@@ -885,13 +885,24 @@ fn fit_formula_ink(node: &mut Json) {
     node["height"] = json!(bounds.height());
     node["ascent"] = json!(jnum(node, "ascent", 0.) + dy);
 }
-fn measure(font: &FontAsset, text: &str, size: f64) -> (f64, f64, f64) {
+/// Positioned glyphs in millimetres, shared by layout and every drawing backend.
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct PositionedGlyph {
+    pub id: u16,
+    pub x: f64,
+    pub y: f64,
+    pub advance: f64,
+    pub source: std::ops::Range<usize>,
+}
+
+pub fn shape_glyphs(font: &FontAsset, text: &str, size: f64) -> Vec<PositionedGlyph> {
     let Some(face) = rustybuzz::Face::from_slice(&font.data, font.index) else {
-        return (size, 0.8 * size, 0.2 * size);
+        return Vec::new();
     };
     let scale = size / face.units_per_em() as f64;
     let bidi = unicode_bidi::BidiInfo::new(text, Some(unicode_bidi::Level::ltr()));
     let mut width = 0.;
+    let mut glyphs = Vec::new();
     for paragraph in &bidi.paragraphs {
         let (levels, runs) = bidi.visual_runs(paragraph, paragraph.range.clone());
         for run in runs {
@@ -904,16 +915,45 @@ fn measure(font: &FontAsset, text: &str, size: f64) -> (f64, f64, f64) {
                 rustybuzz::Direction::LeftToRight
             });
             let shaped = rustybuzz::shape(&face, &[], buffer);
-            width += shaped
-                .glyph_positions()
+            let mut clusters: Vec<_> = shaped
+                .glyph_infos()
                 .iter()
-                .map(|p| p.x_advance as f64 * scale)
-                .sum::<f64>()
-                .abs();
+                .map(|g| run.start + g.cluster as usize)
+                .collect();
+            clusters.push(run.end);
+            clusters.sort_unstable();
+            clusters.dedup();
+            for (g, p) in shaped.glyph_infos().iter().zip(shaped.glyph_positions()) {
+                let start = run.start + g.cluster as usize;
+                let end = clusters
+                    .get(clusters.partition_point(|&c| c <= start))
+                    .copied()
+                    .unwrap_or(run.end);
+                let advance = (p.x_advance as f64 * scale).abs();
+                glyphs.push(PositionedGlyph {
+                    id: g.glyph_id as u16,
+                    x: width + p.x_offset as f64 * scale,
+                    y: -(p.y_offset as f64 * scale),
+                    advance,
+                    source: start..end,
+                });
+                width += advance;
+            }
         }
     }
+    glyphs
+}
+
+fn measure(font: &FontAsset, text: &str, size: f64) -> (f64, f64, f64) {
+    let Some(face) = rustybuzz::Face::from_slice(&font.data, font.index) else {
+        return (size, 0.8 * size, 0.2 * size);
+    };
+    let scale = size / face.units_per_em() as f64;
     (
-        width,
+        shape_glyphs(font, text, size)
+            .iter()
+            .map(|g| g.advance)
+            .sum(),
         face.ascender() as f64 * scale,
         -face.descender() as f64 * scale,
     )

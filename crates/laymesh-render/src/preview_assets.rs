@@ -30,6 +30,131 @@ pub fn write_resource(path: &Path, bytes: &[u8]) -> Result<()> {
     }
     std::fs::rename(&temporary, path).map_err(|e| error(e.to_string()))
 }
+fn process_images(tasks: &[ImageTask], settings: &PreviewSettings) -> Result<()> {
+    let next = AtomicUsize::new(0);
+    let memory = (Mutex::new(0usize), Condvar::new());
+    let failure = Mutex::new(None);
+    let budget = settings.processing_memory_mb * 1024 * 1024;
+    // Only owned pixels and encoding settings reach these workers, never compiler Rc/RefCell state.
+    std::thread::scope(|scope| {
+        for _ in 0..settings.threads().min(tasks.len()) {
+            let tasks = &tasks;
+            let next = &next;
+            let memory = &memory;
+            let failure = &failure;
+            scope.spawn(move || {
+                loop {
+                    let index = next.fetch_add(1, Ordering::Relaxed);
+                    let Some(task) = tasks.get(index) else {
+                        break;
+                    };
+                    let estimate = task.pixels.as_bytes().len().saturating_mul(3);
+                    let mut used = memory.0.lock().unwrap();
+                    while *used > 0 && used.saturating_add(estimate) > budget {
+                        used = memory.1.wait(used).unwrap();
+                    }
+                    *used = used.saturating_add(estimate);
+                    drop(used);
+                    let result = raster_policy::preview_bytes(
+                        &task.pixels,
+                        settings.jpeg_quality,
+                        settings.webp_quality,
+                        settings.webp_method,
+                    )
+                    .and_then(|(_, bytes)| write_resource(&task.path, &bytes));
+                    let mut used = memory.0.lock().unwrap();
+                    *used = used.saturating_sub(estimate);
+                    memory.1.notify_all();
+                    drop(used);
+                    if let Err(e) = result {
+                        *failure.lock().unwrap() = Some(e);
+                    }
+                }
+            });
+        }
+    });
+    if let Some(e) = failure.into_inner().unwrap() {
+        return Err(e);
+    }
+    Ok(())
+}
+/// Protocol 3 carries drawing commands, with immutable encoded resources beside them.
+pub fn display_frame(
+    scene: &Scene,
+    directory: &Path,
+    settings: &PreviewSettings,
+) -> Result<(DisplayList, Vec<Json>)> {
+    use crate::display_list::{DrawKind, DrawNode, Paint};
+    fn paint(p: &mut Paint, ids: &HashMap<String, String>) {
+        if let Paint::Pattern { nodes, .. } = p {
+            visit(nodes, ids);
+        }
+    }
+    fn visit(nodes: &mut [DrawNode], ids: &HashMap<String, String>) {
+        for n in nodes {
+            match &mut n.kind {
+                DrawKind::Image { resource, .. } => {
+                    if let Some(id) = ids.get(resource) {
+                        *resource = id.clone();
+                    }
+                }
+                DrawKind::Group { children, mask, .. } => {
+                    visit(children, ids);
+                    if let Some(mask) = mask {
+                        visit(std::slice::from_mut(&mut mask.node), ids);
+                    }
+                }
+                DrawKind::Path { fill, .. } => {
+                    paint(fill, ids);
+                }
+                DrawKind::Glyphs { .. } => {}
+            }
+        }
+    }
+    let mut list = to_display_list(scene)?;
+    let mut resources = Vec::new();
+    let mut ids = HashMap::new();
+    let mut tasks = Vec::new();
+    let mut registered = std::collections::BTreeMap::new();
+    for (original, mut resource) in std::mem::take(&mut list.resources) {
+        let id = if resource.mime.starts_with("image/") {
+            let id = format!(
+                "{original}-preview-q{}-wq{}-m{}",
+                settings.jpeg_quality, settings.webp_quality, settings.webp_method
+            );
+            let path = directory.join(format!("{id}.resource"));
+            let pixels = Arc::new(
+                image::load_from_memory(&resource.data).map_err(|e| error(e.to_string()))?,
+            );
+            resource.mime = if raster_policy::has_transparency(&pixels) {
+                "image/webp"
+            } else {
+                "image/jpeg"
+            }
+            .into();
+            if !path.is_file() {
+                tasks.push(ImageTask { pixels, path });
+            }
+            ids.insert(original, id.clone());
+            id
+        } else {
+            write_resource(
+                &directory.join(format!("{original}.resource")),
+                &resource.data,
+            )?;
+            original
+        };
+        let path = directory.join(format!("{id}.resource"));
+        resources.push(json!({"id":id,"path":path,"mime":resource.mime,"fontIndex":resource.font_index,"family":resource.family}));
+        resource.data.clear();
+        registered.insert(id, resource);
+    }
+    process_images(&tasks, settings)?;
+    list.resources = registered;
+    visit(&mut list.nodes, &ids);
+    Ok((list, resources))
+}
+
 pub fn frame(
     scene: &Scene,
     directory: &Path,
@@ -105,51 +230,7 @@ pub fn frame(
         )?;
     }
     let tasks: Vec<_> = tasks.into_values().collect();
-    let next = AtomicUsize::new(0);
-    let memory = (Mutex::new(0usize), Condvar::new());
-    let failure = Mutex::new(None);
-    let budget = settings.processing_memory_mb * 1024 * 1024;
-    // Only owned pixels and encoding settings reach these workers, never compiler Rc/RefCell state.
-    std::thread::scope(|scope| {
-        for _ in 0..settings.threads().min(tasks.len()) {
-            let tasks = &tasks;
-            let next = &next;
-            let memory = &memory;
-            let failure = &failure;
-            scope.spawn(move || {
-                loop {
-                    let index = next.fetch_add(1, Ordering::Relaxed);
-                    let Some(task) = tasks.get(index) else {
-                        break;
-                    };
-                    let estimate = task.pixels.as_bytes().len().saturating_mul(3);
-                    let mut used = memory.0.lock().unwrap();
-                    while *used > 0 && used.saturating_add(estimate) > budget {
-                        used = memory.1.wait(used).unwrap();
-                    }
-                    *used = used.saturating_add(estimate);
-                    drop(used);
-                    let result = raster_policy::preview_bytes(
-                        &task.pixels,
-                        settings.jpeg_quality,
-                        settings.webp_quality,
-                        settings.webp_method,
-                    )
-                    .and_then(|(_, bytes)| write_resource(&task.path, &bytes));
-                    let mut used = memory.0.lock().unwrap();
-                    *used = used.saturating_sub(estimate);
-                    memory.1.notify_all();
-                    drop(used);
-                    if let Err(e) = result {
-                        *failure.lock().unwrap() = Some(e);
-                    }
-                }
-            });
-        }
-    });
-    if let Some(e) = failure.into_inner().unwrap() {
-        return Err(e);
-    }
+    process_images(&tasks, settings)?;
     let mut css = String::new();
     for (key, (weight, italic)) in used_fonts(&scene) {
         if let Some(font) = scene.fonts.get(&key) {

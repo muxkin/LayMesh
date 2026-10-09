@@ -1,4 +1,4 @@
-//! Browser bindings use the same parser, layout, fonts, and SVG renderer as native.
+//! Browser bindings share native layout and CPU drawing; SVG is an export format.
 use laymesh_core::{
     engine::compile_source,
     model::{Host, Scene},
@@ -10,6 +10,93 @@ use std::collections::BTreeMap;
 use wasm_bindgen::prelude::*;
 thread_local! {
     static PREVIEW_FONTS: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new());
+    static DRAW_RESOURCES: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new());
+}
+
+#[wasm_bindgen]
+pub fn register_render_resource(id: &str, bytes: &[u8]) {
+    DRAW_RESOURCES.with(|resources| resources.borrow_mut().insert(id.into(), bytes.to_vec()));
+}
+#[wasm_bindgen]
+pub fn retain_render_resources(ids: &str) -> Result<(), JsValue> {
+    let ids: Vec<String> = serde_json::from_str(ids).map_err(js_error)?;
+    DRAW_RESOURCES.with(|r| r.borrow_mut().retain(|id, _| ids.contains(id)));
+    Ok(())
+}
+fn js_error(e: impl std::fmt::Display) -> JsValue {
+    JsValue::from_str(&e.to_string())
+}
+
+#[wasm_bindgen]
+pub struct DrawJob {
+    list: laymesh_render::DisplayList,
+}
+#[wasm_bindgen]
+pub struct RgbaFrame {
+    width: u32,
+    height: u32,
+    rgba: Vec<u8>,
+}
+#[wasm_bindgen]
+impl RgbaFrame {
+    #[wasm_bindgen(getter)]
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+    #[wasm_bindgen(getter)]
+    pub fn height(&self) -> u32 {
+        self.height
+    }
+    #[wasm_bindgen(getter)]
+    pub fn rgba(&self) -> Vec<u8> {
+        self.rgba.clone()
+    }
+}
+#[wasm_bindgen]
+impl DrawJob {
+    pub fn display_list(&self) -> Result<String, JsValue> {
+        let mut list = self.list.clone();
+        for resource in list.resources.values_mut() {
+            resource.data.clear();
+        }
+        serde_json::to_string(&list).map_err(js_error)
+    }
+    /// Millimetre viewport; output dimensions include browser device pixel ratio.
+    pub fn raster(&self, viewport: &str, width: u32, height: u32) -> Result<RgbaFrame, JsValue> {
+        let r: [f64; 4] = serde_json::from_str(viewport).map_err(js_error)?;
+        let result = laymesh_render::raster::render_region(
+            &self.list,
+            kurbo::Rect::new(r[0], r[1], r[2], r[3]),
+            width,
+            height,
+        )
+        .map_err(js_error)?;
+        Ok(RgbaFrame {
+            width: result.width,
+            height: result.height,
+            rgba: result.rgba,
+        })
+    }
+}
+#[wasm_bindgen]
+pub fn prepare_display_list(json: &str) -> Result<DrawJob, JsValue> {
+    let mut list: laymesh_render::DisplayList = serde_json::from_str(json).map_err(js_error)?;
+    if list.schema_version != laymesh_render::display_list::DISPLAY_LIST_VERSION {
+        return Err(js_error("Unsupported display list version"));
+    }
+    DRAW_RESOURCES.with(|resources| {
+        for (id, resource) in &mut list.resources {
+            if resource.data.is_empty() {
+                resource.data = resources
+                    .borrow()
+                    .get(id)
+                    .cloned()
+                    .ok_or_else(|| js_error(format!("Missing drawing resource {id}")))?;
+            }
+        }
+        Ok::<(), JsValue>(())
+    })?;
+    Ok(DrawJob { list })
 }
 
 /// Register Page-only body fonts as bytes, avoiding a large JSON byte array on every render.
@@ -29,6 +116,15 @@ pub struct RenderJob {
 }
 #[wasm_bindgen]
 impl RenderJob {
+    pub fn draw_job(&self) -> Result<DrawJob, JsValue> {
+        Ok(DrawJob {
+            list: laymesh_render::to_display_list(&self.scene).map_err(js_error)?,
+        })
+    }
+    pub fn display_list(&self) -> Result<String, JsValue> {
+        serde_json::to_string(&laymesh_render::to_display_list(&self.scene).map_err(js_error)?)
+            .map_err(js_error)
+    }
     pub fn svg(&self) -> Result<String, JsValue> {
         laymesh_render::render_svg(&self.scene).map_err(|e| JsValue::from_str(&e.to_string()))
     }

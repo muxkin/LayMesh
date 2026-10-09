@@ -58,19 +58,18 @@ def main():
    port=int(active.read_text().splitlines()[0]);opener=urllib.request.build_opener(urllib.request.ProxyHandler({}));pages=json.load(opener.open(f'http://127.0.0.1:{port}/json'));cdp=CDP(next(p['webSocketDebuggerUrl'] for p in pages if p['type']=='page'));cdp.call('Page.enable');cdp.call('Runtime.enable');cdp.call('Log.enable');cdp.call('Emulation.setDeviceMetricsOverride',{'width':1440,'height':1000,'deviceScaleFactor':1,'mobile':False});cdp.call('Page.navigate',{'url':a.url})
    ready="""new Promise((resolve,reject)=>{const deadline=Date.now()+45000;const tick=()=>{const m=document.querySelector('.example-module');if(m?.dataset.liveState==='success')return resolve({title:document.title,url:location.href,status:m.querySelector('.live-status').textContent,diagnostics:m.querySelector('.live-diagnostics').textContent});if(m?.dataset.liveState==='error')return reject(Error(m.querySelector('.live-diagnostics').textContent));if(Date.now()>deadline)return reject(Error('Preview timeout: '+document.body.innerText.slice(-800)));setTimeout(tick,100)};tick()})"""
    first=cdp.evaluate(ready);cdp.evaluate("document.querySelector('[data-source-mode=source]').click()")
-   state=cdp.evaluate("({mode:document.querySelector('.example-module').dataset.mode,editor:!!document.querySelector('.cm-editor'),image:document.querySelector('.live-image').src,warnings:document.querySelector('.live-diagnostics').textContent})");assert state['mode']=='source' and state['editor'] and state['image'].startswith('blob:'),state
+   state=cdp.evaluate("({mode:document.querySelector('.example-module').dataset.mode,editor:!!document.querySelector('.cm-editor'),image:document.querySelector('.live-image').localName,warnings:document.querySelector('.live-diagnostics').textContent})");assert state['mode']=='source' and state['editor'] and state['image']=='canvas',state
    source='page=canvas(size=(80,50),background="#ffffff")\npage.add(text("Rust 中文 $E=mc^2$",font_size=12),offset=(4,8))\npage.add(rect(size=(25,12),fill="#245447"),offset=(4,25))'
-   before_edit=cdp.evaluate("document.querySelector('.live-image').src")
+   before_edit=cdp.evaluate("document.querySelector('.example-module').dataset.generation")
    cdp.evaluate("document.querySelector('.cm-content').focus()")
-   cdp.call('Input.dispatchKeyEvent',{'type':'keyDown','key':'a','code':'KeyA','modifiers':2,'windowsVirtualKeyCode':65});cdp.call('Input.dispatchKeyEvent',{'type':'keyUp','key':'a','code':'KeyA','modifiers':2,'windowsVirtualKeyCode':65});cdp.call('Input.insertText',{'text':source});edited=cdp.evaluate("new Promise((resolve,reject)=>{const previous="+json.dumps(before_edit)+";let n=0;const tick=()=>{const m=document.querySelector('.example-module'),image=m.querySelector('.live-image');if(m.dataset.liveState==='error')return reject(Error(m.querySelector('.live-diagnostics').textContent));if(m.dataset.liveState==='success'&&image.src!==previous&&image.complete)return resolve({title:document.title,url:location.href,status:m.querySelector('.live-status').textContent,diagnostics:m.querySelector('.live-diagnostics').textContent});if(++n>450)return reject(Error('Edited preview timeout'));setTimeout(tick,100)};tick()})");assert 'W_FONT' not in edited['diagnostics'],edited
-   svg=cdp.evaluate("fetch(document.querySelector('.live-image').src).then(r=>r.text()).then(t=>({hasChinese:t.includes('中文'),hasEmbeddedFont:t.includes('data:font/')}))")
-   assert svg['hasChinese'] and svg['hasEmbeddedFont'],svg
+   cdp.call('Input.dispatchKeyEvent',{'type':'keyDown','key':'a','code':'KeyA','modifiers':2,'windowsVirtualKeyCode':65});cdp.call('Input.dispatchKeyEvent',{'type':'keyUp','key':'a','code':'KeyA','modifiers':2,'windowsVirtualKeyCode':65});cdp.call('Input.insertText',{'text':source});edited=cdp.evaluate("new Promise((resolve,reject)=>{const previous="+json.dumps(before_edit)+";let n=0;const tick=()=>{const m=document.querySelector('.example-module'),image=m.querySelector('.live-image');if(m.dataset.liveState==='error')return reject(Error(m.querySelector('.live-diagnostics').textContent));if(m.dataset.liveState==='success'&&m.dataset.generation!==previous&&m.dataset.painted==='true')return resolve({title:document.title,url:location.href,status:m.querySelector('.live-status').textContent,diagnostics:m.querySelector('.live-diagnostics').textContent});if(++n>450)return reject(Error('Edited preview timeout'));setTimeout(tick,100)};tick()})");assert 'W_FONT' not in edited['diagnostics'],edited
+   pixels=cdp.evaluate("(()=>{const c=document.querySelector('.live-image'),p=c.getContext('2d').getImageData(0,0,c.width,c.height).data;return {canvas:c.localName,width:c.width,height:c.height,visible:p.some((v,i)=>i%4===3&&v>0)}})()");assert pixels['canvas']=='canvas' and pixels['visible'],pixels
    cdp.call('Input.dispatchKeyEvent',{'type':'keyDown','key':'Escape','code':'Escape','windowsVirtualKeyCode':27});cdp.call('Input.dispatchKeyEvent',{'type':'keyUp','key':'Escape','code':'Escape','windowsVirtualKeyCode':27});shot=cdp.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'desktop.png').write_bytes(base64.b64decode(shot['data']))
    # User-font route: programmatically select the dedicated test fixture through
    # the browser file input. It is never packaged in the site runtime.
-   before_font=cdp.evaluate("document.querySelector('.live-image').src");cdp.call('DOM.enable');doc=cdp.call('DOM.getDocument');node=cdp.call('DOM.querySelector',{'nodeId':doc['root']['nodeId'],'selector':'.live-font-file'});cdp.call('DOM.setFileInputFiles',{'nodeId':node['nodeId'],'files':[str(ROOT/'tests/assets/GFSNeohellenic.otf')]})
+   before_font=cdp.evaluate("document.querySelector('.example-module').dataset.generation");cdp.call('DOM.enable');doc=cdp.call('DOM.getDocument');node=cdp.call('DOM.querySelector',{'nodeId':doc['root']['nodeId'],'selector':'.live-font-file'});cdp.call('DOM.setFileInputFiles',{'nodeId':node['nodeId'],'files':[str(ROOT/'tests/assets/GFSNeohellenic.otf')]})
    fonts=cdp.evaluate("new Promise((resolve,reject)=>{let n=0;const tick=()=>{const t=document.querySelector('.font-note').textContent;if(t.includes('GFSNeohellenic'))return resolve(t);if(++n>100)return reject(Error(t));setTimeout(tick,100)};tick()})")
-   font_render=cdp.evaluate("new Promise((resolve,reject)=>{const previous="+json.dumps(before_font)+";let n=0;const tick=()=>{const m=document.querySelector('.example-module');if(m.dataset.liveState==='success'&&m.querySelector('.live-image').src!==previous)return resolve(m.querySelector('.live-diagnostics').textContent);if(++n>200)return reject(Error('Font rerender timeout'));setTimeout(tick,100)};tick()})")
+   font_render=cdp.evaluate("new Promise((resolve,reject)=>{const previous="+json.dumps(before_font)+";let n=0;const tick=()=>{const m=document.querySelector('.example-module');if(m.dataset.liveState==='success'&&m.dataset.generation!==previous&&m.dataset.painted==='true')return resolve(m.querySelector('.live-diagnostics').textContent);if(++n>200)return reject(Error('Font rerender timeout'));setTimeout(tick,100)};tick()})")
    cdp.call('Emulation.setDeviceMetricsOverride',{'width':390,'height':844,'deviceScaleFactor':1,'mobile':True});cdp.evaluate("document.querySelector('.example-module').scrollIntoView()")
    shot=cdp.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'mobile.png').write_bytes(base64.b64decode(shot['data']))
    corpus=[]
@@ -85,7 +84,7 @@ def main():
           const timeout=setTimeout(()=>reject(Error('Corpus worker initialization timeout')),20000);
           worker.onmessage=({data})=>{
             if(data.type==='ready'){clearTimeout(timeout);resolve()}
-            else if(data.type==='result'||data.type==='error'){pending.get(data.id)?.(data);pending.delete(data.id)}
+            else if(data.type==='result'||data.type==='error'||data.type==='painted'||data.type==='paint-error'){pending.get(data.id)?.(data);pending.delete(data.id)}
           };
           worker.onerror=error=>reject(Error(error.message));
           worker.postMessage({type:'init',base:base.href});
@@ -104,7 +103,12 @@ def main():
             pending.set(id,data=>{clearTimeout(timeout);resolve(data)});
             worker.postMessage({type:'render',id,entry:example.entry,files});
           });
-          results.push(response.type==='error'?{example:name,elapsed_ms:performance.now()-start,error:response.error}:{example:name,elapsed_ms:performance.now()-start,width:response.inspection.page.width,height:response.inspection.page.height,warnings:response.warnings.length});
+          let raster;
+          if(response.type==='result'){
+            const paintId=++sequence,page=response.inspection.page,width=960,height=Math.max(1,Math.round(width*page.height/page.width));
+            raster=await new Promise(resolve=>{const timeout=setTimeout(()=>{pending.delete(paintId);resolve({type:'paint-error',error:{code:'TIMEOUT',message:'Raster timeout'}})},20000);pending.set(paintId,data=>{clearTimeout(timeout);resolve(data)});worker.postMessage({type:'paint',id:paintId,generation:id,rect:[0,0,page.width,page.height],width,height});});
+          }
+          results.push(response.type==='error'?{example:name,elapsed_ms:performance.now()-start,error:response.error}:{example:name,elapsed_ms:performance.now()-start,width:response.inspection.page.width,height:response.inspection.page.height,warnings:response.warnings.length,metrics:response.metrics,raster_ms:raster.rasterMs,wasm_memory_bytes:raster.wasmMemoryBytes,raster_error:raster.error});
         }
         return results;
       };
@@ -116,7 +120,7 @@ def main():
     cdp.evaluate('window.__laymeshCorpusStop()')
    errors=[e for e in cdp.events if e.get('method')=='Runtime.exceptionThrown' or e.get('method')=='Log.entryAdded' and e['params']['entry']['level']=='error'];assert not errors,errors
    result={'browser':'Chromium via Python stdlib CDP','artifact_sha256':provenance(__file__),'url':a.url,'first_render':first,'editor':state,'edited_render':edited,'font_file_input':fonts,'font_render_warnings':font_render,'desktop':[1440,1000],'mobile':[390,844],'console_errors':errors,'node_runtime':False,'node_on_path':bool(shutil.which('node')),'npm_on_path':bool(shutil.which('npm')),'wasm_examples':corpus};(a.output/'verification.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))
-   assert all('error' not in item for item in corpus),[item for item in corpus if 'error' in item]
+   assert all('error' not in item and not item.get('raster_error') for item in corpus),[item for item in corpus if 'error' in item]
   finally:
    try:
     if os.name=='posix':os.killpg(chrome.pid,signal.SIGTERM)

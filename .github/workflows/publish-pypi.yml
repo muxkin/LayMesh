@@ -58,6 +58,8 @@ jobs:
         with:
           python-version: '3.13'
       - run: cargo build --release --locked -p laymesh-cli
+      - run: rustup target add wasm32-unknown-unknown
+      - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
       - run: python -m pip install -r release/build-requirements.txt
       - run: python scripts/collect-licenses.py
       - run: python scripts/build-python-wheel.py --output release/dist

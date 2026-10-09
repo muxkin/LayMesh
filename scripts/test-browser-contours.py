@@ -33,35 +33,34 @@ def main():
             cdp.call('Page.enable'); cdp.call('Runtime.enable'); cdp.call('Log.enable')
             cdp.call('Page.navigate', {'url': args.url})
             cdp.evaluate("new Promise((resolve,reject)=>{const limit=Date.now()+20000;function ready(){if(document.querySelector('script[src$=\"app.js\"]'))return resolve();if(Date.now()>limit)return reject(Error('Page timeout'));setTimeout(ready,30)}ready()})")
-            result = cdp.evaluate('''(async()=>{
+            result = cdp.evaluate(r'''(async()=>{
                 const fixtures=FIXTURES;
                 const base=new URL('live/',document.querySelector('script[src$="app.js"]').src);
                 const worker=new Worker(new URL('worker.js',base),{type:'module'}),pending=new Map();let serial=0;
                 await new Promise((resolve,reject)=>{worker.onerror=e=>reject(Error(e.message));worker.onmessage=({data})=>{if(data.type==='ready')resolve();else if(data.type==='result'||data.type==='error'){pending.get(data.id)?.(data);pending.delete(data.id)}};worker.postMessage({type:'init',base:base.href})});
                 const run=c=>new Promise((resolve,reject)=>{const id=++serial,t=setTimeout(()=>reject(Error(c.name+' timeout')),20000);pending.set(id,d=>{clearTimeout(t);resolve(d)});worker.postMessage({type:'run',id,entry:'fixtures/contour.lay',files:{'fixtures/contour.lay':c.source,...c.files}})});
-                function geometry(svg,c){
-                    const doc=new DOMParser().parseFromString(svg,'image/svg+xml');
-                    const paths=[...doc.querySelectorAll('[data-id="plot-data"] path')].filter(p=>!p.closest('defs'));
-                    if(c.data_path_count!==undefined&&paths.length!==c.data_path_count)return false;
-                    if(c.minimum_closed_subpaths!==undefined&&paths.reduce((n,p)=>n+(p.getAttribute('d').match(/Z/gi)||[]).length,0)<c.minimum_closed_subpaths)return false;
-                    const vertices=paths.flatMap(p=>[...p.getAttribute('d').matchAll(/[ML]\\s*([-+\\deE.]+)[ ,]+([-+\\deE.]+)/g)].map(m=>[Number(m[1])+10,Number(m[2])+10]));
-                    return (c.boundary_vertices||[]).every(q=>vertices.some(p=>Math.hypot(p[0]-q[0],p[1]-q[1])<fixtures.scene_coordinate_tolerance_mm));
-                }
-                async function pixels(svg,c,page){
-                    const canvas=document.createElement('canvas'),scale=fixtures.pixel_dpi/25.4;canvas.width=Math.round(page.width*scale);canvas.height=Math.round(page.height*scale);
-                    const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'})),image=new Image();
-                    try{await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(Error('SVG image decode failed'));image.src=url});const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0,canvas.width,canvas.height);
-                    const samples=c.pixel_samples.map(s=>{const actual=[...ctx.getImageData(Math.round(s.x*scale),Math.round(s.y*scale),1,1).data].slice(0,3);return {...s,actual,passed:actual.every((v,i)=>Math.abs(v-s.rgb[i])<=s.tolerance)}});return {passed:samples.every(s=>s.passed),samples};}finally{URL.revokeObjectURL(url)}
-                }
+                const wasm=await import(new URL('wasm/laymesh_wasm.js',base));await wasm.default();
+                const manifest=await(await fetch(new URL('manifest.json',base))).json();
+                for(const font of manifest.fonts){const bytes=new Uint8Array(await(await fetch(new URL(font.file,base))).arrayBuffer());wasm.register_preview_font('/@bundled/'+font.file.split('/').pop(),bytes);}
+                function walk(nodes,t=[1,0,0,1,0,0],active=false,out=[]){for(const n of nodes){const u=n.transform;const tr=[t[0]*u[0]+t[2]*u[1],t[1]*u[0]+t[3]*u[1],t[0]*u[2]+t[2]*u[3],t[1]*u[2]+t[3]*u[3],t[0]*u[4]+t[2]*u[5]+t[4],t[1]*u[4]+t[3]*u[5]+t[5]],inside=active||n.name==='plot-data';if(n.kind.kind==='group')walk(n.kind.children,tr,inside,out);else if(inside&&n.kind.kind==='path'&&(n.kind.fill.kind!=='none'||n.kind.stroke))out.push({node:n,t:tr});}return out;}
+                function geometry(list,c){const paths=walk(list.nodes);if(c.data_path_count!==undefined&&paths.length!==c.data_path_count)return false;
+                  if(c.minimum_closed_subpaths!==undefined&&paths.reduce((count,p)=>count+p.node.kind.path.filter(el=>el==='ClosePath').length,0)<c.minimum_closed_subpaths)return false;
+                  const vertices=paths.flatMap(p=>p.node.kind.path.flatMap(el=>{const q=el.MoveTo||el.LineTo;return q?[[p.t[0]*q.x+p.t[2]*q.y+p.t[4],p.t[1]*q.x+p.t[3]*q.y+p.t[5]]]:[]}));return (c.boundary_vertices||[]).every(q=>vertices.some(p=>Math.hypot(p[0]-q[0],p[1]-q[1])<fixtures.scene_coordinate_tolerance_mm));}
+                async function pixels(list,c,page){const job=wasm.prepare_display_list(JSON.stringify(list)),scale=fixtures.pixel_dpi/25.4,width=Math.round(page.width*scale),height=Math.round(page.height*scale),raster=job.raster(JSON.stringify([0,0,page.width,page.height]),width,height);try{const rgba=raster.rgba;const samples=c.pixel_samples.map(s=>{const i=(Math.round(s.y*scale)*width+Math.round(s.x*scale))*4,actual=[...rgba.slice(i,i+3)];return {...s,actual,passed:actual.every((v,i)=>Math.abs(v-s.rgb[i])<=s.tolerance)}});return {passed:samples.every(s=>s.passed),samples};}finally{raster.free();job.free();}}
                 const cases=[];let geometryFault=false,opacityFault=false;
-                try{for(const c of fixtures.cases){const response=await run(c);if(response.type!=='result')throw Error(c.name+': '+JSON.stringify(response.error));const g=geometry(response.svg,c),p=await pixels(response.svg,c,response.inspection.page);cases.push({name:c.name,geometry:g,pixels:p,metrics:response.metrics,svg:response.svg});
-                    if(c.name==='saddle'){const doc=new DOMParser().parseFromString(response.svg,'image/svg+xml');doc.querySelector('[data-id="plot-data"]').replaceChildren();geometryFault=!geometry(new XMLSerializer().serializeToString(doc),c)}
-                    if(c.name==='equal_threshold'){const doc=new DOMParser().parseFromString(response.svg,'image/svg+xml');for(const el of doc.querySelectorAll('[data-id="plot-data"] [opacity]'))el.setAttribute('opacity','1');const fault=await pixels(new XMLSerializer().serializeToString(doc),c,response.inspection.page);opacityFault=!fault.passed}
+                try{for(const c of fixtures.cases){const response=await run(c);if(response.type!=='result')throw Error(c.name+': '+JSON.stringify(response.error));
+                    // Register the resources in this independent WASM instance;
+                    // the worker's resident byte cache is deliberately private.
+                    const files=Object.fromEntries(Object.entries({'fixtures/contour.lay':c.source,...c.files}).map(([k,v])=>['/'+k.replace(/^\/+/,''),v])),resourceJob=wasm.prepare_render(c.source,'/fixtures/contour.lay',JSON.stringify(files));
+                    try{for(const [id,r]of Object.entries(JSON.parse(resourceJob.display_list()).resources))wasm.register_render_resource(id,new Uint8Array(r.data));}finally{resourceJob.free();}
+                    const list=response.displayList,g=geometry(list,c),p=await pixels(list,c,response.inspection.page);cases.push({name:c.name,geometry:g,pixels:p,metrics:response.metrics,displayList:list});
+                    if(c.name==='saddle'){const fault=structuredClone(list);function remove(nodes){for(const n of nodes){if(n.name==='plot-data')n.kind.children=[];else if(n.kind.children)remove(n.kind.children)}}remove(fault.nodes);geometryFault=!geometry(fault,c);}
+                    if(c.name==='equal_threshold'){const fault=structuredClone(list);function alpha(nodes){for(const n of nodes){n.opacity=1;if(n.kind.children)alpha(n.kind.children)}}alpha(fault.nodes);opacityFault=!(await pixels(fault,c,response.inspection.page)).passed;}
                 }}finally{worker.terminate()}
                 return {cases,fault_injections:{missing_geometry_rejected:geometryFault,changed_opacity_rejected:opacityFault}};
             })()'''.replace('FIXTURES', json.dumps(fixtures)))
             for case in result['cases']:
-                (args.output / (case['name'] + '.svg')).write_text(case.pop('svg'))
+                (args.output / (case['name'] + '.json')).write_text(json.dumps(case.pop('displayList')))
             errors = [e for e in cdp.events if e.get('method') == 'Runtime.exceptionThrown' or e.get('method') == 'Log.entryAdded' and e['params']['entry']['level'] == 'error']
             result.update(artifact_sha256=browser.provenance(__file__), node_on_path=bool(shutil.which('node')), npm_on_path=bool(shutil.which('npm')), fixture_sha256=hashlib.sha256(fixture_path.read_bytes()).hexdigest(), wasm_sha256=hashlib.sha256((ROOT/'site/dist/site/live/wasm/laymesh_wasm_bg.wasm').read_bytes()).hexdigest(), console_errors=errors)
             result['status'] = 'passed' if not errors and all(c['geometry'] and c['pixels']['passed'] for c in result['cases']) and all(result['fault_injections'].values()) else 'failed'

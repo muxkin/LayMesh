@@ -1,0 +1,156 @@
+{
+  "baseline": {
+    "binary": "bundled",
+    "source": "examples/effects/images-groups.lay",
+    "cold": {
+      "bytes": 11783,
+      "resources": 2,
+      "protocol": 2,
+      "native_ms": 83,
+      "native_peak_rss_kib": 47648,
+      "elapsed_ms": 155
+    },
+    "hot": [
+      {
+        "bytes": 11150,
+        "resources": 0,
+        "protocol": 2,
+        "native_ms": 4,
+        "native_peak_rss_kib": 47648,
+        "elapsed_ms": 337
+      },
+      {
+        "bytes": 11150,
+        "resources": 0,
+        "protocol": 2,
+        "native_ms": 3,
+        "native_peak_rss_kib": 47648,
+        "elapsed_ms": 229
+      },
+      {
+        "bytes": 11150,
+        "resources": 0,
+        "protocol": 2,
+        "native_ms": 5,
+        "native_peak_rss_kib": 47648,
+        "elapsed_ms": 172
+      },
+      {
+        "bytes": 11150,
+        "resources": 0,
+        "protocol": 2,
+        "native_ms": 4,
+        "native_peak_rss_kib": 47648,
+        "elapsed_ms": 782
+      },
+      {
+        "bytes": 11150,
+        "resources": 0,
+        "protocol": 2,
+        "native_ms": 4,
+        "native_peak_rss_kib": 47648,
+        "elapsed_ms": 189
+      }
+    ],
+    "hot_median_ms": 229,
+    "definition": "native request enqueue to resources loaded and SVG visible in VS Code; excludes edit debounce"
+  },
+  "current": {
+    "binary": "bundled",
+    "source": "examples/effects/images-groups.lay",
+    "cold": {
+      "bytes": 16003,
+      "resources": 2,
+      "protocol": 3,
+      "native_ms": 74,
+      "native_peak_rss_kib": 52572,
+      "resources_ms": 16,
+      "install_ms": 3.699999988079071,
+      "initialization_wait_ms": 116.30000001192093,
+      "raster_ms": 117.60000002384186,
+      "wasm_memory_bytes": 18939904,
+      "width": 1200,
+      "height": 600,
+      "elapsed_ms": 365
+    },
+    "hot": [
+      {
+        "bytes": 16873,
+        "resources": 2,
+        "protocol": 3,
+        "native_ms": 6,
+        "native_peak_rss_kib": 52572,
+        "resources_ms": 0,
+        "install_ms": 0.40000003576278687,
+        "initialization_wait_ms": 0,
+        "raster_ms": 80.39999997615814,
+        "wasm_memory_bytes": 21430272,
+        "width": 1200,
+        "height": 600,
+        "elapsed_ms": 89
+      },
+      {
+        "bytes": 18260,
+        "resources": 2,
+        "protocol": 3,
+        "native_ms": 7,
+        "native_peak_rss_kib": 52572,
+        "resources_ms": 0,
+        "install_ms": 0.6000000238418579,
+        "initialization_wait_ms": 0,
+        "raster_ms": 81,
+        "wasm_memory_bytes": 21430272,
+        "width": 1200,
+        "height": 600,
+        "elapsed_ms": 91
+      },
+      {
+        "bytes": 19190,
+        "resources": 2,
+        "protocol": 3,
+        "native_ms": 7,
+        "native_peak_rss_kib": 52572,
+        "resources_ms": 0,
+        "install_ms": 0.30000001192092896,
+        "initialization_wait_ms": 0,
+        "raster_ms": 80.39999997615814,
+        "wasm_memory_bytes": 21430272,
+        "width": 1200,
+        "height": 600,
+        "elapsed_ms": 91
+      },
+      {
+        "bytes": 17124,
+        "resources": 2,
+        "protocol": 3,
+        "native_ms": 6,
+        "native_peak_rss_kib": 52572,
+        "resources_ms": 0,
+        "install_ms": 0.5,
+        "initialization_wait_ms": 0,
+        "raster_ms": 83.09999996423721,
+        "wasm_memory_bytes": 21430272,
+        "width": 1200,
+        "height": 600,
+        "elapsed_ms": 93
+      },
+      {
+        "bytes": 18362,
+        "resources": 2,
+        "protocol": 3,
+        "native_ms": 7,
+        "native_peak_rss_kib": 52572,
+        "resources_ms": 0,
+        "install_ms": 0.5,
+        "initialization_wait_ms": 0,
+        "raster_ms": 82.80000001192093,
+        "wasm_memory_bytes": 21430272,
+        "width": 1200,
+        "height": 600,
+        "elapsed_ms": 93
+      }
+    ],
+    "hot_median_ms": 91,
+    "definition": "native request enqueue to resources loaded and WASM Canvas drawn in VS Code; excludes edit debounce"
+  }
+}

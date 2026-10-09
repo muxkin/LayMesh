@@ -10,5 +10,6 @@ laymesh-core = { path = "../laymesh-core", default-features = false }
 laymesh-language.workspace = true
 serde_json.workspace = true
 wasm-bindgen = "0.2"
+kurbo = "0.13"
 
 laymesh-render = { path = "../laymesh-render", default-features = false }

@@ -56,11 +56,11 @@ exports.run=async()=>{
  assert.equal(math.plotAt(math.preparePlots({plots:[radar]}),[80,20],4),null);
  evidence.checks.push('Units, rotated/nonuniform transforms, extra axes, log/symlog/reversed/broken axes, clipping, overlapping inset, polar deg/rad/reversal/center, radar spokes and polygon boundary');
  await vscode.commands.executeCommand('laymesh.openPreview',doc.uri);
- await until(()=>host?.messages.find(m=>m.svg),'Initial preview');
- await vscode.commands.executeCommand('laymesh.openPreview',doc.uri);assert.equal(panels,1);assert.equal(host.messages.find(m=>m.svg).inspection.page.unit,'cm');
- evidence.checks.push('Open and reuse beside the editor; native canvas unit and SVG');
+ await until(()=>host?.messages.find(m=>m.displayList),'Initial preview');
+ await vscode.commands.executeCommand('laymesh.openPreview',doc.uri);assert.equal(panels,1);assert.equal(host.messages.find(m=>m.displayList).inspection.page.unit,'cm');
+ evidence.checks.push('Open and reuse beside the editor; native canvas unit and Canvas');
  if(gate){fs.writeFileSync(gate,JSON.stringify({phase:'open'}));const phase=()=>{try{return JSON.parse(fs.readFileSync(gate)).phase}catch{return null}};
-  const renderCount=()=>new Set(host.messages.filter(m=>m.svg).map(m=>m.id)).size;
+  const renderCount=()=>new Set(host.messages.filter(m=>m.displayList).map(m=>m.id)).size;
   await until(()=>phase()==='mouse-start','Mouse measurement gate',2400);await pause(500);const before=renderCount(),version=doc.version;fs.writeFileSync(gate,JSON.stringify({phase:'mouse-ready'}));
   await until(()=>phase()==='ui-verified','UI interaction gate',2400);assert.equal(doc.version,version,'UI gesture must not edit figure source');assert.equal(renderCount(),before,'Mouse must not render; messages: '+JSON.stringify(host.received));evidence.checks.push('Actual webview mouse/zoom/pan/rulers/resize do not compile');
   await vscode.workspace.getConfiguration('laymesh').update('language','en',vscode.ConfigurationTarget.Global);fs.writeFileSync(gate,JSON.stringify({phase:'english-ready'}));await until(()=>phase()==='english-verified','English UI gate',2400);
@@ -74,18 +74,18 @@ exports.run=async()=>{
  configCount=host.messages.length;fs.unlinkSync(configuration);await until(()=>host.messages.slice(configCount).find(m=>m.previewSettings?.jpeg_quality===90),'Removed project config');
  evidence.checks.push('Created/deleted project configuration refreshes effective preview quality');
  if(process.env.LAYMESH_PREVIEW_BMP){const asset=process.env.LAYMESH_PREVIEW_BMP,original=fs.readFileSync(asset),changed=Buffer.from(original),offset=changed.readUInt32LE(10);changed[offset]^=4;
-  const before=host.messages.filter(m=>m.svg).at(-1).svg;const count=host.messages.length;fs.writeFileSync(asset,changed);await until(()=>host.messages.slice(count).find(m=>m.svg&&m.svg!==before),'Changed bitmap on disk');
-  const changedCount=host.messages.length;fs.writeFileSync(asset,original);await until(()=>host.messages.slice(changedCount).find(m=>m.svg===before),'Restored bitmap on disk');evidence.checks.push('Disk bitmap modification changes resource identity and restores correctly');
+  const before=JSON.stringify(host.messages.filter(m=>m.displayList).at(-1).displayList);const count=host.messages.length;fs.writeFileSync(asset,changed);await until(()=>host.messages.slice(count).find(m=>m.displayList&&JSON.stringify(m.displayList)!==before),'Changed bitmap on disk');
+  const changedCount=host.messages.length;fs.writeFileSync(asset,original);await until(()=>host.messages.slice(changedCount).find(m=>JSON.stringify(m.displayList)===before),'Restored bitmap on disk');evidence.checks.push('Disk bitmap modification changes resource identity and restores correctly');
  }
  const dependencyDoc=await vscode.workspace.openTextDocument(dependency);let count=host.messages.length;await replace(dependencyDoc,'export top=5');
- let result=await until(()=>host.messages.slice(count).find(m=>m.svg),'Unsaved dependency');assert(fs.readFileSync(dependency,'utf8').includes('top=3'));assert(result.svg!==host.messages.find(m=>m.svg).svg);
+ let result=await until(()=>host.messages.slice(count).find(m=>m.displayList),'Unsaved dependency');assert(fs.readFileSync(dependency,'utf8').includes('top=3'));assert(JSON.stringify(result.displayList)!==JSON.stringify(host.messages.find(m=>m.displayList).displayList));
  evidence.checks.push('Unsaved imported buffer wins without changing disk');
  count=host.messages.length;await replace(doc,source+'\n???');await until(()=>host.messages.slice(count).find(m=>m.error),'Located compilation failure');
  if(gate){fs.writeFileSync(gate,JSON.stringify({phase:'english-error'}));await until(()=>JSON.parse(fs.readFileSync(gate)).phase==='error-verified','English stale error gate',2400);}
  await host.receive({type:'source'});assert.equal(vscode.window.activeTextEditor.document.uri.toString(),doc.uri.toString());
- count=host.messages.length;await replace(doc,source);await until(()=>host.messages.slice(count).find(m=>m.svg),'Recovery');
+ count=host.messages.length;await replace(doc,source);await until(()=>host.messages.slice(count).find(m=>m.displayList),'Recovery');
  evidence.checks.push('Located error jumps to source; corrected buffer recovers');
- count=host.messages.length;await replace(dependencyDoc,'export top=4');await replace(dependencyDoc,'export top=6');await until(()=>host.messages.slice(count).find(m=>m.svg),'Latest edit');assert.equal(host.messages.slice(count).filter(m=>m.svg).length,1);
+ count=host.messages.length;await replace(dependencyDoc,'export top=4');await replace(dependencyDoc,'export top=6');await until(()=>host.messages.slice(count).find(m=>m.displayList),'Latest edit');assert.equal(host.messages.slice(count).filter(m=>m.displayList).length,1);
  evidence.checks.push('Rapid edits coalesce into the latest version');
  // Hold one completed native response while a newer generation finishes first.
  const {PreviewWorker}=require(path.join(extension.extensionPath,'dist/preview-host.cjs'));
@@ -93,20 +93,20 @@ exports.run=async()=>{
  PreviewWorker.prototype.enqueue=function(job){if(hold&&job.file===file){hold=false;const done=job.done;job={...job,done:response=>{releaseOlder=()=>done(response);}};}return enqueue.call(this,job);};
  try{
   await replace(dependencyDoc,'export top=7');await until(()=>releaseOlder,'Held older result');
-  count=host.messages.length;await replace(dependencyDoc,'export top=8');await until(()=>host.messages.slice(count).find(m=>m.svg),'Newer result');
+  count=host.messages.length;await replace(dependencyDoc,'export top=8');await until(()=>host.messages.slice(count).find(m=>m.displayList),'Newer result');
   const beforeRelease=host.messages.length;releaseOlder();await pause(100);assert.equal(host.messages.length,beforeRelease,'Older completed result must be discarded');
  }finally{PreviewWorker.prototype.enqueue=enqueue;}
  evidence.checks.push('Older native response arriving after a newer generation is discarded');
  // Test the same persistent transport with a deliberately stalled executable.
- const slow=path.join(directory,'slow.cjs');fs.writeFileSync(slow,"process.stdout.write(JSON.stringify({type:'ready',protocol:1})+'\\n');process.stdin.resume();");
+ const slow=path.join(directory,'slow.cjs');fs.writeFileSync(slow,"process.stdout.write(JSON.stringify({type:'ready',protocol:1,capabilities:['display-list-v3']})+'\\n');process.stdin.resume();");
  const binary=path.join(directory,'slow');if(process.platform!=='win32'){
   const quote=s=>"'"+s.replace(/'/g,"'\\''")+"'",marker=path.join(directory,'started');
   fs.writeFileSync(binary,'#!/bin/sh\nif test -f '+quote(marker)+'; then exec '+quote(path.join(extension.extensionPath,'bin','laymesh'))+' preview --stdio; fi\n: > '+quote(marker)+'\nELECTRON_RUN_AS_NODE=1 exec '+quote(process.execPath)+' '+quote(slow)+'\n');fs.chmodSync(binary,0o755);
   const worker=new PreviewWorker(binary,{append(){}});let response;worker.enqueue({file,source,overlays:{},timeout:100,done:r=>response=r});const firstPid=worker.process.pid;await until(()=>response,'Timeout');assert(response.error.message.includes('timed out'));await until(()=>worker.ready,'Automatic restart');assert.notEqual(worker.process.pid,firstPid);
   assert(!response.error.message.includes('超时'));assert(response.error.messageZh.includes('超时'));
-  response=null;worker.enqueue({file,source,overlays:{},timeout:30000,done:r=>response=r});await until(()=>response,'Render after automatic restart');assert(response.svg);worker.dispose();assert.equal(worker.process,null);evidence.checks.push('Timeout kills isolated worker, automatically starts a new worker, and subsequent rendering succeeds');
+  response=null;worker.enqueue({file,source,overlays:{},timeout:30000,done:r=>response=r});await until(()=>response,'Render after automatic restart');assert(response.displayList);worker.dispose();assert.equal(worker.process,null);evidence.checks.push('Timeout kills isolated worker, automatically starts a new worker, and subsequent rendering succeeds');
  }
- host.panel.dispose();await pause(100);await vscode.commands.executeCommand('laymesh.openPreview',doc.uri);await until(()=>host.messages.find(m=>m.svg),'Reopen after dispose');assert.equal(panels,2);host.panel.dispose();
+ host.panel.dispose();await pause(100);await vscode.commands.executeCommand('laymesh.openPreview',doc.uri);await until(()=>host.messages.find(m=>m.displayList),'Reopen after dispose');assert.equal(panels,2);host.panel.dispose();
  evidence.checks.push('Panel disposal and fresh native worker after reopening');
  await vscode.commands.executeCommand('workbench.action.closeAllEditors');
  fs.writeFileSync(process.env.LAYMESH_PREVIEW_EVIDENCE,JSON.stringify(evidence,null,2));if(gate)fs.writeFileSync(gate,JSON.stringify({phase:'complete'}));fs.rmSync(directory,{recursive:true,force:true});

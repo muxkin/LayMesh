@@ -5,25 +5,25 @@ edition.workspace = true
 license.workspace = true
 [features]
 default = ["native"]
-native = ["dep:resvg", "dep:krilla", "dep:krilla-svg", "dep:png", "dep:ratex-katex-fonts", "dep:ttf-parser", "dep:image", "dep:tiff", "dep:webp", "dep:serde", "dep:zip", "dep:svgtypes"]
+native = ["dep:krilla", "dep:png", "dep:ratex-katex-fonts", "dep:tiff", "dep:webp", "dep:zip"]
 [dependencies]
 laymesh-core = { path = "../laymesh-core", default-features = false }
 serde_json.workspace = true
-resvg = { version = "0.47", default-features = false, features = ["text", "raster-images"], optional = true }
 krilla = { version = "0.8.2", default-features = false, features = ["raster-images"], optional = true }
-krilla-svg = { version = "=0.8.1", default-features = false, optional = true }
 png = { version = "0.18", optional = true }
 base64 = "0.22"
 ratex-katex-fonts = { version = "=0.1.14", optional = true }
-ttf-parser = { version = "0.25", optional = true }
-kurbo = "0.13"
-serde = { workspace = true, optional = true }
-image = { version = "0.25", default-features = false, features = ["png", "jpeg", "bmp", "gif", "ico", "pnm", "tga", "webp", "tiff"], optional = true }
+ttf-parser = "0.25"
+kurbo = { version = "0.13", features = ["serde"] }
+serde.workspace = true
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "bmp", "gif", "ico", "pnm", "tga", "webp", "tiff"] }
+vello_cpu = { version = "=0.3.0", default-features = false, features = ["std", "f32_pipeline"] }
+usvg = { version = "=0.47.0", default-features = false, features = ["text"] }
 tiff = { version = "=0.11.3", optional = true }
 webp = { version = "=0.3.1", default-features = false, optional = true }
 roxmltree = "0.21"
 zip = { version = "=2.4.2", default-features = false, features = ["deflate"], optional = true }
-svgtypes = { version = "0.16", optional = true }
+svgtypes = "0.16"
 [dev-dependencies]
 image = { version = "0.25", default-features = false, features = ["png", "webp", "ico", "tga", "tiff"] }
 roxmltree = "0.21"
