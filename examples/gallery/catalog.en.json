@@ -214,6 +214,18 @@
       "colors-alpha": [
         "Color spaces and alpha",
         "HEX, RGB, HSV and OKLCH share alpha and export rules."
+      ],
+      "arrows": [
+        "Shape arrow templates",
+        "Straight, arc, bent, U-turn, chevron and variable-width custom-path arrows share one closed outline and shape styling."
+      ],
+      "arrow-connections": [
+        "Arrows between anchors",
+        "Reusable shape arrows connect anchors with signed sweeps or radii and expose their logical centerline."
+      ],
+      "arrow-effects": [
+        "Arrow fills and effects",
+        "Unified arrow outlines support gradients, white borders, transparency, shadows and glow."
       ]
     }
   },

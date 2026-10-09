@@ -145,7 +145,7 @@
     },
     {
       "name": "support.function",
-      "match": "\\b(?:abs|add|add_axis|append|arc|arc_to|area|array|at|axis|band|bar|between|box|boxplot|canvas|close|cmap|cmap_names|color_scale|colorbar|colors|contour|contourf|corners|cubic_to|data|dict|ecdf|ellipse|enumerate|errorbar|extrema|formula|fuse|get|glow|group|hatch|head|heatmap|hist|hline|hsv|image|image_fill|in_space|inflections|intersections|items|keys|legend|len|line|line_to|linear_gradient|max|min|move_to|nearest|oklch|palette|path|plot|plot_style|polygon|polyline|quad_to|radial_gradient|range|ray|rect|reversed|rgb|ring|sample|scatter|sector|shadow|span|star|step|str|table|text|text_extrude|text_path|text_warp|update|values|violin|vline|with_side|zip)(?=\\s*\\()"
+      "match": "\\b(?:abs|add|add_axis|append|arc|arc_to|area|array|arrow|at|axis|band|bar|bent|between|box|boxplot|canvas|chevron|close|cmap|cmap_names|color_scale|colorbar|colors|contour|contourf|corners|cubic_to|data|dict|ecdf|ellipse|enumerate|errorbar|extrema|formula|fuse|get|glow|group|hatch|head|heatmap|hist|hline|hsv|image|image_fill|in_space|inflections|intersections|items|keys|legend|len|line|line_to|linear_gradient|max|min|move_to|nearest|oklch|palette|path|plot|plot_style|polygon|polyline|quad_to|radial_gradient|range|ray|rect|reversed|rgb|ring|sample|scatter|sector|shadow|span|star|step|str|table|text|text_extrude|text_path|text_warp|update|uturn|values|violin|vline|with_side|zip)(?=\\s*\\()"
     },
     {
       "name": "keyword.control",

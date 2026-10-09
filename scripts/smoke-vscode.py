@@ -12,7 +12,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-vscode-host-') as temp:
  if a.headless:command+=['--ozone-platform=headless']
  completed=subprocess.run(command,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,timeout=90)
  if completed.returncode or not a.output.is_file():raise RuntimeError('VS Code host verification failed:\n'+completed.stdout[-5000:])
- result=json.loads(a.output.read_text());assert len(result['tests'])==24
+ result=json.loads(a.output.read_text());assert len(result['tests'])==26
  files=[Path(__file__),ROOT/'scripts/vscode-smoke.cjs',ROOT/'extensions/vscode/src/client.cjs',ROOT/'extensions/vscode/bin'/('laymesh.exe' if os.name=='nt' else 'laymesh')]
  result['artifact_sha256']={str(p.resolve().relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
  a.output.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))

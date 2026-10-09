@@ -17,13 +17,13 @@
 
 ## 组合用法
 
-将曲线的弧长中点用作文字 target，并将 rotation 设置为该点的 tangent_angle。需要沿线与法线偏移时使用 offset_space=target；尖角先选择 incoming 或 outgoing。 线条可在 add 中用 start/end 连接物理坐标、数据点或锚点；start_offset/end_offset 分别微调两端，offset 平移整条线。每端的 *_offset_space 可选 container 或 target。
+将曲线的弧长中点用作文字 target，并将 rotation 设置为该点的 tangent_angle。需要沿线与法线偏移时使用 offset_space=target；尖角先选择 incoming 或 outgoing。 线条和形状箭头可在 add 中用 start/end 连接物理坐标、数据点或锚点；start_offset/end_offset 分别微调两端，offset 平移整个实例。每端的 *_offset_space 可选 container 或 target。
 
 <!-- example:examples/gallery/positioning/anchors.lay -->
 
 ## 常见错误与限制
 
-候选集合不能直接传给 target。空集合索引报错；连续重合和无限个最近点不会被随意抽样。self 只在 anchor 中绑定，未放置的素材不能充当目标实例。 双端点仅适用于 line，必须同时指定，且与显式 anchor/target/rotation/size 互斥；端点须属于同一容器，整体 offset_space 只接受 container。
+候选集合不能直接传给 target。空集合索引报错；连续重合和无限个最近点不会被随意抽样。self 只在 anchor 中绑定，未放置的素材不能充当目标实例。 双端点适用于 line 和形状箭头，必须同时指定，且与显式 anchor/target/rotation/size 互斥；端点须属于同一容器，整体 offset_space 只接受 container。
 
 ## 逐项功能说明
 
@@ -45,7 +45,7 @@
 
 ### add
 
-将素材放置到画布或组合中；使用 anchor/target 单点定位，或为 line 指定 start/end 双端点连接。offset 平移整个实例，同一素材可重复放置并独立覆盖样式。
+将素材放置到画布或组合中；使用 anchor/target 单点定位，或为 line 与形状箭头指定 start/end 双端点连接。offset 平移整个实例，同一素材可重复放置并独立覆盖样式。
 
 返回：已放置实例；可读取测量尺寸并引用其锚点继续定位。
 
@@ -145,7 +145,7 @@
 
 ### 双端点连接
 
-`line()` 可以先只定义样式，在 `add` 时决定起终点。两端可混合使用当前容器中的物理坐标、实例锚点、`chart.data(...)` 和已索引的几何查询锚点。
+`line()` 和 `arrow()` 可以先只定义样式，在 `add` 时决定起终点；`arrow.arc()` 的双端连接还须指定扫角或有符号半径。两端可混合使用当前容器中的物理坐标、实例锚点、`chart.data(...)` 和已索引的几何查询锚点。
 
 <!-- example:examples/gallery/positioning/line-connections.lay -->
 
@@ -175,7 +175,7 @@ page.add(dot, anchor=center,
          target=placed.ink.boundary.nearest(to=placed.bounds.top_left)[0])
 ```
 
-箭头的 `path` 包含完整逻辑中心线，末端不会被箭头头部截短。线条的 `path.bounds` 可以零高度，`ink.bounds` 计入线宽、端帽及箭头头部。本轮仅支持原生矢量几何；图片与文字继续使用 `bounds`，不提取像素或字形轮廓。
+带箭头线条的 `path` 包含完整逻辑中心线，末端不会被箭头头部截短。形状箭头的 `path` 是闭合外轮廓，其逻辑路线通过 `centerline` 查询，`.centerline.length` 返回弧长；详见[形状箭头](arrows.zh-CN.md)。线条的 `path.bounds` 可以零高度，`ink.bounds` 计入线宽、端帽及箭头头部。本轮仅支持原生矢量几何；图片与文字继续使用 `bounds`，不提取像素或字形轮廓。
 
 ### 节点、曲线段与沿途选点
 

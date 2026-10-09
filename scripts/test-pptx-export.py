@@ -105,7 +105,7 @@ def main():
             assert actual['pictures'] == 0
             assert not any('W_PPTX_RASTER' in s for s in actual['warnings'])
         if name == 'native':
-            assert actual['pictures'] == 5  # Four native pictures, one alpha-gradient fallback.
+            assert actual['pictures'] == 4  # Three pictures + alpha-gradient fallback; contain uses a shape.
             assert len(actual['media']) == 2  # Source PNG is shared, never cropped/re-encoded.
             # Two explicit groups and one formula group; font fallback can split
             # the title into multiple runs requiring one compound text group.

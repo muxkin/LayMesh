@@ -11,7 +11,8 @@ page.add(line(dx=45mm,dy=8mm,line_width=0.6mm,line_color="#1268ff",line_dash=[3m
 page.add(formula(source=r"\frac{x^2+1}{3}",font_size=18pt),offset=(133mm,25mm))
 # The same independent PNG is shared by three fills and one cropped picture.
 page.add(rect(size=(32mm,20mm),border_radius=3mm,fill=image_fill(src="../gallery/assets/sample.png",fit=cover),border_width=0),offset=(10mm,54mm))
-page.add(rect(size=(32mm,20mm),border_radius=3mm,fill=image_fill(src="../gallery/assets/sample.png",fit=contain),border_width=0),offset=(50mm,54mm))
+# A different aspect ratio makes contain's transparent margins observable.
+page.add(rect(size=(32mm,26mm),border_radius=3mm,fill=image_fill(src="../gallery/assets/sample.png",fit=contain),border_width=0),offset=(50mm,54mm))
 page.add(rect(size=(32mm,20mm),border_radius=3mm,fill=image_fill(src="../gallery/assets/sample.png",fit=stretch),border_width=0),offset=(90mm,54mm),rotation=12deg,opacity=0.7)
 page.add(image(src="../gallery/assets/sample.png"),fit=cover,size=(28mm,20mm),crop=box(offset=(0.25,0),size=(0.5,1)),offset=(135mm,54mm))
 page.add(rect(size=(60mm,20mm),fill=linear_gradient(start=(0.15,0.2),end=(0.85,0.8),stops=[(0,"#ff774480"),(1,"#1268ff80")]),border_width=0),offset=(10mm,88mm),rotation=5deg)

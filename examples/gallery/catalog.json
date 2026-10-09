@@ -284,6 +284,24 @@
           "slug": "colors-alpha",
           "title": "颜色空间与透明度",
           "description": "HEX、RGB、HSV、OKLCH 颜色共用透明度与导出规则。"
+        },
+        {
+          "group": "形状箭头",
+          "slug": "arrows",
+          "title": "形状箭头模板",
+          "description": "直箭头、弧形、折弯、回转、燕尾和自由路径共享一体式轮廓。"
+        },
+        {
+          "group": "形状箭头",
+          "slug": "arrow-connections",
+          "title": "箭头与锚点连接",
+          "description": "使用两端锚点加扫角或有符号半径，端点与中心线可再次查询。"
+        },
+        {
+          "group": "形状箭头",
+          "slug": "arrow-effects",
+          "title": "箭头样式与特效",
+          "description": "渐变、白色描边、半透明、阴影和发光应用于完整形状。"
         }
       ]
     },

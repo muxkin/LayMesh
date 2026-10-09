@@ -48,6 +48,7 @@ Asset paths below resolve relative to the `.lay` file **that defines the materia
 | `rect` | `size=(width, height)` | `fill="none"`, `border_radius=0`, stroke settings | [outlines](../examples/outlines.lay) |
 | `ellipse` | `size=(width, height)` | Fill and stroke settings; no nonzero corner radius | [basic](../examples/basic.lay) |
 | `line` | `dx/dy` or `length/angle` | Full logical centerline; zero length requires explicit angle; independent caps and `head(...)` configs; default width `0.3pt` | [Endpoints](topics/shapes.en.md) |
+| `arrow` / `arrow.arc/bent/uturn/chevron/path` | Dedicated geometry or `add(start=...,end=...)` | Closed shapes with variable width, two heads, fill, borders and effects | [Shape arrows](topics/arrows.en.md) |
 | `group` | None | Populate through `g.add(...)`; can nest and be placed repeatedly | [scripted](../examples/scripted.lay) |
 
 `font_weight` must be an integer from 100 to 900. `align` is `left`, `center`, `right`, or `justify`. With a width, text wraps at Unicode line-break opportunities and long words at grapheme boundaries; `\n` forces a break. Without width, it stays on one line except explicit breaks. A placement width can reflow the same material independently. The [typography example](../examples/typography.lay) demonstrates fonts, colored spans, inline formulas, and display formulas.
@@ -109,14 +110,14 @@ second = page.add(photo,size=(40 mm, auto), anchor=top_left,
 
 Explicit `instance.bounds/path/ink` views support indexed candidate queries, `self` source selectors, arc-length and parameter points, tangent-frame offsets and chart components. See [geometric anchors and path locations](topics/anchors.en.md).
 
-Lines expose `instance.start/end` and support placement with `anchor="start"/"end"`. Native plots expose nine data-rectangle anchors prefixed with `plot_`, plus `instance.data(x=...,y=...)` data anchors; for example, `anchor="plot_top_left"` or `target=chart.plot_center`. These anchors rotate with their instances. See [fixed data area and annotations](plotting.en.md#fixed-data-area-and-annotations).
+Filled arrows expose `.centerline` for route queries and `.centerline.length` for arc length; `.path` remains the closed outline. Lines and filled arrows expose logical `instance.start/end` and support placement with `anchor="start"/"end"`. Native plots expose nine data-rectangle anchors prefixed with `plot_`, plus `instance.data(x=...,y=...)` data anchors; for example, `anchor="plot_top_left"` or `target=chart.plot_center`. These anchors rotate with their instances. See [fixed data area and annotations](plotting.en.md#fixed-data-area-and-annotations).
 
 | Material | Additional `add` options | Rule |
 | --- | --- | --- |
 | Image | `size=(width, height)`, `fit=contain|cover|stretch`, `crop=box(offset=(x,y), size=(w,h))` | One size implies the other from the cropped aspect ratio; crop is normalized 0–1; SVG crop is unsupported |
 | Text | `size=(80, auto)` | Rewrap this placement without changing the definition |
 | Native plot | `size=(width, height)` | Reflow the outer frame while preserving fonts, strokes and markers; `plot_area` also preserves the data rectangle |
-| Rectangle, ellipse, path, group | `size=(width, height)` | Scale the placement; group children scale together |
+| Rectangle, ellipse, path, filled arrow, group | `size=(width, height)` | Scale the placement; group children scale together |
 | Formula, line | No size override | Common options still apply |
 
 Groups use local coordinates. Placing a group seals its contents; the same group can still be placed again. Nesting is limited to 128 levels and a group cannot contain itself. Crop precedes fitting: `contain` preserves the full image, `cover` clips overflow, and `stretch` may distort aspect ratio.

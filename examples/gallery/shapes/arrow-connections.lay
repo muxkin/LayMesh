@@ -1,0 +1,17 @@
+page=canvas(size=(220mm,140mm),background="#f4f7fc")
+style { text { font-family:"DejaVu Sans";font-size:10pt;color:#24324b; } arrow {fill:#087f8c;} }
+page.add(text("Anchor connections",font_size=23pt,font_weight=700),offset=(10,8))
+page.add(text("Signed sweep / signed radius. Endpoints stay on their anchors."),offset=(10,20))
+a=page.add(rect(size=(28,18),fill="#e4eaf5",border_radius=3),offset=(25,65))
+b=page.add(rect(size=(28,18),fill="#e4eaf5",border_radius=3),offset=(165,65))
+page.add(text("A",font_size=18pt,font_weight=700),anchor=center,target=a.center)
+page.add(text("B",font_size=18pt,font_weight=700),anchor=center,target=b.center)
+straight=page.add(arrow(shaft_width=(2,5),head_size=(10,12)),start=a.middle_right,end=b.middle_left)
+bow=page.add(arrow.arc(sweep_angle=95deg,shaft_width=3,head_size=(9,10),fill="#ee784b"),start=a.top_center,end=b.top_center)
+page.add(arrow.arc(radius=-100mm,shaft_width=3,head_size=(9,10),fill="#5273c5"),start=a.bottom_center,end=b.bottom_center)
+page.add(text("+95 deg"),anchor=bottom_center,target=bow.centerline.at(fraction=0.5),offset=(0,-6))
+page.add(text("radius = -100 mm"),offset=(80,118))
+for anchor_point in [straight.start,straight.end,bow.start,bow.end] {
+ page.add(ellipse(size=(2,2),fill="#24324b"),anchor=center,target=anchor_point)
+}
+centerline_length = bow.centerline.length

@@ -430,6 +430,16 @@ fn paths(node: &NodeView, e: &Engine, l: Loc) -> Result<Paths> {
         local: false,
     })
 }
+pub(crate) fn material_paths(node: &Json, e: &Engine, l: Loc) -> Result<Paths> {
+    paths(
+        &NodeView {
+            node: node.clone(),
+            transform: Affine::IDENTITY,
+        },
+        e,
+        l,
+    )
+}
 fn vector_only(node: &Json) -> bool {
     node["kind"] == "path"
         || (node["kind"] == "group"
@@ -790,6 +800,29 @@ impl Engine {
                         route: None,
                         segment: None,
                     })),
+                    "centerline" => {
+                        let recipe = &n.node["geometryRecipe"];
+                        if recipe["kind"] != "arrow" {
+                            return Err(self.error("E_GEOMETRY", "centerline 需要形状箭头实例", l));
+                        }
+                        let origin = &recipe["origin"];
+                        let tr = n.transform
+                            * node_frame(&n.node)
+                            * Affine::translate((
+                                -origin[0].as_f64().unwrap(),
+                                -origin[1].as_f64().unwrap(),
+                            ));
+                        Ok(Geometry::Path(PathView {
+                            paths: Rc::new(Paths {
+                                identity: String::new(),
+                                routes: vec![crate::arrows::recipe_route(recipe, tr)],
+                                frame: tr,
+                                local: false,
+                            }),
+                            route: None,
+                            segment: None,
+                        }))
+                    }
                     "ink" => {
                         if !vector_only(&n.node) {
                             return Err(self.error("E_GEOMETRY", "ink 仅适用于矢量几何", l));
@@ -885,6 +918,19 @@ impl Engine {
             }
             Geometry::Path(p) => match m {
                 "path" => Ok(Geometry::Path(p)),
+                "length" => {
+                    let ri = self.route_id(&p, l)?;
+                    let segments = &p.paths.routes[ri].segments;
+                    let length = if let Some(si) = p.segment {
+                        segments[si].measured(&p.paths).length(1.)
+                    } else {
+                        segments
+                            .iter()
+                            .map(|s| s.measured(&p.paths).length(1.))
+                            .sum()
+                    };
+                    Ok(Geometry::Value(V::mm(length)))
+                }
                 "bounds" => {
                     let mut ps = (*p.paths).clone();
                     if let Some(i) = p.route {

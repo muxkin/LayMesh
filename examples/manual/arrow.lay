@@ -1,0 +1,4 @@
+page=canvas(size=(85mm,70mm),background="#ffffff")
+a=page.add(arrow(length=50mm,shaft_width=(2mm,5mm),fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+centerline_length = a.centerline.length

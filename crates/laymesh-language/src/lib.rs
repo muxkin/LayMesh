@@ -330,6 +330,12 @@ fn expression_type(e: &Expr, lookup: &impl Fn(&str) -> Option<String>) -> Option
                 .map(str::to_string)
         }
         ExprKind::Call(ps, _) => {
+            if ps.len() == 2
+                && lookup(&ps[0]).is_none()
+                && entry(&ps.join(".")).is_some_and(|e| e["namespaceConstructor"] == true)
+            {
+                return Some(ps.join("."));
+            }
             if ps.len() == 1 {
                 return Some(
                     entry(&ps[0])
@@ -615,6 +621,13 @@ impl LanguageService {
             .collect()
     }
     fn callable(&self, uri: &str, offset: usize, c: &Context) -> Option<J> {
+        if c.receiver == "arrow"
+            && self
+                .resolve(uri, "arrow", offset, &mut BTreeSet::new())
+                .is_none()
+        {
+            return builtin(&format!("arrow.{}", c.name), self.en());
+        }
         if c.receiver.is_empty() {
             if let Some(s) = self.resolve(uri, &c.name, offset, &mut BTreeSet::new()) {
                 return if s.kind == "function" {
@@ -1138,7 +1151,22 @@ impl LanguageService {
             let typ = self
                 .receiver_type(uri, &receiver, offset)
                 .unwrap_or_default();
-            let names = if ["plot", "polar_plot", "radar_plot"].contains(&typ.as_str()) {
+            let names = if receiver == "arrow"
+                && self
+                    .resolve(uri, "arrow", offset, &mut BTreeSet::new())
+                    .is_none()
+            {
+                entries()
+                    .iter()
+                    .filter(|e| e["namespaceConstructor"] == true)
+                    .filter_map(|e| {
+                        e["name"]
+                            .as_str()?
+                            .strip_prefix("arrow.")
+                            .map(str::to_string)
+                    })
+                    .collect()
+            } else if ["plot", "polar_plot", "radar_plot"].contains(&typ.as_str()) {
                 entries()
                     .iter()
                     .filter_map(|e| {
@@ -1666,7 +1694,13 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                 }
             }
             ExprKind::Call(ps, args) => {
-                if ps == &["arrow"] && !names.contains("arrow") {
+                if ps == &["arrow"]
+                    && !inferred.contains_key("arrow")
+                    && args.iter().any(|(k, _)| {
+                        k.as_deref()
+                            .is_some_and(laymesh_core::migration::legacy_arrow_parameter)
+                    })
+                {
                     let edit = laymesh_core::migration::arrow_edits(source)
                         .into_iter()
                         .find(|v| v.0 == e.loc.offset);
@@ -1676,9 +1710,9 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                         to,
                         "E_API_MIGRATION",
                         if en {
-                            "arrow has been removed; use line(..., end_head=head(...))"
+                            "Legacy line-arrow parameters require line(..., end_head=head(...)); arrow now creates a filled shape"
                         } else {
-                            "arrow 已移除，使用 line(..., end_head=head(...))"
+                            "旧线条箭头参数使用 line(..., end_head=head(...))；arrow 现在创建闭合形状"
                         }
                         .into(),
                         edit.as_ref().map(|v| v.2.as_str()),
@@ -1702,22 +1736,26 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                 }
                 let last = ps.last().unwrap();
                 let typ = inferred.get(&ps[0]).map(String::as_str).unwrap_or("");
-                let surface = if ps.len() > 1 && ["plot", "polar_plot", "radar_plot"].contains(&typ)
+                let surface =
+                    if ps.len() == 2 && ps[0] == "arrow" && !inferred.contains_key("arrow") {
+                        ps.join(".")
+                    } else if ps.len() > 1 && ["plot", "polar_plot", "radar_plot"].contains(&typ) {
+                        format!("plot.{last}")
+                    } else if ps.len() > 1
+                        && typ == "instance"
+                        && ["data", "axis"].contains(&last.as_str())
+                    {
+                        format!("instance.{last}")
+                    } else if ps.len() > 1 && ["dict", "table", "cmap"].contains(&typ) {
+                        format!("{}.{last}", if typ == "table" { "dict" } else { typ })
+                    } else if ps.len() > 1 {
+                        geometry_surface(last).unwrap_or_else(|| last.clone())
+                    } else {
+                        last.clone()
+                    };
+                if let Some(api) =
+                    entry(&surface).filter(|_| ps[0] != "arrow" || !inferred.contains_key("arrow"))
                 {
-                    format!("plot.{last}")
-                } else if ps.len() > 1
-                    && typ == "instance"
-                    && ["data", "axis"].contains(&last.as_str())
-                {
-                    format!("instance.{last}")
-                } else if ps.len() > 1 && ["dict", "table", "cmap"].contains(&typ) {
-                    format!("{}.{last}", if typ == "table" { "dict" } else { typ })
-                } else if ps.len() > 1 {
-                    geometry_surface(last).unwrap_or_else(|| last.clone())
-                } else {
-                    last.clone()
-                };
-                if let Some(api) = entry(&surface) {
                     for (n, v) in args {
                         if let Some(n) = n {
                             let before = &source[e.loc.offset..v.loc.offset.min(source.len())];

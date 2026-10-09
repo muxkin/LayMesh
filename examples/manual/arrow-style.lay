@@ -1,0 +1,10 @@
+page=canvas(size=(100mm,65mm),background="#eef3f9")
+style {
+ arrow.demo {
+  fill:#087f8c; border-color:#ffffff; border-width:0.5mm;
+  shaft-width:[(0,2mm),(0.5,5mm),(1,3mm)]; heads:both;
+  head-size:8mm 9mm; start-head-size:7mm 8mm; end-head-size:9mm 10mm;
+  effects:[shadow(blur=1mm,offset=(1mm,1mm))];
+ }
+}
+page.add(arrow(length=75mm,class="demo"),offset=(10mm,25mm))

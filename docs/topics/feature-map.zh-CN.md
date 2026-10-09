@@ -275,3 +275,16 @@
 | `lcss:extrude` | [→](art-effects.zh-CN.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
 | `lcss:math_font` | [→](lcss.zh-CN.md#style-properties) | [→](../../examples/unified.lay) | [→](../../examples/language/paper.lcss) |
 | `lcss:math_text_fallback` | [→](lcss.zh-CN.md#style-properties) | [→](../../examples/unified.lay) | [→](../../examples/language/paper.lcss) |
+| `api:arrow` | [→](arrows.zh-CN.md#arrow) | [→](../../examples/manual/arrow.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `api:arrow.arc` | [→](arrows.zh-CN.md#arrow-arc) | [→](../../examples/manual/arrow-arc.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `api:arrow.bent` | [→](arrows.zh-CN.md#arrow-bent) | [→](../../examples/manual/arrow-bent.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `api:arrow.uturn` | [→](arrows.zh-CN.md#arrow-uturn) | [→](../../examples/manual/arrow-uturn.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `api:arrow.chevron` | [→](arrows.zh-CN.md#arrow-chevron) | [→](../../examples/manual/arrow-chevron.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `api:arrow.path` | [→](arrows.zh-CN.md#arrow-path) | [→](../../examples/manual/arrow-path.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `lcss:shaft_width` | [→](arrows.zh-CN.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
+| `lcss:heads` | [→](arrows.zh-CN.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
+| `lcss:head_size` | [→](arrows.zh-CN.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
+| `lcss:start_head_size` | [→](arrows.zh-CN.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
+| `lcss:end_head_size` | [→](arrows.zh-CN.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
+| `geometry:instance.centerline` | [→](arrows.zh-CN.md#centerline) | [→](../../examples/manual/arrow.lay) | [→](../../examples/gallery/shapes/arrow-connections.lay) |
+| `geometry:geometry_path.length` | [→](arrows.zh-CN.md#centerline) | [→](../../examples/manual/arrow.lay) | [→](../../examples/gallery/shapes/arrow-connections.lay) |

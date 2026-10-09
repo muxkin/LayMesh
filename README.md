@@ -8,11 +8,11 @@
 
 [展示图源码](examples/showcase.lay) · [科研绘图示例](docs/gallery/plots.zh-CN.md)
 
-[可编辑 PPTX 导出](docs/topics/export.zh-CN.md#pptx-可编辑导出) · [艺术字、阴影与发光](docs/topics/art-effects.zh-CN.md) · [更新说明](release/notes/0.5.0.md)
+[可编辑 PPTX 导出](docs/topics/export.zh-CN.md#pptx-可编辑导出) · [艺术字、阴影与发光](docs/topics/art-effects.zh-CN.md) · [更新说明](release/notes/0.5.1.md)
 
 ## VS Code（推荐）
 
-在扩展面板安装 [LayMesh（发布者 Hyacine）](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language)，或通过 **Extensions: Install from VSIX / 从 VSIX 安装** 安装对应平台的包。**Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon 的 0.5.0 VSIX 均内置原生引擎，无需另装 Python、Rust 或 npm。** [下载平台安装包](https://github.com/muxkin/LayMesh/releases/tag/v0.5.0)。Remote SSH 场景安装与远程扩展宿主匹配的平台包。
+在扩展面板安装 [LayMesh（发布者 Hyacine）](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language)，或通过 **Extensions: Install from VSIX / 从 VSIX 安装** 安装对应平台的包。**Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon 的 0.5.1 VSIX 均内置原生引擎，无需另装 Python、Rust 或 npm。** [下载平台安装包](https://github.com/muxkin/LayMesh/releases/tag/v0.5.1)。Remote SSH 场景安装与远程扩展宿主匹配的平台包。
 
 打开可信任的本地或 Remote SSH 工作文件夹，将下面源码保存为 `figure.lay`：
 
@@ -26,7 +26,7 @@ page.add(rec, offset=(0.1cm, 0.1cm))
 
 ## Python 与 CLI 安装
 
-需要 **Python 3.10+**。本次源码版本为 **`0.5.0`**，Python 包、Rust 引擎和 VS Code 扩展同步版本号，新增可编辑 PPTX 导出及编辑器文件图标、代码格式化。稳定标签触发审核包构建，批准 PyPI 环境后上传并生成 GitHub Release；当前已公开版本以 PyPI 为准。从 [PyPI](https://pypi.org/project/laymesh/) 安装：
+需要 **Python 3.10+**。本次源码版本为 **`0.5.1`**，Python 包、Rust 引擎和 VS Code 扩展同步版本号，新增形状箭头与锚点连接，改进公式排版并修复 PPTX 图片适配。稳定标签触发审核包构建，批准 PyPI 环境后上传并生成 GitHub Release；当前已公开版本以 PyPI 为准。从 [PyPI](https://pypi.org/project/laymesh/) 安装：
 
 ```sh
 python -m pip install laymesh

@@ -6,6 +6,7 @@ use crate::{
 impl Engine {
     pub(crate) fn validate_definition(&mut self, name: &str, a: &Args, l: Loc) -> Result<()> {
         self.validate_art(name, a, l)?;
+        crate::arrows::validate(self, name, a, l)?;
         if name == "line" && crate::endpoints::has_line_geometry(a) {
             crate::endpoints::line_vector(self, a, l)?;
         }

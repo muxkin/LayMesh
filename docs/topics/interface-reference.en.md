@@ -843,7 +843,7 @@ page.add(ellipse(size=(2mm,2mm),fill="#e36b70"),anchor=center,target=chart.axis(
 
 ## add
 
-Place material in a canvas or group using anchor/target, or connect two start/end points with line material. Offset translates the entire instance. Reuse material with independent style overrides.
+Place material in a canvas or group using anchor/target, or connect two start/end points with line or filled-arrow material. Offset translates the entire instance. Reuse material with independent style overrides.
 
 Returns: A placed instance with measured dimensions and anchors for subsequent placement.
 
@@ -890,13 +890,18 @@ Required: `material`.
 | `line_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `line_opacity` | value | Independent line opacity, 0–1 | 1 |
 | `offset_space` | "container" \| "target" | Offset in container coordinates, or target tangent and left normal.; line connections accept container only, with separate start_offset_space/end_offset_space for endpoint frames<br>`container`: Offsets follow the current container axes<br>`target`: Offsets follow the target tangent and left normal | container |
-| `start` | anchor \| (length, length) | Start of a line connection: physical coordinates or an anchor in the current container. Both start/end are required, exclusive with anchor/target/rotation/size; overrides material geometry for this placement | — |
-| `end` | anchor \| (length, length) | End of a line connection: physical coordinates or an anchor in the current container. Both start/end are required, exclusive with anchor/target/rotation/size; overrides material geometry for this placement | — |
+| `start` | anchor \| (length, length) | Coordinate or anchor for a line/arrow endpoint connection | — |
+| `end` | anchor \| (length, length) | Coordinate or anchor for a line/arrow endpoint connection | — |
 | `start_offset` | (length, length) / canvas unit | Independent physical offset of the start, followed by the overall offset | (0, 0) |
 | `end_offset` | (length, length) / canvas unit | Independent physical offset of the end, followed by the overall offset | (0, 0) |
 | `start_offset_space` | "container" \| "target" | Direction frame for the start offset; target requires a path anchor with an unambiguous tangent<br>`container`: Along the current container axes<br>`target`: Along this path anchor tangent and left normal | container |
 | `end_offset_space` | "container" \| "target" | Direction frame for the end offset; target requires a path anchor with an unambiguous tangent<br>`container`: Along the current container axes<br>`target`: Along this path anchor tangent and left normal | container |
 | `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation | 3mm |
+| `heads` | "start" \| "end" \| "both" | Head endpoints; chevrons support one head only<br>`start`: Start head<br>`end`: End head<br>`both`: Both heads | end |
+| `head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `end_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
 
 ### Minimal complete example
 
@@ -3700,6 +3705,245 @@ page.add(text("PERSPECTIVE",font_family=font,font_size=26pt,font_weight=700,warp
 
 [Concepts and common errors](art-effects.en.md#text_extrude) · [Composition source](../../examples/effects/art-text.lay)
 
+## arrow
+
+Create a reusable filled straight arrow. Connect anchors using start/end in add, and style with fill, border_* and effects.
+
+Returns: Reusable filled arrow material.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `length` | length / canvas unit | Nonnegative line length; mutually exclusive with dx/dy | — |
+| `angle` | angle / deg | Local direction: 0 right, 90 down; required explicitly for zero length | 0deg |
+| `dx` | length / canvas unit | Horizontal line displacement; requires dy, exclusive with length/angle | — |
+| `dy` | length / canvas unit | Vertical line displacement; requires dx, exclusive with length/angle | — |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation | 3mm |
+| `heads` | "start" \| "end" \| "both" | Head endpoints; chevrons support one head only<br>`start`: Start head<br>`end`: End head<br>`both`: Both heads | end |
+| `head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `end_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `class` | string | Space-separated LCSS class names | "" |
+| `fill` | paint | Interior color, gradient, pattern or image paint | #000000 |
+| `border_color` | color | Closed-outline color; none disables the border | none |
+| `border_width` | length / pt | Closed-outline width; unitless values are pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | Border line pattern, independent of fill<br>`none`: Do not draw this item<br>`solid`: Continuous solid stroke<br>`dashed`: Dashed stroke; explicit dash values override the pattern<br>`dotted`: Dotted stroke<br>`dash_dot`: Dash-dot stroke<br>`double`: Double compound stroke<br>`triple`: Triple compound stroke | solid |
+| `border_dash` | length[] / pt | Alternating border segments and gaps, in pairs | — |
+| `border_dash_offset` | length / pt | Border dash phase; unitless values are pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | Outline dash endpoint shape<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
+| `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
+| `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(85mm,70mm),background="#ffffff")
+a=page.add(arrow(length=50mm,shaft_width=(2mm,5mm),fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+centerline_length = a.centerline.length
+```
+
+[Concepts and common errors](arrows.en.md#arrow) · [Composition source](../../examples/gallery/shapes/arrows.lay)
+
+## arrow.arc
+
+Append straight triangular heads along an arc shaft’s endpoint tangents. The total sweep includes heads; connections solve for the complete endpoints.
+
+Returns: Reusable filled arrow material.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `radius` | length / canvas unit | Radius of the arc shaft centerline; positive locally, signed for clockwise/counterclockwise minor connections. Endpoint constraints include heads | — |
+| `start_angle` | angle | Polar angle of the final logical start around the circle center; solved from endpoints for connections | 0deg |
+| `sweep_angle` | angle | Total polar sweep including heads; positive clockwise, 0 < absolute value < 360deg, with positive remaining shaft sweep | — |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation | 3mm |
+| `heads` | "start" \| "end" \| "both" | Head endpoints; chevrons support one head only<br>`start`: Start head<br>`end`: End head<br>`both`: Both heads | end |
+| `head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `end_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `class` | string | Space-separated LCSS class names | "" |
+| `fill` | paint | Interior color, gradient, pattern or image paint | #000000 |
+| `border_color` | color | Closed-outline color; none disables the border | none |
+| `border_width` | length / pt | Closed-outline width; unitless values are pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | Border line pattern, independent of fill<br>`none`: Do not draw this item<br>`solid`: Continuous solid stroke<br>`dashed`: Dashed stroke; explicit dash values override the pattern<br>`dotted`: Dotted stroke<br>`dash_dot`: Dash-dot stroke<br>`double`: Double compound stroke<br>`triple`: Triple compound stroke | solid |
+| `border_dash` | length[] / pt | Alternating border segments and gaps, in pairs | — |
+| `border_dash_offset` | length / pt | Border dash phase; unitless values are pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | Outline dash endpoint shape<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
+| `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
+| `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(150mm,95mm),background="#ffffff")
+a=page.add(arrow.arc(radius=22mm,start_angle=0deg,sweep_angle=240deg,fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+# Signed-radius endpoint connections select clockwise / counterclockwise minor arcs.
+page.add(arrow.arc(radius=45mm,fill="#ee784b"),start=(75mm,40mm),end=(135mm,40mm))
+page.add(arrow.arc(radius=-45mm,fill="#5273c5"),start=(75mm,60mm),end=(135mm,60mm))
+```
+
+[Concepts and common errors](arrows.en.md#arrow-arc) · [Composition source](../../examples/gallery/shapes/arrows.lay)
+
+## arrow.bent
+
+Create an L-shaped arrow with centerline span and corner radius, optionally connected between anchors.
+
+Returns: Reusable filled arrow material.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `span` | (length,length) / canvas unit | Horizontal and vertical centerline span | (30mm,20mm) |
+| `corner_radius` | length / canvas unit | Centerline corner radius; zero makes a sharp corner | min(span)/4 |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation | 3mm |
+| `heads` | "start" \| "end" \| "both" | Head endpoints; chevrons support one head only<br>`start`: Start head<br>`end`: End head<br>`both`: Both heads | end |
+| `head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `end_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `class` | string | Space-separated LCSS class names | "" |
+| `fill` | paint | Interior color, gradient, pattern or image paint | #000000 |
+| `border_color` | color | Closed-outline color; none disables the border | none |
+| `border_width` | length / pt | Closed-outline width; unitless values are pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | Border line pattern, independent of fill<br>`none`: Do not draw this item<br>`solid`: Continuous solid stroke<br>`dashed`: Dashed stroke; explicit dash values override the pattern<br>`dotted`: Dotted stroke<br>`dash_dot`: Dash-dot stroke<br>`double`: Double compound stroke<br>`triple`: Triple compound stroke | solid |
+| `border_dash` | length[] / pt | Alternating border segments and gaps, in pairs | — |
+| `border_dash_offset` | length / pt | Border dash phase; unitless values are pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | Outline dash endpoint shape<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
+| `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
+| `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(85mm,70mm),background="#ffffff")
+a=page.add(arrow.bent(span=(40mm,25mm),corner_radius=8mm,fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+```
+
+[Concepts and common errors](arrows.en.md#arrow-bent) · [Composition source](../../examples/gallery/shapes/arrows.lay)
+
+## arrow.uturn
+
+Create a U-turn arrow. Endpoint connections transform its centerline while retaining physical shaft and head dimensions.
+
+Returns: Reusable filled arrow material.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `span` | (length,length) / canvas unit | Horizontal and vertical centerline span | (30mm,20mm) |
+| `corner_radius` | length / canvas unit | Centerline corner radius; zero makes a sharp corner | min(span)/4 |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation | 3mm |
+| `heads` | "start" \| "end" \| "both" | Head endpoints; chevrons support one head only<br>`start`: Start head<br>`end`: End head<br>`both`: Both heads | end |
+| `head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `end_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `class` | string | Space-separated LCSS class names | "" |
+| `fill` | paint | Interior color, gradient, pattern or image paint | #000000 |
+| `border_color` | color | Closed-outline color; none disables the border | none |
+| `border_width` | length / pt | Closed-outline width; unitless values are pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | Border line pattern, independent of fill<br>`none`: Do not draw this item<br>`solid`: Continuous solid stroke<br>`dashed`: Dashed stroke; explicit dash values override the pattern<br>`dotted`: Dotted stroke<br>`dash_dot`: Dash-dot stroke<br>`double`: Double compound stroke<br>`triple`: Triple compound stroke | solid |
+| `border_dash` | length[] / pt | Alternating border segments and gaps, in pairs | — |
+| `border_dash_offset` | length / pt | Border dash phase; unitless values are pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | Outline dash endpoint shape<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
+| `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
+| `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(85mm,70mm),background="#ffffff")
+a=page.add(arrow.uturn(span=(35mm,25mm),heads=both,fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+```
+
+[Concepts and common errors](arrows.en.md#arrow-uturn) · [Composition source](../../examples/gallery/shapes/arrows.lay)
+
+## arrow.chevron
+
+Create a single-headed notched arrow whose tail and shaft share one continuous closed silhouette.
+
+Returns: Reusable filled arrow material.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `length` | length / canvas unit | Nonnegative line length; mutually exclusive with dx/dy | — |
+| `angle` | angle / deg | Local direction: 0 right, 90 down; required explicitly for zero length | 0deg |
+| `dx` | length / canvas unit | Horizontal line displacement; requires dy, exclusive with length/angle | — |
+| `dy` | length / canvas unit | Vertical line displacement; requires dx, exclusive with length/angle | — |
+| `notch_depth` | length / canvas unit | Notch depth at the unheaded tail | tail shaft width |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation | 3mm |
+| `heads` | "start" \| "end" \| "both" | Head endpoints; chevrons support one head only<br>`start`: Start head<br>`end`: End head<br>`both`: Both heads | end |
+| `head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `end_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `class` | string | Space-separated LCSS class names | "" |
+| `fill` | paint | Interior color, gradient, pattern or image paint | #000000 |
+| `border_color` | color | Closed-outline color; none disables the border | none |
+| `border_width` | length / pt | Closed-outline width; unitless values are pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | Border line pattern, independent of fill<br>`none`: Do not draw this item<br>`solid`: Continuous solid stroke<br>`dashed`: Dashed stroke; explicit dash values override the pattern<br>`dotted`: Dotted stroke<br>`dash_dot`: Dash-dot stroke<br>`double`: Double compound stroke<br>`triple`: Triple compound stroke | solid |
+| `border_dash` | length[] / pt | Alternating border segments and gaps, in pairs | — |
+| `border_dash_offset` | length / pt | Border dash phase; unitless values are pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | Outline dash endpoint shape<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
+| `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
+| `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(85mm,70mm),background="#ffffff")
+a=page.add(arrow.chevron(length=50mm,shaft_width=5mm,fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+```
+
+[Concepts and common errors](arrows.en.md#arrow-chevron) · [Composition source](../../examples/gallery/shapes/arrows.lay)
+
+## arrow.path
+
+Preserve a complete custom open path as the shaft and append straight triangular heads along its outward endpoint tangents; supports variable width and independent head sizes.
+
+Returns: Reusable filled arrow material.
+
+Required: `path`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `path` | material | One open path material with its original curve segments preserved; source endpoints are necks and tips extend outward | — |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation | 3mm |
+| `heads` | "start" \| "end" \| "both" | Head endpoints; chevrons support one head only<br>`start`: Start head<br>`end`: End head<br>`both`: Both heads | end |
+| `head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `end_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `class` | string | Space-separated LCSS class names | "" |
+| `fill` | paint | Interior color, gradient, pattern or image paint | #000000 |
+| `border_color` | color | Closed-outline color; none disables the border | none |
+| `border_width` | length / pt | Closed-outline width; unitless values are pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | Border line pattern, independent of fill<br>`none`: Do not draw this item<br>`solid`: Continuous solid stroke<br>`dashed`: Dashed stroke; explicit dash values override the pattern<br>`dotted`: Dotted stroke<br>`dash_dot`: Dash-dot stroke<br>`double`: Double compound stroke<br>`triple`: Triple compound stroke | solid |
+| `border_dash` | length[] / pt | Alternating border segments and gaps, in pairs | — |
+| `border_dash_offset` | length / pt | Border dash phase; unitless values are pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | Outline dash endpoint shape<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
+| `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
+| `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(85mm,70mm),background="#ffffff")
+a=page.add(arrow.path(path=path(commands=[move_to(0,20),cubic_to(15,20,25,0,50,0)]),shaft_width=[(0,2mm),(0.5,5mm),(1,3mm)],fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+```
+
+[Concepts and common errors](arrows.en.md#arrow-path) · [Composition source](../../examples/gallery/shapes/arrows.lay)
+
 ## Geometry view types
 
 [Anchors and path queries](anchors.en.md)
@@ -3724,6 +3968,7 @@ Explicit geometry views of a placed instance.
 | `ink` | `ink` |
 | `plot_area` | `component` |
 | `axes` | `axes` |
+| `centerline` | `geometry_path` |
 
 ### component
 
@@ -3794,6 +4039,7 @@ The nine short names refer to `bounds`. Use geometric queries to get a point on 
 | `controls` | `control_nodes` |
 | `start` | `path_anchor` |
 | `end` | `path_anchor` |
+| `length` | `length` |
 | `at(...)` | `path_anchor` |
 | `nearest(...)` | `anchor_collection` |
 | `extrema(...)` | `anchor_collection` |

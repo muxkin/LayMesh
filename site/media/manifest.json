@@ -10,7 +10,7 @@
     "version": 2,
     "engine": "rust-ratex"
   },
-  "engine": "91c783339fd38ba4ed3c9471d84ceff45ce3c85b62b5bef607a28af4a4d4be92",
+  "engine": "131e65f8fbb37a7308662c9e7911782a5ee297d3676be28fe6f82afe523ef7e5",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -1141,6 +1141,84 @@
         }
       ]
     },
+    "examples/gallery/shapes/arrows.lay": {
+      "fingerprint": "716337b9296cd739a11a381514ec7f76b41175941d810c7f654f2a8faa4a29a0",
+      "dependencies": [
+        "examples/gallery/shapes/arrows.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-arrows-960.webp",
+          "width": 960,
+          "height": 640,
+          "sha256": "c23cdd13f4f0759ce6c7b762bd744469f1217138c2e68c7a2605c53fccd6c980"
+        },
+        {
+          "file": "site/media/gallery-shapes-arrows-1920.webp",
+          "width": 1920,
+          "height": 1280,
+          "sha256": "3683299048841b0e90e031fbbbd9585036ad9240130546394dd1214777efe5c9"
+        },
+        {
+          "file": "site/media/gallery-shapes-arrows-3840.webp",
+          "width": 3840,
+          "height": 2560,
+          "sha256": "91426bbc6c7ba38a591242710e9b4e1f619b3decefadda0e53ff227e24e3f27a"
+        }
+      ]
+    },
+    "examples/gallery/shapes/arrow-connections.lay": {
+      "fingerprint": "75b18644145fc1e983fd8a514dff9b3858526ab16fed9d124860adb08dfcd46d",
+      "dependencies": [
+        "examples/gallery/shapes/arrow-connections.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-arrow-connections-960.webp",
+          "width": 960,
+          "height": 611,
+          "sha256": "bf993110b09e8ccb731b65578df4be03b801257f3970a110f63a35c8b73cf20c"
+        },
+        {
+          "file": "site/media/gallery-shapes-arrow-connections-1920.webp",
+          "width": 1920,
+          "height": 1222,
+          "sha256": "4f410b18708b1eed74fc771a4fae8f4c5a7a4f5cc95a33b59e2773d485e81661"
+        },
+        {
+          "file": "site/media/gallery-shapes-arrow-connections-3840.webp",
+          "width": 3840,
+          "height": 2444,
+          "sha256": "6521e67c07758710cf44135e06304896138305fce41d76bac9cf7d5e3b283d3a"
+        }
+      ]
+    },
+    "examples/gallery/shapes/arrow-effects.lay": {
+      "fingerprint": "a7b017a58114949659e0ba2119b7bb425f419a02c235f1df49f2652942810e7d",
+      "dependencies": [
+        "examples/gallery/shapes/arrow-effects.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-shapes-arrow-effects-960.webp",
+          "width": 960,
+          "height": 576,
+          "sha256": "fe91484d67eb6040f47147d818c6a38fff21a669ce063fe8fcb1c5be988a2f31"
+        },
+        {
+          "file": "site/media/gallery-shapes-arrow-effects-1920.webp",
+          "width": 1920,
+          "height": 1152,
+          "sha256": "c14714b4c8827b4e466fa7243d66cde066603905cd7e3e9fd88dc58e2a1a7cf4"
+        },
+        {
+          "file": "site/media/gallery-shapes-arrow-effects-3840.webp",
+          "width": 3840,
+          "height": 2304,
+          "sha256": "006af0376cef23ddf436b1c0882522cfee6db30706cc05dd52a71aa69205e3b1"
+        }
+      ]
+    },
     "examples/gallery/typography/font.lay": {
       "fingerprint": "1e05a4cc8cc8e70e52898260b3c9b663b7a6096dfc0a6aa0ea85cfa5388988fe",
       "dependencies": [
@@ -1826,7 +1904,7 @@
       ]
     },
     "examples/export/pptx-native.lay": {
-      "fingerprint": "7dbb1acbecbeb5896e0836f1b3f44981858ca5d02f661c5bcc770dec5c6fc7ed",
+      "fingerprint": "974715968fdcde94e3c81686a386987e463eb7d10637bd10035c0cf9861531c4",
       "dependencies": [
         "examples/export/pptx-native.lay",
         "examples/gallery/assets/sample.png"
@@ -1836,19 +1914,19 @@
           "file": "site/media/export-pptx-native-960.webp",
           "width": 960,
           "height": 640,
-          "sha256": "88f89f4bf2d0f0faf0ca97e768586d2732d93c052900815746544d04536b7c90"
+          "sha256": "3f662b3d74543c8703a0a9d9e7044b146b4d7dc5d563bd74f6a20ed24e48a535"
         },
         {
           "file": "site/media/export-pptx-native-1920.webp",
           "width": 1920,
           "height": 1280,
-          "sha256": "90ebd0eeed533b74da4ec2bb76702f28d4ee0cd8d50f01665b0b4e0c0477eed1"
+          "sha256": "bc601b768e234b94a621e353b61860d4ba7dbfee2e199bfddfa9e24e3cafb39c"
         },
         {
           "file": "site/media/export-pptx-native-3840.webp",
           "width": 3840,
           "height": 2560,
-          "sha256": "a617733ec117a59d8aa146169481309e2478035812300ddec34dd580b6afe758"
+          "sha256": "5c085d6099a3663d952e3f2cbbc4e2734776bd9d0a30148fefdde879d40a2717"
         }
       ]
     },
@@ -2164,6 +2242,188 @@
           "width": 3840,
           "height": 2880,
           "sha256": "759b56dfa3caf3b49e7ff114d9bd7f291742b275dfdda1cfe025585011122b35"
+        }
+      ]
+    },
+    "examples/manual/arrow-arc.lay": {
+      "fingerprint": "6fdec93ec744812d3904af5ff98470f6898951794a6c5f634e63f4613aa2f652",
+      "dependencies": [
+        "examples/manual/arrow-arc.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-arrow-arc-960.webp",
+          "width": 960,
+          "height": 608,
+          "sha256": "4a498e1ed525d83d2d9a8e16b8b454170d5dc7592fa51494bddfc976cf8fd086"
+        },
+        {
+          "file": "site/media/manual-arrow-arc-1920.webp",
+          "width": 1920,
+          "height": 1216,
+          "sha256": "332edbd53ecbecf154f6e700a45eb431c5c831f68f53a7ee303b361166e69380"
+        },
+        {
+          "file": "site/media/manual-arrow-arc-3840.webp",
+          "width": 3840,
+          "height": 2432,
+          "sha256": "369af2f3914e9262ad5850449938c33e3e7ccdba1fcc65d696b1b57e0a23fe3f"
+        }
+      ]
+    },
+    "examples/manual/arrow-bent.lay": {
+      "fingerprint": "f260d2d79054b54d2d41b514093e0eadf2a102ef4d4e90293d3b93b2e1abebf0",
+      "dependencies": [
+        "examples/manual/arrow-bent.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-arrow-bent-960.webp",
+          "width": 960,
+          "height": 790,
+          "sha256": "39de5e08e7710feee0036e01da9b4c01241c054b9eded48fce066bf40f73c303"
+        },
+        {
+          "file": "site/media/manual-arrow-bent-1920.webp",
+          "width": 1920,
+          "height": 1581,
+          "sha256": "a727bc52c0ff6148c321d62288993dde0e821876a673469034a8311e5f2fca68"
+        },
+        {
+          "file": "site/media/manual-arrow-bent-3840.webp",
+          "width": 3840,
+          "height": 3162,
+          "sha256": "9b598debde69ef29a60a51e7337e2f81171fe1d5373bc8e401f0ef99499e80ff"
+        }
+      ]
+    },
+    "examples/manual/arrow-chevron.lay": {
+      "fingerprint": "de296ad4ba76e5a63c93d9b69a543b5e0b9d9280bb0fa7d66d805ce987e69e41",
+      "dependencies": [
+        "examples/manual/arrow-chevron.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-arrow-chevron-960.webp",
+          "width": 960,
+          "height": 790,
+          "sha256": "d60f98447138c83172cc2c4e35f897fb398241340c3beaf6f06da48d574db582"
+        },
+        {
+          "file": "site/media/manual-arrow-chevron-1920.webp",
+          "width": 1920,
+          "height": 1581,
+          "sha256": "a4963c98a1c7a4dd68005640556e2bbc67a674ca6f5f46d89d278bffbec66545"
+        },
+        {
+          "file": "site/media/manual-arrow-chevron-3840.webp",
+          "width": 3840,
+          "height": 3162,
+          "sha256": "c8b1a893223389d6f78b9fe251d9e69119299b46a4eb8876474efc2b37f82321"
+        }
+      ]
+    },
+    "examples/manual/arrow-path.lay": {
+      "fingerprint": "b937273fa778cad31bbd56f2985f08d926dae2fb560aa340ede4074fd49def96",
+      "dependencies": [
+        "examples/manual/arrow-path.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-arrow-path-960.webp",
+          "width": 960,
+          "height": 790,
+          "sha256": "2a066c4e422596a9bd2f4d7452888c5487a52f02b79c5859fff022812f3b61c0"
+        },
+        {
+          "file": "site/media/manual-arrow-path-1920.webp",
+          "width": 1920,
+          "height": 1581,
+          "sha256": "d7b7fcf9f6640f1050253a3d02ed18d404f331bb264e49bce604ced6cef2e0a5"
+        },
+        {
+          "file": "site/media/manual-arrow-path-3840.webp",
+          "width": 3840,
+          "height": 3162,
+          "sha256": "bda00a9b576919437fc3360ef9868f42e295c0c494fee0605c5a2b4a3ca12209"
+        }
+      ]
+    },
+    "examples/manual/arrow-style.lay": {
+      "fingerprint": "7202dc6fb58364c46d8f3d2dfeb1881675d9b84fc06f0c73a8995aa81460fa08",
+      "dependencies": [
+        "examples/manual/arrow-style.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-arrow-style-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "9614327ecc20d64e11160eb9d866e46306c5eec57458538ad7b39c2f778a2007"
+        },
+        {
+          "file": "site/media/manual-arrow-style-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "6c8794da0f21a358b167435fb864f47398cacc3c3d46a4204a8ceb01dd74ff4d"
+        },
+        {
+          "file": "site/media/manual-arrow-style-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "e41b290a2c806cbe590df7f66da667648f3ef45a83f5dde12bd15b54b1879c1d"
+        }
+      ]
+    },
+    "examples/manual/arrow-uturn.lay": {
+      "fingerprint": "239ba9e74797793d96cac54ff0f2b2cd37e0b4668d3b1ce7af8b72128ae64610",
+      "dependencies": [
+        "examples/manual/arrow-uturn.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-arrow-uturn-960.webp",
+          "width": 960,
+          "height": 790,
+          "sha256": "b012469fde732a3fa90b8e6038b0b19eda40e308190dc8c8377d316cd3fe9087"
+        },
+        {
+          "file": "site/media/manual-arrow-uturn-1920.webp",
+          "width": 1920,
+          "height": 1581,
+          "sha256": "273234a3ff725d79fe5aa6dcbf8177323797263f0ef4fca5d681ac084dacdbf8"
+        },
+        {
+          "file": "site/media/manual-arrow-uturn-3840.webp",
+          "width": 3840,
+          "height": 3162,
+          "sha256": "69b14d919b888b577caea664ad1f90bdcd0b87af2b87d981dc03d97499bdeb9a"
+        }
+      ]
+    },
+    "examples/manual/arrow.lay": {
+      "fingerprint": "79ded90eb46b07e8955625022d4e8a83e95ec521d84db88b17328a72d9dc7a77",
+      "dependencies": [
+        "examples/manual/arrow.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-arrow-960.webp",
+          "width": 960,
+          "height": 790,
+          "sha256": "9a292915a0efaf83fe862cec86a107f181bed168f3a52d4023e474f710e328f2"
+        },
+        {
+          "file": "site/media/manual-arrow-1920.webp",
+          "width": 1920,
+          "height": 1581,
+          "sha256": "6af12e008a91b38c889819d23d030bae77abd09aaeda2dd33efd362408c752f6"
+        },
+        {
+          "file": "site/media/manual-arrow-3840.webp",
+          "width": 3840,
+          "height": 3162,
+          "sha256": "c85f1f8bc9b8887d2e67b3e89596a0a4b8c4680ceed417e17d7c5b5c4ab01acb"
         }
       ]
     },

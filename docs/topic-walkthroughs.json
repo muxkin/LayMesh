@@ -38,10 +38,10 @@
   "anchors": {
     "conceptZh": "定位关系需要明确自身选哪个点、目标选哪个点、额外移动多少。默认九点属于布局框，圆角矩形和椭圆的框角通常不在轮廓上。需要轮廓点时使用 path 或 ink.boundary 查询并显式索引候选。",
     "conceptEn": "Placement states which source point meets which target point and how much offset to add. Nine-point defaults belong to layout bounds. Rounded-rectangle and ellipse box corners often lie off the outline; use path or ink.boundary queries and explicitly index candidates.",
-    "compositionZh": "将曲线的弧长中点用作文字 target，并将 rotation 设置为该点的 tangent_angle。需要沿线与法线偏移时使用 offset_space=target；尖角先选择 incoming 或 outgoing。 线条可在 add 中用 start/end 连接物理坐标、数据点或锚点；start_offset/end_offset 分别微调两端，offset 平移整条线。每端的 *_offset_space 可选 container 或 target。",
-    "compositionEn": "Target a curve’s arc-length midpoint with text and use its tangent_angle for rotation. offset_space=target applies tangent/normal offsets; choose incoming or outgoing at a corner first. Connect physical coordinates, data points or anchors with start/end in add. start_offset/end_offset adjust each endpoint, while offset translates the whole line. Each endpoint frame may be container or target.",
-    "errorsZh": "候选集合不能直接传给 target。空集合索引报错；连续重合和无限个最近点不会被随意抽样。self 只在 anchor 中绑定，未放置的素材不能充当目标实例。 双端点仅适用于 line，必须同时指定，且与显式 anchor/target/rotation/size 互斥；端点须属于同一容器，整体 offset_space 只接受 container。",
-    "errorsEn": "A candidate collection cannot be passed directly to target. Indexing an empty collection errors; continuous overlap and infinitely many nearest points are not arbitrarily sampled. self binds only in anchor, and unplaced material cannot serve as a target. Connections require line material and both endpoints, exclusive with explicit anchor/target/rotation/size. Endpoints belong to the same container; overall offset_space accepts container only.",
+    "compositionZh": "将曲线的弧长中点用作文字 target，并将 rotation 设置为该点的 tangent_angle。需要沿线与法线偏移时使用 offset_space=target；尖角先选择 incoming 或 outgoing。 线条和形状箭头可在 add 中用 start/end 连接物理坐标、数据点或锚点；start_offset/end_offset 分别微调两端，offset 平移整个实例。每端的 *_offset_space 可选 container 或 target。",
+    "compositionEn": "Target a curve’s arc-length midpoint with text and use its tangent_angle for rotation. offset_space=target applies tangent/normal offsets; choose incoming or outgoing at a corner first. Connect physical coordinates, data points or anchors with start/end in add. start_offset/end_offset adjust each endpoint, while offset translates the whole instance. Each endpoint frame may be container or target.",
+    "errorsZh": "候选集合不能直接传给 target。空集合索引报错；连续重合和无限个最近点不会被随意抽样。self 只在 anchor 中绑定，未放置的素材不能充当目标实例。 双端点适用于 line 和形状箭头，必须同时指定，且与显式 anchor/target/rotation/size 互斥；端点须属于同一容器，整体 offset_space 只接受 container。",
+    "errorsEn": "A candidate collection cannot be passed directly to target. Indexing an empty collection errors; continuous overlap and infinitely many nearest points are not arbitrarily sampled. self binds only in anchor, and unplaced material cannot serve as a target. Connections require line or filled-arrow material and both endpoints, exclusive with explicit anchor/target/rotation/size. Endpoints belong to the same container; overall offset_space accepts container only.",
     "minimalApi": "path.at"
   },
   "groups": {
@@ -85,8 +85,8 @@
     "conceptEn": "Closed shapes use fill and border_*; open lines use line_*. path(commands=...) preserves source nodes and segments rather than render subdivisions. Shaft and heads affect ink, while the complete centerline reaches logical endpoints.",
     "compositionZh": "line() 或只带样式的 line(...) 可作为未指定几何的素材，在 add 中用 start/end 连接两点；也可沿用 dx/dy 或 length/angle 定义，二者互斥。构造可省略几何，放置必须能确定几何。start_head 反向沿起点切线，end_head 沿终点切线；triangle/open/stealth 以尖定位，dot/diamond/bar 以中心定位。零长度显式 angle 可生成独立头部。",
     "compositionEn": "Use line() or style-only line(...) as material and supply start/end in add, or retain dx/dy or length/angle, never both. Construction may omit geometry; placement must determine it. start_head points opposite the start tangent and end_head along the end tangent. triangle/open/stealth locate their tip; dot/diamond/bar locate their center. Zero length plus an explicit angle creates standalone heads.",
-    "errorsZh": "闭合子路径不接受头部；多条开放子路径各自设置端部。头部不会因短线缩小。零长度布局框沿用端帽或头部尺寸规则，path 弧长仍为零。arrow(...) 已移除，迁移为 line(...,end_head=head(...))。 未定义几何且未提供 start/end 时，错误定位到 add；两端重合的连接报错，不会自动变成零长度头部。",
-    "errorsEn": "Closed subpaths reject heads; each open subpath receives its own endpoint styles. Short lines do not shrink heads. Zero-length layout retains cap/head dimension rules while path length remains zero. arrow(...) is removed; migrate to line(...,end_head=head(...)). Missing material geometry without start/end is reported at add. Coincident connection endpoints error rather than creating a zero-length head.",
+    "errorsZh": "闭合子路径不接受头部；多条开放子路径各自设置端部。头部不会因短线缩小。零长度布局框沿用端帽或头部尺寸规则，path 弧长仍为零。arrow(...) 创建闭合形状箭头；线条箭头仍使用 line(...,end_head=head(...))。 未定义几何且未提供 start/end 时，错误定位到 add；两端重合的连接报错，不会自动变成零长度头部。",
+    "errorsEn": "Closed subpaths reject heads; each open subpath receives its own endpoint styles. Short lines do not shrink heads. Zero-length layout retains cap/head dimension rules while path length remains zero. arrow(...) creates a filled shape; line arrows use line(...,end_head=head(...)). Missing material geometry without start/end is reported at add. Coincident connection endpoints error rather than creating a zero-length head.",
     "minimalApi": "line"
   },
   "fills": {
@@ -286,5 +286,14 @@
     "errorsZh": "名称区分大小写，支持原生别名与 _r；rdbu 是 RdBu 的兼容别名。n 为 0–10,000 的整数，位置 t 必须有限，范围外钳制。原有配色已统一为 Matplotlib 颜色，部分旧输出会变化。",
     "errorsEn": "Names are case-sensitive and support native aliases and _r; rdbu aliases RdBu. n is an integer from 0 to 10,000; t must be finite and is clamped outside the domain. Existing names now use Matplotlib colors, changing some previous output.",
     "minimalApi": "cmap"
+  },
+  "arrows": {
+    "minimalApi": "arrow",
+    "conceptZh": "形状箭头是一体式闭合轮廓；构造素材后通过 add 放置。默认 arrow() 为直箭头，各模板使用 arrow.arc() 等独立入口，共享填充、边框与特效。",
+    "conceptEn": "Filled arrows are single closed silhouettes. Construct a material and place it with add. arrow() is straight; independent constructors such as arrow.arc() share paints, borders and effects.",
+    "compositionZh": "弧形和自由路径在箭身末端沿切线接出居中的三角头。自由路径保留完整曲线，弧形从总扫角中扣除头部占角。在 add 中用 start/end 将最终箭尖或无头端连接锚点；shaft_width 按箭身弧长插值。",
+    "compositionEn": "Arc and custom-path arrows append centered triangular heads along shaft endpoint tangents. Custom paths retain the complete curve; arcs reserve head angles within the total sweep. Connect final tips or unheaded ends using start/end in add; shaft_width interpolates along shaft arclength.",
+    "errorsZh": "圆弧半径、总扫角、头部尺寸与端点距离必须一致；没有正箭身解、端点重合、整圈扫角、非法宽度或自交轮廓报错。centerline 包含头部轴线，path 是闭合轮廓。",
+    "errorsEn": "Radius, total sweep, head dimensions and endpoint distance must agree. Missing positive shaft solutions, coincident endpoints, full-circle sweeps, invalid widths and self-intersections error. centerline includes head axes; path is the closed outline."
   }
 }

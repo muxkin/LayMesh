@@ -1,6 +1,6 @@
 # 构建与发布到 PyPI
 
-**0.5.0** 将可编辑 PPTX 导出与 VS Code 文件图标、原生文档/选区格式化一起发行。Python、Rust、runtime 与扩展统一版本号。详见[中英文更新说明](notes/0.5.0.md)；实际发布状态与跨平台结果以[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)为准。
+**0.5.1** 合并发布形状箭头、锚点协同、公式排版改进与 PPTX 图片填充修复。Python、Rust、runtime 与扩展统一版本号。详见[中英文更新说明](notes/0.5.1.md)；实际发布状态与跨平台结果以[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)为准。
 
 默认安装包含 NumPy、pandas、Matplotlib 和 IPython，使用 `pip install laymesh` 即可获得全部 Python 功能；已公开版本以 [PyPI](https://pypi.org/project/laymesh/) 为准。[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)构建和验证五个平台 wheel，执行包审计与校验和检查，人工审批后通过 Trusted Publishing 上传。每个平台 wheel 包含 Python API、CLI 入口、一个 Rust 原生程序、依赖许可及构建清单。公式字体编译进 RaTeX，正文使用系统或用户字体。
 
@@ -18,9 +18,9 @@ python scripts/check-release.py
 python -m pip install -e "./python" pillow
 python scripts/test-contracts.py
 python scripts/collect-licenses.py
-python scripts/build-python-wheel.py --output release/dist/pypi-0.5.0
-python scripts/check-python-wheels.py release/dist/pypi-0.5.0 --checksums release/dist/pypi-0.5.0/SHA256SUMS
-python -m twine check --strict release/dist/pypi-0.5.0/*.whl
+python scripts/build-python-wheel.py --output release/dist/pypi-0.5.1
+python scripts/check-python-wheels.py release/dist/pypi-0.5.1 --checksums release/dist/pypi-0.5.1/SHA256SUMS
+python -m twine check --strict release/dist/pypi-0.5.1/*.whl
 ```
 
 构建器先检查版本一致性，再编译锁定依赖的 release 引擎，在源码树以外暂存并打包。独立输出目录避免混入旧包。Linux 标签依据二进制实际 GLIBC 符号要求生成，下限为 2.28；新系统构建不能宣称旧系统兼容。本地 Linux x64 wheel 要求 glibc 2.35+；CI runner 生成的包可能需要更新的 glibc，请查看实际文件名与清单。
@@ -32,7 +32,7 @@ python -m twine check --strict release/dist/pypi-0.5.0/*.whl
 另建一个**干净的虚拟环境**，安装生成的 wheel，不使用可编辑源码安装。下面的文件名应替换为本机实际生成的包：
 
 ```sh
-python -m pip install "release/dist/pypi-0.5.0/laymesh-0.5.0-py3-none-manylinux_2_35_x86_64.whl" pillow
+python -m pip install "release/dist/pypi-0.5.1/laymesh-0.5.1-py3-none-manylinux_2_35_x86_64.whl" pillow
 python -m pip check
 python -m laymesh --version
 python scripts/smoke-python-wheel.py --examples examples
@@ -47,10 +47,10 @@ python -m unittest discover -s python/tests -v
 
 1. 在 PyPI 配置 pending trusted publisher：项目 `laymesh`、所有者 `muxkin`、仓库 `LayMesh`、工作流 `publish-pypi.yml`、环境 `pypi`。
 2. 在 GitHub 仓库创建 `pypi` environment 并配置 required reviewers。工作流会检查人工审核门禁是否存在。
-3. 将已验证的提交同步到 `main`，创建并推送稳定标签：`git tag v0.5.0`、`git push origin v0.5.0`。
+3. 将已验证的提交同步到 `main`，创建并推送稳定标签：`git tag v0.5.1`、`git push origin v0.5.1`。
 4. 审核本次运行的 wheel、VSIX 和校验和，再批准 `pypi` 环境；上传成功后自动创建 GitHub Release。
 
-发布任务下载审核过的同一批文件，不重新构建。PR 和普通构建运行不上传。发布后在仓库以外验证索引安装：`python -m pip install "laymesh==0.5.0"`，再运行 `python -m pip check` 与 `python -m laymesh --version`。已发布版本不能覆盖；需要替换时同步递增 Python、Rust、runtime 与 VS Code 扩展版本。
+发布任务下载审核过的同一批文件，不重新构建。PR 和普通构建运行不上传。发布后在仓库以外验证索引安装：`python -m pip install "laymesh==0.5.1"`，再运行 `python -m pip check` 与 `python -m laymesh --version`。已发布版本不能覆盖；需要替换时同步递增 Python、Rust、runtime 与 VS Code 扩展版本。
 
 ## 验证记录
 
@@ -58,7 +58,7 @@ python -m unittest discover -s python/tests -v
 
 ## VS Code 手动发布与 GitHub Release
 
-稳定版本标签（例如 `v0.5.0`）触发五平台 wheel 和 VSIX 构建、审计与 Python 兼容性检查；通过现有 `pypi` 环境人工审批后自动上传 PyPI，再创建带中英文更新说明、十个发行包及 `SHA256SUMS` 的 GitHub Release。标签必须与全部版本元数据一致，且对应提交属于 `main`。PR 和手动启动的工作流只验证，不发布。
+稳定版本标签（例如 `v0.5.1`）触发五平台 wheel 和 VSIX 构建、审计与 Python 兼容性检查；通过现有 `pypi` 环境人工审批后自动上传 PyPI，再创建带中英文更新说明、十个发行包及 `SHA256SUMS` 的 GitHub Release。标签必须与全部版本元数据一致，且对应提交属于 `main`。PR 和手动启动的工作流只验证，不发布。
 
 Marketplace 自动上传工作流已移除。下载 Release 中五个平台的 `.vsix`，通过 [Hyacine 发布者门户](https://marketplace.visualstudio.com/manage/publishers/Hyacine) 手动上传。也可在本地使用 `vsce publish --packagePath <已审核包.vsix>`；凭据只保存在本机，不需要 Actions Marketplace Secret。
 

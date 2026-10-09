@@ -1,0 +1,26 @@
+page=canvas(size=(240mm,160mm),background="#f4f7fc")
+style {
+  text { font-family:"DejaVu Sans"; font-size:10pt; color:#24324b; }
+  arrow { fill:#087f8c; border-color:#ffffff; border-width:0.45mm; }
+  arrow.orange { fill:#ee784b; }
+}
+page.add(text("Filled arrows",font_size=23pt,font_weight=700),offset=(10,8))
+page.add(text("One silhouette. Reusable materials. Independent shaft and heads.",font_size=10pt),offset=(10,20))
+for x in [8,86,164] { for y in [30,88] {
+  page.add(rect(size=(68,52),fill="#ffffff",border_radius=3mm),offset=(x,y))
+}}
+page.add(text("arrow()",font_weight=700),offset=(12,34))
+page.add(arrow(length=55,shaft_width=5,head_size=(11,13)),offset=(14,45))
+page.add(arrow(length=55,shaft_width=3,heads=both,head_size=(9,9),class="orange"),offset=(14,65))
+page.add(text("arrow.arc()",font_weight=700),offset=(90,34))
+page.add(arrow.arc(radius=15,start_angle=160deg,sweep_angle=250deg,shaft_width=4,head_size=(8,10)),offset=(100,44))
+page.add(text("arrow.bent()",font_weight=700),offset=(168,34))
+page.add(arrow.bent(span=(43,24),corner_radius=8,shaft_width=4,head_size=(9,11),class="orange"),offset=(176,45))
+page.add(text("arrow.uturn()",font_weight=700),offset=(12,92))
+page.add(arrow.uturn(span=(39,25),corner_radius=9,shaft_width=4,heads=both,head_size=(8,10)),offset=(22,103))
+page.add(text("arrow.chevron()",font_weight=700),offset=(90,92))
+page.add(arrow.chevron(length=54,shaft_width=(5,8),head_size=(14,17),notch_depth=5,class="orange"),offset=(93,110))
+page.add(text("arrow.path()",font_weight=700),offset=(168,92))
+curve=path(commands=[move_to(0,20),cubic_to(18,20,10,0,28,0),cubic_to(44,0,36,20,54,20)])
+page.add(arrow.path(path=curve,shaft_width=[(0,2mm),(0.5,6mm),(1,3mm)],head_size=(8,10)),offset=(168,105))
+page.add(text("All arrows use fill, border_* and effects. Shape paths and centerlines remain separate."),offset=(10,149))

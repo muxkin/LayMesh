@@ -527,11 +527,12 @@ impl Engine {
         let connection = {
             let def = def.borrow();
             if def.kind != "line"
+                && !crate::arrows::is_arrow(&def.kind)
                 && crate::endpoints::CONNECTION_PARAMETERS
                     .iter()
                     .any(|k| a.contains_key(*k))
             {
-                return Err(self.error("E_ARG", "双端点连接参数只适用于 line 素材", l));
+                return Err(self.error("E_ARG", "双端点连接参数只适用于 line 或 arrow 素材", l));
             }
             let connection = self.connection_endpoints(owner.borrow().id, &a, l)?;
             if def.kind == "line"
@@ -572,7 +573,14 @@ impl Engine {
             }
         };
         let vector = connection.map(|p| [p[1].x - p[0].x, p[1].y - p[0].y]);
-        let mut n = self.materialize_with_line_vector(def.clone(), &a, &parent, vector)?;
+        let mut n = self
+            .materialize_with_line_vector(def.clone(), &a, &parent, vector)
+            .map_err(|mut error| {
+                if crate::arrows::is_arrow(&def.borrow().kind) {
+                    error.loc = l;
+                }
+                error
+            })?;
         if !matches!(
             string(&a, "offset_space", "container").as_str(),
             "container" | "target"
@@ -760,11 +768,15 @@ impl Engine {
             }
         }
         if let Some([dx, dy]) = vector {
-            for key in ["length", "angle", "dx", "dy"] {
-                a.remove(key);
+            if crate::arrows::is_arrow(&o.kind) {
+                a.insert("__arrow_vector".into(), V::List(vec![V::mm(dx), V::mm(dy)]));
+            } else {
+                for key in ["length", "angle", "dx", "dy"] {
+                    a.remove(key);
+                }
+                a.insert("dx".into(), V::mm(dx));
+                a.insert("dy".into(), V::mm(dy));
             }
-            a.insert("dx".into(), V::mm(dx));
-            a.insert("dy".into(), V::mm(dy));
         }
         if matches!(o.kind.as_str(), "rect" | "ellipse") && placement.contains_key("size") {
             let original = pair(&o.args, "size", [o.width, o.height], &self.unit, self.dpi);
@@ -1049,6 +1061,7 @@ impl Engine {
                     .collect::<Vec<_>>()
             );
         }
+        crate::arrows::validate_transform(&n, Affine::IDENTITY, self, l)?;
         if let Some(b) = crate::art::decorated_bounds(&n) {
             n["effectsBounds"] = json!({"x":b.x0,"y":b.y0,"width":b.width(),"height":b.height()});
         }
@@ -1108,6 +1121,9 @@ impl Engine {
         Ok(n)
     }
     pub fn shape(&self, o: &Object, a: &Args, size: [f64; 2]) -> Result<Json> {
+        if crate::arrows::is_arrow(&o.kind) {
+            return crate::arrows::shape(self, o, a, size);
+        }
         let l = o.loc;
         let g = |key: &str, d: f64| length(a, key, d, &self.unit, self.dpi);
         let mut p = BezPath::new();

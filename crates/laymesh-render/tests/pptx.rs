@@ -525,7 +525,7 @@ fn rounded_image_fill_fit_and_rectangular_crop_keep_original_media() {
             .descendants()
             .filter(|n| n.tag_name().name() == "pic")
             .count(),
-        4
+        3
     );
     assert_eq!(
         slide
@@ -543,6 +543,15 @@ fn rounded_image_fill_fit_and_rectangular_crop_keep_original_media() {
             .any(|n| n.tag_name().name() == "fillRect"
                 && n.attribute("t") == Some("25000")
                 && n.attribute("b") == Some("25000"))
+    );
+    let contain = slide
+        .descendants()
+        .find(|n| n.tag_name().name() == "fillRect" && n.attribute("t") == Some("25000"))
+        .unwrap();
+    assert!(contain.ancestors().any(|n| n.tag_name().name() == "sp"));
+    assert!(
+        !contain.ancestors().any(|n| n.tag_name().name() == "pic"),
+        "LibreOffice ignores letterbox insets on picture objects"
     );
     assert!(
         slide

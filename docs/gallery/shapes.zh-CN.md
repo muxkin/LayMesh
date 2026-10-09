@@ -500,3 +500,56 @@ page.add(text("One color model across shapes, text, gradients and plots.",font_f
 复现命令：`laymesh validate examples/gallery/shapes/colors-alpha.lay`；`laymesh render examples/gallery/shapes/colors-alpha.lay -o colors-alpha.png --dpi 150`。
 
 实测：有效，页面 **145 × 95 mm**；PNG **856 × 561 px**，150 DPI；警告：无。
+
+## 形状箭头
+
+<a id="arrows"></a>
+
+### 形状箭头模板
+
+```lay
+page.add(arrow(length=55mm,shaft_width=5mm,head_size=(11mm,13mm)))
+page.add(arrow.uturn(span=(39mm,25mm),heads=both))
+```
+
+![形状箭头模板](../../site/media/gallery-shapes-arrows-1920.webp)
+
+源码： [arrows.lay](../../examples/gallery/shapes/arrows.lay)。
+
+复现命令： `laymesh render examples/gallery/shapes/arrows.lay -o arrows.png --dpi 150`。
+
+实测： PNG **1417 × 945 px**，150 DPI。SVG/PDF/PNG/PPTX 导出均已验证；普通箭头保持矢量，PPTX 特效局部回退会产生提示。
+
+<a id="arrow-connections"></a>
+
+### 箭头与锚点连接
+
+```lay
+page.add(arrow.arc(sweep_angle=95deg),start=a.top_center,end=b.top_center)
+page.add(arrow.arc(radius=-100mm),start=a.bottom_center,end=b.bottom_center)
+```
+
+![箭头与锚点连接](../../site/media/gallery-shapes-arrow-connections-1920.webp)
+
+源码： [arrow-connections.lay](../../examples/gallery/shapes/arrow-connections.lay)。
+
+复现命令： `laymesh render examples/gallery/shapes/arrow-connections.lay -o arrow-connections.png --dpi 150`。
+
+实测： PNG **1299 × 827 px**，150 DPI。SVG/PDF/PNG/PPTX 导出均已验证；普通箭头保持矢量，PPTX 特效局部回退会产生提示。
+
+<a id="arrow-effects"></a>
+
+### 箭头样式与特效
+
+```lay
+page.add(arrow(length=74mm,shaft_width=(5mm,10mm),
+    fill="#438deb",effects=[shadow(blur=1.3mm,offset=(1.5mm,2mm))]))
+```
+
+![箭头样式与特效](../../site/media/gallery-shapes-arrow-effects-1920.webp)
+
+源码： [arrow-effects.lay](../../examples/gallery/shapes/arrow-effects.lay)。
+
+复现命令： `laymesh render examples/gallery/shapes/arrow-effects.lay -o arrow-effects.png --dpi 150`。
+
+实测： PNG **1181 × 709 px**，150 DPI。SVG/PDF/PNG/PPTX 导出均已验证；普通箭头保持矢量，PPTX 特效局部回退会产生提示。

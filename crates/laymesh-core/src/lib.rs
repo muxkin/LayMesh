@@ -1,3 +1,4 @@
+pub mod arrows;
 mod art;
 pub mod asset_cache;
 pub mod assets;

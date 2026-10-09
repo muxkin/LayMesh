@@ -842,7 +842,7 @@ page.add(ellipse(size=(2mm,2mm),fill="#e36b70"),anchor=center,target=chart.axis(
 
 ## add
 
-将素材放置到画布或组合中；使用 anchor/target 单点定位，或为 line 指定 start/end 双端点连接。offset 平移整个实例，同一素材可重复放置并独立覆盖样式。
+将素材放置到画布或组合中；使用 anchor/target 单点定位，或为 line 与形状箭头指定 start/end 双端点连接。offset 平移整个实例，同一素材可重复放置并独立覆盖样式。
 
 返回：已放置实例；可读取测量尺寸并引用其锚点继续定位。
 
@@ -889,13 +889,18 @@ page.add(ellipse(size=(2mm,2mm),fill="#e36b70"),anchor=center,target=chart.axis(
 | `line_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `line_opacity` | value | 线条独立透明度 0–1 | 1 |
 | `offset_space` | "container" \| "target" | offset 的方向：容器坐标，或目标路径的切线与左法线；双端点连接时只接受 container，两端方向分别用 start_offset_space/end_offset_space<br>`container`: 偏移沿当前容器的横纵方向<br>`target`: 偏移沿目标切线与左法线方向 | container |
-| `start` | anchor \| (length, length) | 线条连接起点：当前容器中的物理坐标或锚点；start/end 必须同时指定，与 anchor/target/rotation/size 互斥；覆盖本次实例的素材几何 | — |
-| `end` | anchor \| (length, length) | 线条连接终点：当前容器中的物理坐标或锚点；start/end 必须同时指定，与 anchor/target/rotation/size 互斥；覆盖本次实例的素材几何 | — |
+| `start` | anchor \| (length, length) | line/arrow 双端点连接的坐标或锚点 | — |
+| `end` | anchor \| (length, length) | line/arrow 双端点连接的坐标或锚点 | — |
 | `start_offset` | (length, length) / 画布单位 | 连接起点的独立物理偏移，随后叠加整体 offset | (0, 0) |
 | `end_offset` | (length, length) / 画布单位 | 连接终点的独立物理偏移，随后叠加整体 offset | (0, 0) |
 | `start_offset_space` | "container" \| "target" | 起点偏移的方向；target 需要路径锚点及明确切线方向<br>`container`: 沿当前容器的横纵方向<br>`target`: 沿对应路径锚点的切线与左法线 | container |
 | `end_offset_space` | "container" \| "target" | 终点偏移的方向；target 需要路径锚点及明确切线方向<br>`container`: 沿当前容器的横纵方向<br>`target`: 沿对应路径锚点的切线与左法线 | container |
 | `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | 箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值 | 3mm |
+| `heads` | "start" \| "end" \| "both" | 头部所在端；燕尾只支持单头<br>`start`: 起点头部<br>`end`: 终点头部<br>`both`: 双头 | end |
+| `head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `end_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
 
 ### 最小完整示例
 
@@ -3698,3 +3703,242 @@ page.add(text("PERSPECTIVE",font_family=font,font_size=26pt,font_weight=700,warp
 ```
 
 [概念与常见错误](topics/art-effects.zh-CN.md#text_extrude) · [组合源码](../examples/effects/art-text.lay)
+
+## arrow
+
+创建可复用的直箭头形状；可在 add 中通过 start/end 连接锚点，使用 fill、border_* 与 effects。
+
+返回：可复用的形状箭头素材。
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `length` | length / 画布单位 | 线段非负长度，与 dx/dy 互斥 | — |
+| `angle` | angle / deg | 局部方向；0 朝右，90 朝下；零长度必须显式指定 | 0deg |
+| `dx` | length / 画布单位 | 线段水平位移；与 dy 同时指定，与 length/angle 互斥 | — |
+| `dy` | length / 画布单位 | 线段竖直位移；与 dx 同时指定，与 length/angle 互斥 | — |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | 箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值 | 3mm |
+| `heads` | "start" \| "end" \| "both" | 头部所在端；燕尾只支持单头<br>`start`: 起点头部<br>`end`: 终点头部<br>`both`: 双头 | end |
+| `head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `end_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `class` | string | 空格分隔的 LCSS 类名 | "" |
+| `fill` | paint | 形状内部的颜色、渐变、纹理或图片 | #000000 |
+| `border_color` | color | 封闭轮廓颜色，none 表示无边框 | none |
+| `border_width` | length / pt | 封闭轮廓线宽；裸值为 pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | 边框线型；与填充独立<br>`none`: 不绘制此项<br>`solid`: 连续实线<br>`dashed`: 虚线；可用 dash 参数覆盖长度<br>`dotted`: 点线<br>`dash_dot`: 点划线<br>`double`: 双线描边<br>`triple`: 三线描边 | solid |
+| `border_dash` | length[] / pt | 交替的边框线段和间隔长度列表；须成对 | — |
+| `border_dash_offset` | length / pt | 虚线相位；裸值为 pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | 轮廓虚线端点形状<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
+| `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
+| `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(85mm,70mm),background="#ffffff")
+a=page.add(arrow(length=50mm,shaft_width=(2mm,5mm),fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+centerline_length = a.centerline.length
+```
+
+[概念与常见错误](topics/arrows.zh-CN.md#arrow) · [组合源码](../examples/gallery/shapes/arrows.lay)
+
+## arrow.arc
+
+创建弧形箭身并沿末端切线接出直边三角头；总扫角包含头部，连接时将头部计入端点求解。
+
+返回：可复用的形状箭头素材。
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `radius` | length / 画布单位 | 圆弧箭身中心线的半径；本地为正，连接时正负选择顺/逆时针小弧，端点约束计入头部 | — |
+| `start_angle` | angle | 最终逻辑起点相对圆心的极角；连接放置时由端点求解 | 0deg |
+| `sweep_angle` | angle | 包含两端头部的总极角扫角；正值顺时针，0 < 绝对值 < 360deg，须留有正箭身扫角 | — |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | 箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值 | 3mm |
+| `heads` | "start" \| "end" \| "both" | 头部所在端；燕尾只支持单头<br>`start`: 起点头部<br>`end`: 终点头部<br>`both`: 双头 | end |
+| `head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `end_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `class` | string | 空格分隔的 LCSS 类名 | "" |
+| `fill` | paint | 形状内部的颜色、渐变、纹理或图片 | #000000 |
+| `border_color` | color | 封闭轮廓颜色，none 表示无边框 | none |
+| `border_width` | length / pt | 封闭轮廓线宽；裸值为 pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | 边框线型；与填充独立<br>`none`: 不绘制此项<br>`solid`: 连续实线<br>`dashed`: 虚线；可用 dash 参数覆盖长度<br>`dotted`: 点线<br>`dash_dot`: 点划线<br>`double`: 双线描边<br>`triple`: 三线描边 | solid |
+| `border_dash` | length[] / pt | 交替的边框线段和间隔长度列表；须成对 | — |
+| `border_dash_offset` | length / pt | 虚线相位；裸值为 pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | 轮廓虚线端点形状<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
+| `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
+| `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(150mm,95mm),background="#ffffff")
+a=page.add(arrow.arc(radius=22mm,start_angle=0deg,sweep_angle=240deg,fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+# Signed-radius endpoint connections select clockwise / counterclockwise minor arcs.
+page.add(arrow.arc(radius=45mm,fill="#ee784b"),start=(75mm,40mm),end=(135mm,40mm))
+page.add(arrow.arc(radius=-45mm,fill="#5273c5"),start=(75mm,60mm),end=(135mm,60mm))
+```
+
+[概念与常见错误](topics/arrows.zh-CN.md#arrow-arc) · [组合源码](../examples/gallery/shapes/arrows.lay)
+
+## arrow.bent
+
+创建 L 形折弯箭头；可设置中心线跨度与圆角，并连接两个锚点。
+
+返回：可复用的形状箭头素材。
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `span` | (length,length) / 画布单位 | 折弯中心线的水平、垂直跨度 | (30mm,20mm) |
+| `corner_radius` | length / 画布单位 | 中心线转角半径，0 为尖角 | min(span)/4 |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | 箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值 | 3mm |
+| `heads` | "start" \| "end" \| "both" | 头部所在端；燕尾只支持单头<br>`start`: 起点头部<br>`end`: 终点头部<br>`both`: 双头 | end |
+| `head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `end_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `class` | string | 空格分隔的 LCSS 类名 | "" |
+| `fill` | paint | 形状内部的颜色、渐变、纹理或图片 | #000000 |
+| `border_color` | color | 封闭轮廓颜色，none 表示无边框 | none |
+| `border_width` | length / pt | 封闭轮廓线宽；裸值为 pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | 边框线型；与填充独立<br>`none`: 不绘制此项<br>`solid`: 连续实线<br>`dashed`: 虚线；可用 dash 参数覆盖长度<br>`dotted`: 点线<br>`dash_dot`: 点划线<br>`double`: 双线描边<br>`triple`: 三线描边 | solid |
+| `border_dash` | length[] / pt | 交替的边框线段和间隔长度列表；须成对 | — |
+| `border_dash_offset` | length / pt | 虚线相位；裸值为 pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | 轮廓虚线端点形状<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
+| `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
+| `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(85mm,70mm),background="#ffffff")
+a=page.add(arrow.bent(span=(40mm,25mm),corner_radius=8mm,fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+```
+
+[概念与常见错误](topics/arrows.zh-CN.md#arrow-bent) · [组合源码](../examples/gallery/shapes/arrows.lay)
+
+## arrow.uturn
+
+创建 U 形回转箭头；双端连接调整中心线，保留箭身与头部物理尺寸。
+
+返回：可复用的形状箭头素材。
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `span` | (length,length) / 画布单位 | 折弯中心线的水平、垂直跨度 | (30mm,20mm) |
+| `corner_radius` | length / 画布单位 | 中心线转角半径，0 为尖角 | min(span)/4 |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | 箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值 | 3mm |
+| `heads` | "start" \| "end" \| "both" | 头部所在端；燕尾只支持单头<br>`start`: 起点头部<br>`end`: 终点头部<br>`both`: 双头 | end |
+| `head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `end_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `class` | string | 空格分隔的 LCSS 类名 | "" |
+| `fill` | paint | 形状内部的颜色、渐变、纹理或图片 | #000000 |
+| `border_color` | color | 封闭轮廓颜色，none 表示无边框 | none |
+| `border_width` | length / pt | 封闭轮廓线宽；裸值为 pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | 边框线型；与填充独立<br>`none`: 不绘制此项<br>`solid`: 连续实线<br>`dashed`: 虚线；可用 dash 参数覆盖长度<br>`dotted`: 点线<br>`dash_dot`: 点划线<br>`double`: 双线描边<br>`triple`: 三线描边 | solid |
+| `border_dash` | length[] / pt | 交替的边框线段和间隔长度列表；须成对 | — |
+| `border_dash_offset` | length / pt | 虚线相位；裸值为 pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | 轮廓虚线端点形状<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
+| `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
+| `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(85mm,70mm),background="#ffffff")
+a=page.add(arrow.uturn(span=(35mm,25mm),heads=both,fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+```
+
+[概念与常见错误](topics/arrows.zh-CN.md#arrow-uturn) · [组合源码](../examples/gallery/shapes/arrows.lay)
+
+## arrow.chevron
+
+创建单头燕尾箭头；尾部凹口与箭身组成同一个闭合轮廓。
+
+返回：可复用的形状箭头素材。
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `length` | length / 画布单位 | 线段非负长度，与 dx/dy 互斥 | — |
+| `angle` | angle / deg | 局部方向；0 朝右，90 朝下；零长度必须显式指定 | 0deg |
+| `dx` | length / 画布单位 | 线段水平位移；与 dy 同时指定，与 length/angle 互斥 | — |
+| `dy` | length / 画布单位 | 线段竖直位移；与 dx 同时指定，与 length/angle 互斥 | — |
+| `notch_depth` | length / 画布单位 | 无头端燕尾凹入深度 | tail shaft width |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | 箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值 | 3mm |
+| `heads` | "start" \| "end" \| "both" | 头部所在端；燕尾只支持单头<br>`start`: 起点头部<br>`end`: 终点头部<br>`both`: 双头 | end |
+| `head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `end_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `class` | string | 空格分隔的 LCSS 类名 | "" |
+| `fill` | paint | 形状内部的颜色、渐变、纹理或图片 | #000000 |
+| `border_color` | color | 封闭轮廓颜色，none 表示无边框 | none |
+| `border_width` | length / pt | 封闭轮廓线宽；裸值为 pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | 边框线型；与填充独立<br>`none`: 不绘制此项<br>`solid`: 连续实线<br>`dashed`: 虚线；可用 dash 参数覆盖长度<br>`dotted`: 点线<br>`dash_dot`: 点划线<br>`double`: 双线描边<br>`triple`: 三线描边 | solid |
+| `border_dash` | length[] / pt | 交替的边框线段和间隔长度列表；须成对 | — |
+| `border_dash_offset` | length / pt | 虚线相位；裸值为 pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | 轮廓虚线端点形状<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
+| `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
+| `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(85mm,70mm),background="#ffffff")
+a=page.add(arrow.chevron(length=50mm,shaft_width=5mm,fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+```
+
+[概念与常见错误](topics/arrows.zh-CN.md#arrow-chevron) · [组合源码](../examples/gallery/shapes/arrows.lay)
+
+## arrow.path
+
+保留完整自由开放路径作为箭身，在两端沿切线向外接出直边三角头；支持变宽与独立头部尺寸。
+
+返回：可复用的形状箭头素材。
+
+必需：`path`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `path` | material | 单条开放路径素材，保留原始曲线段；原路径端点为颈部，箭尖向外延伸 | — |
+| `shaft_width` | length \| (length,length) \| (number,length)[] | 箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值 | 3mm |
+| `heads` | "start" \| "end" \| "both" | 头部所在端；燕尾只支持单头<br>`start`: 起点头部<br>`end`: 终点头部<br>`both`: 双头 | end |
+| `head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | twice the corresponding neck width |
+| `start_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `end_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `class` | string | 空格分隔的 LCSS 类名 | "" |
+| `fill` | paint | 形状内部的颜色、渐变、纹理或图片 | #000000 |
+| `border_color` | color | 封闭轮廓颜色，none 表示无边框 | none |
+| `border_width` | length / pt | 封闭轮廓线宽；裸值为 pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | 边框线型；与填充独立<br>`none`: 不绘制此项<br>`solid`: 连续实线<br>`dashed`: 虚线；可用 dash 参数覆盖长度<br>`dotted`: 点线<br>`dash_dot`: 点划线<br>`double`: 双线描边<br>`triple`: 三线描边 | solid |
+| `border_dash` | length[] / pt | 交替的边框线段和间隔长度列表；须成对 | — |
+| `border_dash_offset` | length / pt | 虚线相位；裸值为 pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | 轮廓虚线端点形状<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
+| `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
+| `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(85mm,70mm),background="#ffffff")
+a=page.add(arrow.path(path=path(commands=[move_to(0,20),cubic_to(15,20,25,0,50,0)]),shaft_width=[(0,2mm),(0.5,5mm),(1,3mm)],fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+```
+
+[概念与常见错误](topics/arrows.zh-CN.md#arrow-path) · [组合源码](../examples/gallery/shapes/arrows.lay)

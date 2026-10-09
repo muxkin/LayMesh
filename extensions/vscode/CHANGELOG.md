@@ -1,3 +1,12 @@
+# 0.5.1
+
+- Add reusable filled arrows: `arrow()`, `arrow.arc()`, `arrow.bent()`, `arrow.uturn()`, `arrow.chevron()` and `arrow.path()` with namespace completion, signatures and hover.
+- Connect arrows to layout, data and selected path anchors; retain independent head dimensions, shaft-width profiles and reusable group placement.
+- Center tangent heads on curved shafts and preserve one silhouette for fills, outlines, opacity and effects.
+- Preserve `contain` image-fill margins in LibreOffice PPTX exports while retaining editable geometry and the original image resource.
+- Improve OpenType math fonts, multilingual formula text, chemical bonds, nested math alphabets and visible missing-glyph placeholders using the pinned RaTeX fork.
+- `arrow()` now constructs a filled shape. Migrate legacy line arrows to `line(..., end_head=head(...))`; only calls identified by line-only parameters receive an automatic migration.
+
 # 0.5.0
 
 - Add editable PowerPoint (PPTX) export using the current unsaved entry and imported buffers.

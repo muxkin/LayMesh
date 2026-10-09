@@ -73,6 +73,7 @@
             "resources",
             "formulas",
             "shapes",
+            "arrows",
             "fills",
             "lcss"
           ]
@@ -419,6 +420,14 @@
         "Shapes and paths"
       ],
       "example": "examples/gallery/shapes/path-commands.lay"
+    },
+    {
+      "key": "arrows",
+      "title": [
+        "形状箭头",
+        "Filled arrows"
+      ],
+      "example": "examples/gallery/shapes/arrows.lay"
     },
     {
       "key": "fills",

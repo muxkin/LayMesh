@@ -500,3 +500,56 @@ Source: [colors-alpha.lay](../../examples/gallery/shapes/colors-alpha.lay).
 Reproduce: `laymesh validate examples/gallery/shapes/colors-alpha.lay`; `laymesh render examples/gallery/shapes/colors-alpha.lay -o colors-alpha.png --dpi 150`.
 
 Observed CLI output: valid, **145 × 95 mm** page; PNG **856 × 561 px** at 150 DPI; no warnings.
+
+## Filled arrows
+
+<a id="arrows"></a>
+
+### Filled arrow templates
+
+```lay
+page.add(arrow(length=55mm,shaft_width=5mm,head_size=(11mm,13mm)))
+page.add(arrow.uturn(span=(39mm,25mm),heads=both))
+```
+
+![Filled arrow templates](../../site/media/gallery-shapes-arrows-1920.webp)
+
+Source: [arrows.lay](../../examples/gallery/shapes/arrows.lay).
+
+Reproduce: `laymesh render examples/gallery/shapes/arrows.lay -o arrows.png --dpi 150`.
+
+Observed CLI output: PNG **1417 × 945 px**, 150 DPI. SVG/PDF/PNG/PPTX exports verified; ordinary arrows remain vector and special-effect PPTX fallbacks emit warnings.
+
+<a id="arrow-connections"></a>
+
+### Arrow anchor connections
+
+```lay
+page.add(arrow.arc(sweep_angle=95deg),start=a.top_center,end=b.top_center)
+page.add(arrow.arc(radius=-100mm),start=a.bottom_center,end=b.bottom_center)
+```
+
+![Arrow anchor connections](../../site/media/gallery-shapes-arrow-connections-1920.webp)
+
+Source: [arrow-connections.lay](../../examples/gallery/shapes/arrow-connections.lay).
+
+Reproduce: `laymesh render examples/gallery/shapes/arrow-connections.lay -o arrow-connections.png --dpi 150`.
+
+Observed CLI output: PNG **1299 × 827 px**, 150 DPI. SVG/PDF/PNG/PPTX exports verified; ordinary arrows remain vector and special-effect PPTX fallbacks emit warnings.
+
+<a id="arrow-effects"></a>
+
+### Arrow styles and effects
+
+```lay
+page.add(arrow(length=74mm,shaft_width=(5mm,10mm),
+    fill="#438deb",effects=[shadow(blur=1.3mm,offset=(1.5mm,2mm))]))
+```
+
+![Arrow styles and effects](../../site/media/gallery-shapes-arrow-effects-1920.webp)
+
+Source: [arrow-effects.lay](../../examples/gallery/shapes/arrow-effects.lay).
+
+Reproduce: `laymesh render examples/gallery/shapes/arrow-effects.lay -o arrow-effects.png --dpi 150`.
+
+Observed CLI output: PNG **1181 × 709 px**, 150 DPI. SVG/PDF/PNG/PPTX exports verified; ordinary arrows remain vector and special-effect PPTX fallbacks emit warnings.

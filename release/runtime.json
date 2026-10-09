@@ -1,6 +1,6 @@
 {
   "engine": "rust",
-  "rust_version": "0.5.0",
+  "rust_version": "0.5.1",
   "targets": {
     "linux-x64": {
       "rust_target": "x86_64-unknown-linux-gnu",

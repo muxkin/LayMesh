@@ -7,7 +7,7 @@ use laymesh_core::{
 use serde_json::{Value, json};
 use std::collections::BTreeSet;
 
-fn line_geometry(
+fn material_geometry(
     service: &LanguageService,
     uri: &str,
     expr: &Expr,
@@ -15,12 +15,23 @@ fn line_geometry(
     seen: &mut BTreeSet<String>,
 ) -> Option<bool> {
     match &expr.kind {
-        ExprKind::Call(parts, args) if parts == &["line"] => {
+        ExprKind::Call(parts, args)
+            if parts == &["line"] || laymesh_core::arrows::is_arrow(&parts.join(".")) =>
+        {
             if service
-                .resolve(uri, "line", at, &mut BTreeSet::new())
+                .resolve(uri, &parts[0], at, &mut BTreeSet::new())
                 .is_some()
             {
                 return None;
+            }
+            let has = |key: &str| args.iter().any(|(k, _)| k.as_deref() == Some(key));
+            if parts.len() == 2 {
+                return Some(match parts[1].as_str() {
+                    "arc" => has("radius") && has("sweep_angle"),
+                    "bent" | "uturn" => true,
+                    "path" => has("path"),
+                    _ => has("length") || has("dx") || has("dy"),
+                });
             }
             Some(args.iter().any(|(key, _)| {
                 key.as_deref()
@@ -33,7 +44,7 @@ fn line_geometry(
             {
                 return None;
             }
-            line_geometry(
+            material_geometry(
                 service,
                 &symbol.uri,
                 symbol.value.as_ref()?,
@@ -90,7 +101,7 @@ pub(super) fn diagnostics(service: &LanguageService, uri: &str, stmts: &[Stmt]) 
         }
         if let Some(material) = args.iter().find(|(k, _)| k.is_none()).map(|(_, v)| v) {
             if !connection
-                && line_geometry(
+                && material_geometry(
                     service,
                     uri,
                     material,
@@ -100,22 +111,21 @@ pub(super) fn diagnostics(service: &LanguageService, uri: &str, stmts: &[Stmt]) 
             {
                 report(
                     "E_ARG",
-                    laymesh_core::endpoints::MISSING_LINE_GEOMETRY,
-                    "Line material has no geometry; supply start/end or define dx/dy or length/angle in line",
+                    "素材未定义几何；请在 add 提供 start/end，或在素材中定义完整几何",
+                    "Material has no geometry; supply start/end in add or define complete material geometry",
                 );
             }
             if connection {
                 let typ = expression_type(material, &|name| {
                     service.type_of(uri, name, material.loc.offset)
                 });
-                if typ
-                    .as_deref()
-                    .is_some_and(|t| t != "line" && entry(t).is_some())
-                {
+                if typ.as_deref().is_some_and(|t| {
+                    t != "line" && !laymesh_core::arrows::is_arrow(t) && entry(t).is_some()
+                }) {
                     report(
                         "E_ARG",
-                        "双端点连接参数只适用于 line 素材",
-                        "Connection parameters only apply to line material",
+                        "双端点连接参数只适用于 line 或 arrow 素材",
+                        "Connection parameters only apply to line or arrow material",
                     );
                 }
             }

@@ -725,7 +725,10 @@ impl Engine {
         }
         if let Some(o) = v.object() {
             let o = o.borrow();
-            if matches!(p, "bounds" | "path" | "ink" | "plot_area" | "axes") {
+            if matches!(
+                p,
+                "bounds" | "path" | "centerline" | "ink" | "plot_area" | "axes"
+            ) {
                 if !matches!(o.kind.as_str(), "instance" | "canvas") {
                     return Err(self.error("E_TYPE", "几何查询需要已放置实例", l));
                 }
@@ -889,6 +892,15 @@ impl Engine {
         s: &Scope,
         l: Loc,
     ) -> Result<V> {
+        let qualified = parts.join(".");
+        if parts.len() == 2
+            && crate::arrows::is_arrow(&qualified)
+            && Environment::get(s, &parts[0]).is_none()
+        {
+            self.validate_args(&qualified, &mut a, &pos, l)?;
+            self.validate_definition(&qualified, &a, l)?;
+            return Ok(self.object(&qualified, a, l));
+        }
         if parts.len() == 1 && parts[0] == "ray" {
             a.retain(|k, _| !k.starts_with("__"));
             if !pos.is_empty()
@@ -972,10 +984,13 @@ impl Engine {
         if let Some(result) = self.collection_builtin(name, &pos, a.clone(), l) {
             return result;
         }
-        if name == "arrow" {
+        if name == "arrow"
+            && a.keys()
+                .any(|k| crate::migration::legacy_arrow_parameter(k))
+        {
             return Err(self.error(
                 "E_API_MIGRATION",
-                "arrow 已移除；使用 line(..., end_head=head(...))",
+                "旧线条箭头参数请迁移到 line(..., end_head=head(...))；arrow 现在是闭合形状",
                 l,
             ));
         }

@@ -17,13 +17,13 @@ Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. E
 
 ## Composition
 
-Target a curve’s arc-length midpoint with text and use its tangent_angle for rotation. offset_space=target applies tangent/normal offsets; choose incoming or outgoing at a corner first. Connect physical coordinates, data points or anchors with start/end in add. start_offset/end_offset adjust each endpoint, while offset translates the whole line. Each endpoint frame may be container or target.
+Target a curve’s arc-length midpoint with text and use its tangent_angle for rotation. offset_space=target applies tangent/normal offsets; choose incoming or outgoing at a corner first. Connect physical coordinates, data points or anchors with start/end in add. start_offset/end_offset adjust each endpoint, while offset translates the whole instance. Each endpoint frame may be container or target.
 
 <!-- example:examples/gallery/positioning/anchors.lay -->
 
 ## Common errors and limits
 
-A candidate collection cannot be passed directly to target. Indexing an empty collection errors; continuous overlap and infinitely many nearest points are not arbitrarily sampled. self binds only in anchor, and unplaced material cannot serve as a target. Connections require line material and both endpoints, exclusive with explicit anchor/target/rotation/size. Endpoints belong to the same container; overall offset_space accepts container only.
+A candidate collection cannot be passed directly to target. Indexing an empty collection errors; continuous overlap and infinitely many nearest points are not arbitrarily sampled. self binds only in anchor, and unplaced material cannot serve as a target. Connections require line or filled-arrow material and both endpoints, exclusive with explicit anchor/target/rotation/size. Endpoints belong to the same container; overall offset_space accepts container only.
 
 ## Individual functions
 
@@ -45,7 +45,7 @@ Returns: anchor
 
 ### add
 
-Place material in a canvas or group using anchor/target, or connect two start/end points with line material. Offset translates the entire instance. Reuse material with independent style overrides.
+Place material in a canvas or group using anchor/target, or connect two start/end points with line or filled-arrow material. Offset translates the entire instance. Reuse material with independent style overrides.
 
 Returns: A placed instance with measured dimensions and anchors for subsequent placement.
 
@@ -145,7 +145,7 @@ Returns: path_anchor
 
 ### Two-endpoint connections
 
-Define reusable styling with `line()` and choose its geometry in `add`. Mix physical coordinate pairs, instance anchors, `chart.data(...)` and explicitly indexed geometry-query anchors in the current container.
+Define reusable styling with `line()` or `arrow()` and choose endpoints in `add`. Connecting `arrow.arc()` also requires a sweep angle or signed radius. Mix physical coordinate pairs, instance anchors, `chart.data(...)` and explicitly indexed geometry-query anchors in the current container.
 
 <!-- example:examples/gallery/positioning/line-connections.lay -->
 
@@ -175,7 +175,7 @@ page.add(dot, anchor=center,
          target=placed.ink.boundary.nearest(to=placed.bounds.top_left)[0])
 ```
 
-An arrow's `path` represents the complete logical centerline, including the portion under its head. A line's `path.bounds` may have zero height; `ink.bounds` includes width, caps and the head. These views cover native vector geometry. Images and text retain `bounds`; no pixel or glyph outlines are extracted.
+A line with arrowheads keeps its complete logical centerline in `path`, including the portion under its head. A filled arrow uses `path` for its closed outline and `centerline` for its logical route; `.centerline.length` returns arc length. See [shape arrows](arrows.en.md). A line's `path.bounds` may have zero height; `ink.bounds` includes width, caps and the head. These views cover native vector geometry. Images and text retain `bounds`; no pixel or glyph outlines are extracted.
 
 ### Nodes, segments and points along a route
 

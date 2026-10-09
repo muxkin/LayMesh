@@ -13,6 +13,12 @@ pub fn resolved_path(n: &Json, transform: Affine) -> BezPath {
     }
     let tol = 0.0001 / magnification.max(1.);
     let kind = jstr(recipe, "kind", "");
+    if kind == "arrow" {
+        let origin = &recipe["origin"];
+        return transform
+            * Affine::translate((-origin[0].as_f64().unwrap(), -origin[1].as_f64().unwrap()))
+            * crate::arrows::resolved(recipe, tol);
+    }
     if kind == "polar" {
         return transform * crate::plot::resolved_polar_path(recipe, tol);
     }

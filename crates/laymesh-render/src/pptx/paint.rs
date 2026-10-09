@@ -155,7 +155,10 @@ impl Writer<'_> {
     pub(super) fn emit_shape(&mut self, name: &str, g: Geometry, fill: &str, line: &str) -> String {
         let id = self.id();
         self.bounds.push(g.bounds);
-        if fill.starts_with("<a:blipFill>") {
+        // LibreOffice ignores fillRect insets on p:pic and stretches contain
+        // fills across the geometry. A shape's a:blipFill preserves the same
+        // original image and editable outline, and honors those insets.
+        if fill.starts_with("<a:blipFill>") && fill.contains(&relative_rect("fillRect", [0.; 4])) {
             let fill = fill.replace("a:blipFill", "p:blipFill");
             format!(
                 "<p:pic><p:nvPicPr><p:cNvPr id=\"{id}\" name=\"{}\"/><p:cNvPicPr><a:picLocks noChangeAspect=\"1\"/></p:cNvPicPr><p:nvPr/></p:nvPicPr>{fill}<p:spPr>{}{}{line}</p:spPr></p:pic>",

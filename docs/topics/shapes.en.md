@@ -23,7 +23,7 @@ Use line() or style-only line(...) as material and supply start/end in add, or r
 
 ## Common errors and limits
 
-Closed subpaths reject heads; each open subpath receives its own endpoint styles. Short lines do not shrink heads. Zero-length layout retains cap/head dimension rules while path length remains zero. arrow(...) is removed; migrate to line(...,end_head=head(...)). Missing material geometry without start/end is reported at add. Coincident connection endpoints error rather than creating a zero-length head.
+Closed subpaths reject heads; each open subpath receives its own endpoint styles. Short lines do not shrink heads. Zero-length layout retains cap/head dimension rules while path length remains zero. arrow(...) creates a filled shape; line arrows use line(...,end_head=head(...)). Missing material geometry without start/end is reported at add. Coincident connection endpoints error rather than creating a zero-length head.
 
 ## Individual functions
 
@@ -205,7 +205,7 @@ Use rect, ellipse, polygon, polyline, path, line for vector materials. Path coor
 
 ### Line direction and endpoint styles
 
-`arrow(...)` has been removed. Use `line(...,end_head=head(...))`. Editors report the migration and offer a fix for safely identifiable builtin calls.
+Use `line(...,end_head=head(...))` for line heads and [arrow() and its templates](arrows.en.md) for filled arrows. Identifiable legacy line-arrow calls retain migration diagnostics.
 
 ```lay
 page.add(line(length=40mm,angle=30deg,line_width=1mm,

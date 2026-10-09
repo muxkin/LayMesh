@@ -4004,8 +4004,8 @@
     },
     {
       "name": "add",
-      "description": "将素材放置到画布或组合中；使用 anchor/target 单点定位，或为 line 指定 start/end 双端点连接。offset 平移整个实例，同一素材可重复放置并独立覆盖样式。",
-      "descriptionEn": "Place material in a canvas or group using anchor/target, or connect two start/end points with line material. Offset translates the entire instance. Reuse material with independent style overrides.",
+      "description": "将素材放置到画布或组合中；使用 anchor/target 单点定位，或为 line 与形状箭头指定 start/end 双端点连接。offset 平移整个实例，同一素材可重复放置并独立覆盖样式。",
+      "descriptionEn": "Place material in a canvas or group using anchor/target, or connect two start/end points with line or filled-arrow material. Offset translates the entire instance. Reuse material with independent style overrides.",
       "returns": {
         "zh": "已放置实例；可读取测量尺寸并引用其锚点继续定位。",
         "en": "A placed instance with measured dimensions and anchors for subsequent placement."
@@ -4614,15 +4614,15 @@
           "name": "start",
           "type": "anchor | (length, length)",
           "unit": "none",
-          "description": "线条连接起点：当前容器中的物理坐标或锚点；start/end 必须同时指定，与 anchor/target/rotation/size 互斥；覆盖本次实例的素材几何",
-          "descriptionEn": "Start of a line connection: physical coordinates or an anchor in the current container. Both start/end are required, exclusive with anchor/target/rotation/size; overrides material geometry for this placement"
+          "description": "line/arrow 双端点连接的坐标或锚点",
+          "descriptionEn": "Coordinate or anchor for a line/arrow endpoint connection"
         },
         {
           "name": "end",
           "type": "anchor | (length, length)",
           "unit": "none",
-          "description": "线条连接终点：当前容器中的物理坐标或锚点；start/end 必须同时指定，与 anchor/target/rotation/size 互斥；覆盖本次实例的素材几何",
-          "descriptionEn": "End of a line connection: physical coordinates or an anchor in the current container. Both start/end are required, exclusive with anchor/target/rotation/size; overrides material geometry for this placement"
+          "description": "line/arrow 双端点连接的坐标或锚点",
+          "descriptionEn": "Coordinate or anchor for a line/arrow endpoint connection"
         },
         {
           "name": "start_offset",
@@ -4691,6 +4691,65 @@
           "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
           "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
           "default": "[]"
+        },
+        {
+          "name": "shaft_width",
+          "type": "length | (length,length) | (number,length)[]",
+          "unit": "none",
+          "description": "箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值",
+          "descriptionEn": "Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation",
+          "default": "3mm"
+        },
+        {
+          "name": "heads",
+          "type": "enum",
+          "unit": "none",
+          "description": "头部所在端；燕尾只支持单头",
+          "descriptionEn": "Head endpoints; chevrons support one head only",
+          "default": "end",
+          "values": [
+            "start",
+            "end",
+            "both"
+          ],
+          "valueDescriptions": {
+            "start": {
+              "zh": "起点头部",
+              "en": "Start head"
+            },
+            "end": {
+              "zh": "终点头部",
+              "en": "End head"
+            },
+            "both": {
+              "zh": "双头",
+              "en": "Both heads"
+            }
+          }
+        },
+        {
+          "name": "head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "twice the corresponding neck width"
+        },
+        {
+          "name": "start_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "end_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
         }
       ],
       "positional": [
@@ -15621,6 +15680,1598 @@
       ],
       "positional": [],
       "required": []
+    },
+    {
+      "name": "arrow",
+      "description": "创建可复用的直箭头形状；可在 add 中通过 start/end 连接锚点，使用 fill、border_* 与 effects。",
+      "descriptionEn": "Create a reusable filled straight arrow. Connect anchors using start/end in add, and style with fill, border_* and effects.",
+      "returns": {
+        "zh": "可复用的形状箭头素材。",
+        "en": "Reusable filled arrow material."
+      },
+      "required": [],
+      "parameters": [
+        {
+          "name": "length",
+          "type": "length",
+          "unit": "geometry",
+          "description": "线段非负长度，与 dx/dy 互斥",
+          "descriptionEn": "Nonnegative line length; mutually exclusive with dx/dy"
+        },
+        {
+          "name": "angle",
+          "type": "angle",
+          "unit": "deg",
+          "description": "局部方向；0 朝右，90 朝下；零长度必须显式指定",
+          "descriptionEn": "Local direction: 0 right, 90 down; required explicitly for zero length",
+          "default": "0deg"
+        },
+        {
+          "name": "dx",
+          "unit": "geometry",
+          "type": "length",
+          "description": "线段水平位移；与 dy 同时指定，与 length/angle 互斥",
+          "descriptionEn": "Horizontal line displacement; requires dy, exclusive with length/angle"
+        },
+        {
+          "name": "dy",
+          "unit": "geometry",
+          "type": "length",
+          "description": "线段竖直位移；与 dx 同时指定，与 length/angle 互斥",
+          "descriptionEn": "Vertical line displacement; requires dx, exclusive with length/angle"
+        },
+        {
+          "name": "shaft_width",
+          "type": "length | (length,length) | (number,length)[]",
+          "unit": "none",
+          "description": "箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值",
+          "descriptionEn": "Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation",
+          "default": "3mm"
+        },
+        {
+          "name": "heads",
+          "type": "enum",
+          "unit": "none",
+          "description": "头部所在端；燕尾只支持单头",
+          "descriptionEn": "Head endpoints; chevrons support one head only",
+          "default": "end",
+          "values": [
+            "start",
+            "end",
+            "both"
+          ],
+          "valueDescriptions": {
+            "start": {
+              "zh": "起点头部",
+              "en": "Start head"
+            },
+            "end": {
+              "zh": "终点头部",
+              "en": "End head"
+            },
+            "both": {
+              "zh": "双头",
+              "en": "Both heads"
+            }
+          }
+        },
+        {
+          "name": "head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "twice the corresponding neck width"
+        },
+        {
+          "name": "start_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "end_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "class",
+          "unit": "none",
+          "type": "string",
+          "description": "空格分隔的 LCSS 类名",
+          "descriptionEn": "Space-separated LCSS class names",
+          "default": "\"\"",
+          "example": "\"paper annotation\""
+        },
+        {
+          "name": "fill",
+          "unit": "none",
+          "type": "paint",
+          "description": "形状内部的颜色、渐变、纹理或图片",
+          "descriptionEn": "Interior color, gradient, pattern or image paint",
+          "default": "#000000"
+        },
+        {
+          "name": "border_color",
+          "unit": "none",
+          "type": "color",
+          "description": "封闭轮廓颜色，none 表示无边框",
+          "descriptionEn": "Closed-outline color; none disables the border",
+          "default": "none"
+        },
+        {
+          "name": "border_width",
+          "unit": "pt",
+          "type": "length",
+          "description": "封闭轮廓线宽；裸值为 pt",
+          "descriptionEn": "Closed-outline width; unitless values are pt"
+        },
+        {
+          "name": "border_style",
+          "unit": "none",
+          "type": "enum",
+          "description": "边框线型；与填充独立",
+          "descriptionEn": "Border line pattern, independent of fill",
+          "default": "solid",
+          "values": [
+            "none",
+            "solid",
+            "dashed",
+            "dotted",
+            "dash_dot",
+            "double",
+            "triple"
+          ],
+          "valueDescriptions": {
+            "none": {
+              "zh": "不绘制此项",
+              "en": "Do not draw this item"
+            },
+            "solid": {
+              "zh": "连续实线",
+              "en": "Continuous solid stroke"
+            },
+            "dashed": {
+              "zh": "虚线；可用 dash 参数覆盖长度",
+              "en": "Dashed stroke; explicit dash values override the pattern"
+            },
+            "dotted": {
+              "zh": "点线",
+              "en": "Dotted stroke"
+            },
+            "dash_dot": {
+              "zh": "点划线",
+              "en": "Dash-dot stroke"
+            },
+            "double": {
+              "zh": "双线描边",
+              "en": "Double compound stroke"
+            },
+            "triple": {
+              "zh": "三线描边",
+              "en": "Triple compound stroke"
+            }
+          }
+        },
+        {
+          "name": "border_dash",
+          "unit": "pt",
+          "type": "length[]",
+          "description": "交替的边框线段和间隔长度列表；须成对",
+          "descriptionEn": "Alternating border segments and gaps, in pairs"
+        },
+        {
+          "name": "border_dash_offset",
+          "unit": "pt",
+          "type": "length",
+          "description": "虚线相位；裸值为 pt",
+          "descriptionEn": "Border dash phase; unitless values are pt",
+          "default": "0"
+        },
+        {
+          "name": "border_cap",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓虚线端点形状",
+          "descriptionEn": "Outline dash endpoint shape",
+          "default": "butt",
+          "values": [
+            "butt",
+            "round",
+            "square"
+          ],
+          "valueDescriptions": {
+            "butt": {
+              "zh": "平端帽，不向端点外延伸",
+              "en": "Flat cap; does not extend beyond the endpoint"
+            },
+            "round": {
+              "zh": "圆端帽，向外延伸半个线宽",
+              "en": "Round cap; extends half the stroke width"
+            },
+            "square": {
+              "zh": "方端帽，向外延伸半个线宽",
+              "en": "Square cap; extends half the stroke width"
+            }
+          }
+        },
+        {
+          "name": "border_join",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓交点形状",
+          "descriptionEn": "Outline join",
+          "default": "miter",
+          "values": [
+            "miter",
+            "round",
+            "bevel"
+          ],
+          "valueDescriptions": {
+            "miter": {
+              "zh": "延长边缘形成尖角，受尖角限制约束",
+              "en": "Extend edges to a pointed join, subject to the miter limit"
+            },
+            "round": {
+              "zh": "以圆弧连接相邻描边边缘",
+              "en": "Join adjacent stroke edges with a circular arc"
+            },
+            "bevel": {
+              "zh": "以平边截去连接尖角",
+              "en": "Cut off the corner with a straight edge"
+            }
+          }
+        },
+        {
+          "name": "border_miter_limit",
+          "unit": "none",
+          "type": "value",
+          "description": "尖角的最大延伸与线宽之比",
+          "descriptionEn": "Maximum miter extension relative to line width",
+          "default": "4"
+        },
+        {
+          "name": "border_opacity",
+          "unit": "none",
+          "type": "value",
+          "description": "边框独立透明度 0–1",
+          "descriptionEn": "Independent border opacity, 0–1",
+          "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
+        }
+      ]
+    },
+    {
+      "name": "arrow.arc",
+      "description": "创建弧形箭身并沿末端切线接出直边三角头；总扫角包含头部，连接时将头部计入端点求解。",
+      "descriptionEn": "Append straight triangular heads along an arc shaft’s endpoint tangents. The total sweep includes heads; connections solve for the complete endpoints.",
+      "returns": {
+        "zh": "可复用的形状箭头素材。",
+        "en": "Reusable filled arrow material."
+      },
+      "required": [],
+      "parameters": [
+        {
+          "name": "radius",
+          "type": "length",
+          "unit": "geometry",
+          "description": "圆弧箭身中心线的半径；本地为正，连接时正负选择顺/逆时针小弧，端点约束计入头部",
+          "descriptionEn": "Radius of the arc shaft centerline; positive locally, signed for clockwise/counterclockwise minor connections. Endpoint constraints include heads"
+        },
+        {
+          "name": "start_angle",
+          "type": "angle",
+          "unit": "none",
+          "description": "最终逻辑起点相对圆心的极角；连接放置时由端点求解",
+          "descriptionEn": "Polar angle of the final logical start around the circle center; solved from endpoints for connections",
+          "default": "0deg"
+        },
+        {
+          "name": "sweep_angle",
+          "type": "angle",
+          "unit": "none",
+          "description": "包含两端头部的总极角扫角；正值顺时针，0 < 绝对值 < 360deg，须留有正箭身扫角",
+          "descriptionEn": "Total polar sweep including heads; positive clockwise, 0 < absolute value < 360deg, with positive remaining shaft sweep"
+        },
+        {
+          "name": "shaft_width",
+          "type": "length | (length,length) | (number,length)[]",
+          "unit": "none",
+          "description": "箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值",
+          "descriptionEn": "Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation",
+          "default": "3mm"
+        },
+        {
+          "name": "heads",
+          "type": "enum",
+          "unit": "none",
+          "description": "头部所在端；燕尾只支持单头",
+          "descriptionEn": "Head endpoints; chevrons support one head only",
+          "default": "end",
+          "values": [
+            "start",
+            "end",
+            "both"
+          ],
+          "valueDescriptions": {
+            "start": {
+              "zh": "起点头部",
+              "en": "Start head"
+            },
+            "end": {
+              "zh": "终点头部",
+              "en": "End head"
+            },
+            "both": {
+              "zh": "双头",
+              "en": "Both heads"
+            }
+          }
+        },
+        {
+          "name": "head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "twice the corresponding neck width"
+        },
+        {
+          "name": "start_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "end_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "class",
+          "unit": "none",
+          "type": "string",
+          "description": "空格分隔的 LCSS 类名",
+          "descriptionEn": "Space-separated LCSS class names",
+          "default": "\"\"",
+          "example": "\"paper annotation\""
+        },
+        {
+          "name": "fill",
+          "unit": "none",
+          "type": "paint",
+          "description": "形状内部的颜色、渐变、纹理或图片",
+          "descriptionEn": "Interior color, gradient, pattern or image paint",
+          "default": "#000000"
+        },
+        {
+          "name": "border_color",
+          "unit": "none",
+          "type": "color",
+          "description": "封闭轮廓颜色，none 表示无边框",
+          "descriptionEn": "Closed-outline color; none disables the border",
+          "default": "none"
+        },
+        {
+          "name": "border_width",
+          "unit": "pt",
+          "type": "length",
+          "description": "封闭轮廓线宽；裸值为 pt",
+          "descriptionEn": "Closed-outline width; unitless values are pt"
+        },
+        {
+          "name": "border_style",
+          "unit": "none",
+          "type": "enum",
+          "description": "边框线型；与填充独立",
+          "descriptionEn": "Border line pattern, independent of fill",
+          "default": "solid",
+          "values": [
+            "none",
+            "solid",
+            "dashed",
+            "dotted",
+            "dash_dot",
+            "double",
+            "triple"
+          ],
+          "valueDescriptions": {
+            "none": {
+              "zh": "不绘制此项",
+              "en": "Do not draw this item"
+            },
+            "solid": {
+              "zh": "连续实线",
+              "en": "Continuous solid stroke"
+            },
+            "dashed": {
+              "zh": "虚线；可用 dash 参数覆盖长度",
+              "en": "Dashed stroke; explicit dash values override the pattern"
+            },
+            "dotted": {
+              "zh": "点线",
+              "en": "Dotted stroke"
+            },
+            "dash_dot": {
+              "zh": "点划线",
+              "en": "Dash-dot stroke"
+            },
+            "double": {
+              "zh": "双线描边",
+              "en": "Double compound stroke"
+            },
+            "triple": {
+              "zh": "三线描边",
+              "en": "Triple compound stroke"
+            }
+          }
+        },
+        {
+          "name": "border_dash",
+          "unit": "pt",
+          "type": "length[]",
+          "description": "交替的边框线段和间隔长度列表；须成对",
+          "descriptionEn": "Alternating border segments and gaps, in pairs"
+        },
+        {
+          "name": "border_dash_offset",
+          "unit": "pt",
+          "type": "length",
+          "description": "虚线相位；裸值为 pt",
+          "descriptionEn": "Border dash phase; unitless values are pt",
+          "default": "0"
+        },
+        {
+          "name": "border_cap",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓虚线端点形状",
+          "descriptionEn": "Outline dash endpoint shape",
+          "default": "butt",
+          "values": [
+            "butt",
+            "round",
+            "square"
+          ],
+          "valueDescriptions": {
+            "butt": {
+              "zh": "平端帽，不向端点外延伸",
+              "en": "Flat cap; does not extend beyond the endpoint"
+            },
+            "round": {
+              "zh": "圆端帽，向外延伸半个线宽",
+              "en": "Round cap; extends half the stroke width"
+            },
+            "square": {
+              "zh": "方端帽，向外延伸半个线宽",
+              "en": "Square cap; extends half the stroke width"
+            }
+          }
+        },
+        {
+          "name": "border_join",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓交点形状",
+          "descriptionEn": "Outline join",
+          "default": "miter",
+          "values": [
+            "miter",
+            "round",
+            "bevel"
+          ],
+          "valueDescriptions": {
+            "miter": {
+              "zh": "延长边缘形成尖角，受尖角限制约束",
+              "en": "Extend edges to a pointed join, subject to the miter limit"
+            },
+            "round": {
+              "zh": "以圆弧连接相邻描边边缘",
+              "en": "Join adjacent stroke edges with a circular arc"
+            },
+            "bevel": {
+              "zh": "以平边截去连接尖角",
+              "en": "Cut off the corner with a straight edge"
+            }
+          }
+        },
+        {
+          "name": "border_miter_limit",
+          "unit": "none",
+          "type": "value",
+          "description": "尖角的最大延伸与线宽之比",
+          "descriptionEn": "Maximum miter extension relative to line width",
+          "default": "4"
+        },
+        {
+          "name": "border_opacity",
+          "unit": "none",
+          "type": "value",
+          "description": "边框独立透明度 0–1",
+          "descriptionEn": "Independent border opacity, 0–1",
+          "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
+        }
+      ],
+      "namespaceConstructor": true
+    },
+    {
+      "name": "arrow.bent",
+      "description": "创建 L 形折弯箭头；可设置中心线跨度与圆角，并连接两个锚点。",
+      "descriptionEn": "Create an L-shaped arrow with centerline span and corner radius, optionally connected between anchors.",
+      "returns": {
+        "zh": "可复用的形状箭头素材。",
+        "en": "Reusable filled arrow material."
+      },
+      "required": [],
+      "parameters": [
+        {
+          "name": "span",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "折弯中心线的水平、垂直跨度",
+          "descriptionEn": "Horizontal and vertical centerline span",
+          "default": "(30mm,20mm)"
+        },
+        {
+          "name": "corner_radius",
+          "type": "length",
+          "unit": "geometry",
+          "description": "中心线转角半径，0 为尖角",
+          "descriptionEn": "Centerline corner radius; zero makes a sharp corner",
+          "default": "min(span)/4"
+        },
+        {
+          "name": "shaft_width",
+          "type": "length | (length,length) | (number,length)[]",
+          "unit": "none",
+          "description": "箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值",
+          "descriptionEn": "Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation",
+          "default": "3mm"
+        },
+        {
+          "name": "heads",
+          "type": "enum",
+          "unit": "none",
+          "description": "头部所在端；燕尾只支持单头",
+          "descriptionEn": "Head endpoints; chevrons support one head only",
+          "default": "end",
+          "values": [
+            "start",
+            "end",
+            "both"
+          ],
+          "valueDescriptions": {
+            "start": {
+              "zh": "起点头部",
+              "en": "Start head"
+            },
+            "end": {
+              "zh": "终点头部",
+              "en": "End head"
+            },
+            "both": {
+              "zh": "双头",
+              "en": "Both heads"
+            }
+          }
+        },
+        {
+          "name": "head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "twice the corresponding neck width"
+        },
+        {
+          "name": "start_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "end_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "class",
+          "unit": "none",
+          "type": "string",
+          "description": "空格分隔的 LCSS 类名",
+          "descriptionEn": "Space-separated LCSS class names",
+          "default": "\"\"",
+          "example": "\"paper annotation\""
+        },
+        {
+          "name": "fill",
+          "unit": "none",
+          "type": "paint",
+          "description": "形状内部的颜色、渐变、纹理或图片",
+          "descriptionEn": "Interior color, gradient, pattern or image paint",
+          "default": "#000000"
+        },
+        {
+          "name": "border_color",
+          "unit": "none",
+          "type": "color",
+          "description": "封闭轮廓颜色，none 表示无边框",
+          "descriptionEn": "Closed-outline color; none disables the border",
+          "default": "none"
+        },
+        {
+          "name": "border_width",
+          "unit": "pt",
+          "type": "length",
+          "description": "封闭轮廓线宽；裸值为 pt",
+          "descriptionEn": "Closed-outline width; unitless values are pt"
+        },
+        {
+          "name": "border_style",
+          "unit": "none",
+          "type": "enum",
+          "description": "边框线型；与填充独立",
+          "descriptionEn": "Border line pattern, independent of fill",
+          "default": "solid",
+          "values": [
+            "none",
+            "solid",
+            "dashed",
+            "dotted",
+            "dash_dot",
+            "double",
+            "triple"
+          ],
+          "valueDescriptions": {
+            "none": {
+              "zh": "不绘制此项",
+              "en": "Do not draw this item"
+            },
+            "solid": {
+              "zh": "连续实线",
+              "en": "Continuous solid stroke"
+            },
+            "dashed": {
+              "zh": "虚线；可用 dash 参数覆盖长度",
+              "en": "Dashed stroke; explicit dash values override the pattern"
+            },
+            "dotted": {
+              "zh": "点线",
+              "en": "Dotted stroke"
+            },
+            "dash_dot": {
+              "zh": "点划线",
+              "en": "Dash-dot stroke"
+            },
+            "double": {
+              "zh": "双线描边",
+              "en": "Double compound stroke"
+            },
+            "triple": {
+              "zh": "三线描边",
+              "en": "Triple compound stroke"
+            }
+          }
+        },
+        {
+          "name": "border_dash",
+          "unit": "pt",
+          "type": "length[]",
+          "description": "交替的边框线段和间隔长度列表；须成对",
+          "descriptionEn": "Alternating border segments and gaps, in pairs"
+        },
+        {
+          "name": "border_dash_offset",
+          "unit": "pt",
+          "type": "length",
+          "description": "虚线相位；裸值为 pt",
+          "descriptionEn": "Border dash phase; unitless values are pt",
+          "default": "0"
+        },
+        {
+          "name": "border_cap",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓虚线端点形状",
+          "descriptionEn": "Outline dash endpoint shape",
+          "default": "butt",
+          "values": [
+            "butt",
+            "round",
+            "square"
+          ],
+          "valueDescriptions": {
+            "butt": {
+              "zh": "平端帽，不向端点外延伸",
+              "en": "Flat cap; does not extend beyond the endpoint"
+            },
+            "round": {
+              "zh": "圆端帽，向外延伸半个线宽",
+              "en": "Round cap; extends half the stroke width"
+            },
+            "square": {
+              "zh": "方端帽，向外延伸半个线宽",
+              "en": "Square cap; extends half the stroke width"
+            }
+          }
+        },
+        {
+          "name": "border_join",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓交点形状",
+          "descriptionEn": "Outline join",
+          "default": "miter",
+          "values": [
+            "miter",
+            "round",
+            "bevel"
+          ],
+          "valueDescriptions": {
+            "miter": {
+              "zh": "延长边缘形成尖角，受尖角限制约束",
+              "en": "Extend edges to a pointed join, subject to the miter limit"
+            },
+            "round": {
+              "zh": "以圆弧连接相邻描边边缘",
+              "en": "Join adjacent stroke edges with a circular arc"
+            },
+            "bevel": {
+              "zh": "以平边截去连接尖角",
+              "en": "Cut off the corner with a straight edge"
+            }
+          }
+        },
+        {
+          "name": "border_miter_limit",
+          "unit": "none",
+          "type": "value",
+          "description": "尖角的最大延伸与线宽之比",
+          "descriptionEn": "Maximum miter extension relative to line width",
+          "default": "4"
+        },
+        {
+          "name": "border_opacity",
+          "unit": "none",
+          "type": "value",
+          "description": "边框独立透明度 0–1",
+          "descriptionEn": "Independent border opacity, 0–1",
+          "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
+        }
+      ],
+      "namespaceConstructor": true
+    },
+    {
+      "name": "arrow.uturn",
+      "description": "创建 U 形回转箭头；双端连接调整中心线，保留箭身与头部物理尺寸。",
+      "descriptionEn": "Create a U-turn arrow. Endpoint connections transform its centerline while retaining physical shaft and head dimensions.",
+      "returns": {
+        "zh": "可复用的形状箭头素材。",
+        "en": "Reusable filled arrow material."
+      },
+      "required": [],
+      "parameters": [
+        {
+          "name": "span",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "折弯中心线的水平、垂直跨度",
+          "descriptionEn": "Horizontal and vertical centerline span",
+          "default": "(30mm,20mm)"
+        },
+        {
+          "name": "corner_radius",
+          "type": "length",
+          "unit": "geometry",
+          "description": "中心线转角半径，0 为尖角",
+          "descriptionEn": "Centerline corner radius; zero makes a sharp corner",
+          "default": "min(span)/4"
+        },
+        {
+          "name": "shaft_width",
+          "type": "length | (length,length) | (number,length)[]",
+          "unit": "none",
+          "description": "箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值",
+          "descriptionEn": "Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation",
+          "default": "3mm"
+        },
+        {
+          "name": "heads",
+          "type": "enum",
+          "unit": "none",
+          "description": "头部所在端；燕尾只支持单头",
+          "descriptionEn": "Head endpoints; chevrons support one head only",
+          "default": "end",
+          "values": [
+            "start",
+            "end",
+            "both"
+          ],
+          "valueDescriptions": {
+            "start": {
+              "zh": "起点头部",
+              "en": "Start head"
+            },
+            "end": {
+              "zh": "终点头部",
+              "en": "End head"
+            },
+            "both": {
+              "zh": "双头",
+              "en": "Both heads"
+            }
+          }
+        },
+        {
+          "name": "head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "twice the corresponding neck width"
+        },
+        {
+          "name": "start_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "end_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "class",
+          "unit": "none",
+          "type": "string",
+          "description": "空格分隔的 LCSS 类名",
+          "descriptionEn": "Space-separated LCSS class names",
+          "default": "\"\"",
+          "example": "\"paper annotation\""
+        },
+        {
+          "name": "fill",
+          "unit": "none",
+          "type": "paint",
+          "description": "形状内部的颜色、渐变、纹理或图片",
+          "descriptionEn": "Interior color, gradient, pattern or image paint",
+          "default": "#000000"
+        },
+        {
+          "name": "border_color",
+          "unit": "none",
+          "type": "color",
+          "description": "封闭轮廓颜色，none 表示无边框",
+          "descriptionEn": "Closed-outline color; none disables the border",
+          "default": "none"
+        },
+        {
+          "name": "border_width",
+          "unit": "pt",
+          "type": "length",
+          "description": "封闭轮廓线宽；裸值为 pt",
+          "descriptionEn": "Closed-outline width; unitless values are pt"
+        },
+        {
+          "name": "border_style",
+          "unit": "none",
+          "type": "enum",
+          "description": "边框线型；与填充独立",
+          "descriptionEn": "Border line pattern, independent of fill",
+          "default": "solid",
+          "values": [
+            "none",
+            "solid",
+            "dashed",
+            "dotted",
+            "dash_dot",
+            "double",
+            "triple"
+          ],
+          "valueDescriptions": {
+            "none": {
+              "zh": "不绘制此项",
+              "en": "Do not draw this item"
+            },
+            "solid": {
+              "zh": "连续实线",
+              "en": "Continuous solid stroke"
+            },
+            "dashed": {
+              "zh": "虚线；可用 dash 参数覆盖长度",
+              "en": "Dashed stroke; explicit dash values override the pattern"
+            },
+            "dotted": {
+              "zh": "点线",
+              "en": "Dotted stroke"
+            },
+            "dash_dot": {
+              "zh": "点划线",
+              "en": "Dash-dot stroke"
+            },
+            "double": {
+              "zh": "双线描边",
+              "en": "Double compound stroke"
+            },
+            "triple": {
+              "zh": "三线描边",
+              "en": "Triple compound stroke"
+            }
+          }
+        },
+        {
+          "name": "border_dash",
+          "unit": "pt",
+          "type": "length[]",
+          "description": "交替的边框线段和间隔长度列表；须成对",
+          "descriptionEn": "Alternating border segments and gaps, in pairs"
+        },
+        {
+          "name": "border_dash_offset",
+          "unit": "pt",
+          "type": "length",
+          "description": "虚线相位；裸值为 pt",
+          "descriptionEn": "Border dash phase; unitless values are pt",
+          "default": "0"
+        },
+        {
+          "name": "border_cap",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓虚线端点形状",
+          "descriptionEn": "Outline dash endpoint shape",
+          "default": "butt",
+          "values": [
+            "butt",
+            "round",
+            "square"
+          ],
+          "valueDescriptions": {
+            "butt": {
+              "zh": "平端帽，不向端点外延伸",
+              "en": "Flat cap; does not extend beyond the endpoint"
+            },
+            "round": {
+              "zh": "圆端帽，向外延伸半个线宽",
+              "en": "Round cap; extends half the stroke width"
+            },
+            "square": {
+              "zh": "方端帽，向外延伸半个线宽",
+              "en": "Square cap; extends half the stroke width"
+            }
+          }
+        },
+        {
+          "name": "border_join",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓交点形状",
+          "descriptionEn": "Outline join",
+          "default": "miter",
+          "values": [
+            "miter",
+            "round",
+            "bevel"
+          ],
+          "valueDescriptions": {
+            "miter": {
+              "zh": "延长边缘形成尖角，受尖角限制约束",
+              "en": "Extend edges to a pointed join, subject to the miter limit"
+            },
+            "round": {
+              "zh": "以圆弧连接相邻描边边缘",
+              "en": "Join adjacent stroke edges with a circular arc"
+            },
+            "bevel": {
+              "zh": "以平边截去连接尖角",
+              "en": "Cut off the corner with a straight edge"
+            }
+          }
+        },
+        {
+          "name": "border_miter_limit",
+          "unit": "none",
+          "type": "value",
+          "description": "尖角的最大延伸与线宽之比",
+          "descriptionEn": "Maximum miter extension relative to line width",
+          "default": "4"
+        },
+        {
+          "name": "border_opacity",
+          "unit": "none",
+          "type": "value",
+          "description": "边框独立透明度 0–1",
+          "descriptionEn": "Independent border opacity, 0–1",
+          "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
+        }
+      ],
+      "namespaceConstructor": true
+    },
+    {
+      "name": "arrow.chevron",
+      "description": "创建单头燕尾箭头；尾部凹口与箭身组成同一个闭合轮廓。",
+      "descriptionEn": "Create a single-headed notched arrow whose tail and shaft share one continuous closed silhouette.",
+      "returns": {
+        "zh": "可复用的形状箭头素材。",
+        "en": "Reusable filled arrow material."
+      },
+      "required": [],
+      "parameters": [
+        {
+          "name": "length",
+          "type": "length",
+          "unit": "geometry",
+          "description": "线段非负长度，与 dx/dy 互斥",
+          "descriptionEn": "Nonnegative line length; mutually exclusive with dx/dy"
+        },
+        {
+          "name": "angle",
+          "type": "angle",
+          "unit": "deg",
+          "description": "局部方向；0 朝右，90 朝下；零长度必须显式指定",
+          "descriptionEn": "Local direction: 0 right, 90 down; required explicitly for zero length",
+          "default": "0deg"
+        },
+        {
+          "name": "dx",
+          "unit": "geometry",
+          "type": "length",
+          "description": "线段水平位移；与 dy 同时指定，与 length/angle 互斥",
+          "descriptionEn": "Horizontal line displacement; requires dy, exclusive with length/angle"
+        },
+        {
+          "name": "dy",
+          "unit": "geometry",
+          "type": "length",
+          "description": "线段竖直位移；与 dx 同时指定，与 length/angle 互斥",
+          "descriptionEn": "Vertical line displacement; requires dx, exclusive with length/angle"
+        },
+        {
+          "name": "notch_depth",
+          "type": "length",
+          "unit": "geometry",
+          "description": "无头端燕尾凹入深度",
+          "descriptionEn": "Notch depth at the unheaded tail",
+          "default": "tail shaft width"
+        },
+        {
+          "name": "shaft_width",
+          "type": "length | (length,length) | (number,length)[]",
+          "unit": "none",
+          "description": "箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值",
+          "descriptionEn": "Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation",
+          "default": "3mm"
+        },
+        {
+          "name": "heads",
+          "type": "enum",
+          "unit": "none",
+          "description": "头部所在端；燕尾只支持单头",
+          "descriptionEn": "Head endpoints; chevrons support one head only",
+          "default": "end",
+          "values": [
+            "start",
+            "end",
+            "both"
+          ],
+          "valueDescriptions": {
+            "start": {
+              "zh": "起点头部",
+              "en": "Start head"
+            },
+            "end": {
+              "zh": "终点头部",
+              "en": "End head"
+            },
+            "both": {
+              "zh": "双头",
+              "en": "Both heads"
+            }
+          }
+        },
+        {
+          "name": "head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "twice the corresponding neck width"
+        },
+        {
+          "name": "start_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "end_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "class",
+          "unit": "none",
+          "type": "string",
+          "description": "空格分隔的 LCSS 类名",
+          "descriptionEn": "Space-separated LCSS class names",
+          "default": "\"\"",
+          "example": "\"paper annotation\""
+        },
+        {
+          "name": "fill",
+          "unit": "none",
+          "type": "paint",
+          "description": "形状内部的颜色、渐变、纹理或图片",
+          "descriptionEn": "Interior color, gradient, pattern or image paint",
+          "default": "#000000"
+        },
+        {
+          "name": "border_color",
+          "unit": "none",
+          "type": "color",
+          "description": "封闭轮廓颜色，none 表示无边框",
+          "descriptionEn": "Closed-outline color; none disables the border",
+          "default": "none"
+        },
+        {
+          "name": "border_width",
+          "unit": "pt",
+          "type": "length",
+          "description": "封闭轮廓线宽；裸值为 pt",
+          "descriptionEn": "Closed-outline width; unitless values are pt"
+        },
+        {
+          "name": "border_style",
+          "unit": "none",
+          "type": "enum",
+          "description": "边框线型；与填充独立",
+          "descriptionEn": "Border line pattern, independent of fill",
+          "default": "solid",
+          "values": [
+            "none",
+            "solid",
+            "dashed",
+            "dotted",
+            "dash_dot",
+            "double",
+            "triple"
+          ],
+          "valueDescriptions": {
+            "none": {
+              "zh": "不绘制此项",
+              "en": "Do not draw this item"
+            },
+            "solid": {
+              "zh": "连续实线",
+              "en": "Continuous solid stroke"
+            },
+            "dashed": {
+              "zh": "虚线；可用 dash 参数覆盖长度",
+              "en": "Dashed stroke; explicit dash values override the pattern"
+            },
+            "dotted": {
+              "zh": "点线",
+              "en": "Dotted stroke"
+            },
+            "dash_dot": {
+              "zh": "点划线",
+              "en": "Dash-dot stroke"
+            },
+            "double": {
+              "zh": "双线描边",
+              "en": "Double compound stroke"
+            },
+            "triple": {
+              "zh": "三线描边",
+              "en": "Triple compound stroke"
+            }
+          }
+        },
+        {
+          "name": "border_dash",
+          "unit": "pt",
+          "type": "length[]",
+          "description": "交替的边框线段和间隔长度列表；须成对",
+          "descriptionEn": "Alternating border segments and gaps, in pairs"
+        },
+        {
+          "name": "border_dash_offset",
+          "unit": "pt",
+          "type": "length",
+          "description": "虚线相位；裸值为 pt",
+          "descriptionEn": "Border dash phase; unitless values are pt",
+          "default": "0"
+        },
+        {
+          "name": "border_cap",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓虚线端点形状",
+          "descriptionEn": "Outline dash endpoint shape",
+          "default": "butt",
+          "values": [
+            "butt",
+            "round",
+            "square"
+          ],
+          "valueDescriptions": {
+            "butt": {
+              "zh": "平端帽，不向端点外延伸",
+              "en": "Flat cap; does not extend beyond the endpoint"
+            },
+            "round": {
+              "zh": "圆端帽，向外延伸半个线宽",
+              "en": "Round cap; extends half the stroke width"
+            },
+            "square": {
+              "zh": "方端帽，向外延伸半个线宽",
+              "en": "Square cap; extends half the stroke width"
+            }
+          }
+        },
+        {
+          "name": "border_join",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓交点形状",
+          "descriptionEn": "Outline join",
+          "default": "miter",
+          "values": [
+            "miter",
+            "round",
+            "bevel"
+          ],
+          "valueDescriptions": {
+            "miter": {
+              "zh": "延长边缘形成尖角，受尖角限制约束",
+              "en": "Extend edges to a pointed join, subject to the miter limit"
+            },
+            "round": {
+              "zh": "以圆弧连接相邻描边边缘",
+              "en": "Join adjacent stroke edges with a circular arc"
+            },
+            "bevel": {
+              "zh": "以平边截去连接尖角",
+              "en": "Cut off the corner with a straight edge"
+            }
+          }
+        },
+        {
+          "name": "border_miter_limit",
+          "unit": "none",
+          "type": "value",
+          "description": "尖角的最大延伸与线宽之比",
+          "descriptionEn": "Maximum miter extension relative to line width",
+          "default": "4"
+        },
+        {
+          "name": "border_opacity",
+          "unit": "none",
+          "type": "value",
+          "description": "边框独立透明度 0–1",
+          "descriptionEn": "Independent border opacity, 0–1",
+          "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
+        }
+      ],
+      "namespaceConstructor": true
+    },
+    {
+      "name": "arrow.path",
+      "description": "保留完整自由开放路径作为箭身，在两端沿切线向外接出直边三角头；支持变宽与独立头部尺寸。",
+      "descriptionEn": "Preserve a complete custom open path as the shaft and append straight triangular heads along its outward endpoint tangents; supports variable width and independent head sizes.",
+      "returns": {
+        "zh": "可复用的形状箭头素材。",
+        "en": "Reusable filled arrow material."
+      },
+      "required": [
+        "path"
+      ],
+      "parameters": [
+        {
+          "name": "path",
+          "type": "material",
+          "unit": "none",
+          "description": "单条开放路径素材，保留原始曲线段；原路径端点为颈部，箭尖向外延伸",
+          "descriptionEn": "One open path material with its original curve segments preserved; source endpoints are necks and tips extend outward"
+        },
+        {
+          "name": "shaft_width",
+          "type": "length | (length,length) | (number,length)[]",
+          "unit": "none",
+          "description": "箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值",
+          "descriptionEn": "Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation",
+          "default": "3mm"
+        },
+        {
+          "name": "heads",
+          "type": "enum",
+          "unit": "none",
+          "description": "头部所在端；燕尾只支持单头",
+          "descriptionEn": "Head endpoints; chevrons support one head only",
+          "default": "end",
+          "values": [
+            "start",
+            "end",
+            "both"
+          ],
+          "valueDescriptions": {
+            "start": {
+              "zh": "起点头部",
+              "en": "Start head"
+            },
+            "end": {
+              "zh": "终点头部",
+              "en": "End head"
+            },
+            "both": {
+              "zh": "双头",
+              "en": "Both heads"
+            }
+          }
+        },
+        {
+          "name": "head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "twice the corresponding neck width"
+        },
+        {
+          "name": "start_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "end_head_size",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+          "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+          "default": "head_size"
+        },
+        {
+          "name": "class",
+          "unit": "none",
+          "type": "string",
+          "description": "空格分隔的 LCSS 类名",
+          "descriptionEn": "Space-separated LCSS class names",
+          "default": "\"\"",
+          "example": "\"paper annotation\""
+        },
+        {
+          "name": "fill",
+          "unit": "none",
+          "type": "paint",
+          "description": "形状内部的颜色、渐变、纹理或图片",
+          "descriptionEn": "Interior color, gradient, pattern or image paint",
+          "default": "#000000"
+        },
+        {
+          "name": "border_color",
+          "unit": "none",
+          "type": "color",
+          "description": "封闭轮廓颜色，none 表示无边框",
+          "descriptionEn": "Closed-outline color; none disables the border",
+          "default": "none"
+        },
+        {
+          "name": "border_width",
+          "unit": "pt",
+          "type": "length",
+          "description": "封闭轮廓线宽；裸值为 pt",
+          "descriptionEn": "Closed-outline width; unitless values are pt"
+        },
+        {
+          "name": "border_style",
+          "unit": "none",
+          "type": "enum",
+          "description": "边框线型；与填充独立",
+          "descriptionEn": "Border line pattern, independent of fill",
+          "default": "solid",
+          "values": [
+            "none",
+            "solid",
+            "dashed",
+            "dotted",
+            "dash_dot",
+            "double",
+            "triple"
+          ],
+          "valueDescriptions": {
+            "none": {
+              "zh": "不绘制此项",
+              "en": "Do not draw this item"
+            },
+            "solid": {
+              "zh": "连续实线",
+              "en": "Continuous solid stroke"
+            },
+            "dashed": {
+              "zh": "虚线；可用 dash 参数覆盖长度",
+              "en": "Dashed stroke; explicit dash values override the pattern"
+            },
+            "dotted": {
+              "zh": "点线",
+              "en": "Dotted stroke"
+            },
+            "dash_dot": {
+              "zh": "点划线",
+              "en": "Dash-dot stroke"
+            },
+            "double": {
+              "zh": "双线描边",
+              "en": "Double compound stroke"
+            },
+            "triple": {
+              "zh": "三线描边",
+              "en": "Triple compound stroke"
+            }
+          }
+        },
+        {
+          "name": "border_dash",
+          "unit": "pt",
+          "type": "length[]",
+          "description": "交替的边框线段和间隔长度列表；须成对",
+          "descriptionEn": "Alternating border segments and gaps, in pairs"
+        },
+        {
+          "name": "border_dash_offset",
+          "unit": "pt",
+          "type": "length",
+          "description": "虚线相位；裸值为 pt",
+          "descriptionEn": "Border dash phase; unitless values are pt",
+          "default": "0"
+        },
+        {
+          "name": "border_cap",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓虚线端点形状",
+          "descriptionEn": "Outline dash endpoint shape",
+          "default": "butt",
+          "values": [
+            "butt",
+            "round",
+            "square"
+          ],
+          "valueDescriptions": {
+            "butt": {
+              "zh": "平端帽，不向端点外延伸",
+              "en": "Flat cap; does not extend beyond the endpoint"
+            },
+            "round": {
+              "zh": "圆端帽，向外延伸半个线宽",
+              "en": "Round cap; extends half the stroke width"
+            },
+            "square": {
+              "zh": "方端帽，向外延伸半个线宽",
+              "en": "Square cap; extends half the stroke width"
+            }
+          }
+        },
+        {
+          "name": "border_join",
+          "unit": "none",
+          "type": "enum",
+          "description": "轮廓交点形状",
+          "descriptionEn": "Outline join",
+          "default": "miter",
+          "values": [
+            "miter",
+            "round",
+            "bevel"
+          ],
+          "valueDescriptions": {
+            "miter": {
+              "zh": "延长边缘形成尖角，受尖角限制约束",
+              "en": "Extend edges to a pointed join, subject to the miter limit"
+            },
+            "round": {
+              "zh": "以圆弧连接相邻描边边缘",
+              "en": "Join adjacent stroke edges with a circular arc"
+            },
+            "bevel": {
+              "zh": "以平边截去连接尖角",
+              "en": "Cut off the corner with a straight edge"
+            }
+          }
+        },
+        {
+          "name": "border_miter_limit",
+          "unit": "none",
+          "type": "value",
+          "description": "尖角的最大延伸与线宽之比",
+          "descriptionEn": "Maximum miter extension relative to line width",
+          "default": "4"
+        },
+        {
+          "name": "border_opacity",
+          "unit": "none",
+          "type": "value",
+          "description": "边框独立透明度 0–1",
+          "descriptionEn": "Independent border opacity, 0–1",
+          "default": "1"
+        },
+        {
+          "name": "effects",
+          "type": "effect[]",
+          "unit": "none",
+          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "default": "[]"
+        }
+      ],
+      "namespaceConstructor": true
     }
   ],
   "styleProperties": [
@@ -15671,7 +17322,12 @@
     "effects",
     "path",
     "warp",
-    "extrude"
+    "extrude",
+    "shaft_width",
+    "heads",
+    "head_size",
+    "start_head_size",
+    "end_head_size"
   ],
   "geometryTypes": {
     "instance": {
@@ -15689,7 +17345,8 @@
         "path": "geometry_path",
         "ink": "ink",
         "plot_area": "component",
-        "axes": "axes"
+        "axes": "axes",
+        "centerline": "geometry_path"
       },
       "methods": {},
       "description": "已放置实例的明确几何视图。",
@@ -15757,7 +17414,8 @@
         "nodes": "path_nodes",
         "controls": "control_nodes",
         "start": "path_anchor",
-        "end": "path_anchor"
+        "end": "path_anchor",
+        "length": "length"
       },
       "methods": {
         "at": "path_anchor",

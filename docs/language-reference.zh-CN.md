@@ -48,6 +48,7 @@ page = canvas(name="Figure 1", size=(180 mm, 120 mm),
 | `rect` | `size=(宽, 高)` | `fill="none"`、`border_radius=0`，以及下文的描边参数 | [outlines](../examples/outlines.lay) |
 | `ellipse` | `size=(宽, 高)` | `fill="none"` 与描边参数；不接受非零圆角 | [basic](../examples/basic.lay) |
 | `line` | `dx/dy` 或 `length/angle` | 完整逻辑中心线；零长度须显式角度；独立端帽和 `head(...)`；默认线宽 `0.3pt` | [端部规则](topics/shapes.zh-CN.md) |
+| `arrow` / `arrow.arc/bent/uturn/chevron/path` | 独立几何参数，或 `add(start=...,end=...)` | 闭合形状，支持变宽、双头、填充、边框与特效 | [形状箭头](topics/arrows.zh-CN.md) |
 | `group` | 无 | `g.add(...)` 构建子元素；可嵌套与重复放置 | [scripted](../examples/scripted.lay) |
 
 `text` 的 `font_weight` 须为 100–900 的整数；`align` 为 `left/center/right/justify`。设置 `size=(80, auto)` 后按 Unicode 换行机会排版，超长词再按字素边界换行；`\n` 强制换行。未设置宽度时保留单行或显式换行。放置时的 `size=(80, auto)` 可以覆盖定义时的文字排版宽度，重新计算行位置。[排版示例](../examples/typography.lay)同时演示混合字体、颜色、行内公式和独立公式。
@@ -107,9 +108,9 @@ second = page.add(photo,size=(40 mm, auto), anchor=top_left,
 
 `canvas.add(material, ...)` 与 `group.add(material, ...)` 的第一个参数是素材定义，返回实例。无需引用的实例可以直接写 `page.add(...)`。通用选项为 `anchor`（默认 `top_left`）、`target`（默认当前容器的左上角）、`offset=(0 mm,0 mm)`、`rotation=0` 和 `opacity=1`。`add` 顺序即从后到前的绘制顺序。九个锚点是 `top_left/top_center/top_right`、`middle_left/center/middle_right`、`bottom_left/bottom_center/bottom_right`，旋转后按轴对齐外接框求值。目标必须位于同一画布或组中且此前已经放置。组自身只提供 `group.top_left` 作为组内定位原点。
 
-新增显式几何视图 `instance.bounds/path/ink`，候选查询必须索引；`self` 自身选择器、弧长与参数取点、切线法线偏移和图表内部部件遵循统一定位规则。详见[几何锚点与路径定位](topics/anchors.zh-CN.md)。
+显式几何视图包括 `instance.bounds/path/ink`；形状箭头另提供 `instance.centerline`，其 `.length` 返回弧长，`.at(...)` 支持取点与切线。候选查询必须索引；`self` 自身选择器、弧长与参数取点、切线法线偏移和图表内部部件遵循统一定位规则。详见[几何锚点与路径定位](topics/anchors.zh-CN.md)。
 
-线还可用 `instance.start/end` 读取端点，用 `anchor="start"/"end"` 放置端点。原生图表支持九个带 `plot_` 前缀的绘图区锚点，以及 `instance.data(x=...,y=...)` 数据锚点；例如 `anchor="plot_top_left"`、`target=chart.plot_center`。这些锚点随实例旋转，详见[固定绘图区与数据标注](plotting.zh-CN.md#固定绘图区与数据标注)。
+线和形状箭头还可用 `instance.start/end` 读取逻辑端点，用 `anchor="start"/"end"` 放置端点。原生图表支持九个带 `plot_` 前缀的绘图区锚点，以及 `instance.data(x=...,y=...)` 数据锚点；例如 `anchor="plot_top_left"`、`target=chart.plot_center`。这些锚点随实例旋转，详见[固定绘图区与数据标注](plotting.zh-CN.md#固定绘图区与数据标注)。
 
 按素材类型允许的实例选项：
 
@@ -118,7 +119,7 @@ second = page.add(photo,size=(40 mm, auto), anchor=top_left,
 | 图片 | `size=(宽, 高)`、`fit=contain|cover|stretch`、`crop=box(offset=(x,y), size=(w,h))` | 只给一个尺寸时按裁剪后宽高比推导另一尺寸；裁剪取原图的 0–1 比例，SVG 素材不支持 `crop` |
 | 文字 | `size=(80, auto)` | 为该实例重新换行；不改变原素材 |
 | 原生图表 | `size=(宽, 高)` | 覆盖外框并重新排版，保持字体、线宽和标记尺寸；指定 `plot_area` 时绘图区也保持固定 |
-| 矩形、椭圆、路径、组 | `size=(宽, 高)` | 缩放当前放置实例；组缩放全部子元素 |
+| 矩形、椭圆、路径、形状箭头、组 | `size=(宽, 高)` | 缩放当前放置实例；组缩放全部子元素 |
 | 公式、线 | 无尺寸覆盖 | 可使用所有通用选项 |
 
 组使用自己的局部坐标。已放置的组会封存，不能再添加子元素；可再次放置同一组，嵌套最多 128 层，组不能包含自身。图片的裁剪先于适配：`contain` 保持比例完整放入框内，`cover` 保持比例并裁到框内，`stretch` 直接填满框。说明和实例见[使用指南](user-guide.zh-CN.md)。

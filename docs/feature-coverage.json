@@ -1977,6 +1977,99 @@
       "reference": "",
       "minimal": "examples/unified.lay",
       "composition": "examples/language/paper.lcss"
+    },
+    "api:arrow": {
+      "topic": "arrows",
+      "anchor": "arrow",
+      "reference": "arrow",
+      "minimal": "examples/manual/arrow.lay",
+      "composition": "examples/gallery/shapes/arrows.lay"
+    },
+    "api:arrow.arc": {
+      "topic": "arrows",
+      "anchor": "arrow-arc",
+      "reference": "arrow-arc",
+      "minimal": "examples/manual/arrow-arc.lay",
+      "composition": "examples/gallery/shapes/arrows.lay"
+    },
+    "api:arrow.bent": {
+      "topic": "arrows",
+      "anchor": "arrow-bent",
+      "reference": "arrow-bent",
+      "minimal": "examples/manual/arrow-bent.lay",
+      "composition": "examples/gallery/shapes/arrows.lay"
+    },
+    "api:arrow.uturn": {
+      "topic": "arrows",
+      "anchor": "arrow-uturn",
+      "reference": "arrow-uturn",
+      "minimal": "examples/manual/arrow-uturn.lay",
+      "composition": "examples/gallery/shapes/arrows.lay"
+    },
+    "api:arrow.chevron": {
+      "topic": "arrows",
+      "anchor": "arrow-chevron",
+      "reference": "arrow-chevron",
+      "minimal": "examples/manual/arrow-chevron.lay",
+      "composition": "examples/gallery/shapes/arrows.lay"
+    },
+    "api:arrow.path": {
+      "topic": "arrows",
+      "anchor": "arrow-path",
+      "reference": "arrow-path",
+      "minimal": "examples/manual/arrow-path.lay",
+      "composition": "examples/gallery/shapes/arrows.lay"
+    },
+    "lcss:shaft_width": {
+      "topic": "arrows",
+      "anchor": "LCSS arrow styles",
+      "reference": "shaft_width",
+      "minimal": "examples/manual/arrow-style.lay",
+      "composition": "examples/manual/arrow-style.lay"
+    },
+    "lcss:heads": {
+      "topic": "arrows",
+      "anchor": "LCSS arrow styles",
+      "reference": "heads",
+      "minimal": "examples/manual/arrow-style.lay",
+      "composition": "examples/manual/arrow-style.lay"
+    },
+    "lcss:head_size": {
+      "topic": "arrows",
+      "anchor": "LCSS arrow styles",
+      "reference": "head_size",
+      "minimal": "examples/manual/arrow-style.lay",
+      "composition": "examples/manual/arrow-style.lay"
+    },
+    "lcss:start_head_size": {
+      "topic": "arrows",
+      "anchor": "LCSS arrow styles",
+      "reference": "start_head_size",
+      "minimal": "examples/manual/arrow-style.lay",
+      "composition": "examples/manual/arrow-style.lay"
+    },
+    "lcss:end_head_size": {
+      "topic": "arrows",
+      "anchor": "LCSS arrow styles",
+      "reference": "end_head_size",
+      "minimal": "examples/manual/arrow-style.lay",
+      "composition": "examples/manual/arrow-style.lay"
+    },
+    "geometry:instance.centerline": {
+      "topic": "arrows",
+      "anchor": "centerline",
+      "reference": "instance",
+      "minimal": "examples/manual/arrow.lay",
+      "composition": "examples/gallery/shapes/arrow-connections.lay",
+      "exercise": "\\.centerline\\b"
+    },
+    "geometry:geometry_path.length": {
+      "topic": "arrows",
+      "anchor": "centerline",
+      "reference": "geometry_path",
+      "minimal": "examples/manual/arrow.lay",
+      "composition": "examples/gallery/shapes/arrow-connections.lay",
+      "exercise": "\\.centerline\\.length\\b"
     }
   }
 }

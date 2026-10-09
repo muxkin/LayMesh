@@ -1,0 +1,6 @@
+page=canvas(size=(150mm,95mm),background="#ffffff")
+a=page.add(arrow.arc(radius=22mm,start_angle=0deg,sweep_angle=240deg,fill="#087f8c"),offset=(10mm,10mm))
+page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerline.end)
+# Signed-radius endpoint connections select clockwise / counterclockwise minor arcs.
+page.add(arrow.arc(radius=45mm,fill="#ee784b"),start=(75mm,40mm),end=(135mm,40mm))
+page.add(arrow.arc(radius=-45mm,fill="#5273c5"),start=(75mm,60mm),end=(135mm,60mm))

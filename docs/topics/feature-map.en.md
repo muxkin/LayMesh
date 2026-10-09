@@ -275,3 +275,16 @@ This map covers public functions, geometry members, LCSS properties and integrat
 | `lcss:extrude` | [→](art-effects.en.md#LCSS decorations) | [→](../../examples/effects/art-text.lay) | [→](../../examples/effects/shadow-glow.lay) |
 | `lcss:math_font` | [→](lcss.en.md#style-properties) | [→](../../examples/unified.lay) | [→](../../examples/language/paper.lcss) |
 | `lcss:math_text_fallback` | [→](lcss.en.md#style-properties) | [→](../../examples/unified.lay) | [→](../../examples/language/paper.lcss) |
+| `api:arrow` | [→](arrows.en.md#arrow) | [→](../../examples/manual/arrow.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `api:arrow.arc` | [→](arrows.en.md#arrow-arc) | [→](../../examples/manual/arrow-arc.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `api:arrow.bent` | [→](arrows.en.md#arrow-bent) | [→](../../examples/manual/arrow-bent.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `api:arrow.uturn` | [→](arrows.en.md#arrow-uturn) | [→](../../examples/manual/arrow-uturn.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `api:arrow.chevron` | [→](arrows.en.md#arrow-chevron) | [→](../../examples/manual/arrow-chevron.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `api:arrow.path` | [→](arrows.en.md#arrow-path) | [→](../../examples/manual/arrow-path.lay) | [→](../../examples/gallery/shapes/arrows.lay) |
+| `lcss:shaft_width` | [→](arrows.en.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
+| `lcss:heads` | [→](arrows.en.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
+| `lcss:head_size` | [→](arrows.en.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
+| `lcss:start_head_size` | [→](arrows.en.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
+| `lcss:end_head_size` | [→](arrows.en.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
+| `geometry:instance.centerline` | [→](arrows.en.md#centerline) | [→](../../examples/manual/arrow.lay) | [→](../../examples/gallery/shapes/arrow-connections.lay) |
+| `geometry:geometry_path.length` | [→](arrows.en.md#centerline) | [→](../../examples/manual/arrow.lay) | [→](../../examples/gallery/shapes/arrow-connections.lay) |

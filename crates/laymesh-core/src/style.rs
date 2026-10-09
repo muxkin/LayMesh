@@ -59,6 +59,11 @@ fn css_color(s: &str) -> &str {
     }
 }
 fn compound_match(selector: &str, kind: &str, args: &Args) -> bool {
+    let kind = if crate::arrows::is_arrow(kind) {
+        "arrow"
+    } else {
+        kind
+    };
     let parts: Vec<_> = selector.split('.').collect();
     let typ = parts[0];
     (typ.is_empty() || typ == "*" || typ == kind)
@@ -496,6 +501,23 @@ pub fn validate_stylesheet(source: &str, file: &str, origin: Loc) -> Result<()> 
 
 fn scalar_value(key: &str, s: &str, file: &str, l: Loc) -> Result<V> {
     let fail = |m: &str| Diagnostic::new("E_LCSS", m, file, l);
+    if matches!(
+        key,
+        "shaft_width" | "head_size" | "start_head_size" | "end_head_size"
+    ) && (s.starts_with('[') || s.starts_with('('))
+    {
+        fn literal(expr: crate::parser::Expr) -> Option<V> {
+            match expr.kind {
+                crate::parser::ExprKind::Number(n, u) => Some(V::Number(n, u)),
+                crate::parser::ExprKind::List(v) => Some(V::List(
+                    v.into_iter().map(literal).collect::<Option<Vec<_>>>()?,
+                )),
+                _ => None,
+            }
+        }
+        return literal(crate::parser::expression(s, file).map_err(|_| fail("无效箭头尺寸列表"))?)
+            .ok_or_else(|| fail("箭头尺寸列表只接受数字及长度"));
+    }
     if key == "math_text_fallback" {
         return match s.trim() {
             "true" => Ok(V::Bool(true)),
