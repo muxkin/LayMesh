@@ -3,6 +3,7 @@
 import argparse,hashlib,json,re,shutil,subprocess
 from pathlib import Path
 from site_support import ROOT,examples,dependencies,engine_files,fingerprint
+import page_fonts
 IMPORT=re.compile(r'''((?:\bfrom\s*|\bimport\s*)['"])([^'"]+)(['"])''')
 def runtime_sources():
  return engine_files()+[p.relative_to(ROOT).as_posix() for p in sorted((ROOT/'crates/laymesh-wasm').rglob('*')) if p.is_file() and p.suffix in ('.rs','.toml','.json')]
@@ -25,18 +26,8 @@ def build(output,skip_wasm=False):
  output.mkdir(parents=True,exist_ok=True)
  manifest={'engine':'rust-ratex','resources':{},'fonts':[],'examples':{}}
  (output/'resources').mkdir(exist_ok=True)
- font_dir=output/'fonts';font_dir.mkdir(exist_ok=True)
- for family,filename,license_name in [
-  ('DejaVu Sans','DejaVuSans.ttf','DejaVu-LICENSE'),
-  ('Noto Sans CJK SC','NotoSansCJK-Regular.ttc','Noto-CJK-LICENSE'),
- ]:
-  source=ROOT/'site/page-fonts'/filename
-  data=source.read_bytes()
-  if len(data)>=20_000_000:raise RuntimeError(f'Page font exceeds jsDelivr 20 MB file limit: {filename}')
-  shutil.copy2(source,font_dir/filename)
-  shutil.copy2(ROOT/'site/page-fonts'/license_name,font_dir/license_name)
-  manifest['fonts'].append({'family':family,'file':'fonts/'+filename,'sha256':hashlib.sha256(data).hexdigest(),
-   'cdn':'https://cdn.jsdelivr.net/gh/muxkin/LayMesh@main/site/page-fonts/'+filename})
+ if (output/'fonts').exists():shutil.rmtree(output/'fonts')
+ manifest['fonts']=page_fonts.build(output)
  for e in examples():
   deps=[f for f in dependencies(e['source']) if Path(f).suffix.lower() not in ('.ttf','.otf','.ttc','.otc','.woff','.woff2')]
   manifest['examples'][e['id']]={'entry':e['source'],'files':[f for f in deps if Path(f).suffix in ('.lay','.laydoc','.lcss','.css','.csv','.json')],'dependencies':deps}

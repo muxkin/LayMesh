@@ -109,3 +109,5 @@
 }
 
 .document-pages{max-width:12rem;min-width:0;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--soft);color:var(--text);font:inherit}
+
+.preview-startup{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:13px}.preview-startup[hidden]{display:none}.preview-startup span{flex:1}.preview-startup button{font:inherit}

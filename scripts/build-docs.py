@@ -7,6 +7,7 @@ from urllib.parse import unquote
 from jinja2 import Environment,FileSystemLoader,select_autoescape
 from markdown_it import MarkdownIt
 from site_support import ROOT,examples,dependencies,summary
+import page_fonts
 OUT=ROOT/'site/dist';ENV=Environment(loader=FileSystemLoader(ROOT/'site/templates'),autoescape=select_autoescape());NAV=json.loads((ROOT/'site/navigation.json').read_text());EXAMPLES=examples();EX={e['source']:e for e in EXAMPLES};PAGES=[];BY_KEY={};BY_SOURCE={};MEDIA=json.loads((ROOT/'site/media/manifest.json').read_text())
 def relative(page,target):return posixpath.relpath(str(target),posixpath.dirname(page['output']) or '.')
 def output_name(source,en):
@@ -79,7 +80,8 @@ def example_module(page,source):
  panels=[]
  for i,file in enumerate(files):panels.append(dict(file=file,editable=Path(file).suffix in ('.lay','.laydoc','.lcss','.css','.csv','.json'),name=Path(file).name,id='example-'+e['id']+('-source' if i==0 else '-'+re.sub(r'[^\w-]','-',Path(file).name)),code=code((ROOT/file).read_text(),Path(file).suffix[1:],Path(file).name)))
  text,start,line=summary(source)
- return ENV.get_template('example.html').render(**context(page),example=e,panels=panels,summary_from=start,summary_code=code(text,'lay',Path(source).name,line-1),preview=picture(page,source,e['title'][page['lang']=='en']),dependencies=deps)
+ has_animation=any(re.search(r'\.animate\s*\(', (ROOT/f).read_text()) for f in deps if Path(f).suffix=='.lay')
+ return ENV.get_template('example.html').render(**context(page),example=e,has_animation=has_animation,panels=panels,summary_from=start,summary_code=code(text,'lay',Path(source).name,line-1),preview=picture(page,source,e['title'][page['lang']=='en']),dependencies=deps)
 def gallery(page):
  return '<div class="example-grid gallery-grid">'+''.join(f'<a class="example-card" data-category="{e["category"]}" href="{relative(page,BY_KEY[("example-"+e["id"],page["lang"])]["output"])}">{picture(page,e["source"],e["title"][page["lang"]=="en"])}<strong>{html.escape(e["title"][page["lang"]=="en"])}</strong></a>' for e in EXAMPLES)+'</div>'
 def rewrite(page,url):
@@ -148,18 +150,8 @@ def check():
    for prefix in ('','en/'):
     page=(OUT/(prefix+'examples/'+e['id']+'.html')).read_text();assert f'title="{sibling}"' in page and f'data-edit-file="{sibling}"' not in page,f'Missing read-only Python tab: {sibling}'
  live=OUT/'site/live';manifest=json.loads((live/'manifest.json').read_text())
- expected={'fonts/DejaVuSans.ttf','fonts/NotoSansCJK-Regular.ttc'}
- assert {f['file'] for f in manifest['fonts']}==expected
- for font in manifest['fonts']:
-  source=ROOT/'site/page-fonts'/Path(font['file']).name;target=live/font['file']
-  assert target.read_bytes()==source.read_bytes() and hashlib.sha256(target.read_bytes()).hexdigest()==font['sha256']
-  assert target.stat().st_size<20_000_000
-  assert font['cdn']=='https://cdn.jsdelivr.net/gh/muxkin/LayMesh@main/site/page-fonts/'+target.name
- for license_name in ['DejaVu-LICENSE','Noto-CJK-LICENSE']:
-  assert (live/'fonts'/license_name).read_bytes()==(ROOT/'site/page-fonts'/license_name).read_bytes()
- for p in live.rglob('*'):
-  if p.suffix.lower() in ('.ttf','.otf','.ttc','.otc','.woff','.woff2'):assert p.relative_to(live).as_posix() in expected,f'Unexpected Page font: {p}'
- assert (live/'wasm/laymesh_wasm_bg.wasm').is_file();print(f'Checked {count} documentation pages and two Page-only body fonts')
+ page_fonts.validate(live,manifest)
+ assert (live/'wasm/laymesh_wasm_bg.wasm').is_file();print(f'Checked {count} documentation pages, startup fonts and full editing fonts')
  spec=importlib.util.spec_from_file_location('check_live',ROOT/'scripts/build-docs-live.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);module.validate_runtime(live)
 def main():
  parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--check',action='store_true');parser.add_argument('--skip-wasm',action='store_true');a=parser.parse_args()

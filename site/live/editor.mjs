@@ -1,49 +1,35 @@
+import {PlaybackStats} from './playback-stats.mjs';
 import {AnimationPlayer} from './animation-player.mjs';
-import {languageSupport} from './language.mjs';
 import { Workspace } from './workspace.mjs';
-import { EditorView } from '@codemirror/view';
-import { editingSetup } from './setup.mjs';
-import { EditorState, Compartment, ChangeSet } from '@codemirror/state';
-import { keymap } from '@codemirror/view';
-import { StreamLanguage } from '@codemirror/language';
-import { tags } from '@lezer/highlight';
-import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
-import { json } from '@codemirror/lang-json';
 const en=document.documentElement.lang==='en', t=(zh,enText)=>en?enText:zh;
 const base=new URL('./',import.meta.url);
-const theme=EditorView.theme({
- '&':{fontSize:'14px',height:'100%',lineHeight:'1.8',backgroundColor:'var(--code)' ,color:'#dcece7'},
- '.cm-content':{fontFamily:'var(--mono, monospace)',padding:'14px 0',caretColor:'#ffffff'},
- '.cm-gutters':{backgroundColor:'var(--code)',color:'#91aaa2',border:'none'},
- '.cm-activeLine,.cm-activeLineGutter':{backgroundColor:'#ffffff08'},
- '&.cm-focused .cm-selectionBackground,.cm-selectionBackground':{backgroundColor:'#346355 !important'},
- '.cm-scroller':{overflow:'auto',minHeight:'0',height:'100%'},
- '.cm-cursor':{borderLeftColor:'#fff'},
- '.cm-tooltip':{backgroundColor:'#253d35',color:'#e7f3ef',border:'1px solid #536b63'},
-},{dark:true});
-const colors=HighlightStyle.define([{tag:tags.keyword,color:'#7ccde0'},{tag:tags.function(tags.variableName),color:'#91d6c6'},{tag:tags.propertyName,color:'#a7cdea'},{tag:tags.operator,color:'#aabfba'},{tag:tags.string,color:'#b9dd91'},{tag:tags.number,color:'#e5c48c'},{tag:tags.comment,color:'#8caaa0'}]);
 class ExampleEditor {
  constructor(module) {
   this.module=module;this.entry=module.dataset.entry;this.original={};this.files={};this.views=new Map();this.maps=new Map();this.seq=0;this.busy=false;this.pending=false;this.loadedFonts=[];this.last=null;this.activated=false;
-  for(const panel of module.querySelectorAll('[data-edit-file]')) { const field=panel.querySelector('.code-raw');const text=field.defaultValue;field.value=text;this.original[panel.dataset.editFile]=text;this.files[panel.dataset.editFile]=text;this.maps.set(panel.dataset.editFile,ChangeSet.empty(text.length).desc); }
-  this.fontNote=module.querySelector('.font-note');
+  for(const panel of module.querySelectorAll('[data-edit-file]')) { const field=panel.querySelector('.code-raw');const text=field.defaultValue;field.value=text;this.original[panel.dataset.editFile]=text;this.files[panel.dataset.editFile]=text;}
+  this.fontNote=module.querySelector('.font-note');this.startup=module.querySelector('.preview-startup');
   this.status=module.querySelector('.live-status');this.metrics=module.querySelector('.live-metrics');this.diagnostics=module.querySelector('.live-diagnostics');this.static=module.querySelector('.original-preview');this.image=module.querySelector('.live-image');this.toolbar=module.querySelector('.live-toolbar');
-  this.player=new AnimationPlayer(module.querySelector('.preview-toolbar').parentElement,()=>this.requestPaint(),{page:direction=>{const n=(this.pageSelect?.selectedIndex??-1)+direction;if(!this.pageSelect||n<0||n>=this.pageSelect.options.length)return false;this.pageSelect.selectedIndex=n;this.pageSelect.onchange();return true;}});module.querySelector('.preview-toolbar').after(this.player.bar);
+  this.playbackStats=new PlaybackStats();
+  this.player=new AnimationPlayer(module.querySelector('.preview-toolbar').parentElement,()=>this.requestPaint(this.player?.running),{statusInterval:100,page:direction=>{const n=(this.pageSelect?.selectedIndex??-1)+direction;if(!this.pageSelect||n<0||n>=this.pageSelect.options.length)return false;this.pageSelect.selectedIndex=n;this.pageSelect.onchange();return true;}});module.querySelector('.preview-toolbar').after(this.player.bar);
   const canvas=document.createElement('canvas');canvas.className=this.image.className;canvas.hidden=true;canvas.setAttribute('role','img');canvas.setAttribute('aria-label','LayMesh');this.image.replaceWith(canvas);this.image=canvas;
   this.overview=document.createElement('canvas');this.overview.className='live-overview';this.overview.hidden=true;this.overview.setAttribute('aria-hidden','true');this.overview.style.pointerEvents='none';canvas.before(this.overview);
   this.module.addEventListener('laymesh:draw',()=>this.requestPaint());
   this.workspace=new Workspace(module,offset=>this.editSummary(offset));
   module.querySelector('.diagnostics-toggle').addEventListener('click',()=>{this.diagnosticsOpen=!this.diagnosticsOpen;this.sync();});
-  module.querySelector('.live-run').addEventListener('click',()=>{if(module.dataset.liveState==='error'){this.worker?.terminate();this.worker=null;this.busy=false;}this.schedule(true);});
+  module.querySelector('.live-run').addEventListener('click',()=>this.retry());
+  module.querySelector('.startup-retry').addEventListener('click',()=>this.retry());
+  module.addEventListener('laymesh:play',()=>{this.activate();if(this.presented&&this.player.metadata){this.module.dataset.playRequested='false';this.player.action('replay');}});
   module.querySelector('.live-reset').addEventListener('click',()=>this.reset());
   module.querySelector('.live-system-fonts').addEventListener('click',()=>this.localFonts());
   module.querySelector('.live-font-file').addEventListener('change',async e=>{for(const file of e.target.files)await this.font(file.name,await file.arrayBuffer());e.target.value='';});
   module.addEventListener('laymesh:tab',()=>this.sync());
   this.sync();
  }
+ retry(){if(this.sourceLoadError){location.reload();return;}if(!this.ready||!this.worker){this.worker?.terminate();this.worker=null;this.busy=false;}if(this.fullFontState==='error')this.fullFontState='idle';this.activate();this.schedule(true);}
+ ensureFullFonts(){if(!this.ready||this.fullFontState!=='idle')return;this.fullFontState='loading';this.module.dataset.fullFonts='loading';this.worker.postMessage({type:'full-fonts'});}
  activate() { if(this.activated)return;this.activated=true;this.boot();this.schedule(true); }
  boot() {
-  this.worker?.terminate();clearTimeout(this.timeout);clearTimeout(this.initTimeout);this.busy=false;this.ready=false;
+  this.worker?.terminate();clearTimeout(this.timeout);clearTimeout(this.initTimeout);this.busy=false;this.ready=false;this.fullFontState='idle';this.module.dataset.fullFonts='idle';
   this.paintInFlight=null;this.pendingPaint=null;
   clearTimeout(this.paintTimer);this.paintTimer=0;
   const start=performance.now();this.worker=new Worker(new URL('worker.js',base),{type:'module'});
@@ -55,16 +41,23 @@ class ExampleEditor {
     if(request)this.paintInFlight=null;
     if(data.generation===this.last?.generation&&request){
      if(data.type==='paint-error'&&request.key===this.paintKey){this.paintKey='';this.error(data.error);}
-     else if(data.type==='painted'&&(request.key===this.paintKey||this.pendingPaint)){this.image.width=data.width;this.image.height=data.height;this.image.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(data.rgba.buffer,data.rgba.byteOffset,data.rgba.byteLength),data.width,data.height),0,0);
+     else if(data.type==='painted'&&(request.key===this.paintKey||this.pendingPaint)){if(this.image.width!==data.width)this.image.width=data.width;if(this.image.height!==data.height)this.image.height=data.height;this.image.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(data.rgba.buffer,data.rgba.byteOffset,data.rgba.byteLength),data.width,data.height),0,0);
       const p=this.last.inspection.page;
       if(data.overview){const o=data.overview;this.overview.width=o.width;this.overview.height=o.height;this.overview.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(o.rgba.buffer,o.rgba.byteOffset,o.rgba.byteLength),o.width,o.height),0,0);this.overviewGeneration=data.generation;}
-      else if(request.rect[0]===0&&request.rect[1]===0&&request.rect[2]===p.width&&request.rect[3]===p.height){const s=Math.min(768/p.width,2048/p.height,Math.sqrt(500000/(p.width*p.height)));this.overview.width=Math.max(1,Math.floor(p.width*s));this.overview.height=Math.max(1,Math.floor(p.height*s));this.overview.getContext('2d').drawImage(this.image,0,0,this.overview.width,this.overview.height);this.overviewGeneration=data.generation;}
-      this.presented=request;this.positionPixels();this.last.metrics.raster=data.rasterMs;this.last.metrics.total=this.last.metrics.compile+this.last.metrics.lower+data.rasterMs;if(data.id===this.paintId)this.module.dataset.painted='true';this.updateMetrics();this.requestPaint();}
+      else if(request.time===null&&request.rect[0]===0&&request.rect[1]===0&&request.rect[2]===p.width&&request.rect[3]===p.height){const s=Math.min(768/p.width,2048/p.height,Math.sqrt(500000/(p.width*p.height)));this.overview.width=Math.max(1,Math.floor(p.width*s));this.overview.height=Math.max(1,Math.floor(p.height*s));this.overview.getContext('2d').drawImage(this.image,0,0,this.overview.width,this.overview.height);this.overviewGeneration=data.generation;}
+      if(request.running&&this.player.running&&!this.statsFrame)this.statsFrame=requestAnimationFrame(now=>{this.statsFrame=0;const frame=this.presented;if(frame?.running){this.playbackStats.record(`${frame.generation}:${frame.time}`,now);this.module.dataset.playbackFps=this.playbackStats.fps.toFixed(1);}});
+      const first=!this.presented;this.presented=request;
+      if(this.firstFrameMs===undefined){this.firstFrameMs=performance.now();this.module.dataset.firstFrameMs=this.firstFrameMs.toFixed(1);}
+      if(first)this.sync();
+      if(this.playAfterPaint&&request.time===this.player.time){this.playAfterPaint=false;this.module.dataset.playRequested='false';this.player.start();}
+      this.positionPixels();this.last.metrics.raster=data.rasterMs;this.last.metrics.total=this.last.metrics.compile+this.last.metrics.lower+data.rasterMs;if(data.id===this.paintId)this.module.dataset.painted='true';this.updateMetrics();this.requestPaint();}
     }
     if(!this.paintTimer)this.flushPaint();return;
    }
    if(data.type==='init-error'){clearTimeout(this.initTimeout);this.error(data.error);this.worker?.terminate();this.worker=null;return;}
    if(data.type==='ready'){clearTimeout(this.initTimeout);this.ready=true;this.initialization=performance.now()-start;for(const font of this.loadedFonts)this.worker.postMessage({type:'font',...font});if(this.pending)this.drain();return;}
+   if(data.type==='full-fonts-ready'){this.fullFontState='ready';this.module.dataset.fullFonts='ready';if(this.pending)this.drain();return;}
+   if(data.type==='full-fonts-error'){this.fullFontState='error';this.module.dataset.fullFonts='error';this.error({message:t('编辑字体准备失败，请点击重试。','Editing fonts could not load. Please retry.')+' '+data.error.message});return;}
    if(data.type==='font-added'){this.fontNote.textContent=t('内置 DejaVu Sans、Noto Sans CJK SC；另已载入：','Bundled DejaVu Sans and Noto Sans CJK SC; also loaded: ')+(data.families||[]).join(' / ');this.schedule(true);return;}
    if(data.type==='resources'){if(data.id===this.active){if(data.waiting){clearTimeout(this.timeout);if(this.segmentStart!==undefined)this.remaining-=performance.now()-this.segmentStart;this.segmentStart=undefined;}else this.arm();}return;}
    if(data.type==='error'&&typeof data.id==='string'){this.diagnostics.textContent=data.error.message;this.diagnosticsOpen=true;this.sync();return;}
@@ -78,38 +71,44 @@ class ExampleEditor {
  arm(){clearTimeout(this.timeout);this.segmentStart=performance.now();this.timeout=setTimeout(()=>{this.worker?.terminate();this.worker=null;this.busy=false;this.error({message:t('运行超过 10 秒，已停止。请修改源码或恢复示例。','Execution exceeded 10 seconds and was stopped. Edit or restore the example.')});if(this.pending)this.drain();},Math.max(0,this.remaining));}
  drain(){clearTimeout(this.debounce);this.debounce=setTimeout(()=>{if(!this.busy&&!this.composing)this.run();},Math.max(0,(this.readyAt||0)-performance.now()));}
  schedule(immediate=false){this.readyAt=performance.now()+(immediate?0:250);this.seq++;this.pending=true;this.module.dataset.liveState='pending';this.statusText=t('等待更新…','Waiting to update…');this.sync();clearTimeout(this.debounce);this.changed();if(!this.activated)return;this.drain();}
- run(){if(!this.worker)this.boot();if(!this.ready){this.pending=true;this.statusText=t('正在加载预览引擎…','Loading preview engine…');this.sync();return;}this.pending=false;this.busy=true;this.active=this.seq;this.remaining=10000;this.statusText=t('正在运行…','Running…');this.sync();this.arm();this.worker.postMessage({type:'run',id:this.active,entry:this.entry,pageId:this.pageId,files:{...this.files}});}
+ run(){if(!this.worker)this.boot();if(!this.ready){this.pending=true;this.statusText=t('正在加载预览引擎…','Loading preview engine…');this.sync();return;}if(this.module.dataset.modified==='true'&&this.fullFontState!=='ready'){this.pending=true;if(this.fullFontState==='error'){this.error({message:t('编辑字体准备失败，请点击重试。','Editing fonts could not load. Please retry.')});return;}this.ensureFullFonts();this.statusText=t('正在准备编辑字体…','Preparing fonts for editing…');this.sync();return;}this.pending=false;this.busy=true;this.active=this.seq;this.remaining=10000;this.statusText=t('正在运行…','Running…');this.sync();this.arm();this.worker.postMessage({type:'run',id:this.active,entry:this.entry,pageId:this.pageId,files:{...this.files}});}
  changed(){const dirty=Object.keys(this.files).some(f=>this.files[f]!==this.original[f]);this.module.dataset.modified=String(dirty);this.module.querySelector('.live-reset').disabled=!dirty;this.sync();}
- extensions(file,wrap){return [editingSetup,theme,syntaxHighlighting(colors),file.endsWith('.json')?json():/\.(lay|laydoc|lcss|css)$/.test(file)?languageSupport(this,file):[],wrap.of(EditorView.lineWrapping),keymap.of([{key:'Mod-Enter',run:()=>{this.schedule(true);return true;}}]),EditorView.domEventHandlers({compositionstart:()=>{this.composing=true;this.seq++;this.pending=false;clearTimeout(this.debounce);},compositionend:()=>{this.composing=false;this.schedule();}}),EditorView.updateListener.of(update=>{if(!update.docChanged)return;this.maps.set(file,this.maps.get(file).composeDesc(update.changes.desc));this.files[file]=update.state.doc.toString();if(!this.composing)this.schedule();else this.changed();})];}
- editor(panel){const file=panel.dataset.editFile;if(this.views.has(file))return;
-  const code=panel.querySelector('.code-block');code.getSource=()=>this.files[file];code.querySelector('pre').hidden=true;const host=document.createElement('div');host.className='live-editor';code.append(host);const wrap=new Compartment();
-  const view=new EditorView({state:EditorState.create({doc:this.files[file],extensions:this.extensions(file,wrap)}),parent:host});view.contentDOM.setAttribute('aria-label',file);view.contentDOM.setAttribute('spellcheck','false');
-  code.querySelector('.wrap-code').addEventListener('click',()=>view.dispatch({effects:wrap.reconfigure(code.classList.contains('wrap')?EditorView.lineWrapping:[])}));this.views.set(file,{view,wrap});
+ editor(panel){
+  if(this.sourceEditor){this.sourceEditor.editor.call(this,panel);return Promise.resolve();}
+  if(this.sourceLoadError)return Promise.resolve();
+  this.sourceLoading??=import('./source-editor.mjs');
+  return this.sourceLoading.then(editor=>{this.sourceEditor=editor;if(!panel.hidden&&this.module.dataset.mode==='source')editor.editor.call(this,panel);},error=>{this.sourceLoadError=true;this.error({message:error.message});});
  }
- editSummary(offset){
+ async editSummary(offset){
   this.module.dispatchEvent(new CustomEvent('laymesh:select-source',{bubbles:true}));
-  const view=this.views.get(this.entry)?.view;if(!view)return;
-  const anchor=this.maps.get(this.entry).mapPos(offset,1);
-  view.dispatch({selection:{anchor},effects:EditorView.scrollIntoView(anchor,{y:'center'})});view.focus();this.activate();
+  await this.editor(this.module.querySelector('.source-panel:not([hidden])'));
+  this.sourceEditor?.focusEntry.call(this,offset);this.activate();
  }
  sync(){
   const summary=this.module.dataset.mode==='summary',panel=this.module.querySelector('.source-panel:not([hidden])'),editable=!summary&&!!panel?.dataset.editFile;
-  if(this.pageSelect)this.pageSelect.hidden=summary;
+  if(this.pageSelect)this.pageSelect.hidden=false;
   this.toolbar.hidden=!editable;this.module.querySelector('.summary-edit').hidden=!summary;
-  if(editable)this.editor(panel);
-  this.static.hidden=editable&&!!this.last;this.image.hidden=!editable||!this.last;
-  this.overview.hidden=this.player.time!==null||!editable||!this.last||this.overviewGeneration!==this.last.generation;
-  this.module.dataset.previewState=editable?this.module.dataset.liveState:'original';
+  if(editable){this.editor(panel);if(this.presented)this.ensureFullFonts();}
+  // Playback and the current page are independent of the source editor tab.
+  const live=!!this.last&&!!this.presented;
+  this.static.hidden=live;this.image.hidden=!live;
+  this.player.bar.hidden=!live;
+  const failed=this.module.dataset.liveState==='error';
+  this.startup.hidden=live&&!failed;
+  this.startup.querySelector('span').textContent=failed?t('准备失败，请重试','Could not prepare preview. Please retry'):this.module.dataset.hasAnimation==='true'?t('正在准备动画…','Preparing animation…'):t('正在准备预览…','Preparing preview…');
+  this.startup.querySelector('.startup-retry').hidden=!failed;
+  this.overview.hidden=this.player.time!==null||!live||this.overviewGeneration!==this.last.generation;
+  this.module.dataset.previewState=this.module.dataset.liveState||'pending';
   this.module.querySelector('.live-modified').textContent=this.module.dataset.modified==='true'?(summary?t('草稿已修改 · 仅本页','Draft modified · this page'):t('已修改 · 仅本页','Modified · this page')):t('修改仅保留在本页','Edits stay on this page');
-  this.status.textContent=editable?(this.statusText||t('准备预览','Ready to preview')):t('原始示例','Original example');
+  this.status.textContent=this.statusText||t('正在准备预览…','Preparing preview…');
   const stale=this.last&&this.last.id!==this.seq;
-  this.module.querySelector('.live-total').textContent=editable&&this.last?`${stale?t('上次合计','Previous total'):t('合计','Total')} ${this.last.metrics.total.toFixed(1)} ms`:t('合计 —','Total —');
-  this.module.querySelector('.timing-details').hidden=!editable||!this.last;
+  this.module.querySelector('.live-total').textContent=this.last?`${stale?t('上次合计','Previous total'):t('合计','Total')} ${this.last.metrics.total.toFixed(1)} ms`:t('合计 —','Total —');
+  this.module.querySelector('.timing-details').hidden=!this.last;
   const note=this.module.querySelector('.preview-state');
   const pendingDraft=this.module.dataset.liveState==='pending'&&this.module.dataset.modified==='true';
-  note.hidden=!editable||(!stale&&this.module.dataset.liveState!=='error'&&!pendingDraft);
+  note.hidden=(!stale&&this.module.dataset.liveState!=='error'&&!pendingDraft);
   note.textContent=this.module.dataset.liveState==='error'?(this.last?t('上次成功结果','Last successful result'):t('原始示例 · 编辑未通过','Original example · edits failed')):(this.last?t('上次结果 · 等待更新','Previous result · updating'):t('原始示例 · 等待更新','Original example · updating'));
-  const diagnostic=editable&&!!this.diagnostics.textContent,button=this.module.querySelector('.diagnostics-toggle');
+  const diagnostic=!!this.diagnostics.textContent,button=this.module.querySelector('.diagnostics-toggle');
   button.hidden=!diagnostic;button.textContent=this.module.dataset.liveState==='error'?t('查看错误','View error'):t('诊断','Diagnostics');button.setAttribute('aria-expanded',String(!!this.diagnosticsOpen));
   this.diagnostics.hidden=!diagnostic||!this.diagnosticsOpen;
   this.workspace?.fit();
@@ -122,34 +121,50 @@ class ExampleEditor {
  }
  result(data){if(data.protocol!==3||(!data.drawingInfo&&!data.displayList)){this.error({code:'E_PREVIEW_PROTOCOL',message:'Expected drawing protocol 3'});return;}
   if(data.document)this.updateDocument(data.document);
-  this.last=data;this.player.update(data.inspection.animation);this.module.dataset.generation=String(data.generation);this.module.dataset.painted='false';this.paintKey='';this.image.dataset.aspectRatio=String(data.inspection.page.width/data.inspection.page.height);this.statusText=t('预览已更新','Preview updated');
+  this.last=data;
+  if(this.readyMs===undefined){this.readyMs=performance.now();this.module.dataset.readyMs=this.readyMs.toFixed(1);}
+  const resume=this.player.resume;this.player.resume=false;this.player.update(data.inspection.animation);
+  this.playAfterPaint=!!data.inspection.animation&&(!!resume||this.module.dataset.playRequested==='true');
+  if(this.playAfterPaint)this.player.seek(resume===-1?this.player.timeline.steps.at(-1).start:0);this.module.dataset.generation=String(data.generation);this.module.dataset.painted='false';this.paintKey='';this.image.dataset.aspectRatio=String(data.inspection.page.width/data.inspection.page.height);this.statusText=data.inspection.animation?t('可以播放','Ready to play'):t('预览已更新','Preview updated');
   this.diagnosticsOpen=data.warnings.length>0;this.diagnostics.textContent=data.warnings.map(w=>`${w.code} ${w.file}:${w.loc.line}:${w.loc.column} — ${w.message}`).join('\n');this.module.dataset.liveState='success';this.sync();this.updateMetrics();this.requestPaint(true);
  }
- updateMetrics(){const m=this.last.metrics,ms=n=>`${n.toFixed(1)} ms`;this.metrics.textContent=t(`编译 ${ms(m.compile)} · 绘制指令 ${ms(m.lower)} · 绘制 ${ms(m.raster)} · 合计 ${ms(m.total)} · 初始化 ${ms(this.initialization||m.initialization)} · 资源 ${ms(m.resources)}`,`Compile ${ms(m.compile)} · Commands ${ms(m.lower)} · Raster ${ms(m.raster)} · Total ${ms(m.total)} · Initialize ${ms(this.initialization||m.initialization)} · Resources ${ms(m.resources)}`);this.metrics.title=t('本设备本次浏览器实测；不包含输入防抖等待。','Measured in this browser on this device; excludes typing debounce.');this.module.querySelector('.live-total').textContent=`${t('合计','Total')} ${ms(m.total)}`;}
+ updateMetrics(){const now=performance.now();if(this.player.running&&now<this.nextMetrics)return;this.nextMetrics=now+250;const m=this.last.metrics,ms=n=>`${n.toFixed(1)} ms`;this.metrics.textContent=t(`编译 ${ms(m.compile)} · 绘制指令 ${ms(m.lower)} · 绘制 ${ms(m.raster)} · 合计 ${ms(m.total)} · 初始化 ${ms(this.initialization||m.initialization)} · 资源 ${ms(m.resources)} · 准备 ${ms(this.readyMs||0)} · 首帧 ${ms(this.firstFrameMs||0)}`,`Compile ${ms(m.compile)} · Commands ${ms(m.lower)} · Raster ${ms(m.raster)} · Total ${ms(m.total)} · Initialize ${ms(this.initialization||m.initialization)} · Resources ${ms(m.resources)} · Ready ${ms(this.readyMs||0)} · First frame ${ms(this.firstFrameMs||0)}`);if(this.playbackStats.fps)this.metrics.textContent+=t(` · 动态段 ${this.playbackStats.fps.toFixed(1)} fps`,` · Motion ${this.playbackStats.fps.toFixed(1)} fps`);this.metrics.title=t('本设备本次浏览器实测；不包含输入防抖等待。','Measured in this browser on this device; excludes typing debounce.');this.module.querySelector('.live-total').textContent=`${t('合计','Total')} ${ms(m.total)}`;}
  positionPixels(){if(!this.presented||!this.last)return;const box=this.workspace.canvas.getBoundingClientRect(),page=this.last.inspection.page,c=this.presented.rect,sx=box.width/page.width,sy=box.height/page.height;Object.assign(this.image.style,{position:'absolute',left:c[0]*sx+'px',top:c[1]*sy+'px',width:(c[2]-c[0])*sx+'px',height:(c[3]-c[1])*sy+'px',maxWidth:'none',maxHeight:'none'});
   this.overview.hidden=this.player.time!==null||this.image.hidden||this.overviewGeneration!==this.last.generation;
   if(!this.overview.hidden){const [x0,y0,x1,y1]=c.map((v,i)=>100*v/(i%2?page.height:page.width));Object.assign(this.overview.style,{position:'absolute',left:'0',top:'0',width:box.width+'px',height:box.height+'px',clipPath:`polygon(evenodd,0% 0%,100% 0%,100% 100%,0% 100%,0% 0%,${x0}% ${y0}%,${x1}% ${y0}%,${x1}% ${y1}%,${x0}% ${y1}%,${x0}% ${y0}%)`});}
  }
- requestPaint(immediate=false){this.paintImmediate||=immediate;if(this.paintSchedule)return;this.paintSchedule=requestAnimationFrame(()=>{this.paintSchedule=0;const force=this.paintImmediate;this.paintImmediate=false;if(!this.last||!this.worker||this.image.hidden)return;this.positionPixels();
+ requestPaint(immediate=false){this.paintImmediate||=immediate;if(immediate&&this.player.running){cancelAnimationFrame(this.paintSchedule);this.paintNow();return;}if(this.paintSchedule)return;this.paintSchedule=requestAnimationFrame(()=>this.paintNow());}
+ frameTime(){
+  const time=this.player.time;if(time===null)return null;
+  const step=this.player.timeline?.steps.findLast(step=>step.start<=time);if(!step)return time;
+  const end=step.start+step.duration;
+  // Sample inside the hold: (start + duration) - start can round down and
+  // accidentally keep a CSS animation active instead of applying its fill.
+  return time>end?Math.min(time,end+Number.EPSILON*Math.max(1,Math.abs(end))):time;
+ }
+ paintNow(){this.paintSchedule=0;const force=this.paintImmediate;this.paintImmediate=false;if(!this.last||!this.worker)return;this.positionPixels();
   const box=this.workspace.canvas.getBoundingClientRect(),view=this.workspace.viewport.getBoundingClientRect();if(!box.width||!box.height)return;
   const x=Math.max(0,view.left-box.left),y=Math.max(0,view.top-box.top),w=Math.min(box.width,view.right-box.left)-x,h=Math.min(box.height,view.bottom-box.top)-y;if(w<=0||h<=0)return;
-  const page=this.last.inspection.page,visible=[x/box.width*page.width,y/box.height*page.height,(x+w)/box.width*page.width,(y+h)/box.height*page.height],scale=[box.width/page.width,box.height/page.height],dpr=devicePixelRatio||1,old=this.presented;
-  if(old?.time===this.player.time&&old?.reduced===this.player.reduced&&old?.generation===this.last.generation&&old.scale[0]===scale[0]&&old.scale[1]===scale[1]&&old.dpr===dpr&&visible[0]>=old.rect[0]-1e-9&&visible[1]>=old.rect[1]-1e-9&&visible[2]<=old.rect[2]+1e-9&&visible[3]<=old.rect[3]+1e-9){this.pendingPaint=null;clearTimeout(this.paintTimer);this.paintTimer=0;this.paintKey=old.key;this.module.dataset.painted='true';return;}
+  const time=this.frameTime(),page=this.last.inspection.page,visible=[x/box.width*page.width,y/box.height*page.height,(x+w)/box.width*page.width,(y+h)/box.height*page.height],scale=[box.width/page.width,box.height/page.height],dpr=devicePixelRatio||1,old=this.presented;
+  if(old?.time===time&&old?.reduced===this.player.reduced&&old?.generation===this.last.generation&&old.scale[0]===scale[0]&&old.scale[1]===scale[1]&&old.dpr===dpr&&visible[0]>=old.rect[0]-1e-9&&visible[1]>=old.rect[1]-1e-9&&visible[2]<=old.rect[2]+1e-9&&visible[3]<=old.rect[3]+1e-9){this.pendingPaint=null;clearTimeout(this.paintTimer);this.paintTimer=0;this.paintKey=old.key;this.module.dataset.painted='true';return;}
   const rect=[Math.max(0,visible[0]-96/scale[0]),Math.max(0,visible[1]-96/scale[1]),Math.min(page.width,visible[2]+96/scale[0]),Math.min(page.height,visible[3]+96/scale[1])],width=Math.ceil((rect[2]-rect[0])*scale[0]*dpr),height=Math.ceil((rect[3]-rect[1])*scale[1]*dpr);
-  const key=JSON.stringify([this.last.generation,rect,width,height,this.player.time,this.player.reduced]);if(key===this.paintKey)return;this.paintKey=key;this.paintId=(this.paintId||0)+1;this.module.dataset.painted='false';
+  const key=JSON.stringify([this.last.generation,rect,width,height,time,this.player.reduced]);if(key===this.paintKey)return;this.paintKey=key;this.paintId=(this.paintId||0)+1;this.module.dataset.painted='false';
   // Rendering is synchronous inside the worker. Keep one request in flight
   // and replace its pending successor as the viewport moves, instead of
   // queueing a bitmap for every animation frame that will later be discarded.
-  this.pendingPaint={time:this.player.time,reduced:this.player.reduced,type:'paint',id:this.paintId,generation:this.last.generation,rect,width,height,scale,dpr,key};clearTimeout(this.paintTimer);this.paintTimer=0;
+  this.pendingPaint={running:this.player.running,time,reduced:this.player.reduced,type:'paint',id:this.paintId,generation:this.last.generation,rect,width,height,scale,dpr,key};clearTimeout(this.paintTimer);this.paintTimer=0;
   if(force||(old?.scale[0]===scale[0]&&old?.scale[1]===scale[1]))this.flushPaint();else this.paintTimer=setTimeout(()=>{this.paintTimer=0;this.flushPaint();},80);
- });}
+ }
  flushPaint(){if(this.paintInFlight||!this.pendingPaint||!this.worker)return;
   const next=this.pendingPaint;this.pendingPaint=null;if(next.generation!==this.last?.generation)return;
-  this.paintInFlight=next;this.worker.postMessage(next);
+  // A slow renderer may finish after several clock ticks. Sample the latest
+  // time instead of delivering a backlog of obsolete frames.
+  if(this.player.running&&next.time!==null){next.time=this.frameTime();next.key=JSON.stringify([next.generation,next.rect,next.width,next.height,next.time,next.reduced]);this.paintKey=next.key;}
+  next.sentAt=performance.now();this.paintInFlight=next;this.worker.postMessage(next);
  }
 
  error(error){if(error.document)this.updateDocument(error.document);this.statusText=this.last?t('上次成功结果 · 当前源码未通过','Last successful result · current source failed'):t('当前源码未通过','Current source failed');this.diagnosticsOpen=true;this.diagnostics.textContent=[error.code,error.file,error.loc?`${error.loc.line}:${error.loc.column}`:'',error.message].filter(Boolean).join(' ');this.module.dataset.liveState='error';this.sync();}
- reset(restart=true){this.player.update(null);this.seq++;this.pageId=undefined;if(this.pageSelect){this.pageSelect.remove();this.pageSelect=null;}clearTimeout(this.debounce);this.worker?.terminate();this.worker=null;clearTimeout(this.initTimeout);clearTimeout(this.timeout);this.busy=false;this.pending=false;this.files={...this.original};for(const [file,text]of Object.entries(this.original))this.maps.set(file,ChangeSet.empty(text.length).desc);for(const [file,{view,wrap}]of this.views){view.setState(EditorState.create({doc:this.files[file],extensions:this.extensions(file,wrap)}));this.module.querySelector(`[data-edit-file="${CSS.escape(file)}"] .code-raw`).value=this.files[file];}this.last=null;this.presented=null;clearTimeout(this.paintTimer);this.paintTimer=0;this.paintKey='';this.image.getContext('2d').clearRect(0,0,this.image.width,this.image.height);this.diagnostics.textContent='';this.diagnosticsOpen=false;this.metrics.textContent='';this.statusText='';this.workspace.zoomTo(1);this.sync();this.changed();if(restart)this.schedule(true);}
+ reset(restart=true){this.playAfterPaint=false;this.module.dataset.playRequested='false';const play=this.startup.querySelector('.startup-play');if(play){play.disabled=false;play.textContent=t('播放','Play');}this.player.update(null);this.seq++;this.pageId=undefined;if(this.pageSelect){this.pageSelect.remove();this.pageSelect=null;}clearTimeout(this.debounce);this.worker?.terminate();this.worker=null;clearTimeout(this.initTimeout);clearTimeout(this.timeout);this.busy=false;this.pending=false;this.files={...this.original};this.sourceEditor?.reset.call(this);this.last=null;this.presented=null;clearTimeout(this.paintTimer);this.paintTimer=0;this.paintKey='';this.image.getContext('2d').clearRect(0,0,this.image.width,this.image.height);this.diagnostics.textContent='';this.diagnosticsOpen=false;this.metrics.textContent='';this.statusText='';this.workspace.zoomTo(1);this.sync();this.changed();if(restart)this.schedule(true);}
 
  async font(name,bytes,alias){this.activate();const id=`font-${this.loadedFonts.length}`,font={id,name,bytes,alias};this.loadedFonts.push(font);this.worker.postMessage({type:'font',...font});}
  async localFonts(){this.diagnosticsOpen=true;if(!window.queryLocalFonts){this.diagnostics.textContent=t('此浏览器无法读取系统字体；请选择字体文件。未加载的字符显示方框。','This browser cannot read installed fonts. Select a font file; missing glyphs display as boxes.');this.sync();return;}

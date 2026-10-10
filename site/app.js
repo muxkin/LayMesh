@@ -53,5 +53,11 @@ let drag;stage?.addEventListener('pointerdown',e=>{if(e.button!==0)return;drag={
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openSearch();}if(e.key==='/'&&!search.open&&!['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)&&!document.activeElement?.closest('.cm-editor')){e.preventDefault();openSearch();}if(e.key==='Escape'&&!document.querySelector('dialog[open]:not(.search-dialog):not(.image-dialog)')){if(document.body.classList.contains('menu-open')){closeMenu();menu.focus();}else if(!search.open&&!lightbox.open&&root.dataset.toc==='open'){setToc(false);tocButton?.focus();}}});
 try{const legacyTarget=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(legacyTarget?.classList.contains('legacy-redirect'))location.replace(legacyTarget.href);}catch{}
 
+// Record intent even before the editor module and WASM finish loading.
+$$('.startup-play').forEach(button=>button.addEventListener('click',()=>{
+ const module=button.closest('.example-module');module.dataset.playRequested='true';
+ button.textContent=en?'Play when ready':'准备后播放';button.disabled=true;
+ module.dispatchEvent(new CustomEvent('laymesh:play'));
+}));
 if(document.querySelector('.example-module[data-entry]'))import(new URL('./live/editor.js',import.meta.url));
 document.addEventListener('laymesh:lightbox',e=>{const img=e.detail.image;lastImage=img;const ratio=Number(img.dataset.aspectRatio)||(Number(img.getAttribute('width'))||img.naturalWidth)/(Number(img.getAttribute('height'))||img.naturalHeight)||1;fitWidth=Math.min(stage.clientWidth-40,(stage.clientHeight-40)*ratio);zoomTo(1);});

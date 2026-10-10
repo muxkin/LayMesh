@@ -1,5 +1,5 @@
 import init, {prepare_render,prepare_document_render,register_preview_font} from './wasm/laymesh_wasm.js';
-let initialized, manifest, base,wasmMemory;
+let initialized, manifest, base,wasmMemory,fullFonts;
 const assets={}, fonts={};
 let chain=Promise.resolve(),drawJob,generation,drawPage,overviewReady=false;
 const key=name=>'/'+name.replace(/^\/+/, '');
@@ -27,17 +27,13 @@ async function checkedFont(url,expected,timeout,signal){
   const bytes=new Uint8Array(await response.arrayBuffer());if(sha256(bytes)!==expected)throw Error('Font SHA-256 mismatch');return bytes;
  }finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
 }
-async function loadBundledFont(font){
- // Give the CDN a short head start, then race the packaged copy. Both paths
- // verify the same checksum; an unreachable CDN must not delay offline use.
- const controller=new AbortController();let timer,local;
- const packaged=()=>local??=checkedFont(new URL(font.file,base),font.sha256,30000,controller.signal).then(bytes=>({bytes,source:'page'}));
- const fallback=new Promise(resolve=>{timer=setTimeout(()=>resolve(packaged()),100);});
- try{
-  const {bytes,source}=await Promise.any([checkedFont(font.cdn,font.sha256,5000,controller.signal).then(bytes=>({bytes,source:'cdn'}),packaged),fallback]);
-  register_preview_font('/@bundled/'+font.file.split('/').pop(),bytes);
-  self.postMessage({type:'bundled-font',family:font.family,source});
- }finally{clearTimeout(timer);controller.abort();}
+const fontBytes=font=>checkedFont(new URL(font.file,base),font.sha256,30000);
+function ensureFullFonts(){
+ return fullFonts??=Promise.all(manifest.fonts.filter(font=>font.full).map(async font=>{
+  const bytes=await fontBytes(font.full);
+  // Replace the startup collection at the same key, preserving fallback order.
+  register_preview_font('/@bundled/'+font.filename,bytes);
+ })).catch(error=>{fullFonts=null;throw error;});
 }
 async function resource(name){
  const path=key(name);
@@ -52,13 +48,23 @@ self.onmessage=({data})=>{
  if(data.type==='init'){
   base=data.base;
   initialized=(async()=>{
-   const start=performance.now();wasmMemory=(await init()).memory;
-   const response=await fetch(new URL('manifest.json',base));
-   if(!response.ok)throw new Error('Preview manifest loading failed');
-   manifest=await response.json();await Promise.all(manifest.fonts.map(loadBundledFont));self.postMessage({type:'ready'});
+   const start=performance.now();
+   const fontsReady=(async()=>{
+    const response=await fetch(new URL('manifest.json',base));
+    if(!response.ok)throw new Error('Preview manifest loading failed');
+    manifest=await response.json();return Promise.all(manifest.fonts.map(fontBytes));
+   })();
+   const [wasm,bytes]=await Promise.all([init(),fontsReady]);wasmMemory=wasm.memory;
+   manifest.fonts.forEach((font,i)=>{register_preview_font('/@bundled/'+font.filename,bytes[i]);self.postMessage({type:'bundled-font',family:font.family,source:'page'});});
+   self.postMessage({type:'ready'});
    return performance.now()-start;
   })().catch(error=>{self.postMessage({type:'init-error',error:detail(error)});throw error;});
+  initialized.catch(()=>{});
   return;
+ }
+ // Downloads must not occupy the render queue while an animation is playing.
+ if(data.type==='full-fonts'){
+  initialized.then(ensureFullFonts).then(()=>self.postMessage({type:'full-fonts-ready'}),error=>self.postMessage({type:'full-fonts-error',error:detail(error)}));return;
  }
  chain=chain.then(async()=>{
   const {id}=data;
