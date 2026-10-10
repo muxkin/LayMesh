@@ -1,0 +1,3 @@
+doc = document(name="LCSS animation presentation")
+doc.add(page(src="presentation.lay", name="入场与翻转"))
+doc.add(page(src="second.lay", name="区域揭示"))

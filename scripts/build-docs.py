@@ -52,7 +52,7 @@ def discover():
   text=(ROOT/page['source']).read_text()
   for link in re.findall(r'(?<!!)\[[^]]*\]\(([^)]+)\)',text):
    target=posixpath.normpath(posixpath.join(posixpath.dirname(page['source']),link.split('#')[0]))
-   if (ROOT/target).is_file() and target not in BY_SOURCE and target not in EX and Path(target).suffix.lower() in ('.py','.rs','.toml','.json','.csv','.lay','.laydoc','.lcss','.txt','.yml','.yaml','.mjs','.ts','.md'):
+   if (ROOT/target).is_file() and target not in BY_SOURCE and target not in EX and Path(target).suffix.lower() in ('.py','.rs','.toml','.json','.csv','.lay','.laydoc','.lcss','.css','.txt','.yml','.yaml','.mjs','.ts','.md'):
     for lang in ['zh-CN','en']:
      key='source-'+target
      if (key,lang) not in BY_KEY:register(dict(key=key,file=target,lang=lang,title=Path(target).name,output=('en/' if lang=='en' else '')+'source/'+target+'.html',kind='source',area='reference'))
@@ -74,10 +74,10 @@ def context(page):
 def example_module(page,source):
  e=EX.get(source)
  if not e:return ''
- deps=[f for f in dependencies(source) if Path(f).suffix.lower() not in ('.ttf','.otf','.ttc','.otc','.woff','.woff2')];files=sorted([f for f in deps if Path(f).suffix in ('.lay','.laydoc','.lcss','.csv','.json')],key=lambda f:(f!=source,f));python=source.removesuffix('.lay')+'.py'
+ deps=[f for f in dependencies(source) if Path(f).suffix.lower() not in ('.ttf','.otf','.ttc','.otc','.woff','.woff2')];files=sorted([f for f in deps if Path(f).suffix in ('.lay','.laydoc','.lcss','.css','.csv','.json')],key=lambda f:(f!=source,f));python=source.removesuffix('.lay')+'.py'
  if (ROOT/python).is_file() and python not in files:files.append(python)
  panels=[]
- for i,file in enumerate(files):panels.append(dict(file=file,editable=Path(file).suffix in ('.lay','.laydoc','.lcss','.csv','.json'),name=Path(file).name,id='example-'+e['id']+('-source' if i==0 else '-'+re.sub(r'[^\w-]','-',Path(file).name)),code=code((ROOT/file).read_text(),Path(file).suffix[1:],Path(file).name)))
+ for i,file in enumerate(files):panels.append(dict(file=file,editable=Path(file).suffix in ('.lay','.laydoc','.lcss','.css','.csv','.json'),name=Path(file).name,id='example-'+e['id']+('-source' if i==0 else '-'+re.sub(r'[^\w-]','-',Path(file).name)),code=code((ROOT/file).read_text(),Path(file).suffix[1:],Path(file).name)))
  text,start,line=summary(source)
  return ENV.get_template('example.html').render(**context(page),example=e,panels=panels,summary_from=start,summary_code=code(text,'lay',Path(source).name,line-1),preview=picture(page,source,e['title'][page['lang']=='en']),dependencies=deps)
 def gallery(page):

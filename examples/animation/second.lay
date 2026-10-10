@@ -1,0 +1,6 @@
+page = canvas(size=(100mm, 100mm), stylesheet="motion.lcss", background="#eef5f2")
+title = page.add(text("第二页 · Page 2", font_size=20pt), offset=(12mm, 18mm))
+card = page.add(rect(size=(55mm, 40mm), fill="#2e8b69", border_color="none"), offset=(20mm, 40mm))
+s1 = page.step(name="区域揭示 · Reveal", hold=1s)
+s1.animate(title, class="animate__animated animate__fadeIn")
+s1.animate(card, class="reveal-motion", delay=200ms)

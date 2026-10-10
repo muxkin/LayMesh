@@ -291,3 +291,6 @@
 | `api:document` | [→](documents.zh-CN.md#document) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |
 | `api:page` | [→](documents.zh-CN.md#page) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |
 | `api:document.add` | [→](documents.zh-CN.md#document-add) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |
+| `api:step` | [→](animation.zh-CN.md#step) | [→](../../examples/animation/presentation.lay) | [→](../../examples/animation/presentation.lay) |
+| `api:animate` | [→](animation.zh-CN.md#animate) | [→](../../examples/animation/presentation.lay) | [→](../../examples/animation/presentation.lay) |
+| `geometry:step.animate` | [→](animation.zh-CN.md#animate) | [→](../../examples/animation/presentation.lay) | [→](../../examples/animation/presentation.lay) |

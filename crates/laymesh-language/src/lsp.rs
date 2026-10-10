@@ -117,7 +117,7 @@ fn workspace_files(root_uri: &str) -> Vec<(String, String)> {
             } else if kind.is_file()
                 && path
                     .extension()
-                    .is_some_and(|ext| ext == "lay" || ext == "lcss")
+                    .is_some_and(|ext| ext == "lay" || ext == "lcss" || ext == "css")
             {
                 if let (Ok(relative), Ok(source)) =
                     (path.strip_prefix(root), std::fs::read_to_string(&path))
@@ -213,7 +213,11 @@ fn dependencies(
         let laymesh_core::parser::ExprKind::String(source, _, false) = expr.kind else {
             continue;
         };
-        if !source.ends_with(".lay") && !source.ends_with(".laydoc") && !source.ends_with(".lcss") {
+        if !source.ends_with(".lay")
+            && !source.ends_with(".laydoc")
+            && !source.ends_with(".lcss")
+            && !source.ends_with(".css")
+        {
             continue;
         }
         let target = crate::resolve(uri, &source);

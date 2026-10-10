@@ -304,6 +304,70 @@
           "maximum": 1000,
           "scope": "resource",
           "description": "%config.format.lineWidth%"
+        },
+        "laymesh.export.animation.width": {
+          "type": "integer",
+          "default": 1920,
+          "description": "%config.export.animation.width%",
+          "scope": "resource",
+          "minimum": 2,
+          "maximum": 8192
+        },
+        "laymesh.export.animation.fps": {
+          "type": "number",
+          "default": 30,
+          "description": "%config.export.animation.fps%",
+          "scope": "resource",
+          "exclusiveMinimum": 0,
+          "maximum": 120
+        },
+        "laymesh.export.animation.reducedMotion": {
+          "type": "boolean",
+          "default": false,
+          "description": "%config.export.animation.reducedMotion%",
+          "scope": "resource"
+        },
+        "laymesh.export.animation.crf": {
+          "type": "integer",
+          "default": 18,
+          "description": "%config.export.animation.crf%",
+          "scope": "resource",
+          "minimum": 0,
+          "maximum": 51
+        },
+        "laymesh.export.animation.preset": {
+          "type": "string",
+          "default": "medium",
+          "description": "%config.export.animation.preset%",
+          "scope": "resource",
+          "enum": [
+            "ultrafast",
+            "superfast",
+            "veryfast",
+            "faster",
+            "fast",
+            "medium",
+            "slow",
+            "slower",
+            "veryslow"
+          ]
+        },
+        "laymesh.export.animation.media": {
+          "type": "string",
+          "enum": [
+            "screen",
+            "print"
+          ],
+          "default": "screen",
+          "description": "%config.export.animation.media%",
+          "scope": "resource"
+        },
+        "laymesh.export.animation.background": {
+          "type": "string",
+          "default": "#ffffff",
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "scope": "resource",
+          "description": "%config.export.animation.background%"
         }
       }
     },

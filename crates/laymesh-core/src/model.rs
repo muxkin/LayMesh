@@ -345,6 +345,8 @@ pub struct FontAsset {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Scene {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub animation: Option<crate::animation::Animation>,
     pub schema_version: u32,
     pub width: f64,
     pub height: f64,

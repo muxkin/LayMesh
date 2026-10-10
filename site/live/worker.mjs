@@ -46,7 +46,7 @@ async function resource(name){
  if(!location)throw new Error(`Resource is not registered: ${name}`);
  const response=await fetch(new URL(location,base));
  if(!response.ok)throw new Error(`Resource loading failed: ${name}`);
- assets[path]=/\.(lay|laydoc|lcss|json|csv)$/.test(name)?await response.text():Array.from(new Uint8Array(await response.arrayBuffer()));
+ assets[path]=/\.(lay|laydoc|lcss|css|json|csv)$/.test(name)?await response.text():Array.from(new Uint8Array(await response.arrayBuffer()));
 }
 self.onmessage=({data})=>{
  if(data.type==='init'){
@@ -70,10 +70,10 @@ self.onmessage=({data})=>{
    }
    if(data.type==='paint'){
     if(!drawJob||data.generation!==generation){self.postMessage({type:'paint-skipped',id:data.id,generation:data.generation});return;}
-    const before=performance.now(),frame=drawJob.raster_retained(JSON.stringify(data.rect),data.width,data.height);
+    const before=performance.now(),frame=(data.time==null?drawJob.raster_retained(JSON.stringify(data.rect),data.width,data.height):drawJob.raster_animation(JSON.stringify(data.rect),data.width,data.height,data.time,!!data.reduced));
     const width=frame.width,height=frame.height,rgba=frame.into_rgba(),transfer=[rgba.buffer];let overview;
     if(data.rect[0]===0&&data.rect[1]===0&&data.rect[2]===drawPage.width&&data.rect[3]===drawPage.height)overviewReady=true;
-    if(!overviewReady){const p=drawPage,s=Math.min(768/p.width,2048/p.height,Math.sqrt(500000/(p.width*p.height))),width=Math.max(1,Math.floor(p.width*s)),height=Math.max(1,Math.floor(p.height*s));const frame=drawJob.raster_retained(JSON.stringify([0,0,p.width,p.height]),width,height);overview={width,height,rgba:frame.into_rgba()};transfer.push(overview.rgba.buffer);overviewReady=true;}
+    if(!overviewReady&&data.time==null){const p=drawPage,s=Math.min(768/p.width,2048/p.height,Math.sqrt(500000/(p.width*p.height))),width=Math.max(1,Math.floor(p.width*s)),height=Math.max(1,Math.floor(p.height*s));const frame=drawJob.raster_retained(JSON.stringify([0,0,p.width,p.height]),width,height);overview={width,height,rgba:frame.into_rgba()};transfer.push(overview.rgba.buffer);overviewReady=true;}
     self.postMessage({type:'painted',id:data.id,generation,rgba,overview,width,height,rasterMs:performance.now()-before,wasmMemoryBytes:wasmMemory.buffer.byteLength,rect:data.rect},transfer);return;
    }
    const edited={};for(const [name,text]of Object.entries(data.files))edited[key(name)]=text;

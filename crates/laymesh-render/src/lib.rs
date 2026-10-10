@@ -1,6 +1,7 @@
 //! Shared drawing commands, Vello CPU rasterization, direct krilla PDF and
 //! DrawingML exports. The SVG serializer serves file exports and explicit
 //! compatibility calls; SVG imports pass through a separate adapter.
+pub mod animation;
 pub mod display_list;
 pub mod display_update;
 mod effects;
@@ -843,6 +844,7 @@ mod tests {
     use super::*;
     fn empty() -> Scene {
         Scene {
+            animation: None,
             schema_version: 8,
             width: 25.4,
             height: 12.7,

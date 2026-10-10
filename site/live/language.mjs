@@ -35,7 +35,7 @@ export const layLanguage=StreamLanguage.define({
   if(s.peek()==='}'){s.next();if(state.css&&--state.css===1)state.css=0;return 'bracket';}
   if(state.css&&s.match(/^#[\da-f]{3,8}\b/i))return 'color';
   if(s.match(/^(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?/i))return 'number';
-  if(s.match(/^(?:for|in|not|and|or|while|break|continue|if|else|return|function|import|export|from|true|false|null|auto|mm|cm|inch|pt|px|deg|rad)\b/))return 'keyword';
+  if(s.match(/^(?:for|in|not|and|or|while|break|continue|if|else|return|function|import|export|from|true|false|null|auto|mm|cm|inch|pt|px|deg|rad|s|ms)\b/))return 'keyword';
   if(s.match(/^[\w-]+(?=\s*(?:=|:))/))return 'propertyName';
   if(s.match(/^[a-z_]\w*(?=\s*\()/i))return 'function';
   if(s.match(/^[a-z_]\w*/i))return 'variableName';
@@ -53,7 +53,7 @@ export function languageSupport(editor,file){
   constructor(view){this.refresh=()=>{closeCompletion(view);view.dispatch({effects:signatureEffect.of(null)});};editor.module.addEventListener('laymesh:tab',this.refresh);}
   destroy(){editor.module.removeEventListener('laymesh:tab',this.refresh);}
  });
- return [colorDecorations(editor,file,query),helpTheme,dependencyRefresh,file.endsWith('.lcss')?css():layLanguage,autocompletion({defaultKeymap:false,interactionDelay:0,positionInfo,override:[async context=>{
+ return [colorDecorations(editor,file,query),helpTheme,dependencyRefresh,/\.(lcss|css)$/.test(file)?css():layLanguage,autocompletion({defaultKeymap:false,interactionDelay:0,positionInfo,override:[async context=>{
   const options=await query(editor,file,'completions',context.pos);if(!options?.length)return null;
   // CodeMirror filters the entire result range. Keep it at the cursor so an
   // unfinished suffix ("ro|xx") does not hide "round", while each accepted

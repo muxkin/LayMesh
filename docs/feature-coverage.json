@@ -2092,6 +2092,27 @@
       "reference": "canvas",
       "minimal": "examples/document/report.laydoc",
       "composition": "examples/document/report.laydoc"
+    },
+    "api:step": {
+      "topic": "animation",
+      "anchor": "step",
+      "minimal": "examples/animation/presentation.lay",
+      "composition": "examples/animation/presentation.lay",
+      "exercise": "\\.step\\s*\\("
+    },
+    "api:animate": {
+      "topic": "animation",
+      "anchor": "animate",
+      "minimal": "examples/animation/presentation.lay",
+      "composition": "examples/animation/presentation.lay",
+      "exercise": "\\.animate\\s*\\("
+    },
+    "geometry:step.animate": {
+      "topic": "animation",
+      "anchor": "animate",
+      "minimal": "examples/animation/presentation.lay",
+      "composition": "examples/animation/presentation.lay",
+      "exercise": "\\.animate\\s*\\("
     }
   }
 }

@@ -39,7 +39,7 @@ def build(output,skip_wasm=False):
    'cdn':'https://cdn.jsdelivr.net/gh/muxkin/LayMesh@main/site/page-fonts/'+filename})
  for e in examples():
   deps=[f for f in dependencies(e['source']) if Path(f).suffix.lower() not in ('.ttf','.otf','.ttc','.otc','.woff','.woff2')]
-  manifest['examples'][e['id']]={'entry':e['source'],'files':[f for f in deps if Path(f).suffix in ('.lay','.laydoc','.lcss','.csv','.json')],'dependencies':deps}
+  manifest['examples'][e['id']]={'entry':e['source'],'files':[f for f in deps if Path(f).suffix in ('.lay','.laydoc','.lcss','.css','.csv','.json')],'dependencies':deps}
   for f in deps:
    data=(ROOT/f).read_bytes();name='resources/'+hashlib.sha256(data).hexdigest()+Path(f).suffix;(output/name).write_bytes(data);manifest['resources']['/'+f]=name
  vendor=json.loads((ROOT/'site/vendor/manifest.json').read_text())

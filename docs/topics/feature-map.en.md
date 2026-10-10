@@ -291,3 +291,6 @@ This map covers public functions, geometry members, LCSS properties and integrat
 | `api:document` | [→](documents.en.md#document) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |
 | `api:page` | [→](documents.en.md#page) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |
 | `api:document.add` | [→](documents.en.md#document-add) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |
+| `api:step` | [→](animation.en.md#step) | [→](../../examples/animation/presentation.lay) | [→](../../examples/animation/presentation.lay) |
+| `api:animate` | [→](animation.en.md#animate) | [→](../../examples/animation/presentation.lay) | [→](../../examples/animation/presentation.lay) |
+| `geometry:step.animate` | [→](animation.en.md#animate) | [→](../../examples/animation/presentation.lay) | [→](../../examples/animation/presentation.lay) |

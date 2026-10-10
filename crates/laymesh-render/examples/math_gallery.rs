@@ -149,6 +149,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             node["x"] = json!(x);
                             node["y"] = json!(y);
                             let scene = Scene {
+                                animation: None,
                                 schema_version: 1,
                                 width: bounds.width() + 1.,
                                 height: bounds.height() + 1.,

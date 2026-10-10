@@ -261,3 +261,21 @@ fn shipped_examples_format_without_changing_semantics() {
     );
     assert!(count > 100);
 }
+#[test]
+fn animation_css_and_step_formatting_are_idempotent() {
+    let css = "@keyframes fade{from{opacity:0}50%{opacity:.5;animation-timing-function:steps(2,end)}to{opacity:1}}\n.a{animation:fade 800ms linear both}";
+    let result = format(
+        "motion.lcss",
+        css,
+        json!({"tabSize":2,"insertSpaces":true}),
+        None,
+    );
+    assert!(result.contains("@keyframes"));
+    let result = format(
+        "motion.lay",
+        "p=canvas(size=(30,20))\na=p.add(rect(size=(10,10)))\ns=p.step(hold=1s)\ns.animate(a,name=\"fade\",duration=800ms)",
+        json!({"tabSize":2,"insertSpaces":true}),
+        None,
+    );
+    assert!(result.contains("800ms") || result.contains("800 ms"));
+}

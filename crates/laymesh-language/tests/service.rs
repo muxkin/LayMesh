@@ -303,3 +303,20 @@ fn lcss_parts_classes_variables_and_values() {
         );
     }
 }
+#[test]
+fn presentation_step_completion_and_css_animation_hover() {
+    let mut s = LanguageService::new("en");
+    let source = "p=canvas(size=(30,20))\ns=p.step()\ns.";
+    s.update("motion.lay", source);
+    let completions = s.completions("motion.lay", source.len()).to_string();
+    assert!(completions.contains("animate"), "{completions}");
+    let source = "p=canvas(size=(30,20))\ns=p.step()\ns.animate(a, dur";
+    s.update("motion.lay", source);
+    assert!(
+        s.completions("motion.lay", source.len())
+            .to_string()
+            .contains("duration")
+    );
+    s.update("motion.css", ".a { animation-duration: 1s; }");
+    assert!(s.hover("motion.css", 12).to_string().contains("duration"));
+}

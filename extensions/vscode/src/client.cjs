@@ -106,7 +106,7 @@ async function activate(context){
    panel.webview.postMessage({id:message.id,result});
   }catch(error){panel.webview.postMessage({id:message.id,error:error.message});}});
  }));
- const watcher=vscode.workspace.createFileSystemWatcher('**/*.{lay,lcss}');for(const [event,type]of [['onDidCreate',1],['onDidChange',2],['onDidDelete',3]])context.subscriptions.push(watcher[event](uri=>send('workspace/didChangeWatchedFiles',{changes:[{uri:uri.toString(),type}]})));context.subscriptions.push(watcher);
+ const watcher=vscode.workspace.createFileSystemWatcher('**/*.{lay,lcss,css}');for(const [event,type]of [['onDidCreate',1],['onDidChange',2],['onDidDelete',3]])context.subscriptions.push(watcher[event](uri=>send('workspace/didChangeWatchedFiles',{changes:[{uri:uri.toString(),type}]})));context.subscriptions.push(watcher);
  context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(event=>send('workspace/didChangeWorkspaceFolders',{event:{added:event.added.map(folder=>({uri:folder.uri.toString(),name:folder.name})),removed:event.removed.map(folder=>({uri:folder.uri.toString(),name:folder.name}))}})));
 }
 async function deactivate(){closed=true;if(process_){try{await Promise.race([request('shutdown',null),new Promise(resolve=>setTimeout(resolve,1000))]);send('exit');}catch{}process_.kill();}}

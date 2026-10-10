@@ -25,6 +25,7 @@ def build(binary=None,extension_dir=None):
   if pattern.get('name')=='support.function':pattern['match']=r'\b(?:'+'|'.join(re.escape(n) for n in names)+r')(?=\s*\()'
  grammar.write_text(json.dumps(syntax,ensure_ascii=False,indent=2)+'\n')
  shutil.copy2(ROOT/'site/live/color-panel.mjs',extension/'dist/color-panel.mjs');shutil.copy2(ROOT/'site/live/color-math.mjs',extension/'dist/color-math.mjs');shutil.copy2(source/'src/color-webview.mjs',extension/'dist/color-webview.mjs')
+ shutil.copy2(ROOT/'site/live/animation-player.mjs',extension/'dist/animation-player.mjs')
  for name in ['preview-host.cjs','preview-math.mjs','preview-webview.mjs','preview.css']:shutil.copy2(source/'src'/name,extension/'dist'/name)
  subprocess.run(['cargo','build','--release','--locked','--target','wasm32-unknown-unknown','-p','laymesh-wasm','--no-default-features'],cwd=ROOT,check=True)
  subprocess.run(['wasm-bindgen','--target','web','--out-dir',str(extension/'dist/wasm'),str(ROOT/'target/wasm32-unknown-unknown/release/laymesh_wasm.wasm')],check=True)

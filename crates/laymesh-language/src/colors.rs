@@ -100,7 +100,7 @@ impl LanguageService {
             i += 1;
         }
         // LCSS has unquoted hex and space-separated functions; inspect declaration values.
-        let regions = if uri.ends_with(".lcss") {
+        let regions = if uri.ends_with(".lcss") || uri.ends_with(".css") {
             vec![(0, source.len())]
         } else {
             ts.windows(2)
@@ -182,16 +182,15 @@ impl LanguageService {
             .as_array()
             .and_then(|vs| vs.iter().find(|v| v["from"] == from && v["to"] == to))
             .cloned();
-        let format =
-            info.as_ref()
-                .and_then(|v| v["format"].as_str())
-                .unwrap_or(if uri.ends_with(".lcss") {
-                    "css"
-                } else if old.starts_with(['\"', '\'']) {
-                    "string"
-                } else {
-                    "constructor"
-                });
+        let format = info.as_ref().and_then(|v| v["format"].as_str()).unwrap_or(
+            if uri.ends_with(".lcss") || uri.ends_with(".css") {
+                "css"
+            } else if old.starts_with(['\"', '\'']) {
+                "string"
+            } else {
+                "constructor"
+            },
+        );
         let quote = info
             .as_ref()
             .and_then(|v| v["quote"].as_str())

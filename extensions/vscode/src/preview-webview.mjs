@@ -1,3 +1,4 @@
+import {AnimationPlayer} from './animation-player.mjs';
 import {mmPerUnit,canvasAt,niceStep,preparePlots,plotAt,formatData} from './preview-math.mjs';
 
 const bridge=typeof acquireVsCodeApi==='function'?acquireVsCodeApi():{getState:()=>null,setState(){},postMessage(){}};
@@ -13,6 +14,7 @@ openPage.type=exportDocument.type='button';
 pageSelect.onchange=()=>{view.mode='fit';view.pan={x:0,y:0};bridge.postMessage({type:'select-page',pageId:pageSelect.value});};
 openPage.onclick=()=>bridge.postMessage({type:'open-page'});
 exportDocument.onclick=()=>bridge.postMessage({type:'export-document'});
+const player=new AnimationPlayer(root,schedule,{locale:()=>locale,page:direction=>{const n=pageSelect.selectedIndex+direction;if(n<0||n>=pageSelect.options.length)return false;pageSelect.selectedIndex=n;pageSelect.onchange();return true;}});
 const workspace=el('div','workspace',root),corner=el('span','corner',workspace),hr=el('canvas','ruler horizontal',workspace),vr=el('canvas','ruler vertical',workspace),viewport=el('div','viewport',workspace);
 viewport.tabIndex=0;viewport.setAttribute('role','region');
 const figure=el('div','figure',viewport),overview=el('canvas','figure-overview',figure);overview.hidden=true;overview.setAttribute('aria-hidden','true');overview.style.pointerEvents='none';let overviewContent='';
@@ -41,6 +43,7 @@ errorButton.type='button';errorButton.hidden=true;
 const pathContext=document.createElement('canvas').getContext('2d');let pathCache=new WeakMap();
 const text=(zh,en)=>/^zh/i.test(locale)?zh:en;
 function labels(){
+ player.localize();
  pageSelect.setAttribute('aria-label',text('文档页面','Document page'));
  openPage.textContent=text('编辑页面','Edit page');exportDocument.textContent=text('导出整本 PDF','Export document PDF');
  document.documentElement.lang=/^zh/i.test(locale)?'zh-CN':'en';
@@ -133,6 +136,7 @@ async function installFrame(data){
  if(sequence!==renderSequence)return;
  drawReady=true;drawJobId=data.displayListId||data.displayListCompressed?.id||String(data.generation);if(!installed.reused)drawKey='';wasmMemoryBytes=installed.wasmMemoryBytes;
  drawGeneration=data.generation;
+ player.update(data.inspection.animation);
  page=data.inspection.page;plots=preparePlots(data.inspection);pathCache=new WeakMap();
  warnings.textContent=(data.inspection.warnings||[]).map(w=>`${w.code}: ${w.message}`).join('\n');
  frameTimings={initializationWaitMs:installed.initializationWaitMs,resourcesMs:installed.resourcesMs,installMs:installed.installMs};
@@ -143,7 +147,7 @@ async function installFrame(data){
  layout(true);
 }
 function positionPixels(){if(!presented||!page)return;const c=presented.crop;Object.assign(image.style,{width:(c[2]-c[0])*view.scale+'px',height:(c[3]-c[1])*view.scale+'px',left:c[0]*view.scale+'px',top:c[1]*view.scale+'px'});
- overview.hidden=overviewContent!==drawJobId;
+ overview.hidden=player.time!==null||overviewContent!==drawJobId;
  if(!overview.hidden){const [x0,y0,x1,y1]=c.map((v,i)=>100*v/(i%2?page.height:page.width));Object.assign(overview.style,{position:'absolute',left:'0',top:'0',width:page.width*view.scale+'px',height:page.height*view.scale+'px',clipPath:`polygon(evenodd,0% 0%,100% 0%,100% 100%,0% 100%,0% 0%,${x0}% ${y0}%,${x1}% ${y0}%,${x1}% ${y1}%,${x0}% ${y1}%,${x0}% ${y0}%)`});}
 }
 function reportPaint(rasterMs){root.dataset.painted='true';root.dataset.rasterMs=String(rasterMs);bridge.postMessage({type:'painted',generation:drawGeneration,displayListId:drawJobId,at:Date.now(),rasterMs,wasmMemoryBytes,...frameTimings,width:image.width,height:image.height});}
@@ -152,13 +156,13 @@ function paint(r,force=false){
  const left=Math.max(0,r.left),top=Math.max(0,r.top),right=Math.min(viewport.clientWidth,r.left+r.width),bottom=Math.min(viewport.clientHeight,r.top+r.height);
  if(right<=left||bottom<=top){image.hidden=true;return;}image.hidden=false;
  const visible=[(left-r.left)/view.scale,(top-r.top)/view.scale,(right-r.left)/view.scale,(bottom-r.top)/view.scale],dpr=devicePixelRatio||1;
- if(presented?.content===drawJobId&&presented.scale===view.scale&&presented.dpr===dpr&&visible[0]>=presented.crop[0]-1e-9&&visible[1]>=presented.crop[1]-1e-9&&visible[2]<=presented.crop[2]+1e-9&&visible[3]<=presented.crop[3]+1e-9){
+ if(presented?.time===player.time&&presented?.reduced===player.reduced&&presented?.content===drawJobId&&presented.scale===view.scale&&presented.dpr===dpr&&visible[0]>=presented.crop[0]-1e-9&&visible[1]>=presented.crop[1]-1e-9&&visible[2]<=presented.crop[2]+1e-9&&visible[3]<=presented.crop[3]+1e-9){
   pendingPaint=null;clearTimeout(paintTimer);paintTimer=0;drawKey=presented.key;root.dataset.painted='true';if(force)reportPaint(0);return;
  }
  const pad=96/view.scale,crop=[Math.max(0,visible[0]-pad),Math.max(0,visible[1]-pad),Math.min(page.width,visible[2]+pad),Math.min(page.height,visible[3]+pad)];
  const width=Math.max(1,Math.ceil((crop[2]-crop[0])*view.scale*dpr)),height=Math.max(1,Math.ceil((crop[3]-crop[1])*view.scale*dpr));
- const key=JSON.stringify([drawJobId,crop,width,height]);if(key===drawKey)return;drawKey=key;root.dataset.painted='false';
- pendingPaint={type:'paint',generation:drawGeneration,crop,width,height,content:drawJobId,scale:view.scale,dpr,key};
+ const key=JSON.stringify([drawJobId,crop,width,height,player.time,player.reduced]);if(key===drawKey)return;drawKey=key;root.dataset.painted='false';
+ pendingPaint={time:player.time,reduced:player.reduced,type:'paint',generation:drawGeneration,crop,width,height,content:drawJobId,scale:view.scale,dpr,key};
  clearTimeout(paintTimer);paintTimer=0;
  // Translate the retained Canvas immediately. Changing zoom temporarily
  // scales its pixels; the worker restores exact DPR pixels after motion settles.

@@ -10,6 +10,8 @@ pub const DISPLAY_LIST_VERSION: u32 = 1;
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DisplayList {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub animation: Option<laymesh_core::animation::Animation>,
     pub schema_version: u32,
     pub width: f64,
     pub height: f64,
@@ -832,6 +834,12 @@ impl Builder<'_> {
             json!({"kind":n["kind"],"radius":n["radius"]})
         };
         result.hint["logicalKind"] = n["kind"].clone();
+        if self.scene.animation.is_some() {
+            result.hint["animationLayout"] =
+                json!(laymesh_core::geometry::node_transform(n).as_coeffs());
+            result.hint["animationSize"] = json!([jnum(n, "width", 0.), jnum(n, "height", 0.)]);
+            result.hint["plotBounds"] = n["plotBounds"].clone();
+        }
         if let DrawKind::Group { children, .. } = &mut result.kind {
             for child in children {
                 if child.hint.is_null() && matches!(child.kind, DrawKind::Path { .. }) {
@@ -960,6 +968,7 @@ fn build(scene: &Scene, preview: bool) -> Result<DisplayList> {
         nodes.push(b.node(n, Affine::IDENTITY)?);
     }
     Ok(DisplayList {
+        animation: scene.animation.clone(),
         schema_version: DISPLAY_LIST_VERSION,
         width: scene.width,
         height: scene.height,

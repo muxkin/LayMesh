@@ -12,7 +12,7 @@ function compactReplay(previous,frame){
  const update=structuredClone(previous?.displayListUpdate?.update||frame.displayListUpdate.update);
  if(previous){
   const incoming=frame.displayListUpdate.update;
-  update.width=incoming.width;update.height=incoming.height;update.schemaVersion=incoming.schemaVersion;
+  update.animation=structuredClone(incoming.animation);update.width=incoming.width;update.height=incoming.height;update.schemaVersion=incoming.schemaVersion;
   if(incoming.resources)update.resources=structuredClone(incoming.resources);
   if(incoming.roots){update.roots=structuredClone(incoming.roots);update.nodes=[];}
   const prefix=(a,b)=>a.length<=b.length&&a.every((v,i)=>v===b[i]);
@@ -63,6 +63,7 @@ class PreviewWorker {
    if(this.enabled)this.start();
   },job.timeout);
   const request={protocol:3,resource_dir:this.resourceDir,...job.request};if(request.protocol===3&&!this.capabilities.includes('display-list-v3')){clearTimeout(this.renderTimer);this.active=null;job.done({error:{code:'E_PREVIEW_PROTOCOL',message:'Native engine does not support drawing protocol 3'},dependencies:[]});this.pump();return;}
+  if(request.type==='animate'&&!this.capabilities.includes('animation-v1')){clearTimeout(this.renderTimer);this.active=null;job.done({error:messageError('Update LayMesh to support animation export','请更新 LayMesh 以支持动画导出')});this.pump();return;}
   if(request.protocol===3&&this.capabilities.includes('display-list-gzip-v3'))request.compressed_display_list=true;
   if(request.protocol===3&&this.capabilities.includes('display-list-updates-v3'))request.display_list_updates=true;
   this.process.stdin.write(JSON.stringify({...request,id:this.active.id,file:job.file,source:job.source,overlays:job.overlays})+'\n');
@@ -79,7 +80,7 @@ class PreviewWorker {
 function editorDefaults(uri){
  const cfg=vscode.workspace.getConfiguration('laymesh',uri),user={},workspace={};
  const mappings={
-  'export.dpi':'export.dpi','export.quality':['export.jpeg.quality','export.webp.quality'],
+  'export.animation.background':'export.animation.background','export.animation.media':'export.animation.media','export.animation.width':'export.animation.width','export.animation.fps':'export.animation.fps','export.animation.reducedMotion':'export.animation.reduced_motion','export.animation.crf':'export.animation.crf','export.animation.preset':'export.animation.preset','export.dpi':'export.dpi','export.quality':['export.jpeg.quality','export.webp.quality'],
   'export.tiffCompression':'export.tiff.compression','export.pngCompression':'export.png.compression',
   'export.background':['export.jpeg.background','export.gif.background','export.ppm.background','export.pgm.background','export.pbm.background'],
   'export.webpQuality':'export.webp.quality','export.webpLossless':'export.webp.webp_lossless','export.webpMethod':'export.webp.webp_method',
@@ -109,15 +110,15 @@ function activatePreview(context,binary,output){
    vscode.window.showInformationMessage(text('LayMesh：请在受信任工作区保存 .lay 或 .laydoc 文件后导出','LayMesh: save a .lay or .laydoc file in a trusted workspace before exporting'));return;
   }
   try{
-   let destination,options;
+   let destination,options,animated=!!provided?.animated;
    if(provided){
     destination=typeof provided.output==='string'?vscode.Uri.file(provided.output):provided.output;
     options=provided.options||{};
     if(!destination||destination.scheme!=='file')throw new Error(text('导出目标必须是本地文件','Export destination must be a local file'));
    }else{
-    const formats=[['svg','SVG'],['pdf','PDF'],['pptx','PowerPoint (PPTX)'],['png','PNG'],['jpg','JPEG'],['tif','TIFF'],['webp','WebP'],['bmp','BMP'],['gif','GIF'],['ico','ICO'],['pam','PAM / PNM'],['ppm','PPM'],['pgm','PGM'],['pbm','PBM'],['tga','TGA']];
-    const format=await vscode.window.showQuickPick(formats.map(([extension,label])=>({label,extension})),{title:text('LayMesh：导出图形','LayMesh: Export Figure'),placeHolder:text('选择导出格式','Choose an export format')});
-    if(!format)return;
+    const formats=[['svg','SVG'],['pdf','PDF'],['pptx','PowerPoint (PPTX)'],['png','PNG'],['jpg','JPEG'],['tif','TIFF'],['webp','WebP'],['bmp','BMP'],['gif','GIF'],['ico','ICO'],['pam','PAM / PNM'],['ppm','PPM'],['pgm','PGM'],['pbm','PBM'],['tga','TGA'],['mp4','MP4 动画 / Animation',true],['gif','GIF 动画 / Animation',true]];
+    const format=await vscode.window.showQuickPick(formats.map(([extension,label,animated])=>({label,extension,animated})),{title:text('LayMesh：导出图形','LayMesh: Export Figure'),placeHolder:text('选择导出格式','Choose an export format')});
+    if(!format)return;animated=!!format.animated;
     options={};
     destination=await vscode.window.showSaveDialog({defaultUri:vscode.Uri.file(uri.fsPath.replace(/\.(lay|laydoc)$/,'.'+format.extension)),filters:{[format.label]:[format.extension]},saveLabel:text('导出','Export')});
     if(!destination)return;
@@ -128,9 +129,11 @@ function activatePreview(context,binary,output){
    // Snapshot after the dialogs: export the current unsaved entry and imported buffers.
    const doc=await vscode.workspace.openTextDocument(uri),overlays={};
    for(const buffer of vscode.workspace.textDocuments)if(buffer.uri.scheme==='file'&&buffer.isDirty)overlays[keyOf(buffer.uri)]=buffer.getText();
-   const result=await vscode.window.withProgress({location:vscode.ProgressLocation.Notification,title:text('LayMesh：正在导出…','LayMesh: Exporting…')},()=>new Promise(resolve=>{
+   const cancelFile=path.join(os.tmpdir(),'laymesh-animation-cancel-'+process.pid+'-'+Date.now());
+   const result=await vscode.window.withProgress({cancellable:animated,location:vscode.ProgressLocation.Notification,title:text('LayMesh：正在导出…','LayMesh: Exporting…')},(_progress,token)=>new Promise(resolve=>{
+    const cancellation=token.onCancellationRequested(()=>{try{fs.writeFileSync(cancelFile,'cancel');}catch{}});
     const exporter=new PreviewWorker(binary,output);
-    exporter.enqueue({file:keyOf(uri),source:doc.getText(),overlays,request:{type:'export',output:keyOf(destination),options,...(uri.fsPath.endsWith('.laydoc')?{page_id:currentPage||provided?.pageId||panels.get(keyOf(uri))?.pageId,document_all:provided?.documentAll??(!currentPage&&destination.fsPath.toLowerCase().endsWith('.pdf'))}:{}),...editorDefaults(uri),...(provided?.config?{config:provided.config}:{})},timeout:300000,done:result=>{exporter.dispose();resolve(result);}});
+    exporter.enqueue({file:keyOf(uri),source:doc.getText(),overlays,request:{type:animated?'animate':'export',cancel_file:cancelFile,output:keyOf(destination),options,...(uri.fsPath.endsWith('.laydoc')?{page_id:currentPage||provided?.pageId||panels.get(keyOf(uri))?.pageId,document_all:provided?.documentAll??(!currentPage&&destination.fsPath.toLowerCase().endsWith('.pdf'))}:{}),...editorDefaults(uri),...(provided?.config?{config:provided.config}:{})},timeout:animated?3600000:300000,done:result=>{cancellation.dispose();try{fs.unlinkSync(cancelFile);}catch{}exporter.dispose();resolve(result);}});
    }));
    if(result.error)throw new Error(result.error.messageZh&&/^zh/i.test(locale())?result.error.messageZh:result.error.message);
    if(!result.exported)throw new Error(text('请更新配置的 LayMesh 可执行文件以支持导出','Update the configured LayMesh executable to support export'));

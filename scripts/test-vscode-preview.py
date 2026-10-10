@@ -172,7 +172,20 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   until(lambda:root.evaluate("!!document.querySelector('.quick-input-widget input')?.value.endsWith('.pdf')"),'Whole document PDF save dialog');key('Escape',27)
   evaluate("(()=>{d.querySelector('.page-select').nextElementSibling.click();return true})()")
   document_errors=[event for event in c.events if event.get('method')=='Runtime.exceptionThrown' or event.get('method')=='Runtime.consoleAPICalled' and event['params'].get('type')=='error'];assert not document_errors,document_errors
-  phase('document-ui-verified');wait_phase('complete');host.wait(timeout=20);assert host.returncode==0
+  phase('document-ui-verified');wait_phase('animation-ready')
+  c=until(attach,'Animation preview iframe');c.call('Log.enable')
+  wait("d.querySelector('.preview').dataset.painted==='true'&&d.querySelector('.animation-controls').style.display==='flex'")
+  full_hash=drawing_hash()
+  evaluate("(()=>{d.querySelector('[data-action=animation-play]').click();return true})()")
+  wait("d.querySelector('[data-action=animation-play]').textContent==='Pause'")
+  evaluate("(()=>{d.querySelector('[data-action=animation-play]').click();const r=d.querySelector('[aria-label=\"Animation time\"]');r.value='0';r.dispatchEvent(new d.defaultView.Event('input'));return true})()")
+  wait("d.querySelector('.preview').dataset.painted==='true'");until(lambda:drawing_hash()!=full_hash,'Animation state rendered')
+  evaluate("(()=>{d.querySelector('[data-action=animation-next]').click();d.querySelector('[data-action=animation-play]').click();return true})()")
+  wait("d.querySelector('[aria-label=\"Current step\"]').textContent.includes('Pulse')")
+  evaluate("(()=>{d.querySelector('[data-action=animation-static]').click();return true})()")
+  wait("d.querySelector('.preview').dataset.painted==='true'");until(lambda:drawing_hash()==full_hash,'Static layout restored')
+  screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'animation-controls.png').write_bytes(base64.b64decode(screenshot['data']))
+  phase('animation-verified');wait_phase('complete');host.wait(timeout=20);assert host.returncode==0
   result=json.loads(evidence.read_text());result['ui']={'bmp_pixel':bitmap,'transparent_webp_pixel':transparent_pixel,'opaque_16bit_jpeg_pixel':high_pixel,'direct_export_save_dialog_verified':True,'no_dpi_or_compression_prompts':True,'initial_readout':readout,'english_readout':english_readout,'state':state,'narrow':layout,'console_errors':console_errors,'viewports':['1440x1000 dark DPR 2','760x720 light DPR 2'],'checks':['BMP on a Chinese/space/hash path','canvas/data hover','ruler markers','wheel anchor','Space drag','100%','ruler toggle','fit','continuous motion','pointer exit','narrow resize','DPR ruler pixels','explicit English and auto UI','view preserved on language change','English stale error and source action']}
   result['ui']['documents']={'page_selector':True,'formula_edit_visible':True,'reordering_preserves_page_id':True,'whole_pdf_direct_save_dialog':True,'console_errors':document_errors}
   (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))

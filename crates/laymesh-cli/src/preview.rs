@@ -39,7 +39,7 @@ pub fn serve() -> io::Result<()> {
         }
     });
     sender
-        .send(json!({"type":"ready","protocol":1,"capabilities":["resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","defaults"]}))
+        .send(json!({"type":"ready","protocol":1,"capabilities":["animation-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","defaults"]}))
         .unwrap();
     for line in io::stdin().lock().lines() {
         let request: Value = match serde_json::from_str(&line?) {
@@ -125,6 +125,22 @@ pub fn serve() -> io::Result<()> {
                 }
             }
             host.files.insert(file.into(), source.as_bytes().to_vec());
+            if request["type"] == "animate" {
+                let output = Path::new(request["output"].as_str().ok_or("Missing output path")?);
+                if !output.is_absolute() {
+                    return Err("Animation output path must be absolute".into());
+                }
+                return super::animation::export(
+                    file,
+                    source,
+                    host,
+                    output,
+                    &defaults,
+                    &request["options"],
+                    None,
+                    request["cancel_file"].as_str().map(Path::new),
+                );
+            }
             let mut drawing_key = file.to_owned();
             let scene = if file.ends_with(".laydoc") {
                 let plan = laymesh_core::document::plan_source(source, file, host.clone())?;

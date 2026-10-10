@@ -204,6 +204,19 @@
     ]
   },
   {
+    "name": "block2",
+    "version": "0.6.2",
+    "license": "MIT",
+    "repository": "https://github.com/madsmtm/objc2",
+    "texts": [
+      {
+        "file": "block2-0.6.2-LICENSE.md",
+        "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/b4167b582b2f75f9a1be75495c41b765344fd03c/LICENSE.md"
+      }
+    ]
+  },
+  {
     "name": "bumpalo",
     "version": "3.20.3",
     "license": "MIT OR Apache-2.0",
@@ -300,6 +313,22 @@
       {
         "file": "cfg-if-1.0.5-LICENSE-MIT",
         "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    ]
+  },
+  {
+    "name": "cfg_aliases",
+    "version": "0.2.2",
+    "license": "MIT",
+    "repository": "https://github.com/katharostech/cfg_aliases",
+    "texts": [
+      {
+        "file": "cfg_aliases-0.2.2-LICENSE",
+        "sha256": "31b94860253d8ec7b4529f51901044d3b459d6292d996504a36b1bae3a36a812"
+      },
+      {
+        "file": "cfg_aliases-0.2.2-NOTICES.md",
+        "sha256": "1e2b7ade3fb228130408b9990cae6a7618eb314c75aa0b164bfe485d9d9756ee"
       }
     ]
   },
@@ -484,6 +513,30 @@
     ]
   },
   {
+    "name": "cssparser",
+    "version": "0.38.0",
+    "license": "MPL-2.0",
+    "repository": "https://github.com/servo/rust-cssparser",
+    "texts": [
+      {
+        "file": "cssparser-0.38.0-LICENSE",
+        "sha256": "fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85"
+      }
+    ]
+  },
+  {
+    "name": "cssparser-macros",
+    "version": "0.7.1",
+    "license": "MPL-2.0",
+    "repository": "https://github.com/servo/rust-cssparser",
+    "texts": [
+      {
+        "file": "cssparser-macros-0.7.1-LICENSE",
+        "sha256": "fab3dd6bdab226f1c08630b1dd917e11fcb4ec5e1e020e2c16f83a0a13863e85"
+      }
+    ]
+  },
+  {
     "name": "csv",
     "version": "1.4.0",
     "license": "Unlicense/MIT",
@@ -512,6 +565,22 @@
       {
         "file": "csv-core-0.1.13-LICENSE-MIT",
         "sha256": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f"
+      }
+    ]
+  },
+  {
+    "name": "ctrlc",
+    "version": "3.5.2",
+    "license": "MIT/Apache-2.0",
+    "repository": "https://github.com/Detegr/rust-ctrlc.git",
+    "texts": [
+      {
+        "file": "ctrlc-3.5.2-LICENSE-APACHE",
+        "sha256": "3481c338b8e2760b5a58e129339501c01e640f7597767f91d1a84e25e68fbdb4"
+      },
+      {
+        "file": "ctrlc-3.5.2-LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
       }
     ]
   },
@@ -580,6 +649,19 @@
     ]
   },
   {
+    "name": "dispatch2",
+    "version": "0.3.1",
+    "license": "Zlib OR Apache-2.0 OR MIT",
+    "repository": "https://github.com/madsmtm/objc2",
+    "texts": [
+      {
+        "file": "dispatch2-0.3.1-LICENSE.md",
+        "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/8852b424193ca41602281b3d7540d7c8ed51e49a/LICENSE.md"
+      }
+    ]
+  },
+  {
     "name": "displaydoc",
     "version": "0.2.7",
     "license": "MIT OR Apache-2.0",
@@ -592,6 +674,34 @@
       {
         "file": "displaydoc-0.2.7-LICENSE-MIT",
         "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "name": "dtoa",
+    "version": "1.0.11",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/dtolnay/dtoa",
+    "texts": [
+      {
+        "file": "dtoa-1.0.11-LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "file": "dtoa-1.0.11-LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "name": "dtoa-short",
+    "version": "0.3.5",
+    "license": "MPL-2.0",
+    "repository": "https://github.com/upsuper/dtoa-short",
+    "texts": [
+      {
+        "file": "dtoa-short-0.3.5-LICENSE",
+        "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5"
       }
     ]
   },
@@ -636,6 +746,22 @@
       {
         "file": "fancy-regex-0.14.0-LICENSE",
         "sha256": "3bc70e239e91272782006c638fc0452a714d384224f11f0923036b7be07cf9b5"
+      }
+    ]
+  },
+  {
+    "name": "fastrand",
+    "version": "2.5.0",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/smol-rs/fastrand",
+    "texts": [
+      {
+        "file": "fastrand-2.5.0-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "fastrand-2.5.0-LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
       }
     ]
   },
@@ -1381,6 +1507,18 @@
     ]
   },
   {
+    "name": "nix",
+    "version": "0.31.3",
+    "license": "MIT",
+    "repository": "https://github.com/nix-rust/nix",
+    "texts": [
+      {
+        "file": "nix-0.31.3-LICENSE",
+        "sha256": "66e3ee1fa7f909ad3c612d556f2a0cdabcd809ad6e66f3b0605015ac64841b70"
+      }
+    ]
+  },
+  {
     "name": "num-traits",
     "version": "0.2.19",
     "license": "MIT OR Apache-2.0",
@@ -1393,6 +1531,32 @@
       {
         "file": "num-traits-0.2.19-LICENSE-MIT",
         "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
+      }
+    ]
+  },
+  {
+    "name": "objc2",
+    "version": "0.6.5",
+    "license": "MIT",
+    "repository": "https://github.com/madsmtm/objc2",
+    "texts": [
+      {
+        "file": "objc2-0.6.5-LICENSE.md",
+        "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/d7d2fa23ceaa5e6096c923b081040e5d81b3b9df/LICENSE.md"
+      }
+    ]
+  },
+  {
+    "name": "objc2-encode",
+    "version": "4.1.0",
+    "license": "MIT",
+    "repository": "https://github.com/madsmtm/objc2",
+    "texts": [
+      {
+        "file": "objc2-encode-4.1.0-LICENSE.md",
+        "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/8d214f5477365ffcbcbb7de058c86ed9a518efb7/LICENSE.md"
       }
     ]
   },
@@ -1457,6 +1621,18 @@
     ]
   },
   {
+    "name": "phf",
+    "version": "0.14.0",
+    "license": "MIT",
+    "repository": "https://github.com/rust-phf/rust-phf",
+    "texts": [
+      {
+        "file": "phf-0.14.0-LICENSE",
+        "sha256": "0ab4d106b6faac07fb6a051815fd1b4d862d730895e2d7d7358c2f13565e7a38"
+      }
+    ]
+  },
+  {
     "name": "phf_generator",
     "version": "0.11.3",
     "license": "MIT",
@@ -1464,6 +1640,18 @@
     "texts": [
       {
         "file": "phf_generator-0.11.3-LICENSE",
+        "sha256": "0ab4d106b6faac07fb6a051815fd1b4d862d730895e2d7d7358c2f13565e7a38"
+      }
+    ]
+  },
+  {
+    "name": "phf_generator",
+    "version": "0.14.0",
+    "license": "MIT",
+    "repository": "https://github.com/rust-phf/rust-phf",
+    "texts": [
+      {
+        "file": "phf_generator-0.14.0-LICENSE",
         "sha256": "0ab4d106b6faac07fb6a051815fd1b4d862d730895e2d7d7358c2f13565e7a38"
       }
     ]
@@ -1481,6 +1669,18 @@
     ]
   },
   {
+    "name": "phf_macros",
+    "version": "0.14.0",
+    "license": "MIT",
+    "repository": "https://github.com/rust-phf/rust-phf",
+    "texts": [
+      {
+        "file": "phf_macros-0.14.0-LICENSE",
+        "sha256": "0ab4d106b6faac07fb6a051815fd1b4d862d730895e2d7d7358c2f13565e7a38"
+      }
+    ]
+  },
+  {
     "name": "phf_shared",
     "version": "0.11.3",
     "license": "MIT",
@@ -1488,6 +1688,18 @@
     "texts": [
       {
         "file": "phf_shared-0.11.3-LICENSE",
+        "sha256": "0ab4d106b6faac07fb6a051815fd1b4d862d730895e2d7d7358c2f13565e7a38"
+      }
+    ]
+  },
+  {
+    "name": "phf_shared",
+    "version": "0.14.0",
+    "license": "MIT",
+    "repository": "https://github.com/rust-phf/rust-phf",
+    "texts": [
+      {
+        "file": "phf_shared-0.14.0-LICENSE",
         "sha256": "0ab4d106b6faac07fb6a051815fd1b4d862d730895e2d7d7358c2f13565e7a38"
       }
     ]

@@ -75,7 +75,8 @@
             "shapes",
             "arrows",
             "fills",
-            "lcss"
+            "lcss",
+            "animation"
           ]
         },
         {
@@ -744,6 +745,13 @@
         "Multi-page documents"
       ],
       "example": "examples/document/report.laydoc"
+    },
+    {
+      "key": "animation",
+      "title": [
+        "动画与演示",
+        "Animation and presentations"
+      ]
     }
   ]
 }

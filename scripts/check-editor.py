@@ -13,7 +13,7 @@ with zipfile.ZipFile(a.vsix) as z:
  engines=[n for n in names if n.startswith('extension/bin/')];assert len(engines)==1
  if a.binary:assert z.read(engines[0])==a.binary.read_bytes()
  if not engines[0].endswith('.exe'):assert (z.getinfo(engines[0]).external_attr>>16)&0o111
- scripts=[n for n in names if Path(n).suffix in ('.js','.mjs','.cjs')];assert sorted(scripts)==sorted(['extension/dist/client.cjs','extension/dist/color-math.mjs','extension/dist/color-panel.mjs','extension/dist/color-webview.mjs','extension/dist/preview-host.cjs','extension/dist/preview-math.mjs','extension/dist/preview-webview.mjs','extension/dist/preview-worker.mjs','extension/dist/wasm/laymesh_wasm.js']),scripts
+ scripts=[n for n in names if Path(n).suffix in ('.js','.mjs','.cjs')];assert sorted(scripts)==sorted(['extension/dist/animation-player.mjs','extension/dist/client.cjs','extension/dist/color-math.mjs','extension/dist/color-panel.mjs','extension/dist/color-webview.mjs','extension/dist/preview-host.cjs','extension/dist/preview-math.mjs','extension/dist/preview-webview.mjs','extension/dist/preview-worker.mjs','extension/dist/wasm/laymesh_wasm.js']),scripts
  assert 'extension/dist/preview.css' in names
  assert 'extension/dist/wasm/laymesh_wasm_bg.wasm' in names
  assert "protocol:3" in z.read('extension/dist/preview-host.cjs').decode()
@@ -24,7 +24,7 @@ with zipfile.ZipFile(a.vsix) as z:
  host=z.read('extension/dist/preview-host.cjs').decode()
  assert 'worker-src blob:' in host
  assert "['pptx','PowerPoint (PPTX)']" in host, 'PPTX must be available in the export format picker'
- client=z.read(scripts[0]).decode();assert set(re.findall(r"require\(['\"]([^'\"]+)",client))=={'vscode','child_process','path','./preview-host.cjs'}
+ client=z.read('extension/dist/client.cjs').decode();assert set(re.findall(r"require\(['\"]([^'\"]+)",client))=={'vscode','child_process','path','./preview-host.cjs'}
  package=json.loads(z.read('extension/package.json'));assert not package.get('dependencies') and not package.get('devDependencies');assert package['main']=='./dist/client.cjs'
  languages={v['id']:v for v in package['contributes']['languages']};assert set(languages)=={'laymesh','lcss'}
  for language in languages.values():

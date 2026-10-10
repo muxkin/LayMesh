@@ -17356,6 +17356,137 @@
         }
       ],
       "namespaceConstructor": true
+    },
+    {
+      "name": "step",
+      "description": "创建演示步骤；同一步动作并行执行，hold 默认为 1s。",
+      "descriptionEn": "Create a presentation step; actions run in parallel, followed by a 1s hold.",
+      "returnType": "step",
+      "returns": {
+        "zh": "演示步骤",
+        "en": "Presentation step"
+      },
+      "required": [],
+      "positional": [],
+      "parameters": [
+        {
+          "name": "name",
+          "type": "string",
+          "unit": "none",
+          "description": "步骤名称",
+          "descriptionEn": "Step name"
+        },
+        {
+          "name": "duration",
+          "type": "time",
+          "unit": "time",
+          "description": "有限演示窗口；无限或暂停动画必填",
+          "descriptionEn": "Finite presentation window; required for infinite or paused effects"
+        },
+        {
+          "name": "hold",
+          "type": "time",
+          "unit": "time",
+          "description": "动作结束后的停留时长",
+          "descriptionEn": "Hold after animation window",
+          "default": "1s"
+        }
+      ]
+    },
+    {
+      "name": "animate",
+      "description": "在步骤中为 add() 返回的实例安排动画；class 是临时 CSS 类，显式参数覆盖 CSS 计算值。",
+      "descriptionEn": "Animate a placed instance in this step. Temporary classes supply CSS values; explicit arguments override them.",
+      "returnType": "null",
+      "returns": {
+        "zh": "无返回值",
+        "en": "No return value"
+      },
+      "required": [
+        "target"
+      ],
+      "positional": [
+        "target"
+      ],
+      "parameters": [
+        {
+          "name": "target",
+          "type": "instance",
+          "unit": "none",
+          "description": "add() 返回的实例",
+          "descriptionEn": "Placed instance returned by add()"
+        },
+        {
+          "name": "class",
+          "type": "string",
+          "unit": "none",
+          "description": "本次动画的 CSS 类名列表",
+          "descriptionEn": "Temporary CSS class list"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "unit": "none",
+          "description": "直接引用 @keyframes 名称",
+          "descriptionEn": "Reference @keyframes by name"
+        },
+        {
+          "name": "duration",
+          "type": "time",
+          "unit": "time",
+          "description": "单次时长",
+          "descriptionEn": "Iteration duration"
+        },
+        {
+          "name": "delay",
+          "type": "time",
+          "unit": "time",
+          "description": "延迟，可为负数",
+          "descriptionEn": "Delay, including negative times"
+        },
+        {
+          "name": "easing",
+          "type": "string",
+          "unit": "none",
+          "description": "CSS 缓动函数",
+          "descriptionEn": "CSS timing function"
+        },
+        {
+          "name": "iterations",
+          "type": "number | string",
+          "unit": "none",
+          "description": "次数；支持 infinite",
+          "descriptionEn": "Iteration count or infinite"
+        },
+        {
+          "name": "direction",
+          "type": "string",
+          "unit": "none",
+          "description": "normal/reverse/alternate/alternate-reverse",
+          "descriptionEn": "CSS animation direction"
+        },
+        {
+          "name": "fill",
+          "type": "string",
+          "unit": "none",
+          "description": "none/forwards/backwards/both",
+          "descriptionEn": "CSS fill mode"
+        },
+        {
+          "name": "vars",
+          "type": "dict",
+          "unit": "none",
+          "description": "本次动画的 CSS 自定义属性",
+          "descriptionEn": "CSS custom property overrides"
+        },
+        {
+          "name": "play_state",
+          "type": "string",
+          "unit": "none",
+          "description": "running/paused",
+          "descriptionEn": "CSS play state"
+        }
+      ]
     }
   ],
   "styleProperties": [
@@ -17617,6 +17748,14 @@
       "description": "",
       "descriptionEn": "",
       "index": "number"
+    },
+    "step": {
+      "members": {},
+      "methods": {
+        "animate": "null"
+      },
+      "description": "演示步骤",
+      "descriptionEn": "Presentation step"
     }
   },
   "predefinedVariables": [

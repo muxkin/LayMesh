@@ -21,7 +21,7 @@ for name,f in features.items():
   source=ROOT/f[use];assert source.is_file(),f'{name}: missing {source}'
  if name.startswith('api:'):
   surface=name[4:];leaf=surface.rsplit('.',1)[-1]
-  pattern=r'\.'+re.escape(leaf)+r'\s*\(' if '.' in surface or surface in ['add','fuse'] else r'(?<![\w.])'+re.escape(surface)+r'\s*\('
+  pattern=r'\.'+re.escape(leaf)+r'\s*\(' if '.' in surface or surface in ['add','fuse','step','animate'] else r'(?<![\w.])'+re.escape(surface)+r'\s*\('
   for use in ['minimal','composition']:
    assert re.search(pattern,(ROOT/f[use]).read_text()),f'{name}: {use} never exercises the function'
  if name.startswith('geometry:'):

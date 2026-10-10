@@ -40,6 +40,8 @@ pub struct Engine {
     pub loading: BTreeSet<String>,
     pub objects: BTreeMap<usize, Rc<RefCell<Object>>>,
     pub styles: Vec<crate::style::StyleRule>,
+    pub animation_sheets: Vec<crate::animation::css::Sheet>,
+    pub animation_steps: Vec<crate::animation::StepSpec>,
     pub file: String,
     pub steps: usize,
     pub calls: usize,
@@ -121,6 +123,8 @@ impl Engine {
             loading: BTreeSet::new(),
             objects: BTreeMap::new(),
             styles: vec![],
+            animation_sheets: vec![],
+            animation_steps: vec![],
             file: String::new(),
             steps: 0,
             calls: 0,
@@ -225,6 +229,7 @@ impl Engine {
             }
         }
         Ok(Scene {
+            animation: self.compile_animation(&c.nodes)?,
             schema_version: 8,
             width: c.width,
             height: c.height,
@@ -351,7 +356,7 @@ impl Engine {
             StmtKind::Bind(..) | StmtKind::Return(..) | StmtKind::If(..) => unreachable!(),
             StmtKind::SetIndex(target, value) => self.set_index(target, value, scope, stmt.loc)?,
             StmtKind::Expr(e) => {
-                if !matches!(&e.kind,ExprKind::Call(parts,_) if parts.len()==2 && (matches!(parts[1].as_str(),"add"|"fuse") || Environment::get(scope,&parts[0]).and_then(|v|v.object()).is_some_and(|o|o.borrow().kind=="plot")))
+                if !matches!(&e.kind,ExprKind::Call(parts,_) if parts.len()==2 && (matches!(parts[1].as_str(),"add"|"fuse"|"animate") || Environment::get(scope,&parts[0]).and_then(|v|v.object()).is_some_and(|o|o.borrow().kind=="plot")))
                 {
                     return Err(self.error(
                         "E_STATEMENT",
@@ -501,7 +506,7 @@ impl Engine {
                 }
                 if !matches!(
                     u.as_str(),
-                    "" | "mm" | "cm" | "in" | "inch" | "pt" | "px" | "deg" | "rad"
+                    "" | "mm" | "cm" | "in" | "inch" | "pt" | "px" | "deg" | "rad" | "s" | "ms"
                 ) {
                     return Err(self.error("E_UNIT", format!("未知单位 {u}"), l));
                 }
@@ -675,6 +680,8 @@ impl Engine {
         let dim = |u: &str| {
             if u.is_empty() {
                 0
+            } else if matches!(u, "s" | "ms") {
+                3
             } else if matches!(u, "deg" | "rad") {
                 2
             } else {
@@ -685,12 +692,19 @@ impl Engine {
         if da == 1 {
             x = value_length(&V::Number(x, u.clone()), "mm", self.dpi).unwrap();
             u = "mm".into();
+        } else if da == 3 {
+            if u == "ms" {
+                x *= 0.001;
+            }
+            u = "s".into();
         } else if u == "rad" {
             x = x.to_degrees();
             u = "deg".into();
         }
         if db == 1 {
             y = value_length(&V::Number(y, v.clone()), "mm", self.dpi).unwrap();
+        } else if v == "ms" {
+            y *= 0.001;
         } else if v == "rad" {
             y = y.to_degrees();
         }
@@ -705,7 +719,13 @@ impl Engine {
                     return Err(self.error("E_UNIT", "不支持复合单位", l));
                 }
                 if da == 0 {
-                    u = if db == 1 { "mm".into() } else { v };
+                    u = if db == 1 {
+                        "mm".into()
+                    } else if db == 3 {
+                        "s".into()
+                    } else {
+                        v
+                    };
                 }
                 x * y
             }
@@ -985,6 +1005,12 @@ impl Engine {
                 })?;
             let method = parts.last().unwrap().as_str();
             match method {
+                "step" if owner.borrow().kind == "canvas" => {
+                    return self.animation_method(owner, method, pos, a, l);
+                }
+                "animate" if owner.borrow().kind == "step" => {
+                    return self.animation_method(owner, method, pos, a, l);
+                }
                 "add" => return self.add(owner, pos, a, l),
                 "fuse" => return self.fuse(owner, pos, a, l),
                 "data" | "axis" => return self.data_anchor(owner, method, pos, a, l),
@@ -1091,6 +1117,8 @@ impl Engine {
                 return match pos[0].value() {
                     V::Number(n, u) => Ok(V::text(if u.is_empty() {
                         n.to_string()
+                    } else if matches!(u.as_str(), "s" | "ms") {
+                        format!("{} s", if u == "ms" { n * 0.001 } else { *n })
                     } else if matches!(u.as_str(), "deg" | "rad") {
                         format!("{} deg", if u == "rad" { n.to_degrees() } else { *n })
                     } else {

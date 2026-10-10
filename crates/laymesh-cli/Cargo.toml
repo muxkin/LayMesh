@@ -13,4 +13,8 @@ laymesh-language.workspace = true
 serde_json.workspace = true
 base64 = "0.22"
 flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
+png = "0.18"
+ctrlc = "3.5"
+kurbo = "0.13"
+serde = { workspace = true, features = ["derive"] }
 

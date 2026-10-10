@@ -39,5 +39,12 @@
   "config.export.webpAlphaQuality": "有损 WebP 透明通道质量；100 保留完整精度。",
   "config.export.webpNearLossless": "无损 WebP 模式的近无损保真度；100 为完全无损。",
   "config.export.webpQuality": "WebP 质量（0–100）；显式设置后覆盖通用导出质量。",
-  "config.format.lineWidth": "文档和选区格式化的目标行宽。短调用保留一行，长参数列表自动展开；缩进遵循 VS Code 设置。字符串等不可拆分内容可能超过此行宽。"
+  "config.format.lineWidth": "文档和选区格式化的目标行宽。短调用保留一行，长参数列表自动展开；缩进遵循 VS Code 设置。字符串等不可拆分内容可能超过此行宽。",
+  "config.export.animation.width": "动画输出宽度（像素）；未显式设置时 GIF 使用 960。",
+  "config.export.animation.fps": "动画帧率；未显式设置时 GIF 使用 20。",
+  "config.export.animation.reducedMotion": "视频导出采用 prefers-reduced-motion: reduce 媒体条件。",
+  "config.export.animation.crf": "MP4 质量（0–51）；数值越低，画质越高。",
+  "config.export.animation.preset": "FFmpeg libx264 编码速度预设。",
+  "config.export.animation.media": "动画导出的媒体环境；不影响静态导出。",
+  "config.export.animation.background": "动画导出中透明区域和页面留边的底色（#RRGGBB）。"
 }

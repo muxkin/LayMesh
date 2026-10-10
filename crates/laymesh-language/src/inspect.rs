@@ -148,6 +148,9 @@ pub fn inspect_scene(scene: &Scene) -> J {
         }
     }
     let mut result = json!({"schema_version":scene.schema_version,"units":"mm","page":{"width":scene.width,"height":scene.height,"unit":scene.canvas_unit,"layout_dpi":scene.layout_dpi},"plots":plots,"warnings":scene.warnings});
+    if let Some(animation) = &scene.animation {
+        result["animation"] = json!({"duration":animation.normal.duration,"steps":animation.normal.steps.iter().enumerate().map(|(i,s)|json!({"number":i+1,"name":s.name,"start":s.start,"duration":s.duration,"hold":s.hold,"animations":s.clips.iter().map(|c|json!({"name":c.name,"target":c.target,"properties":c.tracks.iter().map(|t|&t.property).collect::<Vec<_>>(),"compatibility":if c.tracks.iter().any(|t|t.property.starts_with("-laymesh-")){"laymesh-extension"}else{"css-animation-subset"}})).collect::<Vec<_>>()})).collect::<Vec<_>>(),"printDuration":animation.print.duration,"reducedDuration":animation.reduced.duration,"reducedSteps":animation.reduced.steps.iter().enumerate().map(|(i,s)|json!({"number":i+1,"name":s.name,"start":s.start,"duration":s.duration,"hold":s.hold})).collect::<Vec<_>>()});
+    }
     let mut items = Vec::new();
     for (i, n) in scene.nodes.iter().enumerate() {
         decorations(n, [1., 0., 0., 1., 0., 0.], i.to_string(), &mut items);

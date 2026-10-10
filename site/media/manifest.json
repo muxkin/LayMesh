@@ -10,7 +10,7 @@
     "version": 2,
     "engine": "rust-ratex"
   },
-  "engine": "aa3fe6f679c810aa4059f62196c404dd23f0414c207d0a9ea46d90323a7f389f",
+  "engine": "4e43efc35d79942cc02763255e4eff7304d1d0864228319d5c7b77d90d44c110",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -1766,6 +1766,62 @@
           "width": 3840,
           "height": 1975,
           "sha256": "2a0c8aa1069429e65db4cff0634aa0f78fcca28cf36db6ecb8abd97a227e7084"
+        }
+      ]
+    },
+    "examples/animation/presentation.lay": {
+      "fingerprint": "2a6f011d2da1b11ea2df45aafe6c1e77d0037d89ba12ed5131666e69b07b906a",
+      "dependencies": [
+        "examples/animation/motion.lcss",
+        "examples/animation/presentation.lay",
+        "tests/animation/vendor/animate.css"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-presentation-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "b8243d98182f9834e04ee7865417b7122a11e196bc511379a178a790988bb268"
+        },
+        {
+          "file": "site/media/animation-presentation-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "746c148a4e169bf21584c7f644477b743bad06c5dcfc508fe452fbe9d0edf480"
+        },
+        {
+          "file": "site/media/animation-presentation-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "7c1a539382668c3787a7ae58480c805323f796782357b8615c868ec0ae131dd2"
+        }
+      ]
+    },
+    "examples/animation/second.lay": {
+      "fingerprint": "d3c0f91782a758856bfa71042539b6c99637edcdfeffbd23956dce36988cde55",
+      "dependencies": [
+        "examples/animation/motion.lcss",
+        "examples/animation/second.lay",
+        "tests/animation/vendor/animate.css"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-second-960.webp",
+          "width": 960,
+          "height": 960,
+          "sha256": "0b9039d23da5db975221c8a03763058155f41027c9847f019936ffd7de631c2b"
+        },
+        {
+          "file": "site/media/animation-second-1920.webp",
+          "width": 1920,
+          "height": 1920,
+          "sha256": "c1866c4e466f30399e8635302cf9d0e7037adaedb2f17d17de8ec12a06942feb"
+        },
+        {
+          "file": "site/media/animation-second-3840.webp",
+          "width": 3840,
+          "height": 3840,
+          "sha256": "e8d46dde7f8d07bba4382c57047f6a8986143e338639ddb482a3b38de1c7a52f"
         }
       ]
     },
@@ -4967,6 +5023,36 @@
           "width": 3840,
           "height": 2560,
           "sha256": "4a7fe56571f893002a432ad4fa88f2069242fdb0a50dd40a52b3d78b0d8b4ee5"
+        }
+      ]
+    },
+    "examples/animation/presentation.laydoc": {
+      "fingerprint": "d6d86ff09ed9fe6213be91c071315cede10fc8608ab1e3c0679b9d628998e0fe",
+      "dependencies": [
+        "examples/animation/motion.lcss",
+        "examples/animation/presentation.lay",
+        "examples/animation/presentation.laydoc",
+        "examples/animation/second.lay",
+        "tests/animation/vendor/animate.css"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-presentation-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "b8243d98182f9834e04ee7865417b7122a11e196bc511379a178a790988bb268"
+        },
+        {
+          "file": "site/media/animation-presentation-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "746c148a4e169bf21584c7f644477b743bad06c5dcfc508fe452fbe9d0edf480"
+        },
+        {
+          "file": "site/media/animation-presentation-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "7c1a539382668c3787a7ae58480c805323f796782357b8615c868ec0ae131dd2"
         }
       ]
     },

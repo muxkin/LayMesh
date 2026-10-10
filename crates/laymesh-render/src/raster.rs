@@ -322,9 +322,19 @@ fn decode(resources: &BTreeMap<String, Resource>) -> Result<Images> {
             out.insert(id.clone(), image);
             continue;
         }
-        let im = image::load_from_memory(&r.data)
-            .map_err(|e| error(format!("图片解码失败：{e}")))?
-            .into_rgba8();
+        let im = if r.mime == "image/x-laymesh-rgba" {
+            if r.data.len() < 8 {
+                return Err(error("Invalid animation RGBA resource"));
+            }
+            let w = u32::from_le_bytes(r.data[..4].try_into().unwrap());
+            let h = u32::from_le_bytes(r.data[4..8].try_into().unwrap());
+            image::RgbaImage::from_raw(w, h, r.data[8..].to_vec())
+                .ok_or_else(|| error("Invalid animation RGBA dimensions"))?
+        } else {
+            image::load_from_memory(&r.data)
+                .map_err(|e| error(format!("图片解码失败：{e}")))?
+                .into_rgba8()
+        };
         let (w, h) = im.dimensions();
         if w as u64 * h as u64 > MAX_PIXELS {
             return Err(error("图片像素数超过 100000000 上限"));
@@ -1128,6 +1138,7 @@ mod retained_tests {
             rgba: [0.7, 0.1, 0.3, 0.5],
         });
         DisplayList {
+            animation: None,
             schema_version: DISPLAY_LIST_VERSION,
             width: 80.,
             height: 50.,

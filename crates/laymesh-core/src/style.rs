@@ -238,7 +238,7 @@ fn uncomment(source: &str, file: &str, origin: Loc) -> Result<String> {
     }
     Ok(String::from_utf8(bytes).unwrap())
 }
-fn substitute(
+pub(crate) fn substitute(
     value: &str,
     vars: &BTreeMap<String, String>,
     seen: &mut Vec<String>,
@@ -295,7 +295,8 @@ fn parse_stylesheet(
     origin: Loc,
     scope: Option<&str>,
 ) -> Result<(Vec<StyleRule>, Vec<(String, Loc)>)> {
-    let css = uncomment(source, file, origin)?;
+    let (filtered, _) = crate::animation::css::extract(source, file, origin, scope)?;
+    let css = uncomment(&filtered, file, origin)?;
     let fail = |message: &str, offset| {
         Diagnostic::new("E_LCSS", message, file, location(&css, origin, offset))
     };
@@ -324,7 +325,7 @@ fn parse_stylesheet(
                 .unwrap_or(import)
                 .trim()
                 .trim_matches(['\'', '"']);
-            if !import.ends_with(".lcss")
+            if !(import.ends_with(".lcss") || import.ends_with(".css"))
                 || import.contains(':')
                 || import.starts_with("//")
                 || import.is_empty()
@@ -602,6 +603,8 @@ impl Engine {
             });
             result?;
         }
+        let (_, motion) = crate::animation::css::extract(source, file, origin, scope)?;
+        self.animation_sheets.push(motion);
         self.styles.extend(parsed);
         Ok(())
     }

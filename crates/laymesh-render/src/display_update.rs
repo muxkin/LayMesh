@@ -7,6 +7,8 @@ use std::collections::BTreeMap;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DisplayUpdate {
+    #[serde(default)]
+    pub animation: Option<laymesh_core::animation::Animation>,
     pub schema_version: u32,
     pub width: f64,
     pub height: f64,
@@ -24,6 +26,7 @@ pub struct NodeUpdate {
 impl DisplayUpdate {
     pub fn between(old: &DisplayList, new: &DisplayList) -> Self {
         let mut update = Self {
+            animation: new.animation.clone(),
             schema_version: new.schema_version,
             width: new.width,
             height: new.height,
@@ -66,6 +69,7 @@ impl DisplayUpdate {
     }
     pub fn apply(self, list: &mut DisplayList) -> Result<()> {
         self.validate(list)?;
+        list.animation = self.animation;
         list.width = self.width;
         list.height = self.height;
         if let Some(roots) = self.roots {

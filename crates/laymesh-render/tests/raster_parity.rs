@@ -80,6 +80,7 @@ fn pdf_raster(scene: &Scene) -> Raster {
 }
 fn scene(nodes: Vec<Json>) -> Scene {
     Scene {
+        animation: None,
         schema_version: 8,
         width: 50.8,
         height: 25.4,

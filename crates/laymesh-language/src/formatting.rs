@@ -778,7 +778,7 @@ impl LanguageService {
     }
     fn formatting_inner(&self, uri: &str, options: &J, selected: Option<&J>) -> Option<J> {
         let source = self.documents.get(uri)?;
-        let css = uri.ends_with(".lcss");
+        let css = uri.ends_with(".lcss") || uri.ends_with(".css");
         let ast = if css {
             Vec::new()
         } else {

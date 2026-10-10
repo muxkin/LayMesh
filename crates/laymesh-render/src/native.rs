@@ -106,6 +106,7 @@ mod tests {
     use super::*;
     fn scene() -> Scene {
         Scene {
+            animation: None,
             schema_version: 8,
             width: 25.4,
             height: 12.7,
@@ -213,6 +214,7 @@ mod extraction_tests {
         formula["x"] = json!(2.);
         formula["y"] = json!(10.);
         let scene = Scene {
+            animation: None,
             schema_version: 8,
             width: 60.,
             height: 30.,

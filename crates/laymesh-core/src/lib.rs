@@ -1,3 +1,4 @@
+pub mod animation;
 pub mod arrows;
 mod art;
 pub mod asset_cache;

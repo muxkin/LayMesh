@@ -352,6 +352,9 @@ fn expression_type(e: &Expr, lookup: &impl Fn(&str) -> Option<String>) -> Option
                 typ = geometry_member_type(&typ, member)?;
             }
             let method = ps.last()?;
+            if typ == "canvas" && method == "step" {
+                return Some("step".into());
+            }
             if method == "add" || method == "fuse" {
                 return Some(
                     if typ == "document" {
@@ -748,7 +751,12 @@ impl LanguageService {
                 }
             }
         }
-        if uri.ends_with(".lcss") || css_region(source, offset).is_some() {
+        if (uri.ends_with(".lcss") || uri.ends_with(".css")) || css_region(source, offset).is_some()
+        {
+            if let Some((_, zh, en_text)) = MOTION_PROPERTIES.iter().find(|(name, _, _)| *name == w)
+            {
+                return json!({"from":from,"to":to,"contents":if en{en_text}else{zh}});
+            }
             if let Some(p) = entries()
                 .iter()
                 .flat_map(|e| e["parameters"].as_array().unwrap())
@@ -1014,7 +1022,7 @@ impl LanguageService {
                 );
             }
         }
-        let css = if uri.ends_with(".lcss") {
+        let css = if uri.ends_with(".lcss") || uri.ends_with(".css") {
             Some(0)
         } else {
             css_region(source, offset)
@@ -1127,6 +1135,15 @@ impl LanguageService {
                         ))
                     }
                 }
+                for (name, zh, en_text) in MOTION_PROPERTIES {
+                    options.push(option(
+                        name,
+                        "property",
+                        if en { en_text } else { zh }.to_string(),
+                        format!("{name}: "),
+                        "CSS animation",
+                    ));
+                }
                 return json!(options);
             }
             return json!(
@@ -1213,6 +1230,7 @@ impl LanguageService {
                 ]
                 .iter()
                 .map(|s| s.to_string())
+                .chain((typ == "canvas").then_some("step".into()))
                 .collect::<Vec<_>>()
             };
             return json!(
@@ -1552,7 +1570,7 @@ pub fn offset(source: &str, pos: &J) -> usize {
 fn diagnostics(service: &LanguageService, uri: &str) -> J {
     let source = service.source(uri);
     let en = service.en();
-    let mut out = if uri.ends_with(".lcss") {
+    let mut out = if uri.ends_with(".lcss") || uri.ends_with(".css") {
         vec![]
     } else {
         index(uri, source, en).issues
@@ -1574,7 +1592,7 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
         }
         out.push(d)
     };
-    if uri.ends_with(".lcss") {
+    if uri.ends_with(".lcss") || uri.ends_with(".css") {
         if let Err(error) = laymesh_core::style::validate_stylesheet(
             source,
             uri,
@@ -2132,3 +2150,73 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
     out.extend(connections::diagnostics(service, uri, &stmts));
     json!(out)
 }
+
+const MOTION_PROPERTIES: &[(&str, &str, &str)] = &[
+    (
+        "animation",
+        "CSS 动画简写：名称 时长 缓动 延迟 次数 方向 填充 状态",
+        "CSS animation shorthand: name duration easing delay count direction fill state",
+    ),
+    (
+        "animation-name",
+        "@keyframes 名称；默认 none",
+        "Keyframe names; initial none",
+    ),
+    (
+        "animation-duration",
+        "单次动画时长；默认 0s",
+        "Iteration duration; initial 0s",
+    ),
+    (
+        "animation-delay",
+        "动画延迟，支持负值；默认 0s",
+        "Delay, including negatives; initial 0s",
+    ),
+    (
+        "animation-timing-function",
+        "ease/linear/cubic-bezier()/steps()；steps() 是阶梯缓动",
+        "ease/linear/cubic-bezier()/steps(); steps() is stepped easing",
+    ),
+    (
+        "animation-iteration-count",
+        "次数或 infinite；默认 1",
+        "Iteration count or infinite; initial 1",
+    ),
+    (
+        "animation-direction",
+        "normal/reverse/alternate/alternate-reverse",
+        "normal/reverse/alternate/alternate-reverse",
+    ),
+    (
+        "animation-fill-mode",
+        "none/forwards/backwards/both；默认 none",
+        "none/forwards/backwards/both; initial none",
+    ),
+    ("animation-play-state", "running/paused", "running/paused"),
+    (
+        "transform",
+        "标准 CSS 2D/3D 变换；px 固定为 1/96 英寸",
+        "CSS 2D/3D transforms; px is always 1/96 inch",
+    ),
+    (
+        "transform-origin",
+        "变换原点；百分比基于布局框",
+        "Transform origin; percentages use the layout box",
+    ),
+    (
+        "visibility",
+        "visible/hidden/collapse",
+        "visible/hidden/collapse",
+    ),
+    ("backface-visibility", "visible/hidden", "visible/hidden"),
+    (
+        "-laymesh-draw",
+        "非标准扩展：开放描线进度 0–1",
+        "Nonstandard extension: open stroke progress 0–1",
+    ),
+    (
+        "-laymesh-reveal",
+        "非标准扩展：区域揭示进度 0–1",
+        "Nonstandard extension: area reveal progress 0–1",
+    ),
+];

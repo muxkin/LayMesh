@@ -4039,6 +4039,84 @@ page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerlin
 
 [概念与常见错误](arrows.zh-CN.md#arrow-path) · [组合源码](../../examples/gallery/shapes/arrows.lay)
 
+## step
+
+创建演示步骤；同一步动作并行执行，hold 默认为 1s。
+
+返回：演示步骤
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `name` | string | 步骤名称 | — |
+| `duration` | time / time | 有限演示窗口；无限或暂停动画必填 | — |
+| `hold` | time / time | 动作结束后的停留时长 | 1s |
+
+### 最小完整示例
+
+```lay
+page = canvas(size=(160mm, 90mm), stylesheet="motion.lcss", background="#f4f5f9")
+title = page.add(text("研究结果 · Results", class="title-motion", font_size=24pt), offset=(12mm, 12mm))
+card = page.add(rect(size=(48mm, 30mm), fill="#3978d4", border_color="none"), offset=(12mm, 35mm))
+label = page.add(text("LCSS + Animate.css", font_size=13pt), offset=(74mm, 42mm))
+curve = page.add(line(length=69mm, line_color="#3978d4", line_width=2pt), offset=(74mm, 58mm))
+s1 = page.step(name="标题入场 · Title", hold=1s)
+s1.animate(title, class="animate__animated animate__fadeInUp")
+s2 = page.step(name="三维翻转 · Flip", hold=1s)
+s2.animate(card, class="animate__animated animate__flipInY")
+s2.animate(label, class="animate__animated animate__fadeInRight", delay=200ms)
+s3 = page.step(name="描线 · Draw", hold=1s)
+s3.animate(curve, class="draw-motion")
+s4 = page.step(name="强调 · Emphasis", hold=1s)
+s4.animate(title, class="animate__animated animate__pulse", duration=600ms)
+```
+
+[概念与常见错误](animation.zh-CN.md#step) · [组合源码](../../examples/animation/presentation.lay)
+
+## animate
+
+在步骤中为 add() 返回的实例安排动画；class 是临时 CSS 类，显式参数覆盖 CSS 计算值。
+
+返回：无返回值
+
+位置参数：`target`.
+
+必需：`target`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `target` | instance | add() 返回的实例 | — |
+| `class` | string | 本次动画的 CSS 类名列表 | — |
+| `name` | string | 直接引用 @keyframes 名称 | — |
+| `duration` | time / time | 单次时长 | — |
+| `delay` | time / time | 延迟，可为负数 | — |
+| `easing` | string | CSS 缓动函数 | — |
+| `iterations` | number \| string | 次数；支持 infinite | — |
+| `direction` | string | normal/reverse/alternate/alternate-reverse | — |
+| `fill` | string | none/forwards/backwards/both | — |
+| `vars` | dict | 本次动画的 CSS 自定义属性 | — |
+| `play_state` | string | running/paused | — |
+
+### 最小完整示例
+
+```lay
+page = canvas(size=(160mm, 90mm), stylesheet="motion.lcss", background="#f4f5f9")
+title = page.add(text("研究结果 · Results", class="title-motion", font_size=24pt), offset=(12mm, 12mm))
+card = page.add(rect(size=(48mm, 30mm), fill="#3978d4", border_color="none"), offset=(12mm, 35mm))
+label = page.add(text("LCSS + Animate.css", font_size=13pt), offset=(74mm, 42mm))
+curve = page.add(line(length=69mm, line_color="#3978d4", line_width=2pt), offset=(74mm, 58mm))
+s1 = page.step(name="标题入场 · Title", hold=1s)
+s1.animate(title, class="animate__animated animate__fadeInUp")
+s2 = page.step(name="三维翻转 · Flip", hold=1s)
+s2.animate(card, class="animate__animated animate__flipInY")
+s2.animate(label, class="animate__animated animate__fadeInRight", delay=200ms)
+s3 = page.step(name="描线 · Draw", hold=1s)
+s3.animate(curve, class="draw-motion")
+s4 = page.step(name="强调 · Emphasis", hold=1s)
+s4.animate(title, class="animate__animated animate__pulse", duration=600ms)
+```
+
+[概念与常见错误](animation.zh-CN.md#animate) · [组合源码](../../examples/animation/presentation.lay)
+
 ## 几何视图类型
 
 [锚点与路径查询](anchors.zh-CN.md)
@@ -4268,6 +4346,14 @@ page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerlin
 | 选取 | 类型 |
 | --- | --- |
 | `[i]` | `number` |
+
+### step
+
+演示步骤
+
+| 选取 | 类型 |
+| --- | --- |
+| `animate(...)` | `null` |
 
 ## 值类型
 

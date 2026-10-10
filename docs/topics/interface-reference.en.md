@@ -4039,6 +4039,84 @@ page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerlin
 
 [Concepts and common errors](arrows.en.md#arrow-path) · [Composition source](../../examples/gallery/shapes/arrows.lay)
 
+## step
+
+Create a presentation step; actions run in parallel, followed by a 1s hold.
+
+Returns: Presentation step
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `name` | string | Step name | — |
+| `duration` | time / time | Finite presentation window; required for infinite or paused effects | — |
+| `hold` | time / time | Hold after animation window | 1s |
+
+### Minimal complete example
+
+```lay
+page = canvas(size=(160mm, 90mm), stylesheet="motion.lcss", background="#f4f5f9")
+title = page.add(text("研究结果 · Results", class="title-motion", font_size=24pt), offset=(12mm, 12mm))
+card = page.add(rect(size=(48mm, 30mm), fill="#3978d4", border_color="none"), offset=(12mm, 35mm))
+label = page.add(text("LCSS + Animate.css", font_size=13pt), offset=(74mm, 42mm))
+curve = page.add(line(length=69mm, line_color="#3978d4", line_width=2pt), offset=(74mm, 58mm))
+s1 = page.step(name="标题入场 · Title", hold=1s)
+s1.animate(title, class="animate__animated animate__fadeInUp")
+s2 = page.step(name="三维翻转 · Flip", hold=1s)
+s2.animate(card, class="animate__animated animate__flipInY")
+s2.animate(label, class="animate__animated animate__fadeInRight", delay=200ms)
+s3 = page.step(name="描线 · Draw", hold=1s)
+s3.animate(curve, class="draw-motion")
+s4 = page.step(name="强调 · Emphasis", hold=1s)
+s4.animate(title, class="animate__animated animate__pulse", duration=600ms)
+```
+
+[Concepts and common errors](animation.en.md#step) · [Composition source](../../examples/animation/presentation.lay)
+
+## animate
+
+Animate a placed instance in this step. Temporary classes supply CSS values; explicit arguments override them.
+
+Returns: No return value
+
+Positional parameters: `target`.
+
+Required: `target`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `target` | instance | Placed instance returned by add() | — |
+| `class` | string | Temporary CSS class list | — |
+| `name` | string | Reference @keyframes by name | — |
+| `duration` | time / time | Iteration duration | — |
+| `delay` | time / time | Delay, including negative times | — |
+| `easing` | string | CSS timing function | — |
+| `iterations` | number \| string | Iteration count or infinite | — |
+| `direction` | string | CSS animation direction | — |
+| `fill` | string | CSS fill mode | — |
+| `vars` | dict | CSS custom property overrides | — |
+| `play_state` | string | CSS play state | — |
+
+### Minimal complete example
+
+```lay
+page = canvas(size=(160mm, 90mm), stylesheet="motion.lcss", background="#f4f5f9")
+title = page.add(text("研究结果 · Results", class="title-motion", font_size=24pt), offset=(12mm, 12mm))
+card = page.add(rect(size=(48mm, 30mm), fill="#3978d4", border_color="none"), offset=(12mm, 35mm))
+label = page.add(text("LCSS + Animate.css", font_size=13pt), offset=(74mm, 42mm))
+curve = page.add(line(length=69mm, line_color="#3978d4", line_width=2pt), offset=(74mm, 58mm))
+s1 = page.step(name="标题入场 · Title", hold=1s)
+s1.animate(title, class="animate__animated animate__fadeInUp")
+s2 = page.step(name="三维翻转 · Flip", hold=1s)
+s2.animate(card, class="animate__animated animate__flipInY")
+s2.animate(label, class="animate__animated animate__fadeInRight", delay=200ms)
+s3 = page.step(name="描线 · Draw", hold=1s)
+s3.animate(curve, class="draw-motion")
+s4 = page.step(name="强调 · Emphasis", hold=1s)
+s4.animate(title, class="animate__animated animate__pulse", duration=600ms)
+```
+
+[Concepts and common errors](animation.en.md#animate) · [Composition source](../../examples/animation/presentation.lay)
+
 ## Geometry view types
 
 [Anchors and path queries](anchors.en.md)
@@ -4268,6 +4346,14 @@ Two dimensionless components: `[0]` is the horizontal component and `[1]` the ve
 | Selection | Type |
 | --- | --- |
 | `[i]` | `number` |
+
+### step
+
+Presentation step
+
+| Selection | Type |
+| --- | --- |
+| `animate(...)` | `null` |
 
 ## Value types
 

@@ -27,7 +27,7 @@ def localized(value):
 
 if args.pre_release and not re.fullmatch(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)', package['version']):
     parser.error('Marketplace prereleases require a numeric major.minor.patch version.')
-for name in ['client.cjs', 'preview-host.cjs', 'preview-webview.mjs', 'preview-math.mjs', 'preview.css']:
+for name in ['animation-player.mjs', 'client.cjs', 'preview-host.cjs', 'preview-webview.mjs', 'preview-math.mjs', 'preview.css']:
     if not (root / 'dist' / name).is_file():
         raise SystemExit('Run python scripts/build-editors.py first.')
 

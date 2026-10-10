@@ -1,5 +1,6 @@
 * text=auto eol=lf
-release/licenses/** -text
+# Preserve original third-party license bytes, including upstream whitespace.
+release/licenses/** -text -whitespace
 
 # Preserve byte-identical upstream formula fixtures, including intentional whitespace.
 tests/math/ratex-0.1.14/*.txt -whitespace

@@ -33,7 +33,7 @@ fn js_error(e: impl std::fmt::Display) -> JsValue {
 
 #[wasm_bindgen]
 pub struct DrawJob {
-    raster: laymesh_render::raster::PreparedRaster,
+    raster: laymesh_render::animation::AnimationRenderer,
 }
 #[wasm_bindgen]
 pub struct RgbaFrame {
@@ -65,8 +65,22 @@ impl RgbaFrame {
 impl DrawJob {
     /// Workers already own the drawing; the UI only needs its resource headers.
     /// Keep display_list() available for consumers that need complete commands.
+    pub fn animation_sample(&self, time: f64, reduced: bool) -> Result<String, JsValue> {
+        if !time.is_finite() || time < 0. {
+            return Err(js_error("Invalid animation time"));
+        }
+        serde_json::to_string(
+            &self
+                .raster
+                .base()
+                .animation
+                .as_ref()
+                .map(|a| a.timeline(reduced).sample(time)),
+        )
+        .map_err(js_error)
+    }
     pub fn drawing_info(&self) -> Result<String, JsValue> {
-        let list = self.raster.display_list();
+        let list = self.raster.base();
         let resources: BTreeMap<_, _> = list
             .resources
             .iter()
@@ -77,7 +91,7 @@ impl DrawJob {
                 )
             })
             .collect();
-        serde_json::to_string(&json!({"schemaVersion":list.schema_version,"width":list.width,"height":list.height,"resources":resources})).map_err(js_error)
+        serde_json::to_string(&json!({"schemaVersion":list.schema_version,"width":list.width,"height":list.height,"resources":resources,"animation":list.animation})).map_err(js_error)
     }
     pub fn raster_retained(
         &mut self,
@@ -88,7 +102,38 @@ impl DrawJob {
         let r: [f64; 4] = serde_json::from_str(viewport).map_err(js_error)?;
         let frame = self
             .raster
-            .render_retained_region(kurbo::Rect::new(r[0], r[1], r[2], r[3]), width, height)
+            .render(
+                kurbo::Rect::new(r[0], r[1], r[2], r[3]),
+                width,
+                height,
+                None,
+                false,
+            )
+            .map_err(js_error)?;
+        Ok(RgbaFrame {
+            width: frame.width,
+            height: frame.height,
+            rgba: frame.rgba,
+        })
+    }
+    pub fn raster_animation(
+        &mut self,
+        viewport: &str,
+        width: u32,
+        height: u32,
+        time: f64,
+        reduced: bool,
+    ) -> Result<RgbaFrame, JsValue> {
+        let r: [f64; 4] = serde_json::from_str(viewport).map_err(js_error)?;
+        let frame = self
+            .raster
+            .render(
+                kurbo::Rect::new(r[0], r[1], r[2], r[3]),
+                width,
+                height,
+                Some(time),
+                reduced,
+            )
             .map_err(js_error)?;
         Ok(RgbaFrame {
             width: frame.width,
@@ -106,7 +151,7 @@ impl DrawJob {
         self.raster.update(update).map_err(js_error)
     }
     pub fn display_list(&self) -> Result<String, JsValue> {
-        let mut list = self.raster.display_list().clone();
+        let mut list = self.raster.base().clone();
         for resource in list.resources.values_mut() {
             resource.data.clear();
         }
@@ -122,7 +167,13 @@ impl DrawJob {
         let r: [f64; 4] = serde_json::from_str(viewport).map_err(js_error)?;
         let result = self
             .raster
-            .render_region(kurbo::Rect::new(r[0], r[1], r[2], r[3]), width, height)
+            .render(
+                kurbo::Rect::new(r[0], r[1], r[2], r[3]),
+                width,
+                height,
+                None,
+                false,
+            )
             .map_err(js_error)?;
         Ok(RgbaFrame {
             width: result.width,
@@ -142,7 +193,7 @@ pub fn prepare_display_list(json: &str) -> Result<DrawJob, JsValue> {
     }
     resolve_resources(&mut list.resources)?;
     Ok(DrawJob {
-        raster: laymesh_render::raster::PreparedRaster::new(list).map_err(js_error)?,
+        raster: laymesh_render::animation::AnimationRenderer::new(list).map_err(js_error)?,
     })
 }
 fn resolve_resources(
@@ -182,15 +233,13 @@ pub struct RenderJob {
 impl RenderJob {
     pub fn update_draw_job(&self, draw: &mut DrawJob) -> Result<(), JsValue> {
         let next = laymesh_render::to_display_list(&self.scene).map_err(js_error)?;
-        let update = laymesh_render::display_update::DisplayUpdate::between(
-            draw.raster.display_list(),
-            &next,
-        );
+        let update =
+            laymesh_render::display_update::DisplayUpdate::between(draw.raster.base(), &next);
         draw.raster.update(update).map_err(js_error)
     }
     pub fn draw_job(&self) -> Result<DrawJob, JsValue> {
         Ok(DrawJob {
-            raster: laymesh_render::raster::PreparedRaster::new(
+            raster: laymesh_render::animation::AnimationRenderer::new(
                 laymesh_render::to_display_list(&self.scene).map_err(js_error)?,
             )
             .map_err(js_error)?,

@@ -44,10 +44,10 @@ self.onmessage=({data})=>{
     self.postMessage({type:'installed',requestId:data.requestId,generation:rasterGeneration,reused,wasmMemoryBytes:rasterMemory.buffer.byteLength,initializationWaitMs:beforeResources-beforeReady,resourcesMs,installMs:performance.now()-beforeInstall-resourcesMs});
    }else if(data.type==='paint'){
     if(!rasterJob||data.generation!==rasterGeneration){self.postMessage({type:'paint-skipped',requestId:data.requestId,generation:data.generation});return;}
-    const before=performance.now(),pixels=rasterJob.raster_retained(JSON.stringify(data.crop),data.width,data.height),rgba=pixels.into_rgba();
+    const before=performance.now(),pixels=(data.time==null?rasterJob.raster_retained(JSON.stringify(data.crop),data.width,data.height):rasterJob.raster_animation(JSON.stringify(data.crop),data.width,data.height,data.time,!!data.reduced)),rgba=pixels.into_rgba();
     let overview;const transfer=[rgba.buffer];
     if(data.crop[0]===0&&data.crop[1]===0&&data.crop[2]===rasterPage.width&&data.crop[3]===rasterPage.height)overviewReady=true;
-    if(!overviewReady){const p=rasterPage,s=Math.min(768/p.width,2048/p.height,Math.sqrt(500000/(p.width*p.height))),width=Math.max(1,Math.floor(p.width*s)),height=Math.max(1,Math.floor(p.height*s));const frame=rasterJob.raster_retained(JSON.stringify([0,0,p.width,p.height]),width,height);overview={width,height,rgba:frame.into_rgba()};transfer.push(overview.rgba.buffer);overviewReady=true;}
+    if(!overviewReady&&data.time==null){const p=rasterPage,s=Math.min(768/p.width,2048/p.height,Math.sqrt(500000/(p.width*p.height))),width=Math.max(1,Math.floor(p.width*s)),height=Math.max(1,Math.floor(p.height*s));const frame=rasterJob.raster_retained(JSON.stringify([0,0,p.width,p.height]),width,height);overview={width,height,rgba:frame.into_rgba()};transfer.push(overview.rgba.buffer);overviewReady=true;}
     self.postMessage({type:'painted',requestId:data.requestId,generation:rasterGeneration,width:data.width,height:data.height,crop:data.crop,rgba,overview,rasterMs:performance.now()-before,wasmMemoryBytes:rasterMemory.buffer.byteLength},transfer);
    }
   }catch(error){self.postMessage({type:'error',requestId:data.requestId,generation:data.generation,error:String(error)});}

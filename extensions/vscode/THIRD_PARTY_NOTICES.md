@@ -17,12 +17,14 @@ The native executable and WebAssembly module contain the following locked Rust d
 | bitflags | 2.13.2 | MIT OR Apache-2.0 |
 | block-buffer | 0.10.4 | MIT OR Apache-2.0 |
 | block-buffer | 0.12.1 | MIT OR Apache-2.0 |
+| block2 | 0.6.2 | MIT |
 | bumpalo | 3.20.3 | MIT OR Apache-2.0 |
 | bytemuck | 1.25.2 | Zlib OR Apache-2.0 OR MIT |
 | bytemuck_derive | 1.12.1 | Zlib OR Apache-2.0 OR MIT |
 | byteorder-lite | 0.1.0 | Unlicense OR MIT |
 | cc | 1.6.0 | MIT OR Apache-2.0 |
 | cfg-if | 1.0.5 | MIT OR Apache-2.0 |
+| cfg_aliases | 0.2.2 | MIT |
 | color | 0.3.3 | Apache-2.0 OR MIT |
 | color_quant | 1.1.0 | MIT |
 | const-oid | 0.10.2 | Apache-2.0 OR MIT |
@@ -35,16 +37,23 @@ The native executable and WebAssembly module contain the following locked Rust d
 | crunchy | 0.2.4 | MIT |
 | crypto-common | 0.1.7 | MIT OR Apache-2.0 |
 | crypto-common | 0.2.2 | MIT OR Apache-2.0 |
+| cssparser | 0.38.0 | MPL-2.0 |
+| cssparser-macros | 0.7.1 | MPL-2.0 |
 | csv | 1.4.0 | Unlicense/MIT |
 | csv-core | 0.1.13 | Unlicense/MIT |
+| ctrlc | 3.5.2 | MIT/Apache-2.0 |
 | data-url | 0.3.2 | MIT OR Apache-2.0 |
 | derive_arbitrary | 1.4.2 | MIT OR Apache-2.0 |
 | digest | 0.10.7 | MIT OR Apache-2.0 |
 | digest | 0.11.3 | MIT OR Apache-2.0 |
+| dispatch2 | 0.3.1 | Zlib OR Apache-2.0 OR MIT |
 | displaydoc | 0.2.7 | MIT OR Apache-2.0 |
+| dtoa | 1.0.11 | MIT OR Apache-2.0 |
+| dtoa-short | 0.3.5 | MPL-2.0 |
 | equivalent | 1.0.2 | Apache-2.0 OR MIT |
 | euclid | 0.22.14 | MIT OR Apache-2.0 |
 | fancy-regex | 0.14.0 | MIT |
+| fastrand | 2.5.0 | Apache-2.0 OR MIT |
 | fax | 0.2.7 | MIT |
 | fdeflate | 0.3.7 | MIT OR Apache-2.0 |
 | fearless_simd | 0.7.0 | Apache-2.0 OR MIT |
@@ -93,14 +102,21 @@ The native executable and WebAssembly module contain the following locked Rust d
 | miniz_oxide | 0.8.9 | MIT OR Zlib OR Apache-2.0 |
 | miniz_oxide | 0.9.1 | MIT OR Zlib OR Apache-2.0 |
 | moxcms | 0.8.1 | BSD-3-Clause OR Apache-2.0 |
+| nix | 0.31.3 | MIT |
 | num-traits | 0.2.19 | MIT OR Apache-2.0 |
+| objc2 | 0.6.5 | MIT |
+| objc2-encode | 4.1.0 | MIT |
 | once_cell | 1.21.4 | MIT OR Apache-2.0 |
 | pdf-writer | 0.15.0 | MIT OR Apache-2.0 |
 | peniko | 0.6.1 | Apache-2.0 OR MIT |
 | phf | 0.11.3 | MIT |
+| phf | 0.14.0 | MIT |
 | phf_generator | 0.11.3 | MIT |
+| phf_generator | 0.14.0 | MIT |
 | phf_macros | 0.11.3 | MIT |
+| phf_macros | 0.14.0 | MIT |
 | phf_shared | 0.11.3 | MIT |
+| phf_shared | 0.14.0 | MIT |
 | pico-args | 0.5.0 | MIT |
 | png | 0.18.1 | MIT OR Apache-2.0 |
 | polycool | 0.4.0 | MIT OR Apache-2.0 |

@@ -14,6 +14,7 @@ const observed=message=>{
  }else if(message.displayListUpdate){
   const {base,update}=message.displayListUpdate;assert(drawings.has(base),'Patch must name an observed CPU baseline');
   list=structuredClone(drawings.get(base));list.width=update.width;list.height=update.height;
+  if(update.animation==null)delete list.animation;else list.animation=update.animation;
   assert.equal(list.schemaVersion,update.schemaVersion);
   if(update.roots)list.nodes=update.roots;
   if(update.resources)list.resources=update.resources;
@@ -95,8 +96,9 @@ exports.run=async()=>{
  configCount=host.messages.length;fs.unlinkSync(configuration);await until(()=>host.messages.slice(configCount).find(m=>m.previewSettings?.jpeg_quality===90),'Removed project config');
  evidence.checks.push('Created/deleted project configuration refreshes effective preview quality');
  if(process.env.LAYMESH_PREVIEW_BMP){const asset=process.env.LAYMESH_PREVIEW_BMP,original=fs.readFileSync(asset),changed=Buffer.from(original),offset=changed.readUInt32LE(10);changed[offset]^=4;
-  const before=JSON.stringify(host.messages.filter(m=>m.displayList).at(-1).displayList);const count=host.messages.length;fs.writeFileSync(asset,changed);await until(()=>host.messages.slice(count).find(m=>m.displayList&&JSON.stringify(m.displayList)!==before),'Changed bitmap on disk');
-  const changedCount=host.messages.length;fs.writeFileSync(asset,original);await until(()=>host.messages.slice(changedCount).find(m=>JSON.stringify(m.displayList)===before),'Restored bitmap on disk');evidence.checks.push('Disk bitmap modification changes resource identity and restores correctly');
+  const identity=m=>m.displayList?.nodes.find(n=>n.kind.kind==='image')?.kind.resource;
+  const before=identity(host.messages.filter(m=>m.displayList).at(-1));assert(before);const count=host.messages.length;fs.writeFileSync(asset,changed);await until(()=>host.messages.slice(count).find(m=>identity(m)&&identity(m)!==before),'Changed bitmap on disk');
+  const changedCount=host.messages.length;fs.writeFileSync(asset,original);await until(()=>host.messages.slice(changedCount).find(m=>identity(m)===before),'Restored bitmap on disk');evidence.checks.push('Disk bitmap modification changes resource identity and restores correctly');
  }
  const dependencyDoc=await vscode.workspace.openTextDocument(dependency);let count=host.messages.length;await replace(dependencyDoc,'export top=5');
  let result=await until(()=>host.messages.slice(count).find(m=>m.displayList),'Unsaved dependency');assert(fs.readFileSync(dependency,'utf8').includes('top=3'));assert(JSON.stringify(result.displayList)!==JSON.stringify(host.messages.find(m=>m.displayList).displayList));
@@ -176,6 +178,16 @@ exports.run=async()=>{
  assert(fs.readFileSync(documentPdf).includes(Buffer.from('/Count 3')));assert(fs.readFileSync(selectedPdf).includes(Buffer.from('/Count 1')));
  evidence.checks.push('.laydoc language association; real page selection; independent cm units and formula; unsaved selected page; inactive page edits do not compile; stable ID survives reordering; edit-page action; whole/selected vector PDF');
  host.panel.dispose();
+ const motionFile=path.join(directory,'animation.lay');
+ fs.copyFileSync(path.resolve(extension.extensionPath,'../../tests/animation/vendor/animate.css'),path.join(directory,'animate.css'));
+ const motionSource='p=canvas(size=(80,40),stylesheet="animate.css",background="#fff")\na=p.add(rect(size=(25,15),fill="#3978d4"),offset=(20,10))\ns=p.step(name="Entrance",hold=500ms)\ns.animate(a,class="animate__animated animate__fadeIn",duration=1s)\ns2=p.step(name="Pulse",hold=500ms)\ns2.animate(a,class="animate__animated animate__pulse",duration=1s)';
+ fs.writeFileSync(motionFile,motionSource);const motionDoc=await vscode.workspace.openTextDocument(motionFile);await vscode.window.showTextDocument(motionDoc);await vscode.commands.executeCommand('laymesh.openPreview',motionDoc.uri);
+ await until(()=>host.messages.find(m=>m.inspection?.animation),'Animation preview');const beforePlayback=host.messages.filter(m=>m.displayList).length;
+ await documentPhase('animation-ready','animation-verified');assert.equal(host.messages.filter(m=>m.displayList).length,beforePlayback,'Playback must not request another layout');
+ const animationSettings=vscode.workspace.getConfiguration('laymesh',motionDoc.uri);await animationSettings.update('export.animation.width',160,vscode.ConfigurationTarget.Global);await animationSettings.update('export.animation.fps',5,vscode.ConfigurationTarget.Global);await animationSettings.update('export.animation.background','#f5f0e8',vscode.ConfigurationTarget.Global);
+ const video=path.join(directory,'animation.mp4');await vscode.commands.executeCommand('laymesh.exportFigure',motionDoc.uri,{output:video,animated:true});assert(fs.statSync(video).size>500);
+ const videoProbe=JSON.parse(require('child_process').execFileSync('ffprobe',['-v','error','-show_streams','-of','json',video]));assert.equal(videoProbe.streams[0].width,160);assert.equal(videoProbe.streams[0].r_frame_rate,'5/1');
+ evidence.checks.push('Animate.css preview controls, deterministic seeking, static restoration, no playback recompilation, editor MP4 export');host.panel.dispose();
  await vscode.commands.executeCommand('workbench.action.closeAllEditors');
  fs.writeFileSync(process.env.LAYMESH_PREVIEW_EVIDENCE,JSON.stringify(evidence,null,2));if(gate)fs.writeFileSync(gate,JSON.stringify({phase:'complete'}));fs.rmSync(directory,{recursive:true,force:true});
 };
