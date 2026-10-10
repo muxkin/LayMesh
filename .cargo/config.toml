@@ -1,3 +1,8 @@
 [target.x86_64-pc-windows-msvc]
 # The bundled engine must run without a separately installed Visual C++ runtime.
 rustflags = ["-C", "target-feature=+crt-static"]
+
+[target.wasm32-unknown-unknown]
+# Vello's f32 pipeline selects its WASM SIMD implementation at compile time.
+# SIMD128 is supported by the browsers used by the website and VS Code engine.
+rustflags = ["-C", "target-feature=+simd128"]

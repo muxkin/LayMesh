@@ -276,8 +276,8 @@
       "different_channels": 1
     }
   ],
-  "seconds": 74.45209125301335,
-  "renderer_fingerprint": "6edd74e1f9bbbe3f4519e408ffbf156ec80cf70a7ad7226d3fcc3ea160724632",
+  "seconds": 74.24104004300898,
+  "renderer_fingerprint": "b47ff7a042d9ae0e4fd9c86e24285abbed7ddcbc4a01c3a91b94a81a6fe38239",
   "interaction": {
     "url": "http://100.64.0.6:8768/?suite=text&style=inline&size=48&baselines=1",
     "count": "24 条匹配 · 显示 1–20",

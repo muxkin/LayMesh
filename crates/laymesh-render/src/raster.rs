@@ -4,7 +4,7 @@ use display_list::*;
 use kurbo::{Affine, Rect};
 use std::{
     cell::RefCell,
-    collections::{BTreeMap, HashMap},
+    collections::{BTreeMap, BTreeSet, HashMap},
     sync::Arc,
 };
 use vello_cpu::{Image, ImageSource, PixelMetadata, Pixmap, RenderContext, Resources, peniko};
@@ -35,6 +35,76 @@ struct DecodedImage {
     tiles: Vec<ImageTile>,
 }
 type Images = BTreeMap<String, Arc<DecodedImage>>;
+struct CachedEffects {
+    tiles: Arc<Vec<EffectTile>>,
+    pixels: u64,
+    costs: BTreeMap<(usize, u64), u64>,
+    used: u64,
+}
+struct EffectCache {
+    entries: BTreeMap<(usize, u64), CachedEffects>,
+    bytes: u64,
+    budget: u64,
+    tick: u64,
+}
+impl Default for EffectCache {
+    fn default() -> Self {
+        Self {
+            entries: BTreeMap::new(),
+            bytes: 0,
+            budget: 64 * 1024 * 1024,
+            tick: 0,
+        }
+    }
+}
+impl EffectCache {
+    fn trim(&mut self, incoming: u64) {
+        while self.bytes.saturating_add(incoming) > self.budget || self.entries.len() >= 128 {
+            let Some(key) = self
+                .entries
+                .iter()
+                .min_by_key(|(_, e)| e.used)
+                .map(|(k, _)| *k)
+            else {
+                break;
+            };
+            self.bytes -= self.entries.remove(&key).unwrap().pixels * 4;
+        }
+    }
+}
+/// An immutable drawing and its decoded resources/effect tiles. Moving this
+/// object cannot change node addresses: the list is boxed and never mutated.
+pub struct PreparedRaster {
+    list: Box<DisplayList>,
+    images: Images,
+    effects: EffectCache,
+}
+impl PreparedRaster {
+    pub fn new(list: DisplayList) -> Result<Self> {
+        if list.schema_version != DISPLAY_LIST_VERSION {
+            return Err(error("不支持的绘制指令版本"));
+        }
+        let images = decode(&list.resources)?;
+        Ok(Self {
+            list: Box::new(list),
+            images,
+            effects: EffectCache::default(),
+        })
+    }
+    pub fn display_list(&self) -> &DisplayList {
+        &self.list
+    }
+    /// Effects retain at most 64 MiB; current frames keep independent pixel
+    /// references while an old cache entry is evicted.
+    pub fn set_cache_budget(&mut self, mib: usize) {
+        self.effects.budget = mib.min(64) as u64 * 1024 * 1024;
+        self.effects.trim(0);
+    }
+    pub fn render_region(&mut self, rect: Rect, w: u32, h: u32) -> Result<RasterFrame> {
+        validate_region(&self.list, rect, w, h)?;
+        render_prepared(&self.list, rect, w, h, &self.images, &mut self.effects)
+    }
+}
 struct ImageCache {
     entries: HashMap<String, (Arc<DecodedImage>, usize, u64)>,
     bytes: usize,
@@ -191,6 +261,11 @@ pub fn render_rgba(list: &DisplayList, dpi: f64) -> Result<RasterFrame> {
 }
 /// Render a viewport in physical coordinates, allowing previews to avoid huge offscreen canvases.
 pub fn render_region(list: &DisplayList, rect: Rect, w: u32, h: u32) -> Result<RasterFrame> {
+    validate_region(list, rect, w, h)?;
+    let images = decode(&list.resources)?;
+    render_prepared(list, rect, w, h, &images, &mut EffectCache::default())
+}
+fn validate_region(list: &DisplayList, rect: Rect, w: u32, h: u32) -> Result<()> {
     if list.schema_version != DISPLAY_LIST_VERSION
         || w == 0
         || h == 0
@@ -202,11 +277,23 @@ pub fn render_region(list: &DisplayList, rect: Rect, w: u32, h: u32) -> Result<R
     {
         return Err(error("无效渲染区域或超过 100000000 像素上限"));
     }
-    let images = decode(&list.resources)?;
+    Ok(())
+}
+fn render_prepared(
+    list: &DisplayList,
+    rect: Rect,
+    w: u32,
+    h: u32,
+    images: &Images,
+    effects: &mut EffectCache,
+) -> Result<RasterFrame> {
     let mut renderer = Renderer {
-        images: &images,
-        effects: BTreeMap::new(),
+        images,
+        effects,
         effect_pixels: 0,
+        used_effects: BTreeSet::new(),
+        frame_effects: BTreeMap::new(),
+        effect_costs: Vec::new(),
     };
     let mut rgba = Vec::new();
     rgba.try_reserve_exact(w as usize * h as usize * 4)
@@ -236,11 +323,26 @@ pub fn render_region(list: &DisplayList, rect: Rect, w: u32, h: u32) -> Result<R
 }
 struct Renderer<'a> {
     images: &'a Images,
-    effects: BTreeMap<(usize, u64), Vec<EffectTile>>,
+    effects: &'a mut EffectCache,
     effect_pixels: u64,
+    used_effects: BTreeSet<(usize, u64)>,
+    frame_effects: BTreeMap<(usize, u64), (Arc<Vec<EffectTile>>, BTreeMap<(usize, u64), u64>)>,
+    // Each retained effect includes its nested effects' logical pixel costs.
+    // Cache hits must enforce the same frame budget as fresh calculations.
+    effect_costs: Vec<((usize, u64), BTreeMap<(usize, u64), u64>)>,
 }
 impl Renderer<'_> {
     fn tile(&mut self, nodes: &[DrawNode], tr: Affine, w: u32, h: u32) -> Result<Pixmap> {
+        self.tile_content(nodes, tr, w, h, false)
+    }
+    fn tile_content(
+        &mut self,
+        nodes: &[DrawNode],
+        tr: Affine,
+        w: u32,
+        h: u32,
+        source_root: bool,
+    ) -> Result<Pixmap> {
         if w == 0
             || h == 0
             || w > u16::MAX as u32
@@ -251,7 +353,7 @@ impl Renderer<'_> {
         }
         let mut context = RenderContext::new(w as u16, h as u16);
         for n in nodes {
-            self.node(&mut context, n, tr, w, h)?;
+            self.node_content(&mut context, n, tr, w, h, source_root)?;
         }
         let mut target = Pixmap::new(w as u16, h as u16);
         context.flush();
@@ -368,14 +470,32 @@ impl Renderer<'_> {
         w: u32,
         h: u32,
     ) -> Result<()> {
-        let tr = parent * n.transform;
+        self.node_content(ctx, n, parent, w, h, false)
+    }
+    fn node_content(
+        &mut self,
+        ctx: &mut RenderContext,
+        n: &DrawNode,
+        parent: Affine,
+        w: u32,
+        h: u32,
+        source_root: bool,
+    ) -> Result<()> {
+        let tr = if source_root {
+            parent
+        } else {
+            parent * n.transform
+        };
         let b = tr.transform_rect_bbox(n.local_bounds());
-        let effect_pad = n
-            .effects
-            .iter()
-            .map(|e| 4. * e.blur + e.spread + e.offset[0].abs().max(e.offset[1].abs()))
-            .fold(0f64, f64::max)
-            * scale(tr);
+        let effect_pad = if source_root {
+            0.
+        } else {
+            n.effects
+                .iter()
+                .map(|e| 4. * e.blur + e.spread + e.offset[0].abs().max(e.offset[1].abs()))
+                .fold(0f64, f64::max)
+                * scale(tr)
+        };
         if b.inflate(effect_pad, effect_pad)
             .intersect(Rect::new(0., 0., w as f64, h as f64))
             .area()
@@ -387,14 +507,19 @@ impl Renderer<'_> {
             return Err(error("绘制变换或透明度无效"));
         }
         ctx.set_transform(tr);
-        ctx.push_opacity_layer(n.opacity.clamp(0., 1.) as f32);
+        ctx.push_opacity_layer(if source_root {
+            1.
+        } else {
+            n.opacity.clamp(0., 1.) as f32
+        });
         let key = (n as *const DrawNode as usize, scale(tr).to_bits());
-        if !n.effects.is_empty() {
-            if !self.effects.contains_key(&key) {
-                let tiles = self.effect_tiles(n, scale(tr).max(1e-9))?;
-                self.effects.insert(key, tiles);
-            }
-            for t in &self.effects[&key] {
+        let effect_tiles = if !source_root && !n.effects.is_empty() {
+            Some(self.cached_effects(n, key)?)
+        } else {
+            None
+        };
+        if let Some(tiles) = &effect_tiles {
+            for t in tiles.iter() {
                 if !t.inner {
                     self.image(ctx, t.pixels.clone(), t.rect, tr, false);
                 }
@@ -540,8 +665,8 @@ impl Renderer<'_> {
                 ctx.set_blend_mode(previous);
             }
         }
-        if !n.effects.is_empty() {
-            for t in &self.effects[&key] {
+        if let Some(tiles) = &effect_tiles {
+            for t in tiles.iter() {
                 if t.inner {
                     self.image(ctx, t.pixels.clone(), t.rect, tr, false);
                 }
@@ -550,12 +675,71 @@ impl Renderer<'_> {
         ctx.pop_layer();
         Ok(())
     }
+    fn cached_effects(&mut self, n: &DrawNode, key: (usize, u64)) -> Result<Arc<Vec<EffectTile>>> {
+        if let Some((tiles, costs)) = self.frame_effects.get(&key) {
+            if let Some((_, current)) = self.effect_costs.last_mut() {
+                current.extend(costs);
+            }
+            return Ok(tiles.clone());
+        }
+        self.effects.tick += 1;
+        if let Some(entry) = self.effects.entries.get_mut(&key) {
+            entry.used = self.effects.tick;
+            for (&cost_key, &pixels) in &entry.costs {
+                if self.used_effects.insert(cost_key) {
+                    self.effect_pixels = self
+                        .effect_pixels
+                        .checked_add(pixels)
+                        .ok_or_else(|| error("效果像素预算溢出"))?;
+                    if self.effect_pixels > MAX_PIXELS {
+                        return Err(error("效果像素数超过 100000000 上限"));
+                    }
+                }
+            }
+            if let Some((_, current)) = self.effect_costs.last_mut() {
+                current.extend(&entry.costs);
+            }
+            let tiles = entry.tiles.clone();
+            self.frame_effects
+                .insert(key, (tiles.clone(), entry.costs.clone()));
+            return Ok(tiles);
+        }
+        self.used_effects.insert(key);
+        self.effect_costs.push((key, BTreeMap::new()));
+        let tiles = Arc::new(self.effect_tiles(n, f64::from_bits(key.1).max(1e-9))?);
+        let (_, costs) = self.effect_costs.pop().unwrap();
+        if let Some((_, current)) = self.effect_costs.last_mut() {
+            current.extend(&costs);
+        }
+        // A frame must still reuse large effects when the retention budget is
+        // zero or too small, preserving the export budget and tiled behavior.
+        self.frame_effects
+            .insert(key, (tiles.clone(), costs.clone()));
+        let pixels = tiles
+            .iter()
+            .map(|t| t.pixels.width() as u64 * t.pixels.height() as u64)
+            .sum::<u64>();
+        if pixels * 4 <= self.effects.budget {
+            self.effects.trim(pixels * 4);
+            self.effects.tick += 1;
+            self.effects.entries.insert(
+                key,
+                CachedEffects {
+                    tiles: tiles.clone(),
+                    pixels,
+                    costs,
+                    used: self.effects.tick,
+                },
+            );
+            self.effects.bytes += pixels * 4;
+        }
+        Ok(tiles)
+    }
     fn effect_tiles(&mut self, n: &DrawNode, density: f64) -> Result<Vec<EffectTile>> {
-        let mut source = n.clone();
-        source.effects.clear();
-        source.opacity = 1.;
-        source.transform = Affine::IDENTITY;
-        let bounds = source.local_bounds();
+        // Draw the original children, suppressing only this root's effects,
+        // opacity and transform. A temporary cloned tree would make persistent
+        // node-address cache keys invalid after this call.
+        let bounds = n.local_bounds();
         let mut out = Vec::new();
         for e in &n.effects {
             if ![e.blur, e.spread, e.offset[0], e.offset[1]]
@@ -574,6 +758,9 @@ impl Renderer<'_> {
             };
             let ww = (b.width() * density).ceil().max(1.) as u32;
             let hh = (b.height() * density).ceil().max(1.) as u32;
+            if let Some((key, costs)) = self.effect_costs.last_mut() {
+                *costs.entry(*key).or_default() += ww as u64 * hh as u64;
+            }
             self.effect_pixels = self
                 .effect_pixels
                 .checked_add(ww as u64 * hh as u64)
@@ -599,7 +786,7 @@ impl Renderer<'_> {
                     let ox = b.x0 + (x as f64 - overlap as f64) / density;
                     let oy = b.y0 + (y as f64 - overlap as f64) / density;
                     let tr = Affine::scale(density) * Affine::translate((-ox, -oy));
-                    let pixels = self.tile(std::slice::from_ref(&source), tr, pw, ph)?;
+                    let pixels = self.tile_content(std::slice::from_ref(n), tr, pw, ph, true)?;
                     let alpha: Vec<u8> = pixels
                         .data()
                         .iter()
@@ -716,8 +903,104 @@ pub(crate) fn effect_tiles(
     let images = decode(&list.resources)?;
     Renderer {
         images: &images,
-        effects: BTreeMap::new(),
+        effects: &mut EffectCache::default(),
         effect_pixels: 0,
+        used_effects: BTreeSet::new(),
+        frame_effects: BTreeMap::new(),
+        effect_costs: Vec::new(),
     }
     .effect_tiles(n, density)
+}
+
+#[cfg(test)]
+mod retained_tests {
+    use super::*;
+    use kurbo::Shape;
+    fn drawing() -> DisplayList {
+        let mut child = DrawNode::new(DrawKind::Path {
+            path: Rect::new(8., 8., 50., 35.).to_path(0.0001),
+            fill: Paint::Solid {
+                rgba: [0.2, 0.5, 0.8, 0.75],
+            },
+            stroke: None,
+            even_odd: false,
+        });
+        child.effects.push(Effect {
+            inner: true,
+            blur: 1.2,
+            spread: 0.,
+            offset: [0.6, 0.8],
+            rgba: [0., 0., 0., 0.6],
+        });
+        let mut group = DrawNode::group(vec![child]);
+        group.transform = Affine::translate((4., 2.));
+        group.opacity = 0.8;
+        group.effects.push(Effect {
+            inner: false,
+            blur: 2.,
+            spread: 0.5,
+            offset: [2., 3.],
+            rgba: [0.7, 0.1, 0.3, 0.5],
+        });
+        DisplayList {
+            schema_version: DISPLAY_LIST_VERSION,
+            width: 80.,
+            height: 50.,
+            nodes: vec![group],
+            resources: BTreeMap::new(),
+        }
+    }
+    #[test]
+    fn prepared_frames_preserve_nested_effects_across_pan_scale_move_and_eviction() {
+        let list = drawing();
+        let mut prepared = PreparedRaster::new(list.clone()).unwrap();
+        for (rect, w, h) in [
+            (Rect::new(0., 0., 80., 50.), 320, 200),
+            (Rect::new(3., 2., 83., 52.), 320, 200),
+            (Rect::new(0., 0., 80., 50.), 640, 400),
+        ] {
+            assert_eq!(
+                render_region(&list, rect, w, h).unwrap().rgba,
+                prepared.render_region(rect, w, h).unwrap().rgba
+            );
+        }
+        assert!(prepared.effects.bytes > 0);
+        assert!(prepared.effects.bytes <= prepared.effects.budget);
+        fn pixel_cost(prepared: &PreparedRaster, effects: &mut EffectCache) -> u64 {
+            let mut renderer = Renderer {
+                images: &prepared.images,
+                effects,
+                effect_pixels: 0,
+                used_effects: BTreeSet::new(),
+                frame_effects: BTreeMap::new(),
+                effect_costs: Vec::new(),
+            };
+            renderer
+                .tile(&prepared.list.nodes, Affine::scale(4.), 320, 200)
+                .unwrap();
+            renderer.effect_pixels
+        }
+        let mut cache = EffectCache::default();
+        let cold_cost = pixel_cost(&prepared, &mut cache);
+        assert!(cold_cost > 0);
+        assert_eq!(cold_cost, pixel_cost(&prepared, &mut cache));
+        assert!(cache.entries.values().any(|entry| entry.costs.len() > 1));
+        let count = prepared.effects.entries.len();
+        let mut moved = Box::new(prepared);
+        let rect = Rect::new(0., 0., 80., 50.);
+        assert_eq!(
+            render_region(&list, rect, 640, 400).unwrap().rgba,
+            moved.render_region(rect, 640, 400).unwrap().rgba
+        );
+        assert_eq!(count, moved.effects.entries.len());
+        moved.set_cache_budget(0);
+        assert_eq!(moved.effects.bytes, 0);
+        // Multiple ordinary output tiles still share effects within a frame
+        // when the persistent cache is disabled.
+        assert_eq!(
+            render_region(&list, rect, 1500, 938).unwrap().rgba,
+            moved.render_region(rect, 1500, 938).unwrap().rgba
+        );
+        assert_eq!(moved.effects.bytes, 0);
+    }
 }

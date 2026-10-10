@@ -1,0 +1,541 @@
+{
+  "measured_at": "2026-10-10",
+  "baseline_commit": "79e47f8",
+  "platform": "Linux x64; real VS Code extension/webview and isolated Chromium; headless software composition",
+  "fixture": {
+    "kind": "user scientific layout",
+    "sha256": "0f76ae48abf1612798cf064a7739b619d5534386bb5bc93f63c8b7e377c6c4ab",
+    "original_modified": false
+  },
+  "methodology": "Continuous interaction excludes compilation. Each scenario dispatches 60 real UI events; records animation-frame intervals, input-to-next-layout latency, main-thread long tasks and bitmap uploads. The final sharp DPR paint is awaited; Canvas coverage, overview clipping and memory bounds are checked. These are UI scheduling measurements, not a physical display refresh-rate guarantee. Source-edit and raster timings are measured separately with other validation processes stopped.",
+  "implementation": {
+    "wasm_simd128": true,
+    "vello_f32_pipeline_preserved": true,
+    "retained_drawing": "Immutable boxed DisplayList with once-decoded resources and reusable effect tiles; node identity and exact scale are stable cache keys",
+    "effect_cache_maximum_mib": 64,
+    "effect_cache_maximum_entries": 128,
+    "effect_frame_pixel_budget": 100000000,
+    "effect_budget_counts_nested_effects_on_cache_hits": true,
+    "vscode_worker": "Bundled blob module with explicit packaged WASM URL; install, decode and raster work stays off the UI thread",
+    "pan_overscan_css_px": 96,
+    "zoom_settle_ms": 80,
+    "paint_queue": "One in flight and latest pending; obsolete generations acknowledge; returning to an already covered viewport cancels stale requests",
+    "overview": "At most 500000 pixels, generated only when needed or downsampled from the existing full-page paint; clipped out beneath the sharp patch to preserve Alpha; final viewport is covered by DPR pixels",
+    "internal_svg_fallback": false
+  },
+  "motion": {
+    "native_vscode": {
+      "before": {
+        "definition": "60 actions per scenario, real UI event listeners, requestAnimationFrame intervals and input-to-next-layout latency; headless software composition, excludes compilation; final sharp paint awaited",
+        "dpr": 2,
+        "rows": [
+          {
+            "scenario": "pan",
+            "steps": 60,
+            "frame_median_ms": 200,
+            "frame_p95_ms": 216.69999999999982,
+            "frame_max_ms": 216.80000000000018,
+            "frames_above_25_ms": 59,
+            "handler_p95_ms": 0.19999998807907104,
+            "input_to_layout_p95_ms": 206.30000001192093,
+            "bitmap_paints": 60,
+            "long_tasks": 60,
+            "long_task_total_ms": 11656
+          },
+          {
+            "scenario": "zoom",
+            "steps": 60,
+            "frame_median_ms": 183.3000000000011,
+            "frame_p95_ms": 200,
+            "frame_max_ms": 200.09999999999854,
+            "frames_above_25_ms": 59,
+            "handler_p95_ms": 0.20000004768371582,
+            "input_to_layout_p95_ms": 188.9000000357628,
+            "bitmap_paints": 60,
+            "long_tasks": 60,
+            "long_task_total_ms": 11062
+          },
+          {
+            "scenario": "cursor",
+            "steps": 60,
+            "frame_median_ms": 16.700000000000728,
+            "frame_p95_ms": 16.700000000000728,
+            "frame_max_ms": 16.80000000000291,
+            "frames_above_25_ms": 0,
+            "handler_p95_ms": 0.19999998807907104,
+            "input_to_layout_p95_ms": 17.30000001192093,
+            "bitmap_paints": 0,
+            "long_tasks": 0,
+            "long_task_total_ms": 0
+          },
+          {
+            "scenario": "pan-uncovered",
+            "steps": 60,
+            "frame_median_ms": 183.40000000000146,
+            "frame_p95_ms": 250,
+            "frame_max_ms": 250.10000000000218,
+            "frames_above_25_ms": 59,
+            "handler_p95_ms": 0.20000004768371582,
+            "input_to_layout_p95_ms": 249.10000002384186,
+            "bitmap_paints": 60,
+            "long_tasks": 60,
+            "long_task_total_ms": 11652
+          }
+        ],
+        "final": {
+          "painted": true,
+          "canvas": [
+            1264,
+            1401
+          ],
+          "pixel_ratio": [
+            2,
+            2.0005577929249547
+          ],
+          "viewport_covered": true,
+          "visible": true,
+          "generation": "1"
+        }
+      },
+      "after": {
+        "definition": "60 actions per scenario, real UI event listeners, requestAnimationFrame intervals and input-to-next-layout latency; headless software composition, excludes compilation; final sharp paint awaited",
+        "dpr": 2,
+        "rows": [
+          {
+            "scenario": "pan",
+            "steps": 60,
+            "frame_median_ms": 16.699999999999818,
+            "frame_p95_ms": 16.700000000000273,
+            "frame_max_ms": 16.800000000000182,
+            "frames_above_25_ms": 0,
+            "handler_p95_ms": 0.30000001192092896,
+            "input_to_layout_p95_ms": 17.400000035762787,
+            "bitmap_paints": 0,
+            "long_tasks": 0,
+            "long_task_total_ms": 0,
+            "uncovered_layout_frames": 0
+          },
+          {
+            "scenario": "zoom",
+            "steps": 60,
+            "frame_median_ms": 16.699999999999818,
+            "frame_p95_ms": 16.799999999999272,
+            "frame_max_ms": 16.800000000000182,
+            "frames_above_25_ms": 0,
+            "handler_p95_ms": 0.30000001192092896,
+            "input_to_layout_p95_ms": 17.399999976158142,
+            "bitmap_paints": 1,
+            "long_tasks": 0,
+            "long_task_total_ms": 0,
+            "uncovered_layout_frames": 0
+          },
+          {
+            "scenario": "cursor",
+            "steps": 60,
+            "frame_median_ms": 16.699999999999818,
+            "frame_p95_ms": 16.800000000000182,
+            "frame_max_ms": 16.800000000000182,
+            "frames_above_25_ms": 0,
+            "handler_p95_ms": 0.20000004768371582,
+            "input_to_layout_p95_ms": 17.399999976158142,
+            "bitmap_paints": 0,
+            "long_tasks": 0,
+            "long_task_total_ms": 0,
+            "uncovered_layout_frames": 0
+          },
+          {
+            "scenario": "pan-uncovered",
+            "steps": 60,
+            "frame_median_ms": 16.699999999999818,
+            "frame_p95_ms": 16.700000000000728,
+            "frame_max_ms": 16.800000000000182,
+            "frames_above_25_ms": 0,
+            "handler_p95_ms": 0.30000001192092896,
+            "input_to_layout_p95_ms": 17.399999976158142,
+            "bitmap_paints": 8,
+            "long_tasks": 0,
+            "long_task_total_ms": 0,
+            "uncovered_layout_frames": 0
+          }
+        ],
+        "final": {
+          "painted": true,
+          "canvas": [
+            1648,
+            1593
+          ],
+          "pixel_ratio": [
+            2,
+            2.000490547156298
+          ],
+          "viewport_covered": true,
+          "visible": true,
+          "overview_clip_supported": true,
+          "overview_overlaps_front": false,
+          "overview_pixels": 393216,
+          "generation": "1"
+        }
+      }
+    },
+    "website": {
+      "definition": "60 actions per scenario, real UI event listeners, requestAnimationFrame intervals and input-to-next-layout latency; headless software composition, excludes compilation; final sharp paint awaited",
+      "dpr": 2,
+      "rows": [
+        {
+          "scenario": "pan",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.799999999999955,
+          "frame_max_ms": 16.800000000000182,
+          "frames_above_25_ms": 0,
+          "handler_p95_ms": 0.30000001192092896,
+          "input_to_layout_p95_ms": 17.19999998807907,
+          "bitmap_paints": 0,
+          "long_tasks": 0,
+          "long_task_total_ms": 0,
+          "uncovered_layout_frames": 0
+        },
+        {
+          "scenario": "zoom",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.700000000000273,
+          "frame_max_ms": 16.800000000000182,
+          "frames_above_25_ms": 0,
+          "handler_p95_ms": 0.30000001192092896,
+          "input_to_layout_p95_ms": 17.19999998807907,
+          "bitmap_paints": 0,
+          "long_tasks": 0,
+          "long_task_total_ms": 0,
+          "uncovered_layout_frames": 0
+        },
+        {
+          "scenario": "cursor",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.700000000000728,
+          "frame_max_ms": 16.800000000000182,
+          "frames_above_25_ms": 0,
+          "handler_p95_ms": 0.19999998807907104,
+          "input_to_layout_p95_ms": 17,
+          "bitmap_paints": 0,
+          "long_tasks": 0,
+          "long_task_total_ms": 0,
+          "uncovered_layout_frames": 0
+        },
+        {
+          "scenario": "pan-uncovered",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.700000000000728,
+          "frame_max_ms": 33.400000000000546,
+          "frames_above_25_ms": 1,
+          "handler_p95_ms": 0.30000001192092896,
+          "input_to_layout_p95_ms": 18.299999952316284,
+          "bitmap_paints": 21,
+          "long_tasks": 0,
+          "long_task_total_ms": 0,
+          "uncovered_layout_frames": 0
+        }
+      ],
+      "final": {
+        "painted": true,
+        "canvas": [
+          1487,
+          1396
+        ],
+        "pixel_ratio": [
+          2,
+          2
+        ],
+        "viewport_covered": true,
+        "visible": true,
+        "overview_clip_supported": true,
+        "overview_overlaps_front": false,
+        "overview_pixels": 393216,
+        "generation": "2"
+      }
+    }
+  },
+  "source_edits": {
+    "before": {
+      "cold": {
+        "start": 1791598579534,
+        "label": "cold",
+        "generation": 1,
+        "native_ms": 1526,
+        "native_peak_rss_kib": 481744,
+        "bytes": 3455752,
+        "resources": 11,
+        "protocol": 3,
+        "resources_ms": 57.5,
+        "install_ms": 132.39999997615814,
+        "initialization_wait_ms": 0,
+        "raster_ms": 850.7000000476837,
+        "wasm_memory_bytes": 190054400,
+        "width": 1200,
+        "height": 800,
+        "elapsed_ms": 2596
+      },
+      "hot": [
+        {
+          "start": 1791598582931,
+          "label": "1",
+          "generation": 4,
+          "native_ms": 101,
+          "native_peak_rss_kib": 481744,
+          "bytes": 3456275,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 112.90000003576279,
+          "initialization_wait_ms": 0,
+          "raster_ms": 155.39999997615814,
+          "wasm_memory_bytes": 210894848,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 393
+        },
+        {
+          "start": 1791598583602,
+          "label": "2",
+          "generation": 5,
+          "native_ms": 106,
+          "native_peak_rss_kib": 481744,
+          "bytes": 3455801,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 113.19999998807907,
+          "initialization_wait_ms": 0,
+          "raster_ms": 155.80000001192093,
+          "wasm_memory_bytes": 210894848,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 397
+        },
+        {
+          "start": 1791598584263,
+          "label": "3",
+          "generation": 6,
+          "native_ms": 97,
+          "native_peak_rss_kib": 481744,
+          "bytes": 3456563,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 121.39999997615814,
+          "initialization_wait_ms": 0,
+          "raster_ms": 159.10000002384186,
+          "wasm_memory_bytes": 210894848,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 398
+        },
+        {
+          "start": 1791598584928,
+          "label": "4",
+          "generation": 7,
+          "native_ms": 95,
+          "native_peak_rss_kib": 481744,
+          "bytes": 3455961,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 116,
+          "initialization_wait_ms": 0,
+          "raster_ms": 155.69999998807907,
+          "wasm_memory_bytes": 210894848,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 392
+        },
+        {
+          "start": 1791598585590,
+          "label": "5",
+          "generation": 8,
+          "native_ms": 96,
+          "native_peak_rss_kib": 481744,
+          "bytes": 3455964,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 112.59999996423721,
+          "initialization_wait_ms": 0,
+          "raster_ms": 156,
+          "wasm_memory_bytes": 210894848,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 386
+        }
+      ],
+      "hot_median_ms": 393,
+      "artifact_sha256": {
+        "native": "4015883e506d65ec8b6eb4ac944e6914fd96b5764277d680555491d7a7ad9897",
+        "wasm": "ec200201ff24798c95f307cd4b0fc677d15d8c49a70b4d85c5241037cc66a600"
+      },
+      "definition": "native request enqueue to resources loaded and WASM Canvas drawn in VS Code; excludes edit debounce",
+      "change": "A panel label changes on every edit; isolated copy, original file unchanged; fit view, DPR 2, 1200 x 800 pixels"
+    },
+    "after": {
+      "cold": {
+        "start": 1791599324942,
+        "label": "cold",
+        "generation": 1,
+        "native_ms": 1422,
+        "native_peak_rss_kib": 481812,
+        "bytes": 3455752,
+        "resources": 11,
+        "protocol": 3,
+        "resources_ms": 57.69999998807907,
+        "install_ms": 695.6999999880791,
+        "initialization_wait_ms": 0.10000002384185791,
+        "raster_ms": 78.89999997615814,
+        "wasm_memory_bytes": 197328896,
+        "width": 1200,
+        "height": 800,
+        "elapsed_ms": 2288
+      },
+      "hot": [
+        {
+          "start": 1791599327982,
+          "label": "1",
+          "generation": 4,
+          "native_ms": 99,
+          "native_peak_rss_kib": 481812,
+          "bytes": 3456275,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0.10000002384185791,
+          "install_ms": 129.69999998807907,
+          "initialization_wait_ms": 0,
+          "raster_ms": 63.10000002384186,
+          "wasm_memory_bytes": 212074496,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 315
+        },
+        {
+          "start": 1791599328598,
+          "label": "2",
+          "generation": 5,
+          "native_ms": 99,
+          "native_peak_rss_kib": 481812,
+          "bytes": 3455801,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 132.70000004768372,
+          "initialization_wait_ms": 0,
+          "raster_ms": 63.5,
+          "wasm_memory_bytes": 212074496,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 318
+        },
+        {
+          "start": 1791599329215,
+          "label": "3",
+          "generation": 6,
+          "native_ms": 96,
+          "native_peak_rss_kib": 481812,
+          "bytes": 3456563,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 138.30000001192093,
+          "initialization_wait_ms": 0,
+          "raster_ms": 61.60000002384186,
+          "wasm_memory_bytes": 212074496,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 321
+        },
+        {
+          "start": 1791599329827,
+          "label": "4",
+          "generation": 7,
+          "native_ms": 99,
+          "native_peak_rss_kib": 481812,
+          "bytes": 3455961,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 126.19999998807907,
+          "initialization_wait_ms": 0,
+          "raster_ms": 61.89999997615814,
+          "wasm_memory_bytes": 212074496,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 317
+        },
+        {
+          "start": 1791599330444,
+          "label": "5",
+          "generation": 8,
+          "native_ms": 101,
+          "native_peak_rss_kib": 481812,
+          "bytes": 3455964,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 130.5999999642372,
+          "initialization_wait_ms": 0,
+          "raster_ms": 61,
+          "wasm_memory_bytes": 212074496,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 323
+        }
+      ],
+      "hot_median_ms": 318,
+      "artifact_sha256": {
+        "native": "170cd6f6a7b027349992923a2002b1fc5720f95953151f6ad1137c789d5183c3",
+        "wasm": "4e325bcdb852ef99a6db2703bb28574ddfab21e88cbc54c648b42fe56ef7536c"
+      },
+      "definition": "native request enqueue to resources loaded and WASM Canvas drawn in VS Code; excludes edit debounce",
+      "change": "A panel label changes on every edit; isolated copy, original file unchanged; fit view, DPR 2, 1200 x 800 pixels"
+    }
+  },
+  "shadow_repaint": {
+    "before": {
+      "wasm_sha256": "ec200201ff24798c95f307cd4b0fc677d15d8c49a70b4d85c5241037cc66a600",
+      "definition": "Same dependencies/fonts; isolated Chromium; 1200 px paint and five viewport repaints; first compile and seven comment edits; excludes initialization/network/debounce",
+      "first_paint_ms": 81.60000002384186,
+      "hot_first_paint_median_ms": 65.60000002384186,
+      "repaint_median_ms": 65,
+      "rgba_fnv1a": [
+        "de2e20c5"
+      ],
+      "maximum_wasm_linear_memory_bytes": 103284736
+    },
+    "after": {
+      "wasm_sha256": "4e325bcdb852ef99a6db2703bb28574ddfab21e88cbc54c648b42fe56ef7536c",
+      "definition": "Same dependencies/fonts; isolated Chromium; 1200 px paint and five viewport repaints; first compile and seven comment edits; excludes initialization/network/debounce",
+      "first_paint_ms": 57.80000001192093,
+      "hot_first_paint_median_ms": 43.69999998807907,
+      "repaint_median_ms": 8.900000035762787,
+      "rgba_fnv1a": [
+        "de2e20c5"
+      ],
+      "maximum_wasm_linear_memory_bytes": 103284736
+    }
+  },
+  "artifacts": {
+    "before": {
+      "native": "4015883e506d65ec8b6eb4ac944e6914fd96b5764277d680555491d7a7ad9897",
+      "wasm": "ec200201ff24798c95f307cd4b0fc677d15d8c49a70b4d85c5241037cc66a600"
+    },
+    "after": {
+      "native": "170cd6f6a7b027349992923a2002b1fc5720f95953151f6ad1137c789d5183c3",
+      "wasm": "4e325bcdb852ef99a6db2703bb28574ddfab21e88cbc54c648b42fe56ef7536c"
+    },
+    "packaged_worker_sha256": "cec381a8ed521d7e52a57555bb953432f055efe3b8f30a8176a15258a7ad1261",
+    "wasm_build_configuration_sha256": "fe8ba7c33121171a380588201f828e9758ef4671a1dbf20b5e8a645193c70736"
+  },
+  "limits": [
+    "Complete DSL compilation of the scientific fixture still takes about 100 ms; this change separates it from viewport interaction.",
+    "SIMD and effect reuse do not imply every scene can be fully rasterized within 16.7 ms.",
+    "120 Hz and physical desktop GPU composition have not been measured; first complex geometry compilation remains a separate cost."
+  ]
+}

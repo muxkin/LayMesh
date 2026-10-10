@@ -86,7 +86,7 @@ def main():
     unique=list(dict.fromkeys(c["source"] for c in entries))
     inputs=output/"inputs.json"
     inputs.write_text(json.dumps(unique,ensure_ascii=False))
-    engine=[ROOT/"Cargo.lock",ROOT/"Cargo.toml",ROOT/"rust-toolchain.toml"]+sorted(
+    engine=[ROOT/".cargo/config.toml",ROOT/"Cargo.lock",ROOT/"Cargo.toml",ROOT/"rust-toolchain.toml"]+sorted(
         p for p in (ROOT/"crates").rglob("*") if p.is_file() and p.suffix in {".rs",".toml",".json"})+[ROOT/"tests/fonts/text/fixtures.rs",ROOT/"tests/fonts/text/manifest.json",ROOT/"tests/fonts/math/manifest.json"]
     fingerprint=hashlib.sha256()
     for path in engine:

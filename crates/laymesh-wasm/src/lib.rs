@@ -33,7 +33,7 @@ fn js_error(e: impl std::fmt::Display) -> JsValue {
 
 #[wasm_bindgen]
 pub struct DrawJob {
-    list: laymesh_render::DisplayList,
+    raster: laymesh_render::raster::PreparedRaster,
 }
 #[wasm_bindgen]
 pub struct RgbaFrame {
@@ -64,27 +64,32 @@ impl RgbaFrame {
 #[wasm_bindgen]
 impl DrawJob {
     pub fn display_list(&self) -> Result<String, JsValue> {
-        let mut list = self.list.clone();
+        let mut list = self.raster.display_list().clone();
         for resource in list.resources.values_mut() {
             resource.data.clear();
         }
         serde_json::to_string(&list).map_err(js_error)
     }
     /// Millimetre viewport; output dimensions include browser device pixel ratio.
-    pub fn raster(&self, viewport: &str, width: u32, height: u32) -> Result<RgbaFrame, JsValue> {
+    pub fn raster(
+        &mut self,
+        viewport: &str,
+        width: u32,
+        height: u32,
+    ) -> Result<RgbaFrame, JsValue> {
         let r: [f64; 4] = serde_json::from_str(viewport).map_err(js_error)?;
-        let result = laymesh_render::raster::render_region(
-            &self.list,
-            kurbo::Rect::new(r[0], r[1], r[2], r[3]),
-            width,
-            height,
-        )
-        .map_err(js_error)?;
+        let result = self
+            .raster
+            .render_region(kurbo::Rect::new(r[0], r[1], r[2], r[3]), width, height)
+            .map_err(js_error)?;
         Ok(RgbaFrame {
             width: result.width,
             height: result.height,
             rgba: result.rgba,
         })
+    }
+    pub fn set_cache_budget(&mut self, mib: usize) {
+        self.raster.set_cache_budget(mib);
     }
 }
 #[wasm_bindgen]
@@ -105,7 +110,9 @@ pub fn prepare_display_list(json: &str) -> Result<DrawJob, JsValue> {
         }
         Ok::<(), JsValue>(())
     })?;
-    Ok(DrawJob { list })
+    Ok(DrawJob {
+        raster: laymesh_render::raster::PreparedRaster::new(list).map_err(js_error)?,
+    })
 }
 
 /// Register Page-only body fonts as bytes, avoiding a large JSON byte array on every render.
@@ -127,7 +134,10 @@ pub struct RenderJob {
 impl RenderJob {
     pub fn draw_job(&self) -> Result<DrawJob, JsValue> {
         Ok(DrawJob {
-            list: laymesh_render::to_display_list(&self.scene).map_err(js_error)?,
+            raster: laymesh_render::raster::PreparedRaster::new(
+                laymesh_render::to_display_list(&self.scene).map_err(js_error)?,
+            )
+            .map_err(js_error)?,
         })
     }
     pub fn display_list(&self) -> Result<String, JsValue> {

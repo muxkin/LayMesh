@@ -20,7 +20,7 @@ def source_manifest(root):
     for directory, patterns in [('crates', ('*.rs', '*.json', 'Cargo.toml')), ('python', ('*.py',)), ('migration/assertion-maps', ('*.json',)), ('migration/tests', ('*.py',)), ('examples', ('*.lay', '*.lcss', '*.csv', '*.json'))]:
         for pattern in patterns:
             paths.update((root / directory).rglob(pattern))
-    for name in ('Cargo.toml', 'Cargo.lock', 'rust-toolchain.toml', 'migration/legacy-assertions.json', 'migration/check-assertions.py', 'scripts/test-contracts.py', 'scripts/run-python-contracts.py'):
+    for name in ('.cargo/config.toml', 'Cargo.toml', 'Cargo.lock', 'rust-toolchain.toml', 'migration/legacy-assertions.json', 'migration/check-assertions.py', 'scripts/test-contracts.py', 'scripts/run-python-contracts.py'):
         if (root / name).is_file():
             paths.add(root / name)
     for directory in ('tests', 'migration/corpus', 'examples/assets'):

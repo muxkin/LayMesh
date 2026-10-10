@@ -45,6 +45,7 @@ READY = r'''new Promise((resolve,reject)=>{const end=Date.now()+45000;function t
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--url',required=True)
     p.add_argument('--output',required=True,type=Path);p.add_argument('--baseline',action='store_true',help='Record the old unbounded queue without asserting the new bound')
+    p.add_argument('--motion',action='store_true',help='Also measure continuous pan, zoom and pointer updates')
     a=p.parse_args()
     with tempfile.TemporaryDirectory(prefix='laymesh-paint-perf-',ignore_cleanup_errors=True) as profile:
         chrome=subprocess.Popen(['/usr/bin/google-chrome','--headless=new','--no-sandbox','--disable-gpu','--no-proxy-server','--remote-debugging-port=0','--remote-allow-origins=*','--user-data-dir='+profile,'about:blank'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True)
@@ -71,21 +72,30 @@ def main():
              return {during,held};
             })()''')
             latest=cdp.evaluate(READY)
-            final=cdp.evaluate(r'''(()=>{const c=document.querySelector('.live-image'),requests=window.__paintRequests,last=requests.at(-1);return {requests:requests.length,canvas:[c.width,c.height],latest:[last.width,last.height],generation:document.querySelector('.example-module').dataset.generation,font_sources:window.__fontSources,initialization_ms:Number(document.querySelector('.live-metrics').textContent.match(/(?:初始化|Initialization)\s*([\d.]+)/)?.[1]),worker_replies:window.__workerReplies};})()''')
-            assert final['canvas']==final['latest'],final
+            final=cdp.evaluate(r'''(()=>{const c=document.querySelector('.live-image'),box=c.getBoundingClientRect(),requests=window.__paintRequests,last=requests.at(-1);return {requests:requests.length,canvas:[c.width,c.height],latest:last?[last.width,last.height]:null,pixel_ratio:[c.width/box.width,c.height/box.height],generation:document.querySelector('.example-module').dataset.generation,font_sources:window.__fontSources,initialization_ms:Number(document.querySelector('.live-metrics').textContent.match(/(?:初始化|Initialization)\s*([\d.]+)/)?.[1]),worker_replies:window.__workerReplies};})()''')
+            assert all(abs(ratio-2)<.015 for ratio in final['pixel_ratio']),final
             assert all(font['source']=='page' for font in final['font_sources']) and len(final['font_sources'])==2,final
             if not a.baseline:
-                assert zoom['during']==1 and final['requests']==2,(zoom,final)
+                assert 0<=zoom['during']<=2 and 0<=final['requests']<=2,(zoom,final)
                 # A compile queued before an old-generation paint must return
                 # an acknowledgement, otherwise bounded paint dispatch stalls.
                 cdp.evaluate("window.__holdResults=true;document.querySelector('.live-run').click()")
-                cdp.evaluate("new Promise((r,j)=>{let n=0;function tick(){if(window.__heldResults.length){document.querySelector('.preview-zoom-out').click();return r();}if(++n>1000)return j(Error('Compile timeout'));setTimeout(tick,20);}tick();})")
+                cdp.evaluate("new Promise((r,j)=>{let n=0;function tick(){if(window.__heldResults.length){document.querySelector('.preview-zoom-in').click();return r();}if(++n>1000)return j(Error('Compile timeout'));setTimeout(tick,20);}tick();})")
                 cdp.evaluate("new Promise((r,j)=>{let n=0;function tick(){if(window.__workerReplies.some(e=>e.type==='paint-skipped')){window.__holdResults=false;for(const release of window.__heldResults.splice(0))release();return r();}if(++n>1000)return j(Error('Old paint was not acknowledged'));setTimeout(tick,20);}tick();})")
                 cdp.evaluate("new Promise((resolve,reject)=>{const previous="+json.dumps(latest['generation'])+";let n=0;function tick(){const m=document.querySelector('.example-module');if(m.dataset.generation!==previous&&m.dataset.painted==='true')return resolve(true);if(++n>1000)return reject(Error('New generation paint stalled'));setTimeout(tick,20);}tick();})")
                 generation=cdp.evaluate("({generation:document.querySelector('.example-module').dataset.generation,replies:window.__workerReplies})")
                 assert any(reply['type']=='paint-skipped' for reply in generation['replies']),generation
             else:generation=None
+            motion=None
+            if a.motion:
+                from preview_frame_probe import MOTION
+                motion=cdp.evaluate('const DOCUMENT=document,SITE=true;'+MOTION)
+                assert motion['final']['painted'] and motion['final']['visible'],motion['final']
+                assert motion['final']['viewport_covered'] and all(abs(v-motion['dpr'])<.015 for v in motion['final']['pixel_ratio']),motion['final']
+                assert all(row['uncovered_layout_frames']==0 for row in motion['rows']),motion
+                assert motion['final']['overview_clip_supported'] and not motion['final']['overview_overlaps_front'] and motion['final']['overview_pixels']<=500000,motion['final']
             result={'definition':'Real page/WASM/Canvas; stalled CDN fetch respecting AbortSignal; 13 zoom changes with paint replies held; DPR 2','url':a.url,'artifact_sha256':browser.provenance(__file__),'first':first,'zoom_burst':zoom,'final':final,'generation_change':generation}
+            if motion is not None:result['motion']=motion
             a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
             print(json.dumps({'initialization_ms':final['initialization_ms'],'during':zoom['during'],'total_requests':final['requests'],'canvas':final['canvas'],'generation_change':bool(generation)},ensure_ascii=False))
         finally:

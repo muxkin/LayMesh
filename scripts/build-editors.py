@@ -28,6 +28,11 @@ def build(binary=None,extension_dir=None):
  for name in ['preview-host.cjs','preview-math.mjs','preview-webview.mjs','preview.css']:shutil.copy2(source/'src'/name,extension/'dist'/name)
  subprocess.run(['cargo','build','--release','--locked','--target','wasm32-unknown-unknown','-p','laymesh-wasm','--no-default-features'],cwd=ROOT,check=True)
  subprocess.run(['wasm-bindgen','--target','web','--out-dir',str(extension/'dist/wasm'),str(ROOT/'target/wasm32-unknown-unknown/release/laymesh_wasm.wasm')],check=True)
+ # Blob workers cannot import extension modules. Inline the generated ESM
+ # bindings with the renderer worker; no Node bundler or runtime is needed.
+ worker_source=(source/'src/preview-worker.mjs').read_text()
+ worker_source=re.sub(r'^import .*?;\n', 'const init=__wbg_init;\n', worker_source, count=1, flags=re.M)
+ (extension/'dist/preview-worker.mjs').write_text((extension/'dist/wasm/laymesh_wasm.js').read_text()+'\n'+worker_source)
  # A platform package contains exactly one engine, even when reusing a staging directory.
  stale=extension/'bin'/('laymesh' if binary.name=='laymesh.exe' else 'laymesh.exe')
  if stale.exists():stale.unlink()

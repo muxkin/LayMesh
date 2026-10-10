@@ -28,6 +28,7 @@ class ExampleEditor {
   this.fontNote=module.querySelector('.font-note');
   this.status=module.querySelector('.live-status');this.metrics=module.querySelector('.live-metrics');this.diagnostics=module.querySelector('.live-diagnostics');this.static=module.querySelector('.original-preview');this.image=module.querySelector('.live-image');this.toolbar=module.querySelector('.live-toolbar');
   const canvas=document.createElement('canvas');canvas.className=this.image.className;canvas.hidden=true;canvas.setAttribute('role','img');canvas.setAttribute('aria-label','LayMesh');this.image.replaceWith(canvas);this.image=canvas;
+  this.overview=document.createElement('canvas');this.overview.className='live-overview';this.overview.hidden=true;this.overview.setAttribute('aria-hidden','true');this.overview.style.pointerEvents='none';canvas.before(this.overview);
   this.module.addEventListener('laymesh:draw',()=>this.requestPaint());
   this.workspace=new Workspace(module,offset=>this.editSummary(offset));
   module.querySelector('.diagnostics-toggle').addEventListener('click',()=>{this.diagnosticsOpen=!this.diagnosticsOpen;this.sync();});
@@ -42,18 +43,23 @@ class ExampleEditor {
  boot() {
   this.worker?.terminate();clearTimeout(this.timeout);clearTimeout(this.initTimeout);this.busy=false;this.ready=false;
   this.paintInFlight=null;this.pendingPaint=null;
+  clearTimeout(this.paintTimer);this.paintTimer=0;
   const start=performance.now();this.worker=new Worker(new URL('worker.js',base),{type:'module'});
   this.worker.postMessage({type:'init',base:base.href});
   this.initTimeout=setTimeout(()=>{this.worker?.terminate();this.worker=null;this.error({message:t('引擎或字体加载超时，可点击运行重试。','Engine or fonts timed out. Run again to retry.')});},45000);
   this.worker.onmessage=({data})=>{
    if(['paint-error','painted','paint-skipped'].includes(data.type)){
-    if(this.paintInFlight&&data.id===this.paintInFlight.id&&data.generation===this.paintInFlight.generation)this.paintInFlight=null;
-    if(data.generation===this.last?.generation&&data.id===this.paintId){
-     if(data.type==='paint-error'){this.paintKey='';this.error(data.error);}
-     else if(data.type==='painted'){this.image.width=data.width;this.image.height=data.height;this.image.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(data.rgba.buffer,data.rgba.byteOffset,data.rgba.byteLength),data.width,data.height),0,0);
-      this.last.metrics.raster=data.rasterMs;this.last.metrics.total=this.last.metrics.compile+this.last.metrics.lower+data.rasterMs;this.module.dataset.painted='true';this.updateMetrics();}
+    const request=this.paintInFlight&&data.id===this.paintInFlight.id&&data.generation===this.paintInFlight.generation?this.paintInFlight:null;
+    if(request)this.paintInFlight=null;
+    if(data.generation===this.last?.generation&&request){
+     if(data.type==='paint-error'&&request.key===this.paintKey){this.paintKey='';this.error(data.error);}
+     else if(data.type==='painted'&&(request.key===this.paintKey||this.pendingPaint)){this.image.width=data.width;this.image.height=data.height;this.image.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(data.rgba.buffer,data.rgba.byteOffset,data.rgba.byteLength),data.width,data.height),0,0);
+      const p=this.last.inspection.page;
+      if(data.overview){const o=data.overview;this.overview.width=o.width;this.overview.height=o.height;this.overview.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(o.rgba.buffer,o.rgba.byteOffset,o.rgba.byteLength),o.width,o.height),0,0);this.overviewGeneration=data.generation;}
+      else if(request.rect[0]===0&&request.rect[1]===0&&request.rect[2]===p.width&&request.rect[3]===p.height){const s=Math.min(768/p.width,2048/p.height,Math.sqrt(500000/(p.width*p.height)));this.overview.width=Math.max(1,Math.floor(p.width*s));this.overview.height=Math.max(1,Math.floor(p.height*s));this.overview.getContext('2d').drawImage(this.image,0,0,this.overview.width,this.overview.height);this.overviewGeneration=data.generation;}
+      this.presented=request;this.positionPixels();this.last.metrics.raster=data.rasterMs;this.last.metrics.total=this.last.metrics.compile+this.last.metrics.lower+data.rasterMs;if(data.id===this.paintId)this.module.dataset.painted='true';this.updateMetrics();this.requestPaint();}
     }
-    this.flushPaint();return;
+    if(!this.paintTimer)this.flushPaint();return;
    }
    if(data.type==='init-error'){clearTimeout(this.initTimeout);this.error(data.error);this.worker?.terminate();this.worker=null;return;}
    if(data.type==='ready'){clearTimeout(this.initTimeout);this.ready=true;this.initialization=performance.now()-start;for(const font of this.loadedFonts)this.worker.postMessage({type:'font',...font});if(this.pending)this.drain();return;}
@@ -89,6 +95,7 @@ class ExampleEditor {
   this.toolbar.hidden=!editable;this.module.querySelector('.summary-edit').hidden=!summary;
   if(editable)this.editor(panel);
   this.static.hidden=editable&&!!this.last;this.image.hidden=!editable||!this.last;
+  this.overview.hidden=!editable||!this.last||this.overviewGeneration!==this.last.generation;
   this.module.dataset.previewState=editable?this.module.dataset.liveState:'original';
   this.module.querySelector('.live-modified').textContent=this.module.dataset.modified==='true'?(summary?t('草稿已修改 · 仅本页','Draft modified · this page'):t('已修改 · 仅本页','Modified · this page')):t('修改仅保留在本页','Edits stay on this page');
   this.status.textContent=editable?(this.statusText||t('准备预览','Ready to preview')):t('原始示例','Original example');
@@ -107,19 +114,25 @@ class ExampleEditor {
 
  result(data){if(data.protocol!==3||!data.displayList){this.error({code:'E_PREVIEW_PROTOCOL',message:'Expected drawing protocol 3'});return;}
   this.last=data;this.module.dataset.generation=String(data.generation);this.paintKey='';this.image.dataset.aspectRatio=String(data.inspection.page.width/data.inspection.page.height);this.statusText=t('预览已更新','Preview updated');
-  this.diagnosticsOpen=data.warnings.length>0;this.diagnostics.textContent=data.warnings.map(w=>`${w.code} ${w.file}:${w.loc.line}:${w.loc.column} — ${w.message}`).join('\n');this.module.dataset.liveState='success';this.sync();this.updateMetrics();
+  this.diagnosticsOpen=data.warnings.length>0;this.diagnostics.textContent=data.warnings.map(w=>`${w.code} ${w.file}:${w.loc.line}:${w.loc.column} — ${w.message}`).join('\n');this.module.dataset.liveState='success';this.sync();this.updateMetrics();this.requestPaint(true);
  }
  updateMetrics(){const m=this.last.metrics,ms=n=>`${n.toFixed(1)} ms`;this.metrics.textContent=t(`编译 ${ms(m.compile)} · 绘制指令 ${ms(m.lower)} · 绘制 ${ms(m.raster)} · 合计 ${ms(m.total)} · 初始化 ${ms(this.initialization||m.initialization)} · 资源 ${ms(m.resources)}`,`Compile ${ms(m.compile)} · Commands ${ms(m.lower)} · Raster ${ms(m.raster)} · Total ${ms(m.total)} · Initialize ${ms(this.initialization||m.initialization)} · Resources ${ms(m.resources)}`);this.metrics.title=t('本设备本次浏览器实测；不包含输入防抖等待。','Measured in this browser on this device; excludes typing debounce.');this.module.querySelector('.live-total').textContent=`${t('合计','Total')} ${ms(m.total)}`;}
- requestPaint(){if(this.paintSchedule)return;this.paintSchedule=requestAnimationFrame(()=>{this.paintSchedule=0;if(!this.last||!this.worker||this.image.hidden)return;
+ positionPixels(){if(!this.presented||!this.last)return;const box=this.workspace.canvas.getBoundingClientRect(),page=this.last.inspection.page,c=this.presented.rect,sx=box.width/page.width,sy=box.height/page.height;Object.assign(this.image.style,{position:'absolute',left:c[0]*sx+'px',top:c[1]*sy+'px',width:(c[2]-c[0])*sx+'px',height:(c[3]-c[1])*sy+'px',maxWidth:'none',maxHeight:'none'});
+  this.overview.hidden=this.image.hidden||this.overviewGeneration!==this.last.generation;
+  if(!this.overview.hidden){const [x0,y0,x1,y1]=c.map((v,i)=>100*v/(i%2?page.height:page.width));Object.assign(this.overview.style,{position:'absolute',left:'0',top:'0',width:box.width+'px',height:box.height+'px',clipPath:`polygon(evenodd,0% 0%,100% 0%,100% 100%,0% 100%,0% 0%,${x0}% ${y0}%,${x1}% ${y0}%,${x1}% ${y1}%,${x0}% ${y1}%,${x0}% ${y0}%)`});}
+ }
+ requestPaint(immediate=false){this.paintImmediate||=immediate;if(this.paintSchedule)return;this.paintSchedule=requestAnimationFrame(()=>{this.paintSchedule=0;const force=this.paintImmediate;this.paintImmediate=false;if(!this.last||!this.worker||this.image.hidden)return;this.positionPixels();
   const box=this.workspace.canvas.getBoundingClientRect(),view=this.workspace.viewport.getBoundingClientRect();if(!box.width||!box.height)return;
   const x=Math.max(0,view.left-box.left),y=Math.max(0,view.top-box.top),w=Math.min(box.width,view.right-box.left)-x,h=Math.min(box.height,view.bottom-box.top)-y;if(w<=0||h<=0)return;
-  const page=this.last.inspection.page,rect=[x/box.width*page.width,y/box.height*page.height,(x+w)/box.width*page.width,(y+h)/box.height*page.height],dpr=devicePixelRatio||1,width=Math.ceil(w*dpr),height=Math.ceil(h*dpr);
-  const key=JSON.stringify([this.last.generation,rect,width,height]);if(key===this.paintKey)return;this.paintKey=key;this.paintId=(this.paintId||0)+1;
-  Object.assign(this.image.style,{position:'absolute',left:x+'px',top:y+'px',width:w+'px',height:h+'px',maxWidth:'none',maxHeight:'none'});this.module.dataset.painted='false';
+  const page=this.last.inspection.page,visible=[x/box.width*page.width,y/box.height*page.height,(x+w)/box.width*page.width,(y+h)/box.height*page.height],scale=[box.width/page.width,box.height/page.height],dpr=devicePixelRatio||1,old=this.presented;
+  if(old?.generation===this.last.generation&&old.scale[0]===scale[0]&&old.scale[1]===scale[1]&&old.dpr===dpr&&visible[0]>=old.rect[0]-1e-9&&visible[1]>=old.rect[1]-1e-9&&visible[2]<=old.rect[2]+1e-9&&visible[3]<=old.rect[3]+1e-9){this.pendingPaint=null;clearTimeout(this.paintTimer);this.paintTimer=0;this.paintKey=old.key;this.module.dataset.painted='true';return;}
+  const rect=[Math.max(0,visible[0]-96/scale[0]),Math.max(0,visible[1]-96/scale[1]),Math.min(page.width,visible[2]+96/scale[0]),Math.min(page.height,visible[3]+96/scale[1])],width=Math.ceil((rect[2]-rect[0])*scale[0]*dpr),height=Math.ceil((rect[3]-rect[1])*scale[1]*dpr);
+  const key=JSON.stringify([this.last.generation,rect,width,height]);if(key===this.paintKey)return;this.paintKey=key;this.paintId=(this.paintId||0)+1;this.module.dataset.painted='false';
   // Rendering is synchronous inside the worker. Keep one request in flight
   // and replace its pending successor as the viewport moves, instead of
   // queueing a bitmap for every animation frame that will later be discarded.
-  this.pendingPaint={type:'paint',id:this.paintId,generation:this.last.generation,rect,width,height};this.flushPaint();
+  this.pendingPaint={type:'paint',id:this.paintId,generation:this.last.generation,rect,width,height,scale,dpr,key};clearTimeout(this.paintTimer);this.paintTimer=0;
+  if(force||(old?.scale[0]===scale[0]&&old?.scale[1]===scale[1]))this.flushPaint();else this.paintTimer=setTimeout(()=>{this.paintTimer=0;this.flushPaint();},80);
  });}
  flushPaint(){if(this.paintInFlight||!this.pendingPaint||!this.worker)return;
   const next=this.pendingPaint;this.pendingPaint=null;if(next.generation!==this.last?.generation)return;
@@ -127,7 +140,7 @@ class ExampleEditor {
  }
 
  error(error){this.statusText=this.last?t('上次成功结果 · 当前源码未通过','Last successful result · current source failed'):t('当前源码未通过','Current source failed');this.diagnosticsOpen=true;this.diagnostics.textContent=[error.code,error.file,error.loc?`${error.loc.line}:${error.loc.column}`:'',error.message].filter(Boolean).join(' ');this.module.dataset.liveState='error';this.sync();}
- reset(restart=true){this.seq++;clearTimeout(this.debounce);this.worker?.terminate();this.worker=null;clearTimeout(this.initTimeout);clearTimeout(this.timeout);this.busy=false;this.pending=false;this.files={...this.original};for(const [file,text]of Object.entries(this.original))this.maps.set(file,ChangeSet.empty(text.length).desc);for(const [file,{view,wrap}]of this.views){view.setState(EditorState.create({doc:this.files[file],extensions:this.extensions(file,wrap)}));this.module.querySelector(`[data-edit-file="${CSS.escape(file)}"] .code-raw`).value=this.files[file];}this.last=null;this.paintKey='';this.image.getContext('2d').clearRect(0,0,this.image.width,this.image.height);this.diagnostics.textContent='';this.diagnosticsOpen=false;this.metrics.textContent='';this.statusText='';this.workspace.zoomTo(1);this.sync();this.changed();if(restart)this.schedule(true);}
+ reset(restart=true){this.seq++;clearTimeout(this.debounce);this.worker?.terminate();this.worker=null;clearTimeout(this.initTimeout);clearTimeout(this.timeout);this.busy=false;this.pending=false;this.files={...this.original};for(const [file,text]of Object.entries(this.original))this.maps.set(file,ChangeSet.empty(text.length).desc);for(const [file,{view,wrap}]of this.views){view.setState(EditorState.create({doc:this.files[file],extensions:this.extensions(file,wrap)}));this.module.querySelector(`[data-edit-file="${CSS.escape(file)}"] .code-raw`).value=this.files[file];}this.last=null;this.presented=null;clearTimeout(this.paintTimer);this.paintTimer=0;this.paintKey='';this.image.getContext('2d').clearRect(0,0,this.image.width,this.image.height);this.diagnostics.textContent='';this.diagnosticsOpen=false;this.metrics.textContent='';this.statusText='';this.workspace.zoomTo(1);this.sync();this.changed();if(restart)this.schedule(true);}
 
  async font(name,bytes,alias){this.activate();const id=`font-${this.loadedFonts.length}`,font={id,name,bytes,alias};this.loadedFonts.push(font);this.worker.postMessage({type:'font',...font});}
  async localFonts(){this.diagnosticsOpen=true;if(!window.queryLocalFonts){this.diagnostics.textContent=t('此浏览器无法读取系统字体；请选择字体文件。未加载的字符显示方框。','This browser cannot read installed fonts. Select a font file; missing glyphs display as boxes.');this.sync();return;}

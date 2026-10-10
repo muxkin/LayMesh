@@ -14,7 +14,7 @@
 
 ## 验证
 
-最终性能优化构建完成 523 个 Rust 测试、51 个 Python 测试，891 处历史断言的源码映射和实际执行门禁全部通过；另有 1 个既有忽略测试。覆盖文字、连字、双向文字、字体集合、缺字、公式、艺术字、渐变、纹理、透明图片、遮罩、嵌套变换及现有几何容差。
+最终性能优化构建完成 524 个 Rust 测试、51 个 Python 测试，891 处历史断言的源码映射和实际执行门禁全部通过；另有 1 个既有忽略测试。覆盖文字、连字、双向文字、字体集合、缺字、公式、艺术字、渐变、纹理、透明图片、遮罩、嵌套变换及现有几何容差。
 
 原生与浏览器 WASM 使用同一份绘制指令和编码资源，8 组实际 RGBA 对照通过：7 组完全相同，vector 样例最大单通道差异为 1/255。70,000×2 像素窄图及 1024、2048、65535 像素附近边界采样没有发现接缝。Rust 回归额外覆盖超宽透明图片的分块采样、输出像素上限和未知绘制版本。
 
@@ -225,4 +225,61 @@ python scripts/test-browser-preview-performance.py \
   --url http://100.64.0.6:8767/examples/basic.html --output /tmp/viewport.json
 python scripts/profile-wasm-preview.py --url http://100.64.0.6:8767/ \
   --example gallery-shapes-fuse-angled --width 1200 --output /tmp/geometry.json
+```
+
+
+## 连续交互与 CPU 绘制优化（2026-10-10）
+
+60 Hz 的每帧预算为 16.7 ms，120 Hz 为 8.3 ms。完整 DSL 编译、绘制指令安装与交互刷新
+需要分开处理。本轮保留绘制指令、解码图片、效果和呈现位图，把 VS Code 的解压、资源注册、
+指令安装与 WASM 绘制移入 Worker。构建后的 Blob 模块内联 WASM 绑定，使用明确的离线 WASM URL，
+遵循 [VS Code Worker 文档](https://code.visualstudio.com/api/extension-guides/webview#using-web-workers)。
+
+对同一实际科学图件进行成对检查，每组 60 次真实 UI 事件，DPR=2。
+记录实际 VS Code webview 的动画帧间隔、下一次布局延迟、主线程长任务与位图上传；
+最后等待清晰重绘，并检查视口覆盖和最终像素密度。
+原件未修改，报告仅保存输入指纹与匿名指标，详见 [frame-performance.json](frame-performance.json)。
+
+| 同一图件的连续操作 | 帧间隔中位数，旧 → 新 | 新路径的位图上传次数 | 新路径缺边帧数 |
+| --- | --- | --- | --- |
+| 小幅平移 | 200.0 → 16.7 ms | 0 | 0 |
+| 连续缩放 | 183.3 → 16.7 ms | 1 | 0 |
+| 鼠标坐标与拾取 | 16.7 → 16.7 ms | 0 | 0 |
+| 超出缓存的大幅平移 | 183.4 → 16.7 ms | 8 | 0 |
+
+四组新路径均没有超过 50 ms 的主线程长任务，帧间隔 P95 不超过 16.8 ms。
+这是无头软件合成下的 UI 调度实测，尚未验证物理桌面显示器的 120 Hz 刷新。
+同一默认适应视口、1200×800 位图下，修改图件文字的请求至可见画面中位数为
+393 → 318 ms；原生编译阶段仍约 100 ms。完整图件编译及全场景栅格化仍有独立成本，
+不能据此宣称每帧重编译、任意全场景重绘都能达到 60 Hz。
+
+WASM 现在启用标准 SIMD128，保持现有 Vello f32 绘制与抗锯齿管线。
+1200 像素阴影/发光案例的重复平移绘制中位数为 65.0 → 8.9 ms，
+8 次构建、每次 5 个视口的 RGBA FNV 指纹均为 `de2e20c5`。
+绘制任务持有不可变的 boxed DisplayList，图片仅在任务建立时查找、解码；
+效果缓存采用原节点地址与精确缩放值，最多 64 MiB、128 项。
+缓存命中仍累计嵌套效果的逻辑像素成本，继续执行每帧 100,000,000 像素预算；
+临时源图不再复制节点树，避免释放后的临时节点地址成为缓存键。
+回归覆盖嵌套内阴影、透明度、平移、缩放、任务移动、缓存淘汰与关闭缓存后的分块输出。
+
+网页和扩展采用相同的呈现策略：96 CSS px 外扩、一个正在绘制的请求与最新待绘制视口，
+缩放期间先呈现保留位图，静止 80 ms 后恢复精确 DPR 位图。
+压力测试发现大幅平移等待新位图时可能缺边，已增加全页预览层：
+最多 500,000 像素，从既有全页位图缩小或用同一 WASM 任务生成。
+预览层裁掉清晰区域，避免透明内容重复叠加；停止后清晰位图覆盖整个可见图件。
+实际浏览器还检查了裁剪支持、层间互斥、像素密度、覆盖、过期 generation 应答和返回已缓存视口。
+该预览层不参与文件导出，客户端全程使用协议 3 与 CPU 位图。
+
+最终构建通过 524 个 Rust 测试（另有 1 个既有忽略）、51 个 Python 测试、891 处历史断言门禁，
+全部 186 个网页案例、实际 VS Code 宿主、8 组原生/WASM 像素对照与 70,000×2 窄图。
+全部 30,412 个公式 Canvas 检查通过，仍只有原有 54 个单通道 1/255 舍入差异。
+186 项媒体指纹和 615 个文档页面检查通过；编译配置也纳入媒体、公式画廊和合同源码指纹。
+实验包见本地 `release/verification/frame-preview-performance/`，未发布或更改用户安装的扩展。
+
+```sh
+python scripts/test-vscode-preview-performance.py --motion --output /tmp/vscode-motion.json
+python scripts/test-browser-preview-performance.py --motion \
+  --url http://100.64.0.6:8767/examples/basic.html --output /tmp/web-motion.json
+python scripts/profile-wasm-preview.py --url http://100.64.0.6:8767/ \
+  --example effects-shadow-glow --width 1200 --output /tmp/shadow.json
 ```
