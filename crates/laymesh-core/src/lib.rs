@@ -6,6 +6,7 @@ mod collections;
 pub mod color;
 pub mod colormap;
 mod data;
+pub mod document;
 pub mod endpoints;
 pub mod engine;
 mod formatting;

@@ -2070,6 +2070,28 @@
       "minimal": "examples/manual/arrow.lay",
       "composition": "examples/gallery/shapes/arrow-connections.lay",
       "exercise": "\\.centerline\\.length\\b"
+    },
+    "api:document": {
+      "topic": "documents",
+      "anchor": "document",
+      "reference": "canvas",
+      "minimal": "examples/document/report.laydoc",
+      "composition": "examples/document/report.laydoc"
+    },
+    "api:page": {
+      "topic": "documents",
+      "anchor": "page",
+      "reference": "canvas",
+      "minimal": "examples/document/report.laydoc",
+      "composition": "examples/document/report.laydoc"
+    },
+    "api:document.add": {
+      "topic": "documents",
+      "anchor": "document-add",
+      "heading": "document.add",
+      "reference": "canvas",
+      "minimal": "examples/document/report.laydoc",
+      "composition": "examples/document/report.laydoc"
     }
   }
 }

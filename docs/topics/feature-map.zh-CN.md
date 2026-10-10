@@ -288,3 +288,6 @@
 | `lcss:end_head_size` | [→](arrows.zh-CN.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
 | `geometry:instance.centerline` | [→](arrows.zh-CN.md#centerline) | [→](../../examples/manual/arrow.lay) | [→](../../examples/gallery/shapes/arrow-connections.lay) |
 | `geometry:geometry_path.length` | [→](arrows.zh-CN.md#centerline) | [→](../../examples/manual/arrow.lay) | [→](../../examples/gallery/shapes/arrow-connections.lay) |
+| `api:document` | [→](documents.zh-CN.md#document) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |
+| `api:page` | [→](documents.zh-CN.md#page) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |
+| `api:document.add` | [→](documents.zh-CN.md#document-add) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |

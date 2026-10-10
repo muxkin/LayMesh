@@ -1,0 +1,5 @@
+p = canvas(name="Results", size=(16 cm, 9 cm), unit="cm", background="#ffffff")
+p.add(text(content="Results", font_size=24 pt, color="#203b33"), offset=(1.4, 1.1))
+p.add(formula(source="\\int_0^\\infty e^{-x^2}\\,dx=\\frac{\\sqrt{\\pi}}{2}", font_size=24 pt), offset=(1.4, 3.4))
+p.add(formula(source="\\ce{Al8Cu4Sc}", font_size=18 pt), offset=(1.4, 6.2))
+p.add(text(content="This page uses cm; neighbouring pages use mm.", font_size=10 pt, color="#45665c"), offset=(1.4, 7.5))

@@ -14,13 +14,16 @@ def examples():
   if 'output' in p.relative_to(ROOT).parts:continue
   if source in seen or 'canvas(' not in p.read_text():continue
   title=p.stem.replace('-',' ').title();out.append({'id':source.removeprefix('examples/').removesuffix('.lay').replace('/','-'),'source':source,'category':'plots' if '/plot/' in source else 'notebook' if '/notebook/' in source else 'applications','group':'plot' if '/plot/' in source else 'applications','title':[title,title],'description':['完整可复现的源码与输出。','Complete reproducible source and output.']})
+ for p in sorted((ROOT/'examples').rglob('*.laydoc')):
+  source=p.relative_to(ROOT).as_posix();title=p.stem.replace('-',' ').title()
+  out.append({'id':source.removeprefix('examples/').removesuffix('.laydoc').replace('/','-'),'source':source,'category':'applications','group':'applications','title':[title,title],'description':['使用 Lay 语法管理独立页面。','Manage independent pages with the Lay DSL.']})
  return out
 
 def dependencies(source,seen=None):
  if seen is None:seen=set()
  if source in seen:return sorted(seen)
  seen.add(source);p=ROOT/source
- if p.suffix.lower() not in ('.lay','.lcss','.py','.ipynb','.svg'):return sorted(seen)
+ if p.suffix.lower() not in ('.lay','.laydoc','.lcss','.py','.ipynb','.svg'):return sorted(seen)
  text=p.read_text();text=re.sub(r'url\(\s*([^\'"()\s]+)\s*\)',r'url("\1")',text)
  for value in re.findall(r'''["']([^"'\n]+\.(?:lay|lcss|png|jpg|jpeg|tif|tiff|bmp|webp|gif|ico|pnm|pbm|pgm|ppm|pam|tga|svg|json|csv|ttf|otf|ttc|otc)(?:#[^"'\n]*)?)["']''',text):
   value=re.sub(r'(\.(?:ttf|otf|ttc|otc))#[^/]*$',r'\1',value);target=posixpath.normpath(posixpath.join(posixpath.dirname(source),value))

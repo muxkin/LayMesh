@@ -1,0 +1,4 @@
+p = canvas(name="Summary", size=(160 mm, 90 mm), background="#ffffff")
+p.add(text(content="Summary", font_size=24 pt, color="#203b33"), offset=(14 mm, 12 mm))
+p.add(rect(size=(132 mm, 34 mm), border_radius=4 mm, fill="#e6f5ee"), offset=(14 mm, 32 mm))
+p.add(text(content="Edit content in each page.\nManage order in report.laydoc.", font_size=16 pt, color="#203b33"), offset=(22 mm, 39 mm))

@@ -836,7 +836,7 @@ pub use export::{ExportOptions, export_format, render_export};
 #[cfg(feature = "native")]
 pub use jpeg_preview::{JpegPreviewOptions, render_jpeg_preview};
 #[cfg(feature = "native")]
-pub use native::{render_pdf, render_png};
+pub use native::{PdfDocument, render_pdf, render_pdf_pages, render_png};
 
 #[cfg(test)]
 mod tests {

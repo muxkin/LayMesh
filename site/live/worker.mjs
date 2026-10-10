@@ -1,4 +1,4 @@
-import init, {prepare_render,register_preview_font} from './wasm/laymesh_wasm.js';
+import init, {prepare_render,prepare_document_render,register_preview_font} from './wasm/laymesh_wasm.js';
 let initialized, manifest, base,wasmMemory;
 const assets={}, fonts={};
 let chain=Promise.resolve(),drawJob,generation,drawPage,overviewReady=false;
@@ -46,7 +46,7 @@ async function resource(name){
  if(!location)throw new Error(`Resource is not registered: ${name}`);
  const response=await fetch(new URL(location,base));
  if(!response.ok)throw new Error(`Resource loading failed: ${name}`);
- assets[path]=/\.(lay|lcss|json|csv)$/.test(name)?await response.text():Array.from(new Uint8Array(await response.arrayBuffer()));
+ assets[path]=/\.(lay|laydoc|lcss|json|csv)$/.test(name)?await response.text():Array.from(new Uint8Array(await response.arrayBuffer()));
 }
 self.onmessage=({data})=>{
  if(data.type==='init'){
@@ -82,7 +82,8 @@ self.onmessage=({data})=>{
    for(;;){
     const start=performance.now();
     try{
-     job=prepare_render(data.files[data.entry],key(data.entry),JSON.stringify({...assets,...fonts,...edited}));
+     const files=JSON.stringify({...assets,...fonts,...edited});
+     job=data.entry.endsWith('.laydoc')?prepare_document_render(data.files[data.entry],key(data.entry),files,data.pageId||''):prepare_render(data.files[data.entry],key(data.entry),files);
      compileMs+=performance.now()-start;break;
     }catch(error){
      compileMs+=performance.now()-start;

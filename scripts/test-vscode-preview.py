@@ -153,8 +153,28 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   phase('light-verified');wait_phase('english-error')
   wait("d.querySelector('.preview').dataset.state==='error'&&d.querySelector('.status').textContent==='Error · preview stale'")
   assert evaluate("!d.querySelector('.error-location').hidden&&d.querySelector('.error-location').title==='Go to source'&&d.querySelector('.figure').getBoundingClientRect().width>0")
-  phase('error-verified');wait_phase('complete');host.wait(timeout=20);assert host.returncode==0
+  phase('error-verified');wait_phase('document-ready')
+  c=until(attach,'Document preview iframe');c.call('Log.enable')
+  wait("d.querySelector('.preview').dataset.state==='success'&&d.querySelector('.preview').dataset.painted==='true'&&d.querySelector('.page-select').value==='cover'")
+  assert evaluate("!d.querySelector('.page-select').hidden&&d.querySelector('.page-select').options.length===3")
+  evaluate("(()=>{const s=d.querySelector('.page-select');s.value='results';s.dispatchEvent(new d.defaultView.Event('change'));return true})()")
+  wait("d.querySelector('.page-select').value==='results'&&d.querySelector('.preview').dataset.state==='success'&&d.querySelector('.corner').textContent==='cm'&&d.querySelector('.preview').dataset.painted==='true'")
+  def drawing_hash():return evaluate("(()=>{const c=d.querySelector('.figure-pixels'),p=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let h=2166136261;for(const v of p)h=Math.imul(h^v,16777619);return h>>>0})()")
+  formula_before=drawing_hash();phase('document-results');wait_phase('document-dirty-ready')
+  until(lambda:drawing_hash()!=formula_before,'Unsaved formula visible')
+  wait("d.querySelector('.preview').dataset.painted==='true'")
+  phase('document-dirty-verified');wait_phase('document-reordered')
+  wait("d.querySelector('.page-select').value==='results'&&d.querySelector('.page-select').selectedIndex===2&&d.querySelector('.preview').dataset.painted==='true'")
+  root.call('Emulation.setDeviceMetricsOverride',{'width':1440,'height':1000,'deviceScaleFactor':2,'mobile':False})
+  evaluate("(()=>{d.querySelector('[data-action=fit]').click();return true})()");until(stable_layout,'Stable document layout')
+  screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'document-desktop.png').write_bytes(base64.b64decode(screenshot['data']))
+  evaluate("(()=>{d.querySelector('.page-select').nextElementSibling.nextElementSibling.click();return true})()")
+  until(lambda:root.evaluate("!!document.querySelector('.quick-input-widget input')?.value.endsWith('.pdf')"),'Whole document PDF save dialog');key('Escape',27)
+  evaluate("(()=>{d.querySelector('.page-select').nextElementSibling.click();return true})()")
+  document_errors=[event for event in c.events if event.get('method')=='Runtime.exceptionThrown' or event.get('method')=='Runtime.consoleAPICalled' and event['params'].get('type')=='error'];assert not document_errors,document_errors
+  phase('document-ui-verified');wait_phase('complete');host.wait(timeout=20);assert host.returncode==0
   result=json.loads(evidence.read_text());result['ui']={'bmp_pixel':bitmap,'transparent_webp_pixel':transparent_pixel,'opaque_16bit_jpeg_pixel':high_pixel,'direct_export_save_dialog_verified':True,'no_dpi_or_compression_prompts':True,'initial_readout':readout,'english_readout':english_readout,'state':state,'narrow':layout,'console_errors':console_errors,'viewports':['1440x1000 dark DPR 2','760x720 light DPR 2'],'checks':['BMP on a Chinese/space/hash path','canvas/data hover','ruler markers','wheel anchor','Space drag','100%','ruler toggle','fit','continuous motion','pointer exit','narrow resize','DPR ruler pixels','explicit English and auto UI','view preserved on language change','English stale error and source action']}
+  result['ui']['documents']={'page_selector':True,'formula_edit_visible':True,'reordering_preserves_page_id':True,'whole_pdf_direct_save_dialog':True,'console_errors':document_errors}
   (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))
  except Exception:
   try:

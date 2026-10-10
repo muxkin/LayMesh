@@ -132,3 +132,7 @@ render_file("figure.lay", output="figure.pptx")
 ```
 
 CLI and Jupyter magics also accept `-o figure.pptx`. Each canvas becomes one slide; text is editable, formulas use grouped outlines, and complex effects may fall back locally to PNG. Fonts are not embedded. `dpi` controls fallback resolution only (default 1200).
+
+多页文档使用 `render_document("report.laydoc", output="report.pdf")`；`page=2` 导出单页，`preview_page=2` 只选择 JPEG 预览页。编排文件复用 Lay 语法，详见 [多页文档](../docs/topics/documents.zh-CN.md)。
+
+Multi-page documents use `render_document("report.laydoc", output="report.pdf")`; `page=2` exports one page and `preview_page=2` selects only the JPEG preview. The orchestration file uses the Lay DSL. See [multi-page documents](../docs/topics/documents.en.md).

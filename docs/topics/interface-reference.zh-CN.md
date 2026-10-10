@@ -129,6 +129,101 @@
 | `wave` | `string` | `"wave"` |
 | `perspective` | `string` | `"perspective"` |
 
+## document
+
+创建 .laydoc 编排文档；通过 doc.add(page) 确定页面顺序。
+
+返回：创建 .laydoc 编排文档；通过 doc.add(page) 确定页面顺序。
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `name` | string | 文档名称 | "Untitled" |
+
+### 最小完整示例
+
+```lay
+# Each page remains an ordinary, independently renderable .lay file.
+doc = document(name="LayMesh multi-page report")
+pages = [
+    page(src="./pages/cover.lay", id="cover", name="封面 / Cover"),
+    page(src="./pages/results.lay", id="results", name="结果 / Results"),
+    page(src="./pages/summary.lay", id="summary", name="总结 / Summary"),
+]
+
+# Move entries in the list to reorder the document.
+for p in pages {
+    doc.add(p)
+}
+```
+
+[概念与常见错误](documents.zh-CN.md#document) · [组合源码](../../examples/document/report.laydoc)
+
+## page
+
+引用独立 .lay 页面；页面独立编译，资源路径相对于原页面。
+
+返回：引用独立 .lay 页面；页面独立编译，资源路径相对于原页面。
+
+必需：`src`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `src` | string | 相对于调用所在文件的本地 .lay 路径 | — |
+| `id` | string | 稳定且唯一的页面标识；默认文件名 | — |
+| `name` | string | 显示名称；默认 id | — |
+
+### 最小完整示例
+
+```lay
+# Each page remains an ordinary, independently renderable .lay file.
+doc = document(name="LayMesh multi-page report")
+pages = [
+    page(src="./pages/cover.lay", id="cover", name="封面 / Cover"),
+    page(src="./pages/results.lay", id="results", name="结果 / Results"),
+    page(src="./pages/summary.lay", id="summary", name="总结 / Summary"),
+]
+
+# Move entries in the list to reorder the document.
+for p in pages {
+    doc.add(p)
+}
+```
+
+[概念与常见错误](documents.zh-CN.md#page) · [组合源码](../../examples/document/report.laydoc)
+
+## document.add
+
+追加页面引用；同一文档中 id 必须唯一。切换动画尚未实现。
+
+返回：追加页面引用；同一文档中 id 必须唯一。切换动画尚未实现。
+
+位置参数：`page`.
+
+必需：`page`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `page` | page | 独立页面引用 | — |
+
+### 最小完整示例
+
+```lay
+# Each page remains an ordinary, independently renderable .lay file.
+doc = document(name="LayMesh multi-page report")
+pages = [
+    page(src="./pages/cover.lay", id="cover", name="封面 / Cover"),
+    page(src="./pages/results.lay", id="results", name="结果 / Results"),
+    page(src="./pages/summary.lay", id="summary", name="总结 / Summary"),
+]
+
+# Move entries in the list to reorder the document.
+for p in pages {
+    doc.add(p)
+}
+```
+
+[概念与常见错误](documents.zh-CN.md#document-add) · [组合源码](../../examples/document/report.laydoc)
+
 ## canvas
 
 创建页面并设置页面物理尺寸、背景和默认几何单位。通过 add 放置素材；不带单位的几何长度默认使用 mm，字号和线宽默认使用 pt。
@@ -4200,3 +4295,23 @@ page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerlin
 | `sample(...)` | `color` |
 | `colors(...)` | `list` |
 | `reversed(...)` | `cmap` |
+
+### document
+
+有序页面编排。
+
+| 选取 | 类型 |
+| --- | --- |
+| `name` | `string` |
+| `pages` | `list` |
+| `add(...)` | `page` |
+
+### page
+
+独立页面引用。
+
+| 选取 | 类型 |
+| --- | --- |
+| `id` | `string` |
+| `name` | `string` |
+| `src` | `string` |

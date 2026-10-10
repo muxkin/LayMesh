@@ -26,6 +26,74 @@ fn preview(requests: &[Value]) -> Vec<Value> {
         .collect()
 }
 #[test]
+fn document_preview_selects_stable_ids_uses_unsaved_pages_and_reports_failures() {
+    let root = std::env::temp_dir().join(format!("laydoc-preview-{}", std::process::id()));
+    std::fs::create_dir_all(&root).unwrap();
+    let file = root.join("report.laydoc");
+    let a = root.join("a.lay").to_string_lossy().replace('\\', "/");
+    let b = root.join("b.lay").to_string_lossy().replace('\\', "/");
+    let overlays = json!({a:"p=canvas(size=(10,20))",b.clone():"p=canvas(size=(2,3),unit=\"cm\")"});
+    let source =
+        "d=document()\nd.add(page(src=\"a.lay\",id=\"a\"))\nd.add(page(src=\"b.lay\",id=\"b\"))";
+    let reversed =
+        "d=document()\nd.add(page(src=\"b.lay\",id=\"b\"))\nd.add(page(src=\"a.lay\",id=\"a\"))";
+    let requests=[(source,"a"),(source,"b"),(reversed,"b"),(source,"missing")].map(|(source,id)|json!({"file":file,"source":source,"page_id":id,"generation":id,"overlays":overlays,"protocol":3,"resource_dir":root}));
+    let results = preview(&requests);
+    assert_eq!(results[1]["inspection"]["page"]["width"], 10.);
+    assert_eq!(results[2]["inspection"]["page"]["width"], 20.);
+    assert_eq!(results[2]["document"]["pageNumber"], 2);
+    assert_eq!(results[3]["document"]["pageNumber"], 1);
+    assert_eq!(results[3]["generation"], "b");
+    assert!(
+        results[3]["dependencies"]
+            .as_array()
+            .unwrap()
+            .contains(&json!(b))
+    );
+    assert!(results[4].get("error").is_some());
+    assert_eq!(results[4]["document"]["pages"].as_array().unwrap().len(), 2);
+    std::fs::remove_dir_all(root).unwrap();
+}
+#[test]
+fn switching_pages_does_not_reuse_another_pages_drawing_baseline() {
+    use std::io::{BufRead, BufReader};
+    let root = std::env::temp_dir().join(format!("laydoc-baseline-{}", std::process::id()));
+    std::fs::create_dir_all(&root).unwrap();
+    let file = root.join("report.laydoc");
+    let a = root.join("a.lay").to_string_lossy().replace('\\', "/");
+    let b = root.join("b.lay").to_string_lossy().replace('\\', "/");
+    let source =
+        "d=document()\nd.add(page(src=\"a.lay\",id=\"a\"))\nd.add(page(src=\"b.lay\",id=\"b\"))";
+    let mut process = Command::new(env!("CARGO_BIN_EXE_laymesh"))
+        .args(["preview", "--stdio"])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .env("LAYMESH_NO_SYSTEM_FONTS", "1")
+        .spawn()
+        .unwrap();
+    let mut input = process.stdin.take().unwrap();
+    let mut reader = BufReader::new(process.stdout.take().unwrap());
+    let read = |reader: &mut BufReader<std::process::ChildStdout>| {
+        let mut line = String::new();
+        reader.read_line(&mut line).unwrap();
+        serde_json::from_str::<Value>(&line).unwrap()
+    };
+    read(&mut reader);
+    let mut base = Value::Null;
+    for (i, id) in ["a", "b", "b"].into_iter().enumerate() {
+        let request = json!({"id":i,"file":file,"source":source,"protocol":3,"resource_dir":root,"page_id":id,"display_list_updates":true,"known_display_list":base,"overlays":{a.clone():"p=canvas(size=(10,20))",b.clone():"p=canvas(size=(20,10))"}});
+        writeln!(input, "{request}").unwrap();
+        input.flush().unwrap();
+        let response = read(&mut reader);
+        assert!(response.get("error").is_none(), "{response}");
+        assert_eq!(response.get("displayListUpdate").is_some(), i == 2);
+        base = response["displayListId"].clone();
+    }
+    drop(input);
+    assert!(process.wait().unwrap().success());
+    std::fs::remove_dir_all(root).unwrap();
+}
+#[test]
 fn negotiated_compressed_commands_preserve_exact_lists_and_changed_frames() {
     use base64::Engine;
     use std::io::Read;

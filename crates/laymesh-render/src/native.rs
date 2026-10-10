@@ -28,6 +28,58 @@ pub fn render_pdf_with_options(
     scene: &Scene,
     options: &super::export::ExportOptions,
 ) -> Result<Vec<u8>> {
+    render_pdf_pages(std::iter::once(scene), options)
+}
+/// Append independently compiled pages to one vector PDF. Each page keeps its
+/// physical size, text semantics and local raster/image policy.
+pub fn render_pdf_pages<'a>(
+    scenes: impl IntoIterator<Item = &'a Scene>,
+    options: &super::export::ExportOptions,
+) -> Result<Vec<u8>> {
+    options.validate("pdf")?;
+    let mut doc = PdfDocument::new();
+    for scene in scenes {
+        doc.append(scene, options)?;
+    }
+    doc.finish()
+}
+/// Allows document exporters to release each Scene after writing its page.
+pub struct PdfDocument {
+    doc: Document,
+    count: usize,
+}
+impl Default for PdfDocument {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+impl PdfDocument {
+    pub fn new() -> Self {
+        Self {
+            doc: Document::new(),
+            count: 0,
+        }
+    }
+    pub fn append(&mut self, scene: &Scene, options: &super::export::ExportOptions) -> Result<()> {
+        options.validate("pdf")?;
+        append_pdf_page(&mut self.doc, scene, options)?;
+        self.count += 1;
+        Ok(())
+    }
+    pub fn finish(self) -> Result<Vec<u8>> {
+        if self.count == 0 {
+            return Err(error("PDF 文档至少需要一页"));
+        }
+        self.doc
+            .finish()
+            .map_err(|e| error(format!("PDF 导出失败：{e:?}")))
+    }
+}
+fn append_pdf_page(
+    doc: &mut Document,
+    scene: &Scene,
+    options: &super::export::ExportOptions,
+) -> Result<()> {
     let optimized = super::raster_policy::pdf_scene(scene, options)?;
     let scene = &optimized;
     let list = to_display_list(scene)?;
@@ -36,7 +88,6 @@ pub fn render_pdf_with_options(
         (scene.height * 72. / 25.4) as f32,
     )
     .ok_or_else(|| error("PDF 画布尺寸无效"))?;
-    let mut doc = Document::new();
     let mut page = doc.start_page_with(PageSettings::new(size));
     let mut surface = page.surface();
     surface.push_transform(&Transform::from_scale(
@@ -47,8 +98,7 @@ pub fn render_pdf_with_options(
     surface.pop();
     surface.finish();
     page.finish();
-    doc.finish()
-        .map_err(|e| error(format!("PDF 导出失败：{e:?}")))
+    Ok(())
 }
 
 #[cfg(test)]

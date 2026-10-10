@@ -88,7 +88,8 @@
             "values",
             "control-flow",
             "modules",
-            "library-docs"
+            "library-docs",
+            "documents"
           ]
         }
       ]
@@ -735,6 +736,14 @@
         "Colormap presets and color cycles"
       ],
       "example": "examples/manual/cmaps.lay"
+    },
+    {
+      "key": "documents",
+      "title": [
+        "多页文档",
+        "Multi-page documents"
+      ],
+      "example": "examples/document/report.laydoc"
     }
   ]
 }

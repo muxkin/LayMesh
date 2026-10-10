@@ -353,7 +353,14 @@ fn expression_type(e: &Expr, lookup: &impl Fn(&str) -> Option<String>) -> Option
             }
             let method = ps.last()?;
             if method == "add" || method == "fuse" {
-                return Some("instance".into());
+                return Some(
+                    if typ == "document" {
+                        "page"
+                    } else {
+                        "instance"
+                    }
+                    .into(),
+                );
             }
             type_info(&typ)["methods"][method]
                 .as_str()
@@ -1746,7 +1753,7 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                         && ["data", "axis"].contains(&last.as_str())
                     {
                         format!("instance.{last}")
-                    } else if ps.len() > 1 && ["dict", "table", "cmap"].contains(&typ) {
+                    } else if ps.len() > 1 && ["dict", "table", "cmap", "document"].contains(&typ) {
                         format!("{}.{last}", if typ == "table" { "dict" } else { typ })
                     } else if ps.len() > 1 {
                         geometry_surface(last).unwrap_or_else(|| last.clone())

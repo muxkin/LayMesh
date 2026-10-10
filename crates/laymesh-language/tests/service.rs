@@ -248,7 +248,10 @@ fn shipped_examples_static_diagnostics() {
             let p = e.unwrap().path();
             if p.is_dir() {
                 collect(&p, s, generated)
-            } else if p.extension().is_some_and(|s| s == "lay" || s == "lcss") {
+            } else if p
+                .extension()
+                .is_some_and(|s| s == "lay" || s == "laydoc" || s == "lcss")
+            {
                 s.update(&p.to_string_lossy(), &std::fs::read_to_string(&p).unwrap());
             }
         }

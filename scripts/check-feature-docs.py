@@ -15,7 +15,8 @@ for name,f in features.items():
  for lang in ['en','zh-CN']:
   doc=ROOT/f'docs/topics/{f["topic"]}.{lang}.md'
   assert doc.is_file(),f'{name}: missing {doc}'
-  assert re.search(r'^#{2,3}\s+'+re.escape(f['anchor'])+r'\s*$',doc.read_text(),re.M),f'{name}: missing heading {f["anchor"]} in {doc}'
+  heading=f.get('heading',f['anchor'])
+  assert re.search(r'^#{2,3}\s+'+re.escape(heading)+r'\s*$',doc.read_text(),re.M),f'{name}: missing heading {heading} in {doc}'
  for use in ['minimal','composition']:
   source=ROOT/f[use];assert source.is_file(),f'{name}: missing {source}'
  if name.startswith('api:'):
@@ -44,7 +45,7 @@ if a.render:
    subprocess.run([str(a.binary),'validate',str(ROOT/source),'--warnings','hide'],check=True,stdout=subprocess.DEVNULL)
    for ext in ['svg','pdf','png']:
     output=Path(tmp)/f'{i}.{ext}'
-    subprocess.run([str(a.binary),'render',str(ROOT/source),'-o',str(output),'--warnings','hide'],check=True,stdout=subprocess.DEVNULL)
+    subprocess.run([str(a.binary),'render',str(ROOT/source),'-o',str(output),'--warnings','hide',*(['--page','1'] if source.endswith('.laydoc') and ext!='pdf' else [])],check=True,stdout=subprocess.DEVNULL)
     assert output.stat().st_size>100,(source,ext)
   print(f'Validated {len(sources)} minimal sources and {len(sources)*3} SVG/PDF/PNG exports')
 print(f'Documentation coverage: {len(features)} features, {len(r["api"])} APIs, {len(r["predefinedVariables"])} predefined variables; no omissions')

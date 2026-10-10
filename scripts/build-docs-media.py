@@ -35,7 +35,7 @@ def main():
   with tempfile.TemporaryDirectory(prefix='laymesh-media-') as tmp:
    if e.get('bitmap'):image=Image.open(ROOT/source).convert('RGBA')
    else:
-    result=subprocess.run([str(a.binary),'inspect',str(ROOT/source),'--json'],capture_output=True,text=True,check=True);width=json.loads(result.stdout)['page']['width'];png=Path(tmp)/'figure.png';subprocess.run([str(a.binary),'render',str(ROOT/source),'-o',str(png),'--dpi',str(3840*25.4/width),'--warnings','hide'],check=True,stdout=subprocess.DEVNULL);image=Image.open(png).convert('RGBA')
+    page_args=['--page','1'] if source.endswith('.laydoc') else [];result=subprocess.run([str(a.binary),'inspect',str(ROOT/source),'--json',*page_args],capture_output=True,text=True,check=True);info=json.loads(result.stdout);width=info.get('inspection',info)['page']['width'];png=Path(tmp)/'figure.png';subprocess.run([str(a.binary),'render',str(ROOT/source),'-o',str(png),'--dpi',str(3840*25.4/width),'--warnings','hide',*page_args],check=True,stdout=subprocess.DEVNULL);image=Image.open(png).convert('RGBA')
    variants=[]
    for width in sorted({min(w,image.width) for w in RECIPE['widths']}):
     resized=image.resize((width,round(image.height*width/image.width)),Image.Resampling.LANCZOS);file=dest/f'{e["id"]}-{width}.webp';resized.save(file,'WEBP',lossless=True,method=4);variants.append({'file':file.relative_to(ROOT).as_posix(),'width':resized.width,'height':resized.height,'sha256':hashlib.sha256(file.read_bytes()).hexdigest()})

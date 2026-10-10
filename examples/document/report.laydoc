@@ -1,0 +1,12 @@
+# Each page remains an ordinary, independently renderable .lay file.
+doc = document(name="LayMesh multi-page report")
+pages = [
+    page(src="./pages/cover.lay", id="cover", name="封面 / Cover"),
+    page(src="./pages/results.lay", id="results", name="结果 / Results"),
+    page(src="./pages/summary.lay", id="summary", name="总结 / Summary"),
+]
+
+# Move entries in the list to reorder the document.
+for p in pages {
+    doc.add(p)
+}

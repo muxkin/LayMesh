@@ -107,3 +107,5 @@
  .live-status{max-width:100%}.live-modified{flex-basis:100%;font-size:11px}
  .timing-popover{position:fixed;bottom:20px;right:20px;z-index:65}
 }
+
+.document-pages{max-width:12rem;min-width:0;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--soft);color:var(--text);font:inherit}

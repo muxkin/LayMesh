@@ -129,6 +129,101 @@ Names below are ordinary string variables, available without declarations. User 
 | `wave` | `string` | `"wave"` |
 | `perspective` | `string` | `"perspective"` |
 
+## document
+
+Create a .laydoc document; doc.add(page) determines page order.
+
+Returns: Create a .laydoc document; doc.add(page) determines page order.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `name` | string | Document name | "Untitled" |
+
+### Minimal complete example
+
+```lay
+# Each page remains an ordinary, independently renderable .lay file.
+doc = document(name="LayMesh multi-page report")
+pages = [
+    page(src="./pages/cover.lay", id="cover", name="封面 / Cover"),
+    page(src="./pages/results.lay", id="results", name="结果 / Results"),
+    page(src="./pages/summary.lay", id="summary", name="总结 / Summary"),
+]
+
+# Move entries in the list to reorder the document.
+for p in pages {
+    doc.add(p)
+}
+```
+
+[Concepts and common errors](documents.en.md#document) · [Composition source](../../examples/document/report.laydoc)
+
+## page
+
+Reference an independent .lay page; compilation and asset paths belong to that page.
+
+Returns: Reference an independent .lay page; compilation and asset paths belong to that page.
+
+Required: `src`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `src` | string | Local .lay path relative to the calling file | — |
+| `id` | string | Stable unique page ID; defaults to the file stem | — |
+| `name` | string | Display name; defaults to id | — |
+
+### Minimal complete example
+
+```lay
+# Each page remains an ordinary, independently renderable .lay file.
+doc = document(name="LayMesh multi-page report")
+pages = [
+    page(src="./pages/cover.lay", id="cover", name="封面 / Cover"),
+    page(src="./pages/results.lay", id="results", name="结果 / Results"),
+    page(src="./pages/summary.lay", id="summary", name="总结 / Summary"),
+]
+
+# Move entries in the list to reorder the document.
+for p in pages {
+    doc.add(p)
+}
+```
+
+[Concepts and common errors](documents.en.md#page) · [Composition source](../../examples/document/report.laydoc)
+
+## document.add
+
+Append a page reference with a unique ID. Page transitions are not implemented.
+
+Returns: Append a page reference with a unique ID. Page transitions are not implemented.
+
+Positional parameters: `page`.
+
+Required: `page`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `page` | page | Independent page reference | — |
+
+### Minimal complete example
+
+```lay
+# Each page remains an ordinary, independently renderable .lay file.
+doc = document(name="LayMesh multi-page report")
+pages = [
+    page(src="./pages/cover.lay", id="cover", name="封面 / Cover"),
+    page(src="./pages/results.lay", id="results", name="结果 / Results"),
+    page(src="./pages/summary.lay", id="summary", name="总结 / Summary"),
+]
+
+# Move entries in the list to reorder the document.
+for p in pages {
+    doc.add(p)
+}
+```
+
+[Concepts and common errors](documents.en.md#document-add) · [Composition source](../../examples/document/report.laydoc)
+
 ## canvas
 
 Create a page with physical dimensions, a background and a default geometry unit. Place material with add. Unitless geometry initially uses mm; font sizes and line widths use pt.
@@ -4200,3 +4295,23 @@ Immutable named colormap.
 | `sample(...)` | `color` |
 | `colors(...)` | `list` |
 | `reversed(...)` | `cmap` |
+
+### document
+
+Ordered page orchestration.
+
+| Selection | Type |
+| --- | --- |
+| `name` | `string` |
+| `pages` | `list` |
+| `add(...)` | `page` |
+
+### page
+
+Independent page reference.
+
+| Selection | Type |
+| --- | --- |
+| `id` | `string` |
+| `name` | `string` |
+| `src` | `string` |

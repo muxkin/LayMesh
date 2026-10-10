@@ -288,3 +288,6 @@ This map covers public functions, geometry members, LCSS properties and integrat
 | `lcss:end_head_size` | [→](arrows.en.md#LCSS arrow styles) | [→](../../examples/manual/arrow-style.lay) | [→](../../examples/manual/arrow-style.lay) |
 | `geometry:instance.centerline` | [→](arrows.en.md#centerline) | [→](../../examples/manual/arrow.lay) | [→](../../examples/gallery/shapes/arrow-connections.lay) |
 | `geometry:geometry_path.length` | [→](arrows.en.md#centerline) | [→](../../examples/manual/arrow.lay) | [→](../../examples/gallery/shapes/arrow-connections.lay) |
+| `api:document` | [→](documents.en.md#document) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |
+| `api:page` | [→](documents.en.md#page) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |
+| `api:document.add` | [→](documents.en.md#document-add) | [→](../../examples/document/report.laydoc) | [→](../../examples/document/report.laydoc) |

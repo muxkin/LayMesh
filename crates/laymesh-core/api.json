@@ -1,6 +1,90 @@
 {
   "api": [
     {
+      "name": "document",
+      "description": "创建 .laydoc 编排文档；通过 doc.add(page) 确定页面顺序。",
+      "descriptionEn": "Create a .laydoc document; doc.add(page) determines page order.",
+      "returnType": "document",
+      "returns": {
+        "zh": "创建 .laydoc 编排文档；通过 doc.add(page) 确定页面顺序。",
+        "en": "Create a .laydoc document; doc.add(page) determines page order."
+      },
+      "required": [],
+      "parameters": [
+        {
+          "name": "name",
+          "type": "string",
+          "unit": "none",
+          "description": "文档名称",
+          "descriptionEn": "Document name",
+          "default": "\"Untitled\""
+        }
+      ],
+      "positional": []
+    },
+    {
+      "name": "page",
+      "description": "引用独立 .lay 页面；页面独立编译，资源路径相对于原页面。",
+      "descriptionEn": "Reference an independent .lay page; compilation and asset paths belong to that page.",
+      "returnType": "page",
+      "returns": {
+        "zh": "引用独立 .lay 页面；页面独立编译，资源路径相对于原页面。",
+        "en": "Reference an independent .lay page; compilation and asset paths belong to that page."
+      },
+      "required": [
+        "src"
+      ],
+      "parameters": [
+        {
+          "name": "src",
+          "type": "string",
+          "unit": "none",
+          "description": "相对于调用所在文件的本地 .lay 路径",
+          "descriptionEn": "Local .lay path relative to the calling file"
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "unit": "none",
+          "description": "稳定且唯一的页面标识；默认文件名",
+          "descriptionEn": "Stable unique page ID; defaults to the file stem"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "unit": "none",
+          "description": "显示名称；默认 id",
+          "descriptionEn": "Display name; defaults to id"
+        }
+      ],
+      "positional": []
+    },
+    {
+      "name": "document.add",
+      "description": "追加页面引用；同一文档中 id 必须唯一。切换动画尚未实现。",
+      "descriptionEn": "Append a page reference with a unique ID. Page transitions are not implemented.",
+      "returnType": "page",
+      "returns": {
+        "zh": "追加页面引用；同一文档中 id 必须唯一。切换动画尚未实现。",
+        "en": "Append a page reference with a unique ID. Page transitions are not implemented."
+      },
+      "required": [
+        "page"
+      ],
+      "parameters": [
+        {
+          "name": "page",
+          "type": "page",
+          "unit": "none",
+          "description": "独立页面引用",
+          "descriptionEn": "Independent page reference"
+        }
+      ],
+      "positional": [
+        "page"
+      ]
+    },
+    {
       "name": "canvas",
       "description": "创建页面并设置页面物理尺寸、背景和默认几何单位。通过 add 放置素材；不带单位的几何长度默认使用 mm，字号和线宽默认使用 pt。",
       "descriptionEn": "Create a page with physical dimensions, a background and a default geometry unit. Place material with add. Unitless geometry initially uses mm; font sizes and line widths use pt.",
@@ -18160,6 +18244,28 @@
         "reversed": "cmap"
       },
       "methodPrefix": "cmap"
+    },
+    "document": {
+      "description": "有序页面编排。",
+      "descriptionEn": "Ordered page orchestration.",
+      "members": {
+        "name": "string",
+        "pages": "list"
+      },
+      "methods": {
+        "add": "page"
+      },
+      "methodPrefix": "document"
+    },
+    "page": {
+      "description": "独立页面引用。",
+      "descriptionEn": "Independent page reference.",
+      "members": {
+        "id": "string",
+        "name": "string",
+        "src": "string"
+      },
+      "methods": {}
     }
   }
 }

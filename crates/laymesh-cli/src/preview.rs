@@ -51,9 +51,12 @@ pub fn serve() -> io::Result<()> {
         };
         let file = request["file"].as_str().unwrap_or("");
         let dependencies = Rc::new(RefCell::new(BTreeSet::new()));
+        let mut document_metadata = None;
         let result = (|| -> Result<Value, Box<dyn std::error::Error>> {
-            if !Path::new(file).is_absolute() || !file.ends_with(".lay") {
-                return Err("Preview requires an absolute .lay path".into());
+            if !Path::new(file).is_absolute()
+                || !(file.ends_with(".lay") || file.ends_with(".laydoc"))
+            {
+                return Err("Preview requires an absolute .lay or .laydoc path".into());
             }
             let (defaults, paths) = config::resolve(
                 Path::new(file),
@@ -122,7 +125,50 @@ pub fn serve() -> io::Result<()> {
                 }
             }
             host.files.insert(file.into(), source.as_bytes().to_vec());
-            let scene = compile_source(source, file, host)?;
+            let mut drawing_key = file.to_owned();
+            let scene = if file.ends_with(".laydoc") {
+                let plan = laymesh_core::document::plan_source(source, file, host.clone())?;
+                document_metadata = Some(json!({"name":plan.name,"pages":plan.pages}));
+                let number = if let Some(id) = request["page_id"].as_str() {
+                    plan.pages
+                        .iter()
+                        .position(|p| p.id == id)
+                        .ok_or("Selected page ID no longer exists")?
+                        + 1
+                } else {
+                    match request.get("page") {
+                        None => 1,
+                        Some(v) => {
+                            usize::try_from(v.as_u64().ok_or("Page must be a positive integer")?)?
+                        }
+                    }
+                };
+                let page = plan.page(number)?;
+                document_metadata = Some(
+                    json!({"name":plan.name,"pages":plan.pages,"pageId":page.id,"pageNumber":number}),
+                );
+                if request["type"] == "export" {
+                    let selected = request.get("page").is_some() || request["page_id"].is_string();
+                    let pdf = request["output"]
+                        .as_str()
+                        .is_some_and(|p| p.to_ascii_lowercase().ends_with(".pdf"));
+                    if request["document_all"]
+                        .as_bool()
+                        .unwrap_or(pdf && !selected)
+                    {
+                        return export_document(&plan, host, &request, &defaults);
+                    }
+                    if !selected {
+                        return Err(
+                            "Document export requires an explicit page or document_all PDF".into(),
+                        );
+                    }
+                }
+                drawing_key = format!("{file}\n{}", page.id);
+                laymesh_core::document::compile_preview_page(page, host)?
+            } else {
+                compile_source(source, file, host)?
+            };
             if request["type"] == "export" {
                 return export_scene(&scene, &request, &defaults);
             }
@@ -147,7 +193,7 @@ pub fn serve() -> io::Result<()> {
                     let list_id = format!("{session}-{revision}");
                     if updates
                         && let Some((previous_file, base, previous, bytes)) = &retained_list
-                        && previous_file == file
+                        && previous_file == &drawing_key
                         && request["known_display_list"].as_str() == Some(base)
                     {
                         let update =
@@ -156,7 +202,7 @@ pub fn serve() -> io::Result<()> {
                             bytes.saturating_add(serde_json::to_vec(&update)?.len());
                         let result = json!({"protocol":3,"displayListId":list_id,"displayListUpdate":{"base":base,"update":update},"drawingResources":list.resources,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)});
                         retained_list = (retained_bytes <= budget)
-                            .then(|| (file.into(), list_id, list, retained_bytes));
+                            .then(|| (drawing_key.clone(), list_id, list, retained_bytes));
                         return Ok(result);
                     }
                     if request["compressed_display_list"] == true {
@@ -187,7 +233,7 @@ pub fn serve() -> io::Result<()> {
                         if updates {
                             result["displayListId"] = json!(list_id);
                             retained_list = (bytes.len() <= budget)
-                                .then(|| (file.into(), list_id, list, bytes.len()));
+                                .then(|| (drawing_key.clone(), list_id, list, bytes.len()));
                         }
                         return Ok(result);
                     }
@@ -196,7 +242,7 @@ pub fn serve() -> io::Result<()> {
                         let bytes = serde_json::to_vec(&list)?.len();
                         result["displayListId"] = json!(list_id);
                         retained_list =
-                            (bytes <= budget).then(|| (file.into(), list_id, list, bytes));
+                            (bytes <= budget).then(|| (drawing_key.clone(), list_id, list, bytes));
                     }
                     return Ok(result);
                 }
@@ -229,12 +275,51 @@ pub fn serve() -> io::Result<()> {
             json!({"error":error})
         });
         result["id"] = request["id"].clone();
+        if let Some(document) = document_metadata {
+            result["document"] = document;
+        }
         result["dependencies"] = json!(*dependencies.borrow());
         let _ = sender.send(result);
     }
     drop(sender);
     let _ = writer.join();
     Ok(())
+}
+fn export_document(
+    plan: &laymesh_core::document::DocumentPlan,
+    host: Host,
+    request: &Value,
+    defaults: &Value,
+) -> Result<Value, Box<dyn std::error::Error>> {
+    let output = Path::new(
+        request["output"]
+            .as_str()
+            .ok_or("Export requires an output path")?,
+    );
+    if !output.is_absolute()
+        || !output
+            .extension()
+            .is_some_and(|e| e.eq_ignore_ascii_case("pdf"))
+    {
+        return Err("Whole document export currently requires an absolute PDF path".into());
+    }
+    let explicit = serde_json::from_value(request.get("options").cloned().unwrap_or(json!({})))?;
+    let options = config::export_options(defaults, "pdf", &explicit)?;
+    let mut pdf = laymesh_render::PdfDocument::new();
+    let mut warnings = Vec::new();
+    for page in &plan.pages {
+        let scene = laymesh_core::document::compile_page(page, host.clone())?;
+        warnings.extend(scene.warnings.clone());
+        warnings.extend(laymesh_render::raster_policy::pdf_warnings(
+            &scene, &options,
+        )?);
+        pdf.append(&scene, &options)?;
+    }
+    let data = pdf.finish()?;
+    super::export::write_atomic(output, &data)?;
+    Ok(
+        json!({"exported":output.to_string_lossy(),"bytes":data.len(),"warnings":warnings,"pageCount":plan.pages.len()}),
+    )
 }
 fn export_scene(
     scene: &laymesh_core::model::Scene,

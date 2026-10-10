@@ -148,6 +148,34 @@ exports.run=async()=>{
  }
  host.panel.dispose();await pause(100);await vscode.commands.executeCommand('laymesh.openPreview',doc.uri);await until(()=>host.messages.find(m=>m.displayList),'Reopen after dispose');assert.equal(panels,2);host.panel.dispose();
  evidence.checks.push('Panel disposal and fresh native worker after reopening');
+ // A document keeps ordinary, independently editable .lay sources. Exercise
+ // the real selector through the controller, then the host's dirty buffers.
+ const bookFile=path.join(directory,'report.laydoc'),coverFile=path.join(directory,'cover.lay'),resultsFile=path.join(directory,'results.lay'),summaryFile=path.join(directory,'summary.lay');
+ const coverSource='p=canvas(size=(80,40),background="#fff")\np.add(text("Cover",font_size=16),offset=(4,6))';
+ const resultsSource='p=canvas(size=(8,4),unit="cm",background="#fff")\np.add(formula(source="E=mc^2",font_size=18),offset=(0.4,0.6))';
+ const summarySource='p=canvas(size=(80,40),background="#fff")\np.add(text("Summary",font_size=16),offset=(4,6))';
+ const bookSource='d=document(name="Report")\ncover=page(src="cover.lay",id="cover")\nresults=page(src="results.lay",id="results")\nsummary=page(src="summary.lay",id="summary")\nfor p in [cover,results,summary] { d.add(p) }';
+ fs.writeFileSync(bookFile,bookSource);fs.writeFileSync(coverFile,coverSource);fs.writeFileSync(resultsFile,resultsSource);fs.writeFileSync(summaryFile,summarySource);
+ const bookDoc=await vscode.workspace.openTextDocument(bookFile);await vscode.window.showTextDocument(bookDoc);assert.equal(bookDoc.languageId,'laymesh');
+ await vscode.commands.executeCommand('laymesh.openPreview',bookDoc.uri);await until(()=>host.messages.find(m=>m.document?.pageId==='cover'&&m.displayList),'Document preview');
+ const documentPhase=async(value,next)=>{if(gate){fs.writeFileSync(gate,JSON.stringify({phase:value}));await until(()=>{try{return JSON.parse(fs.readFileSync(gate)).phase===next}catch{return false}},next,2400);}};
+ if(gate)await documentPhase('document-ready','document-results');else await host.receive({type:'select-page',pageId:'results'});
+ result=await until(()=>host.messages.find(m=>m.document?.pageId==='results'&&m.displayList),'Selected results page');assert.equal(result.inspection.page.unit,'cm');
+ const resultsDoc=await vscode.workspace.openTextDocument(resultsFile);count=host.messages.length;
+ await replace(resultsDoc,resultsSource.replace('E=mc^2','E=mc^3'));result=await until(()=>host.messages.slice(count).find(m=>m.document?.pageId==='results'&&m.displayList),'Unsaved selected page');
+ assert.equal(fs.readFileSync(resultsFile,'utf8'),resultsSource);await documentPhase('document-dirty-ready','document-dirty-verified');
+ const coverDoc=await vscode.workspace.openTextDocument(coverFile);count=host.messages.length;await replace(coverDoc,coverSource.replace('Cover','Unsaved cover'));await pause(350);
+ assert.equal(host.messages.slice(count).filter(m=>m.displayList).length,0,'Inactive page edits must not compile the selected page');
+ count=host.messages.length;await replace(bookDoc,bookSource.replace('[cover,results,summary]','[summary,cover,results]'));
+ result=await until(()=>host.messages.slice(count).find(m=>m.document?.pageId==='results'&&m.document.pageNumber===3&&m.displayList),'Reordered stable page ID');
+ await documentPhase('document-reordered','document-ui-verified');
+ if(gate)await until(()=>vscode.window.activeTextEditor?.document.uri.fsPath===resultsFile,'Edit selected page action');
+ const documentPdf=path.join(directory,'document.pdf'),selectedPdf=path.join(directory,'selected.pdf');
+ await vscode.commands.executeCommand('laymesh.exportFigure',bookDoc.uri,{output:documentPdf,documentAll:true});
+ await vscode.commands.executeCommand('laymesh.exportFigure',bookDoc.uri,{output:selectedPdf,documentAll:false,pageId:'results'});
+ assert(fs.readFileSync(documentPdf).includes(Buffer.from('/Count 3')));assert(fs.readFileSync(selectedPdf).includes(Buffer.from('/Count 1')));
+ evidence.checks.push('.laydoc language association; real page selection; independent cm units and formula; unsaved selected page; inactive page edits do not compile; stable ID survives reordering; edit-page action; whole/selected vector PDF');
+ host.panel.dispose();
  await vscode.commands.executeCommand('workbench.action.closeAllEditors');
  fs.writeFileSync(process.env.LAYMESH_PREVIEW_EVIDENCE,JSON.stringify(evidence,null,2));if(gate)fs.writeFileSync(gate,JSON.stringify({phase:'complete'}));fs.rmSync(directory,{recursive:true,force:true});
 };

@@ -34,6 +34,8 @@ pub struct Engine {
     pub unit: String,
     pub dpi: f64,
     pub canvas: Option<Rc<RefCell<Object>>>,
+    pub(crate) document_mode: bool,
+    pub(crate) document: Option<Rc<RefCell<Object>>>,
     pub modules: BTreeMap<String, Scope>,
     pub loading: BTreeSet<String>,
     pub objects: BTreeMap<usize, Rc<RefCell<Object>>>,
@@ -113,6 +115,8 @@ impl Engine {
             unit: "mm".into(),
             dpi: 96.,
             canvas: None,
+            document_mode: false,
+            document: None,
             modules: BTreeMap::new(),
             loading: BTreeSet::new(),
             objects: BTreeMap::new(),
@@ -176,6 +180,22 @@ impl Engine {
         self.fonts.bind_host(&self.host);
         self.preview_images.clear();
         self.file = file.into();
+        self.run_entry(source, file)?;
+        let c = self.canvas.clone().ok_or_else(|| {
+            self.error(
+                "E_CANVAS",
+                "入口文件需要一个 canvas",
+                Loc {
+                    line: 1,
+                    column: 1,
+                    offset: 0,
+                },
+            )
+        })?;
+        self.finish_scene(c)
+    }
+    pub(crate) fn run_entry(&mut self, source: &str, file: &str) -> Result<()> {
+        self.file = file.into();
         let stmts = parser::parse(source, file)?;
         let scope = Environment::root();
         if !matches!(self.run(&stmts, &scope)?, Flow::Normal) {
@@ -189,17 +209,9 @@ impl Engine {
                 },
             ));
         }
-        let c = self.canvas.clone().ok_or_else(|| {
-            self.error(
-                "E_CANVAS",
-                "入口文件需要一个 canvas",
-                Loc {
-                    line: 1,
-                    column: 1,
-                    offset: 0,
-                },
-            )
-        })?;
+        Ok(())
+    }
+    fn finish_scene(&mut self, c: Rc<RefCell<Object>>) -> Result<Scene> {
         let c = c.borrow();
         for node in &c.nodes {
             if let Some(b) = crate::art::decorated_bounds(node) {
@@ -734,6 +746,18 @@ impl Engine {
         }
         if let Some(o) = v.object() {
             let o = o.borrow();
+            if o.kind == "document" && p == "pages" {
+                return Ok(o.args["__pages"].clone());
+            }
+            if (o.kind == "document" && p == "name")
+                || (o.kind == "page" && matches!(p, "id" | "name" | "src"))
+            {
+                return Ok(o
+                    .args
+                    .get(p)
+                    .cloned()
+                    .unwrap_or_else(|| V::text("Untitled")));
+            }
             if matches!(
                 p,
                 "bounds" | "path" | "centerline" | "ink" | "plot_area" | "axes"
@@ -902,6 +926,9 @@ impl Engine {
         l: Loc,
     ) -> Result<V> {
         let qualified = parts.join(".");
+        if let Some(result) = self.document_call(parts, &pos, &a, s, l) {
+            return result;
+        }
         if parts.len() == 2
             && crate::arrows::is_arrow(&qualified)
             && Environment::get(s, &parts[0]).is_none()
@@ -1147,6 +1174,9 @@ impl Engine {
                 .map_err(|m| self.error("E_COLOR", m, l));
         }
         if name == "canvas" {
+            if self.document_mode {
+                return Err(self.error("E_DOCUMENT", ".laydoc 使用 document() 和 page(src=...) 管理页面；canvas 请写在独立 .lay 文件", l));
+            }
             if self.canvas.is_some() {
                 return Err(self.error("E_CANVAS", "只能创建一个画布", l));
             }
@@ -1359,6 +1389,14 @@ impl Engine {
     }
 }
 pub fn compile_file(file: &str) -> Result<Scene> {
+    if file.ends_with(".laydoc") {
+        return Err(Diagnostic::new(
+            "E_DOCUMENT",
+            "多页文档请使用 compile_document_file 或显式选择页面",
+            file,
+            Loc::default(),
+        ));
+    }
     let p = std::fs::canonicalize(file).map_err(|e| {
         Diagnostic::new(
             "E_ASSET",

@@ -213,7 +213,7 @@ fn dependencies(
         let laymesh_core::parser::ExprKind::String(source, _, false) = expr.kind else {
             continue;
         };
-        if !source.ends_with(".lay") && !source.ends_with(".lcss") {
+        if !source.ends_with(".lay") && !source.ends_with(".laydoc") && !source.ends_with(".lcss") {
             continue;
         }
         let target = crate::resolve(uri, &source);

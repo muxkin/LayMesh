@@ -1,0 +1,5 @@
+p = canvas(name="Cover", size=(160 mm, 90 mm), background="#f1f7f5")
+p.add(rect(size=(4 mm, 48 mm), fill="#009b80"), offset=(14 mm, 20 mm))
+p.add(text(content="LayMesh", font_size=32 pt, color="#203b33"), offset=(24 mm, 24 mm))
+p.add(text(content="Independent pages, one document", font_size=15 pt, color="#45665c"), offset=(24 mm, 44 mm))
+p.add(text(content="Each .lay page can still render on its own.", font_size=10 pt, color="#45665c"), offset=(24 mm, 62 mm))

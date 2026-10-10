@@ -7,6 +7,12 @@ const el=(tag,className,parent,text)=>{const node=document.createElement(tag);if
 const root=el('main','preview',document.body),toolbar=el('div','toolbar',root);
 const buttons={};for(const name of ['refresh','export','fit','actual','out','in','rulers']){const button=el('button','',toolbar);button.type='button';button.dataset.action=name;buttons[name]=button;}
 const zoom=el('output','zoom',toolbar),status=el('span','status',toolbar);
+const pageSelect=el('select','page-select',toolbar),openPage=el('button','',toolbar),exportDocument=el('button','',toolbar);
+pageSelect.hidden=openPage.hidden=exportDocument.hidden=true;
+openPage.type=exportDocument.type='button';
+pageSelect.onchange=()=>{view.mode='fit';view.pan={x:0,y:0};bridge.postMessage({type:'select-page',pageId:pageSelect.value});};
+openPage.onclick=()=>bridge.postMessage({type:'open-page'});
+exportDocument.onclick=()=>bridge.postMessage({type:'export-document'});
 const workspace=el('div','workspace',root),corner=el('span','corner',workspace),hr=el('canvas','ruler horizontal',workspace),vr=el('canvas','ruler vertical',workspace),viewport=el('div','viewport',workspace);
 viewport.tabIndex=0;viewport.setAttribute('role','region');
 const figure=el('div','figure',viewport),overview=el('canvas','figure-overview',figure);overview.hidden=true;overview.setAttribute('aria-hidden','true');overview.style.pointerEvents='none';let overviewContent='';
@@ -35,6 +41,8 @@ errorButton.type='button';errorButton.hidden=true;
 const pathContext=document.createElement('canvas').getContext('2d');let pathCache=new WeakMap();
 const text=(zh,en)=>/^zh/i.test(locale)?zh:en;
 function labels(){
+ pageSelect.setAttribute('aria-label',text('文档页面','Document page'));
+ openPage.textContent=text('编辑页面','Edit page');exportDocument.textContent=text('导出整本 PDF','Export document PDF');
  document.documentElement.lang=/^zh/i.test(locale)?'zh-CN':'en';
  const labels={refresh:text('刷新','Refresh'),export:text('导出','Export'),fit:text('适应窗口','Fit'),actual:'100%',out:'−',in:'+',rulers:text('标尺','Rulers')};
  for(const [name,button] of Object.entries(buttons)){button.textContent=labels[name];button.title=labels[name];button.setAttribute('aria-label',name==='out'?text('缩小','Zoom out'):name==='in'?text('放大','Zoom in'):labels[name]);}
@@ -177,6 +185,10 @@ window.addEventListener('message',({data})=>{
  if(data?.type==='initial'){locale=data.locale||'en';if((!initialized&&saved.rulers===undefined)||data.forceRulers)view.rulers=data.showRulers!==false;initialized=true;labels();showDiagnostic();if(root.dataset.state)showStatus(root.dataset.state);schedule();}
  else if(data?.type==='status'){if(data.status!=='success')renderSequence++;showStatus(data.status);}
  else if(data?.type==='result'){
+  if(data.document){
+   pageSelect.replaceChildren();for(const [i,p] of data.document.pages.entries()){const option=el('option','',pageSelect,`${i+1}. ${p.name||p.id}`);option.value=p.id;}
+   pageSelect.value=data.document.pageId;pageSelect.hidden=openPage.hidden=exportDocument.hidden=false;
+  }
   diagnostic=data.error;showDiagnostic();
   if(diagnostic){showStatus('error');}
   else if(data.protocol===3&&(data.displayList||data.displayListCompressed||data.displayListUpdate)&&data.inspection){installFrame(data).catch(error=>{if(String(error).includes('baseline mismatch')){bridge.postMessage({type:'request-full'});return;}diagnostic={code:'E_PREVIEW_RESOURCE',message:String(error)};showDiagnostic();showStatus('error');});}

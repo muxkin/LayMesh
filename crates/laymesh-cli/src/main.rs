@@ -1,14 +1,16 @@
 use laymesh_core::engine::compile_file;
 use std::{env, path::Path, process};
+mod documents;
 mod export;
 mod preview;
 
 fn usage(status: i32) -> ! {
     let help = "用法:\n  laymesh validate <file.lay>\n  laymesh inspect <file.lay> --json\n  laymesh render <file.lay> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga>\n    [--dpi <number>] [--quality <1–100 (JPEG) / 0–100 (WebP)>]\n    [--compression <fast|default|best (PNG) / none|lzw|deflate|packbits (TIFF)>]\n    [--background <#RRGGBB>] [--webp-lossless <true|false>]\n    [--webp-method <0–6>] [--webp-alpha-quality <0–100>] [--webp-near-lossless <0–100>]\n    [--config <file.json>] [--pdf-image-compression <auto|lossless|jpeg>]\n    [--pdf-jpeg-quality <1–100>] [--pdf-downsample <true|false>]\n    [--pdf-recompress-jpeg <true|false>] [--pdf-preserve-16bit <true|false>] [--pdf-preserve-alpha <true|false>] [--pdf-alpha-background <#RRGGBB>]\n    [--pdf-auto-palette-limit <0–16384>] [--pdf-auto-flatness-threshold <0–1>]\n    [--preview-output <preview.jpg> [--preview-dpi <number>] [--preview-quality <1–100>] [--preview-background <#RRGGBB>]]\n  laymesh render <file.lay> --preview-output <preview.jpg>\n  laymesh lsp --stdio\n  laymesh preview --stdio\n所有命令支持 --warnings show|hide（默认读取 LAYMESH_WARNINGS）\n几何默认 mm；字号与线宽默认 pt；样式表使用 .lcss";
+    let document_help = "多页文档：validate/inspect/render 支持 .laydoc；--page N 从 1 开始。\n  laymesh render report.laydoc -o report.pdf\n  laymesh render report.laydoc -o page.png --page 2\n  laymesh render report.laydoc -o page.png --all-pages\n  inspect report.laydoc --json 列出页面；--preview-page N 只选择 JPEG 预览页。";
     if status == 0 {
-        println!("{help}")
+        println!("{help}\n{document_help}")
     } else {
-        eprintln!("{help}")
+        eprintln!("{help}\n{document_help}")
     };
     process::exit(status)
 }
@@ -33,16 +35,26 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         usage(2)
     }
     let (command, file) = (&args[0], &args[1]);
-    if !["validate", "render", "inspect"].contains(&command.as_str()) || !file.ends_with(".lay") {
+    if !["validate", "render", "inspect"].contains(&command.as_str())
+        || !(file.ends_with(".lay") || file.ends_with(".laydoc"))
+    {
         usage(2)
     }
     let mut warning_mode = env::var("LAYMESH_WARNINGS").unwrap_or("show".into());
     let mut rest = Vec::new();
+    let mut page_number = None;
     let mut i = 2;
     while i < args.len() {
         if args[i] == "--warnings" {
             i += 1;
             warning_mode = args.get(i).ok_or("--warnings requires show|hide")?.clone()
+        } else if args[i] == "--page" {
+            i += 1;
+            page_number = Some(
+                args.get(i)
+                    .ok_or("--page requires a number")?
+                    .parse::<usize>()?,
+            );
         } else {
             rest.push(args[i].as_str())
         }
@@ -51,10 +63,35 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     if !["show", "hide"].contains(&warning_mode.as_str()) {
         return Err("--warnings / LAYMESH_WARNINGS 须为 show 或 hide".into());
     }
+    let plan = if file.ends_with(".laydoc") {
+        Some(laymesh_core::document::plan_file(file)?)
+    } else {
+        None
+    };
+    if let Some(plan) = &plan {
+        if let Some(number) = page_number {
+            plan.page(number)?;
+        }
+    } else if page_number.is_some_and(|n| n != 1) {
+        return Err("单页 .lay 的页码只能为 1".into());
+    }
     if command == "inspect" {
         if rest != ["--json"] {
             usage(2)
         };
+        if let Some(plan) = &plan {
+            let value = if let Some(number) = page_number {
+                let scene = laymesh_core::document::compile_page(
+                    plan.page(number)?,
+                    documents::native_host(),
+                )?;
+                serde_json::json!({"document":plan,"pageNumber":number,"inspection":laymesh_language::inspect::inspect_scene(&scene)})
+            } else {
+                serde_json::json!({"document":plan})
+            };
+            println!("{}", serde_json::to_string_pretty(&value)?);
+            return Ok(());
+        }
         println!(
             "{}",
             serde_json::to_string_pretty(&laymesh_language::inspect::inspect_scene(
@@ -67,6 +104,23 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         if !rest.is_empty() {
             usage(2)
         };
+        if let Some(plan) = &plan {
+            if let Some(number) = page_number {
+                let scene = laymesh_core::document::compile_page(
+                    plan.page(number)?,
+                    documents::native_host(),
+                )?;
+                documents::scene_warnings(&scene, &warning_mode);
+            } else {
+                for page in &plan.pages {
+                    let scene =
+                        laymesh_core::document::compile_page(page, documents::native_host())?;
+                    documents::scene_warnings(&scene, &warning_mode);
+                }
+            }
+            println!("有效：{file}（{} 页）", plan.pages.len());
+            return Ok(());
+        }
         let scene = compile_file(file)?;
         if warning_mode == "show" {
             for w in &scene.warnings {
@@ -85,12 +139,23 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut preview_output = None;
     let mut preview_options = laymesh_render::JpegPreviewOptions::default();
     let mut preview_settings = false;
+    let mut preview_page = None;
+    let mut all_pages = false;
     let mut config_path = None;
     let mut pdf_options = serde_json::json!({});
     let mut options = laymesh_render::ExportOptions::default();
     i = 0;
     while i < rest.len() {
         match rest[i] {
+            "--all-pages" => all_pages = true,
+            "--preview-page" => {
+                i += 1;
+                preview_page = Some(
+                    rest.get(i)
+                        .ok_or("--preview-page requires a number")?
+                        .parse::<usize>()?,
+                );
+            }
             "--preview-output" => {
                 i += 1;
                 preview_output = Some(*rest.get(i).ok_or("--preview-output requires a JPEG path")?);
@@ -180,6 +245,26 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     if preview_settings && preview_output.is_none() {
         return Err("--preview-* 参数需要 --preview-output".into());
     }
+    if preview_page.is_some() && preview_output.is_none() {
+        return Err("--preview-page 需要 --preview-output".into());
+    }
+    if all_pages
+        && (page_number.is_some() || plan.is_none() || output.is_none() || preview_output.is_some())
+    {
+        return Err(
+            "--all-pages 需要 .laydoc 与 -o，且不能与 --page 或 --preview-output 同用".into(),
+        );
+    }
+    if let Some(number) = preview_page {
+        if let Some(plan) = &plan {
+            plan.page(number)?;
+        } else if number != 1 {
+            return Err("单页 .lay 的预览页码只能为 1".into());
+        }
+        if page_number.is_some_and(|p| p != number) {
+            return Err("--page 与 --preview-page 必须指向同一页".into());
+        }
+    }
     if let Some(path) = preview_output {
         let extension = Path::new(path)
             .extension()
@@ -232,7 +317,29 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     laymesh_core::asset_cache::preview_mode(format == "pdf");
-    let scene = compile_file(file)?;
+    if let Some(plan) = &plan {
+        if page_number.is_none() && output.is_some() {
+            return documents::render(
+                plan,
+                output.unwrap(),
+                &format,
+                &options,
+                all_pages,
+                preview_output,
+                preview_page.unwrap_or(1),
+                &preview_options,
+                &warning_mode,
+            );
+        }
+    }
+    let scene = if let Some(plan) = &plan {
+        laymesh_core::document::compile_page(
+            plan.page(page_number.or(preview_page).unwrap_or(1))?,
+            documents::native_host(),
+        )?
+    } else {
+        compile_file(file)?
+    };
     if warning_mode == "show" {
         for w in &scene.warnings {
             eprintln!("{w}")

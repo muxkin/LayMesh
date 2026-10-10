@@ -103,10 +103,10 @@ function activatePreview(context,binary,output){
  const locale=()=>{const language=vscode.workspace.getConfiguration('laymesh').get('language','auto');return language==='auto'?vscode.env.language:language;};
  const text=(zh,en)=>/^zh/i.test(locale())?zh:en;
  const relevant=(state,doc)=>doc.uri.scheme==='file'&&(keyOf(doc.uri)===state.file||state.dependencies.has(keyOf(doc.uri)));
- async function exportFigure(uri,provided){
+ async function exportFigure(uri,provided,currentPage){
   uri=uri?.scheme?uri:vscode.window.activeTextEditor?.document.uri;
-  if(!uri||uri.scheme!=='file'||!uri.fsPath.endsWith('.lay')||!vscode.workspace.isTrusted){
-   vscode.window.showInformationMessage(text('LayMesh：请在受信任工作区保存 .lay 文件后导出','LayMesh: save a .lay file in a trusted workspace before exporting'));return;
+  if(!uri||uri.scheme!=='file'||! /\.(lay|laydoc)$/.test(uri.fsPath)||!vscode.workspace.isTrusted){
+   vscode.window.showInformationMessage(text('LayMesh：请在受信任工作区保存 .lay 或 .laydoc 文件后导出','LayMesh: save a .lay or .laydoc file in a trusted workspace before exporting'));return;
   }
   try{
    let destination,options;
@@ -119,7 +119,7 @@ function activatePreview(context,binary,output){
     const format=await vscode.window.showQuickPick(formats.map(([extension,label])=>({label,extension})),{title:text('LayMesh：导出图形','LayMesh: Export Figure'),placeHolder:text('选择导出格式','Choose an export format')});
     if(!format)return;
     options={};
-    destination=await vscode.window.showSaveDialog({defaultUri:vscode.Uri.file(uri.fsPath.replace(/\.lay$/,'.'+format.extension)),filters:{[format.label]:[format.extension]},saveLabel:text('导出','Export')});
+    destination=await vscode.window.showSaveDialog({defaultUri:vscode.Uri.file(uri.fsPath.replace(/\.(lay|laydoc)$/,'.'+format.extension)),filters:{[format.label]:[format.extension]},saveLabel:text('导出','Export')});
     if(!destination)return;
     const actual=path.extname(destination.fsPath).toLowerCase();
     const aliases={jpg:['.jpg','.jpeg'],tif:['.tif','.tiff'],pam:['.pam','.pnm']};
@@ -130,7 +130,7 @@ function activatePreview(context,binary,output){
    for(const buffer of vscode.workspace.textDocuments)if(buffer.uri.scheme==='file'&&buffer.isDirty)overlays[keyOf(buffer.uri)]=buffer.getText();
    const result=await vscode.window.withProgress({location:vscode.ProgressLocation.Notification,title:text('LayMesh：正在导出…','LayMesh: Exporting…')},()=>new Promise(resolve=>{
     const exporter=new PreviewWorker(binary,output);
-    exporter.enqueue({file:keyOf(uri),source:doc.getText(),overlays,request:{type:'export',output:keyOf(destination),options,...editorDefaults(uri),...(provided?.config?{config:provided.config}:{})},timeout:300000,done:result=>{exporter.dispose();resolve(result);}});
+    exporter.enqueue({file:keyOf(uri),source:doc.getText(),overlays,request:{type:'export',output:keyOf(destination),options,...(uri.fsPath.endsWith('.laydoc')?{page_id:currentPage||provided?.pageId||panels.get(keyOf(uri))?.pageId,document_all:provided?.documentAll??(!currentPage&&destination.fsPath.toLowerCase().endsWith('.pdf'))}:{}),...editorDefaults(uri),...(provided?.config?{config:provided.config}:{})},timeout:300000,done:result=>{exporter.dispose();resolve(result);}});
    }));
    if(result.error)throw new Error(result.error.messageZh&&/^zh/i.test(locale())?result.error.messageZh:result.error.message);
    if(!result.exported)throw new Error(text('请更新配置的 LayMesh 可执行文件以支持导出','Update the configured LayMesh executable to support export'));
@@ -169,9 +169,10 @@ function activatePreview(context,binary,output){
    if(state.disposed||generation!==state.generation)return;
    const overlays={};for(const doc of vscode.workspace.textDocuments)if(doc.uri.scheme==='file'&&doc.isDirty)overlays[keyOf(doc.uri)]=doc.getText();
    state.dirty=false;state.pending=true;post(state,{type:'status',status:'rendering'});
-   worker.enqueue({file:state.file,source:doc.getText(),overlays,request:{protocol:3,generation,resource_dir:worker.resourceDir,known_resources:[...state.resources.keys()],known_display_list:state.history.length?state.displayListId:undefined,...editorDefaults(state.uri)},timeout:config().get('renderTimeoutMs',30000),done:result=>{
+   worker.enqueue({file:state.file,source:doc.getText(),overlays,request:{protocol:3,generation,page_id:state.pageId,resource_dir:worker.resourceDir,known_resources:[...state.resources.keys()],known_display_list:state.history.length?state.displayListId:undefined,...editorDefaults(state.uri)},timeout:config().get('renderTimeoutMs',30000),done:result=>{
     if(state.disposed||generation!==state.generation)return;
     watch(state,result.dependencies||[],!!result.error);
+    if(result.document?.pageId)state.pageId=result.document.pageId;
     try{
      if(!result.error){if(result.protocol!==3||(!result.displayList&&!result.displayListCompressed&&!result.displayListUpdate))throw new Error('Expected drawing protocol 3');for(const item of result.resources||[])resource(state,item);result.resources=Object.entries(result.drawingResources||result.displayList.resources).map(([id,meta])=>{const uri=state.resources.get(id);if(!uri)throw Error('Missing drawing resource');return {id,...meta,data:undefined,uri};});}
      const historyBytes=Buffer.byteLength(JSON.stringify(result));
@@ -191,7 +192,7 @@ function activatePreview(context,binary,output){
  }
  async function open(uri){
   uri=uri?.scheme?uri:vscode.window.activeTextEditor?.document.uri;
-  if(!uri||uri.scheme!=='file'||!uri.fsPath.endsWith('.lay')){vscode.window.showInformationMessage(text('LayMesh：请先保存 .lay 文件再打开预览','LayMesh: save a .lay file before opening preview'));return;}
+  if(!uri||uri.scheme!=='file'||! /\.(lay|laydoc)$/.test(uri.fsPath)){vscode.window.showInformationMessage(text('LayMesh：请先保存 .lay 或 .laydoc 文件再打开预览','LayMesh: save a .lay or .laydoc file before opening preview'));return;}
   if(!vscode.workspace.isTrusted){vscode.window.showInformationMessage(text('LayMesh：请在受信任的工作区使用预览','LayMesh: preview requires a trusted workspace'));return;}
   const file=keyOf(uri),existing=panels.get(file);
   if(existing){existing.panel.reveal(vscode.ViewColumn.Beside,true);return;}
@@ -208,7 +209,10 @@ function activatePreview(context,binary,output){
    else if(message?.type==='painted'&&message.generation===state.generation){state.displayListId=message.displayListId;}
    else if(message?.type==='request-full'){state.displayListId=undefined;invalidate(state,true);}
    else if(message?.type==='refresh')invalidate(state,true);
-   else if(message?.type==='export')await exportFigure(state.uri);
+   else if(message?.type==='export')await exportFigure(state.uri,undefined,state.pageId);
+   else if(message?.type==='select-page'&&state.last?.document?.pages.some(page=>page.id===message.pageId)){state.pageId=message.pageId;state.displayListId=undefined;invalidate(state,true);}
+   else if(message?.type==='open-page'){const page=state.last?.document?.pages.find(page=>page.id===state.pageId);if(page){const doc=await vscode.workspace.openTextDocument(vscode.Uri.file(page.src));await vscode.window.showTextDocument(doc,{viewColumn:vscode.ViewColumn.One});}}
+   else if(message?.type==='export-document'){const destination=await vscode.window.showSaveDialog({defaultUri:vscode.Uri.file(state.file.replace(/\.laydoc$/,'.pdf')),filters:{PDF:['pdf']}});if(destination)await exportFigure(state.uri,{output:destination,documentAll:true});}
    else if(message?.type==='source'&&state.last?.error){const error=state.last.error,file=error.file||state.file;
     if(file!==state.file&&!state.dependencies.has(file))return;
     try{const doc=await vscode.workspace.openTextDocument(vscode.Uri.file(file));const line=Math.max(0,(error.loc?.line||1)-1),column=Math.max(0,(error.loc?.column||1)-1);const position=doc.validatePosition(new vscode.Position(line,column));await vscode.window.showTextDocument(doc,{viewColumn:vscode.ViewColumn.One,selection:new vscode.Range(position,position)});}catch(error){vscode.window.showErrorMessage(error.message);}

@@ -176,6 +176,7 @@ pub fn register_preview_font(filename: &str, bytes: &[u8]) {
 #[wasm_bindgen]
 pub struct RenderJob {
     scene: Scene,
+    document: Option<J>,
 }
 #[wasm_bindgen]
 impl RenderJob {
@@ -203,7 +204,11 @@ impl RenderJob {
         laymesh_render::render_svg(&self.scene).map_err(|e| JsValue::from_str(&e.to_string()))
     }
     pub fn inspection(&self) -> String {
-        json!({"inspection":laymesh_language::inspect::inspect_scene(&self.scene),"warnings":self.scene.warnings}).to_string()
+        let mut value = json!({"inspection":laymesh_language::inspect::inspect_scene(&self.scene),"warnings":self.scene.warnings});
+        if let Some(document) = &self.document {
+            value["document"] = document.clone();
+        }
+        value.to_string()
     }
 }
 #[wasm_bindgen]
@@ -212,6 +217,53 @@ pub fn prepare_render(
     filename: &str,
     files_json: &str,
 ) -> Result<RenderJob, JsValue> {
+    let host = render_host(files_json)?;
+    let scene = compile_preview_source(source, filename, host).map_err(diagnostic_js_error)?;
+    Ok(RenderJob {
+        scene,
+        document: None,
+    })
+}
+#[wasm_bindgen]
+pub fn prepare_document_render(
+    source: &str,
+    filename: &str,
+    files_json: &str,
+    page_id: &str,
+) -> Result<RenderJob, JsValue> {
+    let host = render_host(files_json)?;
+    let plan = laymesh_core::document::plan_source(source, filename, host.clone())
+        .map_err(diagnostic_js_error)?;
+    let mut document = json!({"name":plan.name,"pages":plan.pages});
+    let number = if page_id.is_empty() {
+        1
+    } else {
+        plan.pages
+            .iter()
+            .position(|p| p.id == page_id)
+            .ok_or_else(|| {
+                JsValue::from_str(
+                    &json!({"code":"E_PAGE","file":filename,
+                    "message":"Selected page ID no longer exists","document":document})
+                    .to_string(),
+                )
+            })?
+            + 1
+    };
+    let page = plan.page(number).map_err(diagnostic_js_error)?;
+    document["pageId"] = json!(page.id);
+    document["pageNumber"] = json!(number);
+    let scene = laymesh_core::document::compile_preview_page(page, host).map_err(|e| {
+        let mut error = diagnostic_value(e);
+        error["document"] = document.clone();
+        JsValue::from_str(&error.to_string())
+    })?;
+    Ok(RenderJob {
+        scene,
+        document: Some(document),
+    })
+}
+fn render_host(files_json: &str) -> Result<Host, JsValue> {
     let files: J =
         serde_json::from_str(files_json).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let mut host = Host {
@@ -238,18 +290,46 @@ pub fn prepare_render(
                 .map(|(name, data)| (name.clone(), data.clone())),
         );
     });
-    let scene = compile_preview_source(source, filename, host).map_err(|e| {
-        let mut diagnostic = serde_json::to_value(&e).unwrap();
-        // Native errors remain unchanged. This extra field is a browser resource
-        // request; the worker only honors paths in its local resource manifest.
-        if e.code == "E_ASSET" {
-            if let Some(path) = e.message.strip_prefix("无法读取资源：") {
-                diagnostic["resource"] = json!(path);
-            }
+    Ok(host)
+}
+fn diagnostic_js_error(e: laymesh_core::Diagnostic) -> JsValue {
+    JsValue::from_str(&diagnostic_value(e).to_string())
+}
+fn diagnostic_value(e: laymesh_core::Diagnostic) -> J {
+    let mut diagnostic = serde_json::to_value(&e).unwrap();
+    // Native errors remain unchanged. This extra field is a browser resource
+    // request; the worker only honors paths in its local resource manifest.
+    if e.code == "E_ASSET" {
+        if let Some(path) = e.message.strip_prefix("无法读取资源：") {
+            diagnostic["resource"] = json!(path);
         }
-        JsValue::from_str(&diagnostic.to_string())
-    })?;
-    Ok(RenderJob { scene })
+    }
+    diagnostic
+}
+#[cfg(test)]
+mod document_tests {
+    use super::*;
+    #[test]
+    fn wasm_document_selection_matches_native_core_and_cpu_pixels() {
+        let source = "d=document()\nfor p in [page(src=\"a.lay\",id=\"a\"),page(src=\"b.lay\",id=\"b\")] { d.add(p) }";
+        let files=json!({"/a.lay":"p=canvas(size=(10,20))\np.add(rect(size=(4,4),fill=\"#f00\"))","/b.lay":"p=canvas(size=(2,1),unit=\"cm\")\np.add(rect(size=(0.4,0.4),fill=\"#00f\"))"}).to_string();
+        let job = prepare_document_render(source, "/report.laydoc", &files, "b").unwrap();
+        let info: J = serde_json::from_str(&job.inspection()).unwrap();
+        assert_eq!(info["document"]["pageNumber"], 2);
+        assert_eq!(info["inspection"]["page"]["unit"], "cm");
+        let host = render_host(&files).unwrap();
+        let plan =
+            laymesh_core::document::plan_source(source, "/report.laydoc", host.clone()).unwrap();
+        let scene = laymesh_core::document::compile_page(plan.page(2).unwrap(), host).unwrap();
+        let list = laymesh_render::to_display_list(&scene).unwrap();
+        let native = laymesh_render::render_rgba(&list, 254.).unwrap();
+        let wasm = job
+            .draw_job()
+            .unwrap()
+            .raster("[0,0,20,10]", 200, 100)
+            .unwrap();
+        assert_eq!(native.rgba, wasm.rgba);
+    }
 }
 #[wasm_bindgen]
 pub fn render(source: &str, filename: &str, files_json: &str) -> Result<String, JsValue> {

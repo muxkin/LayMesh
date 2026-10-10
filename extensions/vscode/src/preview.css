@@ -10,3 +10,5 @@ button{font:inherit;color:inherit;background:var(--vscode-button-secondaryBackgr
 .coordinates{flex:none;min-height:32px;padding:8px;border-top:1px solid var(--vscode-panel-border,#5555);font:11px var(--vscode-editor-font-family,monospace);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;max-height:25vh;overflow:auto}
 .errors{flex:none;max-height:25vh;overflow:auto}.error-location{display:block;text-align:left;width:100%;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--vscode-errorForeground,#f48771);background:transparent;border-radius:0}.error-location[hidden]{display:none}.warnings:empty{display:none}.warnings{white-space:pre-wrap;color:var(--vscode-editorWarning-foreground,#cca700);padding:5px 8px;font-size:11px}
 @media(max-width:320px){.toolbar{gap:3px;padding:5px}.toolbar button{padding:3px 5px}.status{width:100%;margin:2px 0 0}}
+
+.page-select{max-width:14rem;min-width:0;font:inherit;color:var(--vscode-dropdown-foreground);background:var(--vscode-dropdown-background);border:1px solid var(--vscode-dropdown-border,#777);padding:3px 5px}

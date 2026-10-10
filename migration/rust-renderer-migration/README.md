@@ -2,6 +2,18 @@
 
 基于干净的 `main`（`9c6f26f`）建立 `codex/rust-renderer-migration`。新默认链路为 `Scene → DisplayList v1 → Vello CPU 0.3.0 / krilla 0.8.2 / DrawingML`，本轮未发布版本。CLI、Python 和现有导出函数签名保持兼容。
 
+## Lay 语法的多页编排（2026-10-10）
+
+新增 `.laydoc`，直接复用 Lay 的解析器、变量、函数、条件、循环及模块导入。通过 `document()`、`page(src=..., id=...)` 和 `doc.add(page)` 管理独立 `.lay` 页面；页面内容、变量、单位、样式与相对素材路径保持独立。完整编译 API 对重复源文件共用 Scene；选页预览按需编译，VS Code 中修改未选中页不会触发当前页编译。稳定 ID 保留调序后的选择，删除当前 ID 明确报错并可手动选择其它页恢复。
+
+CLI 支持完整矢量 PDF、`--page N` 单页和 `--all-pages` 编号批量输出；页码从 1 开始。完整 PDF 逐页写入，释放各页 Scene 后再编译下一页。批量输出先逐页暂存到磁盘，全部编译和编码成功后再替换各目标，避免后面的页面错误覆盖原输出；每个文件的替换是原子的，整个批次不是跨文件事务。其它格式不默默输出第一页。Python 新增 `render_document`，Notebook 文件 Magic 支持 `--page`，继续使用 Rust CPU 的 192 DPI、质量 95、4:4:4 JPEG；导出与预览共用一次原生调用。
+
+VS Code 实际扩展宿主与 webview 验证了切页、厘米单位和公式、未保存页面、调序后稳定选择、打开当前页、整本/当前页 PDF，以及既有缩放、标尺、资源、过期结果和错误恢复。网页在 1440×1000 和 390×844、DPR 2 下验证三页 Canvas、公式编辑、快速切页、删除当前页后的手动恢复及恢复示例；无相关控制台错误。修正了新绘制结果到达时沿用旧页面“已绘制”标记的问题，尚未绘制的新页面不再提前标记完成。
+
+完整 Rust 回归 537 项通过、1 项原有忽略，891 处历史断言的源码映射与实际执行门禁全部通过；最终 WASM 变更另通过定向检查。Python 3.10/IPython 8 与 Python 3.13/IPython 9 各通过 56 项测试，两种真实 Notebook 内核分别重复执行示例并验证多页 PDF、单页 PNG 和 JPEG MIME。原生/WASM 的 8 组 RGBA 对照通过，最大单通道差异 1/255，包含 70,000×2 窄图及分块边界。实际三页 PDF 的正文和公式源文本可提取，字体均嵌入且子集化；另验证 25.4×12.7 mm 和 20×30 mm 页面在同一 PDF 中保留各自尺寸。92 个最小源码通过验证及 276 次 SVG/PDF/PNG 导出，625 页文档、190 项媒体指纹检查通过，原有 186 项媒体字节一致。
+
+使用说明见[多页文档](../../docs/topics/documents.zh-CN.md)，源码见 [report.laydoc](../../examples/document/report.laydoc)，输出见[三页 PDF](comparisons/documents.pdf)与[公式页 JPEG](comparisons/documents-results.jpg)。精简验证与输入指纹见 [documents-verification.json](documents-verification.json)。本轮验证源码 Python 环境和 VS Code 开发宿主，未更新用户已安装的包或扩展，未发布版本；Windows/macOS 未实际运行。切换动画和整本 PPTX 尚未实现，相关调用明确报错；单页或编号 PPTX 仍使用既有可编辑导出链路。
+
 ## Notebook 高清 JPEG 预览（2026-10-10）
 
 Notebook Magic 现在默认使用 Rust CPU 生成 192 DPI JPEG，质量 95、4:4:4 采样，透明区域合成到白底，保留画布本身的背景色。`--preview-dpi`、`--preview-quality`、`--preview-background` 独立调整预览，正式导出的默认 DPI、透明度和编码器保持原有规则。公共 Python API 的 SVG 返回值与函数签名保持兼容。

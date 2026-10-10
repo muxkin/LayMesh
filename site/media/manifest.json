@@ -10,7 +10,7 @@
     "version": 2,
     "engine": "rust-ratex"
   },
-  "engine": "17b712992cf7ac6b96c9b5bc5c76e03c334cde79851e73ed91a9c976155cc059",
+  "engine": "aa3fe6f679c810aa4059f62196c404dd23f0414c207d0a9ea46d90323a7f389f",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -1794,6 +1794,84 @@
           "width": 3840,
           "height": 2560,
           "sha256": "2df14e23bb438e9bd2c58de6a4f89c759220a9f3bff50217030a191537c3c4fd"
+        }
+      ]
+    },
+    "examples/document/pages/cover.lay": {
+      "fingerprint": "4c1a0ab4ea127a60568db0cf7e7c5bfdf7c0ee2fa1c594efc424157a92595378",
+      "dependencies": [
+        "examples/document/pages/cover.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/document-pages-cover-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "b244a2807f0cebeac96f110199628d250fee19ef24c2fb471e5cdac6e344b53f"
+        },
+        {
+          "file": "site/media/document-pages-cover-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "8bacc08ab7a3de453f3b994f132076ae1c7f56d7839befca01439b165ce03747"
+        },
+        {
+          "file": "site/media/document-pages-cover-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "ad67a410e99bcb9a6791522c3a3f7616fe849ab78cd5f8866c4adb947f396470"
+        }
+      ]
+    },
+    "examples/document/pages/results.lay": {
+      "fingerprint": "40b5cc773c0fc43b0aff5d241dac70ecc7d2aebe9ad24d3afbe0c9a0b4e34974",
+      "dependencies": [
+        "examples/document/pages/results.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/document-pages-results-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "971ea4833376433061c606a47daed923427cffc8a7a550ab993656f9ef21e521"
+        },
+        {
+          "file": "site/media/document-pages-results-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "af951648db650601cfe1177ba86ef2cf11bb039f2e4b139c6366217a3bccf8b7"
+        },
+        {
+          "file": "site/media/document-pages-results-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "376561a9b057ab9b2bf4fd2caf191a7a7b34a0691ec20fc24c106fcdb803ae4a"
+        }
+      ]
+    },
+    "examples/document/pages/summary.lay": {
+      "fingerprint": "d3f733e26f129608e4c1554ada6d97224cb888d8702f06ac39b5e2eb05be0050",
+      "dependencies": [
+        "examples/document/pages/summary.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/document-pages-summary-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "6ccd4cac2efcfc3fa7d563816a2a4fede1a4c51d6eaad8241ca879562235430c"
+        },
+        {
+          "file": "site/media/document-pages-summary-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "102a98b88f619a0d10710dbc2c99df979a5d0add203eb1404cfb3363415b8535"
+        },
+        {
+          "file": "site/media/document-pages-summary-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "3a7cc4ce8cb9229524e8c6b27b44f4a81c6c6977c694c9f70c96c974d07f56a8"
         }
       ]
     },
@@ -4889,6 +4967,35 @@
           "width": 3840,
           "height": 2560,
           "sha256": "4a7fe56571f893002a432ad4fa88f2069242fdb0a50dd40a52b3d78b0d8b4ee5"
+        }
+      ]
+    },
+    "examples/document/report.laydoc": {
+      "fingerprint": "6cb92bfce2485db2ceacecd4126bbf584322c8d21514de7d1baff0fe3cf178d9",
+      "dependencies": [
+        "examples/document/pages/cover.lay",
+        "examples/document/pages/results.lay",
+        "examples/document/pages/summary.lay",
+        "examples/document/report.laydoc"
+      ],
+      "variants": [
+        {
+          "file": "site/media/document-report-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "b244a2807f0cebeac96f110199628d250fee19ef24c2fb471e5cdac6e344b53f"
+        },
+        {
+          "file": "site/media/document-report-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "8bacc08ab7a3de453f3b994f132076ae1c7f56d7839befca01439b165ce03747"
+        },
+        {
+          "file": "site/media/document-report-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "ad67a410e99bcb9a6791522c3a3f7616fe849ab78cd5f8866c4adb947f396470"
         }
       ]
     }

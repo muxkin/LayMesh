@@ -14,6 +14,7 @@ def _options(line: str, *, cell: bool) -> argparse.Namespace:
     parser = argparse.ArgumentParser(prog="%%laymesh" if cell else "%laymesh")
     if not cell:
         parser.add_argument("file", type=Path)
+        parser.add_argument("--page", type=int)
     parser.add_argument("-o", "--output", type=Path)
     parser.add_argument("--dpi", type=float)
     parser.add_argument("--quality", type=float)
@@ -55,6 +56,7 @@ class LayMeshMagics(Magics):
         if cell is None:
             result = _render_notebook(
                 file=options.file, namespace=self.shell.user_ns, output=options.output, config=options.config,
+                page=options.page,
                 dpi=options.dpi, plot_dpi=options.plot_dpi,
                 preview_dpi=options.preview_dpi, preview_quality=options.preview_quality,
                 preview_background=options.preview_background,

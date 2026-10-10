@@ -1,0 +1,489 @@
+{
+  "status": "passed",
+  "branch": "codex/rust-renderer-migration",
+  "base_commit": "b40deef47587b924aceda663e6decd880e62fe54",
+  "native_sha256": "0ecd3b1a8a1f383210dcb68775795dacf0b344bc73074851deec51835585adfd",
+  "wasm_sha256": "b85dc16af2681bbc0861bdb2159b44c9382c46ce46517f29083d81ecf3c1f4d3",
+  "sources_sha256": {
+    "examples/document/pages/cover.lay": "79cf6dde3997cb8d0b7b3212aeea6799faa60deb8fad4f8fa039bd978fa2b060",
+    "examples/document/pages/results.lay": "0b1df330f3d111ba235e2c960a7dfeb28576453db3ad487853e83d5224105c35",
+    "examples/document/pages/summary.lay": "34612834cac9c61fddbbd8c90a2e09ac9b3af57b443a4df23664b26efa3d22ae",
+    "examples/document/report.laydoc": "4c9a9e7d60bee0ad7ffd016d622cecf6b7486de1d06a4d1ed09054f5144dbce2",
+    "crates/laymesh-core/src/document.rs": "cbae06ad6baa324a65800ce4ec39c2b418b677c31f4827eebdc13fd230574bd3",
+    "crates/laymesh-cli/src/documents.rs": "8fe55408b958b2689745788613ebdc53886ffd907b62c4795c909b9511f57d58",
+    "crates/laymesh-wasm/src/lib.rs": "cf602ec11ee485a6edd5ab23492373a91c0782359f51ceff1c9a89b72fa648a1",
+    "python/laymesh/__init__.py": "28220e2d70fec459d4ea24674129a0a628d8bb6129cda94b92ce78eacd2f8b9f",
+    "python/laymesh/__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+    "python/laymesh/_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+    "python/laymesh/_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+    "python/laymesh/bridge.py": "416979da5726e18c933e7a485d8772d0f27a0ee4fd81ca77dc609ef02d978760",
+    "python/laymesh/ipython.py": "ab78071ade23cc9d3fc7f4813c875aaaef22bcc190f90dcb94dccc7346042230",
+    "scripts/test-vscode-preview.py": "4efa005c14921139cc0d11350b6f1e5b5602d93905b247931ba402146d46acc8",
+    "scripts/vscode-preview.cjs": "868d5ecb447d9408be07c47991a04be455d7152ddc34e23ab8be37c0f931cef5",
+    "scripts/test-python-jupyter.py": "4b64c242a9be878fa4d37f604b5a1af6d416e6bab233e2a81e0c17b2d3f8dac0",
+    "site/live/editor.mjs": "de67c51d09de277662577bd85a7ccbf9251cefccc67c07917f40f93e2a9c22a6",
+    "site/live/worker.mjs": "772d7a639189acf78fd6e17c6d49568792aec7fba580674ac4c047f2a3de2ad5",
+    "extensions/vscode/src/preview-host.cjs": "04f10a691cb655391aec0f60465f1974a078d891be6ce69fec58fe91c562bb08",
+    "extensions/vscode/src/preview-webview.mjs": "3031d99479d00917e197ba97f21f5f60b0c21824166788d55b2af084de3c37aa"
+  },
+  "artifacts_sha256": {
+    "comparisons/documents.pdf": "2e1259b1958405efdda4ddecd6e725d7c69b20e72ee64c61f9d5fe2c6b09911f",
+    "comparisons/documents-results.jpg": "7442ac960be517d0c82f747c1004bedb19c432febcec275f0397a6d63477426a"
+  },
+  "rust": {
+    "passed": 537,
+    "ignored": 1,
+    "final_wasm_targeted_passed": true,
+    "final_source_contract_gate_passed": true
+  },
+  "python": {
+    "3.10": {
+      "tests": 56,
+      "jupyter": {
+        "engine_version": "laymesh 0.5.1",
+        "engine_sha256": "0ecd3b1a8a1f383210dcb68775795dacf0b344bc73074851deec51835585adfd",
+        "python_package_sha256": {
+          "__init__.py": "28220e2d70fec459d4ea24674129a0a628d8bb6129cda94b92ce78eacd2f8b9f",
+          "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+          "_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+          "_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+          "bridge.py": "416979da5726e18c933e7a485d8772d0f27a0ee4fd81ca77dc609ef02d978760",
+          "ipython.py": "ab78071ade23cc9d3fc7f4813c875aaaef22bcc190f90dcb94dccc7346042230"
+        },
+        "data_updates": true,
+        "figure_updates": true,
+        "unchanged_figure_asset_reused": true,
+        "standalone_replay": true,
+        "relative_modules_and_alpha": true,
+        "config_dpi": true,
+        "default_dpi_1200_and_tiff_lzw": true,
+        "errors_recover": true,
+        "svg_api_compatible": true,
+        "jpeg_exact_native_match": true,
+        "compact_result_display": true,
+        "document_jpeg_magic": true,
+        "document_full_pdf_and_selected_png": true,
+        "installed_offline": false
+      }
+    },
+    "3.13": {
+      "tests": 56,
+      "jupyter": {
+        "engine_version": "laymesh 0.5.1",
+        "engine_sha256": "0ecd3b1a8a1f383210dcb68775795dacf0b344bc73074851deec51835585adfd",
+        "python_package_sha256": {
+          "__init__.py": "28220e2d70fec459d4ea24674129a0a628d8bb6129cda94b92ce78eacd2f8b9f",
+          "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+          "_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+          "_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+          "bridge.py": "416979da5726e18c933e7a485d8772d0f27a0ee4fd81ca77dc609ef02d978760",
+          "ipython.py": "ab78071ade23cc9d3fc7f4813c875aaaef22bcc190f90dcb94dccc7346042230"
+        },
+        "data_updates": true,
+        "figure_updates": true,
+        "unchanged_figure_asset_reused": true,
+        "standalone_replay": true,
+        "relative_modules_and_alpha": true,
+        "config_dpi": true,
+        "default_dpi_1200_and_tiff_lzw": true,
+        "errors_recover": true,
+        "svg_api_compatible": true,
+        "jpeg_exact_native_match": true,
+        "compact_result_display": true,
+        "document_jpeg_magic": true,
+        "document_full_pdf_and_selected_png": true,
+        "installed_offline": false
+      }
+    }
+  },
+  "web": {
+    "identity": {
+      "title": "Report · LayMesh",
+      "url": "http://100.64.0.6:8767/examples/document-report.html#example-document-report-source",
+      "selector": [
+        {
+          "id": "cover",
+          "name": "1. 封面 / Cover"
+        },
+        {
+          "id": "results",
+          "name": "2. 结果 / Results"
+        },
+        {
+          "id": "summary",
+          "name": "3. 总结 / Summary"
+        }
+      ],
+      "canvas": "canvas"
+    },
+    "page_pixels": {
+      "cover": {
+        "hash": 3908981870,
+        "width": 1008,
+        "height": 567,
+        "visible": true
+      },
+      "results": {
+        "hash": 3437323062,
+        "width": 1008,
+        "height": 567,
+        "visible": true
+      },
+      "summary": {
+        "hash": 2937417573,
+        "width": 1008,
+        "height": 567,
+        "visible": true
+      }
+    },
+    "checks": [
+      "all three pages paint distinct CPU canvases",
+      "formula page editable without writing sources",
+      "stable ID after reordering",
+      "located syntax error keeps last successful pixels",
+      "corrected source recovers",
+      "rapid page selection finishes on latest ID",
+      "deleted current ID reports error with updated page list",
+      "manual selection after deletion and restore both recover",
+      "desktop and narrow view without overflow",
+      "static summary hides live page selector; source mode restores it"
+    ],
+    "mobile": {
+      "width": 390,
+      "scroll": 390,
+      "selector": {
+        "x": 64,
+        "y": 453.1875,
+        "width": 172,
+        "height": 32,
+        "top": 453.1875,
+        "right": 236,
+        "bottom": 485.1875,
+        "left": 64
+      },
+      "canvas": {
+        "x": 35,
+        "y": 509.1875,
+        "width": 320,
+        "height": 180,
+        "top": 509.1875,
+        "right": 355,
+        "bottom": 689.1875,
+        "left": 35
+      }
+    },
+    "console_errors": []
+  },
+  "vscode": {
+    "status": "passed",
+    "host": "VS Code actual preview webview",
+    "checks": [
+      "Units, rotated/nonuniform transforms, extra axes, log/symlog/reversed/broken axes, clipping, overlapping inset, polar deg/rad/reversal/center, radar spokes and polygon boundary",
+      "Open and reuse beside the editor; native canvas unit and Canvas",
+      "Actual webview mouse/zoom/pan/rulers/resize do not compile",
+      "English manifest commands/settings; explicit and automatic English UI switching without rendering",
+      "Created/deleted project configuration refreshes effective preview quality",
+      "Disk bitmap modification changes resource identity and restores correctly",
+      "Unsaved imported buffer wins without changing disk",
+      "Located error jumps to source; corrected buffer recovers",
+      "Rapid edits coalesce into the latest version",
+      "24 replay updates compact to one lossless delta; ancestor/descendant, root-count and resource replacement validated",
+      "Older native response arriving after a newer generation is discarded",
+      "Timeout kills isolated worker, automatically starts a new worker, and subsequent rendering succeeds",
+      "Panel disposal and fresh native worker after reopening",
+      ".laydoc language association; real page selection; independent cm units and formula; unsaved selected page; inactive page edits do not compile; stable ID survives reordering; edit-page action; whole/selected vector PDF"
+    ],
+    "ui": {
+      "bmp_pixel": [
+        29,
+        150,
+        219,
+        255
+      ],
+      "transparent_webp_pixel": [
+        255,
+        128,
+        127,
+        255
+      ],
+      "opaque_16bit_jpeg_pixel": [
+        136,
+        136,
+        136,
+        255
+      ],
+      "direct_export_save_dialog_verified": true,
+      "no_dpi_or_compression_prompts": true,
+      "initial_readout": "画布: X=5.500 cm  Y=4.000 cm  |  绘图 @1: x=4.99987  y=0.0000403226",
+      "english_readout": "Canvas: X=5.500 cm  Y=4.000 cm  |  Plot @1: x=4.99962  y=0.0000312500",
+      "state": {
+        "readout": "画布: X=5.500 cm  Y=4.000 cm  |  绘图 @1: x=5.00000  y=0.00000",
+        "blank": false,
+        "errors": true,
+        "unit": "cm"
+      },
+      "narrow": {
+        "body": 492,
+        "width": 492,
+        "canvas": 856,
+        "viewport": 428,
+        "dpr": 2,
+        "theme": "vscode-light"
+      },
+      "console_errors": [],
+      "viewports": [
+        "1440x1000 dark DPR 2",
+        "760x720 light DPR 2"
+      ],
+      "checks": [
+        "BMP on a Chinese/space/hash path",
+        "canvas/data hover",
+        "ruler markers",
+        "wheel anchor",
+        "Space drag",
+        "100%",
+        "ruler toggle",
+        "fit",
+        "continuous motion",
+        "pointer exit",
+        "narrow resize",
+        "DPR ruler pixels",
+        "explicit English and auto UI",
+        "view preserved on language change",
+        "English stale error and source action"
+      ],
+      "documents": {
+        "page_selector": true,
+        "formula_edit_visible": true,
+        "reordering_preserves_page_id": true,
+        "whole_pdf_direct_save_dialog": true,
+        "console_errors": []
+      }
+    }
+  },
+  "pdf": {
+    "pages": 3,
+    "text_and_formula_source_extractable": true,
+    "fonts_embedded_and_subset": true,
+    "mixed_page_dimensions_mm": [
+      [
+        25.4,
+        12.7
+      ],
+      [
+        20,
+        30
+      ]
+    ],
+    "actual_pdf_dimensions_pt": [
+      [
+        72,
+        36
+      ],
+      [
+        56.6929,
+        85.0394
+      ]
+    ]
+  },
+  "documentation": {
+    "pages": 625,
+    "media_sources": 190,
+    "original_media_identical": 186,
+    "features": 285,
+    "apis": 107,
+    "minimal_sources": 92,
+    "minimal_exports": 276
+  },
+  "limitations": [
+    "page transitions and whole-document PPTX are not implemented",
+    "batch publishing is atomic per file, not a transaction across files",
+    "Python source environments and VS Code development host tested; no user installation changed",
+    "Windows and macOS not executed; no release published"
+  ],
+  "renderer": {
+    "cases": [
+      {
+        "name": "examples/typography.lay",
+        "width": 605,
+        "height": 378,
+        "rasterMs": 14.899999976158142,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/vector.lay",
+        "width": 680,
+        "height": 454,
+        "rasterMs": 16.5,
+        "maximumDelta": 1,
+        "meanDelta": 4.048976418761337e-06,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/effects/art-text.lay",
+        "width": 680,
+        "height": 567,
+        "rasterMs": 32.80000001192093,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/effects/shadow-glow.lay",
+        "width": 567,
+        "height": 359,
+        "rasterMs": 18.400000035762787,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/effects/images-groups.lay",
+        "width": 605,
+        "height": 302,
+        "rasterMs": 15.099999964237213,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/gallery/images/svg.lay",
+        "width": 454,
+        "height": 302,
+        "rasterMs": 23.599999964237213,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "examples/plot/scientific.lay",
+        "width": 680,
+        "height": 310,
+        "rasterMs": 14.300000011920929,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": []
+      },
+      {
+        "name": "/home/keqing/source/LayMesh/site/dist/renderer-contract/wide.lay",
+        "width": 70000,
+        "height": 2,
+        "rasterMs": 9.400000035762787,
+        "maximumDelta": 0,
+        "meanDelta": 0,
+        "channelsAboveTwo": 0,
+        "samples": [
+          {
+            "x": 1023,
+            "rgba": [
+              0,
+              249,
+              6,
+              129
+            ]
+          },
+          {
+            "x": 1024,
+            "rgba": [
+              0,
+              249,
+              6,
+              129
+            ]
+          },
+          {
+            "x": 2047,
+            "rgba": [
+              0,
+              241,
+              14,
+              131
+            ]
+          },
+          {
+            "x": 2048,
+            "rgba": [
+              0,
+              241,
+              14,
+              131
+            ]
+          },
+          {
+            "x": 65534,
+            "rgba": [
+              0,
+              9,
+              245,
+              247
+            ]
+          },
+          {
+            "x": 65535,
+            "rgba": [
+              0,
+              9,
+              245,
+              247
+            ]
+          },
+          {
+            "x": 65536,
+            "rgba": [
+              0,
+              9,
+              245,
+              247
+            ]
+          }
+        ]
+      }
+    ],
+    "status": "passed",
+    "protocols": {
+      "default_client": 3,
+      "explicit_compatibility": [
+        1,
+        2
+      ],
+      "unknown_rejected": true
+    },
+    "native_oracle_sha256": "41430a81c3ff1329bb249d7db4bd5e3fe38fc1ceb134241f9c6f12eb251d932e",
+    "wasm_sha256": "b85dc16af2681bbc0861bdb2159b44c9382c46ce46517f29083d81ecf3c1f4d3"
+  },
+  "editor_package": {
+    "target": "linux-x64",
+    "bytes": 11534724,
+    "sha256": "c0353d86432fe68071c3aa2989cd951e76f8faeebd115995d3d57efccbca050e",
+    "audit_passed": true,
+    "installed_to_user_environment": false
+  },
+  "existing_pptx": {
+    "examples": 10,
+    "exports_passed": true,
+    "editor_export_flow_passed": true
+  },
+  "legacy_assertion_gate": {
+    "baseline_commit": "78db22d",
+    "baseline_tests": 183,
+    "assertion_call_sites": 891,
+    "mapped_sites": 891,
+    "unmapped_sites": 0,
+    "referenced_tests": 156,
+    "execution_verified": true,
+    "status": "passed",
+    "unmapped_by_file": {},
+    "unmapped": [],
+    "errors": [],
+    "boundary": "Source-qualified assertion mapping and passing test execution; baseline parameter loops remain explicit test responsibilities. Compiler replay is separate."
+  }
+}

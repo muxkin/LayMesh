@@ -27,7 +27,7 @@ import laymesh
 from IPython.display import display
 from IPython.utils.capture import capture_output
 from PIL import Image as PILImage
-from laymesh import render_source, render_file, LayMeshBridgeError
+from laymesh import render_source, render_file, render_document, LayMeshBridgeError
 from laymesh._runtime import bundled_command
 from laymesh.bridge import _command
 
@@ -119,6 +119,26 @@ with PILImage.open(io.BytesIO(preview_bytes)) as image:
     assert image.getpixel((180,80)) == (255,255,255)
 assert relative.outputs[-1].metadata["image/jpeg"] == {"width": 96, "height": 48}
 
+# Ordinary pages retain their relative modules and units in .laydoc. The full
+# PDF and selected CPU JPEG are generated in one call from a real kernel.
+(layout / "formula.lay").write_text('p=canvas(size=(1.27,2.54),unit="cm")\np.add(formula(source="E=mc^2",font_size=8),offset=(0.1,0.3))', encoding="utf-8")
+book = layout / "report.laydoc"
+book.write_text('d=document(name="Notebook report")\nfor p in [page(src="figure.lay",id="first"),page(src="formula.lay",id="second")] { d.add(p) }', encoding="utf-8")
+with capture_output() as document_magic:
+    get_ipython().run_line_magic("laymesh", '"相对素材 # case/report.laydoc" --page 2 --warnings hide')
+document_result = render_document(book, output="document.pdf", preview_page=2, show_warnings=False)
+assert b"/Count 2" in Path("document.pdf").read_bytes()
+assert base64.b64decode(document_magic.outputs[-1].data["image/jpeg"]) == document_result.preview_jpeg
+with capture_output() as document_display:
+    display(document_result)
+assert "image/jpeg" in document_display.outputs[-1].data and "image/svg+xml" not in document_display.outputs[-1].data
+assert document_display.outputs[-1].metadata["image/jpeg"] == {"width": 48, "height": 96}
+with PILImage.open(io.BytesIO(document_result.preview_jpeg)) as image:
+    assert image.size == (96, 192) and image.info["dpi"] == (192, 192)
+single_page = render_document(book, output="document-second.png", page=2, dpi=96, show_warnings=False)
+with PILImage.open(single_page.output) as image:
+    assert image.size == (48, 96)
+
 # Preview resolution stays independent of the 1200-DPI default and settings.
 Path("export.json").write_text('{"export":{"dpi":72,"png":{"compression":"fast"}}}')
 with capture_output() as configured:
@@ -154,7 +174,8 @@ kernel_evidence = dict(engine_version=version,
     data_updates=True, figure_updates=True, unchanged_figure_asset_reused=True,
     standalone_replay=True, relative_modules_and_alpha=True, config_dpi=True,
     default_dpi_1200_and_tiff_lzw=True, errors_recover=True, svg_api_compatible=True,
-    jpeg_exact_native_match=True, compact_result_display=True, installed_offline=installed_check)
+    jpeg_exact_native_match=True, compact_result_display=True, document_jpeg_magic=True,
+    document_full_pdf_and_selected_png=True, installed_offline=installed_check)
 print(json.dumps(kernel_evidence))
 """
 
