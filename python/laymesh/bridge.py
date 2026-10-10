@@ -64,7 +64,7 @@ class RenderResult:
 
 @dataclass(frozen=True)
 class _NotebookResult:
-    preview_png: bytes
+    preview_jpeg: bytes
     output: Path | None
     saved_source: Path | None
 
@@ -513,6 +513,8 @@ def _render_impl(
     save_source: Path | str | None, original: Path | None,
     export_options: Mapping[str, object], config: Path | str | None = None,
     notebook_preview: bool = False,
+    preview_dpi: float = 192, preview_quality: int = 95,
+    preview_background: str = "#ffffff",
 ) -> RenderResult | _NotebookResult:
     base_dir = base_dir.resolve()
     if not base_dir.is_dir():
@@ -527,6 +529,13 @@ def _render_impl(
     if dpi is not None and (not output_path or output_path.suffix.lower() not in (_RASTER_FORMATS | {".pdf", ".pptx"})):
         raise LayMeshBridgeError("--dpi 只用于位图/PDF 输出及 PPTX 局部回退")
     option_args = _export_args(output_path, export_options)
+    if notebook_preview:
+        if type(preview_dpi) not in {int, float} or not math.isfinite(preview_dpi) or not 0 < preview_dpi <= 25400:
+            raise LayMeshBridgeError("--preview-dpi 必须为 0–25400 之间的正数")
+        if type(preview_quality) is not int or not 1 <= preview_quality <= 100:
+            raise LayMeshBridgeError("--preview-quality 必须为 1–100 的整数")
+        if not isinstance(preview_background, str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", preview_background):
+            raise LayMeshBridgeError("--preview-background 须为 #RRGGBB")
     config_args = ["--config", str(Path(config).expanduser().resolve())] if config else []
     saved_path = (base_dir / save_source).resolve() if save_source else None
     if saved_path:
@@ -541,20 +550,22 @@ def _render_impl(
         file = original if original and expanded == source and not saved_path else _temporary_lay(base_dir, expanded)
         cleanup = file != original
         try:
+            args = ["render", str(file)]
             if output_path:
                 output_path.parent.mkdir(parents=True, exist_ok=True)
-                args = ["render", str(file), "-o", str(output_path)]
+                args += ["-o", str(output_path)]
                 if dpi is not None:
                     args += ["--dpi", str(dpi)]
-                args += option_args + config_args
+            args += option_args + config_args
+            if notebook_preview:
+                # Export and JPEG preview share one compiled Scene. Preview
+                # settings are independent of export DPI, matte and PDF policy.
+                preview_file = Path(scratch_name) / "preview.jpg"
+                args += ["--preview-output", str(preview_file), "--preview-dpi", str(preview_dpi),
+                         "--preview-quality", str(preview_quality), "--preview-background", preview_background]
+            if output_path or notebook_preview:
                 _run(cli, args, base_dir, file if cleanup else None)
             if notebook_preview:
-                # Notebook PNGs use the native CPU renderer, independent of the
-                # export's DPI, matte, compression and PDF image policy.
-                reuse_png = output_path and output_path.suffix.lower() == ".png" and dpi == 192
-                preview_file = output_path if reuse_png else Path(scratch_name) / "preview.png"
-                if preview_file != output_path:
-                    _run(cli, ["render", str(file), "-o", str(preview_file), "--dpi", "192", *config_args], base_dir, file if cleanup else None)
                 preview = preview_file.read_bytes()
             elif output_path and output_path.suffix.lower() == ".svg":
                 preview = output_path.read_text(encoding="utf-8")
@@ -596,6 +607,8 @@ def _render_notebook(
     output: Path | str | None = None, dpi: float | None = None,
     plot_dpi: float = 300, save_source: Path | str | None = None,
     show_warnings: bool | None = None, config: Path | str | None = None,
+    preview_dpi: float = 192, preview_quality: int = 95,
+    preview_background: str = "#ffffff",
     **export_options,
 ) -> _NotebookResult:
     """Magic-only preview; the public SVG result and signatures stay compatible."""
@@ -611,6 +624,7 @@ def _render_notebook(
         output=output, dpi=dpi, plot_dpi=plot_dpi, config=config,
         save_source=save_source, original=original, show_warnings=show_warnings,
         export_options=export_options, notebook_preview=True,
+        preview_dpi=preview_dpi, preview_quality=preview_quality, preview_background=preview_background,
     )
 
 

@@ -1,0 +1,812 @@
+{
+  "native_sha256": "a7f277b6e7f41c485895ae6422ad8bc49d5e22ea191f813157f08aafd40da82c",
+  "cargo_lock_sha256": "16b96915524136479211aefb5d33e041349734702766b3c5f5d31536b0f4ea62",
+  "preview": {
+    "renderer": "Vello CPU 0.3.0",
+    "encoder": "jpeg-encoder 0.7.1",
+    "dpi": 192,
+    "quality": 95,
+    "sampling": "4:4:4",
+    "background": "#ffffff",
+    "native_compilations_per_magic": 1
+  },
+  "rust": {
+    "workspace": {
+      "passed": 528,
+      "failed": 0,
+      "ignored": 1
+    },
+    "current_cli": {
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "python_contracts": {
+    "310": {
+      "passed": 54,
+      "skipped": 0
+    },
+    "313": {
+      "passed": 54,
+      "skipped": 0
+    }
+  },
+  "notebooks": {
+    "source": {
+      "python": "3.13.11",
+      "engine_sha256": "a7f277b6e7f41c485895ae6422ad8bc49d5e22ea191f813157f08aafd40da82c",
+      "repeats": [
+        {
+          "run": 1,
+          "code_cells": 10,
+          "elapsed_ms": 839.2629969748668,
+          "previews": [
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            },
+            {
+              "pixels": [
+                756,
+                529
+              ],
+              "css": {
+                "width": 378,
+                "height": 264
+              },
+              "sha256": "d42bf918f87e42506008429f6e3f42fae76f35e3ba5cdcec08e66c96f11148c6"
+            },
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            }
+          ]
+        },
+        {
+          "run": 2,
+          "code_cells": 10,
+          "elapsed_ms": 412.4432420358062,
+          "previews": [
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            },
+            {
+              "pixels": [
+                756,
+                529
+              ],
+              "css": {
+                "width": 378,
+                "height": 264
+              },
+              "sha256": "d42bf918f87e42506008429f6e3f42fae76f35e3ba5cdcec08e66c96f11148c6"
+            },
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            }
+          ]
+        }
+      ],
+      "kernel_checks": {
+        "engine_version": "laymesh 0.5.1",
+        "engine_sha256": "a7f277b6e7f41c485895ae6422ad8bc49d5e22ea191f813157f08aafd40da82c",
+        "python_package_sha256": {
+          "__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+          "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+          "_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+          "_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+          "bridge.py": "2677129a25fe1fcdf82f2cd3ff9f8af5d8e6a467a723fa6cac91c01476a70bc0",
+          "ipython.py": "22084debfc3ddfb276efdd9c84056533aaa4ba8aa3867b8886d42a1000e21ff9"
+        },
+        "data_updates": true,
+        "figure_updates": true,
+        "unchanged_figure_asset_reused": true,
+        "standalone_replay": true,
+        "relative_modules_and_alpha": true,
+        "config_dpi": true,
+        "default_dpi_1200_and_tiff_lzw": true,
+        "errors_recover": true,
+        "svg_api_compatible": true,
+        "jpeg_exact_native_match": true,
+        "compact_result_display": true,
+        "installed_offline": false
+      },
+      "source_sha256": {
+        "scripts/test-python-jupyter.py": "bac930b5612a628e13812154a4f24120817b20596b10d528997fafb20d988d48",
+        "examples/jupyter-integration.ipynb": "716ae6d021a688d7a9719fef3567ebd7a9767aa1d977d345267a151c9ddeb812",
+        "python/laymesh/__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+        "python/laymesh/__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+        "python/laymesh/_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+        "python/laymesh/_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+        "python/laymesh/bridge.py": "2677129a25fe1fcdf82f2cd3ff9f8af5d8e6a467a723fa6cac91c01476a70bc0",
+        "python/laymesh/ipython.py": "22084debfc3ddfb276efdd9c84056533aaa4ba8aa3867b8886d42a1000e21ff9"
+      }
+    },
+    "installed": {
+      "python": "3.13.11",
+      "engine_sha256": "a7f277b6e7f41c485895ae6422ad8bc49d5e22ea191f813157f08aafd40da82c",
+      "repeats": [
+        {
+          "run": 1,
+          "code_cells": 10,
+          "elapsed_ms": 839.5498710451648,
+          "previews": [
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            },
+            {
+              "pixels": [
+                756,
+                529
+              ],
+              "css": {
+                "width": 378,
+                "height": 264
+              },
+              "sha256": "d42bf918f87e42506008429f6e3f42fae76f35e3ba5cdcec08e66c96f11148c6"
+            },
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            }
+          ]
+        },
+        {
+          "run": 2,
+          "code_cells": 10,
+          "elapsed_ms": 394.3474310217425,
+          "previews": [
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            },
+            {
+              "pixels": [
+                756,
+                529
+              ],
+              "css": {
+                "width": 378,
+                "height": 264
+              },
+              "sha256": "d42bf918f87e42506008429f6e3f42fae76f35e3ba5cdcec08e66c96f11148c6"
+            },
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            }
+          ]
+        }
+      ],
+      "kernel_checks": {
+        "engine_version": "laymesh 0.5.1",
+        "engine_sha256": "a7f277b6e7f41c485895ae6422ad8bc49d5e22ea191f813157f08aafd40da82c",
+        "python_package_sha256": {
+          "__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+          "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+          "_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+          "_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+          "bridge.py": "2677129a25fe1fcdf82f2cd3ff9f8af5d8e6a467a723fa6cac91c01476a70bc0",
+          "ipython.py": "22084debfc3ddfb276efdd9c84056533aaa4ba8aa3867b8886d42a1000e21ff9"
+        },
+        "data_updates": true,
+        "figure_updates": true,
+        "unchanged_figure_asset_reused": true,
+        "standalone_replay": true,
+        "relative_modules_and_alpha": true,
+        "config_dpi": true,
+        "default_dpi_1200_and_tiff_lzw": true,
+        "errors_recover": true,
+        "svg_api_compatible": true,
+        "jpeg_exact_native_match": true,
+        "compact_result_display": true,
+        "installed_offline": true
+      },
+      "source_sha256": {
+        "scripts/test-python-jupyter.py": "bac930b5612a628e13812154a4f24120817b20596b10d528997fafb20d988d48",
+        "examples/jupyter-integration.ipynb": "716ae6d021a688d7a9719fef3567ebd7a9767aa1d977d345267a151c9ddeb812",
+        "python/laymesh/__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+        "python/laymesh/__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+        "python/laymesh/_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+        "python/laymesh/_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+        "python/laymesh/bridge.py": "2677129a25fe1fcdf82f2cd3ff9f8af5d8e6a467a723fa6cac91c01476a70bc0",
+        "python/laymesh/ipython.py": "22084debfc3ddfb276efdd9c84056533aaa4ba8aa3867b8886d42a1000e21ff9"
+      }
+    },
+    "installed310": {
+      "python": "3.10.19",
+      "engine_sha256": "a7f277b6e7f41c485895ae6422ad8bc49d5e22ea191f813157f08aafd40da82c",
+      "repeats": [
+        {
+          "run": 1,
+          "code_cells": 10,
+          "elapsed_ms": 1395.7947380258702,
+          "previews": [
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            },
+            {
+              "pixels": [
+                756,
+                529
+              ],
+              "css": {
+                "width": 378,
+                "height": 264
+              },
+              "sha256": "d42bf918f87e42506008429f6e3f42fae76f35e3ba5cdcec08e66c96f11148c6"
+            },
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            }
+          ]
+        },
+        {
+          "run": 2,
+          "code_cells": 10,
+          "elapsed_ms": 422.29849501745775,
+          "previews": [
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            },
+            {
+              "pixels": [
+                756,
+                529
+              ],
+              "css": {
+                "width": 378,
+                "height": 264
+              },
+              "sha256": "d42bf918f87e42506008429f6e3f42fae76f35e3ba5cdcec08e66c96f11148c6"
+            },
+            {
+              "pixels": [
+                1209,
+                756
+              ],
+              "css": {
+                "width": 604,
+                "height": 378
+              },
+              "sha256": "5dc9061be980edf2e0d9b46f1943d3b11080ec55172b182e8b231d93c00e4cc1"
+            }
+          ]
+        }
+      ],
+      "kernel_checks": {
+        "engine_version": "laymesh 0.5.1",
+        "engine_sha256": "a7f277b6e7f41c485895ae6422ad8bc49d5e22ea191f813157f08aafd40da82c",
+        "python_package_sha256": {
+          "__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+          "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+          "_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+          "_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+          "bridge.py": "2677129a25fe1fcdf82f2cd3ff9f8af5d8e6a467a723fa6cac91c01476a70bc0",
+          "ipython.py": "22084debfc3ddfb276efdd9c84056533aaa4ba8aa3867b8886d42a1000e21ff9"
+        },
+        "data_updates": true,
+        "figure_updates": true,
+        "unchanged_figure_asset_reused": true,
+        "standalone_replay": true,
+        "relative_modules_and_alpha": true,
+        "config_dpi": true,
+        "default_dpi_1200_and_tiff_lzw": true,
+        "errors_recover": true,
+        "svg_api_compatible": true,
+        "jpeg_exact_native_match": true,
+        "compact_result_display": true,
+        "installed_offline": true
+      },
+      "source_sha256": {
+        "scripts/test-python-jupyter.py": "bac930b5612a628e13812154a4f24120817b20596b10d528997fafb20d988d48",
+        "examples/jupyter-integration.ipynb": "716ae6d021a688d7a9719fef3567ebd7a9767aa1d977d345267a151c9ddeb812",
+        "python/laymesh/__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+        "python/laymesh/__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+        "python/laymesh/_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+        "python/laymesh/_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+        "python/laymesh/bridge.py": "2677129a25fe1fcdf82f2cd3ff9f8af5d8e6a467a723fa6cac91c01476a70bc0",
+        "python/laymesh/ipython.py": "22084debfc3ddfb276efdd9c84056533aaa4ba8aa3867b8886d42a1000e21ff9"
+      }
+    }
+  },
+  "installed_wheel": {
+    "wheel": "laymesh-0.5.1-py3-none-manylinux_2_35_x86_64.whl",
+    "compressed_bytes": 7878986,
+    "installed_bytes": 18631462,
+    "sha256": "e20a0fdfc88ad55476d50ab5563f28d5e29cf5d16faf544e71b1511ac76e9cee"
+  },
+  "limits": {
+    "jpeg_dimension_max": 65535,
+    "pixel_max": 100000000,
+    "effect_budget_unchanged": true
+  },
+  "public_python_svg_api_unchanged": true,
+  "wasm_encoder_dependency": false,
+  "source_sha256": {
+    "crates/laymesh-cli/src/main.rs": "6eb97a51dc4acfaa9666064b7423e4ab0db5ee1d88e84f9ed62b974d583f5a9d",
+    "crates/laymesh-render/src/jpeg_preview.rs": "846ec914b9d3bdc5d2bda4d498b18c04c2bf0444d9bb9724b343430f5d946e89",
+    "python/laymesh/bridge.py": "2677129a25fe1fcdf82f2cd3ff9f8af5d8e6a467a723fa6cac91c01476a70bc0",
+    "python/laymesh/ipython.py": "22084debfc3ddfb276efdd9c84056533aaa4ba8aa3867b8886d42a1000e21ff9",
+    "examples/jupyter-integration.ipynb": "716ae6d021a688d7a9719fef3567ebd7a9767aa1d977d345267a151c9ddeb812",
+    "scripts/test-python-jupyter.py": "bac930b5612a628e13812154a4f24120817b20596b10d528997fafb20d988d48",
+    "scripts/profile-notebook-preview.py": "bc18dfeefbec8d7139abb529530d01dc541bc1033f67b951628f170f3f70948d"
+  },
+  "browser": {
+    "browser": "Chromium via repository CDP helper; Browser runtime tool unavailable",
+    "viewports": [
+      [
+        1440,
+        1100,
+        2
+      ],
+      [
+        700,
+        1000,
+        2
+      ]
+    ],
+    "runs": [
+      {
+        "executed": 10,
+        "jpeg": 3,
+        "svg": 0,
+        "elapsed_ms": 453.1084370100871
+      },
+      {
+        "executed": 10,
+        "jpeg": 3,
+        "svg": 0,
+        "elapsed_ms": 479.4808769947849
+      }
+    ],
+    "images": [
+      {
+        "width": 1209,
+        "height": 756,
+        "cssWidth": 604,
+        "cssHeight": 377.671875,
+        "jpeg": true
+      },
+      {
+        "width": 756,
+        "height": 529,
+        "cssWidth": 378,
+        "cssHeight": 264.5,
+        "jpeg": true
+      },
+      {
+        "width": 1209,
+        "height": 756,
+        "cssWidth": 604,
+        "cssHeight": 377.671875,
+        "jpeg": true
+      }
+    ],
+    "kernel_provenance": {
+      "engine_version": "laymesh 0.5.1",
+      "engine_sha256": "a7f277b6e7f41c485895ae6422ad8bc49d5e22ea191f813157f08aafd40da82c",
+      "python_package_sha256": {
+        "_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+        "bridge.py": "2677129a25fe1fcdf82f2cd3ff9f8af5d8e6a467a723fa6cac91c01476a70bc0",
+        "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+        "_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+        "__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+        "ipython.py": "22084debfc3ddfb276efdd9c84056533aaa4ba8aa3867b8886d42a1000e21ff9"
+      }
+    },
+    "console_errors": [],
+    "script_sha256": "3df2b7a83a31dfe297747b6a95f0035e58cef2d62168bb752c7cd35720756de3"
+  },
+  "performance": {
+    "baseline_sha256": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+    "native_sha256": "a7f277b6e7f41c485895ae6422ad8bc49d5e22ea191f813157f08aafd40da82c",
+    "script_sha256": "bc18dfeefbec8d7139abb529530d01dc541bc1033f67b951628f170f3f70948d",
+    "dpi": 192,
+    "quality": 95,
+    "sampling": "4:4:4",
+    "background": "#ffffff",
+    "scope": "Native export+preview processes; excludes Python binding and UI",
+    "rss_method": null,
+    "timing_includes_gnu_time": false,
+    "warmups": 1,
+    "repeats": 5,
+    "cases": {
+      "vector": {
+        "source_sha256": "9496fa50f489cb74ad68714dd6e0d43acca1b8d61608c006d45f5b5bcfa2ef10",
+        "pixels": [
+          907,
+          605
+        ],
+        "cpu_png_unchanged": true,
+        "before_ms": [
+          94.10822804784402,
+          94.76977901067585,
+          81.17881597718224,
+          93.49510999163613,
+          79.89180303411558
+        ],
+        "after_ms": [
+          64.46601200150326,
+          58.390013000462204,
+          52.22994298674166,
+          53.03689296124503,
+          55.45557400910184
+        ],
+        "before_median_ms": 93.49510999163613,
+        "after_median_ms": 55.45557400910184,
+        "peak_rss_kib": {
+          "before": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "after": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        "png_bytes": 51158,
+        "jpeg_bytes": 78168,
+        "png_decode_median_ms": 4.75188298150897,
+        "jpeg_decode_median_ms": 0.9754699713084847,
+        "psnr_db": 48.82696400066105,
+        "edge_psnr_db": 40.33131628071671
+      },
+      "heatmap": {
+        "source_sha256": "230b13d200c56bbb6d76da720892ee52bcee487fd90ef8a77bb464bdfaddcd2c",
+        "pixels": [
+          907,
+          605
+        ],
+        "cpu_png_unchanged": true,
+        "before_ms": [
+          93.83895999053493,
+          91.05842595454305,
+          92.45956898666918,
+          96.40286897774786,
+          106.68558301404119
+        ],
+        "after_ms": [
+          67.25501304026693,
+          82.00627705082297,
+          68.2528709876351,
+          78.4000150160864,
+          65.91919501079246
+        ],
+        "before_median_ms": 93.83895999053493,
+        "after_median_ms": 68.2528709876351,
+        "peak_rss_kib": {
+          "before": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "after": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        "png_bytes": 36045,
+        "jpeg_bytes": 110650,
+        "png_decode_median_ms": 4.59710048744455,
+        "jpeg_decode_median_ms": 1.2654970050789416,
+        "psnr_db": 47.909767733379184,
+        "edge_psnr_db": 43.17871277527356
+      },
+      "typography": {
+        "source_sha256": "db6d2f6e0fc902f201249f8ce696ce0f18b2c9625da889918a30767212d24dc1",
+        "pixels": [
+          1209,
+          756
+        ],
+        "cpu_png_unchanged": true,
+        "before_ms": [
+          186.79743900429457,
+          198.0021070339717,
+          197.62720598373562,
+          193.10157600557432,
+          193.29999800538644
+        ],
+        "after_ms": [
+          133.80205299472436,
+          122.91329499566928,
+          126.96528399828821,
+          118.45591705059633,
+          124.81186405057088
+        ],
+        "before_median_ms": 193.29999800538644,
+        "after_median_ms": 124.81186405057088,
+        "peak_rss_kib": {
+          "before": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "after": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        "png_bytes": 71593,
+        "jpeg_bytes": 110740,
+        "png_decode_median_ms": 7.768146024318412,
+        "jpeg_decode_median_ms": 2.1654014999512583,
+        "psnr_db": 48.09535317037481,
+        "edge_psnr_db": 39.938960499705445
+      },
+      "formula-regressions": {
+        "source_sha256": "af80870b21288c60c0746f80226d8ccf3eb456e519c412d9f9c850868eaba3b1",
+        "pixels": [
+          3024,
+          1436
+        ],
+        "cpu_png_unchanged": true,
+        "before_ms": [
+          217.3830489628017,
+          229.43724901415408,
+          232.14140604250133,
+          219.41473300103098,
+          218.0954070063308
+        ],
+        "after_ms": [
+          181.07983795925975,
+          170.9619410103187,
+          167.80021303566173,
+          178.68521698983386,
+          175.3058400354348
+        ],
+        "before_median_ms": 219.41473300103098,
+        "after_median_ms": 175.3058400354348,
+        "peak_rss_kib": {
+          "before": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "after": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        "png_bytes": 260246,
+        "jpeg_bytes": 393850,
+        "png_decode_median_ms": 38.522209477378055,
+        "jpeg_decode_median_ms": 8.449850982287899,
+        "psnr_db": 53.816827473668056,
+        "edge_psnr_db": 40.82940898896061
+      },
+      "chemical-bonds": {
+        "source_sha256": "814dd3a057e0a063ab05a038f42821ae2fee578f734989e885d92d998eeb05ba",
+        "pixels": [
+          3024,
+          1965
+        ],
+        "cpu_png_unchanged": true,
+        "before_ms": [
+          272.359149006661,
+          272.1877400181256,
+          279.31366697885096,
+          273.3093150309287,
+          284.63698900304735
+        ],
+        "after_ms": [
+          239.80689997551963,
+          241.01224599871784,
+          219.01554695796221,
+          228.54957199888304,
+          217.22142695216462
+        ],
+        "before_median_ms": 273.3093150309287,
+        "after_median_ms": 228.54957199888304,
+        "peak_rss_kib": {
+          "before": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "after": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        "png_bytes": 360459,
+        "jpeg_bytes": 659860,
+        "png_decode_median_ms": 50.51563700544648,
+        "jpeg_decode_median_ms": 11.911841022083536,
+        "psnr_db": 53.39032870558917,
+        "edge_psnr_db": 42.108941585848555
+      },
+      "scientific": {
+        "source_sha256": "fe608c32bd2dc991bd31856abdb618fd01b1231462186cacbd90672e6539be01",
+        "pixels": [
+          1315,
+          877
+        ],
+        "cpu_png_unchanged": true,
+        "before_ms": [
+          1267.342364997603,
+          1280.2880640374497,
+          1270.1405949774198,
+          1286.3529560272582,
+          1264.9306069943123
+        ],
+        "after_ms": [
+          1090.8411440323107,
+          1095.3325090231374,
+          1085.7906810124405,
+          1072.0950160175562,
+          1071.7021999880672
+        ],
+        "before_median_ms": 1270.1405949774198,
+        "after_median_ms": 1085.7906810124405,
+        "peak_rss_kib": {
+          "before": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          "after": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        "png_bytes": 377356,
+        "jpeg_bytes": 295302,
+        "png_decode_median_ms": 12.5893484801054,
+        "jpeg_decode_median_ms": 2.7462035068310797,
+        "psnr_db": 46.784350304877634,
+        "edge_psnr_db": 39.923789873092424
+      }
+    }
+  },
+  "media": {
+    "checked_sources": 186,
+    "manifest_sha256": "12e6960dc4f7d49725ec12cdc2cd6b9e270dde67a481bbc23d9725f7f2f89f2b",
+    "all_media_bytes_unchanged": true
+  },
+  "docs": {
+    "checked_pages": 615
+  },
+  "wasm_sha256": "453639a590b18365fdd3e2195441fb0bb4409b203ee2dbf1ea8123bf37f03cd1",
+  "limits_of_verification": [
+    "Linux x86_64 only; Windows/macOS/Python 3.14 not exercised",
+    "JPEG is lossy and may be larger than PNG; figures judged at 192 DPI",
+    "Native benchmark excludes Python binding and browser scheduling",
+    "Single-process reuse does not establish desktop refresh-rate performance",
+    "Peak RSS not measured because GNU time is absent; null values are not memory results"
+  ],
+  "scientific_input_snapshot": {
+    "source_sha256": "fe608c32bd2dc991bd31856abdb618fd01b1231462186cacbd90672e6539be01",
+    "files": 15,
+    "resource_manifest_sha256": "472adf938bbe4af1bd36d448e039d5efa93119b2e2c586677e764a2e709d357d",
+    "snapshot_unchanged": true,
+    "original_modified_by_this_task": false,
+    "original_updated_externally_during_benchmark": true
+  },
+  "discarded_measurements": [
+    "Earlier scientific timings used a changing source and were superseded by a fixed snapshot",
+    "One prior baseline PNG invocation failed; its run is excluded; a separate retry and the final complete run succeeded"
+  ],
+  "pdf_export_bytes_unchanged": {
+    "chemical-bonds": true,
+    "formula-regressions": true,
+    "heatmap": true,
+    "scientific": true,
+    "typography": true,
+    "vector": true
+  }
+}

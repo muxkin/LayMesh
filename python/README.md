@@ -106,7 +106,7 @@ p.line(x=[0, 1, 2, 3], y={{values}})
 page.add(p, offset=(5 mm, 5 mm))
 ```
 
-The magic displays a 192 DPI PNG preview from the Rust CPU renderer at double pixel density and writes the requested export. Preview DPI is independent of export DPI; `render_source` and `render_file` retain the compatible `preview_svg` result. `%laymesh figure.lay -o figure.png --dpi 300` renders an existing file. Both magics support `--warnings show|hide`. [Notebook guide](https://muxkin.github.io/LayMesh/en/docs/topics/notebook.html).
+The magic displays a 192 DPI JPEG preview (quality 95, 4:4:4 sampling, white matte) from the Rust CPU renderer at double pixel density and writes the requested export. The export and preview share one native compilation. `--preview-dpi`, `--preview-quality` and `--preview-background` control the preview independently of export settings; `render_source` and `render_file` retain the compatible `preview_svg` result. `%laymesh figure.lay -o figure.png --dpi 300` renders an existing file. Both magics support `--warnings show|hide`. [Notebook guide](https://muxkin.github.io/LayMesh/en/docs/topics/notebook.html).
 
 ## Scope
 

@@ -19,6 +19,9 @@ def _options(line: str, *, cell: bool) -> argparse.Namespace:
     parser.add_argument("--quality", type=float)
     parser.add_argument("--compression")
     parser.add_argument("--background")
+    parser.add_argument("--preview-dpi", type=float, default=192)
+    parser.add_argument("--preview-quality", type=int, default=95)
+    parser.add_argument("--preview-background", default="#ffffff")
     parser.add_argument("--webp-lossless", choices=("true", "false"))
     parser.add_argument("--webp-method", type=int)
     parser.add_argument("--webp-alpha-quality", type=int)
@@ -53,6 +56,8 @@ class LayMeshMagics(Magics):
             result = _render_notebook(
                 file=options.file, namespace=self.shell.user_ns, output=options.output, config=options.config,
                 dpi=options.dpi, plot_dpi=options.plot_dpi,
+                preview_dpi=options.preview_dpi, preview_quality=options.preview_quality,
+                preview_background=options.preview_background,
                 save_source=options.save_source,
                 show_warnings=None if options.warnings is None else options.warnings == "show",
                 **encoding,
@@ -61,12 +66,14 @@ class LayMeshMagics(Magics):
             result = _render_notebook(
                 source=cell, namespace=self.shell.user_ns, output=options.output, config=options.config,
                 dpi=options.dpi, plot_dpi=options.plot_dpi,
+                preview_dpi=options.preview_dpi, preview_quality=options.preview_quality,
+                preview_background=options.preview_background,
                 save_source=options.save_source,
                 show_warnings=None if options.warnings is None else options.warnings == "show",
                 **encoding,
             )
         # Two physical pixels per CSS pixel, without increasing export DPI.
-        display(Image(data=result.preview_png, retina=True))
+        display(Image(data=result.preview_jpeg, format="jpeg", retina=True))
 
 
 def load_ipython_extension(ipython) -> None:

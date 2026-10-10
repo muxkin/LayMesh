@@ -4,7 +4,7 @@ mod export;
 mod preview;
 
 fn usage(status: i32) -> ! {
-    let help = "用法:\n  laymesh validate <file.lay>\n  laymesh inspect <file.lay> --json\n  laymesh render <file.lay> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga>\n    [--dpi <number>] [--quality <1–100 (JPEG) / 0–100 (WebP)>]\n    [--compression <fast|default|best (PNG) / none|lzw|deflate|packbits (TIFF)>]\n    [--background <#RRGGBB>] [--webp-lossless <true|false>]\n    [--webp-method <0–6>] [--webp-alpha-quality <0–100>] [--webp-near-lossless <0–100>]\n    [--config <file.json>] [--pdf-image-compression <auto|lossless|jpeg>]\n    [--pdf-jpeg-quality <1–100>] [--pdf-downsample <true|false>]\n    [--pdf-recompress-jpeg <true|false>] [--pdf-preserve-16bit <true|false>] [--pdf-preserve-alpha <true|false>] [--pdf-alpha-background <#RRGGBB>]\n    [--pdf-auto-palette-limit <0–16384>] [--pdf-auto-flatness-threshold <0–1>]\n  laymesh lsp --stdio\n  laymesh preview --stdio\n所有命令支持 --warnings show|hide（默认读取 LAYMESH_WARNINGS）\n几何默认 mm；字号与线宽默认 pt；样式表使用 .lcss";
+    let help = "用法:\n  laymesh validate <file.lay>\n  laymesh inspect <file.lay> --json\n  laymesh render <file.lay> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga>\n    [--dpi <number>] [--quality <1–100 (JPEG) / 0–100 (WebP)>]\n    [--compression <fast|default|best (PNG) / none|lzw|deflate|packbits (TIFF)>]\n    [--background <#RRGGBB>] [--webp-lossless <true|false>]\n    [--webp-method <0–6>] [--webp-alpha-quality <0–100>] [--webp-near-lossless <0–100>]\n    [--config <file.json>] [--pdf-image-compression <auto|lossless|jpeg>]\n    [--pdf-jpeg-quality <1–100>] [--pdf-downsample <true|false>]\n    [--pdf-recompress-jpeg <true|false>] [--pdf-preserve-16bit <true|false>] [--pdf-preserve-alpha <true|false>] [--pdf-alpha-background <#RRGGBB>]\n    [--pdf-auto-palette-limit <0–16384>] [--pdf-auto-flatness-threshold <0–1>]\n    [--preview-output <preview.jpg> [--preview-dpi <number>] [--preview-quality <1–100>] [--preview-background <#RRGGBB>]]\n  laymesh render <file.lay> --preview-output <preview.jpg>\n  laymesh lsp --stdio\n  laymesh preview --stdio\n所有命令支持 --warnings show|hide（默认读取 LAYMESH_WARNINGS）\n几何默认 mm；字号与线宽默认 pt；样式表使用 .lcss";
     if status == 0 {
         println!("{help}")
     } else {
@@ -82,12 +82,30 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
     let mut output = None;
+    let mut preview_output = None;
+    let mut preview_options = laymesh_render::JpegPreviewOptions::default();
+    let mut preview_settings = false;
     let mut config_path = None;
     let mut pdf_options = serde_json::json!({});
     let mut options = laymesh_render::ExportOptions::default();
     i = 0;
     while i < rest.len() {
         match rest[i] {
+            "--preview-output" => {
+                i += 1;
+                preview_output = Some(*rest.get(i).ok_or("--preview-output requires a JPEG path")?);
+            }
+            flag @ ("--preview-dpi" | "--preview-quality" | "--preview-background") => {
+                i += 1;
+                let value = rest.get(i).ok_or("preview option requires a value")?;
+                preview_settings = true;
+                match flag {
+                    "--preview-dpi" => preview_options.dpi = value.parse()?,
+                    "--preview-quality" => preview_options.quality = value.parse()?,
+                    "--preview-background" => preview_options.background = value.to_string(),
+                    _ => unreachable!(),
+                }
+            }
             "--config" => {
                 i += 1;
                 config_path = rest.get(i).map(Path::new);
@@ -110,7 +128,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             }
             "-o" | "--output" => {
                 i += 1;
-                output = rest.get(i).copied()
+                output = Some(*rest.get(i).ok_or("-o requires an output path")?)
             }
             flag @ ("--dpi"
             | "--quality"
@@ -156,10 +174,24 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
         i += 1
     }
-    let Some(output) = output else { usage(2) };
-    let format = Path::new(output)
-        .extension()
-        .and_then(|s| s.to_str())
+    if output.is_none() && preview_output.is_none() {
+        usage(2);
+    }
+    if preview_settings && preview_output.is_none() {
+        return Err("--preview-* 参数需要 --preview-output".into());
+    }
+    if let Some(path) = preview_output {
+        let extension = Path::new(path)
+            .extension()
+            .and_then(|s| s.to_str())
+            .unwrap_or("");
+        if !matches!(extension.to_ascii_lowercase().as_str(), "jpg" | "jpeg") {
+            return Err("--preview-output 须为 .jpg 或 .jpeg".into());
+        }
+        preview_options.validate()?;
+    }
+    let format = output
+        .and_then(|path| Path::new(path).extension().and_then(|s| s.to_str()))
         .unwrap_or("")
         .to_ascii_lowercase();
     let mut explicit = serde_json::to_value(&options)?;
@@ -168,9 +200,18 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         eprintln!("{error}");
         usage(2)
     });
-    if let Err(error) = options.validate(&format) {
-        eprintln!("{error}");
-        usage(2)
+    if output.is_some() {
+        if let Err(error) = options.validate(&format) {
+            eprintln!("{error}");
+            usage(2);
+        }
+    } else if serde_json::to_value(&options)?
+        .as_object()
+        .unwrap()
+        .values()
+        .any(|v| !v.is_null())
+    {
+        return Err("导出参数需要 -o；预览请使用 --preview-dpi/quality/background".into());
     }
     let absolute = if Path::new(file).is_absolute() {
         Path::new(file).to_path_buf()
@@ -183,10 +224,12 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         &serde_json::json!({}),
         &serde_json::json!({}),
     )?;
-    options = laymesh_render::config::export_options(&defaults, &format, &options)?;
-    if let Err(error) = options.validate(&format) {
-        eprintln!("{error}");
-        usage(2)
+    if output.is_some() {
+        options = laymesh_render::config::export_options(&defaults, &format, &options)?;
+        if let Err(error) = options.validate(&format) {
+            eprintln!("{error}");
+            usage(2);
+        }
     }
     laymesh_core::asset_cache::preview_mode(format == "pdf");
     let scene = compile_file(file)?;
@@ -200,7 +243,28 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             eprintln!("{w}");
         }
     }
-    let data = if format == "pptx" {
+    let reuse_jpeg = preview_output.is_some()
+        && matches!(format.as_str(), "jpg" | "jpeg")
+        && preview_options.matches_export(&scene, &options)?;
+    let same_path = match (output, preview_output) {
+        (Some(a), Some(b)) => output_identity(Path::new(a))? == output_identity(Path::new(b))?,
+        _ => false,
+    };
+    if same_path {
+        return Err("导出文件与预览文件不能共用路径".into());
+    }
+    // Complete both encodings before replacing either destination.
+    let preview_data = if preview_output.is_some() && !reuse_jpeg {
+        Some(laymesh_render::render_jpeg_preview(
+            &scene,
+            &preview_options,
+        )?)
+    } else {
+        None
+    };
+    let data = if output.is_none() {
+        Vec::new()
+    } else if format == "pptx" {
         let (data, warnings) = laymesh_render::pptx::render_pptx(&scene, &options)?;
         if warning_mode == "show" {
             for warning in warnings {
@@ -212,9 +276,39 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         laymesh_render::render_export(&scene, &format, &options)?
     };
     laymesh_core::asset_cache::preview_mode(false);
-    export::write_atomic(Path::new(output), &data)?;
-    println!("已导出：{output}");
+    if let Some(output) = output {
+        export::write_atomic(Path::new(output), &data)?;
+        println!("已导出：{output}");
+    }
+    if let Some(preview) = preview_output {
+        export::write_atomic(Path::new(preview), preview_data.as_deref().unwrap_or(&data))?;
+        println!("已生成预览：{preview}");
+    }
     Ok(())
+}
+
+fn output_identity(path: &Path) -> std::io::Result<std::path::PathBuf> {
+    let absolute = if path.is_absolute() {
+        path.to_path_buf()
+    } else {
+        env::current_dir()?.join(path)
+    };
+    let mut resolved = std::path::PathBuf::new();
+    for component in absolute.components() {
+        match component {
+            std::path::Component::CurDir => {}
+            std::path::Component::ParentDir => {
+                resolved.pop();
+            }
+            _ => {
+                resolved.push(component);
+                if resolved.exists() {
+                    resolved = resolved.canonicalize()?;
+                }
+            }
+        }
+    }
+    Ok(resolved)
 }
 fn main() {
     if let Err(error) = run() {

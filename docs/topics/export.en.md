@@ -62,9 +62,9 @@ render_file("figure.lay", output="figure.webp", dpi=300, webp_lossless=True,
             quality=100, webp_method=6, webp_near_lossless=100)
 ```
 
-`render_source` accepts the same keyword arguments; encoding options require `output`. Both `%laymesh` and `%%laymesh` accept the same CLI flags. The SVG preview remains available while the export uses the chosen codec.
+`render_source` accepts the same keyword arguments; encoding options require `output`. Both `%laymesh` and `%%laymesh` accept the same CLI flags. The Python API retains its SVG result; Notebook magics display a Rust CPU JPEG preview while the export uses the chosen codec.
 
-PPTX exports retain the SVG Notebook preview: use `%laymesh figure.lay -o figure.pptx` or `%%laymesh -o figure.pptx`. `dpi` affects local fallback only and defaults to 1200.
+PPTX exports display the same Rust CPU JPEG Notebook preview: use `%laymesh figure.lay -o figure.pptx` or `%%laymesh -o figure.pptx`. `dpi` affects local fallback only and defaults to 1200.
 
 ## VS Code
 

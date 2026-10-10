@@ -53,14 +53,14 @@ page.add(text(content={{caption}},font_size=5pt),offset=(2mm,40mm))
 '''
 with capture_output() as first:
     get_ipython().run_cell_magic("laymesh", "--warnings hide -o native.pdf --save-source native.lay", source)
-first_png = first.outputs[-1].data["image/png"]
+first_jpeg = first.outputs[-1].data["image/jpeg"]
 first_data = next(Path("native.assets").glob("*.json")).read_bytes()
 samples.loc[1, "y"] = 7.0
 caption = "Notebook changed 中文 fi العربية $\\sqrt{x^2+1}$"
 with capture_output() as second:
     get_ipython().run_cell_magic("laymesh", "--warnings hide -o native.pptx --save-source native.lay", source)
-second_png = second.outputs[-1].data["image/png"]
-assert first_png != second_png
+second_jpeg = second.outputs[-1].data["image/jpeg"]
+assert first_jpeg != second_jpeg
 assert "Notebook changed" in Path("native.lay").read_text()
 assert len(list(Path("native.assets").glob("*.json"))) == 2
 assert any(p.read_bytes() != first_data for p in Path("native.assets").glob("*.json"))
@@ -69,10 +69,11 @@ with zipfile.ZipFile("native.pptx") as deck:
     assert b"Notebook changed" in deck.read("ppt/slides/slide1.xml")
 with capture_output() as reopened:
     get_ipython().run_line_magic("laymesh", "native.lay --warnings hide")
-assert reopened.outputs[-1].data["image/png"] == second_png
+assert reopened.outputs[-1].data["image/jpeg"] == second_jpeg
 result = render_file("native.lay", output="native-replay.png", dpi=192, show_warnings=False)
 assert result.preview_svg.startswith("<svg")
-assert base64.b64decode(second_png) == Path("native-replay.png").read_bytes()
+subprocess.run([*command, "render", "native.lay", "--preview-output", "native-replay.jpg", "--warnings", "hide"], check=True, capture_output=True)
+assert base64.b64decode(second_jpeg) == Path("native-replay.jpg").read_bytes()
 with capture_output() as api_display:
     display(result)
 assert len(api_display.outputs[-1].data["text/plain"].encode()) < 1024
@@ -89,12 +90,12 @@ with capture_output() as vector_first:
     get_ipython().run_cell_magic("laymesh", "--warnings hide --save-source mutable.lay", figure_source)
 with capture_output() as vector_same:
     get_ipython().run_cell_magic("laymesh", "--warnings hide --save-source mutable.lay", figure_source)
-assert vector_first.outputs[-1].data["image/png"] == vector_same.outputs[-1].data["image/png"]
+assert vector_first.outputs[-1].data["image/jpeg"] == vector_same.outputs[-1].data["image/jpeg"]
 assert len(list(Path("mutable.assets").glob("*.svg"))) == 1
 ax.lines[0].set_ydata([3, 1, 4])
 with capture_output() as vector_second:
     get_ipython().run_cell_magic("laymesh", "--warnings hide --save-source mutable.lay", figure_source)
-assert vector_first.outputs[-1].data["image/png"] != vector_second.outputs[-1].data["image/png"]
+assert vector_first.outputs[-1].data["image/jpeg"] != vector_second.outputs[-1].data["image/jpeg"]
 assert len(list(Path("mutable.assets").glob("*.svg"))) == 2
 
 # File magic resolves modules and transparent raster assets relative to the
@@ -109,10 +110,14 @@ with capture_output() as relative:
 with PILImage.open("relative export.png") as image:
     assert image.size == (96, 48)
     assert image.convert("RGBA").getpixel((10, 10)) == (0, 128, 255, 128)
-preview_bytes = base64.b64decode(relative.outputs[-1].data["image/png"])
+preview_bytes = base64.b64decode(relative.outputs[-1].data["image/jpeg"])
 with PILImage.open(io.BytesIO(preview_bytes)) as image:
     assert image.size == (192, 96)
-assert relative.outputs[-1].metadata["image/png"] == {"width": 96, "height": 48}
+    assert image.format == "JPEG"
+    assert image.info["dpi"] == (192, 192)
+    assert all(abs(a-b) <= 2 for a,b in zip(image.getpixel((20,20)), (127,191,255)))
+    assert image.getpixel((180,80)) == (255,255,255)
+assert relative.outputs[-1].metadata["image/jpeg"] == {"width": 96, "height": 48}
 
 # Preview resolution stays independent of the 1200-DPI default and settings.
 Path("export.json").write_text('{"export":{"dpi":72,"png":{"compression":"fast"}}}')
@@ -120,7 +125,7 @@ with capture_output() as configured:
     get_ipython().run_cell_magic("laymesh", "-o configured.png --config export.json", 'page=canvas(size=(25.4mm,12.7mm))')
 with PILImage.open("configured.png") as image:
     assert image.size == (72, 36)
-with PILImage.open(io.BytesIO(base64.b64decode(configured.outputs[-1].data["image/png"]))) as image:
+with PILImage.open(io.BytesIO(base64.b64decode(configured.outputs[-1].data["image/jpeg"]))) as image:
     assert image.size == (192, 96)
 with capture_output() as defaults:
     get_ipython().run_cell_magic("laymesh", "-o default.tif", 'page=canvas(size=(2.54mm,1.27mm))')
@@ -138,7 +143,7 @@ for invalid, message in [('page=unknown()', None), ('page=canvas(size=(10mm,10mm
         raise AssertionError("Invalid input was accepted")
 with capture_output() as recovered:
     get_ipython().run_cell_magic("laymesh", "--warnings hide", 'page=canvas(size=(10mm,10mm))\npage.add(text("$E=mc^2$"))')
-assert "image/png" in recovered.outputs[-1].data
+assert "image/jpeg" in recovered.outputs[-1].data
 assert "image/svg+xml" not in recovered.outputs[-1].data
 assert not list(Path.cwd().rglob(".laymesh-*.lay"))
 assert not plt.get_fignums()
@@ -149,7 +154,7 @@ kernel_evidence = dict(engine_version=version,
     data_updates=True, figure_updates=True, unchanged_figure_asset_reused=True,
     standalone_replay=True, relative_modules_and_alpha=True, config_dpi=True,
     default_dpi_1200_and_tiff_lzw=True, errors_recover=True, svg_api_compatible=True,
-    png_exact_native_match=True, compact_result_display=True, installed_offline=installed_check)
+    jpeg_exact_native_match=True, compact_result_display=True, installed_offline=installed_check)
 print(json.dumps(kernel_evidence))
 """
 
@@ -199,13 +204,17 @@ def main():
                 previews = []
                 for cell in notebook.cells:
                     for output in cell.get("outputs", []):
-                        if "image/png" not in output.get("data", {}):
+                        if "image/jpeg" not in output.get("data", {}):
                             continue
                         assert "image/svg+xml" not in output.data
-                        data = base64.b64decode(output.data["image/png"])
+                        data = base64.b64decode(output.data["image/jpeg"])
                         with Image.open(io.BytesIO(data)) as image:
                             image.load()
-                            previews.append({"pixels": list(image.size), "css": output.metadata["image/png"],
+                            assert image.format == "JPEG"
+                            assert image.info["dpi"] == (192, 192)
+                            from PIL.JpegImagePlugin import get_sampling
+                            assert get_sampling(image) == 0
+                            previews.append({"pixels": list(image.size), "css": output.metadata["image/jpeg"],
                                              "sha256": hashlib.sha256(data).hexdigest()})
                 assert len(previews) == 3, previews
                 expected = work / "output/laymesh-jupyter/figure.pdf"

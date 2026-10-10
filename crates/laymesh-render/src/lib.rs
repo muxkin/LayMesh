@@ -820,6 +820,8 @@ pub mod config;
 #[cfg(feature = "native")]
 mod export;
 #[cfg(feature = "native")]
+mod jpeg_preview;
+#[cfg(feature = "native")]
 mod native;
 #[cfg(feature = "native")]
 mod pdf;
@@ -831,6 +833,8 @@ pub mod preview_assets;
 pub mod raster_policy;
 #[cfg(feature = "native")]
 pub use export::{ExportOptions, export_format, render_export};
+#[cfg(feature = "native")]
+pub use jpeg_preview::{JpegPreviewOptions, render_jpeg_preview};
 #[cfg(feature = "native")]
 pub use native::{render_pdf, render_png};
 

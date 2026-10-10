@@ -155,14 +155,14 @@ impl ExportOptions {
     }
 }
 
-fn parse_background(value: &str) -> Result<[u8; 3]> {
+pub(crate) fn parse_background(value: &str) -> Result<[u8; 3]> {
     let digits = value.strip_prefix('#').unwrap_or("");
     if digits.len() != 6 || !digits.bytes().all(|b| b.is_ascii_hexdigit()) {
         return Err(error("background 须为 #RRGGBB（默认 #ffffff）"));
     }
     Ok([0, 2, 4].map(|i| u8::from_str_radix(&digits[i..i + 2], 16).unwrap()))
 }
-fn matte(rgba: &[u8], background: [u8; 3]) -> Vec<u8> {
+pub(crate) fn matte(rgba: &[u8], background: [u8; 3]) -> Vec<u8> {
     rgba.chunks_exact(4)
         .flat_map(|p| {
             (0..3).map(move |i| {

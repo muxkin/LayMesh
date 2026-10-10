@@ -62,9 +62,9 @@ render_file("figure.lay", output="figure.webp", dpi=300, webp_lossless=True,
             quality=100, webp_method=6, webp_near_lossless=100)
 ```
 
-`render_source` 接受相同关键字参数；`output=None` 时不能指定编码参数。`%laymesh` 和 `%%laymesh` 接受上面示例中的同名 CLI 参数。SVG 预览保持可用，导出文件使用所选编码。
+`render_source` 接受相同关键字参数；`output=None` 时不能指定编码参数。`%laymesh` 和 `%%laymesh` 接受上面示例中的同名 CLI 参数。Python API 保留 SVG 返回值；Notebook Magic 使用 Rust CPU JPEG 预览，导出文件使用所选编码。
 
-PPTX 保留 SVG Notebook 预览，`%laymesh figure.lay -o figure.pptx` 或 `%%laymesh -o figure.pptx` 可直接导出；`dpi` 仅调节局部回退，默认 1200。
+PPTX 也使用 Rust CPU JPEG Notebook 预览，`%laymesh figure.lay -o figure.pptx` 或 `%%laymesh -o figure.pptx` 可直接导出；`dpi` 仅调节局部回退，默认 1200。
 
 ## VS Code
 

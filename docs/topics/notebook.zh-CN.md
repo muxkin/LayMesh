@@ -28,7 +28,7 @@ Python 默认使用所安装 wheel 的内置引擎；切换 Git 分支不会自�
 page = canvas(size=(100 mm, 70 mm))
 ```
 
-两种 Magic 都通过 Rust CPU 渲染器生成 192 DPI PNG 预览，以双倍像素密度显示在单元格中；预览 DPI 独立于导出 DPI。SVG 仍可显式导出，Python API 的 `preview_svg` 保持兼容。行 Magic 读取文件，单元格 Magic 读取正文；均支持 `-o/--output`、`--dpi`、`--plot-dpi`、`--save-source`。`--plot-dpi` 默认 300，只影响 Figure 回退图像。`load_ipython_extension` 位于 [ipython.py](../../python/laymesh/ipython.py)，不在 `laymesh` 顶层导出。
+两种 Magic 都通过 Rust CPU 渲染器生成 192 DPI JPEG 预览（质量 95，4:4:4 采样，透明区域默认合成到白底），以双倍像素密度显示在单元格中；导出与预览共用一次原生编译。`--preview-dpi`、`--preview-quality`、`--preview-background` 独立控制预览；`--dpi`、`--quality`、`--background` 仍只影响导出。画布本身的背景色保持不变。SVG 仍可显式导出，Python API 的 `preview_svg` 保持兼容。行 Magic 读取文件，单元格 Magic 读取正文；均支持 `-o/--output`、`--dpi`、`--plot-dpi`、`--save-source`。`--plot-dpi` 默认 300，只影响 Figure 回退图像。`load_ipython_extension` 位于 [ipython.py](../../python/laymesh/ipython.py)，不在 `laymesh` 顶层导出。
 
 ## 限制与相关主题
 

@@ -5,12 +5,13 @@ edition.workspace = true
 license.workspace = true
 [features]
 default = ["native"]
-native = ["dep:krilla", "dep:png", "dep:ratex-katex-fonts", "dep:tiff", "dep:webp", "dep:zip"]
+native = ["dep:jpeg-encoder", "dep:krilla", "dep:png", "dep:ratex-katex-fonts", "dep:tiff", "dep:webp", "dep:zip"]
 [dependencies]
 laymesh-core = { path = "../laymesh-core", default-features = false }
 serde_json.workspace = true
 krilla = { version = "0.8.2", default-features = false, features = ["raster-images"], optional = true }
 png = { version = "0.18", optional = true }
+jpeg-encoder = { version = "=0.7.1", features = ["simd"], optional = true }
 base64 = "0.22"
 ratex-katex-fonts = { version = "=0.1.14", optional = true }
 ttf-parser = "0.25"

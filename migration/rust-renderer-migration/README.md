@@ -2,7 +2,32 @@
 
 基于干净的 `main`（`9c6f26f`）建立 `codex/rust-renderer-migration`。新默认链路为 `Scene → DisplayList v1 → Vello CPU 0.3.0 / krilla 0.8.2 / DrawingML`，本轮未发布版本。CLI、Python 和现有导出函数签名保持兼容。
 
-## Python / Jupyter 协同复核（2026-10-10）
+## Notebook 高清 JPEG 预览（2026-10-10）
+
+Notebook Magic 现在默认使用 Rust CPU 生成 192 DPI JPEG，质量 95、4:4:4 采样，透明区域合成到白底，保留画布本身的背景色。`--preview-dpi`、`--preview-quality`、`--preview-background` 独立调整预览，正式导出的默认 DPI、透明度和编码器保持原有规则。公共 Python API 的 SVG 返回值与函数签名保持兼容。
+
+CLI 新增 `--preview-output preview.jpg`，Notebook 导出与预览共用一次编译。预览采用原生限定的 `jpeg-encoder 0.7.1`，运行时检测 AVX2 并保留标量路径；参数一致时复用正式 JPEG 输出。仍执行 100,000,000 像素上限和原有效果预算，JPEG 超过 65535 像素的边长明确报错。预览错误不会静默改用 SVG/PNG；两个文件共用路径或通过符号链接互相覆盖时也明确拒绝。
+
+完整 Rust 回归 528 项成功、1 项原有忽略，当前 CLI 另通过 8 项检查；Python 3.10/IPython 8 与 Python 3.13/IPython 9 各通过 54 项合同。源码与两个隔离 wheel 环境均连续执行示例两轮，验证数据/Figure 更新、保存重渲染、公式、Alpha 合成、配置隔离、离线运行与错误恢复。JupyterLab 桌面、窄屏和 DPR 2 实测显示 JPEG，实际内核及内置引擎的哈希与源码一致，无相关控制台错误。
+
+完整公式 Rust 合同随回归重跑；JPEG 另检查四种公式字体、化学键、数学字母与此前回归案例，见[实际 JPEG 预览](comparisons/notebook-formulas-jpeg.jpg)。六种输入在相同 192 DPI 下的新旧 PNG 字节一致；JPEG 与白底合成参考的 PSNR 为 46.8–53.8 dB，边缘区域为 39.9–43.2 dB。这些指标不代表 JPEG 无损。WASM 二进制哈希保持一致，新增编码器不进入 WASM 依赖树。
+
+下表测量完整原生 PDF 导出加 Notebook 预览，旧版本分别启动两个进程，新版本启动一个进程；每例预热一次、交替运行五次取中位数。图片解码列为 Pillow 单独解码，均不包含 Python 数据绑定或浏览器调度。
+
+| 案例 | 导出＋预览旧 → 新（ms） | PNG → JPEG 解码（ms） |
+| --- | --- | --- |
+| vector | 93.5 → 55.5 | 4.75 → 0.98 |
+| heatmap | 93.8 → 68.3 | 4.60 → 1.27 |
+| typography | 193.3 → 124.8 | 7.77 → 2.17 |
+| formula-regressions | 219.4 → 175.3 | 38.52 → 8.45 |
+| chemical-bonds | 273.3 → 228.5 | 50.52 → 11.91 |
+| scientific | 1270.1 → 1085.8 | 12.59 → 2.75 |
+
+这六例的导出与预览合计缩短约 15%–41%。多数线条和公式案例的 JPEG 文件比 PNG 大，不能据此声称普遍节省体积；科研图件仍有约 1.1 秒的 PDF 导出与预览总耗时，本次改动未把它变成高刷新率工作流。每次计时保存在[精简验证结果](notebook-jpeg-verification.json)，可用 [profile-notebook-preview.py](../../scripts/profile-notebook-preview.py) 复现。科研源文件在复测期间发生外部更新，因此最终使用当前源码和 15 项文件构成的固定副本；未修改原始图件。六例正式 PDF 字节也与基线一致。本机缺少 GNU time，峰值内存未获得有效测量，不把空值当作结果。
+
+媒体通过原生渲染器完整重建，186 项媒体指纹和 615 页文档检查通过，实际媒体字节保持一致。实验 wheel 约 7.88 MB，保存在本地 `release/verification/notebook-jpeg/wheels/`；这里只安装到隔离测试环境，目标 Notebook 内核需安装该 wheel 并重启后生效。本轮未发布版本或实现多页与动画。
+
+## Python / Jupyter 协同复核（2026-10-10，JPEG 切换前的 e5e7352 基线）
 
 Notebook Magic 已接入原生 CPU PNG 预览，固定 192 DPI、双倍像素密度；导出仍遵循默认 1200 DPI、TIFF LZW 与显式配置。Python `render_source`、`render_file` 和 `RenderResult` 的构造签名、`preview_svg` 字段保持兼容。返回对象的默认文本摘要不再展开整段 SVG，避免 Notebook 输出大量图片编码文本。Matplotlib 默认 SVG 标识改为固定哈希种子，使布局未改变的 Figure 复用素材；保留用户显式配置的 `svg.hashsalt`，实际布局变化仍使用新内容哈希。
 

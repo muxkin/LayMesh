@@ -77,6 +77,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | indexmap | 2.14.2 | Apache-2.0 OR MIT |
 | itoa | 1.0.18 | MIT OR Apache-2.0 |
 | jobserver | 0.1.35 | MIT OR Apache-2.0 |
+| jpeg-encoder | 0.7.1 | (MIT OR Apache-2.0) AND IJG |
 | krilla | 0.8.2 | MIT OR Apache-2.0 |
 | kurbo | 0.13.1 | Apache-2.0 OR MIT |
 | lazy_static | 1.5.1 | MIT OR Apache-2.0 |
