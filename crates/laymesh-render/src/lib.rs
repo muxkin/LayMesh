@@ -2,6 +2,7 @@
 //! DrawingML exports. The SVG serializer serves file exports and explicit
 //! compatibility calls; SVG imports pass through a separate adapter.
 pub mod display_list;
+pub mod display_update;
 mod effects;
 pub mod raster;
 mod svg_import;

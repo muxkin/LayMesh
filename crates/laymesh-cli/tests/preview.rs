@@ -71,6 +71,70 @@ fn negotiated_compressed_commands_preserve_exact_lists_and_changed_frames() {
 }
 
 #[test]
+fn acknowledged_display_updates_and_unknown_baselines_use_lossless_cpu_commands() {
+    use std::io::{BufRead, BufReader};
+    let root = std::env::temp_dir().join(format!("laymesh-updates-preview-{}", std::process::id()));
+    std::fs::create_dir_all(&root).unwrap();
+    let mut process = Command::new(env!("CARGO_BIN_EXE_laymesh"))
+        .args(["preview", "--stdio"])
+        .env("LAYMESH_NO_SYSTEM_FONTS", "1")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let mut input = process.stdin.take().unwrap();
+    let mut output = BufReader::new(process.stdout.take().unwrap());
+    let mut line = String::new();
+    output.read_line(&mut line).unwrap();
+    let ready: Value = serde_json::from_str(&line).unwrap();
+    assert!(
+        ready["capabilities"]
+            .as_array()
+            .unwrap()
+            .contains(&json!("display-list-updates-v3"))
+    );
+    let source = "p=canvas(size=(30mm,20mm))\np.add(rect(size=(10mm,10mm),fill=\"#f00\"))";
+    let mut base = Value::Null;
+    let mut retained: Option<laymesh_render::DisplayList> = None;
+    for i in 0..4 {
+        let source = source.replace("#f00", if i == 0 { "#f00" } else { "#00f" });
+        let request = json!({"id":i,"generation":i,"protocol":3,"file":root.join("main.lay"),"source":source,"resource_dir":root,"display_list_updates":true,"known_display_list":if i==3 {json!("unknown-restarted-client")} else {base.clone()}});
+        writeln!(input, "{request}").unwrap();
+        input.flush().unwrap();
+        line.clear();
+        output.read_line(&mut line).unwrap();
+        let result: Value = serde_json::from_str(&line).unwrap();
+        assert!(result.get("svg").is_none());
+        assert_eq!(result["generation"], i);
+        if i == 0 || i == 3 {
+            assert!(result.get("displayListUpdate").is_none());
+            retained = Some(serde_json::from_value(result["displayList"].clone()).unwrap());
+        } else {
+            assert_eq!(result["displayListUpdate"]["base"], base);
+            let update: laymesh_render::display_update::DisplayUpdate =
+                serde_json::from_value(result["displayListUpdate"]["update"].clone()).unwrap();
+            assert_eq!(update.nodes.len(), if i == 1 { 1 } else { 0 });
+            update.apply(retained.as_mut().unwrap()).unwrap();
+            let scene = laymesh_core::engine::compile_source(
+                &source,
+                "/fixture/main.lay",
+                Default::default(),
+            )
+            .unwrap();
+            assert_eq!(
+                retained.as_ref().unwrap(),
+                &laymesh_render::to_display_list(&scene).unwrap()
+            );
+        }
+        base = result["displayListId"].clone();
+        assert!(base.is_string());
+    }
+    drop(input);
+    assert!(process.wait().unwrap().success());
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
 fn preview_units_overlays_failed_dependencies_and_recovery() {
     let root = std::env::temp_dir()
         .join(format!("laymesh-preview-overlays-{}", std::process::id()))

@@ -1,0 +1,1352 @@
+{
+  "measured_at": "2026-10-10",
+  "baseline_commit": "aa3e302",
+  "platform": "Linux x64; actual isolated VS Code webview, DPR 2, fit view, 1200 x 800 pixels",
+  "fixture_sha256": "0f76ae48abf1612798cf064a7739b619d5534386bb5bc93f63c8b7e377c6c4ab",
+  "methodology": "Same readonly scientific input and genuine panel label edits. One cold frame, one edit warmup, then five edits. Phase medians are separate and need not sum. elapsed_ms excludes the default 100 ms debounce; edit_to_visible_ms starts before applying each editor change and includes debounce, event handling and Canvas presentation. Paired runs after heavy validations stopped. Cold/reload values are single observations.",
+  "before": {
+    "cold_ms": 2491,
+    "median": {
+      "native_ms": 103,
+      "install_ms": 137.80000001192093,
+      "raster_ms": 62,
+      "elapsed_ms": 330,
+      "edit_to_visible_ms": 438,
+      "bytes": 3455964,
+      "native_peak_rss_kib": 479704,
+      "wasm_memory_bytes": 212074496,
+      "width": 1200,
+      "height": 800
+    },
+    "hot": [
+      {
+        "native_ms": 105,
+        "install_ms": 137.80000001192093,
+        "raster_ms": 61.80000001192093,
+        "elapsed_ms": 330,
+        "edit_to_visible_ms": 440,
+        "bytes": 3456275,
+        "native_peak_rss_kib": 479704,
+        "wasm_memory_bytes": 212074496,
+        "width": 1200,
+        "height": 800,
+        "incremental": false
+      },
+      {
+        "native_ms": 107,
+        "install_ms": 136.39999997615814,
+        "raster_ms": 62.19999998807907,
+        "elapsed_ms": 329,
+        "edit_to_visible_ms": 437,
+        "bytes": 3455801,
+        "native_peak_rss_kib": 479704,
+        "wasm_memory_bytes": 212074496,
+        "width": 1200,
+        "height": 800,
+        "incremental": false
+      },
+      {
+        "native_ms": 98,
+        "install_ms": 132.80000001192093,
+        "raster_ms": 62,
+        "elapsed_ms": 321,
+        "edit_to_visible_ms": 429,
+        "bytes": 3456563,
+        "native_peak_rss_kib": 479704,
+        "wasm_memory_bytes": 212074496,
+        "width": 1200,
+        "height": 800,
+        "incremental": false
+      },
+      {
+        "native_ms": 99,
+        "install_ms": 140.10000002384186,
+        "raster_ms": 61.39999997615814,
+        "elapsed_ms": 332,
+        "edit_to_visible_ms": 438,
+        "bytes": 3455961,
+        "native_peak_rss_kib": 479704,
+        "wasm_memory_bytes": 222691328,
+        "width": 1200,
+        "height": 800,
+        "incremental": false
+      },
+      {
+        "native_ms": 103,
+        "install_ms": 144.19999998807907,
+        "raster_ms": 62.299999952316284,
+        "elapsed_ms": 334,
+        "edit_to_visible_ms": 441,
+        "bytes": 3455964,
+        "native_peak_rss_kib": 479704,
+        "wasm_memory_bytes": 222691328,
+        "width": 1200,
+        "height": 800,
+        "incremental": false
+      }
+    ],
+    "reload_ms": 889,
+    "artifacts": {
+      "native": "170cd6f6a7b027349992923a2002b1fc5720f95953151f6ad1137c789d5183c3",
+      "wasm": "4e325bcdb852ef99a6db2703bb28574ddfab21e88cbc54c648b42fe56ef7536c"
+    }
+  },
+  "after": {
+    "cold_ms": 2349,
+    "median": {
+      "native_ms": 35,
+      "install_ms": 0.30000001192092896,
+      "raster_ms": 8.299999952316284,
+      "elapsed_ms": 48,
+      "edit_to_visible_ms": 154,
+      "bytes": 16602,
+      "native_peak_rss_kib": 481848,
+      "wasm_memory_bytes": 201195520,
+      "width": 1200,
+      "height": 800
+    },
+    "hot": [
+      {
+        "native_ms": 34,
+        "install_ms": 0.30000001192092896,
+        "raster_ms": 8.599999964237213,
+        "elapsed_ms": 48,
+        "edit_to_visible_ms": 154,
+        "bytes": 16311,
+        "native_peak_rss_kib": 481848,
+        "wasm_memory_bytes": 201195520,
+        "width": 1200,
+        "height": 800,
+        "incremental": true
+      },
+      {
+        "native_ms": 35,
+        "install_ms": 0.30000001192092896,
+        "raster_ms": 8.199999988079071,
+        "elapsed_ms": 47,
+        "edit_to_visible_ms": 153,
+        "bytes": 16602,
+        "native_peak_rss_kib": 481848,
+        "wasm_memory_bytes": 201195520,
+        "width": 1200,
+        "height": 800,
+        "incremental": true
+      },
+      {
+        "native_ms": 37,
+        "install_ms": 0.3999999761581421,
+        "raster_ms": 8.5,
+        "elapsed_ms": 51,
+        "edit_to_visible_ms": 158,
+        "bytes": 17726,
+        "native_peak_rss_kib": 481848,
+        "wasm_memory_bytes": 201195520,
+        "width": 1200,
+        "height": 800,
+        "incremental": true
+      },
+      {
+        "native_ms": 34,
+        "install_ms": 0.30000001192092896,
+        "raster_ms": 8.299999952316284,
+        "elapsed_ms": 47,
+        "edit_to_visible_ms": 154,
+        "bytes": 15553,
+        "native_peak_rss_kib": 481848,
+        "wasm_memory_bytes": 201195520,
+        "width": 1200,
+        "height": 800,
+        "incremental": true
+      },
+      {
+        "native_ms": 35,
+        "install_ms": 0.30000001192092896,
+        "raster_ms": 8.099999964237213,
+        "elapsed_ms": 48,
+        "edit_to_visible_ms": 156,
+        "bytes": 16929,
+        "native_peak_rss_kib": 481848,
+        "wasm_memory_bytes": 201195520,
+        "width": 1200,
+        "height": 800,
+        "incremental": true
+      }
+    ],
+    "reload_ms": 1238,
+    "artifacts": {
+      "native": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+      "wasm": "453639a590b18365fdd3e2195441fb0bb4409b203ee2dbf1ea8123bf37f03cd1"
+    }
+  },
+  "strategy": [
+    "Protocol 3 explicitly negotiates updates, validates the acknowledged baseline and replaces changed subtrees; unavailable baselines receive complete CPU commands.",
+    "Reuse unchanged typed drawing commands and decoded resources.",
+    "Preview retains at most two exact viewport/density frames, with a maximum 16 MiB pixel cache and a zero-budget switch. Repaint conservative old/new object bounds with original 1024-pixel tile origins, integer clipping and culling.",
+    "Masks/effects, changed resources, root-count/page-size changes and different viewports draw completely. Existing geometry precision and pixel/effect limits remain unchanged.",
+    "Website reuses its resident DrawJob across edits and sends only resource/page information to the UI; complete display_list() and raster() APIs remain available.",
+    "A bounded complete baseline plus one composed update restores the webview; ancestor/descendant replacements, roots and resource changes compose without an edit-count-triggered full reinstallation."
+  ],
+  "retained_pixel_checks": {
+    "scientific": {
+      "rows": [
+        {
+          "generation": 0,
+          "incremental": false,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 134.60000002384186
+        },
+        {
+          "generation": 0,
+          "incremental": false,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 69.5
+        },
+        {
+          "generation": 1,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 9.400000035762787
+        },
+        {
+          "generation": 1,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 8.599999964237213
+        },
+        {
+          "generation": 2,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 9
+        },
+        {
+          "generation": 2,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 9.299999952316284
+        },
+        {
+          "generation": 3,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 8.900000035762787
+        },
+        {
+          "generation": 3,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 8.600000023841858
+        },
+        {
+          "generation": 4,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 8.600000023841858
+        },
+        {
+          "generation": 4,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 8.599999964237213
+        },
+        {
+          "generation": 5,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 8.799999952316284
+        },
+        {
+          "generation": 5,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 8.300000011920929
+        },
+        {
+          "generation": 6,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 9.400000035762787
+        },
+        {
+          "generation": 6,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 9
+        }
+      ],
+      "maximumDelta": 0,
+      "frames": 7,
+      "paints": 14,
+      "fixture_sha256": "0f76ae48abf1612798cf064a7739b619d5534386bb5bc93f63c8b7e377c6c4ab",
+      "native_sha256": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+      "wasm_sha256": "453639a590b18365fdd3e2195441fb0bb4409b203ee2dbf1ea8123bf37f03cd1",
+      "definition": "Seven genuine source versions; same resources; whole-page and shifted viewport; fresh full WASM paint compared with retained update; no precision/quality reduction."
+    },
+    "effects": {
+      "rows": [
+        {
+          "generation": 0,
+          "incremental": false,
+          "width": 1200,
+          "height": 600,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 55.09999996423721
+        },
+        {
+          "generation": 0,
+          "incremental": false,
+          "width": 1200,
+          "height": 580,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 48.39999997615814
+        },
+        {
+          "generation": 1,
+          "incremental": true,
+          "width": 1200,
+          "height": 600,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 40.30000001192093
+        },
+        {
+          "generation": 1,
+          "incremental": true,
+          "width": 1200,
+          "height": 580,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 48.60000002384186
+        },
+        {
+          "generation": 2,
+          "incremental": true,
+          "width": 1200,
+          "height": 600,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 41
+        },
+        {
+          "generation": 2,
+          "incremental": true,
+          "width": 1200,
+          "height": 580,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 51.5
+        },
+        {
+          "generation": 3,
+          "incremental": true,
+          "width": 1200,
+          "height": 600,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 45.39999997615814
+        },
+        {
+          "generation": 3,
+          "incremental": true,
+          "width": 1200,
+          "height": 580,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 57.60000002384186
+        },
+        {
+          "generation": 4,
+          "incremental": true,
+          "width": 1200,
+          "height": 600,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 40.700000047683716
+        },
+        {
+          "generation": 4,
+          "incremental": true,
+          "width": 1200,
+          "height": 580,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 48.89999997615814
+        },
+        {
+          "generation": 5,
+          "incremental": true,
+          "width": 1200,
+          "height": 600,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 36.89999997615814
+        },
+        {
+          "generation": 5,
+          "incremental": true,
+          "width": 1200,
+          "height": 580,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 46.40000003576279
+        },
+        {
+          "generation": 6,
+          "incremental": true,
+          "width": 1200,
+          "height": 600,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 37.69999998807907
+        },
+        {
+          "generation": 6,
+          "incremental": true,
+          "width": 1200,
+          "height": 580,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 48.69999998807907
+        }
+      ],
+      "maximumDelta": 0,
+      "frames": 7,
+      "paints": 14,
+      "fixture_sha256": "c63ec8aca7d63110d3eea4cf11c6c5291adea7d70682ea45fa1ca13497ee2061",
+      "native_sha256": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+      "wasm_sha256": "453639a590b18365fdd3e2195441fb0bb4409b203ee2dbf1ea8123bf37f03cd1",
+      "definition": "Seven genuine source versions; same resources; whole-page and shifted viewport; fresh full WASM paint compared with retained update; no precision/quality reduction."
+    },
+    "formula": {
+      "rows": [
+        {
+          "generation": 0,
+          "incremental": false,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 17.400000035762787
+        },
+        {
+          "generation": 0,
+          "incremental": false,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 8.599999964237213
+        },
+        {
+          "generation": 1,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 6.399999976158142
+        },
+        {
+          "generation": 1,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 6.600000023841858
+        },
+        {
+          "generation": 2,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 6.399999976158142
+        },
+        {
+          "generation": 2,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 6.100000023841858
+        },
+        {
+          "generation": 3,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 6.399999976158142
+        },
+        {
+          "generation": 3,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 6.300000011920929
+        },
+        {
+          "generation": 4,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 7
+        },
+        {
+          "generation": 4,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 11
+        },
+        {
+          "generation": 5,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 6.5
+        },
+        {
+          "generation": 5,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 6.300000011920929
+        },
+        {
+          "generation": 6,
+          "incremental": true,
+          "width": 1200,
+          "height": 800,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 6.699999988079071
+        },
+        {
+          "generation": 6,
+          "incremental": true,
+          "width": 1200,
+          "height": 773,
+          "maximumDelta": 0,
+          "differingChannels": 0,
+          "retainedPaintMs": 6.300000011920929
+        }
+      ],
+      "maximumDelta": 0,
+      "frames": 7,
+      "paints": 14,
+      "fixture_sha256": "4fdf352ce779ce97da3b4b596b30d2be613b1bb06f4ed63615d705119c4b5f77",
+      "native_sha256": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+      "wasm_sha256": "453639a590b18365fdd3e2195441fb0bb4409b203ee2dbf1ea8123bf37f03cd1",
+      "definition": "Seven genuine source versions; same resources; whole-page and shifted viewport; fresh full WASM paint compared with retained update; no precision/quality reduction."
+    }
+  },
+  "motion": {
+    "scientific-motion": {
+      "rows": [
+        {
+          "scenario": "pan",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.800000000000182,
+          "frame_max_ms": 16.800000000000182,
+          "frames_above_25_ms": 0,
+          "handler_p95_ms": 0.30000001192092896,
+          "input_to_layout_p95_ms": 17.5,
+          "bitmap_paints": 0,
+          "long_tasks": 0,
+          "uncovered_layout_frames": 0
+        },
+        {
+          "scenario": "zoom",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.800000000000182,
+          "frame_max_ms": 16.800000000000182,
+          "frames_above_25_ms": 0,
+          "handler_p95_ms": 0.20000004768371582,
+          "input_to_layout_p95_ms": 17.399999976158142,
+          "bitmap_paints": 1,
+          "long_tasks": 0,
+          "uncovered_layout_frames": 0
+        },
+        {
+          "scenario": "cursor",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.700000000000728,
+          "frame_max_ms": 16.800000000000182,
+          "frames_above_25_ms": 0,
+          "handler_p95_ms": 0.19999998807907104,
+          "input_to_layout_p95_ms": 17.100000023841858,
+          "bitmap_paints": 0,
+          "long_tasks": 0,
+          "uncovered_layout_frames": 0
+        },
+        {
+          "scenario": "pan-uncovered",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.700000000000728,
+          "frame_max_ms": 16.800000000000182,
+          "frames_above_25_ms": 0,
+          "handler_p95_ms": 0.30000001192092896,
+          "input_to_layout_p95_ms": 17.100000023841858,
+          "bitmap_paints": 8,
+          "long_tasks": 0,
+          "uncovered_layout_frames": 0
+        }
+      ],
+      "final": {
+        "painted": true,
+        "canvas": [
+          1648,
+          1593
+        ],
+        "pixel_ratio": [
+          2,
+          2.000490547156298
+        ],
+        "viewport_covered": true,
+        "visible": true,
+        "overview_clip_supported": true,
+        "overview_overlaps_front": false,
+        "overview_pixels": 393216,
+        "generation": "2"
+      },
+      "definition": "DOM handlers and headless rAF; not a physical display measurement."
+    },
+    "browser-motion": {
+      "rows": [
+        {
+          "scenario": "pan",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.799999999999955,
+          "frame_max_ms": 16.800000000000182,
+          "frames_above_25_ms": 0,
+          "handler_p95_ms": 0.20000004768371582,
+          "input_to_layout_p95_ms": 17.099999964237213,
+          "bitmap_paints": 0,
+          "long_tasks": 0,
+          "uncovered_layout_frames": 0
+        },
+        {
+          "scenario": "zoom",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.799999999999727,
+          "frame_max_ms": 16.800000000000182,
+          "frames_above_25_ms": 0,
+          "handler_p95_ms": 0.2999999523162842,
+          "input_to_layout_p95_ms": 17.19999998807907,
+          "bitmap_paints": 0,
+          "long_tasks": 0,
+          "uncovered_layout_frames": 0
+        },
+        {
+          "scenario": "cursor",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.800000000000182,
+          "frame_max_ms": 16.800000000000182,
+          "frames_above_25_ms": 0,
+          "handler_p95_ms": 0.19999998807907104,
+          "input_to_layout_p95_ms": 17.100000023841858,
+          "bitmap_paints": 0,
+          "long_tasks": 0,
+          "uncovered_layout_frames": 0
+        },
+        {
+          "scenario": "pan-uncovered",
+          "steps": 60,
+          "frame_median_ms": 16.699999999999818,
+          "frame_p95_ms": 16.700000000000728,
+          "frame_max_ms": 16.799999999999272,
+          "frames_above_25_ms": 0,
+          "handler_p95_ms": 0.20000004768371582,
+          "input_to_layout_p95_ms": 17,
+          "bitmap_paints": 21,
+          "long_tasks": 0,
+          "uncovered_layout_frames": 0
+        }
+      ],
+      "final": {
+        "painted": true,
+        "canvas": [
+          1487,
+          1396
+        ],
+        "pixel_ratio": [
+          2,
+          2
+        ],
+        "viewport_covered": true,
+        "visible": true,
+        "overview_clip_supported": true,
+        "overview_overlaps_front": false,
+        "overview_pixels": 393216,
+        "generation": "2"
+      },
+      "definition": "DOM handlers and headless rAF; not a physical display measurement."
+    }
+  },
+  "validation": {
+    "rust_passed": 528,
+    "rust_ignored": 1,
+    "python_passed": 51,
+    "source_qualified_assertions": 891,
+    "gate": "passed",
+    "native_wasm_cases": 8,
+    "browser_examples": 186,
+    "documentation_pages": 615,
+    "media_sources": 186,
+    "math_cases": 4100,
+    "distinct_formulas": 1961,
+    "canvas_checks": 30412,
+    "formula_failures": [],
+    "formula_renderer_fingerprint": "54090c867489bf561b9e16d70703f9c805c6dbff57f1c0fb6808252766bbed4e",
+    "existing_native_wasm_math_rounding_cases": 54,
+    "maximum_math_delta": 1,
+    "vscode_bridge": "passed",
+    "public_input_and_edit_console_errors": [],
+    "replay_composition_cases": 26,
+    "continuous_incremental_updates": 19,
+    "runtime_guard": {
+      "status": "passed",
+      "rejected": [
+        "stale module",
+        "stale WASM sources",
+        "changed WASM binary"
+      ],
+      "wasm_sha256": "453639a590b18365fdd3e2195441fb0bb4409b203ee2dbf1ea8123bf37f03cd1",
+      "source_fingerprint": "a50497d9bebbee473ca3f084d481186b85055ab1028210128cc064033950e6bd"
+    }
+  },
+  "package": {
+    "file": "laymesh-renderer-text-optimized-linux-x64.vsix",
+    "publisher": "Hyacine",
+    "version": "0.5.1",
+    "target": "linux-x64",
+    "prerelease": false,
+    "marketplace_checks": true,
+    "bytes": 11450921,
+    "installed_bytes": 29358537,
+    "native_binary": "extension/bin/laymesh",
+    "client_modules": [
+      "vscode",
+      "child_process",
+      "path"
+    ],
+    "bundled_text_fonts": false,
+    "sha256": "3ae4e0dc61492554b90d2c76339cd987f7109b970d9aaa52c608a0205d550e14",
+    "packaged_worker_sha256": "41283d4c38829cfc83684e2dd415b899dd5a2d588126ff9dbb1368bd5865c9bc",
+    "packaged_host_sha256": "46527951fdb925afdaadbc957e4798ab2a27094ee91b7592406467cd05110294"
+  },
+  "limits": [
+    "Complete native DSL compilation remains about 35 ms for this fixture. This benchmark does not establish 60/120 complete source recompilations per second.",
+    "First open remains around 2.5 seconds; font/geometry initialization is separate from warm source changes.",
+    "Cold replay of a restored webview measured 1238 ms versus 889 ms before; this path is not the hot-edit improvement.",
+    "Performance depends on affected bounds, scene complexity and viewport. A large changed parent may require broad repaint; effects/masks use full painting.",
+    "WASM memory is linear-memory capacity, and native memory is Linux VmHWM; these are not browser RSS."
+  ],
+  "continuous_edit": {
+    "before": {
+      "cold_ms": 2863,
+      "median": {
+        "native_ms": 99,
+        "install_ms": 131.80000001192093,
+        "raster_ms": 62,
+        "elapsed_ms": 321,
+        "edit_to_visible_ms": 427,
+        "bytes": 3456664,
+        "native_peak_rss_kib": 480112,
+        "wasm_memory_bytes": 215154688,
+        "width": 1200,
+        "height": 800
+      },
+      "hot": [
+        {
+          "native_ms": 105,
+          "install_ms": 146.30000001192093,
+          "raster_ms": 61.700000047683716,
+          "elapsed_ms": 337,
+          "edit_to_visible_ms": 445,
+          "bytes": 3456275,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 215154688,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 106,
+          "install_ms": 142.80000001192093,
+          "raster_ms": 64.19999998807907,
+          "elapsed_ms": 337,
+          "edit_to_visible_ms": 444,
+          "bytes": 3455801,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 215154688,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 98,
+          "install_ms": 143.79999995231628,
+          "raster_ms": 62.5,
+          "elapsed_ms": 334,
+          "edit_to_visible_ms": 441,
+          "bytes": 3456563,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 215154688,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 95,
+          "install_ms": 136.39999997615814,
+          "raster_ms": 61.80000001192093,
+          "elapsed_ms": 321,
+          "edit_to_visible_ms": 426,
+          "bytes": 3455961,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 215154688,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 100,
+          "install_ms": 139.4000000357628,
+          "raster_ms": 61.39999997615814,
+          "elapsed_ms": 331,
+          "edit_to_visible_ms": 436,
+          "bytes": 3455964,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 215154688,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 98,
+          "install_ms": 131.9000000357628,
+          "raster_ms": 63.10000002384186,
+          "elapsed_ms": 315,
+          "edit_to_visible_ms": 420,
+          "bytes": 3456994,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 215154688,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 100,
+          "install_ms": 131.80000001192093,
+          "raster_ms": 61.69999998807907,
+          "elapsed_ms": 321,
+          "edit_to_visible_ms": 428,
+          "bytes": 3456144,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 215154688,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 99,
+          "install_ms": 129.0999999642372,
+          "raster_ms": 63.5,
+          "elapsed_ms": 316,
+          "edit_to_visible_ms": 423,
+          "bytes": 3456769,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 215154688,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 100,
+          "install_ms": 134.4000000357628,
+          "raster_ms": 61.19999998807907,
+          "elapsed_ms": 323,
+          "edit_to_visible_ms": 430,
+          "bytes": 3456856,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 215154688,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 98,
+          "install_ms": 129.69999998807907,
+          "raster_ms": 62,
+          "elapsed_ms": 315,
+          "edit_to_visible_ms": 423,
+          "bytes": 3456659,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 215154688,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 99,
+          "install_ms": 147.19999998807907,
+          "raster_ms": 61.30000001192093,
+          "elapsed_ms": 331,
+          "edit_to_visible_ms": 439,
+          "bytes": 3456664,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 225771520,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 98,
+          "install_ms": 126.89999997615814,
+          "raster_ms": 61.30000001192093,
+          "elapsed_ms": 308,
+          "edit_to_visible_ms": 416,
+          "bytes": 3456683,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 225771520,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 97,
+          "install_ms": 131.80000001192093,
+          "raster_ms": 61.200000047683716,
+          "elapsed_ms": 317,
+          "edit_to_visible_ms": 423,
+          "bytes": 3457263,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 225771520,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 105,
+          "install_ms": 128.10000002384186,
+          "raster_ms": 62.09999996423721,
+          "elapsed_ms": 323,
+          "edit_to_visible_ms": 429,
+          "bytes": 3456720,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 225771520,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 100,
+          "install_ms": 131.10000002384186,
+          "raster_ms": 62.30000001192093,
+          "elapsed_ms": 320,
+          "edit_to_visible_ms": 427,
+          "bytes": 3456563,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 225771520,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 95,
+          "install_ms": 127.89999997615814,
+          "raster_ms": 61.39999997615814,
+          "elapsed_ms": 306,
+          "edit_to_visible_ms": 412,
+          "bytes": 3456715,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 225771520,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 99,
+          "install_ms": 138,
+          "raster_ms": 62.19999998807907,
+          "elapsed_ms": 326,
+          "edit_to_visible_ms": 431,
+          "bytes": 3456596,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 225771520,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 97,
+          "install_ms": 131.10000002384186,
+          "raster_ms": 62.30000001192093,
+          "elapsed_ms": 313,
+          "edit_to_visible_ms": 418,
+          "bytes": 3457250,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 225771520,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        },
+        {
+          "native_ms": 99,
+          "install_ms": 131,
+          "raster_ms": 62.5,
+          "elapsed_ms": 318,
+          "edit_to_visible_ms": 425,
+          "bytes": 3457150,
+          "native_peak_rss_kib": 480112,
+          "wasm_memory_bytes": 225771520,
+          "width": 1200,
+          "height": 800,
+          "incremental": false
+        }
+      ],
+      "reload_ms": 1012,
+      "artifacts": {
+        "native": "170cd6f6a7b027349992923a2002b1fc5720f95953151f6ad1137c789d5183c3",
+        "wasm": "4e325bcdb852ef99a6db2703bb28574ddfab21e88cbc54c648b42fe56ef7536c"
+      }
+    },
+    "after": {
+      "cold_ms": 2328,
+      "median": {
+        "native_ms": 35,
+        "install_ms": 0.3999999761581421,
+        "raster_ms": 8.200000047683716,
+        "elapsed_ms": 48,
+        "edit_to_visible_ms": 154,
+        "bytes": 17726,
+        "native_peak_rss_kib": 482056,
+        "wasm_memory_bytes": 201195520,
+        "width": 1200,
+        "height": 800
+      },
+      "hot": [
+        {
+          "native_ms": 35,
+          "install_ms": 0.5,
+          "raster_ms": 8.099999964237213,
+          "elapsed_ms": 48,
+          "edit_to_visible_ms": 157,
+          "bytes": 16311,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 35,
+          "install_ms": 0.6000000238418579,
+          "raster_ms": 8.100000023841858,
+          "elapsed_ms": 48,
+          "edit_to_visible_ms": 154,
+          "bytes": 16602,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 34,
+          "install_ms": 0.5,
+          "raster_ms": 8.399999976158142,
+          "elapsed_ms": 48,
+          "edit_to_visible_ms": 157,
+          "bytes": 17726,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 35,
+          "install_ms": 0.3999999761581421,
+          "raster_ms": 8.300000011920929,
+          "elapsed_ms": 47,
+          "edit_to_visible_ms": 152,
+          "bytes": 15553,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 35,
+          "install_ms": 0.30000001192092896,
+          "raster_ms": 8.300000011920929,
+          "elapsed_ms": 47,
+          "edit_to_visible_ms": 153,
+          "bytes": 16929,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 35,
+          "install_ms": 0.40000003576278687,
+          "raster_ms": 7.900000035762787,
+          "elapsed_ms": 48,
+          "edit_to_visible_ms": 153,
+          "bytes": 17490,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 34,
+          "install_ms": 0.3999999761581421,
+          "raster_ms": 8.300000011920929,
+          "elapsed_ms": 47,
+          "edit_to_visible_ms": 152,
+          "bytes": 15327,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 34,
+          "install_ms": 0.40000003576278687,
+          "raster_ms": 8.100000023841858,
+          "elapsed_ms": 48,
+          "edit_to_visible_ms": 154,
+          "bytes": 18374,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 34,
+          "install_ms": 0.30000001192092896,
+          "raster_ms": 8.199999988079071,
+          "elapsed_ms": 50,
+          "edit_to_visible_ms": 156,
+          "bytes": 17493,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 35,
+          "install_ms": 0.699999988079071,
+          "raster_ms": 8.399999976158142,
+          "elapsed_ms": 48,
+          "edit_to_visible_ms": 155,
+          "bytes": 19323,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 35,
+          "install_ms": 0.20000004768371582,
+          "raster_ms": 8.099999964237213,
+          "elapsed_ms": 49,
+          "edit_to_visible_ms": 156,
+          "bytes": 18105,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 34,
+          "install_ms": 0.40000003576278687,
+          "raster_ms": 8.300000011920929,
+          "elapsed_ms": 48,
+          "edit_to_visible_ms": 154,
+          "bytes": 18403,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 35,
+          "install_ms": 0.5,
+          "raster_ms": 8.199999988079071,
+          "elapsed_ms": 49,
+          "edit_to_visible_ms": 154,
+          "bytes": 19537,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 35,
+          "install_ms": 0.3999999761581421,
+          "raster_ms": 8.300000011920929,
+          "elapsed_ms": 48,
+          "edit_to_visible_ms": 153,
+          "bytes": 17353,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 34,
+          "install_ms": 0.30000001192092896,
+          "raster_ms": 8,
+          "elapsed_ms": 47,
+          "edit_to_visible_ms": 152,
+          "bytes": 18744,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 34,
+          "install_ms": 0.3999999761581421,
+          "raster_ms": 8.300000011920929,
+          "elapsed_ms": 47,
+          "edit_to_visible_ms": 153,
+          "bytes": 19292,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 34,
+          "install_ms": 0.3999999761581421,
+          "raster_ms": 11.699999988079071,
+          "elapsed_ms": 50,
+          "edit_to_visible_ms": 153,
+          "bytes": 17124,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 34,
+          "install_ms": 0.3999999761581421,
+          "raster_ms": 8.200000047683716,
+          "elapsed_ms": 48,
+          "edit_to_visible_ms": 155,
+          "bytes": 20179,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        },
+        {
+          "native_ms": 35,
+          "install_ms": 0.3999999761581421,
+          "raster_ms": 8.100000023841858,
+          "elapsed_ms": 49,
+          "edit_to_visible_ms": 154,
+          "bytes": 19291,
+          "native_peak_rss_kib": 482056,
+          "wasm_memory_bytes": 201195520,
+          "width": 1200,
+          "height": 800,
+          "incremental": true
+        }
+      ],
+      "reload_ms": 1211,
+      "artifacts": {
+        "native": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+        "wasm": "453639a590b18365fdd3e2195441fb0bb4409b203ee2dbf1ea8123bf37f03cd1"
+      }
+    },
+    "definition": "Twenty genuine label edits: one warmup and nineteen measurements, crossing previous eight-frame history limit; all nineteen final updates are incremental."
+  }
+}

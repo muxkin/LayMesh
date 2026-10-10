@@ -7,7 +7,7 @@ use std::collections::BTreeMap;
 
 pub const DISPLAY_LIST_VERSION: u32 = 1;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DisplayList {
     pub schema_version: u32,
@@ -16,7 +16,7 @@ pub struct DisplayList {
     pub nodes: Vec<DrawNode>,
     pub resources: BTreeMap<String, Resource>,
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Resource {
     pub mime: String,
@@ -24,7 +24,7 @@ pub struct Resource {
     pub font_index: Option<u32>,
     pub family: Option<String>,
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct DrawNode {
     pub name: String,
     pub transform: Affine,
@@ -34,7 +34,7 @@ pub struct DrawNode {
     pub hint: Json,
     pub kind: DrawKind,
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub enum DrawKind {
     Group {
@@ -68,17 +68,17 @@ pub enum DrawKind {
         nearest: bool,
     },
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Clip {
     pub path: BezPath,
     pub even_odd: bool,
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Mask {
     pub node: Box<DrawNode>,
     pub luminance: bool,
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub enum Paint {
     None,
@@ -107,12 +107,12 @@ pub enum Paint {
         nodes: Vec<DrawNode>,
     },
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Stop {
     pub offset: f64,
     pub rgba: [f64; 4],
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Stroke {
     pub width: f64,
     pub rgba: [f64; 4],
@@ -122,7 +122,7 @@ pub struct Stroke {
     pub dash: Vec<f64>,
     pub offset: f64,
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Effect {
     pub inner: bool,
     pub blur: f64,

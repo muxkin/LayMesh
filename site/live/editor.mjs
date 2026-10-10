@@ -112,7 +112,7 @@ class ExampleEditor {
   this.workspace?.fit();
  }
 
- result(data){if(data.protocol!==3||!data.displayList){this.error({code:'E_PREVIEW_PROTOCOL',message:'Expected drawing protocol 3'});return;}
+ result(data){if(data.protocol!==3||(!data.drawingInfo&&!data.displayList)){this.error({code:'E_PREVIEW_PROTOCOL',message:'Expected drawing protocol 3'});return;}
   this.last=data;this.module.dataset.generation=String(data.generation);this.paintKey='';this.image.dataset.aspectRatio=String(data.inspection.page.width/data.inspection.page.height);this.statusText=t('预览已更新','Preview updated');
   this.diagnosticsOpen=data.warnings.length>0;this.diagnostics.textContent=data.warnings.map(w=>`${w.code} ${w.file}:${w.loc.line}:${w.loc.column} — ${w.message}`).join('\n');this.module.dataset.liveState='success';this.sync();this.updateMetrics();this.requestPaint(true);
  }

@@ -70,10 +70,10 @@ self.onmessage=({data})=>{
    }
    if(data.type==='paint'){
     if(!drawJob||data.generation!==generation){self.postMessage({type:'paint-skipped',id:data.id,generation:data.generation});return;}
-    const before=performance.now(),frame=drawJob.raster(JSON.stringify(data.rect),data.width,data.height);
+    const before=performance.now(),frame=drawJob.raster_retained(JSON.stringify(data.rect),data.width,data.height);
     const width=frame.width,height=frame.height,rgba=frame.into_rgba(),transfer=[rgba.buffer];let overview;
     if(data.rect[0]===0&&data.rect[1]===0&&data.rect[2]===drawPage.width&&data.rect[3]===drawPage.height)overviewReady=true;
-    if(!overviewReady){const p=drawPage,s=Math.min(768/p.width,2048/p.height,Math.sqrt(500000/(p.width*p.height))),width=Math.max(1,Math.floor(p.width*s)),height=Math.max(1,Math.floor(p.height*s));const frame=drawJob.raster(JSON.stringify([0,0,p.width,p.height]),width,height);overview={width,height,rgba:frame.into_rgba()};transfer.push(overview.rgba.buffer);overviewReady=true;}
+    if(!overviewReady){const p=drawPage,s=Math.min(768/p.width,2048/p.height,Math.sqrt(500000/(p.width*p.height))),width=Math.max(1,Math.floor(p.width*s)),height=Math.max(1,Math.floor(p.height*s));const frame=drawJob.raster_retained(JSON.stringify([0,0,p.width,p.height]),width,height);overview={width,height,rgba:frame.into_rgba()};transfer.push(overview.rgba.buffer);overviewReady=true;}
     self.postMessage({type:'painted',id:data.id,generation,rgba,overview,width,height,rasterMs:performance.now()-before,wasmMemoryBytes:wasmMemory.buffer.byteLength,rect:data.rect},transfer);return;
    }
    const edited={};for(const [name,text]of Object.entries(data.files))edited[key(name)]=text;
@@ -101,11 +101,12 @@ self.onmessage=({data})=>{
     }
    }
    try{
-    const before=performance.now(),next=job.draw_job(),lowerMs=performance.now()-before;
-    drawJob?.free();drawJob=next;generation=id;overviewReady=false;
-    const result=JSON.parse(job.inspection()),displayList=JSON.parse(drawJob.display_list());
-    drawPage=displayList;
-    self.postMessage({type:'result',id,generation,protocol:3,...result,displayList,resources:Object.entries(displayList.resources).map(([id,meta])=>({id,...meta,resident:true})),metrics:{initialization:initMs,resources:resourcesMs,compile:compileMs,lower:lowerMs,raster:0,total:compileMs+lowerMs}});
+    const before=performance.now();
+    if(drawJob)job.update_draw_job(drawJob);else drawJob=job.draw_job();
+    const lowerMs=performance.now()-before;generation=id;overviewReady=false;
+    const result=JSON.parse(job.inspection()),drawingInfo=JSON.parse(drawJob.drawing_info());
+    drawPage=drawingInfo;
+    self.postMessage({type:'result',id,generation,protocol:3,...result,drawingInfo,resources:Object.entries(drawingInfo.resources).map(([id,meta])=>({id,...meta,resident:true})),metrics:{initialization:initMs,resources:resourcesMs,compile:compileMs,lower:lowerMs,raster:0,total:compileMs+lowerMs}});
    }finally{job.free();}
   }catch(error){self.postMessage({type:data.type==='paint'?'paint-error':'error',id,generation:data.generation,error:detail(error)});}
  });

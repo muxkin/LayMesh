@@ -3,7 +3,8 @@
 import argparse, json, os, subprocess, tempfile, socket, time, urllib.request, importlib.util
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',required=True,type=Path);p.add_argument('--binary',type=Path);p.add_argument('--source',type=Path,help='Measure a real layout using read-only links to its sibling assets');p.add_argument('--replace',nargs=2,metavar=('OLD','NEW'),help='Change actual drawing content on each edit, using {i} for the edit number');p.add_argument('--motion',action='store_true',help='Measure pan, zoom and cursor frame intervals before source edits');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--code',default='/usr/share/code/code');a=p.parse_args()
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',required=True,type=Path);p.add_argument('--binary',type=Path);p.add_argument('--source',type=Path,help='Measure a real layout using read-only links to its sibling assets');p.add_argument('--replace',nargs=2,metavar=('OLD','NEW'),help='Change actual drawing content on each edit, using {i} for the edit number');p.add_argument('--edits',type=int,default=6,help='Number of genuine edits, including one warmup');p.add_argument('--motion',action='store_true',help='Measure pan, zoom and cursor frame intervals before source edits');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--code',default='/usr/share/code/code');a=p.parse_args()
+if a.edits<6:p.error('Use at least six edits')
 a.output=a.output.resolve();a.output.parent.mkdir(parents=True,exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='laymesh-perf-host-',ignore_cleanup_errors=True) as temp:
  root=Path(temp);user=root/'profile/User';user.mkdir(parents=True)
@@ -14,6 +15,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-perf-host-',ignore_cleanup_erro
  gate=root/'viewport-gate';env['LAYMESH_PERFORMANCE_GATE']=str(gate)
  if a.source:env['LAYMESH_PERFORMANCE_SOURCE']=str(a.source.resolve())
  if a.replace:env['LAYMESH_PERFORMANCE_REPLACE']=json.dumps(a.replace)
+ env['LAYMESH_PERFORMANCE_EDITS']=str(a.edits)
  if a.motion:env['LAYMESH_PERFORMANCE_MOTION']='1'
  with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
  command=[a.code,'--remote-debugging-port='+str(port),'--remote-allow-origins=*','--no-sandbox','--disable-gpu','--disable-updates','--disable-background-timer-throttling','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows','--ozone-platform=headless','--force-device-scale-factor=2','--user-data-dir='+str(root/'profile'),'--extensions-dir='+str(root/'extensions'),'--extensionDevelopmentPath='+str(a.extension_dir.resolve()),'--extensionTestsPath='+str(ROOT/'scripts/vscode-preview-performance.cjs'),'--skip-welcome','--skip-release-notes','--new-window']

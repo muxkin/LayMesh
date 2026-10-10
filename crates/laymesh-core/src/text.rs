@@ -908,7 +908,7 @@ fn fit_formula_ink(node: &mut Json) {
     node["ascent"] = json!(jnum(node, "ascent", 0.) + dy);
 }
 /// Positioned glyphs in millimetres, shared by layout and every drawing backend.
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct PositionedGlyph {
     pub id: u16,
     pub x: f64,

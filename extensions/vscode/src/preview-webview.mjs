@@ -118,12 +118,12 @@ new ResizeObserver(schedule).observe(viewport);
 let renderSequence=0,frameTimings={};
 async function installFrame(data){
  const sequence=++renderSequence;
- if(data.protocol!==3||(!data.displayList&&!data.displayListCompressed))throw Error('Expected drawing protocol 3');
+ if(data.protocol!==3||(!data.displayList&&!data.displayListCompressed&&!data.displayListUpdate))throw Error('Expected drawing protocol 3');
  await startWorker();if(sequence!==renderSequence)return;
  const bytes=data.displayListCompressed?.data,transfer=bytes instanceof Uint8Array?[bytes.buffer]:[];
- const installed=await workerCall({type:'install',generation:data.generation,page:data.inspection.page,displayList:data.displayList,displayListCompressed:data.displayListCompressed,drawingResources:data.drawingResources,resources:data.resources,previewSettings:data.previewSettings},transfer);
+ const installed=await workerCall({type:'install',generation:data.generation,page:data.inspection.page,displayListId:data.displayListId,displayListUpdate:data.displayListUpdate,displayListReplay:data.displayListReplay,displayList:data.displayList,displayListCompressed:data.displayListCompressed,drawingResources:data.drawingResources,resources:data.resources,previewSettings:data.previewSettings},transfer);
  if(sequence!==renderSequence)return;
- drawReady=true;drawJobId=data.displayListCompressed?.id||String(data.generation);if(!installed.reused)drawKey='';wasmMemoryBytes=installed.wasmMemoryBytes;
+ drawReady=true;drawJobId=data.displayListId||data.displayListCompressed?.id||String(data.generation);if(!installed.reused)drawKey='';wasmMemoryBytes=installed.wasmMemoryBytes;
  drawGeneration=data.generation;
  page=data.inspection.page;plots=preparePlots(data.inspection);pathCache=new WeakMap();
  warnings.textContent=(data.inspection.warnings||[]).map(w=>`${w.code}: ${w.message}`).join('\n');
@@ -138,7 +138,7 @@ function positionPixels(){if(!presented||!page)return;const c=presented.crop;Obj
  overview.hidden=overviewContent!==drawJobId;
  if(!overview.hidden){const [x0,y0,x1,y1]=c.map((v,i)=>100*v/(i%2?page.height:page.width));Object.assign(overview.style,{position:'absolute',left:'0',top:'0',width:page.width*view.scale+'px',height:page.height*view.scale+'px',clipPath:`polygon(evenodd,0% 0%,100% 0%,100% 100%,0% 100%,0% 0%,${x0}% ${y0}%,${x1}% ${y0}%,${x1}% ${y1}%,${x0}% ${y1}%,${x0}% ${y0}%)`});}
 }
-function reportPaint(rasterMs){root.dataset.painted='true';root.dataset.rasterMs=String(rasterMs);bridge.postMessage({type:'painted',generation:drawGeneration,at:Date.now(),rasterMs,wasmMemoryBytes,...frameTimings,width:image.width,height:image.height});}
+function reportPaint(rasterMs){root.dataset.painted='true';root.dataset.rasterMs=String(rasterMs);bridge.postMessage({type:'painted',generation:drawGeneration,displayListId:drawJobId,at:Date.now(),rasterMs,wasmMemoryBytes,...frameTimings,width:image.width,height:image.height});}
 function paint(r,force=false){
  if(!drawReady)return;positionPixels();
  const left=Math.max(0,r.left),top=Math.max(0,r.top),right=Math.min(viewport.clientWidth,r.left+r.width),bottom=Math.min(viewport.clientHeight,r.top+r.height);
@@ -179,7 +179,7 @@ window.addEventListener('message',({data})=>{
  else if(data?.type==='result'){
   diagnostic=data.error;showDiagnostic();
   if(diagnostic){showStatus('error');}
-  else if(data.protocol===3&&(data.displayList||data.displayListCompressed)&&data.inspection){installFrame(data).catch(error=>{diagnostic={code:'E_PREVIEW_RESOURCE',message:String(error)};showDiagnostic();showStatus('error');});}
+  else if(data.protocol===3&&(data.displayList||data.displayListCompressed||data.displayListUpdate)&&data.inspection){installFrame(data).catch(error=>{if(String(error).includes('baseline mismatch')){bridge.postMessage({type:'request-full'});return;}diagnostic={code:'E_PREVIEW_RESOURCE',message:String(error)};showDiagnostic();showStatus('error');});}
   else{diagnostic={code:'E_PREVIEW_PROTOCOL',message:'Expected drawing protocol 3'};showDiagnostic();showStatus('error');}
  }
 });

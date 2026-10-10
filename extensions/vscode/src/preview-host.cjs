@@ -5,6 +5,28 @@ const path=require('path'),fs=require('fs'),os=require('os');
 const keyOf=uri=>path.normalize(uri.fsPath).replace(/\\/g,'/');
 const messageError=(message,messageZh)=>({code:'E_PREVIEW',message,...(messageZh?{messageZh}:{})});
 
+// Compact replay history without parsing/copying the complete drawing. A later
+// ancestor replacement supersedes descendants; a descendant updates an already
+// retained ancestor. The live worker still receives the original native patch.
+function compactReplay(previous,frame){
+ const update=structuredClone(previous?.displayListUpdate?.update||frame.displayListUpdate.update);
+ if(previous){
+  const incoming=frame.displayListUpdate.update;
+  update.width=incoming.width;update.height=incoming.height;update.schemaVersion=incoming.schemaVersion;
+  if(incoming.resources)update.resources=structuredClone(incoming.resources);
+  if(incoming.roots){update.roots=structuredClone(incoming.roots);update.nodes=[];}
+  const prefix=(a,b)=>a.length<=b.length&&a.every((v,i)=>v===b[i]);
+  const replace=(nodes,path,node)=>{for(const i of path.slice(0,-1)){if(nodes[i]?.kind.kind!=='group')throw Error('Invalid retained drawing path');nodes=nodes[i].kind.children;}if(path.at(-1)>=nodes.length)throw Error('Invalid retained drawing index');nodes[path.at(-1)]=structuredClone(node);};
+  for(const change of incoming.nodes){
+   if(update.roots){replace(update.roots,change.path,change.node);continue;}
+   const ancestor=update.nodes.find(old=>prefix(old.path,change.path));
+   if(ancestor){const tail=change.path.slice(ancestor.path.length);if(!tail.length)ancestor.node=structuredClone(change.node);else{if(ancestor.node.kind.kind!=='group')throw Error('Invalid retained drawing ancestor');replace(ancestor.node.kind.children,tail,change.node);}}
+   else{update.nodes=update.nodes.filter(old=>!prefix(change.path,old.path));update.nodes.push(structuredClone(change));}
+  }
+ }
+ return {...frame,displayListUpdate:{base:previous?.displayListUpdate.base||frame.displayListUpdate.base,update}};
+}
+
 class PreviewWorker {
  constructor(binary,output){this.binary=binary;this.output=output;this.queue=new Map();this.sequence=0;this.resourceDir=fs.mkdtempSync(path.join(os.tmpdir(),'laymesh-preview-'));}
  enqueue(job){this.enabled=true;this.queue.set(job.file,job);this.start();this.pump();}
@@ -42,6 +64,7 @@ class PreviewWorker {
   },job.timeout);
   const request={protocol:3,resource_dir:this.resourceDir,...job.request};if(request.protocol===3&&!this.capabilities.includes('display-list-v3')){clearTimeout(this.renderTimer);this.active=null;job.done({error:{code:'E_PREVIEW_PROTOCOL',message:'Native engine does not support drawing protocol 3'},dependencies:[]});this.pump();return;}
   if(request.protocol===3&&this.capabilities.includes('display-list-gzip-v3'))request.compressed_display_list=true;
+  if(request.protocol===3&&this.capabilities.includes('display-list-updates-v3'))request.display_list_updates=true;
   this.process.stdin.write(JSON.stringify({...request,id:this.active.id,file:job.file,source:job.source,overlays:job.overlays})+'\n');
  }
  cancel(file){this.queue.delete(file);}
@@ -146,13 +169,22 @@ function activatePreview(context,binary,output){
    if(state.disposed||generation!==state.generation)return;
    const overlays={};for(const doc of vscode.workspace.textDocuments)if(doc.uri.scheme==='file'&&doc.isDirty)overlays[keyOf(doc.uri)]=doc.getText();
    state.dirty=false;state.pending=true;post(state,{type:'status',status:'rendering'});
-   worker.enqueue({file:state.file,source:doc.getText(),overlays,request:{protocol:3,generation,resource_dir:worker.resourceDir,known_resources:[...state.resources.keys()],...editorDefaults(state.uri)},timeout:config().get('renderTimeoutMs',30000),done:result=>{
+   worker.enqueue({file:state.file,source:doc.getText(),overlays,request:{protocol:3,generation,resource_dir:worker.resourceDir,known_resources:[...state.resources.keys()],known_display_list:state.history.length?state.displayListId:undefined,...editorDefaults(state.uri)},timeout:config().get('renderTimeoutMs',30000),done:result=>{
     if(state.disposed||generation!==state.generation)return;
     watch(state,result.dependencies||[],!!result.error);
     try{
-     if(!result.error){if(result.protocol!==3||(!result.displayList&&!result.displayListCompressed))throw new Error('Expected drawing protocol 3');for(const item of result.resources||[])resource(state,item);result.resources=Object.entries(result.drawingResources||result.displayList.resources).map(([id,meta])=>{const uri=state.resources.get(id);if(!uri)throw Error('Missing drawing resource');return {id,...meta,data:undefined,uri};});}
+     if(!result.error){if(result.protocol!==3||(!result.displayList&&!result.displayListCompressed&&!result.displayListUpdate))throw new Error('Expected drawing protocol 3');for(const item of result.resources||[])resource(state,item);result.resources=Object.entries(result.drawingResources||result.displayList.resources).map(([id,meta])=>{const uri=state.resources.get(id);if(!uri)throw Error('Missing drawing resource');return {id,...meta,data:undefined,uri};});}
+     const historyBytes=Buffer.byteLength(JSON.stringify(result));
      if(result.displayListCompressed){const bytes=Buffer.from(result.displayListCompressed.data,'base64');result.displayListCompressed.data=new Uint8Array(bytes.buffer,bytes.byteOffset,bytes.byteLength);}
-     const frame={type:'result',...result,generation};state.pending=false;state.last=frame;if(result.displayList||result.displayListCompressed)state.lastSuccess=frame;post(state,frame);
+     const frame={type:'result',...result,generation};state.pending=false;state.last=frame;if(result.displayList||result.displayListCompressed||result.displayListUpdate){state.lastSuccess=frame;
+      if(!result.displayListUpdate){state.history=[frame];state.historyBytes=historyBytes;state.replayBytes=0;}
+      else{
+       const compacted=compactReplay(state.history[1],frame);
+       state.history=[state.history[0],compacted];
+       state.replayBytes=Buffer.byteLength(JSON.stringify(compacted));
+      }
+      if(state.historyBytes+(state.replayBytes||0)>(result.previewSettings?.cache_mb??256)*1024*1024){state.history=[];state.historyBytes=0;state.replayBytes=0;state.displayListId=undefined;}
+     }post(state,frame);
     }catch(error){state.pending=false;post(state,{type:'result',error:messageError(error.message)});}
    }});
   }catch(error){if(!state.disposed&&generation===state.generation){state.last={type:'result',error:messageError(error.message)};post(state,state.last);}}
@@ -164,11 +196,17 @@ function activatePreview(context,binary,output){
   const file=keyOf(uri),existing=panels.get(file);
   if(existing){existing.panel.reveal(vscode.ViewColumn.Beside,true);return;}
   const panel=vscode.window.createWebviewPanel('laymeshPreview',`LayMesh · ${path.basename(file)}`,{viewColumn:vscode.ViewColumn.Beside,preserveFocus:true},{enableScripts:true,localResourceRoots:[vscode.Uri.joinPath(context.extensionUri,'dist'),vscode.Uri.file(worker.resourceDir)]});
-  const state={uri,file,panel,generation:0,dirty:true,dependencies:new Set(),watchers:[],disposed:false,resources:new Map()};panels.set(file,state);
+  const state={uri,file,panel,generation:0,dirty:true,dependencies:new Set(),watchers:[],disposed:false,resources:new Map(),history:[],historyBytes:0};panels.set(file,state);
   const asset=name=>panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri,'dist',name));
   panel.webview.html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} blob: data:; font-src ${panel.webview.cspSource} data:; script-src ${panel.webview.cspSource} 'wasm-unsafe-eval'; connect-src ${panel.webview.cspSource}; worker-src blob:; style-src ${panel.webview.cspSource} 'unsafe-inline';"><link rel="stylesheet" href="${asset('preview.css')}"></head><body><script type="module" src="${asset('preview-webview.mjs')}"></script></body></html>`;
   panel.webview.onDidReceiveMessage(async message=>{
-   if(message?.type==='ready'){post(state,{type:'initial',locale:locale(),showRulers:config().get('showRulers',true)});if(state.last?.error&&state.lastSuccess)post(state,state.lastSuccess);if(state.last)post(state,state.last);if(state.dirty)invalidate(state,true);}
+   if(message?.type==='ready'){state.displayListId=undefined;post(state,{type:'initial',locale:locale(),showRulers:config().get('showRulers',true)});
+    if(state.history.length&&state.lastSuccess)post(state,{...state.lastSuccess,displayListReplay:state.history});
+    if(state.last?.error)post(state,state.last);
+    if(state.dirty||!state.history.length)invalidate(state,true);
+   }
+   else if(message?.type==='painted'&&message.generation===state.generation){state.displayListId=message.displayListId;}
+   else if(message?.type==='request-full'){state.displayListId=undefined;invalidate(state,true);}
    else if(message?.type==='refresh')invalidate(state,true);
    else if(message?.type==='export')await exportFigure(state.uri);
    else if(message?.type==='source'&&state.last?.error){const error=state.last.error,file=error.file||state.file;
@@ -200,4 +238,4 @@ function activatePreview(context,binary,output){
   {dispose(){for(const state of [...panels.values()])state.panel.dispose();worker.dispose();}}
  );
 }
-module.exports={activatePreview,PreviewWorker};
+module.exports={activatePreview,PreviewWorker,compactReplay};

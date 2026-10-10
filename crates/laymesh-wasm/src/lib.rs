@@ -63,6 +63,48 @@ impl RgbaFrame {
 }
 #[wasm_bindgen]
 impl DrawJob {
+    /// Workers already own the drawing; the UI only needs its resource headers.
+    /// Keep display_list() available for consumers that need complete commands.
+    pub fn drawing_info(&self) -> Result<String, JsValue> {
+        let list = self.raster.display_list();
+        let resources: BTreeMap<_, _> = list
+            .resources
+            .iter()
+            .map(|(id, r)| {
+                (
+                    id,
+                    json!({"mime":r.mime,"fontIndex":r.font_index,"family":r.family}),
+                )
+            })
+            .collect();
+        serde_json::to_string(&json!({"schemaVersion":list.schema_version,"width":list.width,"height":list.height,"resources":resources})).map_err(js_error)
+    }
+    pub fn raster_retained(
+        &mut self,
+        viewport: &str,
+        width: u32,
+        height: u32,
+    ) -> Result<RgbaFrame, JsValue> {
+        let r: [f64; 4] = serde_json::from_str(viewport).map_err(js_error)?;
+        let frame = self
+            .raster
+            .render_retained_region(kurbo::Rect::new(r[0], r[1], r[2], r[3]), width, height)
+            .map_err(js_error)?;
+        Ok(RgbaFrame {
+            width: frame.width,
+            height: frame.height,
+            rgba: frame.rgba,
+        })
+    }
+    /// Updates are accepted only after the client validates their baseline ID.
+    pub fn update_display_list(&mut self, json: &str) -> Result<(), JsValue> {
+        let mut update: laymesh_render::display_update::DisplayUpdate =
+            serde_json::from_str(json).map_err(js_error)?;
+        if let Some(resources) = &mut update.resources {
+            resolve_resources(resources)?;
+        }
+        self.raster.update(update).map_err(js_error)
+    }
     pub fn display_list(&self) -> Result<String, JsValue> {
         let mut list = self.raster.display_list().clone();
         for resource in list.resources.values_mut() {
@@ -98,20 +140,25 @@ pub fn prepare_display_list(json: &str) -> Result<DrawJob, JsValue> {
     if list.schema_version != laymesh_render::display_list::DISPLAY_LIST_VERSION {
         return Err(js_error("Unsupported display list version"));
     }
+    resolve_resources(&mut list.resources)?;
+    Ok(DrawJob {
+        raster: laymesh_render::raster::PreparedRaster::new(list).map_err(js_error)?,
+    })
+}
+fn resolve_resources(
+    list: &mut BTreeMap<String, laymesh_render::display_list::Resource>,
+) -> Result<(), JsValue> {
     DRAW_RESOURCES.with(|resources| {
-        for (id, resource) in &mut list.resources {
+        let resources = resources.borrow();
+        for (id, resource) in list {
             if resource.data.is_empty() {
                 resource.data = resources
-                    .borrow()
                     .get(id)
                     .cloned()
                     .ok_or_else(|| js_error(format!("Missing drawing resource {id}")))?;
             }
         }
         Ok::<(), JsValue>(())
-    })?;
-    Ok(DrawJob {
-        raster: laymesh_render::raster::PreparedRaster::new(list).map_err(js_error)?,
     })
 }
 
@@ -132,6 +179,14 @@ pub struct RenderJob {
 }
 #[wasm_bindgen]
 impl RenderJob {
+    pub fn update_draw_job(&self, draw: &mut DrawJob) -> Result<(), JsValue> {
+        let next = laymesh_render::to_display_list(&self.scene).map_err(js_error)?;
+        let update = laymesh_render::display_update::DisplayUpdate::between(
+            draw.raster.display_list(),
+            &next,
+        );
+        draw.raster.update(update).map_err(js_error)
+    }
     pub fn draw_job(&self) -> Result<DrawJob, JsValue> {
         Ok(DrawJob {
             raster: laymesh_render::raster::PreparedRaster::new(

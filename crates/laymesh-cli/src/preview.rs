@@ -12,6 +12,14 @@ use std::{
 };
 pub fn serve() -> io::Result<()> {
     let mut compressed_cache: Option<(String, Value)> = None;
+    // One bounded baseline. A different panel, restart, or unacknowledged
+    // generation receives a full CPU display list instead of an unsafe patch.
+    let mut retained_list: Option<(String, String, laymesh_render::DisplayList, usize)> = None;
+    let session = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let mut revision = 0u64;
     let (sender, receiver) = mpsc::channel::<Value>();
     let writer = std::thread::spawn(move || {
         let mut stdout = io::stdout().lock();
@@ -31,7 +39,7 @@ pub fn serve() -> io::Result<()> {
         }
     });
     sender
-        .send(json!({"type":"ready","protocol":1,"capabilities":["resources-v2","display-list-v3","display-list-gzip-v3","defaults"]}))
+        .send(json!({"type":"ready","protocol":1,"capabilities":["resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","defaults"]}))
         .unwrap();
     for line in io::stdin().lock().lines() {
         let request: Value = match serde_json::from_str(&line?) {
@@ -55,6 +63,13 @@ pub fn serve() -> io::Result<()> {
             )?;
             dependencies.borrow_mut().extend(paths);
             let settings = config::preview_settings(&defaults, &request["preview"])?;
+            let budget = settings.cache_mb.saturating_mul(1024 * 1024);
+            if retained_list
+                .as_ref()
+                .is_some_and(|(_, _, _, bytes)| *bytes > budget)
+            {
+                retained_list = None;
+            }
             if compressed_cache.as_ref().is_some_and(|(_, value)| {
                 value["data"].as_str().unwrap().len()
                     > settings.cache_mb.saturating_mul(1024 * 1024)
@@ -127,6 +142,23 @@ pub fn serve() -> io::Result<()> {
                     if let Some(known) = request["known_resources"].as_array() {
                         resources.retain(|item| !known.contains(&item["id"]));
                     }
+                    let updates = request["display_list_updates"] == true;
+                    revision += 1;
+                    let list_id = format!("{session}-{revision}");
+                    if updates
+                        && let Some((previous_file, base, previous, bytes)) = &retained_list
+                        && previous_file == file
+                        && request["known_display_list"].as_str() == Some(base)
+                    {
+                        let update =
+                            laymesh_render::display_update::DisplayUpdate::between(previous, &list);
+                        let retained_bytes =
+                            bytes.saturating_add(serde_json::to_vec(&update)?.len());
+                        let result = json!({"protocol":3,"displayListId":list_id,"displayListUpdate":{"base":base,"update":update},"drawingResources":list.resources,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)});
+                        retained_list = (retained_bytes <= budget)
+                            .then(|| (file.into(), list_id, list, retained_bytes));
+                        return Ok(result);
+                    }
                     if request["compressed_display_list"] == true {
                         use base64::Engine;
                         let bytes = serde_json::to_vec(&list)?;
@@ -151,13 +183,22 @@ pub fn serve() -> io::Result<()> {
                             }
                             value
                         };
-                        return Ok(
-                            json!({"protocol":3,"displayListCompressed":compressed,"drawingResources":list.resources,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)}),
-                        );
+                        let mut result = json!({"protocol":3,"displayListCompressed":compressed,"drawingResources":list.resources,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)});
+                        if updates {
+                            result["displayListId"] = json!(list_id);
+                            retained_list = (bytes.len() <= budget)
+                                .then(|| (file.into(), list_id, list, bytes.len()));
+                        }
+                        return Ok(result);
                     }
-                    return Ok(
-                        json!({"protocol":3,"displayList":list,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)}),
-                    );
+                    let mut result = json!({"protocol":3,"displayList":list,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)});
+                    if updates {
+                        let bytes = serde_json::to_vec(&list)?.len();
+                        result["displayListId"] = json!(list_id);
+                        retained_list =
+                            (bytes <= budget).then(|| (file.into(), list_id, list, bytes));
+                    }
+                    return Ok(result);
                 }
                 let (svg, mut resources) = preview_assets::frame(&scene, directory, &settings)?;
                 if let Some(known) = request["known_resources"].as_array() {

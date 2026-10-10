@@ -1,7 +1,7 @@
 //! Pure Rust CPU renderer, shared without native features by CLI and WASM.
 use super::*;
 use display_list::*;
-use kurbo::{Affine, Rect};
+use kurbo::{Affine, Rect, Shape};
 use std::{
     cell::RefCell,
     collections::{BTreeMap, BTreeSet, HashMap},
@@ -78,6 +78,13 @@ pub struct PreparedRaster {
     list: Box<DisplayList>,
     images: Images,
     effects: EffectCache,
+    retained: Vec<RetainedFrame>,
+    frame_budget: usize,
+}
+struct RetainedFrame {
+    rect: Rect,
+    frame: RasterFrame,
+    dirty: Option<Rect>,
 }
 impl PreparedRaster {
     pub fn new(list: DisplayList) -> Result<Self> {
@@ -89,21 +96,157 @@ impl PreparedRaster {
             list: Box::new(list),
             images,
             effects: EffectCache::default(),
+            retained: Vec::new(),
+            frame_budget: 16 * 1024 * 1024,
         })
     }
     pub fn display_list(&self) -> &DisplayList {
         &self.list
+    }
+    /// Decode only changed resources and commit a fully validated update.
+    /// Effect entries use node identities, so changes always invalidate them.
+    pub fn update(&mut self, update: crate::display_update::DisplayUpdate) -> Result<()> {
+        update.validate(&self.list)?;
+        let images = update.resources.as_ref().map(decode).transpose()?;
+        let reset = update.roots.is_some()
+            || update.resources.is_some()
+            || update.width != self.list.width
+            || update.height != self.list.height;
+        let changed: BTreeSet<_> = update.nodes.iter().map(|n| n.path[0]).collect();
+        let old_bounds = changed
+            .iter()
+            .map(|&i| self.list.nodes[i].bounds())
+            .reduce(|a, b| a.union(b));
+        update.apply(&mut self.list)?;
+        if let Some(images) = images {
+            self.images = images;
+        }
+        self.effects.entries.clear();
+        self.effects.bytes = 0;
+        if reset || complex_layers(&self.list.nodes) {
+            self.retained.clear();
+        } else {
+            let new_bounds = changed
+                .iter()
+                .map(|&i| self.list.nodes[i].bounds())
+                .reduce(|a, b| a.union(b));
+            if let Some(dirty) = old_bounds.zip(new_bounds).map(|(a, b)| a.union(b)) {
+                if [dirty.x0, dirty.y0, dirty.x1, dirty.y1]
+                    .iter()
+                    .all(|v| v.is_finite())
+                {
+                    for retained in &mut self.retained {
+                        retained.dirty = Some(retained.dirty.map_or(dirty, |r| r.union(dirty)));
+                    }
+                } else {
+                    self.retained.clear();
+                }
+            }
+        }
+        Ok(())
     }
     /// Effects retain at most 64 MiB; current frames keep independent pixel
     /// references while an old cache entry is evicted.
     pub fn set_cache_budget(&mut self, mib: usize) {
         self.effects.budget = mib.min(64) as u64 * 1024 * 1024;
         self.effects.trim(0);
+        self.frame_budget = mib.min(16).saturating_mul(1024 * 1024);
+        while self
+            .retained
+            .iter()
+            .map(|r| r.frame.rgba.len())
+            .sum::<usize>()
+            > self.frame_budget
+        {
+            self.retained.remove(0);
+        }
     }
     pub fn render_region(&mut self, rect: Rect, w: u32, h: u32) -> Result<RasterFrame> {
         validate_region(&self.list, rect, w, h)?;
         render_prepared(&self.list, rect, w, h, &self.images, &mut self.effects)
     }
+    /// Preview-only retained pixels. Exact viewport/density matches repaint the
+    /// conservative changed bounds; zoom, resources and complex layers redraw.
+    /// At most two frames and 16 MiB are retained, respecting a zero budget.
+    pub fn render_retained_region(&mut self, rect: Rect, w: u32, h: u32) -> Result<RasterFrame> {
+        validate_region(&self.list, rect, w, h)?;
+        let result = if let Some(index) = self
+            .retained
+            .iter()
+            .position(|r| r.rect == rect && r.frame.width == w && r.frame.height == h)
+        {
+            let retained = self.retained.remove(index);
+            let mut frame = retained.frame;
+            if let Some(dirty) = retained.dirty {
+                let sx = w as f64 / rect.width();
+                let sy = h as f64 / rect.height();
+                let mut x0 = ((dirty.x0 - rect.x0) * sx - 2.).floor().clamp(0., w as f64) as u32;
+                let mut y0 = ((dirty.y0 - rect.y0) * sy - 2.).floor().clamp(0., h as f64) as u32;
+                let mut x1 = ((dirty.x1 - rect.x0) * sx + 2.).ceil().clamp(0., w as f64) as u32;
+                let mut y1 = ((dirty.y1 - rect.y0) * sy + 2.).ceil().clamp(0., h as f64) as u32;
+                // Preserve Vello's 4 by 4 coverage-grid phase.
+                x0 = x0 / 4 * 4;
+                y0 = y0 / 4 * 4;
+                x1 = x1.next_multiple_of(4).min(w);
+                y1 = y1.next_multiple_of(4).min(h);
+                if x1 > x0 && y1 > y0 {
+                    let patch = render_pixels(
+                        &self.list,
+                        rect,
+                        w,
+                        h,
+                        &self.images,
+                        &mut self.effects,
+                        [x0, y0, x1, y1],
+                    )?;
+                    for y in 0..(y1 - y0) as usize {
+                        let to = ((y0 as usize + y) * w as usize + x0 as usize) * 4;
+                        let count = (x1 - x0) as usize * 4;
+                        frame.rgba[to..to + count]
+                            .copy_from_slice(&patch.rgba[y * count..(y + 1) * count]);
+                    }
+                }
+            }
+            frame
+        } else {
+            self.render_region(rect, w, h)?
+        };
+        let bytes = result.rgba.len();
+        if bytes <= self.frame_budget {
+            while self.retained.len() >= 2
+                || self
+                    .retained
+                    .iter()
+                    .map(|r| r.frame.rgba.len())
+                    .sum::<usize>()
+                    + bytes
+                    > self.frame_budget
+            {
+                self.retained.remove(0);
+            }
+            self.retained.push(RetainedFrame {
+                rect,
+                frame: result.clone(),
+                dirty: None,
+            });
+        }
+        Ok(result)
+    }
+}
+fn complex_layers(nodes: &[DrawNode]) -> bool {
+    nodes.iter().any(|n| {
+        !n.effects.is_empty()
+            || match &n.kind {
+                DrawKind::Group { children, mask, .. } => {
+                    mask.is_some() || complex_layers(children)
+                }
+                DrawKind::Path {
+                    fill: Paint::Pattern { nodes, .. },
+                    ..
+                } => complex_layers(nodes),
+                _ => false,
+            }
+    })
 }
 struct ImageCache {
     entries: HashMap<String, (Arc<DecodedImage>, usize, u64)>,
@@ -287,6 +430,19 @@ fn render_prepared(
     images: &Images,
     effects: &mut EffectCache,
 ) -> Result<RasterFrame> {
+    render_pixels(list, rect, w, h, images, effects, [0, 0, w, h])
+}
+fn render_pixels(
+    list: &DisplayList,
+    rect: Rect,
+    w: u32,
+    h: u32,
+    images: &Images,
+    effects: &mut EffectCache,
+    region: [u32; 4],
+) -> Result<RasterFrame> {
+    let [x0, y0, x1, y1] = region;
+    let (pw, ph) = (x1 - x0, y1 - y0);
     let mut renderer = Renderer {
         images,
         effects,
@@ -294,30 +450,44 @@ fn render_prepared(
         used_effects: BTreeSet::new(),
         frame_effects: BTreeMap::new(),
         effect_costs: Vec::new(),
+        damage_clip: None,
     };
     let mut rgba = Vec::new();
-    rgba.try_reserve_exact(w as usize * h as usize * 4)
+    rgba.try_reserve_exact(pw as usize * ph as usize * 4)
         .map_err(|_| error("无法分配导出像素缓冲区"))?;
-    rgba.resize(w as usize * h as usize * 4, 0);
+    rgba.resize(pw as usize * ph as usize * 4, 0);
     let global = Affine::scale_non_uniform(w as f64 / rect.width(), h as f64 / rect.height())
         * Affine::translate((-rect.x0, -rect.y0));
-    for y in (0..h).step_by(TILE as usize) {
-        for x in (0..w).step_by(TILE as usize) {
+    for y in (y0 / TILE * TILE..y1).step_by(TILE as usize) {
+        for x in (x0 / TILE * TILE..x1).step_by(TILE as usize) {
             let tw = (w - x).min(TILE);
             let th = (h - y).min(TILE);
+            let left = x0.max(x);
+            let top = y0.max(y);
+            let right = x1.min(x + tw);
+            let bottom = y1.min(y + th);
             let tr = Affine::translate((-(x as f64), -(y as f64))) * global;
-            let pix = renderer.tile(&list.nodes, tr, tw, th)?;
+            renderer.damage_clip = (region != [0, 0, w, h]).then(|| {
+                Rect::new(
+                    (left - x) as f64,
+                    (top - y) as f64,
+                    (right - x) as f64,
+                    (bottom - y) as f64,
+                )
+            });
+            let pix = renderer.tile_content(&list.nodes, tr, tw, th, false)?;
             let data = pix.take_rgba8(peniko::ImageAlphaType::Alpha);
-            for row in 0..th as usize {
-                let to = ((y as usize + row) * w as usize + x as usize) * 4;
-                rgba[to..to + tw as usize * 4]
-                    .copy_from_slice(&data[row * tw as usize * 4..(row + 1) * tw as usize * 4]);
+            for row in top..bottom {
+                let to = ((row - y0) as usize * pw as usize + (left - x0) as usize) * 4;
+                let from = ((row - y) as usize * tw as usize + (left - x) as usize) * 4;
+                let count = (right - left) as usize * 4;
+                rgba[to..to + count].copy_from_slice(&data[from..from + count]);
             }
         }
     }
     Ok(RasterFrame {
-        width: w,
-        height: h,
+        width: pw,
+        height: ph,
         rgba,
     })
 }
@@ -330,10 +500,14 @@ struct Renderer<'a> {
     // Each retained effect includes its nested effects' logical pixel costs.
     // Cache hits must enforce the same frame budget as fresh calculations.
     effect_costs: Vec<((usize, u64), BTreeMap<(usize, u64), u64>)>,
+    damage_clip: Option<Rect>,
 }
 impl Renderer<'_> {
     fn tile(&mut self, nodes: &[DrawNode], tr: Affine, w: u32, h: u32) -> Result<Pixmap> {
-        self.tile_content(nodes, tr, w, h, false)
+        let saved = self.damage_clip.take();
+        let result = self.tile_content(nodes, tr, w, h, false);
+        self.damage_clip = saved;
+        result
     }
     fn tile_content(
         &mut self,
@@ -352,8 +526,15 @@ impl Renderer<'_> {
             return Err(error("渲染分块超过 64MB 缓冲区预算"));
         }
         let mut context = RenderContext::new(w as u16, h as u16);
+        if let Some(clip) = self.damage_clip {
+            context.set_transform(Affine::IDENTITY);
+            context.push_clip_layer(&clip.to_path(0.0001));
+        }
         for n in nodes {
             self.node_content(&mut context, n, tr, w, h, source_root)?;
+        }
+        if self.damage_clip.is_some() {
+            context.pop_layer();
         }
         let mut target = Pixmap::new(w as u16, h as u16);
         context.flush();
@@ -497,7 +678,10 @@ impl Renderer<'_> {
                 * scale(tr)
         };
         if b.inflate(effect_pad, effect_pad)
-            .intersect(Rect::new(0., 0., w as f64, h as f64))
+            .intersect(
+                self.damage_clip
+                    .unwrap_or(Rect::new(0., 0., w as f64, h as f64)),
+            )
             .area()
             <= 0.
         {
@@ -908,6 +1092,7 @@ pub(crate) fn effect_tiles(
         used_effects: BTreeSet::new(),
         frame_effects: BTreeMap::new(),
         effect_costs: Vec::new(),
+        damage_clip: None,
     }
     .effect_tiles(n, density)
 }
@@ -974,6 +1159,7 @@ mod retained_tests {
                 used_effects: BTreeSet::new(),
                 frame_effects: BTreeMap::new(),
                 effect_costs: Vec::new(),
+                damage_clip: None,
             };
             renderer
                 .tile(&prepared.list.nodes, Affine::scale(4.), 320, 200)

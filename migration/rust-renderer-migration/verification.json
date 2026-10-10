@@ -1,7 +1,7 @@
 {
   "branch": "codex/rust-renderer-migration",
   "base_commit": "9c6f26f",
-  "rust_tests_passed": 524,
+  "rust_tests_passed": 528,
   "python_tests_passed": 51,
   "legacy_assertions_verified": 891,
   "execution_verified": true,
@@ -11,7 +11,7 @@
         "name": "examples/typography.lay",
         "width": 605,
         "height": 378,
-        "rasterMs": 18.600000023841858,
+        "rasterMs": 16.100000023841858,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -21,7 +21,7 @@
         "name": "examples/vector.lay",
         "width": 680,
         "height": 454,
-        "rasterMs": 17.400000035762787,
+        "rasterMs": 15.5,
         "maximumDelta": 1,
         "meanDelta": 4.048976418761337e-06,
         "channelsAboveTwo": 0,
@@ -31,7 +31,7 @@
         "name": "examples/effects/art-text.lay",
         "width": 680,
         "height": 567,
-        "rasterMs": 35.09999996423721,
+        "rasterMs": 32.80000001192093,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -41,7 +41,7 @@
         "name": "examples/effects/shadow-glow.lay",
         "width": 567,
         "height": 359,
-        "rasterMs": 19.899999976158142,
+        "rasterMs": 19.700000047683716,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -51,7 +51,7 @@
         "name": "examples/effects/images-groups.lay",
         "width": 605,
         "height": 302,
-        "rasterMs": 18.19999998807907,
+        "rasterMs": 16.69999998807907,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -61,7 +61,7 @@
         "name": "examples/gallery/images/svg.lay",
         "width": 454,
         "height": 302,
-        "rasterMs": 27.19999998807907,
+        "rasterMs": 24.400000035762787,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -71,17 +71,17 @@
         "name": "examples/plot/scientific.lay",
         "width": 680,
         "height": 310,
-        "rasterMs": 16.69999998807907,
+        "rasterMs": 14.400000035762787,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
         "samples": []
       },
       {
-        "name": "wide-70000x2",
+        "name": "/home/keqing/source/LayMesh/site/dist/renderer-contract/wide.lay",
         "width": 70000,
         "height": 2,
-        "rasterMs": 10.600000023841858,
+        "rasterMs": 10.5,
         "maximumDelta": 0,
         "meanDelta": 0,
         "channelsAboveTwo": 0,
@@ -161,8 +161,8 @@
       ],
       "unknown_rejected": true
     },
-    "native_oracle_sha256": "9ae8c05f58377170d0bfcae8b67a829fe1306dd071e4602822e6d307c8137c4d",
-    "wasm_sha256": "4e325bcdb852ef99a6db2703bb28574ddfab21e88cbc54c648b42fe56ef7536c"
+    "native_oracle_sha256": "af2ead3d5f6f2ae07a013b826b4d18622389d0588130e37e897f583bd3c92e95",
+    "wasm_sha256": "453639a590b18365fdd3e2195441fb0bb4409b203ee2dbf1ea8123bf37f03cd1"
   },
   "browser": {
     "examples": 186,
@@ -205,14 +205,14 @@
     "scope": "Migration acceptance retained; performance follow-up reran Rust/Python export contracts and native/WASM pixel parity."
   },
   "vsix": {
-    "file": "laymesh-renderer-frame-optimized-linux-x64.vsix",
+    "file": "laymesh-renderer-text-optimized-linux-x64.vsix",
     "publisher": "Hyacine",
     "version": "0.5.1",
     "target": "linux-x64",
     "prerelease": false,
     "marketplace_checks": true,
-    "bytes": 11417110,
-    "installed_bytes": 29254108,
+    "bytes": 11450921,
+    "installed_bytes": 29358537,
     "native_binary": "extension/bin/laymesh",
     "client_modules": [
       "vscode",
@@ -222,8 +222,8 @@
     "bundled_text_fonts": false
   },
   "package_baseline_bytes": 7624526,
-  "native_binary_sha256": "170cd6f6a7b027349992923a2002b1fc5720f95953151f6ad1137c789d5183c3",
-  "media_engine_fingerprint": "b011bf7ff96da00c14e99ae478b8a70367eb4b22d95ce0b8fe4da37ed1f4201c",
+  "native_binary_sha256": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+  "media_engine_fingerprint": "7a5327c7236fc7a1257b5df552aeef93601406c130d9547056bd109aef68d5f0",
   "ring": {
     "original_pixels": [
       128,
@@ -300,5 +300,41 @@
     "package_sha256": "1b3d343ca73b11c03c9f24d9f6592c1973fb60e647a11b23d5f5609e0d8ea463",
     "vscode_bridge": "passed",
     "compile_configuration_in_source_manifest": true
+  },
+  "previous_frame_vsix": {
+    "file": "laymesh-renderer-frame-optimized-linux-x64.vsix",
+    "publisher": "Hyacine",
+    "version": "0.5.1",
+    "target": "linux-x64",
+    "prerelease": false,
+    "marketplace_checks": true,
+    "bytes": 11417110,
+    "installed_bytes": 29254108,
+    "native_binary": "extension/bin/laymesh",
+    "client_modules": [
+      "vscode",
+      "child_process",
+      "path"
+    ],
+    "bundled_text_fonts": false
+  },
+  "text_refresh_optimization": {
+    "status": "passed",
+    "metrics": "text-refresh-performance.json",
+    "formula_checks": 30412,
+    "formula_renderer_fingerprint": "54090c867489bf561b9e16d70703f9c805c6dbff57f1c0fb6808252766bbed4e",
+    "source_qualified_assertion_gate": "passed",
+    "package_sha256": "3ae4e0dc61492554b90d2c76339cd987f7109b970d9aaa52c608a0205d550e14",
+    "vscode_bridge": "passed",
+    "retained_pixel_checks": 42,
+    "retained_pixel_maximum_delta": 0,
+    "default_debounce_ms": 100,
+    "source_to_visible_median_ms": 154,
+    "processing_median_ms": 48,
+    "continuous_incremental_edits": 19,
+    "continuous_processing_maximum_ms": 50,
+    "replay_composition": "passed",
+    "browser_runtime_source_guard": "passed",
+    "served_wasm_sha256": "453639a590b18365fdd3e2195441fb0bb4409b203ee2dbf1ea8123bf37f03cd1"
   }
 }

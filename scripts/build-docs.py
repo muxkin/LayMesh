@@ -160,6 +160,7 @@ def check():
  for p in live.rglob('*'):
   if p.suffix.lower() in ('.ttf','.otf','.ttc','.otc','.woff','.woff2'):assert p.relative_to(live).as_posix() in expected,f'Unexpected Page font: {p}'
  assert (live/'wasm/laymesh_wasm_bg.wasm').is_file();print(f'Checked {count} documentation pages and two Page-only body fonts')
+ spec=importlib.util.spec_from_file_location('check_live',ROOT/'scripts/build-docs-live.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);module.validate_runtime(live)
 def main():
  parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--check',action='store_true');parser.add_argument('--skip-wasm',action='store_true');a=parser.parse_args()
  if a.check:check();return

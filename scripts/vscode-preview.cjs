@@ -2,13 +2,26 @@
 const vscode=require('vscode'),fs=require('fs'),path=require('path'),os=require('os'),assert=require('assert/strict');
 const {pathToFileURL}=require('url');
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
+const drawings=new Map();
 const observed=message=>{
- if(!message.displayListCompressed)return message;
- const data=message.displayListCompressed.data;
- const bytes=require('zlib').gunzipSync(typeof data==='string'?Buffer.from(data,'base64'):Buffer.from(data));
- assert.equal(bytes.length,message.displayListCompressed.uncompressedBytes);
- assert.equal(require('crypto').createHash('sha256').update(bytes).digest('hex'),message.displayListCompressed.id);
- return {...message,displayList:JSON.parse(bytes.toString('utf8'))};
+ let list=message.displayList;
+ if(message.displayListCompressed){
+  const data=message.displayListCompressed.data;
+  const bytes=require('zlib').gunzipSync(typeof data==='string'?Buffer.from(data,'base64'):Buffer.from(data));
+  assert.equal(bytes.length,message.displayListCompressed.uncompressedBytes);
+  assert.equal(require('crypto').createHash('sha256').update(bytes).digest('hex'),message.displayListCompressed.id);
+  list=JSON.parse(bytes.toString('utf8'));
+ }else if(message.displayListUpdate){
+  const {base,update}=message.displayListUpdate;assert(drawings.has(base),'Patch must name an observed CPU baseline');
+  list=structuredClone(drawings.get(base));list.width=update.width;list.height=update.height;
+  assert.equal(list.schemaVersion,update.schemaVersion);
+  if(update.roots)list.nodes=update.roots;
+  if(update.resources)list.resources=update.resources;
+  for(const {path,node} of update.nodes){let nodes=list.nodes;for(const index of path.slice(0,-1)){assert.equal(nodes[index].kind.kind,'group');nodes=nodes[index].kind.children;}assert(path.at(-1)<nodes.length);nodes[path.at(-1)]=node;}
+ }
+ if(!list)return message;
+ if(message.displayListId)drawings.set(message.displayListId,list);
+ return {...message,displayList:list};
 };
 exports.run=async()=>{
  const evidence={status:'passed',host:'VS Code actual preview webview',checks:[]};
@@ -96,7 +109,26 @@ exports.run=async()=>{
  count=host.messages.length;await replace(dependencyDoc,'export top=4');await replace(dependencyDoc,'export top=6');await until(()=>host.messages.slice(count).find(m=>m.displayList),'Latest edit');assert.equal(host.messages.slice(count).filter(m=>m.displayList).length,1);
  evidence.checks.push('Rapid edits coalesce into the latest version');
  // Hold one completed native response while a newer generation finishes first.
- const {PreviewWorker}=require(path.join(extension.extensionPath,'dist/preview-host.cjs'));
+ const {PreviewWorker,compactReplay}=require(path.join(extension.extensionPath,'dist/preview-host.cjs'));
+ // Replay composition must handle child/ancestor replacement, root-count
+ // changes and resource replacement without growing with the edit count.
+ const leaf=value=>({kind:{kind:'path',value}}),group=children=>({kind:{kind:'group',children}});
+ let expected=[group([leaf(0),group([leaf(1),leaf(2)])]),leaf(3)];
+ const baseline={displayListId:'baseline',displayList:{schemaVersion:1,width:10,height:10,nodes:structuredClone(expected),resources:{}}};drawings.set('baseline',baseline.displayList);
+ let compacted;
+ const changes=[{path:[0],node:group([leaf(4),group([leaf(5),leaf(6)])])},{path:[0,1,0],node:leaf(7)},{path:[0,1],node:group([leaf(8),leaf(9)])},{path:[1],node:leaf(10)}];
+ for(let i=0;i<24;i++){
+  const change=changes[i%changes.length],update={schemaVersion:1,width:10,height:10,nodes:[change],roots:null,resources:i===5?{new:{mime:'image/png',data:[]}}:null};
+  const frame={displayListId:'composed-'+i,displayListUpdate:{base:i?'composed-'+(i-1):'baseline',update}};
+  compacted=compactReplay(compacted,frame);const sequential=observed(frame).displayList;
+  assert.deepEqual(observed(compacted).displayList,sequential);assert.equal(compacted.displayListUpdate.base,'baseline');
+  assert(compacted.displayListUpdate.update.nodes.length<=2);
+ }
+ const roots={displayListId:'roots',displayListUpdate:{base:compacted.displayListId,update:{schemaVersion:1,width:12,height:10,nodes:[],roots:[group([leaf(11)])],resources:{}}}};
+ compacted=compactReplay(compacted,roots);assert.deepEqual(observed(compacted).displayList,observed(roots).displayList);
+ const child={displayListId:'child',displayListUpdate:{base:'roots',update:{schemaVersion:1,width:12,height:10,nodes:[{path:[0,0],node:leaf(12)}],roots:null,resources:null}}};
+ compacted=compactReplay(compacted,child);assert.deepEqual(observed(compacted).displayList,observed(child).displayList);
+ evidence.checks.push('24 replay updates compact to one lossless delta; ancestor/descendant, root-count and resource replacement validated');
  const enqueue=PreviewWorker.prototype.enqueue;let releaseOlder,hold=true;
  PreviewWorker.prototype.enqueue=function(job){if(hold&&job.file===file){hold=false;const done=job.done;job={...job,done:response=>{releaseOlder=()=>done(response);}};}return enqueue.call(this,job);};
  try{
