@@ -11,6 +11,7 @@ def main():
     p.add_argument('--url', required=True, help='Built site served on its Tailscale address')
     p.add_argument('--wasm-dir', type=Path, default=ROOT/'site/dist/site/live/wasm')
     p.add_argument('--example', default='showcase')
+    p.add_argument('--width', type=int, default=960, help='Canvas pixel width')
     p.add_argument('--output', type=Path, required=True)
     a = p.parse_args()
     glue = 'data:text/javascript;base64,'+base64.b64encode((a.wasm_dir/'laymesh_wasm.js').read_bytes()).decode()
@@ -39,18 +40,25 @@ def main():
                 const example=manifest.examples[EXAMPLE],files={};
                 for(const file of example.dependencies){const response=await fetch(new URL(manifest.resources['/'+file],base));files['/'+file]=/\\.(lay|lcss|csv|json)$/.test(file)?await response.text():Array.from(new Uint8Array(await response.arrayBuffer()));}
                 const json=JSON.stringify(files),rows=[];
+                const take=frame=>{if(typeof frame.into_rgba==='function')return frame.into_rgba();const bytes=frame.rgba;frame.free();return bytes;};
                 for(let i=0;i<8;i++){
                     let before=performance.now();const job=wasm.prepare_render(files['/'+example.entry]+'\\n# performance edit '+i,'/'+example.entry,json),compile=performance.now()-before;
                     before=performance.now();const draw=job.draw_job(),lower=performance.now()-before;
                     before=performance.now();const serialized=draw.display_list(),inspection=JSON.parse(job.inspection()).inspection,metadata=performance.now()-before;
-                    before=performance.now();const frame=draw.raster(JSON.stringify([0,0,inspection.page.width,inspection.page.height]),960,Math.round(960*inspection.page.height/inspection.page.width)),rgba=frame.rgba,raster=performance.now()-before;
+                    const height=Math.round(WIDTH*inspection.page.height/inspection.page.width);
+                    before=performance.now();const frame=draw.raster(JSON.stringify([0,0,inspection.page.width,inspection.page.height]),WIDTH,height),drawMs=performance.now()-before;
+                    before=performance.now();const rgba=take(frame),readbackMs=performance.now()-before,raster=drawMs+readbackMs;
+                    const repeatPaint=[];for(let view=0;view<5;view++){
+                        const start=performance.now(),px=draw.raster(JSON.stringify([inspection.page.width*view*.01,0,inspection.page.width*(1+view*.01),inspection.page.height]),WIDTH,height),paintMs=performance.now()-start;
+                        const read=performance.now();take(px);repeatPaint.push({paintMs,copyMs:performance.now()-read});
+                    }
                     let hash=2166136261;for(const b of rgba)hash=Math.imul(hash^b,16777619)>>>0;
-                    rows.push({compile,lower,metadata,raster,total:compile+lower+metadata+raster,display_list_bytes:serialized.length,rgba_hash:hash.toString(16),wasm_memory_bytes:runtime.memory.buffer.byteLength});frame.free();draw.free();job.free();
+                    rows.push({compile,lower,metadata,raster,drawMs,readbackMs,repeatPaint,total:compile+lower+metadata+raster,display_list_bytes:serialized.length,rgba_hash:hash.toString(16),wasm_memory_bytes:runtime.memory.buffer.byteLength});draw.free();job.free();
                 }
                 return {example:EXAMPLE,files_json_bytes:json.length,rows};
-            })()'''.replace('GLUE',json.dumps(glue)).replace('BINARY',json.dumps(binary)).replace('EXAMPLE',json.dumps(a.example)))
+            })()'''.replace('GLUE',json.dumps(glue)).replace('BINARY',json.dumps(binary)).replace('EXAMPLE',json.dumps(a.example)).replace('WIDTH',str(a.width)))
             result['wasm_sha256']=__import__('hashlib').sha256((a.wasm_dir/'laymesh_wasm_bg.wasm').read_bytes()).hexdigest()
-            result['definition']='Same dependencies/fonts; isolated Chromium; 960 px paint; first compile and seven comment edits; excludes initialization/network/debounce'
+            result['definition']=f'Same dependencies/fonts; isolated Chromium; {a.width} px paint and five viewport repaints; first compile and seven comment edits; excludes initialization/network/debounce'
             result['hot_median_ms']={phase:__import__('statistics').median(r[phase] for r in result['rows'][1:]) for phase in ['compile','lower','metadata','raster','total']}
             a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(result,indent=2)+'\n')
             print(json.dumps({'cold':result['rows'][0],'hot_median_ms':result['hot_median_ms']}))

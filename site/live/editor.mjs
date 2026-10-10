@@ -41,14 +41,20 @@ class ExampleEditor {
  activate() { if(this.activated)return;this.activated=true;this.boot();this.schedule(true); }
  boot() {
   this.worker?.terminate();clearTimeout(this.timeout);clearTimeout(this.initTimeout);this.busy=false;this.ready=false;
+  this.paintInFlight=null;this.pendingPaint=null;
   const start=performance.now();this.worker=new Worker(new URL('worker.js',base),{type:'module'});
   this.worker.postMessage({type:'init',base:base.href});
   this.initTimeout=setTimeout(()=>{this.worker?.terminate();this.worker=null;this.error({message:t('引擎或字体加载超时，可点击运行重试。','Engine or fonts timed out. Run again to retry.')});},45000);
   this.worker.onmessage=({data})=>{
-   if(data.type==='paint-error'){if(data.generation===this.last?.generation){this.paintKey='';this.error(data.error);}return;}
-   if(data.type==='painted'){if(data.generation===this.last?.generation&&data.id===this.paintId){
-    this.image.width=data.width;this.image.height=data.height;this.image.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(data.rgba),data.width,data.height),0,0);
-    this.last.metrics.raster=data.rasterMs;this.last.metrics.total=this.last.metrics.compile+this.last.metrics.lower+data.rasterMs;this.module.dataset.painted='true';this.updateMetrics();}return;}
+   if(['paint-error','painted','paint-skipped'].includes(data.type)){
+    if(this.paintInFlight&&data.id===this.paintInFlight.id&&data.generation===this.paintInFlight.generation)this.paintInFlight=null;
+    if(data.generation===this.last?.generation&&data.id===this.paintId){
+     if(data.type==='paint-error'){this.paintKey='';this.error(data.error);}
+     else if(data.type==='painted'){this.image.width=data.width;this.image.height=data.height;this.image.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(data.rgba.buffer,data.rgba.byteOffset,data.rgba.byteLength),data.width,data.height),0,0);
+      this.last.metrics.raster=data.rasterMs;this.last.metrics.total=this.last.metrics.compile+this.last.metrics.lower+data.rasterMs;this.module.dataset.painted='true';this.updateMetrics();}
+    }
+    this.flushPaint();return;
+   }
    if(data.type==='init-error'){clearTimeout(this.initTimeout);this.error(data.error);this.worker?.terminate();this.worker=null;return;}
    if(data.type==='ready'){clearTimeout(this.initTimeout);this.ready=true;this.initialization=performance.now()-start;for(const font of this.loadedFonts)this.worker.postMessage({type:'font',...font});if(this.pending)this.drain();return;}
    if(data.type==='font-added'){this.fontNote.textContent=t('内置 DejaVu Sans、Noto Sans CJK SC；另已载入：','Bundled DejaVu Sans and Noto Sans CJK SC; also loaded: ')+(data.families||[]).join(' / ');this.schedule(true);return;}
@@ -110,8 +116,15 @@ class ExampleEditor {
   const page=this.last.inspection.page,rect=[x/box.width*page.width,y/box.height*page.height,(x+w)/box.width*page.width,(y+h)/box.height*page.height],dpr=devicePixelRatio||1,width=Math.ceil(w*dpr),height=Math.ceil(h*dpr);
   const key=JSON.stringify([this.last.generation,rect,width,height]);if(key===this.paintKey)return;this.paintKey=key;this.paintId=(this.paintId||0)+1;
   Object.assign(this.image.style,{position:'absolute',left:x+'px',top:y+'px',width:w+'px',height:h+'px',maxWidth:'none',maxHeight:'none'});this.module.dataset.painted='false';
-  this.worker.postMessage({type:'paint',id:this.paintId,generation:this.last.generation,rect,width,height});
+  // Rendering is synchronous inside the worker. Keep one request in flight
+  // and replace its pending successor as the viewport moves, instead of
+  // queueing a bitmap for every animation frame that will later be discarded.
+  this.pendingPaint={type:'paint',id:this.paintId,generation:this.last.generation,rect,width,height};this.flushPaint();
  });}
+ flushPaint(){if(this.paintInFlight||!this.pendingPaint||!this.worker)return;
+  const next=this.pendingPaint;this.pendingPaint=null;if(next.generation!==this.last?.generation)return;
+  this.paintInFlight=next;this.worker.postMessage(next);
+ }
 
  error(error){this.statusText=this.last?t('上次成功结果 · 当前源码未通过','Last successful result · current source failed'):t('当前源码未通过','Current source failed');this.diagnosticsOpen=true;this.diagnostics.textContent=[error.code,error.file,error.loc?`${error.loc.line}:${error.loc.column}`:'',error.message].filter(Boolean).join(' ');this.module.dataset.liveState='error';this.sync();}
  reset(restart=true){this.seq++;clearTimeout(this.debounce);this.worker?.terminate();this.worker=null;clearTimeout(this.initTimeout);clearTimeout(this.timeout);this.busy=false;this.pending=false;this.files={...this.original};for(const [file,text]of Object.entries(this.original))this.maps.set(file,ChangeSet.empty(text.length).desc);for(const [file,{view,wrap}]of this.views){view.setState(EditorState.create({doc:this.files[file],extensions:this.extensions(file,wrap)}));this.module.querySelector(`[data-edit-file="${CSS.escape(file)}"] .code-raw`).value=this.files[file];}this.last=null;this.paintKey='';this.image.getContext('2d').clearRect(0,0,this.image.width,this.image.height);this.diagnostics.textContent='';this.diagnosticsOpen=false;this.metrics.textContent='';this.statusText='';this.workspace.zoomTo(1);this.sync();this.changed();if(restart)this.schedule(true);}

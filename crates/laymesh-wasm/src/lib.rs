@@ -55,6 +55,11 @@ impl RgbaFrame {
     pub fn rgba(&self) -> Vec<u8> {
         self.rgba.clone()
     }
+    /// Consume this frame for Canvas/worker transfer without cloning its
+    /// complete pixel buffer. The reusable getter remains available.
+    pub fn into_rgba(self) -> Vec<u8> {
+        self.rgba
+    }
 }
 #[wasm_bindgen]
 impl DrawJob {

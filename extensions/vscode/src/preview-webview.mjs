@@ -148,7 +148,7 @@ function paint(r){
  image.style.width=(right-left)+'px';image.style.height=(bottom-top)+'px';image.style.left=(left-r.left)+'px';image.style.top=(top-r.top)+'px';
  const key=JSON.stringify([drawJobId||drawGeneration,crop,width,height]);if(key===drawKey)return;drawKey=key;
  try{const before=performance.now(),pixels=drawJob.raster(JSON.stringify(crop),width,height);
-  try{image.width=width;image.height=height;image.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(pixels.rgba),width,height),0,0);}finally{pixels.free();}
+   const rgba=pixels.into_rgba();image.width=width;image.height=height;image.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(rgba.buffer,rgba.byteOffset,rgba.byteLength),width,height),0,0);
   root.dataset.painted='true';root.dataset.rasterMs=String(performance.now()-before);bridge.postMessage({type:'painted',generation:drawGeneration,at:Date.now(),rasterMs:Number(root.dataset.rasterMs),wasmMemoryBytes:wasmMemory.buffer.byteLength,...frameTimings,width,height});
  }catch(error){drawKey='';diagnostic={code:'E_PREVIEW_RENDER',message:String(error)};showDiagnostic();showStatus('error');}
 }

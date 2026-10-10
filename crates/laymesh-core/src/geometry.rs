@@ -1,8 +1,9 @@
 pub use crate::geometry_recipe::resolved_path;
 use crate::{Loc, Result, engine::Engine, model::*};
 use i_overlay::{
-    core::{fill_rule::FillRule, overlay_rule::OverlayRule},
-    float::single::SingleFloatOverlay,
+    core::{fill_rule::FillRule, overlay::ShapeType, overlay_rule::OverlayRule, solver::Solver},
+    float::{overlay::FloatOverlay, single::SingleFloatOverlay},
+    i_float::adapter::FloatPointAdapter,
 };
 use kurbo::{Affine, BezPath, PathEl, Point, Shape};
 use serde_json::{Value as Json, json};
@@ -56,6 +57,108 @@ fn from_contours(cs: Vec<Vec<Vec<[f64; 2]>>>) -> BezPath {
         }
     }
     p
+}
+fn merge_round_disks(subject: Vec<Vec<[f64; 2]>>, disks: Vec<Vec<[f64; 2]>>) -> BezPath {
+    if disks.iter().map(Vec::len).sum::<usize>() <= 16_000 {
+        return from_contours(subject.overlay(&disks, OverlayRule::Union, FillRule::NonZero));
+    }
+    // Dense, overlapping round joins overwhelm the overlay fragment splitter.
+    // Reduce their union in a balanced tree before merging with the stroke.
+    // Every stage uses the original joint integer grid and precision; changing
+    // the adapter per batch would introduce scale-dependent rounding errors.
+    let adapter = FloatPointAdapter::with_iter(subject.iter().chain(&disks).flatten());
+    let combine = |a: &Vec<Vec<[f64; 2]>>, b: &Vec<Vec<[f64; 2]>>| {
+        FloatOverlay::new_custom(
+            adapter.clone(),
+            Default::default(),
+            Solver::AUTO,
+            a.iter().chain(b).map(Vec::len).sum(),
+        )
+        .unsafe_add_source(a, ShapeType::Subject)
+        .unsafe_add_source(b, ShapeType::Clip)
+        .overlay(OverlayRule::Union, FillRule::NonZero)
+        .into_iter()
+        .flatten()
+        .collect::<Vec<Vec<[f64; 2]>>>()
+    };
+    let mut level = disks
+        .chunks(8)
+        .map(|batch| combine(&batch.to_vec(), &Vec::new()))
+        .collect::<Vec<_>>();
+    while level.len() > 1 {
+        level = level
+            .chunks(2)
+            .map(|pair| {
+                if pair.len() == 2 {
+                    combine(&pair[0], &pair[1])
+                } else {
+                    pair[0].clone()
+                }
+            })
+            .collect();
+    }
+    from_contours(vec![combine(&subject, &level.pop().unwrap_or_default())])
+}
+#[cfg(test)]
+mod round_disk_tests {
+    use super::*;
+
+    #[test]
+    fn dense_join_union_preserves_holes_and_physical_boundary() {
+        for transform in [
+            Affine::IDENTITY,
+            Affine::new([1.5, 0.3, -0.2, 0.7, 80., -20.]),
+        ] {
+            let subject = points(
+                &(transform * kurbo::Rect::new(-13., -0.1, 13., 0.1).to_path(0.0001)),
+                0.0001,
+            );
+            let disks: Vec<_> = (0..128)
+                .flat_map(|i| {
+                    let angle = i as f64 * std::f64::consts::TAU / 128.;
+                    points(
+                        &(transform
+                            * kurbo::Circle::new((10. * angle.cos(), 10. * angle.sin()), 2.)
+                                .to_path(0.0001)),
+                        0.0001,
+                    )
+                })
+                .collect();
+            assert!(disks.iter().map(Vec::len).sum::<usize>() > 16_000);
+            let reference =
+                from_contours(subject.overlay(&disks, OverlayRule::Union, FillRule::NonZero));
+            let actual = merge_round_disks(subject, disks);
+            assert!(actual.contains(transform * Point::new(10., 0.)));
+            assert!(!actual.contains(transform * Point::new(0., 5.)));
+            assert!((reference.area() - actual.area()).abs() < 0.0001);
+            for (a, b) in [(&reference, &actual), (&actual, &reference)] {
+                let edges: Vec<_> = points(b, 0.0001)
+                    .into_iter()
+                    .flat_map(|c| {
+                        (0..c.len())
+                            .map(|i| {
+                                let a = c[i];
+                                let b = c[(i + 1) % c.len()];
+                                (Point::new(a[0], a[1]), Point::new(b[0], b[1]))
+                            })
+                            .collect::<Vec<_>>()
+                    })
+                    .collect();
+                for p in points(a, 0.0001).into_iter().flatten().step_by(17) {
+                    let p = Point::new(p[0], p[1]);
+                    let distance = edges
+                        .iter()
+                        .map(|&(a, b)| {
+                            let v = b - a;
+                            let t = ((p - a).dot(v) / v.hypot2()).clamp(0., 1.);
+                            p.distance(a + v * t)
+                        })
+                        .fold(f64::INFINITY, f64::min);
+                    assert!(distance < 0.0001, "boundary displacement {distance}");
+                }
+            }
+        }
+    }
 }
 fn boolean(a: &BezPath, b: &BezPath, op: OverlayRule) -> BezPath {
     crate::geometry_cache::memo(b"boolean", &[a, b], &[op as u8], Affine::IDENTITY, || {
@@ -251,11 +354,7 @@ fn outline_uncached(path: &BezPath, s: &Json, transform: Affine) -> BezPath {
     // All disks have the same winding. Keep the stroke and disk winding
     // accumulators separate, then union them once; a union for every vertex
     // becomes quadratic during morphological closing of flattened contours.
-    from_contours(points(&(transform * stroked), tolerance).overlay(
-        &disks,
-        OverlayRule::Union,
-        FillRule::NonZero,
-    ))
+    merge_round_disks(points(&(transform * stroked), tolerance), disks)
 }
 pub fn node_transform(n: &Json) -> Affine {
     let (w, h) = (jnum(n, "width", 0.), jnum(n, "height", 0.));

@@ -1,0 +1,2275 @@
+{
+  "measured_at": "2026-10-10",
+  "baseline_commit": "73e4f82",
+  "platform": "Linux x64, isolated Chromium and actual VS Code preview webview",
+  "methodology": "Geometry: same bundled fonts/dependencies; first compile in separate fresh WASM processes, then seven comment edits; 1200 px paint and five viewport repaints; excludes network, initialization and debounce. First-compile values are individual observations, not a universal latency guarantee. WASM memory is linear-memory capacity, not browser RSS.",
+  "geometry_round_join_union": {
+    "strategy": "Union overlapping round disks in balanced batches on the original shared integer grid before combining with the stroke; no flattening tolerance change. Dense join union activates above 16000 disk vertices.",
+    "flatten_tolerance_mm": 0.0001,
+    "holes_and_transformed_boundaries_regression": "passed; bidirectional sampled boundary displacement below 0.0001 mm",
+    "cases": [
+      {
+        "example": "gallery-shapes-fuse-angled",
+        "canvas_width": 1200,
+        "before": {
+          "example": "gallery-shapes-fuse-angled",
+          "files_json_bytes": 1266,
+          "rows": [
+            {
+              "compile": 6628,
+              "lower": 3.399999976158142,
+              "metadata": 1.800000011920929,
+              "raster": 21.600000023841858,
+              "drawMs": 20.30000001192093,
+              "readbackMs": 1.300000011920929,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.799999952316284,
+                  "copyMs": 1.2000000476837158
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.0999999642372131
+                },
+                {
+                  "paintMs": 11.899999976158142,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 12.699999988079071,
+                  "copyMs": 1.2000000476837158
+                }
+              ],
+              "total": 6654.800000011921,
+              "display_list_bytes": 110702,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 190054400
+            },
+            {
+              "compile": 19.399999976158142,
+              "lower": 1.899999976158142,
+              "metadata": 0.40000003576278687,
+              "raster": 13.300000011920929,
+              "drawMs": 12,
+              "readbackMs": 1.300000011920929,
+              "repeatPaint": [
+                {
+                  "paintMs": 13.5,
+                  "copyMs": 1.2999999523162842
+                },
+                {
+                  "paintMs": 12.200000047683716,
+                  "copyMs": 1.2999999523162842
+                },
+                {
+                  "paintMs": 14.200000047683716,
+                  "copyMs": 1.2999999523162842
+                },
+                {
+                  "paintMs": 12.300000011920929,
+                  "copyMs": 1.4000000357627869
+                },
+                {
+                  "paintMs": 12.399999976158142,
+                  "copyMs": 1.199999988079071
+                }
+              ],
+              "total": 35,
+              "display_list_bytes": 110702,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 190054400
+            },
+            {
+              "compile": 17.700000047683716,
+              "lower": 2,
+              "metadata": 0.5,
+              "raster": 13.699999988079071,
+              "drawMs": 12.299999952316284,
+              "readbackMs": 1.4000000357627869,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1.2999999523162842
+                },
+                {
+                  "paintMs": 11.400000035762787,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.199999988079071,
+                  "copyMs": 1.199999988079071
+                }
+              ],
+              "total": 33.90000003576279,
+              "display_list_bytes": 110702,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 190054400
+            },
+            {
+              "compile": 18,
+              "lower": 2.100000023841858,
+              "metadata": 0.2999999523162842,
+              "raster": 14.300000011920929,
+              "drawMs": 13.100000023841858,
+              "readbackMs": 1.199999988079071,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.400000035762787,
+                  "copyMs": 1.2999999523162842
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1
+                }
+              ],
+              "total": 34.69999998807907,
+              "display_list_bytes": 110702,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 190054400
+            },
+            {
+              "compile": 17.600000023841858,
+              "lower": 1.7999999523162842,
+              "metadata": 0.30000001192092896,
+              "raster": 13.199999988079071,
+              "drawMs": 12.100000023841858,
+              "readbackMs": 1.0999999642372131,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.700000047683716,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1.0999999642372131
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1.100000023841858
+                },
+                {
+                  "paintMs": 11.299999952316284,
+                  "copyMs": 1.100000023841858
+                },
+                {
+                  "paintMs": 11.199999988079071,
+                  "copyMs": 1.300000011920929
+                }
+              ],
+              "total": 32.89999997615814,
+              "display_list_bytes": 110702,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 190054400
+            },
+            {
+              "compile": 17.399999976158142,
+              "lower": 1.899999976158142,
+              "metadata": 0.20000004768371582,
+              "raster": 12.899999976158142,
+              "drawMs": 11.699999988079071,
+              "readbackMs": 1.199999988079071,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.399999976158142,
+                  "copyMs": 1.100000023841858
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1.0999999642372131
+                },
+                {
+                  "paintMs": 11.200000047683716,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.199999988079071,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1.5
+                }
+              ],
+              "total": 32.39999997615814,
+              "display_list_bytes": 110702,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 190054400
+            },
+            {
+              "compile": 17.69999998807907,
+              "lower": 1.899999976158142,
+              "metadata": 0.19999998807907104,
+              "raster": 13.300000011920929,
+              "drawMs": 12.100000023841858,
+              "readbackMs": 1.199999988079071,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.600000023841858,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.199999988079071,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.199999988079071,
+                  "copyMs": 1.2000000476837158
+                },
+                {
+                  "paintMs": 11.299999952316284,
+                  "copyMs": 1.2000000476837158
+                }
+              ],
+              "total": 33.09999996423721,
+              "display_list_bytes": 110702,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 190054400
+            },
+            {
+              "compile": 17.599999964237213,
+              "lower": 1.800000011920929,
+              "metadata": 0.30000001192092896,
+              "raster": 12.699999988079071,
+              "drawMs": 11.600000023841858,
+              "readbackMs": 1.0999999642372131,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.400000035762787,
+                  "copyMs": 1.0999999642372131
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1.100000023841858
+                },
+                {
+                  "paintMs": 11.199999988079071,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.199999988079071,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.200000047683716,
+                  "copyMs": 1.0999999642372131
+                }
+              ],
+              "total": 32.39999997615814,
+              "display_list_bytes": 110702,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 190054400
+            }
+          ],
+          "wasm_sha256": "833859f7856ec9d61125cdcde8221701167874f5c96f6732778a1e126fda8ce9",
+          "definition": "Same dependencies/fonts; isolated Chromium; 1200 px paint and five viewport repaints; first compile and seven comment edits; excludes initialization/network/debounce; reusable rgba getter retained in both geometry probes",
+          "hot_median_ms": {
+            "compile": 17.69999998807907,
+            "lower": 1.899999976158142,
+            "metadata": 0.30000001192092896,
+            "raster": 13.300000011920929,
+            "total": 33.09999996423721
+          }
+        },
+        "after": {
+          "example": "gallery-shapes-fuse-angled",
+          "files_json_bytes": 1266,
+          "rows": [
+            {
+              "compile": 2318.699999988079,
+              "lower": 3.600000023841858,
+              "metadata": 1.699999988079071,
+              "raster": 30.80000001192093,
+              "drawMs": 29.399999976158142,
+              "readbackMs": 1.4000000357627869,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.800000011920929,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.800000011920929,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.2000000476837158
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.300000011920929
+                }
+              ],
+              "total": 2354.800000011921,
+              "display_list_bytes": 110809,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 121503744
+            },
+            {
+              "compile": 19.600000023841858,
+              "lower": 2,
+              "metadata": 0.3999999761581421,
+              "raster": 13.800000011920929,
+              "drawMs": 12.199999988079071,
+              "readbackMs": 1.600000023841858,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.4000000357627869
+                },
+                {
+                  "paintMs": 11.599999964237213,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 11.600000023841858,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 11.599999964237213,
+                  "copyMs": 1.199999988079071
+                }
+              ],
+              "total": 35.80000001192093,
+              "display_list_bytes": 110809,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 121503744
+            },
+            {
+              "compile": 18.80000001192093,
+              "lower": 2,
+              "metadata": 0.30000001192092896,
+              "raster": 13.5,
+              "drawMs": 12,
+              "readbackMs": 1.5,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.600000023841858,
+                  "copyMs": 1.399999976158142
+                },
+                {
+                  "paintMs": 11.600000023841858,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.2999999523162842
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 11.600000023841858,
+                  "copyMs": 1.199999988079071
+                }
+              ],
+              "total": 34.60000002384186,
+              "display_list_bytes": 110809,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 121503744
+            },
+            {
+              "compile": 19.399999976158142,
+              "lower": 1.9000000357627869,
+              "metadata": 0.2999999523162842,
+              "raster": 13.600000023841858,
+              "drawMs": 12.300000011920929,
+              "readbackMs": 1.300000011920929,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.800000011920929,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 11.300000011920929,
+                  "copyMs": 1.399999976158142
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.5999999642372131
+                },
+                {
+                  "paintMs": 11.800000011920929,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.5
+                }
+              ],
+              "total": 35.19999998807907,
+              "display_list_bytes": 110809,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 121503744
+            },
+            {
+              "compile": 19.399999976158142,
+              "lower": 1.899999976158142,
+              "metadata": 0.40000003576278687,
+              "raster": 14.699999988079071,
+              "drawMs": 13.099999964237213,
+              "readbackMs": 1.600000023841858,
+              "repeatPaint": [
+                {
+                  "paintMs": 12,
+                  "copyMs": 1.399999976158142
+                },
+                {
+                  "paintMs": 12.300000011920929,
+                  "copyMs": 1.600000023841858
+                },
+                {
+                  "paintMs": 14.5,
+                  "copyMs": 1.800000011920929
+                },
+                {
+                  "paintMs": 12.699999988079071,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 13,
+                  "copyMs": 1.199999988079071
+                }
+              ],
+              "total": 36.39999997615814,
+              "display_list_bytes": 110809,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 121503744
+            },
+            {
+              "compile": 19.30000001192093,
+              "lower": 1.899999976158142,
+              "metadata": 0.3999999761581421,
+              "raster": 14,
+              "drawMs": 12.5,
+              "readbackMs": 1.5,
+              "repeatPaint": [
+                {
+                  "paintMs": 12.300000011920929,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 12.300000011920929,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 12.199999988079071,
+                  "copyMs": 1.699999988079071
+                },
+                {
+                  "paintMs": 12.200000047683716,
+                  "copyMs": 1.699999988079071
+                },
+                {
+                  "paintMs": 12.300000011920929,
+                  "copyMs": 1.2999999523162842
+                }
+              ],
+              "total": 35.59999996423721,
+              "display_list_bytes": 110809,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 121503744
+            },
+            {
+              "compile": 18.80000001192093,
+              "lower": 1.9000000357627869,
+              "metadata": 0.2999999523162842,
+              "raster": 13.900000035762787,
+              "drawMs": 12.300000011920929,
+              "readbackMs": 1.600000023841858,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.899999976158142,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.2000000476837158
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.0999999642372131
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.300000011920929
+                }
+              ],
+              "total": 34.90000003576279,
+              "display_list_bytes": 110809,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 121503744
+            },
+            {
+              "compile": 19.400000035762787,
+              "lower": 1.800000011920929,
+              "metadata": 0.19999998807907104,
+              "raster": 13.800000011920929,
+              "drawMs": 12,
+              "readbackMs": 1.800000011920929,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.899999976158142,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 11.800000011920929,
+                  "copyMs": 1.399999976158142
+                },
+                {
+                  "paintMs": 11.600000023841858,
+                  "copyMs": 1.399999976158142
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.2000000476837158
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.5999999642372131
+                }
+              ],
+              "total": 35.200000047683716,
+              "display_list_bytes": 110809,
+              "rgba_hash": "e7a9b0ad",
+              "wasm_memory_bytes": 121503744
+            }
+          ],
+          "wasm_sha256": "ec200201ff24798c95f307cd4b0fc677d15d8c49a70b4d85c5241037cc66a600",
+          "definition": "Same dependencies/fonts; isolated Chromium; 1200 px paint and five viewport repaints; first compile and seven comment edits; excludes initialization/network/debounce; reusable rgba getter retained in both geometry probes",
+          "hot_median_ms": {
+            "compile": 19.399999976158142,
+            "lower": 1.9000000357627869,
+            "metadata": 0.30000001192092896,
+            "raster": 13.800000011920929,
+            "total": 35.200000047683716
+          }
+        },
+        "rgba_unchanged": true
+      },
+      {
+        "example": "gallery-shapes-fuse-curved",
+        "canvas_width": 1200,
+        "before": {
+          "example": "gallery-shapes-fuse-curved",
+          "files_json_bytes": 1596,
+          "rows": [
+            {
+              "compile": 2906.800000011921,
+              "lower": 3.5,
+              "metadata": 2.399999976158142,
+              "raster": 20.899999976158142,
+              "drawMs": 19.80000001192093,
+              "readbackMs": 1.0999999642372131,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.800000011920929,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 15.900000035762787,
+                  "copyMs": 1.5999999642372131
+                },
+                {
+                  "paintMs": 11.900000035762787,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.600000023841858,
+                  "copyMs": 1.199999988079071
+                }
+              ],
+              "total": 2933.599999964237,
+              "display_list_bytes": 170430,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 170262528
+            },
+            {
+              "compile": 18.5,
+              "lower": 2,
+              "metadata": 0.40000003576278687,
+              "raster": 13.300000011920929,
+              "drawMs": 11.899999976158142,
+              "readbackMs": 1.4000000357627869,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.599999964237213,
+                  "copyMs": 1.100000023841858
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.399999976158142,
+                  "copyMs": 1.100000023841858
+                }
+              ],
+              "total": 34.200000047683716,
+              "display_list_bytes": 170430,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 170262528
+            },
+            {
+              "compile": 17.899999976158142,
+              "lower": 1.9000000357627869,
+              "metadata": 0.5,
+              "raster": 13.300000011920929,
+              "drawMs": 12.099999964237213,
+              "readbackMs": 1.2000000476837158,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.599999964237213,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.600000023841858,
+                  "copyMs": 1.0999999642372131
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.2000000476837158
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.0999999642372131
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.199999988079071
+                }
+              ],
+              "total": 33.60000002384186,
+              "display_list_bytes": 170430,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 170262528
+            },
+            {
+              "compile": 18,
+              "lower": 2,
+              "metadata": 0.3999999761581421,
+              "raster": 13.199999988079071,
+              "drawMs": 12,
+              "readbackMs": 1.199999988079071,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.399999976158142,
+                  "copyMs": 1.2000000476837158
+                },
+                {
+                  "paintMs": 11.299999952316284,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.400000035762787,
+                  "copyMs": 1
+                },
+                {
+                  "paintMs": 11.400000035762787,
+                  "copyMs": 1.399999976158142
+                }
+              ],
+              "total": 33.59999996423721,
+              "display_list_bytes": 170430,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 170262528
+            },
+            {
+              "compile": 18.100000023841858,
+              "lower": 2,
+              "metadata": 0.5,
+              "raster": 13.199999988079071,
+              "drawMs": 11.899999976158142,
+              "readbackMs": 1.300000011920929,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.0999999642372131
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.100000023841858
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.600000023841858
+                },
+                {
+                  "paintMs": 12.599999964237213,
+                  "copyMs": 1.100000023841858
+                }
+              ],
+              "total": 33.80000001192093,
+              "display_list_bytes": 170430,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 170262528
+            },
+            {
+              "compile": 18.19999998807907,
+              "lower": 1.9000000357627869,
+              "metadata": 0.3999999761581421,
+              "raster": 13.5,
+              "drawMs": 12.400000035762787,
+              "readbackMs": 1.0999999642372131,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.800000011920929,
+                  "copyMs": 1.600000023841858
+                },
+                {
+                  "paintMs": 11.899999976158142,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.2000000476837158
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.0999999642372131
+                },
+                {
+                  "paintMs": 11.700000047683716,
+                  "copyMs": 1.0999999642372131
+                }
+              ],
+              "total": 34,
+              "display_list_bytes": 170430,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 170262528
+            },
+            {
+              "compile": 17.899999976158142,
+              "lower": 2,
+              "metadata": 0.40000003576278687,
+              "raster": 13.5,
+              "drawMs": 12.199999988079071,
+              "readbackMs": 1.300000011920929,
+              "repeatPaint": [
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.600000023841858,
+                  "copyMs": 1.0999999642372131
+                },
+                {
+                  "paintMs": 11.600000023841858,
+                  "copyMs": 1
+                },
+                {
+                  "paintMs": 11.600000023841858,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.699999988079071,
+                  "copyMs": 1
+                }
+              ],
+              "total": 33.80000001192093,
+              "display_list_bytes": 170430,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 170262528
+            },
+            {
+              "compile": 18,
+              "lower": 2,
+              "metadata": 0.40000003576278687,
+              "raster": 13,
+              "drawMs": 11.800000011920929,
+              "readbackMs": 1.199999988079071,
+              "repeatPaint": [
+                {
+                  "paintMs": 12,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 11.899999976158142,
+                  "copyMs": 1.100000023841858
+                },
+                {
+                  "paintMs": 11.799999952316284,
+                  "copyMs": 1.2000000476837158
+                },
+                {
+                  "paintMs": 11.799999952316284,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 11.5,
+                  "copyMs": 1.300000011920929
+                }
+              ],
+              "total": 33.40000003576279,
+              "display_list_bytes": 170430,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 170262528
+            }
+          ],
+          "wasm_sha256": "833859f7856ec9d61125cdcde8221701167874f5c96f6732778a1e126fda8ce9",
+          "definition": "Same dependencies/fonts; isolated Chromium; 1200 px paint and five viewport repaints; first compile and seven comment edits; excludes initialization/network/debounce; reusable rgba getter retained in both geometry probes",
+          "hot_median_ms": {
+            "compile": 18,
+            "lower": 2,
+            "metadata": 0.40000003576278687,
+            "raster": 13.300000011920929,
+            "total": 33.80000001192093
+          }
+        },
+        "after": {
+          "example": "gallery-shapes-fuse-curved",
+          "files_json_bytes": 1596,
+          "rows": [
+            {
+              "compile": 2007.199999988079,
+              "lower": 3.700000047683716,
+              "metadata": 2.5,
+              "raster": 22,
+              "drawMs": 20.69999998807907,
+              "readbackMs": 1.300000011920929,
+              "repeatPaint": [
+                {
+                  "paintMs": 12.099999964237213,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 12.600000023841858,
+                  "copyMs": 1.399999976158142
+                },
+                {
+                  "paintMs": 12.5,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 12.200000047683716,
+                  "copyMs": 1.2999999523162842
+                },
+                {
+                  "paintMs": 12.700000047683716,
+                  "copyMs": 1.2999999523162842
+                }
+              ],
+              "total": 2035.4000000357628,
+              "display_list_bytes": 170033,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 113115136
+            },
+            {
+              "compile": 21,
+              "lower": 2.700000047683716,
+              "metadata": 0.5,
+              "raster": 14.799999952316284,
+              "drawMs": 13.299999952316284,
+              "readbackMs": 1.5,
+              "repeatPaint": [
+                {
+                  "paintMs": 13,
+                  "copyMs": 1.4000000357627869
+                },
+                {
+                  "paintMs": 13.099999964237213,
+                  "copyMs": 1.4000000357627869
+                },
+                {
+                  "paintMs": 13.099999964237213,
+                  "copyMs": 1.4000000357627869
+                },
+                {
+                  "paintMs": 13.099999964237213,
+                  "copyMs": 1.2000000476837158
+                },
+                {
+                  "paintMs": 13.100000023841858,
+                  "copyMs": 1.300000011920929
+                }
+              ],
+              "total": 39,
+              "display_list_bytes": 170033,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 113115136
+            },
+            {
+              "compile": 21.400000035762787,
+              "lower": 2.300000011920929,
+              "metadata": 0.5,
+              "raster": 15.799999952316284,
+              "drawMs": 14.099999964237213,
+              "readbackMs": 1.699999988079071,
+              "repeatPaint": [
+                {
+                  "paintMs": 12.700000047683716,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 11.899999976158142,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 12,
+                  "copyMs": 1.4000000357627869
+                },
+                {
+                  "paintMs": 13.199999988079071,
+                  "copyMs": 1.699999988079071
+                },
+                {
+                  "paintMs": 13.199999988079071,
+                  "copyMs": 1.4000000357627869
+                }
+              ],
+              "total": 40,
+              "display_list_bytes": 170033,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 113115136
+            },
+            {
+              "compile": 21.399999976158142,
+              "lower": 2.300000011920929,
+              "metadata": 0.6000000238418579,
+              "raster": 16,
+              "drawMs": 14.599999964237213,
+              "readbackMs": 1.4000000357627869,
+              "repeatPaint": [
+                {
+                  "paintMs": 13.099999964237213,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 13.300000011920929,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 13.300000011920929,
+                  "copyMs": 1.5
+                },
+                {
+                  "paintMs": 13,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 12.199999988079071,
+                  "copyMs": 1.300000011920929
+                }
+              ],
+              "total": 40.30000001192093,
+              "display_list_bytes": 170033,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 113115136
+            },
+            {
+              "compile": 21.30000001192093,
+              "lower": 2.399999976158142,
+              "metadata": 0.5,
+              "raster": 15.199999988079071,
+              "drawMs": 13.800000011920929,
+              "readbackMs": 1.399999976158142,
+              "repeatPaint": [
+                {
+                  "paintMs": 13.900000035762787,
+                  "copyMs": 1.399999976158142
+                },
+                {
+                  "paintMs": 12.899999976158142,
+                  "copyMs": 1.4000000357627869
+                },
+                {
+                  "paintMs": 13.099999964237213,
+                  "copyMs": 1.4000000357627869
+                },
+                {
+                  "paintMs": 12.599999964237213,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 12,
+                  "copyMs": 1.300000011920929
+                }
+              ],
+              "total": 39.39999997615814,
+              "display_list_bytes": 170033,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 113115136
+            },
+            {
+              "compile": 20.80000001192093,
+              "lower": 2,
+              "metadata": 0.5,
+              "raster": 14.800000011920929,
+              "drawMs": 13.300000011920929,
+              "readbackMs": 1.5,
+              "repeatPaint": [
+                {
+                  "paintMs": 12.800000011920929,
+                  "copyMs": 1.2999999523162842
+                },
+                {
+                  "paintMs": 20.100000023841858,
+                  "copyMs": 2
+                },
+                {
+                  "paintMs": 12.100000023841858,
+                  "copyMs": 1.2999999523162842
+                },
+                {
+                  "paintMs": 12,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 12,
+                  "copyMs": 1.199999988079071
+                }
+              ],
+              "total": 38.10000002384186,
+              "display_list_bytes": 170033,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 113115136
+            },
+            {
+              "compile": 20.399999976158142,
+              "lower": 2.100000023841858,
+              "metadata": 0.3999999761581421,
+              "raster": 15.400000035762787,
+              "drawMs": 13.100000023841858,
+              "readbackMs": 2.300000011920929,
+              "repeatPaint": [
+                {
+                  "paintMs": 13.099999964237213,
+                  "copyMs": 1.9000000357627869
+                },
+                {
+                  "paintMs": 12.699999988079071,
+                  "copyMs": 1.399999976158142
+                },
+                {
+                  "paintMs": 12.400000035762787,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 12.099999964237213,
+                  "copyMs": 1.100000023841858
+                },
+                {
+                  "paintMs": 12,
+                  "copyMs": 1.300000011920929
+                }
+              ],
+              "total": 38.30000001192093,
+              "display_list_bytes": 170033,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 113115136
+            },
+            {
+              "compile": 19.899999976158142,
+              "lower": 2,
+              "metadata": 0.3999999761581421,
+              "raster": 13.800000011920929,
+              "drawMs": 12.5,
+              "readbackMs": 1.300000011920929,
+              "repeatPaint": [
+                {
+                  "paintMs": 12.5,
+                  "copyMs": 1.4000000357627869
+                },
+                {
+                  "paintMs": 12.399999976158142,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 12.199999988079071,
+                  "copyMs": 1.300000011920929
+                },
+                {
+                  "paintMs": 12.300000011920929,
+                  "copyMs": 1.199999988079071
+                },
+                {
+                  "paintMs": 12.100000023841858,
+                  "copyMs": 1.300000011920929
+                }
+              ],
+              "total": 36.09999996423721,
+              "display_list_bytes": 170033,
+              "rgba_hash": "2858c56",
+              "wasm_memory_bytes": 113115136
+            }
+          ],
+          "wasm_sha256": "ec200201ff24798c95f307cd4b0fc677d15d8c49a70b4d85c5241037cc66a600",
+          "definition": "Same dependencies/fonts; isolated Chromium; 1200 px paint and five viewport repaints; first compile and seven comment edits; excludes initialization/network/debounce; reusable rgba getter retained in both geometry probes",
+          "hot_median_ms": {
+            "compile": 21,
+            "lower": 2.300000011920929,
+            "metadata": 0.5,
+            "raster": 15.199999988079071,
+            "total": 39
+          }
+        },
+        "rgba_unchanged": true
+      }
+    ]
+  },
+  "stalled_cdn_font_initialization": {
+    "definition": "Real worker and SHA-256 verified packaged fonts; shim holds CDN fetch until AbortSignal fires; local network unchanged. New path gives CDN a 100 ms head start, races packaged copy, aborts losing requests.",
+    "before_ms": 5430.1,
+    "after_ms": 514.2,
+    "packaged_font_sources": [
+      {
+        "type": "bundled-font",
+        "family": "DejaVu Sans",
+        "source": "page"
+      },
+      {
+        "type": "bundled-font",
+        "family": "Noto Sans CJK SC",
+        "source": "page"
+      }
+    ]
+  },
+  "viewport_backpressure": {
+    "definition": "13 real zoom changes, DPR 2; worker paint replies held by harness. One in-flight request and one latest pending request, then release replies and confirm final Canvas dimensions.",
+    "before_sent": 13,
+    "after_sent": 2,
+    "in_flight_while_held": 1,
+    "final_canvas_dimensions": [
+      1103,
+      1008
+    ],
+    "generation_change_stale_paint_acknowledged": true,
+    "verification_artifacts": {
+      "scripts/smoke-browser.py": "a37d158b0186a7c27de77f9089b949565c3b6b0e31e0d67291976ee7c974a393",
+      "scripts/test-browser-preview-performance.py": "2191ffa9db3e8dea52348d21c83be74f94c4da8900ea1e0fe867095b48d6ffa9",
+      "site/dist/site/live/color-decorations.mjs": "d8ac3fd42f2f0967b24cc1eaf1fa089a02ed03ab5984ffc0bdb25ee0c8de4961",
+      "site/dist/site/live/color-math.mjs": "17996d795788a0303d9d3e7055a21cbc06eb4bc3131061a48547cebb8439c8e0",
+      "site/dist/site/live/color-panel.mjs": "98a2421d561d72c86c104cb0152c863ad6f00377276e2ddc3039fa9602b325d4",
+      "site/dist/site/live/color-popover.mjs": "353ee40c9e5da4279bde411670dea366b00e88f763d119da91ae5739d1f78ecf",
+      "site/dist/site/live/editor.js": "63541138b395a1ff0cede48c1adbc68c6647f9c747f1f60279a1a1c900ffed0a",
+      "site/dist/site/live/help.mjs": "91ab4ac02dcf373dd06a79dafc8ad0527af577d7a9c84c31ac057f91d35a3e11",
+      "site/dist/site/live/language-worker.js": "84e2054f5d8c5ba50b4ae0dc421c436392c8a1feba65c52ce4135715e1355e84",
+      "site/dist/site/live/language.mjs": "57de51d64f325542d2a83a48d4ab1ea86fef8d362dd94ef0ea2acfb4fe138fa3",
+      "site/dist/site/live/setup.mjs": "0249cd4e8322d616e8463015782e411ed4a08dec2c8a788fc0e346a18b2a8e4d",
+      "site/dist/site/live/vendor/@codemirror/autocomplete/index.js": "b56b54b13369482520bc17a6be424038a65c1ff9a6af6b1b52ee0e123e567df3",
+      "site/dist/site/live/vendor/@codemirror/commands/index.js": "0399fe334a92892d0c05a62b07ff370adafd3a183a80646b1023f8ee4d12cb2e",
+      "site/dist/site/live/vendor/@codemirror/lang-css/index.js": "b28edef6817ed8ee63fc84e52bc1378fc17e224a2ec3da8760afb73266cea9e8",
+      "site/dist/site/live/vendor/@codemirror/lang-json/index.js": "3220f0765a4b6f244a3fc204b81a368d28ed465534d15ce3d2db9b372b59b135",
+      "site/dist/site/live/vendor/@codemirror/language/index.js": "5d078322e03dc5595c12c675e079e881929d47449c666854f57d5934510dd7fb",
+      "site/dist/site/live/vendor/@codemirror/lint/index.js": "aa44221d7069c5bf819795a2a7c94f75a2976a4a10aa58266ab466d19259b6f2",
+      "site/dist/site/live/vendor/@codemirror/search/index.js": "dee679dda99ed62f536c9504f34d236ee616147d2fa291888551fabd2105e2bf",
+      "site/dist/site/live/vendor/@codemirror/state/index.js": "62f347d1a4eaefbc3d5ce2dc0269fe5429547b0f91d03ec33a648df3d4c3b139",
+      "site/dist/site/live/vendor/@codemirror/view/index.js": "bc922493e0a40b9cc9f54a9c5172302d913b84fb2823132ce1d9ff515d5325b2",
+      "site/dist/site/live/vendor/@lezer/common/index.js": "4f08d3cc772b63930aa424b5f75f41c244f2de98da43cd0d72e157a6cbff2dd5",
+      "site/dist/site/live/vendor/@lezer/css/index.js": "d9f287f72f9524f96f1407edded2cdc6ca30282cfea95ca89868ee999385fff2",
+      "site/dist/site/live/vendor/@lezer/highlight/index.js": "910c09bed9d6d9065f097e9b2cf4bf61a0c73bc312e8645cd75f0049a62c6e6b",
+      "site/dist/site/live/vendor/@lezer/json/index.js": "0142d0dbe810088dbda9e7b11f8c1fac8ae1a98ecad52be6028a03583679c9d1",
+      "site/dist/site/live/vendor/@lezer/lr/index.js": "0638def2241bb118d17c50d2a4187bd8ce4b0a83dadd5a424de300e81bb1af91",
+      "site/dist/site/live/vendor/@marijn/find-cluster-break/index.js": "4e9e441fac9db54e09e4e3b1cb0b0393da207ebe943f2ff9efc577821fc03751",
+      "site/dist/site/live/vendor/crelt/index.js": "924800defa2bf95a0bfd16dde589ecebbcd9e36b03635274da84968c77a3721e",
+      "site/dist/site/live/vendor/marked/index.js": "6540aa2544be84b3abdd9424fa287120e9ed7c7600512dd92c097493121a5951",
+      "site/dist/site/live/vendor/style-mod/index.js": "4bd6b34edda52f362553d33df7e3a10f31fbdc0c95125aabec89c4de6be80b0a",
+      "site/dist/site/live/vendor/w3c-keyname/index.js": "b649dec4f01c7c5eb05be4641b5b698c6938231ee50b38e17a2f0f822ca3df2e",
+      "site/dist/site/live/wasm/laymesh_wasm.js": "67ca9c3d3c4de6b1e2c99effab597e82217ad27cf5b9b2da57c90ce7e9fc7609",
+      "site/dist/site/live/wasm/laymesh_wasm_bg.wasm": "ec200201ff24798c95f307cd4b0fc677d15d8c49a70b4d85c5241037cc66a600",
+      "site/dist/site/live/worker.js": "ecff95abe4ec35b97a982806d63f96d7d327b4271f328cdf90cbb5d3c28e8009",
+      "site/dist/site/live/workspace.mjs": "ffce79bf3ce33079ca84f3ccb134a00d109920e068506306306656be919d8b99"
+    }
+  },
+  "pixel_ownership": {
+    "changes": [
+      "Consume decoded DynamicImage into RGBA instead of cloning existing RGBA pixels",
+      "Add consuming RgbaFrame.into_rgba() while retaining rgba getter",
+      "Canvas Uint8ClampedArray views share transferred Uint8Array buffers instead of copying"
+    ],
+    "benchmark": "1200 px shadow/glow, same RGBA hash; readback median remained 1.3 ms, so no measurable readback speedup is claimed. Rendering effects remain the dominant work.",
+    "before": {
+      "example": "effects-shadow-glow",
+      "files_json_bytes": 659,
+      "rows": [
+        {
+          "compile": 71.19999998807907,
+          "lower": 21.69999998807907,
+          "metadata": 1.600000023841858,
+          "raster": 86.10000002384186,
+          "drawMs": 84.5,
+          "readbackMs": 1.600000023841858,
+          "repeatPaint": [
+            {
+              "paintMs": 67.09999996423721,
+              "copyMs": 1.600000023841858
+            },
+            {
+              "paintMs": 67.69999998807907,
+              "copyMs": 1.4000000357627869
+            },
+            {
+              "paintMs": 68.5,
+              "copyMs": 1.5
+            },
+            {
+              "paintMs": 69.79999995231628,
+              "copyMs": 1.2000000476837158
+            },
+            {
+              "paintMs": 68.19999998807907,
+              "copyMs": 1.4000000357627869
+            }
+          ],
+          "total": 180.60000002384186,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 20.69999998807907,
+          "lower": 2,
+          "metadata": 0.40000003576278687,
+          "raster": 70,
+          "drawMs": 68.5,
+          "readbackMs": 1.5,
+          "repeatPaint": [
+            {
+              "paintMs": 66.30000001192093,
+              "copyMs": 1.0999999642372131
+            },
+            {
+              "paintMs": 66.30000001192093,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 66,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 65.70000004768372,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 65.80000001192093,
+              "copyMs": 1.0999999642372131
+            }
+          ],
+          "total": 93.10000002384186,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 18.5,
+          "lower": 1.699999988079071,
+          "metadata": 0.30000001192092896,
+          "raster": 67.5,
+          "drawMs": 66.19999998807907,
+          "readbackMs": 1.300000011920929,
+          "repeatPaint": [
+            {
+              "paintMs": 67.40000003576279,
+              "copyMs": 1.2999999523162842
+            },
+            {
+              "paintMs": 65.80000001192093,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 66.69999998807907,
+              "copyMs": 1.4000000357627869
+            },
+            {
+              "paintMs": 65.89999997615814,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 65.80000001192093,
+              "copyMs": 1.199999988079071
+            }
+          ],
+          "total": 88,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 17.600000023841858,
+          "lower": 1.800000011920929,
+          "metadata": 0.30000001192092896,
+          "raster": 66.69999998807907,
+          "drawMs": 65.59999996423721,
+          "readbackMs": 1.100000023841858,
+          "repeatPaint": [
+            {
+              "paintMs": 65.39999997615814,
+              "copyMs": 1.100000023841858
+            },
+            {
+              "paintMs": 65.30000001192093,
+              "copyMs": 1.399999976158142
+            },
+            {
+              "paintMs": 65.19999998807907,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 65.39999997615814,
+              "copyMs": 1.100000023841858
+            },
+            {
+              "paintMs": 65.19999998807907,
+              "copyMs": 1.199999988079071
+            }
+          ],
+          "total": 86.40000003576279,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 17.80000001192093,
+          "lower": 1.699999988079071,
+          "metadata": 0.19999998807907104,
+          "raster": 67.10000002384186,
+          "drawMs": 65.80000001192093,
+          "readbackMs": 1.300000011920929,
+          "repeatPaint": [
+            {
+              "paintMs": 65.19999998807907,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 65.5,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 65.40000003576279,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 65.19999998807907,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 65.39999997615814,
+              "copyMs": 1
+            }
+          ],
+          "total": 86.80000001192093,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 17.69999998807907,
+          "lower": 1.699999988079071,
+          "metadata": 0.19999998807907104,
+          "raster": 67.10000002384186,
+          "drawMs": 65.60000002384186,
+          "readbackMs": 1.5,
+          "repeatPaint": [
+            {
+              "paintMs": 68,
+              "copyMs": 1.100000023841858
+            },
+            {
+              "paintMs": 67.19999998807907,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 65.60000002384186,
+              "copyMs": 1.399999976158142
+            },
+            {
+              "paintMs": 65.69999998807907,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 68,
+              "copyMs": 1.300000011920929
+            }
+          ],
+          "total": 86.69999998807907,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 18.399999976158142,
+          "lower": 1.699999988079071,
+          "metadata": 0.20000004768371582,
+          "raster": 66.89999997615814,
+          "drawMs": 65.59999996423721,
+          "readbackMs": 1.300000011920929,
+          "repeatPaint": [
+            {
+              "paintMs": 65.5,
+              "copyMs": 2.199999988079071
+            },
+            {
+              "paintMs": 66.90000003576279,
+              "copyMs": 1.399999976158142
+            },
+            {
+              "paintMs": 65.80000001192093,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 67,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 66.19999998807907,
+              "copyMs": 1.300000011920929
+            }
+          ],
+          "total": 87.19999998807907,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 17.80000001192093,
+          "lower": 1.800000011920929,
+          "metadata": 0.19999998807907104,
+          "raster": 68.09999996423721,
+          "drawMs": 66.69999998807907,
+          "readbackMs": 1.399999976158142,
+          "repeatPaint": [
+            {
+              "paintMs": 68.40000003576279,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 65.89999997615814,
+              "copyMs": 1.100000023841858
+            },
+            {
+              "paintMs": 65.19999998807907,
+              "copyMs": 1.100000023841858
+            },
+            {
+              "paintMs": 66.39999997615814,
+              "copyMs": 1.100000023841858
+            },
+            {
+              "paintMs": 66,
+              "copyMs": 1.199999988079071
+            }
+          ],
+          "total": 87.89999997615814,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        }
+      ],
+      "wasm_sha256": "833859f7856ec9d61125cdcde8221701167874f5c96f6732778a1e126fda8ce9",
+      "definition": "Same dependencies/fonts; isolated Chromium; 960 px paint; first compile and seven comment edits; excludes initialization/network/debounce",
+      "hot_median_ms": {
+        "compile": 17.80000001192093,
+        "lower": 1.699999988079071,
+        "metadata": 0.20000004768371582,
+        "raster": 67.10000002384186,
+        "total": 87.19999998807907
+      }
+    },
+    "after": {
+      "example": "effects-shadow-glow",
+      "files_json_bytes": 659,
+      "rows": [
+        {
+          "compile": 62.40000003576279,
+          "lower": 24.19999998807907,
+          "metadata": 1.899999976158142,
+          "raster": 91.70000004768372,
+          "drawMs": 90.40000003576279,
+          "readbackMs": 1.300000011920929,
+          "repeatPaint": [
+            {
+              "paintMs": 72.09999996423721,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 72.19999998807907,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 72.80000001192093,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 71,
+              "copyMs": 1.0999999642372131
+            },
+            {
+              "paintMs": 70.19999998807907,
+              "copyMs": 1.100000023841858
+            }
+          ],
+          "total": 180.20000004768372,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 18.599999964237213,
+          "lower": 1.800000011920929,
+          "metadata": 0.30000001192092896,
+          "raster": 71.5,
+          "drawMs": 70.19999998807907,
+          "readbackMs": 1.300000011920929,
+          "repeatPaint": [
+            {
+              "paintMs": 70.19999998807907,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 70.39999997615814,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 70.30000001192093,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 70.80000001192093,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 70.60000002384186,
+              "copyMs": 1.199999988079071
+            }
+          ],
+          "total": 92.19999998807907,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 18.80000001192093,
+          "lower": 1.899999976158142,
+          "metadata": 0.30000001192092896,
+          "raster": 73.69999998807907,
+          "drawMs": 72.39999997615814,
+          "readbackMs": 1.300000011920929,
+          "repeatPaint": [
+            {
+              "paintMs": 76.30000001192093,
+              "copyMs": 1.399999976158142
+            },
+            {
+              "paintMs": 72.70000004768372,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 91.40000003576279,
+              "copyMs": 1.800000011920929
+            },
+            {
+              "paintMs": 95.69999998807907,
+              "copyMs": 1.399999976158142
+            },
+            {
+              "paintMs": 76.90000003576279,
+              "copyMs": 1.399999976158142
+            }
+          ],
+          "total": 94.69999998807907,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 19,
+          "lower": 2.300000011920929,
+          "metadata": 0.3999999761581421,
+          "raster": 85.80000001192093,
+          "drawMs": 84.30000001192093,
+          "readbackMs": 1.5,
+          "repeatPaint": [
+            {
+              "paintMs": 83.80000001192093,
+              "copyMs": 1.2999999523162842
+            },
+            {
+              "paintMs": 80.80000001192093,
+              "copyMs": 1.199999988079071
+            },
+            {
+              "paintMs": 77.80000001192093,
+              "copyMs": 1.4000000357627869
+            },
+            {
+              "paintMs": 77.89999997615814,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 70.30000001192093,
+              "copyMs": 1.199999988079071
+            }
+          ],
+          "total": 107.5,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 18.399999976158142,
+          "lower": 1.800000011920929,
+          "metadata": 0.30000001192092896,
+          "raster": 71.89999997615814,
+          "drawMs": 70.5,
+          "readbackMs": 1.399999976158142,
+          "repeatPaint": [
+            {
+              "paintMs": 70.40000003576279,
+              "copyMs": 1.0999999642372131
+            },
+            {
+              "paintMs": 70.40000003576279,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 70,
+              "copyMs": 1.2999999523162842
+            },
+            {
+              "paintMs": 69.80000001192093,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 74.60000002384186,
+              "copyMs": 1.399999976158142
+            }
+          ],
+          "total": 92.39999997615814,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 18.19999998807907,
+          "lower": 1.800000011920929,
+          "metadata": 0.19999998807907104,
+          "raster": 73.20000004768372,
+          "drawMs": 71.70000004768372,
+          "readbackMs": 1.5,
+          "repeatPaint": [
+            {
+              "paintMs": 71.89999997615814,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 72.39999997615814,
+              "copyMs": 1.600000023841858
+            },
+            {
+              "paintMs": 71.59999996423721,
+              "copyMs": 1.600000023841858
+            },
+            {
+              "paintMs": 71.10000002384186,
+              "copyMs": 1.5
+            },
+            {
+              "paintMs": 71.5,
+              "copyMs": 1.199999988079071
+            }
+          ],
+          "total": 93.40000003576279,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 18.30000001192093,
+          "lower": 1.9000000357627869,
+          "metadata": 0.19999998807907104,
+          "raster": 71.69999998807907,
+          "drawMs": 70.59999996423721,
+          "readbackMs": 1.100000023841858,
+          "repeatPaint": [
+            {
+              "paintMs": 70.30000001192093,
+              "copyMs": 2
+            },
+            {
+              "paintMs": 71.09999996423721,
+              "copyMs": 1.2000000476837158
+            },
+            {
+              "paintMs": 70.79999995231628,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 71.19999998807907,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 71.19999998807907,
+              "copyMs": 1.300000011920929
+            }
+          ],
+          "total": 92.10000002384186,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        },
+        {
+          "compile": 18.899999976158142,
+          "lower": 1.899999976158142,
+          "metadata": 0.20000004768371582,
+          "raster": 80.79999995231628,
+          "drawMs": 79.69999998807907,
+          "readbackMs": 1.0999999642372131,
+          "repeatPaint": [
+            {
+              "paintMs": 76,
+              "copyMs": 1.300000011920929
+            },
+            {
+              "paintMs": 74.60000002384186,
+              "copyMs": 1.399999976158142
+            },
+            {
+              "paintMs": 70.30000001192093,
+              "copyMs": 1.399999976158142
+            },
+            {
+              "paintMs": 71.70000004768372,
+              "copyMs": 1.2999999523162842
+            },
+            {
+              "paintMs": 71.80000001192093,
+              "copyMs": 1.199999988079071
+            }
+          ],
+          "total": 101.79999995231628,
+          "display_list_bytes": 25613,
+          "rgba_hash": "de2e20c5",
+          "wasm_memory_bytes": 103284736
+        }
+      ],
+      "wasm_sha256": "ec200201ff24798c95f307cd4b0fc677d15d8c49a70b4d85c5241037cc66a600",
+      "definition": "Same dependencies/fonts; isolated Chromium; 1200 px paint and five viewport repaints; first compile and seven comment edits; excludes initialization/network/debounce",
+      "hot_median_ms": {
+        "compile": 18.599999964237213,
+        "lower": 1.899999976158142,
+        "metadata": 0.30000001192092896,
+        "raster": 73.20000004768372,
+        "total": 93.40000003576279
+      }
+    }
+  },
+  "scientific_fixture": {
+    "source_sha256": "0f76ae48abf1612798cf064a7739b619d5534386bb5bc93f63c8b7e377c6c4ab",
+    "source_modified": false,
+    "native_paired_before": {
+      "source_sha256": "0f76ae48abf1612798cf064a7739b619d5534386bb5bc93f63c8b7e377c6c4ab",
+      "binary": "native-preview",
+      "binary_sha256": "c3bb2d0fad00f503268a08dc7770814ee4adaac1514ad4cee031e841448f3e74",
+      "protocol": 3,
+      "capabilities": [
+        "resources-v2",
+        "display-list-v3",
+        "display-list-gzip-v3",
+        "defaults"
+      ],
+      "rows": [
+        {
+          "ms": 1530.085,
+          "bytes": 10219662,
+          "new_resources": 11,
+          "peak_rss_kib": 481360
+        },
+        {
+          "ms": 104.25,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481360
+        },
+        {
+          "ms": 104.415,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481360
+        },
+        {
+          "ms": 104.706,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481360
+        },
+        {
+          "ms": 103.851,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481360
+        },
+        {
+          "ms": 103.141,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481360
+        },
+        {
+          "ms": 104.256,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 481360
+        }
+      ],
+      "hot_median_ms": 104.253,
+      "definition": "write request through full JSON line received; excludes JSON parsing, edit debounce and browser drawing; fresh process and resource directory"
+    },
+    "native_paired_after": {
+      "source_sha256": "0f76ae48abf1612798cf064a7739b619d5534386bb5bc93f63c8b7e377c6c4ab",
+      "binary": "native-preview",
+      "binary_sha256": "4015883e506d65ec8b6eb4ac944e6914fd96b5764277d680555491d7a7ad9897",
+      "protocol": 3,
+      "capabilities": [
+        "resources-v2",
+        "display-list-v3",
+        "display-list-gzip-v3",
+        "defaults"
+      ],
+      "rows": [
+        {
+          "ms": 1513.307,
+          "bytes": 10219662,
+          "new_resources": 11,
+          "peak_rss_kib": 482012
+        },
+        {
+          "ms": 108.76,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 482012
+        },
+        {
+          "ms": 106.596,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 482012
+        },
+        {
+          "ms": 106.88,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 482012
+        },
+        {
+          "ms": 103.69,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 482012
+        },
+        {
+          "ms": 103.042,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 482012
+        },
+        {
+          "ms": 103.653,
+          "bytes": 10216425,
+          "new_resources": 0,
+          "peak_rss_kib": 482012
+        }
+      ],
+      "hot_median_ms": 105.143,
+      "definition": "write request through full JSON line received; excludes JSON parsing, edit debounce and browser drawing; fresh process and resource directory"
+    },
+    "actual_vscode_content_edits": {
+      "binary": "bundled",
+      "cold": {
+        "start": 1791595868818,
+        "label": "cold",
+        "generation": 1,
+        "native_ms": 1849,
+        "native_peak_rss_kib": 481196,
+        "bytes": 3455752,
+        "resources": 11,
+        "protocol": 3,
+        "resources_ms": 58.5,
+        "install_ms": 136.80000001192093,
+        "initialization_wait_ms": 0,
+        "raster_ms": 886.3999999761581,
+        "wasm_memory_bytes": 190054400,
+        "width": 1200,
+        "height": 800,
+        "elapsed_ms": 2999
+      },
+      "hot": [
+        {
+          "start": 1791595872666,
+          "label": "1",
+          "generation": 4,
+          "native_ms": 97,
+          "native_peak_rss_kib": 481196,
+          "bytes": 3456275,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 125.79999995231628,
+          "initialization_wait_ms": 0,
+          "raster_ms": 161.69999998807907,
+          "wasm_memory_bytes": 214237184,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 411
+        },
+        {
+          "start": 1791595873379,
+          "label": "2",
+          "generation": 5,
+          "native_ms": 102,
+          "native_peak_rss_kib": 481196,
+          "bytes": 3455801,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 116.69999998807907,
+          "initialization_wait_ms": 0,
+          "raster_ms": 162.30000001192093,
+          "wasm_memory_bytes": 214237184,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 406
+        },
+        {
+          "start": 1791595874047,
+          "label": "3",
+          "generation": 6,
+          "native_ms": 100,
+          "native_peak_rss_kib": 481196,
+          "bytes": 3456563,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 123.39999997615814,
+          "initialization_wait_ms": 0,
+          "raster_ms": 164,
+          "wasm_memory_bytes": 214237184,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 407
+        },
+        {
+          "start": 1791595874713,
+          "label": "4",
+          "generation": 7,
+          "native_ms": 98,
+          "native_peak_rss_kib": 481196,
+          "bytes": 3455961,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 124.80000001192093,
+          "initialization_wait_ms": 0,
+          "raster_ms": 161.80000001192093,
+          "wasm_memory_bytes": 214237184,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 413
+        },
+        {
+          "start": 1791595875427,
+          "label": "5",
+          "generation": 8,
+          "native_ms": 114,
+          "native_peak_rss_kib": 481196,
+          "bytes": 3455964,
+          "resources": 11,
+          "protocol": 3,
+          "resources_ms": 0,
+          "install_ms": 118.89999997615814,
+          "initialization_wait_ms": 0,
+          "raster_ms": 162.39999997615814,
+          "wasm_memory_bytes": 214237184,
+          "width": 1200,
+          "height": 800,
+          "elapsed_ms": 419
+        }
+      ],
+      "hot_median_ms": 411,
+      "definition": "native request enqueue to resources loaded and WASM Canvas drawn in VS Code; excludes edit debounce",
+      "fixture_sha256": "0f76ae48abf1612798cf064a7739b619d5534386bb5bc93f63c8b7e377c6c4ab",
+      "extension_version": "0.5.1",
+      "artifact_sha256": {
+        "native": "4015883e506d65ec8b6eb4ac944e6914fd96b5764277d680555491d7a7ad9897",
+        "wasm": "ec200201ff24798c95f307cd4b0fc677d15d8c49a70b4d85c5241037cc66a600"
+      }
+    },
+    "interpretation": "The optimized scientific fixture remains near its earlier performance: paired native medians 104 and 105 ms; actual content-edit request-to-visible median 411 ms. This change primarily improves dense cold geometry and browser initialization/viewport scheduling, rather than all edits."
+  },
+  "other_investigation": {
+    "native_bounds_median_ms": {
+      "scientific": 0.9357989999999999,
+      "showcase": 0.048483000000000005,
+      "shadow": 0.001523
+    },
+    "bounds_cache_added": false,
+    "remaining_costs": [
+      "Dense round joins still take around 2 seconds on a first WASM compile",
+      "1200 px alpha effects still require around 70 ms per actual WASM paint; repaint coalescing avoids obsolete work but does not remove effect computation"
+    ]
+  },
+  "validation": {
+    "rust_tests_passed": 523,
+    "rust_tests_ignored": 1,
+    "python_tests_passed": 51,
+    "legacy_assertions_verified": 891,
+    "execution_verified": true,
+    "browser_examples": 186,
+    "browser_console_errors": [],
+    "maximum_wasm_linear_memory_bytes": 220200960,
+    "actual_vscode_bridge": "passed",
+    "native_wasm_parity": {
+      "cases": [
+        {
+          "name": "examples/typography.lay",
+          "width": 605,
+          "height": 378,
+          "rasterMs": 18.5,
+          "maximumDelta": 0,
+          "meanDelta": 0,
+          "channelsAboveTwo": 0,
+          "samples": []
+        },
+        {
+          "name": "examples/vector.lay",
+          "width": 680,
+          "height": 454,
+          "rasterMs": 17.399999976158142,
+          "maximumDelta": 1,
+          "meanDelta": 4.048976418761337e-06,
+          "channelsAboveTwo": 0,
+          "samples": []
+        },
+        {
+          "name": "examples/effects/art-text.lay",
+          "width": 680,
+          "height": 567,
+          "rasterMs": 74.19999998807907,
+          "maximumDelta": 0,
+          "meanDelta": 0,
+          "channelsAboveTwo": 0,
+          "samples": []
+        },
+        {
+          "name": "examples/effects/shadow-glow.lay",
+          "width": 567,
+          "height": 359,
+          "rasterMs": 22.5,
+          "maximumDelta": 0,
+          "meanDelta": 0,
+          "channelsAboveTwo": 0,
+          "samples": []
+        },
+        {
+          "name": "examples/effects/images-groups.lay",
+          "width": 605,
+          "height": 302,
+          "rasterMs": 48.19999998807907,
+          "maximumDelta": 0,
+          "meanDelta": 0,
+          "channelsAboveTwo": 0,
+          "samples": []
+        },
+        {
+          "name": "examples/gallery/images/svg.lay",
+          "width": 454,
+          "height": 302,
+          "rasterMs": 10.699999988079071,
+          "maximumDelta": 0,
+          "meanDelta": 0,
+          "channelsAboveTwo": 0,
+          "samples": []
+        },
+        {
+          "name": "examples/plot/scientific.lay",
+          "width": 680,
+          "height": 310,
+          "rasterMs": 20.30000001192093,
+          "maximumDelta": 0,
+          "meanDelta": 0,
+          "channelsAboveTwo": 0,
+          "samples": []
+        },
+        {
+          "name": "wide-70000x2",
+          "width": 70000,
+          "height": 2,
+          "rasterMs": 13.300000011920929,
+          "maximumDelta": 0,
+          "meanDelta": 0,
+          "channelsAboveTwo": 0,
+          "samples": [
+            {
+              "x": 1023,
+              "rgba": [
+                0,
+                249,
+                6,
+                129
+              ]
+            },
+            {
+              "x": 1024,
+              "rgba": [
+                0,
+                249,
+                6,
+                129
+              ]
+            },
+            {
+              "x": 2047,
+              "rgba": [
+                0,
+                241,
+                14,
+                131
+              ]
+            },
+            {
+              "x": 2048,
+              "rgba": [
+                0,
+                241,
+                14,
+                131
+              ]
+            },
+            {
+              "x": 65534,
+              "rgba": [
+                0,
+                9,
+                245,
+                247
+              ]
+            },
+            {
+              "x": 65535,
+              "rgba": [
+                0,
+                9,
+                245,
+                247
+              ]
+            },
+            {
+              "x": 65536,
+              "rgba": [
+                0,
+                9,
+                245,
+                247
+              ]
+            }
+          ]
+        }
+      ],
+      "status": "passed",
+      "protocols": {
+        "default_client": 3,
+        "explicit_compatibility": [
+          1,
+          2
+        ],
+        "unknown_rejected": true
+      },
+      "native_oracle_sha256": "c1f370ebe5a3c704232a819efb5757dcddf5212bd7d109b7b2678fef6112752e",
+      "wasm_sha256": "ec200201ff24798c95f307cd4b0fc677d15d8c49a70b4d85c5241037cc66a600"
+    },
+    "formula_case_entries": 4100,
+    "formula_distinct": 1961,
+    "formula_canvas_checks": 30412,
+    "formula_failures": [],
+    "formula_rounding_differences": 54,
+    "formula_renderer_fingerprint": "6edd74e1f9bbbe3f4519e408ffbf156ec80cf70a7ad7226d3fcc3ea160724632",
+    "media_sources": 186,
+    "documentation_pages": 615
+  },
+  "artifacts": {
+    "native_sha256": "4015883e506d65ec8b6eb4ac944e6914fd96b5764277d680555491d7a7ad9897",
+    "wasm_sha256": "ec200201ff24798c95f307cd4b0fc677d15d8c49a70b4d85c5241037cc66a600",
+    "media_engine_fingerprint": "75bd98f1ae1ffea44db92504c9f9a824b93ee55b1ef8120e458ced9087ac2128",
+    "vsix": {
+      "file": "laymesh-renderer-deeper-optimized-linux-x64.vsix",
+      "publisher": "Hyacine",
+      "version": "0.5.1",
+      "target": "linux-x64",
+      "prerelease": false,
+      "marketplace_checks": true,
+      "bytes": 11425359,
+      "installed_bytes": 29344447,
+      "native_binary": "extension/bin/laymesh",
+      "client_modules": [
+        "vscode",
+        "child_process",
+        "path"
+      ],
+      "bundled_text_fonts": false
+    },
+    "vsix_sha256": "ffed2e13a02ff8e184fe6b8af159a7b2c15da18e61e5ab099e8d4ce1c277b237",
+    "raw_evidence_directory": "release/verification/deeper-preview-performance",
+    "publication_performed": false,
+    "user_extension_installation_changed": false
+  }
+}

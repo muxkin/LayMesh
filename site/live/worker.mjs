@@ -20,17 +20,24 @@ function sha256(bytes){
  }
  return h.map(v=>v.toString(16).padStart(8,'0')).join('');
 }
-async function checkedFont(url,expected,timeout){
+async function checkedFont(url,expected,timeout,signal){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);
+ const abort=()=>controller.abort();if(signal?.aborted)abort();else signal?.addEventListener('abort',abort,{once:true});
  try{const response=await fetch(url,{signal:controller.signal});if(!response.ok)throw Error(`HTTP ${response.status}`);
   const bytes=new Uint8Array(await response.arrayBuffer());if(sha256(bytes)!==expected)throw Error('Font SHA-256 mismatch');return bytes;
- }finally{clearTimeout(timer);}
+ }finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
 }
 async function loadBundledFont(font){
- let bytes,source='cdn';
- try{bytes=await checkedFont(font.cdn,font.sha256,5000);}catch{source='page';bytes=await checkedFont(new URL(font.file,base),font.sha256,30000);}
- register_preview_font('/@bundled/'+font.file.split('/').pop(),bytes);
- self.postMessage({type:'bundled-font',family:font.family,source});
+ // Give the CDN a short head start, then race the packaged copy. Both paths
+ // verify the same checksum; an unreachable CDN must not delay offline use.
+ const controller=new AbortController();let timer,local;
+ const packaged=()=>local??=checkedFont(new URL(font.file,base),font.sha256,30000,controller.signal).then(bytes=>({bytes,source:'page'}));
+ const fallback=new Promise(resolve=>{timer=setTimeout(()=>resolve(packaged()),100);});
+ try{
+  const {bytes,source}=await Promise.any([checkedFont(font.cdn,font.sha256,5000,controller.signal).then(bytes=>({bytes,source:'cdn'}),packaged),fallback]);
+  register_preview_font('/@bundled/'+font.file.split('/').pop(),bytes);
+  self.postMessage({type:'bundled-font',family:font.family,source});
+ }finally{clearTimeout(timer);controller.abort();}
 }
 async function resource(name){
  const path=key(name);
@@ -62,9 +69,9 @@ self.onmessage=({data})=>{
     self.postMessage({type:'font-added',id,families:[data.alias||data.name]});return;
    }
    if(data.type==='paint'){
-    if(!drawJob||data.generation!==generation)return;
+    if(!drawJob||data.generation!==generation){self.postMessage({type:'paint-skipped',id:data.id,generation:data.generation});return;}
     const before=performance.now(),frame=drawJob.raster(JSON.stringify(data.rect),data.width,data.height);
-    try{const rgba=frame.rgba;self.postMessage({type:'painted',id:data.id,generation,rgba,width:frame.width,height:frame.height,rasterMs:performance.now()-before,wasmMemoryBytes:wasmMemory.buffer.byteLength,rect:data.rect},[rgba.buffer]);}finally{frame.free();}return;
+    const width=frame.width,height=frame.height,rgba=frame.into_rgba();self.postMessage({type:'painted',id:data.id,generation,rgba,width,height,rasterMs:performance.now()-before,wasmMemoryBytes:wasmMemory.buffer.byteLength,rect:data.rect},[rgba.buffer]);return;
    }
    const edited={};for(const [name,text]of Object.entries(data.files))edited[key(name)]=text;
    let resourcesMs=0, compileMs=0, job;

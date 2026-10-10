@@ -111,7 +111,7 @@ fn decode(resources: &BTreeMap<String, Resource>) -> Result<Images> {
         }
         let im = image::load_from_memory(&r.data)
             .map_err(|e| error(format!("图片解码失败：{e}")))?
-            .to_rgba8();
+            .into_rgba8();
         let (w, h) = im.dimensions();
         if w as u64 * h as u64 > MAX_PIXELS {
             return Err(error("图片像素数超过 100000000 上限"));
