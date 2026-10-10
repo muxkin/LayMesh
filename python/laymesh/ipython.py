@@ -5,9 +5,9 @@ import shlex
 from pathlib import Path
 
 from IPython.core.magic import Magics, line_cell_magic, magics_class
-from IPython.display import SVG, display
+from IPython.display import Image, display
 
-from .bridge import render_file, render_source
+from .bridge import _render_notebook
 
 
 def _options(line: str, *, cell: bool) -> argparse.Namespace:
@@ -50,22 +50,23 @@ class LayMeshMagics(Magics):
                         webp_near_lossless=options.webp_near_lossless,
                         pdf_image_compression=options.pdf_image_compression, pdf_jpeg_quality=options.pdf_jpeg_quality, pdf_downsample=None if options.pdf_downsample is None else options.pdf_downsample == "true", pdf_preserve_16bit=None if options.pdf_preserve_16bit is None else options.pdf_preserve_16bit == "true", pdf_preserve_alpha=None if options.pdf_preserve_alpha is None else options.pdf_preserve_alpha == "true", pdf_alpha_background=options.pdf_alpha_background, pdf_recompress_jpeg=None if options.pdf_recompress_jpeg is None else options.pdf_recompress_jpeg == "true", pdf_auto_palette_limit=options.pdf_auto_palette_limit, pdf_auto_flatness_threshold=options.pdf_auto_flatness_threshold)
         if cell is None:
-            result = render_file(
-                options.file, namespace=self.shell.user_ns, output=options.output, config=options.config,
+            result = _render_notebook(
+                file=options.file, namespace=self.shell.user_ns, output=options.output, config=options.config,
                 dpi=options.dpi, plot_dpi=options.plot_dpi,
                 save_source=options.save_source,
                 show_warnings=None if options.warnings is None else options.warnings == "show",
                 **encoding,
             )
         else:
-            result = render_source(
-                cell, namespace=self.shell.user_ns, output=options.output, config=options.config,
+            result = _render_notebook(
+                source=cell, namespace=self.shell.user_ns, output=options.output, config=options.config,
                 dpi=options.dpi, plot_dpi=options.plot_dpi,
                 save_source=options.save_source,
                 show_warnings=None if options.warnings is None else options.warnings == "show",
                 **encoding,
             )
-        display(SVG(data=result.preview_svg))
+        # Two physical pixels per CSS pixel, without increasing export DPI.
+        display(Image(data=result.preview_png, retina=True))
 
 
 def load_ipython_extension(ipython) -> None:

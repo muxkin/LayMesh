@@ -1,4 +1,5 @@
 import os
+import io
 import tempfile
 import unittest
 from pathlib import Path
@@ -6,6 +7,40 @@ from unittest.mock import patch
 
 
 class MagicTest(unittest.TestCase):
+    def test_cpu_preview_alpha_export_dpi_and_reused_png(self):
+        from IPython.core.interactiveshell import InteractiveShell
+        from PIL import Image
+        from laymesh import bridge, render_file
+
+        shell = InteractiveShell.instance()
+        shell.run_line_magic("load_ext", "laymesh.ipython")
+        source = ('page=canvas(size=(25.4mm,12.7mm),background="none")\n'
+                  'page.add(rect(size=(8mm,8mm),fill="#ff000080",border_width=0),offset=(1mm,1mm))\n'
+                  'page.add(text("$\\frac{a}{b}$",font_size=8pt),offset=(12mm,1mm))\n')
+        previous = Path.cwd()
+        with tempfile.TemporaryDirectory(prefix="laymesh-notebook-cpu-") as directory:
+            try:
+                os.chdir(directory)
+                with patch("laymesh.ipython.display") as shown, patch.object(bridge, "_run", wraps=bridge._run) as run:
+                    shell.run_cell_magic("laymesh", "-o export.png --dpi 96 --save-source figure.lay", source)
+                    preview = shown.call_args.args[0]
+                    with Image.open(io.BytesIO(preview.data)) as image:
+                        self.assertEqual(image.size, (192, 96))
+                        self.assertEqual(image.convert("RGBA").getpixel((20, 20)), (255, 0, 0, 128))
+                    with Image.open("export.png") as image:
+                        self.assertEqual(image.size, (96, 48))
+                    self.assertEqual(len(run.call_args_list), 2)
+                    self.assertTrue(all(not any(str(arg).endswith(".svg") for arg in call.args[1]) for call in run.call_args_list))
+                    shell.run_cell_magic("laymesh", "-o retina.png --dpi 192", source)
+                    self.assertEqual(len(run.call_args_list), 3)
+                    self.assertEqual(shown.call_args.args[0].data, Path("retina.png").read_bytes())
+                # The compatibility API still returns its SVG and the same CPU export.
+                result = render_file("figure.lay", output="reference.png", dpi=192)
+                self.assertIn("<svg", result.preview_svg)
+                self.assertEqual(preview.data, Path("reference.png").read_bytes())
+            finally:
+                os.chdir(previous)
+
     def test_line_and_cell_magics_display_previews(self):
         from IPython.core.interactiveshell import InteractiveShell
 
@@ -27,7 +62,8 @@ class MagicTest(unittest.TestCase):
                     Path("existing.lay").write_text("page=canvas(size=(10 mm,10 mm))\n")
                     shell.run_line_magic("laymesh", "existing.lay")
                     self.assertEqual(display.call_count, 2)
-                    self.assertTrue(all("<svg" in call.args[0].data for call in display.call_args_list))
+                    self.assertTrue(all(call.args[0].data.startswith(b"\x89PNG\r\n\x1a\n") for call in display.call_args_list))
+                    self.assertTrue(all(call.args[0].retina for call in display.call_args_list))
                     shell.user_ns["native_x"] = [0, 1, 2]
                     shell.user_ns["native_y"] = [1, 3, 2]
                     shell.run_cell_magic(

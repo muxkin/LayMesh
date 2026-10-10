@@ -1,0 +1,298 @@
+{
+  "scope": "Python/Jupyter cooperation with the existing pure Rust renderer; Linux x64",
+  "changes": [
+    "Notebook magics use native CPU PNG previews at 192 DPI and double pixel density; compatible SVG result API retained",
+    "Notebook Run All keeps one output folder, closes pyplot figure managers, and lays out heatmap labels",
+    "RenderResult repr omits embedded SVG while preserving constructor, fields and function signatures",
+    "Default Matplotlib SVG IDs are deterministic; explicit user hashsalt is retained"
+  ],
+  "engine_sha256": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+  "renderer_core_changed": false,
+  "wheel": {
+    "filename": "laymesh-0.5.1-py3-none-manylinux_2_35_x86_64.whl",
+    "bytes": 7834163,
+    "sha256": "e35937c2ae54f9ba1419a6af287b9122b147b6b3a1e771080df1e279890b94cb",
+    "bundled_engine_verified": true,
+    "python_sources_verified": true
+  },
+  "active_environment": {
+    "engine_version": "laymesh 0.4.0",
+    "engine_sha256": "5b08b77d05c010af832948e6a9e9194120df427367e4dad8e763c4afa6aa4ef5",
+    "modified": false
+  },
+  "dependencies": {
+    "3.13": {
+      "ipython": "9.17.1",
+      "ipykernel": "7.4.0",
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "matplotlib": "3.10.8",
+      "nbclient": "0.11.0",
+      "nbformat": "5.11.1"
+    },
+    "3.10": {
+      "ipython": "8.39.0",
+      "ipykernel": "7.3.0",
+      "numpy": "2.2.6",
+      "pandas": "2.3.3",
+      "matplotlib": "3.10.9",
+      "nbclient": "0.11.0",
+      "nbformat": "5.11.1"
+    }
+  },
+  "contracts": [
+    {
+      "python": "3.13",
+      "passed": 52,
+      "skipped": 0
+    },
+    {
+      "python": "3.10",
+      "passed": 52,
+      "skipped": 0
+    }
+  ],
+  "notebook_kernel_checks": [
+    {
+      "mode": "source-checkout",
+      "python": "3.13.11",
+      "repeats": 2,
+      "code_cells_per_run": 10,
+      "cpu_previews_per_run": 3,
+      "checks": {
+        "engine_version": "laymesh 0.5.1",
+        "engine_sha256": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+        "python_package_sha256": {
+          "__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+          "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+          "_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+          "_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+          "bridge.py": "c6833dd805f69178241496ca8510163d8bf4dd16f78775507d6dd510027bf281",
+          "ipython.py": "4b926cbe51ce82f5a984298108672b949acfc452cb7af1699d2e2e1daf25fd16"
+        },
+        "data_updates": true,
+        "figure_updates": true,
+        "unchanged_figure_asset_reused": true,
+        "standalone_replay": true,
+        "relative_modules_and_alpha": true,
+        "config_dpi": true,
+        "default_dpi_1200_and_tiff_lzw": true,
+        "errors_recover": true,
+        "svg_api_compatible": true,
+        "png_exact_native_match": true,
+        "compact_result_display": true,
+        "installed_offline": false
+      },
+      "sources": {
+        "scripts/test-python-jupyter.py": "fbb7bf743636f92be3446177626bbddb25cd114f507bdfa6e514c695e0f62a3f",
+        "examples/jupyter-integration.ipynb": "638df69048a2300e4d849ee9fe72f9d74afda33852526b42c279762ac518e7b8",
+        "python/laymesh/__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+        "python/laymesh/__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+        "python/laymesh/_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+        "python/laymesh/_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+        "python/laymesh/bridge.py": "c6833dd805f69178241496ca8510163d8bf4dd16f78775507d6dd510027bf281",
+        "python/laymesh/ipython.py": "4b926cbe51ce82f5a984298108672b949acfc452cb7af1699d2e2e1daf25fd16"
+      }
+    },
+    {
+      "mode": "installed-wheel",
+      "python": "3.13.11",
+      "repeats": 2,
+      "code_cells_per_run": 10,
+      "cpu_previews_per_run": 3,
+      "checks": {
+        "engine_version": "laymesh 0.5.1",
+        "engine_sha256": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+        "python_package_sha256": {
+          "__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+          "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+          "_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+          "_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+          "bridge.py": "c6833dd805f69178241496ca8510163d8bf4dd16f78775507d6dd510027bf281",
+          "ipython.py": "4b926cbe51ce82f5a984298108672b949acfc452cb7af1699d2e2e1daf25fd16"
+        },
+        "data_updates": true,
+        "figure_updates": true,
+        "unchanged_figure_asset_reused": true,
+        "standalone_replay": true,
+        "relative_modules_and_alpha": true,
+        "config_dpi": true,
+        "default_dpi_1200_and_tiff_lzw": true,
+        "errors_recover": true,
+        "svg_api_compatible": true,
+        "png_exact_native_match": true,
+        "compact_result_display": true,
+        "installed_offline": true
+      },
+      "sources": {
+        "scripts/test-python-jupyter.py": "fbb7bf743636f92be3446177626bbddb25cd114f507bdfa6e514c695e0f62a3f",
+        "examples/jupyter-integration.ipynb": "638df69048a2300e4d849ee9fe72f9d74afda33852526b42c279762ac518e7b8",
+        "python/laymesh/__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+        "python/laymesh/__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+        "python/laymesh/_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+        "python/laymesh/_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+        "python/laymesh/bridge.py": "c6833dd805f69178241496ca8510163d8bf4dd16f78775507d6dd510027bf281",
+        "python/laymesh/ipython.py": "4b926cbe51ce82f5a984298108672b949acfc452cb7af1699d2e2e1daf25fd16"
+      }
+    },
+    {
+      "mode": "installed-wheel",
+      "python": "3.10.19",
+      "repeats": 2,
+      "code_cells_per_run": 10,
+      "cpu_previews_per_run": 3,
+      "checks": {
+        "engine_version": "laymesh 0.5.1",
+        "engine_sha256": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+        "python_package_sha256": {
+          "__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+          "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+          "_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+          "_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+          "bridge.py": "c6833dd805f69178241496ca8510163d8bf4dd16f78775507d6dd510027bf281",
+          "ipython.py": "4b926cbe51ce82f5a984298108672b949acfc452cb7af1699d2e2e1daf25fd16"
+        },
+        "data_updates": true,
+        "figure_updates": true,
+        "unchanged_figure_asset_reused": true,
+        "standalone_replay": true,
+        "relative_modules_and_alpha": true,
+        "config_dpi": true,
+        "default_dpi_1200_and_tiff_lzw": true,
+        "errors_recover": true,
+        "svg_api_compatible": true,
+        "png_exact_native_match": true,
+        "compact_result_display": true,
+        "installed_offline": true
+      },
+      "sources": {
+        "scripts/test-python-jupyter.py": "fbb7bf743636f92be3446177626bbddb25cd114f507bdfa6e514c695e0f62a3f",
+        "examples/jupyter-integration.ipynb": "638df69048a2300e4d849ee9fe72f9d74afda33852526b42c279762ac518e7b8",
+        "python/laymesh/__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+        "python/laymesh/__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+        "python/laymesh/_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+        "python/laymesh/_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+        "python/laymesh/bridge.py": "c6833dd805f69178241496ca8510163d8bf4dd16f78775507d6dd510027bf281",
+        "python/laymesh/ipython.py": "4b926cbe51ce82f5a984298108672b949acfc452cb7af1699d2e2e1daf25fd16"
+      }
+    }
+  ],
+  "jupyterlab_browser": {
+    "version": "4.6.4",
+    "browser": "Chromium via repository CDP helper; Browser runtime tool unavailable",
+    "viewports": [
+      [
+        1440,
+        1100,
+        2
+      ],
+      [
+        700,
+        1000,
+        2
+      ]
+    ],
+    "runs": [
+      {
+        "executed": 10,
+        "png": 3,
+        "svg": 0
+      },
+      {
+        "executed": 10,
+        "png": 3,
+        "svg": 0
+      }
+    ],
+    "images": [
+      {
+        "width": 1209,
+        "height": 756,
+        "cssWidth": 604,
+        "cssHeight": 377.671875,
+        "png": true
+      },
+      {
+        "width": 756,
+        "height": 529,
+        "cssWidth": 378,
+        "cssHeight": 264.5,
+        "png": true
+      },
+      {
+        "width": 1209,
+        "height": 756,
+        "cssWidth": 604,
+        "cssHeight": 377.671875,
+        "png": true
+      }
+    ],
+    "console_errors": [],
+    "kernel_provenance": {
+      "engine_version": "laymesh 0.5.1",
+      "engine_sha256": "b3d11a94c412c7719da0b01a8d21f74ae1db67bb33b2aff99a7d074261228d37",
+      "python_package_sha256": {
+        "_runtime.py": "57829b5f9c280a8fbfc7346e17a697c5e4175f500a80c03bf3e67701dbe8b742",
+        "bridge.py": "c6833dd805f69178241496ca8510163d8bf4dd16f78775507d6dd510027bf281",
+        "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+        "_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+        "__init__.py": "15d18ab59151aa13250de0bb612ba8b0ac3a4d707845677788689e9abc229b56",
+        "ipython.py": "4b926cbe51ce82f5a984298108672b949acfc452cb7af1699d2e2e1daf25fd16"
+      }
+    },
+    "script_sha256": "fe30c611cfe4a47df481f137953d8f1b078ad7b9730aff9ae45e05b9d0ae7366",
+    "screenshots": [
+      "release/verification/python-jupyter/browser/jupyterlab-desktop.png",
+      "release/verification/python-jupyter/browser/jupyterlab-narrow.png"
+    ]
+  },
+  "scientific_fixture": {
+    "source_sha256": "0f76ae48abf1612798cf064a7739b619d5534386bb5bc93f63c8b7e377c6c4ab",
+    "source_unchanged": true,
+    "png_pixels": [
+      658,
+      438
+    ],
+    "png_sha256": "43d9d46c9b52d6f68d912b51e555e39f11a772071055abc7ad9eb36ecc59b972",
+    "api_svg_compatible": true
+  },
+  "compatibility": {
+    "public_signatures_unchanged": true,
+    "preview_png_equals_native_bytes": true,
+    "exports": [
+      "SVG",
+      "PDF",
+      "PPTX",
+      "PNG",
+      "JPEG",
+      "TIFF",
+      "WebP",
+      "BMP",
+      "GIF",
+      "ICO",
+      "TGA",
+      "PAM",
+      "PPM",
+      "PGM",
+      "PBM"
+    ],
+    "default_export_dpi": 1200,
+    "default_tiff_compression": "LZW",
+    "matplotlib_heatmap_png_fallback_dpi": 240,
+    "figure_changes_reload": true,
+    "invalid_input_recovers": true,
+    "empty_path_bundled_engine": true
+  },
+  "documentation": {
+    "pages_checked": 615,
+    "media_sources_checked": 186,
+    "media_manifest_unchanged_engine_fingerprint": true
+  },
+  "limits": [
+    "Windows/macOS, Python 3.14 and VS Code Notebook frontend not exercised in this check",
+    "Full formula corpus was qualified previously with the same unchanged renderer; this check exercises notebook formula/data integration",
+    "One-shot Python/Notebook exports can still compile separately for output and preview; this is not a desktop frame-rate benchmark",
+    "Constrained layout can change Figure geometry between draws; changed SVG bytes correctly retain a new content hash"
+  ],
+  "released": false
+}

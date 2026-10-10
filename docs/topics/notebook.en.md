@@ -8,6 +8,16 @@ python -m pip install laymesh
 
 [Installation and source development](install.en.md)
 
+Check the package and engine actually selected by the current kernel:
+
+```python
+import sys, laymesh
+print(sys.executable, laymesh.__file__)
+!"{sys.executable}" -m laymesh --version
+```
+
+Python defaults to the installed wheel's bundled engine; switching Git branches does not replace that installation. To test an experimental branch, run `%pip install /path/to/built-wheel.whl` in the kernel, restart it, and register the magics again.
+
 ## Workflow
 
 `%load_ext laymesh.ipython` invokes `load_ipython_extension(ipython)` to register `LayMeshMagics`:
@@ -18,7 +28,7 @@ python -m pip install laymesh
 page = canvas(size=(100 mm, 70 mm))
 ```
 
-Both magics display an SVG preview. Line magic reads a file; cell magic reads cell content. Both support `-o/--output`, `--dpi`, `--plot-dpi`, and `--save-source`. Default `--plot-dpi` is 300 and affects only Figure PNG fallback. `load_ipython_extension` lives in [ipython.py](../../python/laymesh/ipython.py), not the top-level `laymesh` exports.
+Both magics display a 192 DPI PNG preview from the Rust CPU renderer at double pixel density, independently of export DPI. SVG remains an explicit export format, and the Python API retains `preview_svg`. Line magic reads a file; cell magic reads cell content. Both support `-o/--output`, `--dpi`, `--plot-dpi`, and `--save-source`. Default `--plot-dpi` is 300 and affects only Figure PNG fallback. `load_ipython_extension` lives in [ipython.py](../../python/laymesh/ipython.py), not the top-level `laymesh` exports.
 
 ## Limits and related topics
 

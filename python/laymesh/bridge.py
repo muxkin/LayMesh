@@ -18,7 +18,7 @@ import subprocess
 import tempfile
 import warnings
 from contextvars import ContextVar
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Mapping
 
@@ -56,7 +56,15 @@ class LayMeshBridgeError(RuntimeError):
 
 @dataclass(frozen=True)
 class RenderResult:
-    preview_svg: str
+    # A bare result in a Notebook should not print megabytes of SVG/base64.
+    preview_svg: str = field(repr=False)
+    output: Path | None
+    saved_source: Path | None
+
+
+@dataclass(frozen=True)
+class _NotebookResult:
+    preview_png: bytes
     output: Path | None
     saved_source: Path | None
 
@@ -217,7 +225,11 @@ class _Bindings:
         self._warn_plot_bounds(name, figure)
         reason = "SVG 使用了当前 LayMesh 不支持的图形内容"
         try:
-            with mpl.rc_context({"svg.fonttype": "path"}):
+            settings = {"svg.fonttype": "path"}
+            if mpl.rcParams["svg.hashsalt"] is None:
+                # Random IDs make identical Figures miss the asset hash cache.
+                settings["svg.hashsalt"] = "laymesh"
+            with mpl.rc_context(settings):
                 stream = io.StringIO()
                 figure.savefig(stream, format="svg")
             svg = normalize_matplotlib_svg(stream.getvalue()).encode("utf-8")
@@ -500,7 +512,8 @@ def _render_impl(
     output: Path | str | None, dpi: float | None, plot_dpi: float,
     save_source: Path | str | None, original: Path | None,
     export_options: Mapping[str, object], config: Path | str | None = None,
-) -> RenderResult:
+    notebook_preview: bool = False,
+) -> RenderResult | _NotebookResult:
     base_dir = base_dir.resolve()
     if not base_dir.is_dir():
         raise LayMeshBridgeError(f"素材目录不存在：{base_dir}")
@@ -535,7 +548,15 @@ def _render_impl(
                     args += ["--dpi", str(dpi)]
                 args += option_args + config_args
                 _run(cli, args, base_dir, file if cleanup else None)
-            if output_path and output_path.suffix.lower() == ".svg":
+            if notebook_preview:
+                # Notebook PNGs use the native CPU renderer, independent of the
+                # export's DPI, matte, compression and PDF image policy.
+                reuse_png = output_path and output_path.suffix.lower() == ".png" and dpi == 192
+                preview_file = output_path if reuse_png else Path(scratch_name) / "preview.png"
+                if preview_file != output_path:
+                    _run(cli, ["render", str(file), "-o", str(preview_file), "--dpi", "192", *config_args], base_dir, file if cleanup else None)
+                preview = preview_file.read_bytes()
+            elif output_path and output_path.suffix.lower() == ".svg":
                 preview = output_path.read_text(encoding="utf-8")
             else:
                 preview_file = Path(scratch_name) / "preview.svg"
@@ -547,18 +568,50 @@ def _render_impl(
                     os.replace(staged, saved_path)
                 finally:
                     staged.unlink(missing_ok=True)
-            return RenderResult(preview, output_path, saved_path)
+            result_type = _NotebookResult if notebook_preview else RenderResult
+            return result_type(preview, output_path, saved_path)
         finally:
             if cleanup:
                 file.unlink(missing_ok=True)
 
 
-def _render(source: str, *, show_warnings: bool | None = None, **kwargs) -> RenderResult:
+def _render(source: str, *, show_warnings: bool | None = None, **kwargs) -> RenderResult | _NotebookResult:
     token = _warning_state.set((_warning_mode(show_warnings), set()))
     try:
         return _render_impl(source, **kwargs)
     finally:
         _warning_state.reset(token)
+
+
+def _read_layout(file: Path | str) -> tuple[Path, str]:
+    file = Path(file).resolve()
+    if file.suffix != ".lay" or not file.is_file():
+        raise LayMeshBridgeError(f"布局文件不存在或不是 .lay：{file}")
+    return file, file.read_text(encoding="utf-8")
+
+
+def _render_notebook(
+    *, source: str | None = None, file: Path | str | None = None,
+    namespace: Mapping[str, object] | None = None,
+    output: Path | str | None = None, dpi: float | None = None,
+    plot_dpi: float = 300, save_source: Path | str | None = None,
+    show_warnings: bool | None = None, config: Path | str | None = None,
+    **export_options,
+) -> _NotebookResult:
+    """Magic-only preview; the public SVG result and signatures stay compatible."""
+    original = None
+    base_dir = Path.cwd()
+    if file is not None:
+        original, source = _read_layout(file)
+        base_dir = original.parent
+    if source is None:
+        raise LayMeshBridgeError("Notebook 需要 .lay 源码或文件")
+    return _render(
+        source, namespace=namespace or {}, base_dir=base_dir,
+        output=output, dpi=dpi, plot_dpi=plot_dpi, config=config,
+        save_source=save_source, original=original, show_warnings=show_warnings,
+        export_options=export_options, notebook_preview=True,
+    )
 
 
 def render_source(
@@ -611,11 +664,9 @@ def render_file(
     config: Path | str | None = None,
 ) -> RenderResult:
     """Render an existing .lay file; its relative assets stay relative to it."""
-    file = Path(file).resolve()
-    if file.suffix != ".lay" or not file.is_file():
-        raise LayMeshBridgeError(f"布局文件不存在或不是 .lay：{file}")
+    file, source = _read_layout(file)
     return _render(
-        file.read_text(encoding="utf-8"), namespace=namespace or {},
+        source, namespace=namespace or {},
         base_dir=file.parent, output=output, dpi=dpi, config=config,
         plot_dpi=plot_dpi, save_source=save_source, original=file, show_warnings=show_warnings,
         export_options=dict(quality=quality, compression=compression, background=background,

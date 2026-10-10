@@ -2,6 +2,20 @@
 
 基于干净的 `main`（`9c6f26f`）建立 `codex/rust-renderer-migration`。新默认链路为 `Scene → DisplayList v1 → Vello CPU 0.3.0 / krilla 0.8.2 / DrawingML`，本轮未发布版本。CLI、Python 和现有导出函数签名保持兼容。
 
+## Python / Jupyter 协同复核（2026-10-10）
+
+Notebook Magic 已接入原生 CPU PNG 预览，固定 192 DPI、双倍像素密度；导出仍遵循默认 1200 DPI、TIFF LZW 与显式配置。Python `render_source`、`render_file` 和 `RenderResult` 的构造签名、`preview_svg` 字段保持兼容。返回对象的默认文本摘要不再展开整段 SVG，避免 Notebook 输出大量图片编码文本。Matplotlib 默认 SVG 标识改为固定哈希种子，使布局未改变的 Figure 复用素材；保留用户显式配置的 `svg.hashsalt`，实际布局变化仍使用新内容哈希。
+
+现有示例修复了同一内核重复“运行全部”时嵌套创建输出目录的问题，关闭 pyplot Figure 管理器，并补齐热图布局，避免标签越界。Python/Jupyter 入口链接与内核版本检查说明已同步。
+
+Python 3.10/IPython 8 与 Python 3.13 各通过 52 项合同测试。源码、Linux wheel 的 Python 3.10/3.13 三种运行方式，都用真实内核连续执行示例两次，每次 10 个代码单元、3 个 CPU 预览。额外验证 NumPy/pandas 数据更新、Figure 修改及不变素材复用、公式、透明图片、中文和空格路径、相对模块、保存后独立重渲染、错误恢复、导出配置及空 PATH 离线运行。预览 PNG 与直接原生导出的 PNG 字节一致。
+
+JupyterLab 4.6.4 实际页面在 1440×1100、700×1000、DPR 2 下验证，再次执行两轮全部单元格并显示 PNG；无相关控制台错误。实际内核加载的 Python 文件与打包源码哈希、内置引擎与当前原生二进制哈希一致。网页测试使用仓库 Chromium/CDP 工具；临时认证服务绑定 Tailscale 地址并已关闭。科学图件也通过 Python API 导出，原始源码 SHA-256 保持不变。
+
+当前常用 Python 环境的内置引擎仍为 0.4.0；切换仓库分支不会更新已安装 wheel。实验 wheel 已在隔离环境验证，需要在目标 Notebook 内核安装实际构建文件并重启内核才会使用这些改进，本轮未替换用户环境或发布版本。一次性 Python 导出仍可能分别编译导出与预览，不把这些检查等同于桌面刷新率验证。
+
+完整的精简指纹和结果见 [python-jupyter-verification.json](python-jupyter-verification.json)；复现脚本是 [test-python-jupyter.py](../../scripts/test-python-jupyter.py)。实际 Notebook、截图、包和原始日志位于本地 `release/verification/python-jupyter/`。渲染核心本轮没有改动，先前完整公式集资格保持对应相同引擎；本轮另测 Notebook 公式协同。文档 615 页、媒体指纹 186 项检查通过。Windows/macOS、Python 3.14 与 VS Code Notebook 专用前端未在本轮实际运行。
+
 ## 实现与兼容边界
 
 - 绘制指令使用毫米坐标，携带路径、画笔、定位字形及字符区间、编码图片、变换、裁剪、遮罩和效果。普通文字共用 Rust 字体选择和整形；公式、SVG 文字和艺术字保留源文本。

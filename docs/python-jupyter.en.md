@@ -16,9 +16,9 @@ This page preserves existing addresses and section links. Detailed content is or
 
 <a id="notebook-workflow"></a>
 
-## Native array and DataFrame plots
+## Notebook workflow
 
-[Native arrays and DataFrames](topics/python-data.en.md) →
+[Notebook Magic](topics/notebook.en.md) →
 
 <a id="native-data"></a>
 

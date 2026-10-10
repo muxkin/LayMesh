@@ -8,6 +8,16 @@ python -m pip install laymesh
 
 [安装与源码开发](install.zh-CN.md)
 
+在当前内核中检查实际使用的安装与引擎：
+
+```python
+import sys, laymesh
+print(sys.executable, laymesh.__file__)
+!"{sys.executable}" -m laymesh --version
+```
+
+Python 默认使用所安装 wheel 的内置引擎；切换 Git 分支不会自动替换已经安装的包。测试实验分支时，在该内核用 `%pip install /path/to/built-wheel.whl` 安装实际构建文件，然后重启内核再注册 Magic。
+
 ## 操作流程
 
 `%load_ext laymesh.ipython` 调用 `load_ipython_extension(ipython)` 注册 `LayMeshMagics`；随后使用：
@@ -18,7 +28,7 @@ python -m pip install laymesh
 page = canvas(size=(100 mm, 70 mm))
 ```
 
-两种 Magic 都将 SVG 预览显示在单元格中。行 Magic 读取文件，单元格 Magic 读取正文；均支持 `-o/--output`、`--dpi`、`--plot-dpi`、`--save-source`。`--plot-dpi` 默认 300，只影响 Figure 回退图像。`load_ipython_extension` 位于 [ipython.py](../../python/laymesh/ipython.py)，不在 `laymesh` 顶层导出。
+两种 Magic 都通过 Rust CPU 渲染器生成 192 DPI PNG 预览，以双倍像素密度显示在单元格中；预览 DPI 独立于导出 DPI。SVG 仍可显式导出，Python API 的 `preview_svg` 保持兼容。行 Magic 读取文件，单元格 Magic 读取正文；均支持 `-o/--output`、`--dpi`、`--plot-dpi`、`--save-source`。`--plot-dpi` 默认 300，只影响 Figure 回退图像。`load_ipython_extension` 位于 [ipython.py](../../python/laymesh/ipython.py)，不在 `laymesh` 顶层导出。
 
 ## 限制与相关主题
 

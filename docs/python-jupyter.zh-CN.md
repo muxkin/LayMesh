@@ -16,9 +16,9 @@
 
 <a id="notebook-工作流"></a>
 
-## 原生数组与 DataFrame 绘图
+## Notebook 工作流
 
-[原生数组与 DataFrame](topics/python-data.zh-CN.md) →
+[Notebook Magic](topics/notebook.zh-CN.md) →
 
 <a id="native-data"></a>
 

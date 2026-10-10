@@ -34,7 +34,7 @@ print(result.preview_svg.startswith('<svg'), result.output, result.saved_source)
 page = canvas(size=(100 mm, 70 mm))
 ```
 
-两种 Magic 都将 SVG 预览显示在单元格中。行 Magic 读取文件，单元格 Magic 读取正文；均支持 `-o/--output`、`--dpi`、`--plot-dpi`、`--save-source`。`--plot-dpi` 默认 300，只影响 Figure 回退图像。`load_ipython_extension` 位于 [ipython.py](../../python/laymesh/ipython.py)，不在 `laymesh` 顶层导出。
+两种 Magic 都通过 Rust CPU 渲染器生成 192 DPI PNG 预览，以双倍像素密度显示在单元格中；预览 DPI 独立于导出 DPI。SVG 仍可显式导出，Python API 的 `preview_svg` 保持兼容。行 Magic 读取文件，单元格 Magic 读取正文；均支持 `-o/--output`、`--dpi`、`--plot-dpi`、`--save-source`。`--plot-dpi` 默认 300，只影响 Figure 回退图像。`load_ipython_extension` 位于 [ipython.py](../../python/laymesh/ipython.py)，不在 `laymesh` 顶层导出。
 
 `show_warnings=False` 隐藏显示的警告，`True` 显示，`None` 跟随 `LAYMESH_WARNINGS`（默认 `show`）。两种 Notebook Magic 均接受 `--warnings show|hide`。源码开发在编译 Rust CLI 后使用可编辑安装，见[安装说明](install.zh-CN.md)。
 

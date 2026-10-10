@@ -34,7 +34,7 @@ print(result.preview_svg.startswith('<svg'), result.output, result.saved_source)
 page = canvas(size=(100 mm, 70 mm))
 ```
 
-Both magics display an SVG preview. Line magic reads a file; cell magic reads cell content. Both support `-o/--output`, `--dpi`, `--plot-dpi`, and `--save-source`. Default `--plot-dpi` is 300 and affects only Figure PNG fallback. `load_ipython_extension` lives in [ipython.py](../../python/laymesh/ipython.py), not the top-level `laymesh` exports.
+Both magics display a 192 DPI PNG preview from the Rust CPU renderer at double pixel density, independently of export DPI. SVG remains an explicit export format, and the Python API retains `preview_svg`. Line magic reads a file; cell magic reads cell content. Both support `-o/--output`, `--dpi`, `--plot-dpi`, and `--save-source`. Default `--plot-dpi` is 300 and affects only Figure PNG fallback. `load_ipython_extension` lives in [ipython.py](../../python/laymesh/ipython.py), not the top-level `laymesh` exports.
 
 `show_warnings=False` hides displayed warnings; `True` shows them; `None` follows `LAYMESH_WARNINGS` (default `show`). Both Notebook magics accept `--warnings show|hide`. Source development uses an editable install after building the Rust CLI; see [installation](install.en.md).
 
