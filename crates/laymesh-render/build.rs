@@ -24,7 +24,11 @@ fn main() {
                 let kind = if matches!(name, "m" | "pthread" | "dl" | "rt") {
                     "dylib"
                 } else {
-                    "static"
+                    // GNU ld visits our archive before Skia introduces its
+                    // font-library references. Retain these objects explicitly
+                    // so it cannot silently select Skia's later shared libs.
+                    // Section GC still removes unreferenced code at final link.
+                    "static:+whole-archive"
                 };
                 println!("cargo:rustc-link-lib={kind}={name}");
             }
