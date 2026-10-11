@@ -13,9 +13,16 @@ with zipfile.ZipFile(a.vsix) as z:
  engines=[n for n in names if n.startswith('extension/bin/')];assert len(engines)==1
  if a.binary:assert z.read(engines[0])==a.binary.read_bytes()
  if not engines[0].endswith('.exe'):assert (z.getinfo(engines[0]).external_attr>>16)&0o111
- scripts=[n for n in names if Path(n).suffix in ('.js','.mjs','.cjs')];assert sorted(scripts)==sorted(['extension/dist/animation-player.mjs','extension/dist/client.cjs','extension/dist/color-math.mjs','extension/dist/color-panel.mjs','extension/dist/color-webview.mjs','extension/dist/preview-host.cjs','extension/dist/preview-math.mjs','extension/dist/preview-webview.mjs','extension/dist/preview-worker.mjs','extension/dist/wasm/laymesh_wasm.js']),scripts
+ scripts=[n for n in names if Path(n).suffix in ('.js','.mjs','.cjs')];assert sorted(scripts)==sorted(['extension/dist/animation-player.mjs','extension/dist/playback-stats.mjs','extension/dist/client.cjs','extension/dist/color-math.mjs','extension/dist/color-panel.mjs','extension/dist/color-webview.mjs','extension/dist/preview-host.cjs','extension/dist/presentation-host.cjs',*[f'extension/dist/{p.name}' for p in (ROOT/'site/live').glob('presentation*.mjs')],'extension/dist/preview-math.mjs','extension/dist/preview-webview.mjs','extension/dist/preview-worker.mjs','extension/dist/wasm/laymesh_wasm.js','extension/dist/skia-renderer.mjs','extension/dist/skia/canvaskit.mjs','extension/dist/skia/'+json.loads(z.read('extension/dist/skia/manifest.json'))['module']]),scripts
  assert 'extension/dist/preview.css' in names
- assert 'extension/dist/wasm/laymesh_wasm_bg.wasm' in names
+ assert 'extension/dist/presentation.css' in names
+ presentation=z.read('extension/dist/presentation-worker.mjs').decode()
+ assert 'function layerPlan(' in presentation, 'Presentation resource planner missing from offline worker'
+ assert 'createPresentationRuntime' in presentation and not re.search(r'(?m)^import\s',presentation)
+ assert 'extension/dist/wasm/manifest.json' in names
+ wasm_manifest=json.loads(z.read('extension/dist/wasm/manifest.json'));assert 'extension/dist/wasm/'+wasm_manifest['wasm'] in names
+ skia_manifest=json.loads(z.read('extension/dist/skia/manifest.json'));assert skia_manifest['version']=='0.42.0';assert 'extension/dist/skia/'+skia_manifest['wasm'] in names
+ assert 'extension/dist/skia/LICENSE' in names
  assert "protocol:3" in z.read('extension/dist/preview-host.cjs').decode()
  worker=z.read('extension/dist/preview-worker.mjs').decode()
  assert "prepare_display_list" in worker and "__wbg_init" in worker

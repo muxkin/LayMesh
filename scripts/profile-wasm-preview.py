@@ -15,7 +15,7 @@ def main():
     p.add_argument('--output', type=Path, required=True)
     a = p.parse_args()
     glue = 'data:text/javascript;base64,'+base64.b64encode((a.wasm_dir/'laymesh_wasm.js').read_bytes()).decode()
-    binary = base64.b64encode((a.wasm_dir/'laymesh_wasm_bg.wasm').read_bytes()).decode()
+    binary = base64.b64encode((a.wasm_dir/json.loads((a.wasm_dir/'manifest.json').read_text())['wasm']).read_bytes()).decode()
     with tempfile.TemporaryDirectory(prefix='laymesh-wasm-profile-', ignore_cleanup_errors=True) as profile:
         chrome = subprocess.Popen(['/usr/bin/google-chrome','--headless=new','--no-sandbox','--disable-gpu',
             '--no-proxy-server','--remote-debugging-port=0','--remote-allow-origins=*',
@@ -36,28 +36,28 @@ def main():
             result=cdp.evaluate('''(async()=>{
                 const base=new URL('/site/live/',location.href),manifest=await(await fetch(new URL('manifest.json',base))).json();
                 const wasm=await import(GLUE);const runtime=await wasm.default({module_or_path:Uint8Array.from(atob(BINARY),c=>c.charCodeAt(0))});
-                for(const font of manifest.fonts){const bytes=new Uint8Array(await(await fetch(new URL(font.file,base))).arrayBuffer());wasm.register_preview_font('/@bundled/'+font.file.split('/').pop(),bytes);}
+                for(const font of manifest.fonts){const bytes=new Uint8Array(await(await fetch(new URL(font.file,base))).arrayBuffer());wasm.register_preview_font('/@bundled/'+font.filename,bytes);}
                 const example=manifest.examples[EXAMPLE],files={};
                 for(const file of example.dependencies){const response=await fetch(new URL(manifest.resources['/'+file],base));files['/'+file]=/\\.(lay|lcss|csv|json)$/.test(file)?await response.text():Array.from(new Uint8Array(await response.arrayBuffer()));}
                 const json=JSON.stringify(files),rows=[];
-                const take=frame=>{if(typeof frame.into_rgba==='function')return frame.into_rgba();const bytes=frame.rgba;frame.free();return bytes;};
+                const {initializeSkia,SkiaRenderer}=await import(new URL('skia-renderer.mjs',base)),meta=await(await fetch(new URL('skia/manifest.json',base))).json(),ck=await initializeSkia(new URL('skia/'+meta.wasm,base).href);
                 for(let i=0;i<8;i++){
                     let before=performance.now();const job=wasm.prepare_render(files['/'+example.entry]+'\\n# performance edit '+i,'/'+example.entry,json),compile=performance.now()-before;
                     before=performance.now();const draw=job.draw_job(),lower=performance.now()-before;
                     before=performance.now();const serialized=draw.display_list(),inspection=JSON.parse(job.inspection()).inspection,metadata=performance.now()-before;
                     const height=Math.round(WIDTH*inspection.page.height/inspection.page.width);
-                    before=performance.now();const frame=draw.raster(JSON.stringify([0,0,inspection.page.width,inspection.page.height]),WIDTH,height),drawMs=performance.now()-before;
-                    before=performance.now();const rgba=take(frame),readbackMs=performance.now()-before,raster=drawMs+readbackMs;
+                    const renderer=new SkiaRenderer(ck,new OffscreenCanvas(WIDTH,height));await renderer.install(JSON.parse(serialized),id=>draw.resource_bytes(id),i);before=performance.now();renderer.render([0,0,inspection.page.width,inspection.page.height],WIDTH,height);const drawMs=performance.now()-before;
+                    before=performance.now();const rgba=renderer.readPixels(),readbackMs=performance.now()-before,raster=drawMs+readbackMs;
                     const repeatPaint=[];for(let view=0;view<5;view++){
-                        const start=performance.now(),px=draw.raster(JSON.stringify([inspection.page.width*view*.01,0,inspection.page.width*(1+view*.01),inspection.page.height]),WIDTH,height),paintMs=performance.now()-start;
-                        const read=performance.now();take(px);repeatPaint.push({paintMs,copyMs:performance.now()-read});
+                        const start=performance.now(),px=renderer.render([inspection.page.width*view*.01,0,inspection.page.width*(1+view*.01),inspection.page.height],WIDTH,height),paintMs=performance.now()-start;
+                        const read=performance.now();renderer.readPixels();repeatPaint.push({paintMs,copyMs:performance.now()-read});
                     }
                     let hash=2166136261;for(const b of rgba)hash=Math.imul(hash^b,16777619)>>>0;
-                    rows.push({compile,lower,metadata,raster,drawMs,readbackMs,repeatPaint,total:compile+lower+metadata+raster,display_list_bytes:serialized.length,rgba_hash:hash.toString(16),wasm_memory_bytes:runtime.memory.buffer.byteLength});draw.free();job.free();
+                    rows.push({compile,lower,metadata,raster,drawMs,readbackMs,repeatPaint,total:compile+lower+metadata+raster,display_list_bytes:serialized.length,rgba_hash:hash.toString(16),wasm_memory_bytes:runtime.memory.buffer.byteLength});renderer.dispose();draw.free();job.free();
                 }
                 return {example:EXAMPLE,files_json_bytes:json.length,rows};
             })()'''.replace('GLUE',json.dumps(glue)).replace('BINARY',json.dumps(binary)).replace('EXAMPLE',json.dumps(a.example)).replace('WIDTH',str(a.width)))
-            result['wasm_sha256']=__import__('hashlib').sha256((a.wasm_dir/'laymesh_wasm_bg.wasm').read_bytes()).hexdigest()
+            result['wasm_sha256']=__import__('hashlib').sha256((a.wasm_dir/json.loads((a.wasm_dir/'manifest.json').read_text())['wasm']).read_bytes()).hexdigest()
             result['definition']=f'Same dependencies/fonts; isolated Chromium; {a.width} px paint and five viewport repaints; first compile and seven comment edits; excludes initialization/network/debounce'
             result['hot_median_ms']={phase:__import__('statistics').median(r[phase] for r in result['rows'][1:]) for phase in ['compile','lower','metadata','raster','total']}
             a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(result,indent=2)+'\n')

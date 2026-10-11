@@ -73,3 +73,37 @@ fn plot_reveal_preserves_axes_and_restores_all_data() {
     assert_eq!(red(&hidden.rgba), 0);
     assert!(hidden.rgba.chunks_exact(4).any(|p| p[3] > 128));
 }
+
+#[test]
+fn parent_reveal_keeps_child_animation_ids_and_sibling_opacity() {
+    use kurbo::Shape;
+    use laymesh_render::display_list::{DrawKind, DrawNode, Paint};
+    let scene=compile_source("style {@keyframes fade {from{opacity:0}to{opacity:1}}}\np=canvas(size=(20,20),background=\"none\")\na=p.add(rect(size=(20,20)))\nb=p.add(rect(size=(4,8)))\ns=p.step()\ns.animate(a,name=\"reveal\",duration=1s,fill=\"both\",easing=\"linear\")\ns.animate(b,name=\"fade\",duration=1s,fill=\"both\",easing=\"linear\")","/nested.lay",Host::default()).unwrap();
+    let mut list = to_display_list(&scene).unwrap();
+    let clips = &scene.animation.as_ref().unwrap().normal.steps[0].clips;
+    let shape = |rect: Rect, rgba| {
+        DrawNode::new(DrawKind::Path {
+            path: rect.to_path(0.01),
+            fill: Paint::Solid { rgba },
+            stroke: None,
+            even_odd: false,
+        })
+    };
+    let mut red = shape(Rect::new(1., 1., 4., 9.), [1., 0., 0., 1.]);
+    red.name = clips[1].target.clone();
+    let blue = shape(Rect::new(5., 1., 9., 9.), [0., 0., 1., 1.]);
+    let mut group = DrawNode::new(DrawKind::Group {
+        children: vec![red, blue],
+        clip: None,
+        mask: None,
+    });
+    group.name = clips[0].target.clone();
+    group.hint = serde_json::json!({"animationSize":[20.,20.]});
+    list.nodes = vec![group];
+    let mut renderer = AnimationRenderer::new(list).unwrap();
+    let frame = renderer
+        .render(Rect::new(0., 0., 20., 20.), 20, 20, Some(0.5), false)
+        .unwrap();
+    assert!((frame.rgba[(4 * 20 + 2) * 4 + 3] as i32 - 128).abs() <= 1);
+    assert_eq!(frame.rgba[(4 * 20 + 7) * 4 + 3], 255);
+}

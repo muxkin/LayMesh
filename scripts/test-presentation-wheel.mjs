@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {PresentationWheel} from '../site/live/presentation-wheel.mjs';
+const wheel=new PresentationWheel(),input=(y,t,extra={})=>wheel.consume({deltaY:y,deltaX:0,deltaMode:0,...extra},t,900);
+assert.equal(input(120,0),1);
+for(let t=20;t<=600;t+=20)assert.equal(input(t<200?100:5,t),0,'inertial tail must not skip steps');
+assert.equal(input(-120,900),-1);
+wheel.reset();for(let i=0;i<5;i++)assert.equal(input(8,i*10),0);assert.equal(input(8,50),1);
+assert.equal(input(-80,80),0,'rebound remains part of the same gesture');
+assert.equal(input(3,400,{deltaMode:1}),1);
+assert.equal(input(-1,700,{deltaMode:2}),-1);
+for(const extra of [{deltaX:130},{ctrlKey:true},{metaKey:true},{altKey:true},{shiftKey:true}])assert.equal(input(120,1000,extra),0);
+assert.equal(input(NaN,1200),0);
+console.log('Presentation wheel: mouse, touchpad, inertia, direction, delta modes and modifier isolation passed.');

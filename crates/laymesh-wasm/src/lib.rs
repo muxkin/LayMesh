@@ -1,4 +1,4 @@
-//! Browser bindings share native layout and CPU drawing; SVG is an export format.
+//! Browser bindings compile retained scenes and sample animation for CanvasKit.
 use laymesh_core::{
     engine::compile_preview_source,
     model::{Host, Scene},
@@ -18,10 +18,6 @@ pub fn register_render_resource(id: &str, bytes: &[u8]) {
     DRAW_RESOURCES.with(|resources| resources.borrow_mut().insert(id.into(), bytes.to_vec()));
 }
 #[wasm_bindgen]
-pub fn set_render_cache_budget(mib: usize) {
-    laymesh_render::raster::set_image_cache_budget(mib);
-}
-#[wasm_bindgen]
 pub fn retain_render_resources(ids: &str) -> Result<(), JsValue> {
     let ids: Vec<String> = serde_json::from_str(ids).map_err(js_error)?;
     DRAW_RESOURCES.with(|r| r.borrow_mut().retain(|id, _| ids.contains(id)));
@@ -33,36 +29,22 @@ fn js_error(e: impl std::fmt::Display) -> JsValue {
 
 #[wasm_bindgen]
 pub struct DrawJob {
-    raster: laymesh_render::animation::AnimationRenderer,
-}
-#[wasm_bindgen]
-pub struct RgbaFrame {
-    width: u32,
-    height: u32,
-    rgba: Vec<u8>,
-}
-#[wasm_bindgen]
-impl RgbaFrame {
-    #[wasm_bindgen(getter)]
-    pub fn width(&self) -> u32 {
-        self.width
-    }
-    #[wasm_bindgen(getter)]
-    pub fn height(&self) -> u32 {
-        self.height
-    }
-    #[wasm_bindgen(getter)]
-    pub fn rgba(&self) -> Vec<u8> {
-        self.rgba.clone()
-    }
-    /// Consume this frame for Canvas/worker transfer without cloning its
-    /// complete pixel buffer. The reusable getter remains available.
-    pub fn into_rgba(self) -> Vec<u8> {
-        self.rgba
-    }
+    scene: laymesh_render::retained::RetainedScene,
 }
 #[wasm_bindgen]
 impl DrawJob {
+    pub fn frame_state(&self, time: f64, reduced: bool) -> Result<String, JsValue> {
+        serde_json::to_string(&self.scene.sample(time, reduced, false).map_err(js_error)?)
+            .map_err(js_error)
+    }
+    pub fn resource_bytes(&self, id: &str) -> Result<Vec<u8>, JsValue> {
+        self.scene
+            .base()
+            .resources
+            .get(id)
+            .map(|r| r.data.clone())
+            .ok_or_else(|| js_error("Missing drawing resource"))
+    }
     /// Workers already own the drawing; the UI only needs its resource headers.
     /// Keep display_list() available for consumers that need complete commands.
     pub fn animation_sample(&self, time: f64, reduced: bool) -> Result<String, JsValue> {
@@ -71,7 +53,7 @@ impl DrawJob {
         }
         serde_json::to_string(
             &self
-                .raster
+                .scene
                 .base()
                 .animation
                 .as_ref()
@@ -80,7 +62,7 @@ impl DrawJob {
         .map_err(js_error)
     }
     pub fn drawing_info(&self) -> Result<String, JsValue> {
-        let list = self.raster.base();
+        let list = self.scene.base();
         let resources: BTreeMap<_, _> = list
             .resources
             .iter()
@@ -93,54 +75,6 @@ impl DrawJob {
             .collect();
         serde_json::to_string(&json!({"schemaVersion":list.schema_version,"width":list.width,"height":list.height,"resources":resources,"animation":list.animation})).map_err(js_error)
     }
-    pub fn raster_retained(
-        &mut self,
-        viewport: &str,
-        width: u32,
-        height: u32,
-    ) -> Result<RgbaFrame, JsValue> {
-        let r: [f64; 4] = serde_json::from_str(viewport).map_err(js_error)?;
-        let frame = self
-            .raster
-            .render(
-                kurbo::Rect::new(r[0], r[1], r[2], r[3]),
-                width,
-                height,
-                None,
-                false,
-            )
-            .map_err(js_error)?;
-        Ok(RgbaFrame {
-            width: frame.width,
-            height: frame.height,
-            rgba: frame.rgba,
-        })
-    }
-    pub fn raster_animation(
-        &mut self,
-        viewport: &str,
-        width: u32,
-        height: u32,
-        time: f64,
-        reduced: bool,
-    ) -> Result<RgbaFrame, JsValue> {
-        let r: [f64; 4] = serde_json::from_str(viewport).map_err(js_error)?;
-        let frame = self
-            .raster
-            .render(
-                kurbo::Rect::new(r[0], r[1], r[2], r[3]),
-                width,
-                height,
-                Some(time),
-                reduced,
-            )
-            .map_err(js_error)?;
-        Ok(RgbaFrame {
-            width: frame.width,
-            height: frame.height,
-            rgba: frame.rgba,
-        })
-    }
     /// Updates are accepted only after the client validates their baseline ID.
     pub fn update_display_list(&mut self, json: &str) -> Result<(), JsValue> {
         let mut update: laymesh_render::display_update::DisplayUpdate =
@@ -148,41 +82,14 @@ impl DrawJob {
         if let Some(resources) = &mut update.resources {
             resolve_resources(resources)?;
         }
-        self.raster.update(update).map_err(js_error)
+        self.scene.update(update).map_err(js_error)
     }
     pub fn display_list(&self) -> Result<String, JsValue> {
-        let mut list = self.raster.base().clone();
+        let mut list = self.scene.base().clone();
         for resource in list.resources.values_mut() {
             resource.data.clear();
         }
         serde_json::to_string(&list).map_err(js_error)
-    }
-    /// Millimetre viewport; output dimensions include browser device pixel ratio.
-    pub fn raster(
-        &mut self,
-        viewport: &str,
-        width: u32,
-        height: u32,
-    ) -> Result<RgbaFrame, JsValue> {
-        let r: [f64; 4] = serde_json::from_str(viewport).map_err(js_error)?;
-        let result = self
-            .raster
-            .render(
-                kurbo::Rect::new(r[0], r[1], r[2], r[3]),
-                width,
-                height,
-                None,
-                false,
-            )
-            .map_err(js_error)?;
-        Ok(RgbaFrame {
-            width: result.width,
-            height: result.height,
-            rgba: result.rgba,
-        })
-    }
-    pub fn set_cache_budget(&mut self, mib: usize) {
-        self.raster.set_cache_budget(mib);
     }
 }
 #[wasm_bindgen]
@@ -193,7 +100,7 @@ pub fn prepare_display_list(json: &str) -> Result<DrawJob, JsValue> {
     }
     resolve_resources(&mut list.resources)?;
     Ok(DrawJob {
-        raster: laymesh_render::animation::AnimationRenderer::new(list).map_err(js_error)?,
+        scene: laymesh_render::retained::RetainedScene::new(list),
     })
 }
 fn resolve_resources(
@@ -229,20 +136,56 @@ pub struct RenderJob {
     scene: Scene,
     document: Option<J>,
 }
+/// A document plan is evaluated once per presentation snapshot. Page compilation
+/// remains explicit so callers can report progress and cancel between pages.
+#[wasm_bindgen]
+pub struct PresentationPlan {
+    plan: laymesh_core::document::DocumentPlan,
+    host: Host,
+}
+#[wasm_bindgen]
+impl PresentationPlan {
+    pub fn metadata(&self) -> String {
+        json!({"name":self.plan.name,"pages":self.plan.pages}).to_string()
+    }
+    pub fn page(&self, index: usize, files_json: &str) -> Result<RenderJob, JsValue> {
+        let mut host = self.host.clone();
+        host.files.extend(render_host(files_json)?.files);
+        let page = self.plan.page(index + 1).map_err(diagnostic_js_error)?;
+        let scene = laymesh_core::document::compile_preview_page(page, host)
+            .map_err(diagnostic_js_error)?;
+        Ok(RenderJob {
+            scene,
+            document: Some(
+                json!({"name":self.plan.name,"pages":self.plan.pages,"pageId":page.id,"pageNumber":index+1}),
+            ),
+        })
+    }
+}
+#[wasm_bindgen]
+pub fn prepare_presentation(
+    source: &str,
+    filename: &str,
+    files_json: &str,
+) -> Result<PresentationPlan, JsValue> {
+    let host = render_host(files_json)?;
+    let plan = laymesh_core::document::plan_source(source, filename, host.clone())
+        .map_err(diagnostic_js_error)?;
+    Ok(PresentationPlan { plan, host })
+}
 #[wasm_bindgen]
 impl RenderJob {
     pub fn update_draw_job(&self, draw: &mut DrawJob) -> Result<(), JsValue> {
         let next = laymesh_render::to_display_list(&self.scene).map_err(js_error)?;
         let update =
-            laymesh_render::display_update::DisplayUpdate::between(draw.raster.base(), &next);
-        draw.raster.update(update).map_err(js_error)
+            laymesh_render::display_update::DisplayUpdate::between(draw.scene.base(), &next);
+        draw.scene.update(update).map_err(js_error)
     }
     pub fn draw_job(&self) -> Result<DrawJob, JsValue> {
         Ok(DrawJob {
-            raster: laymesh_render::animation::AnimationRenderer::new(
+            scene: laymesh_render::retained::RetainedScene::new(
                 laymesh_render::to_display_list(&self.scene).map_err(js_error)?,
-            )
-            .map_err(js_error)?,
+            ),
         })
     }
     pub fn display_list(&self) -> Result<String, JsValue> {
@@ -359,7 +302,7 @@ fn diagnostic_value(e: laymesh_core::Diagnostic) -> J {
 mod document_tests {
     use super::*;
     #[test]
-    fn wasm_document_selection_matches_native_core_and_cpu_pixels() {
+    fn wasm_document_selection_matches_native_core_and_retained_commands() {
         let source = "d=document()\nfor p in [page(src=\"a.lay\",id=\"a\"),page(src=\"b.lay\",id=\"b\")] { d.add(p) }";
         let files=json!({"/a.lay":"p=canvas(size=(10,20))\np.add(rect(size=(4,4),fill=\"#f00\"))","/b.lay":"p=canvas(size=(2,1),unit=\"cm\")\np.add(rect(size=(0.4,0.4),fill=\"#00f\"))"}).to_string();
         let job = prepare_document_render(source, "/report.laydoc", &files, "b").unwrap();
@@ -371,13 +314,14 @@ mod document_tests {
             laymesh_core::document::plan_source(source, "/report.laydoc", host.clone()).unwrap();
         let scene = laymesh_core::document::compile_page(plan.page(2).unwrap(), host).unwrap();
         let list = laymesh_render::to_display_list(&scene).unwrap();
-        let native = laymesh_render::render_rgba(&list, 254.).unwrap();
-        let wasm = job
-            .draw_job()
-            .unwrap()
-            .raster("[0,0,20,10]", 200, 100)
-            .unwrap();
-        assert_eq!(native.rgba, wasm.rgba);
+        let job = prepare_display_list(&serde_json::to_string(&list).unwrap()).unwrap();
+        let commands: laymesh_render::DisplayList =
+            serde_json::from_str(&job.display_list().unwrap()).unwrap();
+        assert_eq!(commands.nodes, list.nodes);
+        assert!(commands.resources.values().all(|r| r.data.is_empty()));
+        for (id, r) in &list.resources {
+            assert_eq!(job.resource_bytes(id).unwrap(), r.data);
+        }
     }
 }
 #[wasm_bindgen]

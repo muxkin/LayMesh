@@ -62,12 +62,30 @@ pub struct Token {
     pub end: usize,
     pub string: bool,
 }
-fn loc(s: &str, p: usize) -> Loc {
-    let pre = &s[..p];
-    Loc {
-        line: pre.bytes().filter(|b| *b == b'\n').count() + 1,
-        column: pre.rsplit('\n').next().unwrap_or("").encode_utf16().count() + 1,
-        offset: p,
+// Token locations are requested in source order. Advancing a cursor avoids
+// rescanning the entire prefix for every token (quadratic on large data arrays).
+// Columns remain UTF-16 code units, matching editor diagnostics.
+struct Locations(Loc);
+impl Locations {
+    fn new() -> Self {
+        Self(Loc {
+            line: 1,
+            column: 1,
+            offset: 0,
+        })
+    }
+    fn at(&mut self, s: &str, p: usize) -> Loc {
+        debug_assert!(p >= self.0.offset);
+        for ch in s[self.0.offset..p].chars() {
+            if ch == '\n' {
+                self.0.line += 1;
+                self.0.column = 1;
+            } else {
+                self.0.column += ch.len_utf16();
+            }
+        }
+        self.0.offset = p;
+        self.0
     }
 }
 pub fn string_end(s: &str, start: usize) -> Option<usize> {
@@ -130,6 +148,7 @@ pub fn tokenize(s: &str, file: &str) -> Result<Vec<Token>> {
     let b = s.as_bytes();
     let mut i = 0;
     let mut ts = vec![];
+    let mut locations = Locations::new();
     while i < b.len() {
         let start = i;
         if b[i].is_ascii_whitespace() {
@@ -146,7 +165,7 @@ pub fn tokenize(s: &str, file: &str) -> Result<Vec<Token>> {
             i = end;
             ts.push(Token {
                 text: s[start..i].into(),
-                loc: loc(s, start),
+                loc: locations.at(s, start),
                 end: i,
                 string: true,
             });
@@ -188,12 +207,12 @@ pub fn tokenize(s: &str, file: &str) -> Result<Vec<Token>> {
                             "E_SYNTAX",
                             "Unclosed style block",
                             file,
-                            loc(s, start),
+                            locations.at(s, start),
                         ));
                     }
                     ts.push(Token {
                         text: format!("@style{}", &s[from..k - 1]),
-                        loc: loc(s, from),
+                        loc: locations.at(s, from),
                         end: k,
                         string: false,
                     });
@@ -226,19 +245,19 @@ pub fn tokenize(s: &str, file: &str) -> Result<Vec<Token>> {
                 "E_SYNTAX",
                 format!("Unexpected character {}", s[i..].chars().next().unwrap()),
                 file,
-                loc(s, i),
+                locations.at(s, i),
             ));
         }
         ts.push(Token {
             text: s[start..i].into(),
-            loc: loc(s, start),
+            loc: locations.at(s, start),
             end: i,
             string: false,
         });
     }
     ts.push(Token {
         text: String::new(),
-        loc: loc(s, s.len()),
+        loc: locations.at(s, s.len()),
         end: s.len(),
         string: false,
     });

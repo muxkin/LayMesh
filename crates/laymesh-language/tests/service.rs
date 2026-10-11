@@ -320,3 +320,23 @@ fn presentation_step_completion_and_css_animation_hover() {
     s.update("motion.css", ".a { animation-duration: 1s; }");
     assert!(s.hover("motion.css", 12).to_string().contains("duration"));
 }
+
+#[test]
+fn linked_animation_start_completion_and_diagnostic() {
+    let mut s = LanguageService::new("en");
+    let source =
+        "p=canvas(size=(30,20))\na=p.add(rect(size=(5,5)))\ns=p.step()\ns.animate(a,start=\"";
+    s.update("linked.lay", source);
+    let options = s.completions("linked.lay", source.len()).to_string();
+    assert!(
+        options.contains("after-previous") && options.contains("with-previous"),
+        "{options}"
+    );
+    let source = "p=canvas(size=(30,20))\ns=p.step(start=\"";
+    s.update("linked.lay", source);
+    let options = s.completions("linked.lay", source.len()).to_string();
+    assert!(
+        options.contains("after-previous") && options.contains("click"),
+        "{options}"
+    );
+}

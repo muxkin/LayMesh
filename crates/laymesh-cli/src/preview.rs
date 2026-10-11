@@ -11,6 +11,11 @@ use std::{
     sync::mpsc,
 };
 pub fn serve() -> io::Result<()> {
+    let mut presentation_plan: Option<(
+        String,
+        laymesh_core::document::DocumentPlan,
+        BTreeSet<String>,
+    )> = None;
     let mut compressed_cache: Option<(String, Value)> = None;
     // One bounded baseline. A different panel, restart, or unacknowledged
     // generation receives a full CPU display list instead of an unsafe patch.
@@ -143,7 +148,23 @@ pub fn serve() -> io::Result<()> {
             }
             let mut drawing_key = file.to_owned();
             let scene = if file.ends_with(".laydoc") {
-                let plan = laymesh_core::document::plan_source(source, file, host.clone())?;
+                let plan_key = format!("{}\n{}", file, request["presentation_revision"]);
+                let plan = if request["presentation_revision"].is_string() {
+                    if let Some((_, plan, deps)) = presentation_plan
+                        .as_ref()
+                        .filter(|(key, _, _)| key == &plan_key)
+                    {
+                        dependencies.borrow_mut().extend(deps.iter().cloned());
+                        plan.clone()
+                    } else {
+                        let plan = laymesh_core::document::plan_source(source, file, host.clone())?;
+                        presentation_plan =
+                            Some((plan_key, plan.clone(), dependencies.borrow().clone()));
+                        plan
+                    }
+                } else {
+                    laymesh_core::document::plan_source(source, file, host.clone())?
+                };
                 document_metadata = Some(json!({"name":plan.name,"pages":plan.pages}));
                 let number = if let Some(id) = request["page_id"].as_str() {
                     plan.pages

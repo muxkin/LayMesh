@@ -3,7 +3,7 @@
 import argparse,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,default=ROOT/'release/dist/laymesh-wasm.zip');a=p.parse_args();source=ROOT/'site/dist/site/live/wasm';assert (source/'laymesh_wasm_bg.wasm').is_file(),'Build the site with Rust/WASM first';a.output.parent.mkdir(parents=True,exist_ok=True)
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,default=ROOT/'release/dist/laymesh-wasm.zip');a=p.parse_args();source=ROOT/'site/dist/site/live/wasm';assert (source/'manifest.json').is_file(),'Build the site with Rust/WASM first';a.output.parent.mkdir(parents=True,exist_ok=True)
 with zipfile.ZipFile(a.output,'w',zipfile.ZIP_DEFLATED) as z:
  for file in sorted(source.iterdir()):
   if file.is_file():z.write(file,file.name)

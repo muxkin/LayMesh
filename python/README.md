@@ -6,7 +6,7 @@
 
 ## Install
 
-Requires **Python 3.10+**. Version `0.3.9` adds two-endpoint line connections and shares its version with the native engine and VS Code extension. Install an uploaded release or a reviewed local platform wheel:
+Requires **Python 3.10+**. Version `0.6.0` adds multipage documents, Animate.css animation, Skia rendering and MP4/GIF export and shares its version with the native engine and VS Code extension. Install an uploaded release or a reviewed local platform wheel:
 
 ```sh
 python -m pip install laymesh
@@ -18,6 +18,8 @@ Platform wheels bundle one native Rust executable and formula fonts. Rendering r
 The standard installation includes NumPy, pandas, Matplotlib and IPython. Data bindings, Matplotlib Figure import and Jupyter magics are ready to use.
 
 Wheel targets are Windows x64, macOS 14+ on Intel and Apple Silicon, and Linux x64 / arm64. Linux requires glibc at least as new as the wheel's `manylinux_2_XX` tag. Availability depends on uploaded wheels; Alpine/musl, 32-bit platforms and Windows ARM64 have no wheels. Plots are rendered by the native engine.
+
+MP4/GIF animation export requires FFmpeg on PATH. Static exports remain complete layouts; animations run only during playback or explicit time/step snapshots. See the [animation guide](https://muxkin.github.io/LayMesh/en/docs/topics/animation.html).
 
 ## First figure: CLI
 

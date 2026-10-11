@@ -147,19 +147,34 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   move(5.5/12,4/9);wait_readout()
   layout=evaluate("({body:d.body.scrollWidth,width:d.documentElement.clientWidth,canvas:d.querySelector('.horizontal.ruler').width,viewport:d.querySelector('.viewport').clientWidth,dpr:d.defaultView.devicePixelRatio,theme:d.body.className})")
   assert layout['body']<=layout['width'] and layout['canvas']==round(layout['viewport']*layout['dpr']),layout
+  assert evaluate("(()=>{const b=d.querySelector('.render-details').getBoundingClientRect(),f=d.querySelector('.preview-footer').getBoundingClientRect();return b.right<=f.right&&b.left>=f.left})()"), "Narrow footer details must stay visible beside long coordinates"
   screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'light-narrow.png').write_bytes(base64.b64decode(screenshot['data']))
   console_errors=[event for event in c.events if event.get('method')=='Runtime.exceptionThrown' or event.get('method')=='Runtime.consoleAPICalled' and event['params'].get('type')=='error']
   assert not console_errors,console_errors
+  stable_before_error=evaluate("d.querySelector('.viewport').getBoundingClientRect().toJSON()")
   phase('light-verified');wait_phase('english-error')
-  wait("d.querySelector('.preview').dataset.state==='error'&&d.querySelector('.status').textContent==='Error · preview stale'")
+  wait("d.querySelector('.preview').dataset.state==='error'&&d.querySelector('.status').textContent==='Source error · last successful preview'")
+  assert evaluate("d.querySelector('.viewport').getBoundingClientRect().toJSON()")==stable_before_error
+  evaluate("(()=>{d.querySelector('.diagnostic-menu').open=true;return true})()")
+  assert evaluate("d.querySelector('.viewport').getBoundingClientRect().toJSON()")==stable_before_error
   assert evaluate("!d.querySelector('.error-location').hidden&&d.querySelector('.error-location').title==='Go to source'&&d.querySelector('.figure').getBoundingClientRect().width>0")
+  screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'diagnostics-narrow.png').write_bytes(base64.b64decode(screenshot['data']))
   phase('error-verified');wait_phase('document-ready')
   c=until(attach,'Document preview iframe');c.call('Log.enable')
   wait("d.querySelector('.preview').dataset.state==='success'&&d.querySelector('.preview').dataset.painted==='true'&&d.querySelector('.page-select').value==='cover'")
   assert evaluate("!d.querySelector('.page-select').hidden&&d.querySelector('.page-select').options.length===3")
   evaluate("(()=>{const s=d.querySelector('.page-select');s.value='results';s.dispatchEvent(new d.defaultView.Event('change'));return true})()")
   wait("d.querySelector('.page-select').value==='results'&&d.querySelector('.preview').dataset.state==='success'&&d.querySelector('.corner').textContent==='cm'&&d.querySelector('.preview').dataset.painted==='true'")
-  def drawing_hash():return evaluate("(()=>{const c=d.querySelector('.figure-pixels'),p=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let h=2166136261;for(const v of p)h=Math.imul(h^v,16777619);return h>>>0})()")
+  def drawing_hash():
+   import hashlib
+   outer=root.evaluate("document.querySelector('iframe').getBoundingClientRect().toJSON()")
+   bounds=evaluate("d.querySelector('.figure-pixels').getBoundingClientRect().toJSON()")
+   shot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False})
+   pixels=Image.open(io.BytesIO(base64.b64decode(shot['data']))).convert('RGBA')
+   scale=pixels.width/root.evaluate('innerWidth')
+   x=(outer['x']+bounds['x'])*scale;y=(outer['y']+bounds['y'])*scale
+   return hashlib.sha256(pixels.crop((round(x),round(y),round(x+bounds['width']*scale),round(y+bounds['height']*scale))).tobytes()).hexdigest()
+
   formula_before=drawing_hash();phase('document-results');wait_phase('document-dirty-ready')
   until(lambda:drawing_hash()!=formula_before,'Unsaved formula visible')
   wait("d.querySelector('.preview').dataset.painted==='true'")
@@ -168,9 +183,9 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   root.call('Emulation.setDeviceMetricsOverride',{'width':1440,'height':1000,'deviceScaleFactor':2,'mobile':False})
   evaluate("(()=>{d.querySelector('[data-action=fit]').click();return true})()");until(stable_layout,'Stable document layout')
   screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'document-desktop.png').write_bytes(base64.b64decode(screenshot['data']))
-  evaluate("(()=>{d.querySelector('.page-select').nextElementSibling.nextElementSibling.click();return true})()")
+  evaluate("(()=>{d.querySelector('[data-action=export-document]').click();return true})()")
   until(lambda:root.evaluate("!!document.querySelector('.quick-input-widget input')?.value.endsWith('.pdf')"),'Whole document PDF save dialog');key('Escape',27)
-  evaluate("(()=>{d.querySelector('.page-select').nextElementSibling.click();return true})()")
+  evaluate("(()=>{d.querySelector('[data-action=open-page]').click();return true})()")
   document_errors=[event for event in c.events if event.get('method')=='Runtime.exceptionThrown' or event.get('method')=='Runtime.consoleAPICalled' and event['params'].get('type')=='error'];assert not document_errors,document_errors
   phase('document-ui-verified');wait_phase('animation-ready')
   c=until(attach,'Animation preview iframe');c.call('Log.enable')
@@ -185,7 +200,43 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   evaluate("(()=>{d.querySelector('[data-action=animation-static]').click();return true})()")
   wait("d.querySelector('.preview').dataset.painted==='true'");until(lambda:drawing_hash()==full_hash,'Static layout restored')
   screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'animation-controls.png').write_bytes(base64.b64decode(screenshot['data']))
-  phase('animation-verified');wait_phase('complete');host.wait(timeout=20);assert host.returncode==0
+  # Full presentation uses an independent prepared snapshot and real webview controls.
+  wait("d.defaultView.laymeshPresentation.deck?.pages.length>0")
+  evaluate("(()=>{d.defaultView.laymeshPresentation.open();return true})()")
+  wait("d.defaultView.laymeshPresentation.ready&&d.querySelector('.presentation').dataset.painted==='true'")
+  evaluate("(()=>{d.querySelector('.presentation').dispatchEvent(new d.defaultView.KeyboardEvent('keydown',{key:' ',bubbles:true}));return true})()")
+  wait("Number(d.querySelector('.presentation').dataset.time)>0.05")
+  evaluate("(()=>{d.querySelector('.presentation').dispatchEvent(new d.defaultView.KeyboardEvent('keydown',{key:' ',bubbles:true}));return true})()")
+  wait("d.querySelector('.presentation').dataset.running==='false'")
+  screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'presentation.png').write_bytes(base64.b64decode(screenshot['data']))
+  evaluate("(()=>{d.defaultView.laymeshPresentation.close();return true})()")
+  wait("!d.querySelector('.presentation')")
+  phase('animation-verified')
+  if os.environ.get('LAYMESH_ACADEMIC_DOC'):
+   wait_phase('academic-ready');c=until(attach,'Academic preview iframe');c.call('Log.enable')
+   wait("d.defaultView.laymeshPresentation.deck?.pages.length===32")
+   evaluate("(()=>{d.defaultView.laymeshPresentation.open();return true})()")
+   wait("d.defaultView.laymeshPresentation.ready")
+   assert evaluate("d.querySelector('.presentation-bar').inert"), 'Embedded controls are hidden by default'
+   evaluate("(()=>{d.querySelector('.presentation').dispatchEvent(new d.defaultView.KeyboardEvent('keydown',{key:'Tab',bubbles:true,cancelable:true}));return true})()")
+   assert evaluate("!d.querySelector('.presentation-bar').inert && d.activeElement.dataset.action==='present-previous'"), 'Tab reveals and focuses embedded controls'
+   evaluate("(()=>{const v=d.defaultView.laymeshPresentation;v.showMenu();v.showPanel('toolbar');d.querySelector('[data-toolbar-mode=always]').click();return true})()")
+   assert evaluate("!d.querySelector('.presentation-bar').inert"), 'Embedded always-visible choice'
+   evaluate("(()=>{const v=d.defaultView.laymeshPresentation;v.showMenu();v.showPanel('toolbar');d.querySelector('[data-toolbar-mode=hidden]').click();return true})()")
+   assert evaluate("d.querySelector('.presentation-bar').inert"), 'Embedded hidden choice'
+   evaluate("(()=>{d.querySelector('.presentation-canvas').dispatchEvent(new d.defaultView.WheelEvent('wheel',{deltaY:120,bubbles:true,cancelable:true}));return true})()")
+   wait("d.defaultView.laymeshPresentation.clock.time>0.05")
+   time.sleep(.22)
+   evaluate("(()=>{d.querySelector('.presentation-canvas').dispatchEvent(new d.defaultView.WheelEvent('wheel',{deltaY:-120,bubbles:true,cancelable:true}));return true})()")
+   wait("d.defaultView.laymeshPresentation.clock.time===0")
+   for page_index in [17,24,28,31,0]:
+    evaluate(f"(()=>{{d.defaultView.laymeshPresentation.go({page_index},{{end:true}});return true}})()")
+    wait(f"!d.defaultView.laymeshPresentation.switching&&d.querySelector('.presentation').dataset.page==='p{page_index+1:02d}'")
+    if page_index==17:
+     screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'academic-dense.png').write_bytes(base64.b64decode(screenshot['data']))
+   evaluate("(()=>{d.defaultView.laymeshPresentation.close();return true})()");wait("!d.querySelector('.presentation')")
+   phase('academic-verified')
+  wait_phase('complete');host.wait(timeout=20);assert host.returncode==0
   result=json.loads(evidence.read_text());result['ui']={'bmp_pixel':bitmap,'transparent_webp_pixel':transparent_pixel,'opaque_16bit_jpeg_pixel':high_pixel,'direct_export_save_dialog_verified':True,'no_dpi_or_compression_prompts':True,'initial_readout':readout,'english_readout':english_readout,'state':state,'narrow':layout,'console_errors':console_errors,'viewports':['1440x1000 dark DPR 2','760x720 light DPR 2'],'checks':['BMP on a Chinese/space/hash path','canvas/data hover','ruler markers','wheel anchor','Space drag','100%','ruler toggle','fit','continuous motion','pointer exit','narrow resize','DPR ruler pixels','explicit English and auto UI','view preserved on language change','English stale error and source action']}
   result['ui']['documents']={'page_selector':True,'formula_edit_visible':True,'reordering_preserves_page_id':True,'whole_pdf_direct_save_dialog':True,'console_errors':document_errors}
   (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))

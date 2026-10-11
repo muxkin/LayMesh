@@ -4049,6 +4049,7 @@ Returns: Presentation step
 | `name` | string | Step name | — |
 | `duration` | time / time | Finite presentation window; required for infinite or paused effects | — |
 | `hold` | time / time | Hold after animation window | 1s |
+| `start` | "click" \| "after-previous" | click: manual trigger; after-previous: start after the previous step hold, or on page entry for the first step.<br>`click`: Start when the user advances.<br>`after-previous`: Start after the previous step hold; the first step starts on page entry. | click |
 
 ### Minimal complete example
 
@@ -4094,6 +4095,7 @@ Required: `target`.
 | `fill` | string | CSS fill mode | — |
 | `vars` | dict | CSS custom property overrides | — |
 | `play_state` | string | CSS play state | — |
+| `start` | "step" \| "with-previous" \| "after-previous" | step, with-previous, or after-previous. Delay is relative to the selected action boundary.<br>`step`: Use the current step start.<br>`with-previous`: Use the previous action start.<br>`after-previous`: Use the previous action end; the preceding action must have a finite duration. | step |
 
 ### Minimal complete example
 

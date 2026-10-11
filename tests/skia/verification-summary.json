@@ -1,0 +1,209 @@
+{
+  "date": "2026-10-11",
+  "branch": "codex/lcss-animation",
+  "rendererVersion": "object-layers-v1",
+  "scope": "Skia migration regression and static/animated GPU content reuse; local browser GPU is SwiftShader, not hardware acceptance",
+  "hardwareAcceptance": false,
+  "externalHardwareBaseline": "user-stress-baseline.json",
+  "validation": {
+    "animation": {
+      "effects": 97,
+      "comparisons": 873,
+      "failures": [],
+      "consoleErrors": [],
+      "staticRestored": true
+    },
+    "progressiveScenes": {
+      "status": "passed",
+      "counts": {
+        "runs": 10,
+        "paints": 204,
+        "pixelsDuringPlayback": 0
+      },
+      "checks": [
+        "10 progressively compiled scenes, unchanged 4K buffer",
+        "213 concurrent animation targets in final level",
+        "No RGBA in playback messages",
+        "Current dense frame capture",
+        "Single-level UI and Stop",
+        "Original three animation scenes"
+      ],
+      "hardwareAcceptance": false
+    },
+    "cachePixelOracle": [
+      {
+        "scene": "03-patterns-256",
+        "plainMs": 129.30000001192093,
+        "firstMs": 20.900000035762787,
+        "warmMs": 0.9000000357627869,
+        "textureBytes": 43722880,
+        "hits": 2,
+        "builds": 0,
+        "maxDelta": 1,
+        "meanDelta": 0.00018364800347222223,
+        "channelsOver8": 0,
+        "lifecycle": [
+          "partial edit invalidation",
+          "viewport rebuild",
+          "bounded eviction",
+          "zero budget"
+        ]
+      },
+      {
+        "scene": "07-effects",
+        "plainMs": 204.69999998807907,
+        "firstMs": 84.69999998807907,
+        "warmMs": 1,
+        "textureBytes": 61973704,
+        "hits": 2,
+        "builds": 0,
+        "maxDelta": 53,
+        "meanDelta": 0.13241307388117285,
+        "channelsOver8": 52
+      },
+      {
+        "scene": "10-dense",
+        "plainMs": 224.5999999642372,
+        "firstMs": 116.30000001192093,
+        "warmMs": 71.40000003576279,
+        "textureBytes": 18763660,
+        "hits": 129,
+        "builds": 0,
+        "maxDelta": 1,
+        "meanDelta": 0.03698935426311729,
+        "channelsOver8": 0
+      }
+    ],
+    "cacheLifecycle": [
+      "partial edit invalidation",
+      "viewport rebuild",
+      "bounded eviction",
+      "zero budget",
+      "context loss and restoration"
+    ],
+    "browser": [
+      "3840×2160 buffer; 120 retained paints; transactional failed install; context recovery; software fallback; same-ID image replacement",
+      "Main-thread CanvasKit fallback plays directly from summary"
+    ],
+    "vscode": "passed with object-layers-v1 shared renderer",
+    "startup": {
+      "coldMedian": {
+        "ready": 390.2,
+        "firstFrame": 473.1,
+        "initialization": 127.59999996423721,
+        "compile": 137.0999999642372,
+        "lower": 8.699999988079071,
+        "resources": 0
+      },
+      "warmMedian": {
+        "ready": 379.7,
+        "firstFrame": 440.4,
+        "initialization": 117.60000002384186,
+        "compile": 135.10000002384186,
+        "lower": 27.30000001192093,
+        "resources": 0
+      },
+      "checks": [
+        "Summary play/pause/seek, source tabs preserve time, multipage forward/back, static pixel restoration",
+        "Play requested during loading starts with a rendered frame at time zero",
+        "Startup checksum failure is visible in summary; Retry recovers without autoplay",
+        "Deferred full fonts preserve last frame, compile only latest draft, support new Chinese, generated labels and explicit family",
+        "Direct source link starts static; full fonts requested only after first frame",
+        "Failed full-font download remains retryable after editing and recovers the latest draft"
+      ]
+    },
+    "unchangedNativePipeline": {
+      "renderTests": 213,
+      "skiaPdfTests": 3,
+      "animateCssVideoFrames": 194,
+      "animateCssVideoDurationSeconds": 9.7,
+      "pngAndImageFormatSettings": "passed",
+      "PptxFixtures": 10,
+      "startupSubsetFullFontPixelIdenticalExamples": 192
+    },
+    "documentationPages": 639,
+    "movingContentCache": {
+      "status": "passed",
+      "hardwareAcceptance": false,
+      "checks": [
+        {
+          "scene": "08-motion-2d",
+          "firstBuilds": 37,
+          "warmHits": 37,
+          "warmBuilds": 0,
+          "changedPoseBuilds": 0,
+          "textureBytes": 60734120,
+          "staticTextureBytes": 33497996,
+          "limitedBudget": {
+            "hits": 4,
+            "builds": 0,
+            "budgetMisses": 19,
+            "bytes": 11087284
+          },
+          "lifecycle": [
+            "partial edit",
+            "zoom",
+            "bounded admission without rebuild cascade",
+            "zero budget",
+            "context recovery"
+          ]
+        },
+        {
+          "scene": "09-motion-3d",
+          "firstBuilds": 37,
+          "warmHits": 37,
+          "warmBuilds": 0,
+          "changedPoseBuilds": 4,
+          "textureBytes": 89034440,
+          "staticTextureBytes": 19028620
+        },
+        {
+          "scene": "10-dense",
+          "firstBuilds": 73,
+          "warmHits": 73,
+          "warmBuilds": 0,
+          "changedPoseBuilds": 0,
+          "textureBytes": 67770000,
+          "staticTextureBytes": 18763660
+        }
+      ]
+    }
+  },
+  "artifacts": {
+    "linuxVsixBytes": 15693877,
+    "linuxVsixInstalledBytes": 39760129,
+    "nativeBinaryBytes": 18882400,
+    "linuxVsixSha256": "d397c5034d39857051d0714f77a1a1d9ed739695ade8885682d1f795b22fe918",
+    "note": "Archive byte counts and hash describe the preceding static-tiles VSIX. Current extension dist was rebuilt and tested; no new VSIX was installed or published."
+  },
+  "limitations": [
+    "Same-device static-cache A/B is available for levels 7 through 10; hardware throughput for object-layers-v1 remains unmeasured.",
+    "Moving content reuses GPU layers; changing geometry and animated descendants still draw directly. Dense 4K60 and integrated-GPU acceptance remain open.",
+    "Local cache lifecycle tests use a software GPU and are not speedup measurements.",
+    "Native/PDF/export/corpus and startup checks preceded this frontend-only cache change; native code and compiler were unchanged in this cache iteration.",
+    "Browser frame estimate observes completed worker submissions on requestAnimationFrame, not compositor scan-out."
+  ],
+  "externalHardwareCacheAB": "user-static-cache-ab.json",
+  "externalHardwareMovingStaticCacheAB": "user-motion-static-cache-ab.json",
+  "compilationFix": {
+    "evidence": "compile-profile.json",
+    "externalBaseline": "user-compile-delay-baseline.json",
+    "description": "Linear-time source-position tracking in the lexer; rendering pipeline unchanged.",
+    "checks": {
+      "tokenLocationRegression": 3,
+      "coreAnimation": 11,
+      "coreDocument": 3,
+      "language": 83,
+      "progressiveScenes": "passed",
+      "nativeAndWasmSceneHashes": "identical before/after for levels 3, 9, 10",
+      "documentationPages": 639,
+      "mediaSources": 193,
+      "mediaVariantHashesUnchanged": 579,
+      "editorBuild": "passed; built but not installed or published"
+    },
+    "limitations": [
+      "Local compile measurements do not replace user-device measurement.",
+      "Document-wide presentation preloading is not implemented by this compiler fix."
+    ]
+  }
+}

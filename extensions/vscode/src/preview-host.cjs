@@ -1,5 +1,6 @@
 // Native rendering is isolated from the LSP and from the webview UI thread.
 const vscode=require('vscode');
+const {NativePresentation}=require('./presentation-host.cjs');
 const {spawn}=require('child_process');
 const path=require('path'),fs=require('fs'),os=require('os');
 const keyOf=uri=>path.normalize(uri.fsPath).replace(/\\/g,'/');
@@ -28,13 +29,13 @@ function compactReplay(previous,frame){
 }
 
 class PreviewWorker {
- constructor(binary,output){this.binary=binary;this.output=output;this.queue=new Map();this.sequence=0;this.resourceDir=fs.mkdtempSync(path.join(os.tmpdir(),'laymesh-preview-'));}
+ constructor(binary,output,resourceRoot=os.tmpdir()){this.binary=binary;this.output=output;this.queue=new Map();this.sequence=0;this.resourceDir=fs.mkdtempSync(path.join(resourceRoot,'laymesh-preview-'));}
  enqueue(job){this.enabled=true;this.queue.set(job.file,job);this.start();this.pump();}
  start(){
   if(this.process)return;
   fs.mkdirSync(this.resourceDir,{recursive:true});
   const proc=spawn(this.binary,['preview','--stdio'],{stdio:['pipe','pipe','pipe']});
-  this.process=proc;this.ready=false;let parts=[],stderr='';
+  this.process=proc;if(this.background)try{os.setPriority(proc.pid,os.constants.priority.PRIORITY_BELOW_NORMAL);}catch{}this.ready=false;let parts=[],stderr='';
   proc.stdout.setEncoding('utf8');
   this.startTimer=setTimeout(()=>this.fail(messageError('Preview worker did not start; update the configured LayMesh executable','预览进程未启动，请更新 LayMesh 可执行文件')),5000);
   proc.stdout.on('data',data=>{
@@ -65,7 +66,7 @@ class PreviewWorker {
   const request={protocol:3,resource_dir:this.resourceDir,...job.request};if(request.protocol===3&&!this.capabilities.includes('display-list-v3')){clearTimeout(this.renderTimer);this.active=null;job.done({error:{code:'E_PREVIEW_PROTOCOL',message:'Native engine does not support drawing protocol 3'},dependencies:[]});this.pump();return;}
   if(request.type==='animate'&&!this.capabilities.includes('animation-v1')){clearTimeout(this.renderTimer);this.active=null;job.done({error:messageError('Update LayMesh to support animation export','请更新 LayMesh 以支持动画导出')});this.pump();return;}
   if(request.protocol===3&&this.capabilities.includes('display-list-gzip-v3'))request.compressed_display_list=true;
-  if(request.protocol===3&&this.capabilities.includes('display-list-updates-v3'))request.display_list_updates=true;
+  if(!request.presentation_revision&&request.protocol===3&&this.capabilities.includes('display-list-updates-v3'))request.display_list_updates=true;
   this.process.stdin.write(JSON.stringify({...request,id:this.active.id,file:job.file,source:job.source,overlays:job.overlays})+'\n');
  }
  cancel(file){this.queue.delete(file);}
@@ -148,19 +149,23 @@ function activatePreview(context,binary,output){
   const uri=state.panel.webview.asWebviewUri(vscode.Uri.file(item.path)).toString();state.resources.set(item.id,uri);return {...item,path:undefined,uri};
  }
  function signature(file){try{const stat=fs.statSync(file);return `${stat.mtimeMs}:${stat.ctimeMs}:${stat.size}:${stat.ino}`;}catch{return 'missing';}}
- function watch(state,dependencies,failed){
-  const next=new Set(failed?[...state.dependencies,...dependencies]:dependencies);next.add(state.file);
+ function watch(state,dependencies,failed,deckOnly=false){
+  if(!deckOnly)state.previewDependencies=new Set(failed?[...(state.previewDependencies||[]),...dependencies]:dependencies);
+  const next=new Set([...state.previewDependencies,...(state.documentPages||[]).map(p=>p.src),...(state.deck?.dependencies||[])]);next.add(state.file);
   if([...next].sort().join('\n')===[...state.dependencies].sort().join('\n'))return;
   state.dependencies=next;for(const item of state.watchers)item.dispose();state.watchers=[];
   state.signatures=new Map([...next].map(file=>[file,signature(file)]));
   for(const file of next){const watcher=vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(vscode.Uri.file(path.dirname(file)),path.basename(file)));
-   for(const event of ['onDidCreate','onDidChange','onDidDelete'])state.watchers.push(watcher[event](()=>{state.signatures.set(file,signature(file));invalidate(state);} ));
+   for(const event of ['onDidCreate','onDidChange','onDidDelete'])state.watchers.push(watcher[event](()=>{state.signatures.set(file,signature(file));sourceChanged(state,[file]);}));
    state.watchers.push(watcher);
   }
  }
+ function invalidateDeck(state,background=false){if(!state.deckPinned&&!state.deckBrowserPinned){state.deck?.dispose();state.deck=null;post(state,{type:'deck-invalidated',background});}else state.deckStale=true;}
+ function sourceChanged(state,files){if(files.some(file=>file===state.file||state.previewDependencies?.has(file)))invalidate(state);else invalidateDeck(state,true);}
  function post(state,message){if(!state.disposed)state.panel.webview.postMessage(message);}
  function invalidate(state,immediate=false){
-  state.generation++;state.dirty=true;clearTimeout(state.timer);worker.cancel(state.file);
+  invalidateDeck(state);
+  state.generation++;state.dirty=true;for(const other of panels.values())other.deck?.interruptForPreview();clearTimeout(state.timer);worker.cancel(state.file);
   post(state,{type:'status',status:'pending'});
   if(state.panel.visible)state.timer=setTimeout(()=>render(state),immediate?0:config().get('debounceMs',100));
  }
@@ -174,7 +179,7 @@ function activatePreview(context,binary,output){
    state.dirty=false;state.pending=true;post(state,{type:'status',status:'rendering'});
    worker.enqueue({file:state.file,source:doc.getText(),overlays,request:{protocol:3,generation,page_id:state.pageId,resource_dir:worker.resourceDir,known_resources:[...state.resources.keys()],known_display_list:state.history.length?state.displayListId:undefined,...editorDefaults(state.uri)},timeout:config().get('renderTimeoutMs',30000),done:result=>{
     if(state.disposed||generation!==state.generation)return;
-    watch(state,result.dependencies||[],!!result.error);
+    if(result.document)state.documentPages=result.document.pages;watch(state,result.dependencies||[],!!result.error);
     if(result.document?.pageId)state.pageId=result.document.pageId;
     try{
      if(!result.error){if(result.protocol!==3||(!result.displayList&&!result.displayListCompressed&&!result.displayListUpdate))throw new Error('Expected drawing protocol 3');for(const item of result.resources||[])resource(state,item);result.resources=Object.entries(result.drawingResources||result.displayList.resources).map(([id,meta])=>{const uri=state.resources.get(id);if(!uri)throw Error('Missing drawing resource');return {id,...meta,data:undefined,uri};});}
@@ -209,6 +214,18 @@ function activatePreview(context,binary,output){
     if(state.last?.error)post(state,state.last);
     if(state.dirty||!state.history.length)invalidate(state,true);
    }
+   else if(message?.type==='deck-prepare'){
+    state.deck?.dispose();const createWorker=()=>{const w=new PreviewWorker(binary,output,worker.resourceDir);w.background=true;return w;},compiler=createWorker();
+    const deck=state.deck=new NativePresentation({worker:compiler,createWorker,canPrepare:()=>!worker.active&&!worker.queue.size&&![...panels.values()].some(p=>p.panel.visible&&(p.dirty||p.pending)),dist:path.join(context.extensionUri.fsPath,'dist'),uri:file=>state.panel.webview.asWebviewUri(vscode.Uri.file(file)).toString(),notify:data=>{if(state.deck===deck)post(state,{...data,requestId:message.requestId});},onBrowserClose:()=>{state.deckBrowserPinned=false;if(state.deck===deck&&!state.deckPinned){deck.dispose();state.deck=null;state.deckStale=false;post(state,{type:'deck-invalidated'});}}});
+    deck.clientRequest=message.requestId;const doc=await vscode.workspace.openTextDocument(state.uri),overlays={};for(const doc of vscode.workspace.textDocuments)if(doc.uri.scheme==='file'&&doc.isDirty)overlays[keyOf(doc.uri)]=doc.getText();
+    deck.prepare(file,doc.getText(),overlays,editorDefaults(state.uri)).then(()=>{if(state.deck===deck)watch(state,[],false,true);},e=>{if(state.deck===deck)post(state,{type:'deck-error',error:e.message});});
+   }
+   else if(message?.type==='deck-ack'&&state.deck?.revision===message.revision){state.deck.ack(message.pageId);}
+   else if(message?.type==='deck-priority'&&state.deck?.revision===message.revision){state.deck.priority(message.pageId,message.retry);}
+   else if(message?.type==='deck-cancel'&&(!message.requestId||state.deck?.clientRequest===message.requestId)&&(!message.revision||state.deck?.revision===message.revision)){state.deck?.dispose();state.deck=null;}
+   else if(message?.type==='deck-pin'){state.deckPinned=true;}
+   else if(message?.type==='deck-release'){state.deckPinned=false;if(state.deckStale&&!state.deckBrowserPinned){state.deckStale=false;state.deck?.dispose();state.deck=null;post(state,{type:'deck-invalidated'});}}
+   else if(message?.type==='deck-browser'){try{const url=await state.deck.browser();state.deckBrowserPinned=true;await vscode.env.openExternal(vscode.Uri.parse(url));}catch(e){post(state,{type:'deck-browser-error',error:e.message});}}
    else if(message?.type==='painted'&&message.generation===state.generation){state.displayListId=message.displayListId;}
    else if(message?.type==='request-full'){state.displayListId=undefined;invalidate(state,true);}
    else if(message?.type==='refresh')invalidate(state,true);
@@ -222,11 +239,11 @@ function activatePreview(context,binary,output){
    }
   });
   panel.onDidChangeViewState(()=>{if(panel.visible&&state.dirty)invalidate(state,true);else if(!panel.visible){state.dirty=state.dirty||state.pending;state.generation++;clearTimeout(state.timer);worker.cancel(file);}});
-  panel.onDidDispose(()=>{state.disposed=true;clearInterval(state.poll);clearTimeout(state.timer);worker.cancel(file);for(const item of state.watchers)item.dispose();panels.delete(file);if(!panels.size)worker.dispose();});
+  panel.onDidDispose(()=>{state.disposed=true;state.deck?.dispose();clearInterval(state.poll);clearTimeout(state.timer);worker.cancel(file);for(const item of state.watchers)item.dispose();panels.delete(file);if(!panels.size)worker.dispose();});
   watch(state,[file],false);
   // Poll exact dependency files as a fallback for absent config directories and
   // operating-system watcher limits, without watching ancestor trees.
-  state.poll=setInterval(async()=>{if(state.disposed||state.polling)return;state.polling=true;try{let changed=false;await Promise.all([...state.dependencies].map(async file=>{const before=state.signatures.get(file);let value='missing';try{const stat=await fs.promises.stat(file);value=`${stat.mtimeMs}:${stat.ctimeMs}:${stat.size}:${stat.ino}`;}catch{}if(!state.disposed&&state.dependencies.has(file)&&state.signatures.get(file)===before&&before!==value){state.signatures.set(file,value);changed=true;}}));if(changed&&!state.disposed)invalidate(state);}finally{state.polling=false;}},1000);state.poll.unref?.();
+  state.poll=setInterval(async()=>{if(state.disposed||state.polling)return;state.polling=true;try{const changed=[];await Promise.all([...state.dependencies].map(async file=>{const before=state.signatures.get(file);let value='missing';try{const stat=await fs.promises.stat(file);value=`${stat.mtimeMs}:${stat.ctimeMs}:${stat.size}:${stat.ino}`;}catch{}if(!state.disposed&&state.dependencies.has(file)&&state.signatures.get(file)===before&&before!==value){state.signatures.set(file,value);changed.push(file);}}));if(changed.length&&!state.disposed)sourceChanged(state,changed);}finally{state.polling=false;}},1000);state.poll.unref?.();
  }
  async function configureDebounce(){
   const value=await vscode.window.showInputBox({
@@ -238,9 +255,9 @@ function activatePreview(context,binary,output){
   if(value!==undefined)await config().update('debounceMs',Number(value),vscode.workspace.workspaceFolders?.length?vscode.ConfigurationTarget.Workspace:vscode.ConfigurationTarget.Global);
  }
  context.subscriptions.push(vscode.commands.registerCommand('laymesh.configurePreviewDebounce',configureDebounce),vscode.commands.registerCommand('laymesh.openPreview',open),vscode.commands.registerCommand('laymesh.exportFigure',exportFigure),
-  vscode.workspace.onDidChangeTextDocument(e=>{for(const state of panels.values())if(relevant(state,e.document))invalidate(state);}),
-  vscode.workspace.onDidSaveTextDocument(doc=>{for(const state of panels.values())if(relevant(state,doc))invalidate(state);}),
-  vscode.workspace.onDidCloseTextDocument(doc=>{for(const state of panels.values())if(relevant(state,doc))invalidate(state);}),
+  vscode.workspace.onDidChangeTextDocument(e=>{for(const state of panels.values())if(relevant(state,e.document))sourceChanged(state,[keyOf(e.document.uri)]);}),
+  vscode.workspace.onDidSaveTextDocument(doc=>{for(const state of panels.values())if(relevant(state,doc))sourceChanged(state,[keyOf(doc.uri)]);}),
+  vscode.workspace.onDidCloseTextDocument(doc=>{for(const state of panels.values())if(relevant(state,doc))sourceChanged(state,[keyOf(doc.uri)]);}),
   vscode.workspace.onDidChangeConfiguration(e=>{for(const state of panels.values()){if(e.affectsConfiguration('laymesh.language')||e.affectsConfiguration('laymesh.preview.showRulers'))post(state,{type:'initial',locale:locale(),showRulers:config().get('showRulers',true),forceRulers:e.affectsConfiguration('laymesh.preview.showRulers')});if(e.affectsConfiguration('laymesh.preview')||e.affectsConfiguration('laymesh.export'))invalidate(state);}}),
   {dispose(){for(const state of [...panels.values()])state.panel.dispose();worker.dispose();}}
  );

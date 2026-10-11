@@ -6,6 +6,42 @@
 
 预览默认显示完整静态排版，进入播放后才启用演示状态。控制栏提供播放/暂停、上一步/下一步、跳过当前动画、重播、时间定位、倍速，以及手动/自动推进。手动模式在动画窗口末尾暂停；自动模式经过 hold 后推进，支持文档跨页。回退会按目标时间重新采样。第一个使用 backwards/both 的效果可以预置入场前状态，后续尚未激活的效果不会抢占同一属性。停留期间使用步骤窗口的边界状态。这些是 **LAY 演示调度规则**。
 
+## 正式放映
+
+网页示例点击 **放映** 进入浏览器全屏；VS Code 的 **放映** 菜单提供内嵌放映和在浏览器全屏放映。浏览器入口复用原生已编译产物，通过绑定 Tailscale 地址的临时会话服务访问，关闭浏览器页面或预览会话后释放服务。仅需本机预览时可选择内嵌放映。
+
+默认打开完整静态排版。首帧显示后在独立编译队列中准备整份文档，显示真实完成页数；首页及其显示资源就绪后即可放映，后续页面继续后台准备。跳到未就绪页时优先准备目标页，保留当前画面并暂停时钟；目标真实首帧完成后才切换。后台失败只影响对应页，跳到该页时可重试。准备不播放动画，也不推进时钟。失败显示页码和位置，可重试或取消。正式放映固定当前文档版本，编辑更新在退出后应用。
+
+放映默认手动推进：第一次点击执行第一步，动画中再次推进会完成当前步并停留，再次推进执行下一步；全部步骤完成后才翻页。回退按步骤边界重采样，页首回退显示上一页完成态。无动画页面直接按页推进，自动模式默认停留 1 秒。自动播放、倍速、时间定位、页面列表和快捷键帮助在浮动工具条的菜单内。控制栏默认隐藏，按 Tab 呼出并切换按钮，点击画面收起。右键 →“控制栏显示”可选择“一直显示”“鼠标到位置显示”或“不显示”；鼠标模式只在底部控制栏位置触发，不会因画面中的鼠标移动或翻页弹出。三种模式下均可使用 Tab，选择在本次预览会话内保留。右键菜单暂停计时，关闭后恢复先前状态。页面进入后台后暂停，返回时需手动继续。
+
+| 输入 | 行为 |
+| --- | --- |
+| 点击、空格、Enter、右/下方向键、PageDown、N | 推进 / 完成正在播放的步骤 |
+| 左/上方向键、PageUp、Backspace、P | 回退至步骤边界；页首回到上一页 |
+| 滚轮向下 / 向上 | 推进 / 回退；连续滚动与触控板惯性合并为一次操作 |
+| 数字后 Enter | 跳到对应页 |
+| Home / End | 首页初态 / 末页完成态 |
+| S | 暂停或继续 |
+| B / W | 黑屏 / 白屏，再按恢复 |
+| 右键 | 打开放映菜单 |
+| Esc | 关闭菜单；菜单关闭时退出放映 |
+
+放映键盘操作只在放映区域内接管，忽略按键自动重复。退出恢复编辑预览的页面、缩放、滚动和焦点。工具条浮在画面内，不为控件预留黑边；画面按原始比例适应屏幕，不裁切、不拉伸。VS Code 内嵌放映占满预览区域，浏览器入口才使用浏览器全屏。
+
+滚轮只在放映画布内导航。页面列表等菜单保留正常滚动，横向滚动和带 Ctrl/Command/Shift/Alt 的操作不会推进。相邻滚轮事件间隔超过 180 ms 后才视为新手势，避免一次触控板滑动跳过多步；编辑预览原有的滚轮缩放行为保持不变。
+
+编译产物与资源按内容去重，超出内存预算的产物写入浏览器会话 IndexedDB 或原生临时目录。GPU 优先保留当前页和相邻页；静态区域和对象通过资源构建准备，不通过试播建立缓存。切到非驻留页会保留上一帧，目标首帧完成后才切换并启动时钟。暂停与菜单保留绘制缓存；退出放映释放绘制资源。
+
+编辑预览保持固定单行工具栏和状态栏。错误只更新同一个数量入口；源码编译失败保留上次成功画面。诊断与性能信息按需展开为可滚动浮层，支持复制和跳转源码，不改变画布尺寸、不自动抢焦点。
+
+网页首页先行，其后使用最多 4 个独立编译 Worker；低内存设备最多 2 个，每个 Worker 只允许一个待保存页面。文档只解析一次，共享资源按 ID 去重。VS Code 使用最多 4 个低优先级原生编译进程，按可用核心与内存限制并发；当前页预览繁忙时不派发后台编译，进行中的后台编译会中断并在预览完成后重试，已完成的页面保留；编辑失效的准备队列取消，待新预览首帧完成后再启动。编译完成后退出后台进程，已编译产物保留至会话结束。显示资源准备会分析变换、直接构建对象纹理并等待 GPU 完成，不播放动画。投影密度在真实播放时仍逐帧核对；超出预估或缓存预算时保留完整绘制质量，不能承诺任意自定义动画都没有首次构建。测试结果分别记录编译准备、资源准备和首次/重复播放中的纹理重建。
+
+### 退出与移动终态
+
+退出动画支持真正保持消失。例如 `s.animate(item, class="animate__animated animate__fadeOut", fill="both")` 在结束后保持透明；`fill="none"` 则恢复原值。Animate.css 的 `animate__animated` 已定义 `both`，通常不需要重复指定。若后续动作再次设置同一属性，会按动画覆盖规则更新它。
+
+移动的最终位置由最后一个关键帧决定。自定义 `@keyframes move { from { transform: translateX(0px); } to { transform: translateX(320px); } }` 配合 `s.animate(item, name="move", duration=1s, fill="forwards")` 会在演示中停留于右移 84.67 mm 的位置；`pulse` 等首尾相同的效果自然回到原处。变换不会修改静态排版或其他对象的锚点，退出放映后恢复完整原始布局。回退和定位重新计算对应时间状态。
+
 ## animate
 
 原样导入第三方文件，不需要改名或预处理：
@@ -29,6 +65,40 @@ s2.animate(title, class="animate__animated animate__pulse", duration=600ms)
 
 完整示例：[presentation.lay](../../examples/animation/presentation.lay)、[motion.lcss](../../examples/animation/motion.lcss)、[双页 presentation.laydoc](../../examples/animation/presentation.laydoc)。
 
+## “点击”“跟随前一动画”与自动放映
+
+`step` 默认是点击边界；`start` 是 LAY 调度参数，不是 CSS 动画属性。
+
+| 意图 | 定义方式 |
+| --- | --- |
+| 单击时开始 | `page.step(start="click")`，这是默认值 |
+| 与步骤一起开始 | `s.animate(..., start="step")`，这是默认值 |
+| 与前一动作同时开始 | `s.animate(..., start="with-previous")` |
+| 前一动作结束后开始 | `s.animate(..., start="after-previous")` |
+| 前一步停留结束后自动开始 | `page.step(start="after-previous")`；用于第一步时随页面进入开始 |
+
+```python
+first = page.step(name="点击：标题与图表", hold=500ms)
+first.animate(title, class="animate__animated animate__fadeInUp", duration=600ms)
+first.animate(chart, name="laymesh-reveal", duration=800ms, fill="both",
+              start="with-previous")
+# 自动衔接图表的结束时间，再延迟 200ms；修改图表时长后不用重算 delay。
+first.animate(note, class="animate__animated animate__fadeIn", duration=400ms,
+              start="after-previous", delay=200ms)
+
+second = page.step(name="自动强调", start="after-previous", hold=1s)
+second.animate(title, class="animate__animated animate__pulse", duration=800ms)
+third = page.step(name="等待下一次点击")
+```
+
+`after-previous` 引用前一次 `animate()` 调用。如果该调用包含 CSS 动画列表，以其中最晚结束时间为准；计算包含延迟、重复次数、媒体条件和单次覆盖。`delay` 相对所选起点计算，可以为负数。`with-previous` 以该调用最早实际开始时间为准；第一项没有前项时以步骤起点为准。空动画不增加窗口。无限循环或永久暂停的动作没有结束时间，不能被同一步的 `after-previous` 引用；可把它放进有限 `duration` 的独立 step，再接自动 step。
+
+手动模式下，普通 step 完成后等待点击；紧接 `start="after-previous"` 的 step 则在前一步的 `hold` 结束后自动开始。点击跳过进行中的步骤仍会停留，回退和定位也保持暂停。所有步骤设为 `after-previous` 可让页面进入后自动执行，末页动作完成后保留画面；跨页自动推进由放映菜单的 **自动播放** 控制。全局自动播放与 MP4/GIF 导出使用全部窗口及 `hold` 的连续时间线，不等待点击。
+
+可运行示例：[自动衔接与保持终态](../../tests/presentation/linked.lay)。
+
+高信息密度测试：[32 页学术演示源码](../../tests/presentation/academic/report.laydoc)、[复现说明与数据边界](../../tests/presentation/academic/README.md)。24 页正文包含解析曲线、有限差分结果、热图、网格与公式，8 页附录将全部 97 种 Animate.css 效果应用到混合学术对象；数据是可复算教学数据，不是实验结果。
+
 ## Compatibility
 
 兼容目标限定为 **Animate.css v4.1.1 的 97 个效果**，不表示兼容任意网页样式表。[原始文件及 SHA-256](../../tests/animation/vendor/README.md) 固定具体版本，保留原始 MIT 许可头。`transition-*` 可解析，但不会自动为排版编辑生成过渡动画。
@@ -42,9 +112,9 @@ s2.animate(title, class="animate__animated animate__pulse", duration=600ms)
 | 媒体 | 固定库使用的 screen/all/print 与 prefers-reduced-motion 条件；预览遵循系统减少动态效果偏好，视频默认 screen/no-preference |
 | 属性 | opacity 替换目标自身透明度，父级透明度另行相乘；标准变换函数、transform-origin、visibility、backface-visibility |
 | 单位 | 动画 CSS 固定 96px=1in；百分比平移和原点基于未变换的布局框；LAY 原有几何单位规则不变 |
-| 三维 | headShake、flip、flipInX、flipInY、flipOutX、flipOutY；对象局部 RGBA 合成、透视裁剪、背面隐藏；不实现网页三维场景排版 |
+| 三维 | headShake、flip、flipInX、flipInY、flipOutX、flipOutY；Skia 局部图层与 GPU 投影、透视裁剪、背面隐藏；不实现网页三维场景排版 |
 
-Rust 与 WASM 共用时间、插值和渲染实现。内容变化时编译布局和字体，播放逐帧更新动画属性并复用缓存。二维效果沿用矢量绘制列表，透视对象只合成局部图层。过大的投影图层会给出像素上限诊断。
+Rust 与 WASM 共用时间模型、插值和属性采样，只有内容变化时重新排版。CanvasKit 保留矢量绘制记录与图片；原生导出使用 Skia CPU、SkPDF。显示缓冲区始终按视口和设备像素比绘制，播放不降低画质。“详情”显示画布尺寸、后端、采样时间、CPU 绘制提交耗时、可用时的 GPU 查询耗时、提交 fps 与呈现估计。浏览器刷新回调不能证明显示器实际扫描输出；SwiftShader、llvmpipe 等软件 GPU 驱动不计入 4K60 硬件验收。
 
 ## Extensions
 

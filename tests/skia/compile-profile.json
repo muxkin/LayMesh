@@ -1,0 +1,870 @@
+{
+  "date": "2026-10-11",
+  "change": "Track UTF-16 source locations incrementally during tokenization instead of rescanning the source prefix for every token. Rendering strategy unchanged.",
+  "definition": "Native and browser timings are separate. Each profile uses 3 sequential runs per source. Parse includes tokenize; compile includes parse, so phases cannot be added. Local measurements do not replace the user machine.",
+  "native": {
+    "before": {
+      "definition": "Three sequential native runs per source, same process. Parse includes tokenize; compile includes parse. Timings overlap and must not be added. Scene hashing is outside timing.",
+      "rows": [
+        {
+          "compile_ms": 794.5728330000001,
+          "file": "/tmp/laymesh-compile-profile/stress/03-patterns-256.lay",
+          "iteration": 0,
+          "parse_ms": 651.677089,
+          "scene_sha256": "5ae19ef72f95ff47ff4c5f4c2abb73560b2925626cc9064358bc9c8c1d08cd28",
+          "source_bytes": 118788,
+          "tokenize_ms": 651.8579159999999,
+          "tokens": 42668
+        },
+        {
+          "compile_ms": 722.27724,
+          "file": "/tmp/laymesh-compile-profile/stress/03-patterns-256.lay",
+          "iteration": 1,
+          "parse_ms": 650.5604510000001,
+          "scene_sha256": "5ae19ef72f95ff47ff4c5f4c2abb73560b2925626cc9064358bc9c8c1d08cd28",
+          "source_bytes": 118788,
+          "tokenize_ms": 649.9349880000001,
+          "tokens": 42668
+        },
+        {
+          "compile_ms": 721.071272,
+          "file": "/tmp/laymesh-compile-profile/stress/03-patterns-256.lay",
+          "iteration": 2,
+          "parse_ms": 650.693144,
+          "scene_sha256": "5ae19ef72f95ff47ff4c5f4c2abb73560b2925626cc9064358bc9c8c1d08cd28",
+          "source_bytes": 118788,
+          "tokenize_ms": 649.14538,
+          "tokens": 42668
+        },
+        {
+          "compile_ms": 2428.2915709999997,
+          "file": "/tmp/laymesh-compile-profile/stress/09-motion-3d.lay",
+          "iteration": 0,
+          "parse_ms": 2254.5599319999997,
+          "scene_sha256": "9346e5d7f716b0cf58d1cd1aece07df11f4f6db5d68d7c48d1585e750d49bb7d",
+          "source_bytes": 237094,
+          "tokenize_ms": 2246.808137,
+          "tokens": 77300
+        },
+        {
+          "compile_ms": 2433.2063160000002,
+          "file": "/tmp/laymesh-compile-profile/stress/09-motion-3d.lay",
+          "iteration": 1,
+          "parse_ms": 2244.106778,
+          "scene_sha256": "9346e5d7f716b0cf58d1cd1aece07df11f4f6db5d68d7c48d1585e750d49bb7d",
+          "source_bytes": 237094,
+          "tokenize_ms": 2247.6751090000002,
+          "tokens": 77300
+        },
+        {
+          "compile_ms": 2420.351866,
+          "file": "/tmp/laymesh-compile-profile/stress/09-motion-3d.lay",
+          "iteration": 2,
+          "parse_ms": 2245.752607,
+          "scene_sha256": "9346e5d7f716b0cf58d1cd1aece07df11f4f6db5d68d7c48d1585e750d49bb7d",
+          "source_bytes": 237094,
+          "tokenize_ms": 2244.4337729999997,
+          "tokens": 77300
+        },
+        {
+          "compile_ms": 17419.066952,
+          "file": "/tmp/laymesh-compile-profile/stress/10-dense.lay",
+          "iteration": 0,
+          "parse_ms": 16373.473329999999,
+          "scene_sha256": "0adf9807644aacf157950e4ccd0c20d47d54899628ac6489439e47952e41c093",
+          "source_bytes": 648275,
+          "tokenize_ms": 16368.081194999999,
+          "tokens": 202425
+        },
+        {
+          "compile_ms": 17511.743027,
+          "file": "/tmp/laymesh-compile-profile/stress/10-dense.lay",
+          "iteration": 1,
+          "parse_ms": 16819.433242,
+          "scene_sha256": "0adf9807644aacf157950e4ccd0c20d47d54899628ac6489439e47952e41c093",
+          "source_bytes": 648275,
+          "tokenize_ms": 16585.720157,
+          "tokens": 202425
+        },
+        {
+          "compile_ms": 17064.001285,
+          "file": "/tmp/laymesh-compile-profile/stress/10-dense.lay",
+          "iteration": 2,
+          "parse_ms": 16850.3719,
+          "scene_sha256": "0adf9807644aacf157950e4ccd0c20d47d54899628ac6489439e47952e41c093",
+          "source_bytes": 648275,
+          "tokenize_ms": 17071.654218,
+          "tokens": 202425
+        }
+      ]
+    },
+    "after": {
+      "definition": "Three sequential native runs per source, same process. Parse includes tokenize; compile includes parse. Timings overlap and must not be added. Scene hashing is outside timing.",
+      "rows": [
+        {
+          "compile_ms": 112.943621,
+          "file": "/tmp/laymesh-compile-profile/stress/03-patterns-256.lay",
+          "iteration": 0,
+          "parse_ms": 4.072259,
+          "scene_sha256": "5ae19ef72f95ff47ff4c5f4c2abb73560b2925626cc9064358bc9c8c1d08cd28",
+          "source_bytes": 118788,
+          "tokenize_ms": 2.893954,
+          "tokens": 42668
+        },
+        {
+          "compile_ms": 81.942126,
+          "file": "/tmp/laymesh-compile-profile/stress/03-patterns-256.lay",
+          "iteration": 1,
+          "parse_ms": 2.369556,
+          "scene_sha256": "5ae19ef72f95ff47ff4c5f4c2abb73560b2925626cc9064358bc9c8c1d08cd28",
+          "source_bytes": 118788,
+          "tokenize_ms": 1.257277,
+          "tokens": 42668
+        },
+        {
+          "compile_ms": 79.040267,
+          "file": "/tmp/laymesh-compile-profile/stress/03-patterns-256.lay",
+          "iteration": 2,
+          "parse_ms": 2.349327,
+          "scene_sha256": "5ae19ef72f95ff47ff4c5f4c2abb73560b2925626cc9064358bc9c8c1d08cd28",
+          "source_bytes": 118788,
+          "tokenize_ms": 1.270373,
+          "tokens": 42668
+        },
+        {
+          "compile_ms": 190.612002,
+          "file": "/tmp/laymesh-compile-profile/stress/09-motion-3d.lay",
+          "iteration": 0,
+          "parse_ms": 5.420351,
+          "scene_sha256": "9346e5d7f716b0cf58d1cd1aece07df11f4f6db5d68d7c48d1585e750d49bb7d",
+          "source_bytes": 237094,
+          "tokenize_ms": 2.593656,
+          "tokens": 77300
+        },
+        {
+          "compile_ms": 182.152096,
+          "file": "/tmp/laymesh-compile-profile/stress/09-motion-3d.lay",
+          "iteration": 1,
+          "parse_ms": 5.3562080000000005,
+          "scene_sha256": "9346e5d7f716b0cf58d1cd1aece07df11f4f6db5d68d7c48d1585e750d49bb7d",
+          "source_bytes": 237094,
+          "tokenize_ms": 2.1859230000000003,
+          "tokens": 77300
+        },
+        {
+          "compile_ms": 184.186738,
+          "file": "/tmp/laymesh-compile-profile/stress/09-motion-3d.lay",
+          "iteration": 2,
+          "parse_ms": 4.4629509999999994,
+          "scene_sha256": "9346e5d7f716b0cf58d1cd1aece07df11f4f6db5d68d7c48d1585e750d49bb7d",
+          "source_bytes": 237094,
+          "tokenize_ms": 2.8361620000000003,
+          "tokens": 77300
+        },
+        {
+          "compile_ms": 464.30910600000004,
+          "file": "/tmp/laymesh-compile-profile/stress/10-dense.lay",
+          "iteration": 0,
+          "parse_ms": 13.293439000000001,
+          "scene_sha256": "0adf9807644aacf157950e4ccd0c20d47d54899628ac6489439e47952e41c093",
+          "source_bytes": 648275,
+          "tokenize_ms": 6.966404,
+          "tokens": 202425
+        },
+        {
+          "compile_ms": 447.114337,
+          "file": "/tmp/laymesh-compile-profile/stress/10-dense.lay",
+          "iteration": 1,
+          "parse_ms": 12.489954,
+          "scene_sha256": "0adf9807644aacf157950e4ccd0c20d47d54899628ac6489439e47952e41c093",
+          "source_bytes": 648275,
+          "tokenize_ms": 5.437604,
+          "tokens": 202425
+        },
+        {
+          "compile_ms": 449.783378,
+          "file": "/tmp/laymesh-compile-profile/stress/10-dense.lay",
+          "iteration": 2,
+          "parse_ms": 12.715829,
+          "scene_sha256": "0adf9807644aacf157950e4ccd0c20d47d54899628ac6489439e47952e41c093",
+          "source_bytes": 648275,
+          "tokenize_ms": 5.655263,
+          "tokens": 202425
+        }
+      ]
+    },
+    "summary": [
+      {
+        "scene": "03-patterns-256.lay",
+        "beforeMedianMs": {
+          "tokenize_ms": 649.9349880000001,
+          "parse_ms": 650.693144,
+          "compile_ms": 722.27724
+        },
+        "afterMedianMs": {
+          "tokenize_ms": 1.270373,
+          "parse_ms": 2.369556,
+          "compile_ms": 81.942126
+        },
+        "identicalOutputs": {
+          "scene_sha256": true
+        }
+      },
+      {
+        "scene": "09-motion-3d.lay",
+        "beforeMedianMs": {
+          "tokenize_ms": 2246.808137,
+          "parse_ms": 2245.752607,
+          "compile_ms": 2428.2915709999997
+        },
+        "afterMedianMs": {
+          "tokenize_ms": 2.593656,
+          "parse_ms": 5.3562080000000005,
+          "compile_ms": 184.186738
+        },
+        "identicalOutputs": {
+          "scene_sha256": true
+        }
+      },
+      {
+        "scene": "10-dense.lay",
+        "beforeMedianMs": {
+          "tokenize_ms": 16585.720157,
+          "parse_ms": 16819.433242,
+          "compile_ms": 17419.066952
+        },
+        "afterMedianMs": {
+          "tokenize_ms": 5.655263,
+          "parse_ms": 12.715829,
+          "compile_ms": 449.783378
+        },
+        "identicalOutputs": {
+          "scene_sha256": true
+        }
+      }
+    ]
+  },
+  "wasm": {
+    "before": {
+      "definition": "Three sequential runs per input, one isolated Chromium/WASM instance, full bundled fonts, no Skia renderer or playback. Hashing and initialization excluded.",
+      "rows": [
+        {
+          "scene": "03-patterns-256",
+          "iteration": 0,
+          "sourceBytes": 118788,
+          "compile": 899.5,
+          "lower": 29.5,
+          "serialize": 16.400000035762787,
+          "displayListSha256": "5c3bd5ba6c4e68fddc10c0a2f76ebfce0fd76bab632df64b39e92d5af086219b",
+          "inspectionSha256": "838ce76c1878a49190befceae707248b866ea02115c0fd1c96009917ad87b61a"
+        },
+        {
+          "scene": "03-patterns-256",
+          "iteration": 1,
+          "sourceBytes": 118788,
+          "compile": 807.5,
+          "lower": 6.699999988079071,
+          "serialize": 8,
+          "displayListSha256": "5c3bd5ba6c4e68fddc10c0a2f76ebfce0fd76bab632df64b39e92d5af086219b",
+          "inspectionSha256": "838ce76c1878a49190befceae707248b866ea02115c0fd1c96009917ad87b61a"
+        },
+        {
+          "scene": "03-patterns-256",
+          "iteration": 2,
+          "sourceBytes": 118788,
+          "compile": 802.3999999761581,
+          "lower": 5.899999976158142,
+          "serialize": 8.600000023841858,
+          "displayListSha256": "5c3bd5ba6c4e68fddc10c0a2f76ebfce0fd76bab632df64b39e92d5af086219b",
+          "inspectionSha256": "838ce76c1878a49190befceae707248b866ea02115c0fd1c96009917ad87b61a"
+        },
+        {
+          "scene": "09-motion-3d",
+          "iteration": 0,
+          "sourceBytes": 237094,
+          "compile": 2816.800000011921,
+          "lower": 11.5,
+          "serialize": 22.30000001192093,
+          "displayListSha256": "c72e27ff876d7c43dd259f51bba02869941b0c21db4a2c14d63ffce1828276f7",
+          "inspectionSha256": "0149863b8ebde3e47a59770742df5394019c7050e701c601b58ecc84ee9d8dc3"
+        },
+        {
+          "scene": "09-motion-3d",
+          "iteration": 1,
+          "sourceBytes": 237094,
+          "compile": 2783.899999976158,
+          "lower": 11.100000023841858,
+          "serialize": 22,
+          "displayListSha256": "c72e27ff876d7c43dd259f51bba02869941b0c21db4a2c14d63ffce1828276f7",
+          "inspectionSha256": "0149863b8ebde3e47a59770742df5394019c7050e701c601b58ecc84ee9d8dc3"
+        },
+        {
+          "scene": "09-motion-3d",
+          "iteration": 2,
+          "sourceBytes": 237094,
+          "compile": 2779,
+          "lower": 11.299999952316284,
+          "serialize": 22.100000023841858,
+          "displayListSha256": "c72e27ff876d7c43dd259f51bba02869941b0c21db4a2c14d63ffce1828276f7",
+          "inspectionSha256": "0149863b8ebde3e47a59770742df5394019c7050e701c601b58ecc84ee9d8dc3"
+        },
+        {
+          "scene": "10-dense",
+          "iteration": 0,
+          "sourceBytes": 648275,
+          "compile": 18340.19999998808,
+          "lower": 20.80000001192093,
+          "serialize": 42.19999998807907,
+          "displayListSha256": "fa17c20e3a1bd7a6a59f22657e7e81e06609e4dd59df38a53bba3a27a625e1af",
+          "inspectionSha256": "7738e43c5462ef752bea30853b401fa10c88afedfb263ee0368ef6b919b27e02"
+        },
+        {
+          "scene": "10-dense",
+          "iteration": 1,
+          "sourceBytes": 648275,
+          "compile": 18863.899999976158,
+          "lower": 20.600000023841858,
+          "serialize": 42,
+          "displayListSha256": "fa17c20e3a1bd7a6a59f22657e7e81e06609e4dd59df38a53bba3a27a625e1af",
+          "inspectionSha256": "7738e43c5462ef752bea30853b401fa10c88afedfb263ee0368ef6b919b27e02"
+        },
+        {
+          "scene": "10-dense",
+          "iteration": 2,
+          "sourceBytes": 648275,
+          "compile": 18648.80000001192,
+          "lower": 21.900000035762787,
+          "serialize": 45.5,
+          "displayListSha256": "fa17c20e3a1bd7a6a59f22657e7e81e06609e4dd59df38a53bba3a27a625e1af",
+          "inspectionSha256": "7738e43c5462ef752bea30853b401fa10c88afedfb263ee0368ef6b919b27e02"
+        }
+      ]
+    },
+    "after": {
+      "definition": "Three sequential runs per input, one isolated Chromium/WASM instance, full bundled fonts, no Skia renderer or playback. Hashing and initialization excluded.",
+      "rows": [
+        {
+          "scene": "03-patterns-256",
+          "iteration": 0,
+          "sourceBytes": 118788,
+          "compile": 161,
+          "lower": 28.5,
+          "serialize": 14.600000023841858,
+          "displayListSha256": "5c3bd5ba6c4e68fddc10c0a2f76ebfce0fd76bab632df64b39e92d5af086219b",
+          "inspectionSha256": "838ce76c1878a49190befceae707248b866ea02115c0fd1c96009917ad87b61a"
+        },
+        {
+          "scene": "03-patterns-256",
+          "iteration": 1,
+          "sourceBytes": 118788,
+          "compile": 88.59999996423721,
+          "lower": 6,
+          "serialize": 8.699999988079071,
+          "displayListSha256": "5c3bd5ba6c4e68fddc10c0a2f76ebfce0fd76bab632df64b39e92d5af086219b",
+          "inspectionSha256": "838ce76c1878a49190befceae707248b866ea02115c0fd1c96009917ad87b61a"
+        },
+        {
+          "scene": "03-patterns-256",
+          "iteration": 2,
+          "sourceBytes": 118788,
+          "compile": 89.19999998807907,
+          "lower": 6.099999964237213,
+          "serialize": 8.800000011920929,
+          "displayListSha256": "5c3bd5ba6c4e68fddc10c0a2f76ebfce0fd76bab632df64b39e92d5af086219b",
+          "inspectionSha256": "838ce76c1878a49190befceae707248b866ea02115c0fd1c96009917ad87b61a"
+        },
+        {
+          "scene": "09-motion-3d",
+          "iteration": 0,
+          "sourceBytes": 237094,
+          "compile": 395.80000001192093,
+          "lower": 13.099999964237213,
+          "serialize": 24.700000047683716,
+          "displayListSha256": "c72e27ff876d7c43dd259f51bba02869941b0c21db4a2c14d63ffce1828276f7",
+          "inspectionSha256": "0149863b8ebde3e47a59770742df5394019c7050e701c601b58ecc84ee9d8dc3"
+        },
+        {
+          "scene": "09-motion-3d",
+          "iteration": 1,
+          "sourceBytes": 237094,
+          "compile": 363.30000001192093,
+          "lower": 12.300000011920929,
+          "serialize": 24.899999976158142,
+          "displayListSha256": "c72e27ff876d7c43dd259f51bba02869941b0c21db4a2c14d63ffce1828276f7",
+          "inspectionSha256": "0149863b8ebde3e47a59770742df5394019c7050e701c601b58ecc84ee9d8dc3"
+        },
+        {
+          "scene": "09-motion-3d",
+          "iteration": 2,
+          "sourceBytes": 237094,
+          "compile": 469.80000001192093,
+          "lower": 25.099999964237213,
+          "serialize": 29.100000023841858,
+          "displayListSha256": "c72e27ff876d7c43dd259f51bba02869941b0c21db4a2c14d63ffce1828276f7",
+          "inspectionSha256": "0149863b8ebde3e47a59770742df5394019c7050e701c601b58ecc84ee9d8dc3"
+        },
+        {
+          "scene": "10-dense",
+          "iteration": 0,
+          "sourceBytes": 648275,
+          "compile": 1115.6000000238419,
+          "lower": 33.80000001192093,
+          "serialize": 64.19999998807907,
+          "displayListSha256": "fa17c20e3a1bd7a6a59f22657e7e81e06609e4dd59df38a53bba3a27a625e1af",
+          "inspectionSha256": "7738e43c5462ef752bea30853b401fa10c88afedfb263ee0368ef6b919b27e02"
+        },
+        {
+          "scene": "10-dense",
+          "iteration": 1,
+          "sourceBytes": 648275,
+          "compile": 1162.8999999761581,
+          "lower": 28.19999998807907,
+          "serialize": 67.5,
+          "displayListSha256": "fa17c20e3a1bd7a6a59f22657e7e81e06609e4dd59df38a53bba3a27a625e1af",
+          "inspectionSha256": "7738e43c5462ef752bea30853b401fa10c88afedfb263ee0368ef6b919b27e02"
+        },
+        {
+          "scene": "10-dense",
+          "iteration": 2,
+          "sourceBytes": 648275,
+          "compile": 1130.5,
+          "lower": 28.30000001192093,
+          "serialize": 62.89999997615814,
+          "displayListSha256": "fa17c20e3a1bd7a6a59f22657e7e81e06609e4dd59df38a53bba3a27a625e1af",
+          "inspectionSha256": "7738e43c5462ef752bea30853b401fa10c88afedfb263ee0368ef6b919b27e02"
+        }
+      ]
+    },
+    "summary": [
+      {
+        "scene": "03-patterns-256",
+        "beforeMedianMs": {
+          "compile": 807.5,
+          "lower": 6.699999988079071,
+          "serialize": 8.600000023841858
+        },
+        "afterMedianMs": {
+          "compile": 89.19999998807907,
+          "lower": 6.099999964237213,
+          "serialize": 8.800000011920929
+        },
+        "identicalOutputs": {
+          "displayListSha256": true,
+          "inspectionSha256": true
+        }
+      },
+      {
+        "scene": "09-motion-3d",
+        "beforeMedianMs": {
+          "compile": 2783.899999976158,
+          "lower": 11.299999952316284,
+          "serialize": 22.100000023841858
+        },
+        "afterMedianMs": {
+          "compile": 395.80000001192093,
+          "lower": 13.099999964237213,
+          "serialize": 24.899999976158142
+        },
+        "identicalOutputs": {
+          "displayListSha256": true,
+          "inspectionSha256": true
+        }
+      },
+      {
+        "scene": "10-dense",
+        "beforeMedianMs": {
+          "compile": 18648.80000001192,
+          "lower": 20.80000001192093,
+          "serialize": 42.19999998807907
+        },
+        "afterMedianMs": {
+          "compile": 1130.5,
+          "lower": 28.30000001192093,
+          "serialize": 64.19999998807907
+        },
+        "identicalOutputs": {
+          "displayListSha256": true,
+          "inspectionSha256": true
+        }
+      }
+    ]
+  },
+  "workerAfter": [
+    {
+      "scene": "01-baseline",
+      "parameters": {
+        "id": "01-baseline",
+        "label": "01 · 基础排版",
+        "patterns": 0,
+        "charts": 0,
+        "formulas": 0,
+        "effects": false,
+        "motion": "title",
+        "samplesPerLine": 192,
+        "seriesPerLineChart": 3,
+        "heatmapSide": 16
+      },
+      "wallMs": 94.19999998807907,
+      "metrics": {
+        "initialization": 129.5,
+        "resources": 0,
+        "compile": 58.10000002384186,
+        "lower": 22.899999976158142,
+        "raster": 0,
+        "total": 81
+      },
+      "sceneStats": {
+        "nodes": 7,
+        "groups": 3,
+        "paths": 1,
+        "pathElements": 5,
+        "glyphs": 85,
+        "glyphPathElements": 1374,
+        "images": 0,
+        "effectLayers": 0,
+        "maxDepth": 1,
+        "resources": 1,
+        "animatedTargets": 1
+      }
+    },
+    {
+      "scene": "02-patterns-64",
+      "parameters": {
+        "id": "02-patterns-64",
+        "label": "02 · 64 组矢量图案",
+        "patterns": 64,
+        "charts": 0,
+        "formulas": 0,
+        "effects": false,
+        "motion": "title",
+        "samplesPerLine": 192,
+        "seriesPerLineChart": 3,
+        "heatmapSide": 16
+      },
+      "wallMs": 143.30000001192093,
+      "metrics": {
+        "initialization": 129.5,
+        "resources": 0,
+        "compile": 45.89999997615814,
+        "lower": 7.5,
+        "raster": 0,
+        "total": 53.39999997615814
+      },
+      "sceneStats": {
+        "nodes": 519,
+        "groups": 323,
+        "paths": 193,
+        "pathElements": 1477,
+        "glyphs": 89,
+        "glyphPathElements": 1478,
+        "images": 0,
+        "effectLayers": 0,
+        "maxDepth": 3,
+        "resources": 1,
+        "animatedTargets": 1
+      }
+    },
+    {
+      "scene": "03-patterns-256",
+      "parameters": {
+        "id": "03-patterns-256",
+        "label": "03 · 256 组矢量图案",
+        "patterns": 256,
+        "charts": 0,
+        "formulas": 0,
+        "effects": false,
+        "motion": "title",
+        "samplesPerLine": 192,
+        "seriesPerLineChart": 3,
+        "heatmapSide": 16
+      },
+      "wallMs": 249.5,
+      "metrics": {
+        "initialization": 129.5,
+        "resources": 0,
+        "compile": 135.4000000357628,
+        "lower": 9.300000011920929,
+        "raster": 0,
+        "total": 144.70000004768372
+      },
+      "sceneStats": {
+        "nodes": 2055,
+        "groups": 1283,
+        "paths": 769,
+        "pathElements": 5893,
+        "glyphs": 91,
+        "glyphPathElements": 1544,
+        "images": 0,
+        "effectLayers": 0,
+        "maxDepth": 3,
+        "resources": 1,
+        "animatedTargets": 1
+      }
+    },
+    {
+      "scene": "04-charts-6",
+      "parameters": {
+        "id": "04-charts-6",
+        "label": "04 · 加入 6 张多序列图表",
+        "patterns": 256,
+        "charts": 6,
+        "formulas": 0,
+        "effects": false,
+        "motion": "title",
+        "samplesPerLine": 192,
+        "seriesPerLineChart": 3,
+        "heatmapSide": 16
+      },
+      "wallMs": 381,
+      "metrics": {
+        "initialization": 129.5,
+        "resources": 0,
+        "compile": 197.69999998807907,
+        "lower": 7.699999988079071,
+        "raster": 0,
+        "total": 205.39999997615814
+      },
+      "sceneStats": {
+        "nodes": 2431,
+        "groups": 1490,
+        "paths": 895,
+        "pathElements": 8683,
+        "glyphs": 257,
+        "glyphPathElements": 4159,
+        "images": 2,
+        "effectLayers": 0,
+        "maxDepth": 9,
+        "resources": 3,
+        "animatedTargets": 1
+      }
+    },
+    {
+      "scene": "05-charts-12",
+      "parameters": {
+        "id": "05-charts-12",
+        "label": "05 · 增至 12 张图表",
+        "patterns": 256,
+        "charts": 12,
+        "formulas": 0,
+        "effects": false,
+        "motion": "title",
+        "samplesPerLine": 192,
+        "seriesPerLineChart": 3,
+        "heatmapSide": 16
+      },
+      "wallMs": 526.8000000119209,
+      "metrics": {
+        "initialization": 129.5,
+        "resources": 0,
+        "compile": 280.69999998807907,
+        "lower": 9.600000023841858,
+        "raster": 0,
+        "total": 290.30000001192093
+      },
+      "sceneStats": {
+        "nodes": 2809,
+        "groups": 1698,
+        "paths": 1021,
+        "pathElements": 11473,
+        "glyphs": 446,
+        "glyphPathElements": 7104,
+        "images": 4,
+        "effectLayers": 0,
+        "maxDepth": 9,
+        "resources": 5,
+        "animatedTargets": 1
+      }
+    },
+    {
+      "scene": "06-formulas",
+      "parameters": {
+        "id": "06-formulas",
+        "label": "06 · 加入 24 个公式与嵌套布局",
+        "patterns": 256,
+        "charts": 12,
+        "formulas": 24,
+        "effects": false,
+        "motion": "title",
+        "samplesPerLine": 192,
+        "seriesPerLineChart": 3,
+        "heatmapSide": 16
+      },
+      "wallMs": 643.6000000238419,
+      "metrics": {
+        "initialization": 129.5,
+        "resources": 0,
+        "compile": 322.60000002384186,
+        "lower": 11.199999988079071,
+        "raster": 0,
+        "total": 333.80000001192093
+      },
+      "sceneStats": {
+        "nodes": 3283,
+        "groups": 1794,
+        "paths": 1399,
+        "pathElements": 24058,
+        "glyphs": 446,
+        "glyphPathElements": 7126,
+        "images": 4,
+        "effectLayers": 0,
+        "maxDepth": 9,
+        "resources": 5,
+        "animatedTargets": 1
+      }
+    },
+    {
+      "scene": "07-effects",
+      "parameters": {
+        "id": "07-effects",
+        "label": "07 · 加入透明、阴影与光晕",
+        "patterns": 256,
+        "charts": 12,
+        "formulas": 24,
+        "effects": true,
+        "motion": "title",
+        "samplesPerLine": 192,
+        "seriesPerLineChart": 3,
+        "heatmapSide": 16
+      },
+      "wallMs": 556.6999999880791,
+      "metrics": {
+        "initialization": 129.5,
+        "resources": 0,
+        "compile": 326.19999998807907,
+        "lower": 11.5,
+        "raster": 0,
+        "total": 337.69999998807907
+      },
+      "sceneStats": {
+        "nodes": 3283,
+        "groups": 1794,
+        "paths": 1399,
+        "pathElements": 24058,
+        "glyphs": 444,
+        "glyphPathElements": 7084,
+        "images": 4,
+        "effectLayers": 48,
+        "maxDepth": 9,
+        "resources": 5,
+        "animatedTargets": 1
+      }
+    },
+    {
+      "scene": "08-motion-2d",
+      "parameters": {
+        "id": "08-motion-2d",
+        "label": "08 · 图表与公式同时做二维动画",
+        "patterns": 256,
+        "charts": 12,
+        "formulas": 24,
+        "effects": true,
+        "motion": "2d",
+        "samplesPerLine": 192,
+        "seriesPerLineChart": 3,
+        "heatmapSide": 16
+      },
+      "wallMs": 685.5999999642372,
+      "metrics": {
+        "initialization": 129.5,
+        "resources": 0,
+        "compile": 311.9000000357628,
+        "lower": 11.300000011920929,
+        "raster": 0,
+        "total": 323.2000000476837
+      },
+      "sceneStats": {
+        "nodes": 3283,
+        "groups": 1794,
+        "paths": 1399,
+        "pathElements": 24058,
+        "glyphs": 444,
+        "glyphPathElements": 7100,
+        "images": 4,
+        "effectLayers": 48,
+        "maxDepth": 9,
+        "resources": 5,
+        "animatedTargets": 37
+      }
+    },
+    {
+      "scene": "09-motion-3d",
+      "parameters": {
+        "id": "09-motion-3d",
+        "label": "09 · 加入透视翻转与描线动画",
+        "patterns": 256,
+        "charts": 12,
+        "formulas": 24,
+        "effects": true,
+        "motion": "3d",
+        "samplesPerLine": 192,
+        "seriesPerLineChart": 3,
+        "heatmapSide": 16
+      },
+      "wallMs": 742.6999999880791,
+      "metrics": {
+        "initialization": 129.5,
+        "resources": 0,
+        "compile": 342.69999998807907,
+        "lower": 14.599999964237213,
+        "raster": 0,
+        "total": 357.2999999523163
+      },
+      "sceneStats": {
+        "nodes": 3307,
+        "groups": 1806,
+        "paths": 1411,
+        "pathElements": 24082,
+        "glyphs": 444,
+        "glyphPathElements": 7107,
+        "images": 4,
+        "effectLayers": 48,
+        "maxDepth": 9,
+        "resources": 5,
+        "animatedTargets": 113
+      }
+    },
+    {
+      "scene": "10-dense",
+      "parameters": {
+        "id": "10-dense",
+        "label": "10 · 24 张图、48 个公式、512 组图案",
+        "patterns": 512,
+        "charts": 24,
+        "formulas": 48,
+        "effects": true,
+        "motion": "3d",
+        "dense": true,
+        "samplesPerLine": 384,
+        "seriesPerLineChart": 3,
+        "heatmapSide": 24
+      },
+      "wallMs": 1821.1000000238419,
+      "metrics": {
+        "initialization": 129.5,
+        "resources": 0,
+        "compile": 721.5999999642372,
+        "lower": 21.400000035762787,
+        "raster": 0,
+        "total": 743
+      },
+      "sceneStats": {
+        "nodes": 6777,
+        "groups": 3598,
+        "paths": 3001,
+        "pathElements": 57991,
+        "glyphs": 820,
+        "glyphPathElements": 13032,
+        "images": 8,
+        "effectLayers": 96,
+        "maxDepth": 9,
+        "resources": 9,
+        "animatedTargets": 213
+      }
+    }
+  ],
+  "limitations": [
+    "Presentation still compiles pages on demand. This fixes the compiler bottleneck; it does not implement document-wide playback preparation or guarantee zero-latency page changes.",
+    "Local total stage preparation includes JSON/inspection and scene installation; a short remaining wait is distinct from compilation.",
+    "No new rendering throughput optimization or hardware acceptance is claimed."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "version": "0.42.0",
+  "source": "https://registry.npmjs.org/canvaskit-wasm/-/canvaskit-wasm-0.42.0.tgz",
+  "tarball_sha256": "ba667f46830ac2a70c6d76ab2c1ac790b0d15a2bf6ed2c842ce97231478b1f80",
+  "files": {
+    "canvaskit.js": "443777592179808354031cf411d8d43cac9f6b98d1227123c5c22d401b0fbf7f",
+    "canvaskit.wasm": "25ebed8e60158c5854f8dc807b936daca21354f8bfb6a2231266b0a93812f301",
+    "LICENSE": "d27678cba0d529e77201e2d2a053628143e986aad8f1e77f7039ad4366c8f978",
+    "index.d.ts": "a7017a8fd21f27fdd1afe8036841d7ce0979b2410954fcc6d3f80444c171a6c6"
+  }
+}

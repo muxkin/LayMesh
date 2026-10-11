@@ -6,22 +6,24 @@
 <script type="module">
 import init,{prepare_render} from '/wasm/laymesh_wasm.js';
 import {AnimationPlayer} from '/animation-player.mjs';
+import {initializeSkia,SkiaRenderer} from '/skia-renderer.mjs';
+const skiaMeta=await(await fetch('/skia/manifest.json')).json(),ck=await initializeSkia('/skia/'+skiaMeta.wasm);
 await init();const data=await(await fetch('/native.json')).json();const style=document.createElement('style');style.textContent=data.css;document.head.append(style);
 const allJob=prepare_render(data.source,'/main.lay',JSON.stringify({'/animate.css':data.css}));const allDraw=allJob.draw_job();allJob.free();
 const effect=document.querySelector('#effect'),subject=document.querySelector('#subject'),status=document.querySelector('#status'),results=document.querySelector('#results'),canvas=document.querySelector('#frame');
 for(const c of data.cases){const o=document.createElement('option');o.value=c.name;o.textContent=c.name;effect.append(o);}
-let draw,cssAnimation,currentCase;
+let draw,cssAnimation,currentCase;const renderer=new SkiaRenderer(ck,canvas);
 const player=new AnimationPlayer(document.querySelector('#controls'),()=>paint());
-function setup(){const name=effect.value;currentCase=data.cases.find(c=>c.name===name);subject.style.animationName="";subject.className=`animate__animated animate__${name}`;cssAnimation=subject.getAnimations()[0];cssAnimation.pause();
+async function setup(){const name=effect.value;currentCase=data.cases.find(c=>c.name===name);subject.style.animationName="";subject.className=`animate__animated animate__${name}`;cssAnimation=subject.getAnimations()[0];cssAnimation.pause();
  const source=`p=canvas(size=(100,80),stylesheet="animate.css",background="none")\na=p.add(rect(size=(25.4mm,19.05mm),fill="#d84436",border_color="none"),offset=(30,25))\ns=p.step(name="${name}",hold=1s)\ns.animate(a,class="animate__animated animate__${name}")`;
- const job=prepare_render(source,'/main.lay',JSON.stringify({'/animate.css':data.css}));draw?.free();draw=job.draw_job();const inspection=JSON.parse(job.inspection()).inspection;job.free();player.update(inspection.animation);status.textContent='Ready';paint();}
+ const job=prepare_render(source,'/main.lay',JSON.stringify({'/animate.css':data.css}));draw?.free();draw=job.draw_job();const inspection=JSON.parse(job.inspection()).inspection;job.free();await renderer.install(JSON.parse(draw.display_list()),id=>draw.resource_bytes(id),1);player.update(inspection.animation);status.textContent='Ready';paint();}
 function paint(){if(!draw)return;const t=player.time;subject.style.animationName=t===null?'none':'';if(t!==null){cssAnimation=subject.getAnimations()[0];cssAnimation.pause();cssAnimation.currentTime=t*1000;}
- const f=t===null?draw.raster_retained('[0,0,100,80]',378,302):draw.raster_animation('[0,0,100,80]',378,302,t,player.reduced);const rgba=f.into_rgba();canvas.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(rgba),378,302),0,0);}
-effect.onchange=setup;setup();
+ renderer.render([0,0,100,80],378,302,t===null?{}:JSON.parse(draw.frame_state(t,player.reduced)));}
+effect.onchange=setup;await setup();
 function cssState(el){const cs=getComputedStyle(el),m=new DOMMatrix(cs.transform);const matrix=[m.m11,m.m21,m.m31,m.m41,m.m12,m.m22,m.m32,m.m42,m.m13,m.m23,m.m33,m.m43,m.m14,m.m24,m.m34,m.m44];for(const i of [3,7,11])matrix[i]*=25.4/96;for(const i of [12,13,14])matrix[i]*=96/25.4;return {opacity:+cs.opacity,transform:matrix,origin:cs.transformOrigin.split(' ').map(v=>parseFloat(v)*25.4/96),visible:cs.visibility==='visible',backface:cs.backfaceVisibility!=='hidden'};}
 function compare(label,a,b,errors){for(const property of ['opacity','transform','origin','visible','backface']){if(a[property]==null)continue;let x=a[property],y=b[property];if(property==='origin'){x=x.slice(0,2);y=y.slice(0,2);}if(Array.isArray(x)){const max=Math.max(...x.map((v,i)=>Math.abs(v-y[i])));if(max>0.002)errors.push(`${label} ${property}: max error ${max}`);}else if(typeof x==='number'?Math.abs(x-y)>0.0001:x!==y)errors.push(`${label} ${property}: ${x} != ${y}`);}}
 window.runConformance=()=>{const failures=[];let comparisons=0;for(const c of data.cases){const e=document.createElement('div');e.style.cssText='width:96px;height:72px;position:absolute;left:-10000px';e.className=`animate__animated animate__${c.name}`;document.body.append(e);const a=e.getAnimations()[0];a.pause();for(const s of c.samples){a.currentTime=s.time*1000;const state=cssState(e);compare(`${c.name}@${s.time} native/CSS`,s.native,state,failures);const wasm=JSON.parse(allDraw.animation_sample(c.start+s.time,false))[c.target];compare(`${c.name}@${s.time} native/WASM`,s.native,wasm,failures);comparisons++;}e.remove();}
  const result={effects:data.cases.length,comparisons,failures};results.textContent=JSON.stringify(result,null,2);status.textContent=failures.length?'Differences found':'All comparisons passed';return result;};document.querySelector('#check').onclick=window.runConformance;
-window.benchmark=()=>{const report={};for(const name of ['pulse','flipInY']){effect.value=name;setup();const times=[];for(let i=0;i<60;i++){const t=performance.now();const frame=draw.raster_animation('[0,0,100,80]',378,302,i/60,false);frame.free();times.push(performance.now()-t);}times.sort((a,b)=>a-b);report[name]={frames:60,width:378,height:302,medianMs:times[30],p95Ms:times[57],layoutCompilations:1};}return report;};
+window.benchmark=async()=>{const report={};for(const name of ['pulse','flipInY']){effect.value=name;await setup();const times=[];for(let i=0;i<60;i++){const t=performance.now();renderer.render([0,0,100,80],378,302,JSON.parse(draw.frame_state(i/60,false)));times.push(performance.now()-t);}times.sort((a,b)=>a-b);report[name]={frames:60,width:378,height:302,medianMs:times[30],p95Ms:times[57],layoutCompilations:1};}return report;};
 window.animationReady=true;
 </script></html>

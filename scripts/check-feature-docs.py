@@ -37,7 +37,10 @@ for entry in r['api']:
 names={v['name'] for v in r['predefinedVariables']};assert len(names)==len(r['predefinedVariables'])
 for entry in r['api']:
  for p in entry['parameters']:
-  for v in p.get('values',[]):assert any(q['value']==v for q in r['predefinedVariables']),v
+  # Action/step triggers intentionally use quoted strings, including hyphens.
+  # Other enums retain their existing predefined-variable coverage contract.
+  if not p.get('quotedValues',False):
+   for v in p.get('values',[]):assert any(q['value']==v for q in r['predefinedVariables']),v
 if a.render:
  sources=sorted({f['minimal'] for k,f in features.items() if k.startswith(('api:','geometry:'))})
  with tempfile.TemporaryDirectory(prefix='laymesh-doc-examples-') as tmp:

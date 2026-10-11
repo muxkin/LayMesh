@@ -5,11 +5,10 @@ edition.workspace = true
 license.workspace = true
 [features]
 default = ["native"]
-native = ["dep:jpeg-encoder", "dep:krilla", "dep:png", "dep:ratex-katex-fonts", "dep:tiff", "dep:webp", "dep:zip"]
+native = ["dep:lopdf","dep:skia-safe","dep:jpeg-encoder", "dep:png", "dep:ratex-katex-fonts", "dep:tiff", "dep:webp", "dep:zip"]
 [dependencies]
 laymesh-core = { path = "../laymesh-core", default-features = false }
 serde_json.workspace = true
-krilla = { version = "0.8.2", default-features = false, features = ["raster-images"], optional = true }
 png = { version = "0.18", optional = true }
 jpeg-encoder = { version = "=0.7.1", features = ["simd"], optional = true }
 base64 = "0.22"
@@ -18,13 +17,14 @@ ttf-parser = "0.25"
 kurbo = { version = "0.13", features = ["serde"] }
 serde.workspace = true
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "bmp", "gif", "ico", "pnm", "tga", "webp", "tiff"] }
-vello_cpu = { version = "=0.3.0", default-features = false, features = ["std", "f32_pipeline"] }
 usvg = { version = "=0.47.0", default-features = false, features = ["text"] }
 tiff = { version = "=0.11.3", optional = true }
 webp = { version = "=0.3.1", default-features = false, optional = true }
 roxmltree = "0.21"
 zip = { version = "=2.4.2", default-features = false, features = ["deflate"], optional = true }
 svgtypes = "0.16"
+skia-safe = { version = "=0.153.3", default-features = false, features = ["binary-cache", "pdf", "jpeg"], optional = true }
+lopdf = { version = "=0.39.0", default-features = false, optional = true }
 [dev-dependencies]
 image = { version = "0.25", default-features = false, features = ["png", "webp", "ico", "tga", "tiff"] }
 roxmltree = "0.21"

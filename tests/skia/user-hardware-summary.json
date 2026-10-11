@@ -1,0 +1,104 @@
+{
+  "source": "User-provided benchmark JSON and Windows Task Manager screenshot, 2026-10-10",
+  "scope": "One discrete GPU, not integrated-GPU or physical scan-out acceptance",
+  "gpu": "AMD Radeon RX 6750 GRE 12GB",
+  "gpuIdentification": "Task Manager screenshot; corrects the earlier typed model",
+  "displayRefreshHz": 160,
+  "buffer": [
+    3840,
+    2160
+  ],
+  "screenCss": [
+    1920,
+    1080
+  ],
+  "devicePixelRatio": 2,
+  "browser": "Edge 155 / Windows 10",
+  "backend": "Skia WebGL2",
+  "roundsPerScene": 5,
+  "secondsPerRound": 30,
+  "presentationEstimateFpsRange": [
+    159.80106534043566,
+    160.0008001707032
+  ],
+  "legacyMissed60HzSlotsPercent": 0,
+  "scenes": {
+    "title": {
+      "drawSubmissionP95Ms": [
+        2.2,
+        2.7,
+        2.9,
+        3.1,
+        3.3
+      ],
+      "sampleP95Ms": [
+        0.3,
+        0.3,
+        0.3,
+        0.3,
+        0.3
+      ],
+      "gpuP95Ms": [
+        3.25245,
+        2.85768,
+        3.06968,
+        3.2265,
+        3.19124
+      ]
+    },
+    "flip": {
+      "drawSubmissionP95Ms": [
+        3.9,
+        4,
+        4.1,
+        4.2,
+        4.3
+      ],
+      "sampleP95Ms": [
+        0.3,
+        0.3,
+        0.3,
+        0.3,
+        0.3
+      ],
+      "gpuP95Ms": [
+        3.12567,
+        3.23682,
+        3.35548,
+        3.21085,
+        3.22302
+      ]
+    },
+    "stroke": {
+      "drawSubmissionP95Ms": [
+        2.1,
+        2,
+        2,
+        2.1,
+        2.1
+      ],
+      "sampleP95Ms": [
+        0.5,
+        0.4,
+        0.4,
+        0.5,
+        0.5
+      ],
+      "gpuP95Ms": [
+        0.1562,
+        0.15616,
+        0.15628,
+        0.15636,
+        0.15616
+      ]
+    }
+  },
+  "precision": "CPU/sample P95 arrays rounded to 0.1 ms from the supplied JSON; GPU values retained",
+  "hardwareAcceptance": false,
+  "limitations": [
+    "Distinct completed canvas frames observed on requestAnimationFrame; compositor scan-out not measured.",
+    "The legacy missed-60-Hz-slot metric at 160 Hz is not a 60-Hz display pacing test.",
+    "Task Manager shows whole-device utilization/memory, not page-attributed utilization.",
+    "No integrated-GPU performance conclusion can be drawn from this machine."
+  ]
+}

@@ -127,7 +127,15 @@ def check():
  subprocess.run([sys.executable,str(ROOT/'scripts/build-docs-media.py'),'--check'],cwd=ROOT,check=True)
  count=0
  for p in OUT.rglob('*.html'):
-  text=p.read_text();assert 'class="lang-switch"' in text,p
+  text=p.read_text()
+  if p.relative_to(OUT).as_posix() in ('skia-benchmark.html','tests/skia/benchmark.html'):
+   assert text==(ROOT/'tests/skia/benchmark.html').read_text(),f'Stale standalone benchmark: {p}'
+  elif p.relative_to(OUT).as_posix() in ('presentation-test.html','tests/skia/presentation.html'):
+   assert text==(ROOT/'tests/skia/presentation.html').read_text(),f'Stale presentation test: {p}'
+  else:assert 'class="lang-switch"' in text,p
+  # Inline scripts may construct markup with template expressions; validate
+  # actual HTML attributes, including script src, rather than JS string data.
+  text=re.sub(r'(<script\b[^>]*>).*?</script>',r'\1</script>',text,flags=re.S|re.I)
   for value in re.findall(r'(?:src|href|data-full)="([^"]+)"',text):
    value=html.unescape(value).split('#')[0].split('?')[0]
    if not value or re.match(r'(?:[a-z]+:|//)',value,re.I):continue
@@ -151,7 +159,7 @@ def check():
     page=(OUT/(prefix+'examples/'+e['id']+'.html')).read_text();assert f'title="{sibling}"' in page and f'data-edit-file="{sibling}"' not in page,f'Missing read-only Python tab: {sibling}'
  live=OUT/'site/live';manifest=json.loads((live/'manifest.json').read_text())
  page_fonts.validate(live,manifest)
- assert (live/'wasm/laymesh_wasm_bg.wasm').is_file();print(f'Checked {count} documentation pages, startup fonts and full editing fonts')
+ assert (live/'wasm'/json.loads((live/'wasm/manifest.json').read_text())['wasm']).is_file();print(f'Checked {count} documentation pages, startup fonts and full editing fonts')
  spec=importlib.util.spec_from_file_location('check_live',ROOT/'scripts/build-docs-live.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);module.validate_runtime(live)
 def main():
  parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--check',action='store_true');parser.add_argument('--skip-wasm',action='store_true');a=parser.parse_args()

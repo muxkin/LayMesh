@@ -73,7 +73,15 @@ fn no_images(s: &Scene) {
 }
 fn all_exports(s: &Scene) {
     assert!(render_svg(s).unwrap().contains("<path "));
-    assert!(render_pdf(s).unwrap().len() > 1000);
+    let bytes = render_pdf(s).unwrap();
+    let document = lopdf::Document::load_mem(&bytes).unwrap();
+    assert_eq!(document.get_pages().len(), 1);
+    assert!(
+        !document
+            .get_page_content(*document.get_pages().values().next().unwrap())
+            .unwrap()
+            .is_empty()
+    );
     assert!(render_png(s, 96.).unwrap().len() > 100);
 }
 fn located(set: &str, rows: &[(usize, &str)], exact_line: Option<usize>) {
@@ -105,7 +113,16 @@ fn legacy_reused_images_preserve_crop_size_anchors_order_and_opacity() {
     }
     let svg = render_svg(&s).unwrap();
     assert!(svg.find("data-id=\"first\"").unwrap() < svg.find("data-id=\"second\"").unwrap());
-    assert!(pdf(&s).contains("/ca 0.5"));
+    let document = lopdf::Document::load_mem(&render_pdf(&s).unwrap()).unwrap();
+    assert!(
+        document
+            .objects
+            .values()
+            .filter_map(|o| o.as_dict().ok())
+            .filter_map(|d| d.get(b"ca").ok())
+            .filter_map(|o| o.as_float().ok())
+            .any(|a| (a - 0.5).abs() <= 1. / 255.)
+    );
 }
 #[test]
 fn legacy_bare_placements_and_group_anchors() {

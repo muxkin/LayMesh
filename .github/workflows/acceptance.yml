@@ -15,6 +15,7 @@ jobs:
         with:
           toolchain: '1.93.1'
           targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -47,6 +48,7 @@ jobs:
         with:
           toolchain: '1.93.1'
           targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -57,3 +59,34 @@ jobs:
       - run: python scripts/check-feature-docs.py
       - run: python scripts/build-docs.py
       - run: python scripts/build-docs.py --check
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned browser test runtime
+        run: |
+          npm install --prefix "$RUNNER_TEMP/browser-tests" --no-save playwright@1.62.1
+          "$RUNNER_TEMP/browser-tests/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Presentation timing and preparation contracts
+        run: |
+          node scripts/test-presentation-clock.mjs
+          node scripts/test-presentation-wheel.mjs
+          node scripts/test-presentation-session.mjs
+          node scripts/test-presentation-native-scheduling.cjs
+      - name: CSS animation and real presentation browser regressions
+        env:
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-tests/node_modules/playwright
+        run: |
+          cargo build --locked --release -p laymesh-core --example animation_reference
+          python scripts/serve-preview.py --bind 127.0.0.1 --port 8769 > "$RUNNER_TEMP/preview.log" 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid"' EXIT
+          node scripts/test-animation-browser.cjs "$RUNNER_TEMP/browser-results/css"
+          node scripts/test-presentation-controls.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/controls"
+          node scripts/test-presentation-streaming.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/streaming"
+          node scripts/test-academic-presentation.cjs 'http://127.0.0.1:8769/presentation-test.html?deck=academic' "$RUNNER_TEMP/browser-results/academic"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-regressions
+          path: ${{ runner.temp }}/browser-results
+          if-no-files-found: ignore

@@ -4049,6 +4049,7 @@ page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerlin
 | `name` | string | 步骤名称 | — |
 | `duration` | time / time | 有限演示窗口；无限或暂停动画必填 | — |
 | `hold` | time / time | 动作结束后的停留时长 | 1s |
+| `start` | "click" \| "after-previous" | click：点击开始；after-previous：前一步停留结束后自动开始，第一步则随页面开始。<br>`click`: 等待用户推进后开始。<br>`after-previous`: 前一步 hold 结束后开始；第一步随页面进入开始。 | click |
 
 ### 最小完整示例
 
@@ -4094,6 +4095,7 @@ s4.animate(title, class="animate__animated animate__pulse", duration=600ms)
 | `fill` | string | none/forwards/backwards/both | — |
 | `vars` | dict | 本次动画的 CSS 自定义属性 | — |
 | `play_state` | string | running/paused | — |
+| `start` | "step" \| "with-previous" \| "after-previous" | step：与步骤一起开始；with-previous：与前一动作同时开始；after-previous：前一动作结束后开始。delay 相对该起点计算。<br>`step`: 以当前步骤起点为基准。<br>`with-previous`: 以前一动作起点为基准。<br>`after-previous`: 以前一动作结束为基准；前一动作必须具有有限时长。 | step |
 
 ### 最小完整示例
 

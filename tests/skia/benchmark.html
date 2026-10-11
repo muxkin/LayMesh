@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>LayMesh Skia 4K progressive benchmark</title>
+<style>
+body{margin:18px auto;padding:0 18px;max-width:1440px;font:14px system-ui;background:#f4f6fa;color:#20354b}h1{font-size:23px;margin:12px 0}p{line-height:1.6;margin:8px 0}.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}button,select{font:inherit;padding:7px 10px;border:1px solid #b5c5d3;border-radius:5px;background:white;color:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:default}#start{background:#245e97;color:white;border-color:#245e97}#status{min-height:22px;margin:12px 0 4px;font-weight:600}#live{min-height:20px;font-variant-numeric:tabular-nums;margin-bottom:8px;color:#526b82}canvas{width:min(100%,960px,calc((100vh - 315px)*16/9));aspect-ratio:16/9;display:block;border:1px solid #b5c5d3;background:white;max-width:100%}canvas:fullscreen{width:100vw;height:100vh;object-fit:contain;border:0;margin:0;background:#f4f6fa}.results{overflow:auto;margin-top:15px}table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap;background:#fff}th,td{text-align:right;padding:8px;border-bottom:1px solid #dce3eb}th:first-child,td:first-child{text-align:left}th{background:#eaf0f6}details{margin:12px 0}pre{overflow:auto;max-height:240px;font-size:12px}.note{font-size:12px;color:#526b82}
+</style>
+<h1>Skia 4K · 逐级复杂度测试</h1>
+<p>始终使用 <b>3840×2160</b> 绘制缓冲区。逐级加入图案、图表、公式、布局、效果与并行动画；每档编译一次，播放只采样动画。默认快速测试约 2 分钟，加上各档准备时间。可只测一档，再手动提高复杂度。</p>
+<div class="controls">
+<label>场景 <select id="suite"><option value="stress">逐级压力测试 · 10 档</option><option value="baseline">原有基础动画 · 3 档</option></select></label>
+<label>起始档 <select id="stage"></select></label>
+<label><input id="single" type="checkbox">仅当前档</label>
+<label>帧率 <select id="rate"><option value="60">60 fps</option><option value="0">跟随屏幕</option></select></label>
+<label><input id="cache-static" type="checkbox" checked>静态区域 GPU 缓存</label>
+<label><input id="cache-layers" type="checkbox" checked>运动对象 GPU 缓存</label>
+<label>长度 <select id="length"><option value="quick">快速：1 × 10 秒</option><option value="full">完整：5 × 30 秒</option></select></label>
+<button id="start" disabled>开始测试</button><button id="fullscreen">全屏画布</button><button id="stop" disabled>停止</button><button id="save" disabled>下载结果</button>
+</div>
+<div id="status" role="status">正在准备…</div><div id="live"></div>
+<canvas id="canvas"></canvas>
+<div class="results"><table><thead><tr><th>档位</th><th>节点 / 字形</th><th>动画对象</th><th>采样 P95</th><th>CPU 绘制 P95</th><th>GPU P95</th><th>GPU 较前档</th><th>呈现估计 fps</th><th>帧数缺口</th><th>静态纹理 / 命中</th><th>运动纹理 / 命中 / 重建</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p class="note">保持此页可见。60 fps 档只限制提交频率，不降低分辨率。GPU 查询只计本画布的绘制，不等于任务管理器的整卡利用率；浏览器合成、Copy 引擎与其他进程不在查询范围内。呈现帧率来自刷新回调估计，尚未测量物理扫描输出。请同时观察任务管理器，以区分 3D、Copy 和整机显存变化。软件 GPU 驱动不作为硬件验收。</p>
+<p class="note">运动对象缓存复用已绘制的图表、公式和效果，逐帧更新变换与透明度；放大需要更高像素密度时重建。两个缓存开关用于同场景 A/B 对比，均不降低 4K 分辨率或删除效果。</p>
+<details><summary>完整结果与测量定义</summary><pre id="report"></pre></details>
+<script type="module">
+const $=s=>document.querySelector(s),status=$('#status'),canvas=$('#canvas'),live=$('#live');
+const base=new URL(location.pathname.endsWith('/tests/skia/benchmark.html')?'../../site/live/':'./site/live/',location);
+const {stressCases,stressFiles}=await import(new URL('stress-scenes.mjs',location));
+const worker=new Worker(new URL('worker.js',base),{type:'module'}),pending=new Map();
+let seq=0,latest,stopped=false,busy=false,fontReady,fontResolve,fontReject,baselineFiles,baselineRun;
+let readyResolve,readyReject;const ready=new Promise((r,j)=>{readyResolve=r;readyReject=j;});
+const ask=data=>new Promise((resolve,reject)=>{const id=++seq;pending.set(id,{resolve,reject});worker.postMessage({...data,id});});
+worker.onmessage=({data})=>{
+ if(data.type==='ready')readyResolve();if(data.type==='init-error')readyReject(Error(data.error.message));
+ if(data.type==='full-fonts-ready')fontResolve?.();if(data.type==='full-fonts-error'){fontReject?.(Error(data.error.message));fontReady=null;}
+ const p=pending.get(data.id);if(p){pending.delete(data.id);data.error?p.reject(Error(data.error.message||data.error)):p.resolve(data);}
+};
+worker.onerror=e=>{const error=Error(e.message);readyReject(error);fontReject?.(error);for(const p of pending.values())p.reject(error);pending.clear();status.textContent=error.message;};
+const offscreen=canvas.transferControlToOffscreen();worker.postMessage({type:'init',base:base.href,canvas:offscreen},[offscreen]);
+const fullFonts=()=>fontReady??=new Promise((resolve,reject)=>{fontResolve=resolve;fontReject=reject;worker.postMessage({type:'full-fonts'});});
+const percentile=(a,p)=>a.length?[...a].sort((a,b)=>a-b)[Math.min(a.length-1,Math.floor(a.length*p))]:null;
+const fmt=(v,d=1)=>v==null||!Number.isFinite(v)?'—':v.toFixed(d),raf=()=>new Promise(requestAnimationFrame);
+const baselineCases=['title','flip','stroke'].map((id,i)=>({id,label:['标题入场','三维翻转','描线'][i],index:i}));
+const cases=suite=>suite==='baseline'?baselineCases:stressCases;
+function populate(){const stage=$('#stage');stage.replaceChildren(...cases($('#suite').value).map(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.label;return o;}));}
+populate();$('#suite').onchange=populate;
+async function prepare(spec,suite){
+ const before=performance.now();let result,parameters;
+ if(suite==='baseline'){
+  if(!baselineFiles){const manifest=await(await fetch(new URL('manifest.json',base))).json();baselineFiles={};for(const f of manifest.examples['animation-presentation'].files)baselineFiles[f]=await(await fetch(new URL(manifest.resources['/'+f],base))).text();if(!baselineFiles['examples/animation/presentation.lay'])baselineFiles['examples/animation/presentation.lay']=await(await fetch(new URL(manifest.resources['/examples/animation/presentation.lay'],base))).text();}
+  if(!baselineRun)baselineRun=await ask({type:'run',entry:'examples/animation/presentation.lay',files:baselineFiles,stats:true});result=baselineRun;
+ }else{
+  baselineRun=null;const scene=stressFiles(spec);parameters=scene.parameters;result=await ask({type:'run',entry:scene.entry,files:scene.files,stats:true});
+ }
+ const step=result.inspection.animation.steps[suite==='baseline'?spec.index:0];
+ return {result,parameters,offset:step.start+.01,windowSeconds:Math.max(.01,step.duration-.02),prepareWallMs:performance.now()-before};
+}
+function table(report){
+ const grouped=Object.values(Object.groupBy(report.rounds,r=>r.scene));let previous;
+ $('#rows').replaceChildren(...grouped.map(rows=>{
+  const first=rows[0],stats=first.sceneStats||{},gpu=percentile(rows.map(r=>r.gpuP95).filter(v=>v!=null),.5),tr=document.createElement('tr');
+  const values=[first.label,`${stats.nodes??'—'} / ${stats.glyphs??'—'}`,stats.animatedTargets??'—',fmt(Math.max(...rows.map(r=>r.sampleP95)))+' ms',fmt(Math.max(...rows.map(r=>r.drawSubmissionP95)))+' ms',fmt(gpu)+' ms',previous&&gpu!=null?fmt(gpu/previous,2)+'×':'—',fmt(percentile(rows.map(r=>r.presentationEstimateFps),.5)),fmt(Math.max(...rows.map(r=>r.targetDeliveryShortfallPercent)))+'%',fmt(Math.max(...rows.map(r=>r.staticTexturePeakBytes||0))/1048576)+' MiB / '+rows.reduce((n,r)=>n+(r.staticCacheHits||0),0),fmt(Math.max(...rows.map(r=>r.layerTexturePeakBytes||0))/1048576)+' MiB / '+rows.reduce((n,r)=>n+(r.layerCacheHits||0),0)+' / '+rows.reduce((n,r)=>n+(r.layerCacheBuilds||0),0)];
+  previous=gpu;for(const value of values){const td=document.createElement('td');td.textContent=value;tr.append(td);}return tr;
+ }));$('#report').textContent=JSON.stringify(report,null,2);
+}
+window.runBenchmark=async({suite='stress',sceneIds,rounds=1,seconds=10,targetFps=60,cacheStatic=true,cacheLayers=true}={})=>{
+ if(busy)throw Error('测试正在进行');busy=true;stopped=false;$('#start').disabled=true;$('#stop').disabled=false;document.querySelectorAll('.controls select,.controls input').forEach(e=>e.disabled=true);
+ const report=latest={workloadVersion:'progressive-v1',rendererVersion:cacheLayers?'object-layers-v1':'static-tiles-v1',qualityPolicy:'native-resolution; no dynamic resolution',measurementPolicy:'No warm-up. First playback includes cache construction.',cacheStatic,cacheLayers,buffer:[3840,2160],screen:[screen.width,screen.height],dpr:devicePixelRatio,fullscreen:document.fullscreenElement===canvas,canvasCssSize:[canvas.clientWidth,canvas.clientHeight],suite,targetFps:targetFps||'display',userAgent:navigator.userAgent,visibility:document.visibilityState,rounds:[],preparations:[],hardwareAcceptance:false,presentationDefinition:'Worker-completed draw submissions observed on requestAnimationFrame; neither GPU completion nor compositor scan-out is directly measured by this estimate.',gpuDefinition:'WebGL timer queries for this canvas draw only; excludes compositor/Copy/other processes. Each completed GPU query counted once.',tableDefinition:'CPU/sample P95: worst round; GPU P95 and fps: median round; GPU multiplier: previous selected stage.'};
+ $('#rows').replaceChildren();$('#save').disabled=true;
+ try{
+  await ready;if(suite==='stress'){status.textContent='正在准备压力场景所需的完整字体…';await fullFonts();}
+  const selected=cases(suite).filter(s=>!sceneIds||sceneIds.includes(s.id));
+  for(const spec of selected){
+   if(stopped)break;status.textContent=`正在准备 ${spec.label}…`;live.textContent='编译与资源准备不计入播放耗时。';
+   const prepared=await prepare(spec,suite),{result,offset,windowSeconds}=prepared,page=result.inspection.page;
+   report.preparations.push({scene:spec.id,parameters:prepared.parameters,wallMs:prepared.prepareWallMs,metrics:result.metrics,sceneStats:result.sceneStats});
+   for(let round=0;round<rounds&&!stopped;round++){
+    status.textContent=`${spec.label} · 第 ${round+1}/${rounds} 轮`;
+    const start=performance.now(),end=start+1000*seconds,frames=[],draw=[],sample=[],gpu=[],refresh=[];
+    let flight=null,flightError,completed=0,seen=0,submissions=0,lastRefresh,nextDue=start,nextStats=start,cachePeak=0,texturePeak=0,cacheHits=0,cacheBuilds=0,layerPeak=0,layerHits=0,layerBuilds=0,layerBudgetMisses=0,layerAllocationFailures=0,statePeak=0,gpuSkips=0;
+    while(performance.now()<end&&!stopped){
+     const now=await raf();if(document.visibilityState!=='visible')throw Error('页面进入后台，测试已停止；返回前台后重新运行。');if(flightError)throw flightError;
+     if(lastRefresh!=null)refresh.push(now-lastRefresh);lastRefresh=now;if(completed!==seen){frames.push(now);seen=completed;}
+     if(!flight&&(!targetFps||now>=nextDue-.1)){
+      if(targetFps)nextDue=start+(Math.floor((now-start)*targetFps/1000)+1)*1000/targetFps;submissions++;
+      flight=ask({type:'paint',generation:result.generation,rect:[0,0,page.width,page.height],width:3840,height:2160,time:offset+((now-start)/1000%windowSeconds),running:true,cacheStatic,cacheLayers}).then(data=>{
+       if(data.type==='paint-skipped'&&data.reason==='gpu-busy')gpuSkips++;
+       if(data.type==='painted'){completed++;draw.push(data.rasterMs);sample.push(data.sampleMs);gpu.push(...(data.gpuSamples||[]));cachePeak=Math.max(cachePeak,data.cacheBytes||0);texturePeak=Math.max(texturePeak,data.staticTextureBytes||0);cacheHits+=data.staticCacheHits||0;cacheBuilds+=data.staticCacheBuilds||0;layerPeak=Math.max(layerPeak,data.layerTextureBytes||0);layerHits+=data.layerCacheHits||0;layerBuilds+=data.layerCacheBuilds||0;layerBudgetMisses+=data.layerCacheBudgetMisses||0;layerAllocationFailures+=data.layerCacheAllocationFailures||0;statePeak=Math.max(statePeak,data.samplerOutputChars||0);report.backend=data.backend;report.device=data.device;}
+      }).catch(error=>{flightError=error;}).finally(()=>{flight=null;});
+     }
+     if(now>=nextStats){nextStats=now+500;const elapsed=(now-start)/1000;live.textContent=`${report.backend||'Skia'} · 3840×2160 · ${fmt(elapsed)} s · 提交 ${fmt(completed/Math.max(.001,elapsed))} fps · 采样 ${fmt(percentile(sample.slice(-160),.95))} ms · CPU ${fmt(percentile(draw.slice(-160),.95))} ms · GPU ${fmt(percentile(gpu.slice(-160),.95))} ms · 缓存 ${fmt((texturePeak+layerPeak)/1048576)} MiB`;}
+    }
+    await flight;if(flightError)throw flightError;if(completed!==seen){frames.push(await raf());seen=completed;}
+    if(!stopped){
+     const elapsed=performance.now()-start,intervals=frames.slice(1).map((t,i)=>t-frames[i]),refreshPeriod=percentile(refresh,.5),refreshHz=1000/refreshPeriod;
+     const target=targetFps?Math.min(targetFps,refreshHz):refreshHz,expected=Math.max(0,elapsed*target/1000),missed=Math.max(0,expected-frames.length);
+     report.rounds.push({scene:spec.id,label:spec.label,round:round+1,elapsedMs:elapsed,frames:frames.length,sceneStats:result.sceneStats,fullscreen:document.fullscreenElement===canvas,canvasCssSize:[canvas.clientWidth,canvas.clientHeight],
+      presentationEstimateFps:frames.length*1000/elapsed,submissionFps:completed*1000/elapsed,requestFps:submissions*1000/elapsed,
+      refreshCallbackHz:refreshHz,refreshIntervalMedianMs:refreshPeriod,refreshIntervalP95Ms:percentile(refresh,.95),frameIntervalP95Ms:percentile(intervals,.95),targetDeliveryShortfallPercent:expected?100*missed/expected:100,
+      drawSubmissionP95:percentile(draw,.95),sampleP95:percentile(sample,.95),gpuP95:percentile(gpu,.95),gpuQueryCount:gpu.length,gpuDrawDutyEstimatePercent:100*gpu.reduce((a,b)=>a+b,0)/elapsed,cachePeakBytes:cachePeak,staticTexturePeakBytes:texturePeak,staticCacheHits:cacheHits,staticCacheBuilds:cacheBuilds,layerTexturePeakBytes:layerPeak,layerCacheHits:layerHits,layerCacheBuilds:layerBuilds,layerCacheBudgetMisses:layerBudgetMisses,layerCacheAllocationFailures:layerAllocationFailures,gpuBackpressureSkips:gpuSkips,samplerOutputCharsPeak:statePeak});
+     table(report);$('#save').disabled=false;const row=report.rounds.at(-1);live.textContent=`${report.backend} · 3840×2160 · 呈现估计 ${fmt(row.presentationEstimateFps)} fps · 采样 ${fmt(row.sampleP95)} ms · CPU ${fmt(row.drawSubmissionP95)} ms · GPU ${fmt(row.gpuP95)} ms · 缓存 ${fmt((row.staticTexturePeakBytes+row.layerTexturePeakBytes)/1048576)} MiB`;
+    }
+   }
+  }
+  report.stopped=stopped;status.textContent=stopped?'已停止，已完成轮次可下载。':'测试完成。可下载结果，或选择更高档位继续。';table(report);return report;
+ }catch(error){report.error=String(error);status.textContent=`测试停止：${error.message}`;table(report);throw error;}
+ finally{busy=false;document.querySelectorAll('.controls select,.controls input').forEach(e=>e.disabled=false);$('#start').disabled=false;$('#stop').disabled=true;$('#save').disabled=report.rounds.length===0;worker.postMessage({type:'trim'});}
+};
+$('#start').onclick=async()=>{const suite=$('#suite').value,list=cases(suite),index=list.findIndex(s=>s.id===$('#stage').value),selected=$('#single').checked?[list[index]]:list.slice(index);try{await window.runBenchmark({suite,sceneIds:selected.map(s=>s.id),targetFps:Number($('#rate').value),cacheStatic:$('#cache-static').checked,cacheLayers:$('#cache-layers').checked,...($('#length').value==='full'?{rounds:5,seconds:30}:{})});}catch{/* Shown in status; partial data retained. */}};
+$('#fullscreen').onclick=()=>canvas.requestFullscreen();$('#stop').onclick=()=>{stopped=true;status.textContent='正在停止，保留已完成的结果…';};
+$('#save').onclick=()=>{const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify(latest,null,2)],{type:'application/json'}));a.href=url;a.download='laymesh-skia-4k-'+latest.suite+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+try{await ready;status.textContent='可以开始。默认逐级测试；也可选择起始档并勾选“仅当前档”。';$('#start').disabled=false;window.benchmarkReady=true;}catch(error){status.textContent='初始化失败，请刷新重试：'+error.message;}
+</script></html>

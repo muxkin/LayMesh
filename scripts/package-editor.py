@@ -99,7 +99,7 @@ for kind, file in asset_files.items():
 
 files = [file for file in sorted(root.rglob('*')) if file.is_file()
          and not {'src', 'node_modules', '__pycache__'}.intersection(file.relative_to(root).parts)
-         and file.suffix.lower() not in ('.vsix', '.pyc', '.ttf', '.otf', '.ttc', '.otc', '.woff', '.woff2')]
+         and file.suffix.lower() not in ('.vsix', '.pyc', '.gz', '.br', '.ttf', '.otf', '.ttc', '.otc', '.woff', '.woff2')]
 if not (root / 'LICENSE').is_file():
     raise SystemExit('Missing extension LICENSE.')
 def archive_path(file):

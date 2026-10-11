@@ -11,6 +11,7 @@ use values::{Easing, Matrix, Transform};
 #[derive(Clone, Debug)]
 pub struct StepSpec {
     pub name: String,
+    pub trigger: String,
     pub hold: f64,
     pub duration: Option<f64>,
     pub clips: Vec<ClipSpec>,
@@ -39,10 +40,15 @@ pub struct Timeline {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Step {
     pub name: String,
+    #[serde(default = "click_trigger")]
+    pub trigger: String,
     pub start: f64,
     pub duration: f64,
     pub hold: f64,
     pub clips: Vec<Clip>,
+}
+fn click_trigger() -> String {
+    "click".into()
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Clip {
@@ -140,7 +146,9 @@ impl Engine {
                 ));
             }
             for k in args.keys() {
-                if !k.starts_with("__") && !["name", "hold", "duration"].contains(&k.as_str()) {
+                if !k.starts_with("__")
+                    && !["name", "hold", "duration", "start"].contains(&k.as_str())
+                {
                     return Err(self.error(
                         "E_ANIMATION",
                         format!("Unknown step parameter: {k}"),
@@ -164,9 +172,18 @@ impl Engine {
                     loc,
                 ));
             }
+            let trigger = string(&args, "start", "click");
+            if !["click", "after-previous"].contains(&trigger.as_str()) {
+                return Err(self.error(
+                    "E_ANIMATION",
+                    "step start must be click or after-previous",
+                    loc,
+                ));
+            }
             let index = self.animation_steps.len();
             self.animation_steps.push(StepSpec {
                 name: string(&args, "name", &format!("Step {}", index + 1)),
+                trigger,
                 hold,
                 duration,
                 clips: vec![],
@@ -201,6 +218,7 @@ impl Engine {
                     "fill",
                     "vars",
                     "play_state",
+                    "start",
                 ]
                 .contains(&k.as_str())
             {
@@ -255,8 +273,44 @@ impl Engine {
         let mut timeline = Timeline::default();
         for spec in &self.animation_steps {
             let mut clips = vec![];
+            let mut previous_start = 0.;
+            let mut previous_end = Some(0.);
             for c in &spec.clips {
-                clips.extend(self.compile_clip(c, nodes, reduced, print)?);
+                let start = match string(&c.args, "start", "step").as_str() {
+                    "step" => 0.,
+                    "with-previous" => previous_start,
+                    "after-previous" => previous_end.ok_or_else(|| animation_error(
+                        "after-previous cannot follow an infinite or paused action; use a separate step with a finite duration",
+                        &c.file, c.loc,
+                    ))?,
+                    _ => return Err(animation_error("animate start must be step, with-previous or after-previous", &c.file, c.loc)),
+                };
+                let mut action = self.compile_clip(c, nodes, reduced, print)?;
+                for clip in &mut action {
+                    clip.delay += start;
+                    if !clip.delay.is_finite() {
+                        return Err(animation_error("Animation delay overflow", &c.file, c.loc));
+                    }
+                }
+                previous_start = action
+                    .iter()
+                    .map(|c| c.delay.max(start))
+                    .reduce(f64::min)
+                    .unwrap_or(start);
+                previous_end = if action
+                    .iter()
+                    .any(|c| c.paused || (c.iterations.is_none() && c.duration > 0.))
+                {
+                    None
+                } else {
+                    Some(
+                        action
+                            .iter()
+                            .map(|c| (c.delay + c.duration * c.iterations.unwrap_or(0.)).max(start))
+                            .fold(start, f64::max),
+                    )
+                };
+                clips.extend(action);
             }
             let unbounded = clips
                 .iter()
@@ -283,6 +337,7 @@ impl Engine {
             }
             let step = Step {
                 name: spec.name.clone(),
+                trigger: spec.trigger.clone(),
                 start: timeline.duration,
                 duration,
                 hold: spec.hold,

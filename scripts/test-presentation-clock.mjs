@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {PresentationClock} from '../site/live/presentation-clock.mjs';
+const timeline={duration:5,steps:[{start:0,duration:1,hold:1},{start:2,duration:2,hold:1}],reducedDuration:2,reducedSteps:[{start:0,duration:.1},{start:1,duration:.1}]};
+const c=new PresentationClock();c.install(timeline);assert.equal(c.time,0);assert.equal(c.running,false);
+c.advance();c.tick(.4);assert.equal(c.active,0);assert.equal(c.time,.4);c.advance();assert.equal(c.time,1);assert.equal(c.running,false);assert.equal(c.completed,1);
+c.advance();assert.equal(c.active,1);c.tick(9);assert.equal(c.time,4);assert.equal(c.completed,2);assert.equal(c.advance(),1);
+c.previous();assert.equal(c.time,2);assert.equal(c.completed,1);c.previous();assert.equal(c.time,0);assert.equal(c.previous(),-1);
+c.install(timeline);c.mode='auto';c.running=true;assert.equal(c.tick(1.5),0);assert.equal(c.running,true);assert.equal(c.tick(3.5),1);
+c.install(timeline,false,true);assert.equal(c.time,5);assert.equal(c.completed,2);c.seek(2.5);assert.equal(c.active,1);c.toggle();assert.equal(c.running,true);c.toggle();assert.equal(c.time,2.5);
+c.install(timeline,true);assert.equal(c.duration,2);c.mode='manual';c.advance();c.speed=2;c.tick(.06);assert.equal(c.time,.1);assert.equal(c.completed,1);
+c.install(null);c.speed=1;assert.equal(c.advance(),1);assert.equal(c.previous(),-1);c.mode='auto';c.running=true;assert.equal(c.tick(.5),0);assert.equal(c.tick(.5),1);
+console.log('Presentation clock: manual/automatic, boundaries, pause, seek, static and reduced motion passed.');
+const linked={duration:5,steps:[{start:0,duration:1,hold:.5,trigger:'after-previous'},{start:1.5,duration:1,hold:.5,trigger:'after-previous'},{start:3,duration:1,hold:1,trigger:'click'}]};
+c.mode='manual';c.install(linked);assert.equal(c.running,true);c.tick(1.2);assert.equal(c.running,true);assert.equal(c.completed,1);c.tick(.4);assert.equal(c.active,1);c.tick(9);assert.equal(c.time,2.5);assert.equal(c.running,false);c.advance();assert.equal(c.active,2);c.tick(1);assert.equal(c.running,false);
+c.install(linked,false,true);assert.equal(c.running,false);c.install(linked);c.tick(.4);c.advance();assert.equal(c.running,false);assert.equal(c.time,1);c.previous();assert.equal(c.time,0);assert.equal(c.running,false);
+console.log('Linked steps: entry trigger, automatic continuation, hold, next click, skip and rewind passed.');

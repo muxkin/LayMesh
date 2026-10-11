@@ -1,3 +1,8 @@
+import {PresentationSession} from './presentation-session.mjs';
+import {Presentation} from './presentation.mjs';
+import {uiIcon,iconLabel} from './presentation-icons.mjs';
+import {PresentationStore} from './presentation-store.mjs';
+import {PlaybackStats} from './playback-stats.mjs';
 import {AnimationPlayer} from './animation-player.mjs';
 import {mmPerUnit,canvasAt,niceStep,preparePlots,plotAt,formatData} from './preview-math.mjs';
 
@@ -10,16 +15,28 @@ const buttons={};for(const name of ['refresh','export','fit','actual','out','in'
 const zoom=el('output','zoom',toolbar),status=el('span','status',toolbar);
 const pageSelect=el('select','page-select',toolbar),openPage=el('button','',toolbar),exportDocument=el('button','',toolbar);
 pageSelect.hidden=openPage.hidden=exportDocument.hidden=true;
-openPage.type=exportDocument.type='button';
+openPage.type=exportDocument.type='button';openPage.dataset.action='open-page';exportDocument.dataset.action='export-document';
 pageSelect.onchange=()=>{view.mode='fit';view.pan={x:0,y:0};bridge.postMessage({type:'select-page',pageId:pageSelect.value});};
 openPage.onclick=()=>bridge.postMessage({type:'open-page'});
 exportDocument.onclick=()=>bridge.postMessage({type:'export-document'});
-const player=new AnimationPlayer(root,schedule,{locale:()=>locale,page:direction=>{const n=pageSelect.selectedIndex+direction;if(n<0||n>=pageSelect.options.length)return false;pageSelect.selectedIndex=n;pageSelect.onchange();return true;}});
+const playbackStats=new PlaybackStats();let wasRunning=false;
+const details=el('details','render-details',root),summary=el('summary','',details,'Skia'),metrics=el('output','',details);details.style.cssText='font-size:11px;padding:0 8px';
+const player=new AnimationPlayer(root,()=>{if(player?.running)playbackStats.refresh(performance.now());wasRunning=!!player?.running;schedule();},{locale:()=>locale,page:direction=>{const n=pageSelect.selectedIndex+direction;if(n<0||n>=pageSelect.options.length)return false;pageSelect.selectedIndex=n;pageSelect.onchange();return true;}});
+const motionMenu=el('details','motion-menu',toolbar);el('summary','',motionMenu,'▶');motionMenu.append(player.bar);
+const presentationMenu=el('details','presentation-choice',toolbar);el('summary','',presentationMenu,'放映 ▾');
+let previewResume=false;
+let deckResolve,deckReject,deckStore,deckReceive=Promise.resolve(),deckProgress,deckRevision,deckSession,deckRequest=0,deckRestart;
+const presentation=new Presentation({parent:root,base:new URL('./',import.meta.url),blobWorker:true,fullscreen:false,onEnter:()=>{previewResume=player.running;if(previewResume)player.action('play');},provider:({signal,onProgress})=>new Promise((resolve,reject)=>{
+ deckRevision=null;const requestId=++deckRequest;deckStore=new PresentationStore();const store=deckStore;deckSession=new PresentationSession(store,{onProgress,request:(id,retry)=>bridge.postMessage({type:'deck-priority',revision:deckRevision,pageId:id,retry}),stop:()=>bridge.postMessage({type:'deck-cancel',requestId})});deckSession.preparation={};deckResolve=resolve;deckReject=reject;deckProgress=onProgress;deckReceive=Promise.resolve();deckSession.firstReady.then(resolve,reject);signal.addEventListener('abort',()=>store.dispose(),{once:true});bridge.postMessage({type:'deck-prepare',requestId});
+}),onExit:()=>{bridge.postMessage({type:'deck-release'});if(previewResume)player.start();}});
+const presentationPopover=el('div','toolbar-popover',presentationMenu);presentationPopover.append(presentation.button);presentation.button.addEventListener('click',()=>{presentationMenu.open=false;bridge.postMessage({type:'deck-pin'});});
+const browserPresent=el('button','',presentationPopover,'在浏览器全屏放映');browserPresent.onclick=async()=>{presentationMenu.open=false;try{await presentation.prepare();bridge.postMessage({type:'deck-browser'});}catch(e){diagnostic={message:e.message};showDiagnostic();}};
+window.laymeshPresentation=presentation;
 const workspace=el('div','workspace',root),corner=el('span','corner',workspace),hr=el('canvas','ruler horizontal',workspace),vr=el('canvas','ruler vertical',workspace),viewport=el('div','viewport',workspace);
 viewport.tabIndex=0;viewport.setAttribute('role','region');
 const figure=el('div','figure',viewport),overview=el('canvas','figure-overview',figure);overview.hidden=true;overview.setAttribute('aria-hidden','true');overview.style.pointerEvents='none';let overviewContent='';
 let image=el('canvas','figure-pixels',figure);image.style.position='absolute';image.setAttribute('role','img');
-let rasterWorker,rasterReady,workerSequence=0,wasmMemoryBytes=0,drawReady=false,drawJobId='',drawKey='',drawGeneration=0,presented,pendingPaint,paintInFlight=false,paintTimer=0;
+let mainSkia,directCanvas=false,rasterWorker,rasterReady,workerSequence=0,wasmMemoryBytes=0,drawReady=false,drawJobId='',drawKey='',drawGeneration=0,presented,pendingPaint,paintInFlight=false,paintTimer=0;
 const workerCalls=new Map();
 function stopWorker(error){rasterWorker?.terminate();rasterWorker=null;rasterReady=null;drawReady=false;for(const call of workerCalls.values()){clearTimeout(call.timer);call.reject(error);}workerCalls.clear();}
 function workerCall(data,transfer=[]){return new Promise((resolve,reject)=>{
@@ -30,31 +47,39 @@ function startWorker(){if(rasterReady)return rasterReady;
  rasterReady=(async()=>{const response=await fetch(new URL('preview-worker.mjs',import.meta.url));if(!response.ok)throw Error('Canvas worker loading failed');
   const url=URL.createObjectURL(new Blob([await response.text()],{type:'text/javascript'}));
   try{rasterWorker=new Worker(url,{type:'module'});}finally{URL.revokeObjectURL(url);}
-  rasterWorker.onmessage=({data})=>{const call=workerCalls.get(data.requestId);if(!call)return;workerCalls.delete(data.requestId);clearTimeout(call.timer);if(data.type==='error')call.reject(Error(data.error));else call.resolve(data);};
+  rasterWorker.onmessage=({data})=>{if(data.type==='context'){root.dataset.renderBackend=data.ready?'Skia WebGL2':'Skia restoring';if(data.ready){drawKey='';presented=null;schedule();}return;}const call=workerCalls.get(data.requestId);if(!call)return;workerCalls.delete(data.requestId);clearTimeout(call.timer);if(data.type==='error')call.reject(Error(data.error));else call.resolve(data);};
   rasterWorker.onerror=error=>stopWorker(Error(error.message||'Canvas worker failed'));
-  await workerCall({type:'init',wasmURL:new URL('wasm/laymesh_wasm_bg.wasm',import.meta.url).href});
+  const canvas=image.cloneNode(false);image.replaceWith(canvas);image=canvas;mainSkia?.dispose();mainSkia=null;
+  const offscreen=canvas.transferControlToOffscreen?.();directCanvas=!!offscreen;
+  const wasmManifest=await(await fetch(new URL('wasm/manifest.json',import.meta.url))).json();
+  await workerCall({type:'init',wasmURL:new URL('wasm/'+wasmManifest.wasm,import.meta.url).href,skiaBase:new URL('skia/',import.meta.url).href,canvas:offscreen},offscreen?[offscreen]:[]);
  })().catch(error=>{stopWorker(error);throw error;});return rasterReady;
 }
 startWorker().catch(()=>{});
 const vertical=el('div','crosshair vertical',viewport),horizontal=el('div','crosshair horizontal',viewport);
 vertical.hidden=horizontal.hidden=true;
-const errors=el('div','errors',root),errorButton=el('button','error-location',errors),warnings=el('div','warnings',errors),readout=el('output','coordinates',root);
-errorButton.type='button';errorButton.hidden=true;
+const footer=el('footer','preview-footer',root),diagnosticMenu=el('details','diagnostic-menu',footer),diagnosticSummary=el('summary','',diagnosticMenu);diagnosticSummary.textContent='诊断';footer.append(status,details);
+const errors=el('div','errors',diagnosticMenu),errorHeading=el('div','diagnostic-heading',errors),errorTitle=el('strong','',errorHeading),closeError=el('button','',errorHeading),errorNote=el('p','diagnostic-note',errors),errorButton=el('button','error-location',errors),warnings=el('div','warnings',errors),readout=el('output','coordinates',footer);
+iconLabel(closeError,'close');closeError.onclick=()=>diagnosticMenu.open=false;const sourceError=el('button','source-diagnostics',errors);sourceError.onclick=()=>bridge.postMessage({type:'source'});errorButton.type='button';errorButton.hidden=true;const copyError=el('button','copy-diagnostics',errors,'复制');copyError.onclick=()=>{const field=el('textarea','',errors);field.value=[errorButton.textContent,warnings.textContent].filter(Boolean).join('\n');field.select();document.execCommand('copy');field.remove();};
 const pathContext=document.createElement('canvas').getContext('2d');let pathCache=new WeakMap();
 const text=(zh,en)=>/^zh/i.test(locale)?zh:en;
 function labels(){
- player.localize();
+ player.localize();iconLabel(presentationMenu.querySelector('summary'),'play',text('放映','Present'));presentationMenu.querySelector('summary').append(uiIcon('down'));iconLabel(presentation.button,'play',text('内嵌放映','Present here'));summary.textContent=text('详情','Details');closeError.setAttribute('aria-label',text('关闭诊断','Close diagnostics'));sourceError.textContent=text('跳转源码','Go to source');browserPresent.textContent=text('在浏览器全屏放映','Present in browser');copyError.textContent=text('复制','Copy');
  pageSelect.setAttribute('aria-label',text('文档页面','Document page'));
  openPage.textContent=text('编辑页面','Edit page');exportDocument.textContent=text('导出整本 PDF','Export document PDF');
  document.documentElement.lang=/^zh/i.test(locale)?'zh-CN':'en';
  const labels={refresh:text('刷新','Refresh'),export:text('导出','Export'),fit:text('适应窗口','Fit'),actual:'100%',out:'−',in:'+',rulers:text('标尺','Rulers')};
  for(const [name,button] of Object.entries(buttons)){button.textContent=labels[name];button.title=labels[name];button.setAttribute('aria-label',name==='out'?text('缩小','Zoom out'):name==='in'?text('放大','Zoom in'):labels[name]);}
+ iconLabel(buttons.export,'export',text('导出','Export'));
  viewport.setAttribute('aria-label',text('图形预览；Ctrl 加滚轮缩放，空格加拖动平移','Figure preview; Ctrl/Command + wheel to zoom, Space + drag to pan'));
  image.alt=text('LayMesh 图形预览','LayMesh figure preview');
  hr.setAttribute('aria-label',text('水平标尺','Horizontal ruler'));vr.setAttribute('aria-label',text('垂直标尺','Vertical ruler'));
  errorButton.title=text('跳转到源码','Go to source');
  buttons.rulers.setAttribute('aria-pressed',String(view.rulers));
 }
+const more=el('details','preview-more',toolbar);const moreSummary=el('summary','',more);iconLabel(moreSummary,'more');moreSummary.setAttribute('aria-label','More');const morePopover=el('div','toolbar-popover',more);for(const b of [buttons.refresh,buttons.actual,buttons.out,buttons.in,buttons.rulers,openPage,exportDocument,motionMenu])morePopover.append(b);toolbar.replaceChildren(pageSelect,buttons.fit,zoom,presentationMenu,buttons.export,more);footer.replaceChildren(diagnosticMenu,status,readout,details);
+for(const menu of [more,presentationMenu,diagnosticMenu,details])menu.addEventListener('toggle',()=>{if(menu.open)for(const other of [more,presentationMenu,diagnosticMenu,details])if(other!==menu)other.open=false;});
+document.addEventListener('pointerdown',e=>{for(const menu of [more,presentationMenu,diagnosticMenu,details])if(menu.open&&!menu.contains(e.target))menu.open=false;});
 function persist(){bridge.setState({mode:view.mode,scale:view.scale,pan:view.pan,rulers:view.rulers});}
 function containsPath(shape,p){
  let path=pathCache.get(shape);if(!path){try{path=new Path2D(shape.d);pathCache.set(shape,path);}catch{return false;}}
@@ -134,11 +159,12 @@ async function installFrame(data){
  const bytes=data.displayListCompressed?.data,transfer=bytes instanceof Uint8Array?[bytes.buffer]:[];
  const installed=await workerCall({type:'install',generation:data.generation,page:data.inspection.page,displayListId:data.displayListId,displayListUpdate:data.displayListUpdate,displayListReplay:data.displayListReplay,displayList:data.displayList,displayListCompressed:data.displayListCompressed,drawingResources:data.drawingResources,resources:data.resources,previewSettings:data.previewSettings},transfer);
  if(sequence!==renderSequence)return;
+ if(!directCanvas){const {initializeSkia,SkiaRenderer}=await import('./skia-renderer.mjs');if(!mainSkia){const meta=await(await fetch(new URL('skia/manifest.json',import.meta.url))).json();mainSkia=new SkiaRenderer(await initializeSkia(new URL('skia/'+meta.wasm,import.meta.url).href),image,{onContextChange:ready=>{if(ready){drawKey='';presented=null;schedule();}}});}await mainSkia.install(installed.scene,id=>installed.sceneResources[id],data.generation,data.previewSettings?.cache_mb??256);}
  drawReady=true;drawJobId=data.displayListId||data.displayListCompressed?.id||String(data.generation);if(!installed.reused)drawKey='';wasmMemoryBytes=installed.wasmMemoryBytes;
  drawGeneration=data.generation;
  player.update(data.inspection.animation);
  page=data.inspection.page;plots=preparePlots(data.inspection);pathCache=new WeakMap();
- warnings.textContent=(data.inspection.warnings||[]).map(w=>`${w.code}: ${w.message}`).join('\n');
+ warnings.textContent=(data.inspection.warnings||[]).map(w=>`${w.code}: ${w.message}`).join('\n');showDiagnostic();
  frameTimings={initializationWaitMs:installed.initializationWaitMs,resourcesMs:installed.resourcesMs,installMs:installed.installMs};
  root.dataset.generation=String(data.generation);root.dataset.painted='false';showStatus('success');
  // Present a newly installed frame immediately. Background webviews can defer
@@ -150,7 +176,7 @@ function positionPixels(){if(!presented||!page)return;const c=presented.crop;Obj
  overview.hidden=player.time!==null||overviewContent!==drawJobId;
  if(!overview.hidden){const [x0,y0,x1,y1]=c.map((v,i)=>100*v/(i%2?page.height:page.width));Object.assign(overview.style,{position:'absolute',left:'0',top:'0',width:page.width*view.scale+'px',height:page.height*view.scale+'px',clipPath:`polygon(evenodd,0% 0%,100% 0%,100% 100%,0% 100%,0% 0%,${x0}% ${y0}%,${x1}% ${y0}%,${x1}% ${y1}%,${x0}% ${y1}%,${x0}% ${y0}%)`});}
 }
-function reportPaint(rasterMs){root.dataset.painted='true';root.dataset.rasterMs=String(rasterMs);bridge.postMessage({type:'painted',generation:drawGeneration,displayListId:drawJobId,at:Date.now(),rasterMs,wasmMemoryBytes,...frameTimings,width:image.width,height:image.height});}
+function reportPaint(rasterMs){if(!presentation.opened)presentation.prepare().catch(()=>{});root.dataset.painted='true';root.dataset.rasterMs=String(rasterMs);bridge.postMessage({type:'painted',generation:drawGeneration,displayListId:drawJobId,at:Date.now(),rasterMs,wasmMemoryBytes,...frameTimings,width:image.width,height:image.height});}
 function paint(r,force=false){
  if(!drawReady)return;positionPixels();
  const left=Math.max(0,r.left),top=Math.max(0,r.top),right=Math.min(viewport.clientWidth,r.left+r.width),bottom=Math.min(viewport.clientHeight,r.top+r.height);
@@ -162,30 +188,45 @@ function paint(r,force=false){
  const pad=96/view.scale,crop=[Math.max(0,visible[0]-pad),Math.max(0,visible[1]-pad),Math.min(page.width,visible[2]+pad),Math.min(page.height,visible[3]+pad)];
  const width=Math.max(1,Math.ceil((crop[2]-crop[0])*view.scale*dpr)),height=Math.max(1,Math.ceil((crop[3]-crop[1])*view.scale*dpr));
  const key=JSON.stringify([drawJobId,crop,width,height,player.time,player.reduced]);if(key===drawKey)return;drawKey=key;root.dataset.painted='false';
- pendingPaint={time:player.time,reduced:player.reduced,type:'paint',generation:drawGeneration,crop,width,height,content:drawJobId,scale:view.scale,dpr,key};
+ pendingPaint={running:player.running,time:player.time,reduced:player.reduced,type:'paint',generation:drawGeneration,crop,width,height,content:drawJobId,scale:view.scale,dpr,key};
  clearTimeout(paintTimer);paintTimer=0;
  // Translate the retained Canvas immediately. Changing zoom temporarily
  // scales its pixels; the worker restores exact DPR pixels after motion settles.
  if(force||presented?.scale===view.scale)flushPaint();else paintTimer=setTimeout(()=>{paintTimer=0;flushPaint();},80);
 }
 async function flushPaint(){if(paintInFlight||!pendingPaint||!rasterWorker)return;
- const request=pendingPaint;pendingPaint=null;paintInFlight=true;
+ const request=pendingPaint;pendingPaint=null;paintInFlight=true;if(request.running)playbackStats.submit(performance.now());
  try{const data=await workerCall(request);
   if(data.type==='painted'&&data.generation===drawGeneration&&request.content===drawJobId&&(request.key===drawKey||pendingPaint)){
-   image.width=data.width;image.height=data.height;image.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(data.rgba.buffer,data.rgba.byteOffset,data.rgba.byteLength),data.width,data.height),0,0);
-   if(data.overview){const o=data.overview;overview.width=o.width;overview.height=o.height;overview.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(o.rgba.buffer,o.rgba.byteOffset,o.rgba.byteLength),o.width,o.height),0,0);overviewContent=request.content;}
-   else if(request.crop[0]===0&&request.crop[1]===0&&request.crop[2]===page.width&&request.crop[3]===page.height){const s=Math.min(768/page.width,2048/page.height,Math.sqrt(500000/(page.width*page.height)));overview.width=Math.max(1,Math.floor(page.width*s));overview.height=Math.max(1,Math.floor(page.height*s));overview.getContext('2d').drawImage(image,0,0,overview.width,overview.height);overviewContent=request.content;}
+   if(!directCanvas){const metrics=mainSkia.render(request.crop,data.width,data.height,data.states,data.generation,!!request.running);if(metrics.skipped)return;Object.assign(data,metrics);}root.dataset.renderBackend=data.backend;root.dataset.renderWidth=String(data.width);root.dataset.renderHeight=String(data.height);root.dataset.sampleMs=String(data.sampleMs);
+   if(request.time===null&&request.crop[0]===0&&request.crop[1]===0&&request.crop[2]===page.width&&request.crop[3]===page.height){const s=Math.min(768/page.width,2048/page.height,Math.sqrt(500000/(page.width*page.height)));overview.width=Math.max(1,Math.floor(page.width*s));overview.height=Math.max(1,Math.floor(page.height*s));overview.getContext('2d').drawImage(image,0,0,overview.width,overview.height);overviewContent=request.content;}
+   if(request.running)requestAnimationFrame(now=>{playbackStats.record(`${request.generation}:${request.time}`,now);});
+   summary.textContent=text('详情','Details');summary.title=`${data.backend} · ${data.width}×${data.height}`;
+   metrics.textContent=`${data.backend} · ${data.width}×${data.height} · ${text('采样','Sample')} ${data.sampleMs.toFixed(2)} ms · ${text('绘制提交','Draw submission')} ${data.rasterMs.toFixed(2)} ms${data.gpuMs==null?'':` · GPU ${data.gpuMs.toFixed(2)} ms`} · ${text('呈现估计','Presentation estimate')} ${playbackStats.fps.toFixed(1)} fps · ${text('提交','Submissions')} ${playbackStats.submissionFps.toFixed(1)} fps · ${text('错过时隙估计','Missed slots estimate')} ${playbackStats.missedPercent.toFixed(1)}%`;
    presented=request;wasmMemoryBytes=data.wasmMemoryBytes;positionPixels();if(request.key===drawKey)reportPaint(data.rasterMs);
   }
  }catch(error){if(request.generation===drawGeneration&&request.key===drawKey){drawKey='';diagnostic={code:'E_PREVIEW_RENDER',message:String(error)};showDiagnostic();showStatus('error');}}
  finally{paintInFlight=false;if(pendingPaint&&!paintTimer)flushPaint();}
 }
-function showStatus(value){root.dataset.state=value;status.textContent=({pending:text('等待更新 · 预览已过期','Pending · preview stale'),rendering:text('渲染中 · 预览已过期','Rendering · preview stale'),success:text('已更新','Updated'),error:text('错误 · 预览已过期','Error · preview stale')})[value]||'';}
+function showStatus(value){root.dataset.state=value;status.textContent=({pending:text('等待更新 · 预览已过期','Pending · preview stale'),rendering:text('渲染中 · 预览已过期','Rendering · preview stale'),success:text('已更新','Updated'),error:text('源码有错误 · 显示上次结果','Source error · last successful preview')})[value]||'';}
 function showDiagnostic(){
+ const count=warnings.textContent?warnings.textContent.split('\n').length:0;const label=diagnostic?text(`1 个错误${count?' · '+count+' 个警告':''}`,`1 error${count?' · '+count+' warnings':''}`):text(`${count} 个警告`,`${count} warnings`);iconLabel(diagnosticSummary,'warning',label);errorTitle.textContent=label;diagnosticMenu.hidden=!diagnostic&&!count;if(diagnosticMenu.hidden)diagnosticMenu.open=false;errorNote.textContent=diagnostic?text('源码有错误，显示上次结果','Source error; showing last successful result'):'';sourceError.hidden=!diagnostic;
  errorButton.hidden=!diagnostic;
  if(diagnostic)errorButton.textContent=`${diagnostic.code||'E_PREVIEW'} ${diagnostic.file?diagnostic.file+':'+(diagnostic.loc?.line||1)+':'+(diagnostic.loc?.column||1)+' — ':''}${text(diagnostic.messageZh||diagnostic.message,diagnostic.message)}`;
 }
 window.addEventListener('message',({data})=>{
+ if(data?.type?.startsWith('deck-')){
+  if(data.type==='deck-browser-error'){diagnostic={code:'E_PRESENTATION',message:data.error};showDiagnostic();return;}
+  if(data.type==='deck-invalidated'){clearTimeout(deckRestart);presentation.invalidate();if(data.background)deckRestart=setTimeout(()=>{if(root.dataset.state==='success'&&!presentation.opened)presentation.prepare().catch(()=>{});},250);return;}
+  if(data.requestId!==undefined&&data.requestId!==deckRequest)return;
+  if(data.type==='deck-plan'){deckRevision=data.revision;deckStore.budget=data.budget;deckSession.budget=data.budget;deckSession.plan(data.pages);return;}
+  if(deckRevision&&data.revision&&data.revision!==deckRevision)return;
+  if(data.type==='deck-progress')return; // Stored artifact readiness is reported by the session.
+  if(data.type==='deck-error'){deckSession?.fail(data.pageId,Error(data.error));if(!data.pageId)deckReject?.(Error(data.error));return;}
+  if(data.type==='deck-page'){const store=deckStore,session=deckSession;deckReceive=deckReceive.then(async()=>{if(store!==deckStore||store.closed)return;const page=data.page;page.resources={};for(const [id,url]of Object.entries(page.resourceUrls)){if(store.resources.has(id))continue;const r=await fetch(url);if(!r.ok)throw Error('Presentation resource unavailable');page.resources[id]=new Uint8Array(await r.arrayBuffer());}if(store!==deckStore||store.closed)return;delete page.resourceUrls;await store.add(page);session.ready(store.pages.find(p=>p.id===page.id));bridge.postMessage({type:'deck-ack',revision:data.revision,pageId:page.id});}).catch(e=>{if(store===deckStore&&!store.closed){bridge.postMessage({type:'deck-cancel'});store.dispose();deckReject?.(e);}});}
+  if(data.type==='deck-ready'){const store=deckStore;deckReceive.then(()=>{if(store===deckStore&&!store.closed){deckSession.prepareMs=data.prepareMs;Object.assign(deckSession.preparation,data.preparation);}});}return;
+ }
+
  if(data?.type==='initial'){locale=data.locale||'en';if((!initialized&&saved.rulers===undefined)||data.forceRulers)view.rulers=data.showRulers!==false;initialized=true;labels();showDiagnostic();if(root.dataset.state)showStatus(root.dataset.state);schedule();}
  else if(data?.type==='status'){if(data.status!=='success')renderSequence++;showStatus(data.status);}
  else if(data?.type==='result'){
@@ -199,5 +240,5 @@ window.addEventListener('message',({data})=>{
   else{diagnostic={code:'E_PREVIEW_PROTOCOL',message:'Expected drawing protocol 3'};showDiagnostic();showStatus('error');}
  }
 });
-window.addEventListener('pagehide',()=>{renderSequence++;clearTimeout(paintTimer);pendingPaint=null;stopWorker(Error('Preview closed'));});
+window.addEventListener('pagehide',()=>{presentation.dispose();renderSequence++;clearTimeout(paintTimer);pendingPaint=null;stopWorker(Error('Preview closed'));});
 labels();bridge.postMessage({type:'ready'});

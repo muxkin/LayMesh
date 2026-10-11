@@ -1,0 +1,602 @@
+{
+  "source": "User-supplied levels 8–10 static-cache A/B, 2026-10-11",
+  "sourceSha256": "e7a6ce540364c147dc9746665888652478f65acc6d31bb1c0cb4dbfefb306836",
+  "hardwareAcceptance": false,
+  "measurements": [
+    {
+      "workloadVersion": "progressive-v1",
+      "rendererVersion": "static-tiles-v1",
+      "cacheStatic": true,
+      "buffer": [
+        3840,
+        2160
+      ],
+      "screen": [
+        1920,
+        1080
+      ],
+      "dpr": 2,
+      "fullscreen": false,
+      "canvasCssSize": [
+        960,
+        540
+      ],
+      "suite": "stress",
+      "targetFps": "display",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
+      "visibility": "visible",
+      "rounds": [
+        {
+          "scene": "08-motion-2d",
+          "label": "08 · 图表与公式同时做二维动画",
+          "round": 1,
+          "elapsedMs": 10000.399999976158,
+          "frames": 740,
+          "sceneStats": {
+            "nodes": 3283,
+            "groups": 1794,
+            "paths": 1399,
+            "pathElements": 24058,
+            "glyphs": 444,
+            "glyphPathElements": 7100,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 37
+          },
+          "fullscreen": false,
+          "canvasCssSize": [
+            960,
+            540
+          ],
+          "presentationEstimateFps": 73.99704011857168,
+          "submissionFps": 73.99704011857168,
+          "requestFps": 77.99688012498096,
+          "refreshCallbackHz": 158.73015873045205,
+          "refreshIntervalMedianMs": 6.2999999999883585,
+          "refreshIntervalP95Ms": 12.5,
+          "frameIntervalP95Ms": 18.799999999995634,
+          "targetDeliveryShortfallPercent": 53.381864725385995,
+          "drawSubmissionP95": 13.299999952316284,
+          "sampleP95": 0.3999999761581421,
+          "gpuP95": 16.18303,
+          "gpuQueryCount": 740,
+          "gpuDrawDutyEstimatePercent": 61.18976660948153,
+          "cachePeakBytes": 0,
+          "staticTexturePeakBytes": 33497996,
+          "staticCacheHits": 1480,
+          "staticCacheBuilds": 0,
+          "gpuBackpressureSkips": 40,
+          "samplerOutputCharsPeak": 6498
+        },
+        {
+          "scene": "09-motion-3d",
+          "label": "09 · 加入透视翻转与描线动画",
+          "round": 1,
+          "elapsedMs": 10012.5,
+          "frames": 512,
+          "sceneStats": {
+            "nodes": 3307,
+            "groups": 1806,
+            "paths": 1411,
+            "pathElements": 24082,
+            "glyphs": 444,
+            "glyphPathElements": 7107,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 113
+          },
+          "fullscreen": false,
+          "canvasCssSize": [
+            960,
+            540
+          ],
+          "presentationEstimateFps": 51.13607990012484,
+          "submissionFps": 51.13607990012484,
+          "requestFps": 51.73533083645443,
+          "refreshCallbackHz": 158.73015873045205,
+          "refreshIntervalMedianMs": 6.2999999999883585,
+          "refreshIntervalP95Ms": 18.70000000001164,
+          "frameIntervalP95Ms": 25,
+          "targetDeliveryShortfallPercent": 67.78426966298088,
+          "drawSubmissionP95": 19,
+          "sampleP95": 0.8000000715255737,
+          "gpuP95": 20.72222,
+          "gpuQueryCount": 512,
+          "gpuDrawDutyEstimatePercent": 65.79661443196007,
+          "cachePeakBytes": 0,
+          "staticTexturePeakBytes": 19028620,
+          "staticCacheHits": 33280,
+          "staticCacheBuilds": 0,
+          "gpuBackpressureSkips": 6,
+          "samplerOutputCharsPeak": 29328
+        },
+        {
+          "scene": "10-dense",
+          "label": "10 · 24 张图、48 个公式、512 组图案",
+          "round": 1,
+          "elapsedMs": 10017.199999928474,
+          "frames": 221,
+          "sceneStats": {
+            "nodes": 6777,
+            "groups": 3598,
+            "paths": 3001,
+            "pathElements": 57991,
+            "glyphs": 820,
+            "glyphPathElements": 13032,
+            "images": 8,
+            "effectLayers": 96,
+            "maxDepth": 9,
+            "resources": 9,
+            "animatedTargets": 213
+          },
+          "fullscreen": false,
+          "canvasCssSize": [
+            960,
+            540
+          ],
+          "presentationEstimateFps": 22.06205326853592,
+          "submissionFps": 22.06205326853592,
+          "requestFps": 22.461366449866887,
+          "refreshCallbackHz": 158.7301587300854,
+          "refreshIntervalMedianMs": 6.30000000000291,
+          "refreshIntervalP95Ms": 37.5,
+          "frameIntervalP95Ms": 56.19999999999709,
+          "targetDeliveryShortfallPercent": 86.10090644081595,
+          "drawSubmissionP95": 49.799999952316284,
+          "sampleP95": 1.399999976158142,
+          "gpuP95": 50.09348,
+          "gpuQueryCount": 221,
+          "gpuDrawDutyEstimatePercent": 80.673091882539,
+          "cachePeakBytes": 0,
+          "staticTexturePeakBytes": 18763660,
+          "staticCacheHits": 28509,
+          "staticCacheBuilds": 0,
+          "gpuBackpressureSkips": 4,
+          "samplerOutputCharsPeak": 47260
+        }
+      ],
+      "preparations": [
+        {
+          "scene": "08-motion-2d",
+          "parameters": {
+            "id": "08-motion-2d",
+            "label": "08 · 图表与公式同时做二维动画",
+            "patterns": 256,
+            "charts": 12,
+            "formulas": 24,
+            "effects": true,
+            "motion": "2d",
+            "samplesPerLine": 192,
+            "seriesPerLineChart": 3,
+            "heatmapSide": 16
+          },
+          "wallMs": 2410.2999999523163,
+          "metrics": {
+            "initialization": 153.89999997615814,
+            "resources": 0,
+            "compile": 2062.9000000953674,
+            "lower": 11.699999928474426,
+            "raster": 0,
+            "total": 2074.600000023842
+          },
+          "sceneStats": {
+            "nodes": 3283,
+            "groups": 1794,
+            "paths": 1399,
+            "pathElements": 24058,
+            "glyphs": 444,
+            "glyphPathElements": 7100,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 37
+          }
+        },
+        {
+          "scene": "09-motion-3d",
+          "parameters": {
+            "id": "09-motion-3d",
+            "label": "09 · 加入透视翻转与描线动画",
+            "patterns": 256,
+            "charts": 12,
+            "formulas": 24,
+            "effects": true,
+            "motion": "3d",
+            "samplesPerLine": 192,
+            "seriesPerLineChart": 3,
+            "heatmapSide": 16
+          },
+          "wallMs": 2331.7000000476837,
+          "metrics": {
+            "initialization": 153.89999997615814,
+            "resources": 0,
+            "compile": 2007.5,
+            "lower": 14.5,
+            "raster": 0,
+            "total": 2022
+          },
+          "sceneStats": {
+            "nodes": 3307,
+            "groups": 1806,
+            "paths": 1411,
+            "pathElements": 24082,
+            "glyphs": 444,
+            "glyphPathElements": 7107,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 113
+          }
+        },
+        {
+          "scene": "10-dense",
+          "parameters": {
+            "id": "10-dense",
+            "label": "10 · 24 张图、48 个公式、512 组图案",
+            "patterns": 512,
+            "charts": 24,
+            "formulas": 48,
+            "effects": true,
+            "motion": "3d",
+            "dense": true,
+            "samplesPerLine": 384,
+            "seriesPerLineChart": 3,
+            "heatmapSide": 24
+          },
+          "wallMs": 13606.100000023842,
+          "metrics": {
+            "initialization": 153.89999997615814,
+            "resources": 0,
+            "compile": 12903.100000023842,
+            "lower": 21.299999952316284,
+            "raster": 0,
+            "total": 12924.399999976158
+          },
+          "sceneStats": {
+            "nodes": 6777,
+            "groups": 3598,
+            "paths": 3001,
+            "pathElements": 57991,
+            "glyphs": 820,
+            "glyphPathElements": 13032,
+            "images": 8,
+            "effectLayers": 96,
+            "maxDepth": 9,
+            "resources": 9,
+            "animatedTargets": 213
+          }
+        }
+      ],
+      "hardwareAcceptance": false,
+      "presentationDefinition": "Worker-completed draw submissions observed on requestAnimationFrame; neither GPU completion nor compositor scan-out is directly measured by this estimate.",
+      "gpuDefinition": "WebGL timer queries for this canvas draw only; excludes compositor/Copy/other processes. Each completed GPU query counted once.",
+      "tableDefinition": "CPU/sample P95: worst round; GPU P95 and fps: median round; GPU multiplier: previous selected stage.",
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, AMD Radeon RX 6750 GRE 12GB (0x000073DF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "stopped": false
+    },
+    {
+      "workloadVersion": "progressive-v1",
+      "rendererVersion": "static-tiles-v1",
+      "cacheStatic": false,
+      "buffer": [
+        3840,
+        2160
+      ],
+      "screen": [
+        1920,
+        1080
+      ],
+      "dpr": 2,
+      "fullscreen": false,
+      "canvasCssSize": [
+        960,
+        540
+      ],
+      "suite": "stress",
+      "targetFps": "display",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
+      "visibility": "visible",
+      "rounds": [
+        {
+          "scene": "08-motion-2d",
+          "label": "08 · 图表与公式同时做二维动画",
+          "round": 1,
+          "elapsedMs": 10018,
+          "frames": 463,
+          "sceneStats": {
+            "nodes": 3283,
+            "groups": 1794,
+            "paths": 1399,
+            "pathElements": 24058,
+            "glyphs": 444,
+            "glyphPathElements": 7100,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 37
+          },
+          "fullscreen": false,
+          "canvasCssSize": [
+            960,
+            540
+          ],
+          "presentationEstimateFps": 46.21680974246357,
+          "submissionFps": 46.21680974246357,
+          "requestFps": 46.51627071271711,
+          "refreshCallbackHz": 158.73015873045205,
+          "refreshIntervalMedianMs": 6.2999999999883585,
+          "refreshIntervalP95Ms": 18.70000000001164,
+          "frameIntervalP95Ms": 25.10000000000582,
+          "targetDeliveryShortfallPercent": 70.88340986230176,
+          "drawSubmissionP95": 21.59999990463257,
+          "sampleP95": 0.3999999761581421,
+          "gpuP95": 27.15942,
+          "gpuQueryCount": 463,
+          "gpuDrawDutyEstimatePercent": 77.34114573767222,
+          "cachePeakBytes": 0,
+          "staticTexturePeakBytes": 0,
+          "staticCacheHits": 0,
+          "staticCacheBuilds": 0,
+          "gpuBackpressureSkips": 3,
+          "samplerOutputCharsPeak": 6499
+        },
+        {
+          "scene": "09-motion-3d",
+          "label": "09 · 加入透视翻转与描线动画",
+          "round": 1,
+          "elapsedMs": 10025.200000047684,
+          "frames": 375,
+          "sceneStats": {
+            "nodes": 3307,
+            "groups": 1806,
+            "paths": 1411,
+            "pathElements": 24082,
+            "glyphs": 444,
+            "glyphPathElements": 7107,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 113
+          },
+          "fullscreen": false,
+          "canvasCssSize": [
+            960,
+            540
+          ],
+          "presentationEstimateFps": 37.40573754121777,
+          "submissionFps": 37.40573754121777,
+          "requestFps": 37.605234808104264,
+          "refreshCallbackHz": 158.73015873045205,
+          "refreshIntervalMedianMs": 6.2999999999883585,
+          "refreshIntervalP95Ms": 12.5,
+          "frameIntervalP95Ms": 31.300000000017462,
+          "targetDeliveryShortfallPercent": 76.43438534907635,
+          "drawSubmissionP95": 27.100000023841858,
+          "sampleP95": 0.8000000715255737,
+          "gpuP95": 26.60425,
+          "gpuQueryCount": 375,
+          "gpuDrawDutyEstimatePercent": 67.34935352878635,
+          "cachePeakBytes": 0,
+          "staticTexturePeakBytes": 0,
+          "staticCacheHits": 0,
+          "staticCacheBuilds": 0,
+          "gpuBackpressureSkips": 2,
+          "samplerOutputCharsPeak": 29328
+        },
+        {
+          "scene": "10-dense",
+          "label": "10 · 24 张图、48 个公式、512 组图案",
+          "round": 1,
+          "elapsedMs": 10011.600000023842,
+          "frames": 162,
+          "sceneStats": {
+            "nodes": 6777,
+            "groups": 3598,
+            "paths": 3001,
+            "pathElements": 57991,
+            "glyphs": 820,
+            "glyphPathElements": 13032,
+            "images": 8,
+            "effectLayers": 96,
+            "maxDepth": 9,
+            "resources": 9,
+            "animatedTargets": 213
+          },
+          "fullscreen": false,
+          "canvasCssSize": [
+            960,
+            540
+          ],
+          "presentationEstimateFps": 16.18122977342425,
+          "submissionFps": 16.18122977342425,
+          "requestFps": 16.18122977342425,
+          "refreshCallbackHz": 158.73015873045205,
+          "refreshIntervalMedianMs": 6.2999999999883585,
+          "refreshIntervalP95Ms": 37.5,
+          "frameIntervalP95Ms": 68.79999999998836,
+          "targetDeliveryShortfallPercent": 89.80582524276157,
+          "drawSubmissionP95": 63.199999928474426,
+          "sampleP95": 1.2000000476837158,
+          "gpuP95": 59.23709,
+          "gpuQueryCount": 162,
+          "gpuDrawDutyEstimatePercent": 84.6165405128034,
+          "cachePeakBytes": 0,
+          "staticTexturePeakBytes": 0,
+          "staticCacheHits": 0,
+          "staticCacheBuilds": 0,
+          "gpuBackpressureSkips": 0,
+          "samplerOutputCharsPeak": 47268
+        }
+      ],
+      "preparations": [
+        {
+          "scene": "08-motion-2d",
+          "parameters": {
+            "id": "08-motion-2d",
+            "label": "08 · 图表与公式同时做二维动画",
+            "patterns": 256,
+            "charts": 12,
+            "formulas": 24,
+            "effects": true,
+            "motion": "2d",
+            "samplesPerLine": 192,
+            "seriesPerLineChart": 3,
+            "heatmapSide": 16
+          },
+          "wallMs": 2315,
+          "metrics": {
+            "initialization": 153.89999997615814,
+            "resources": 0,
+            "compile": 1955.4000000953674,
+            "lower": 12.199999928474426,
+            "raster": 0,
+            "total": 1967.6000000238419
+          },
+          "sceneStats": {
+            "nodes": 3283,
+            "groups": 1794,
+            "paths": 1399,
+            "pathElements": 24058,
+            "glyphs": 444,
+            "glyphPathElements": 7100,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 37
+          }
+        },
+        {
+          "scene": "09-motion-3d",
+          "parameters": {
+            "id": "09-motion-3d",
+            "label": "09 · 加入透视翻转与描线动画",
+            "patterns": 256,
+            "charts": 12,
+            "formulas": 24,
+            "effects": true,
+            "motion": "3d",
+            "samplesPerLine": 192,
+            "seriesPerLineChart": 3,
+            "heatmapSide": 16
+          },
+          "wallMs": 2330.899999976158,
+          "metrics": {
+            "initialization": 153.89999997615814,
+            "resources": 0,
+            "compile": 2027.6000000238419,
+            "lower": 10.800000071525574,
+            "raster": 0,
+            "total": 2038.4000000953674
+          },
+          "sceneStats": {
+            "nodes": 3307,
+            "groups": 1806,
+            "paths": 1411,
+            "pathElements": 24082,
+            "glyphs": 444,
+            "glyphPathElements": 7107,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 113
+          }
+        },
+        {
+          "scene": "10-dense",
+          "parameters": {
+            "id": "10-dense",
+            "label": "10 · 24 张图、48 个公式、512 组图案",
+            "patterns": 512,
+            "charts": 24,
+            "formulas": 48,
+            "effects": true,
+            "motion": "3d",
+            "dense": true,
+            "samplesPerLine": 384,
+            "seriesPerLineChart": 3,
+            "heatmapSide": 24
+          },
+          "wallMs": 13505.100000023842,
+          "metrics": {
+            "initialization": 153.89999997615814,
+            "resources": 0,
+            "compile": 12809.900000095367,
+            "lower": 20.799999952316284,
+            "raster": 0,
+            "total": 12830.700000047684
+          },
+          "sceneStats": {
+            "nodes": 6777,
+            "groups": 3598,
+            "paths": 3001,
+            "pathElements": 57991,
+            "glyphs": 820,
+            "glyphPathElements": 13032,
+            "images": 8,
+            "effectLayers": 96,
+            "maxDepth": 9,
+            "resources": 9,
+            "animatedTargets": 213
+          }
+        }
+      ],
+      "hardwareAcceptance": false,
+      "presentationDefinition": "Worker-completed draw submissions observed on requestAnimationFrame; neither GPU completion nor compositor scan-out is directly measured by this estimate.",
+      "gpuDefinition": "WebGL timer queries for this canvas draw only; excludes compositor/Copy/other processes. Each completed GPU query counted once.",
+      "tableDefinition": "CPU/sample P95: worst round; GPU P95 and fps: median round; GPU multiplier: previous selected stage.",
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, AMD Radeon RX 6750 GRE 12GB (0x000073DF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "stopped": false
+    }
+  ],
+  "comparisons": [
+    {
+      "scene": "08-motion-2d",
+      "fpsOff": 46.21680974246357,
+      "fpsOn": 73.99704011857168,
+      "fpsRatio": 1.6010849846821835,
+      "gpuP95OffMs": 27.15942,
+      "gpuP95OnMs": 16.18303,
+      "staticTextureMiB": 31.946178436279297,
+      "cacheHitsPerFrame": 2.0
+    },
+    {
+      "scene": "09-motion-3d",
+      "fpsOff": 37.40573754121777,
+      "fpsOn": 51.13607990012484,
+      "fpsRatio": 1.367065141912453,
+      "gpuP95OffMs": 26.60425,
+      "gpuP95OnMs": 20.72222,
+      "staticTextureMiB": 18.147106170654297,
+      "cacheHitsPerFrame": 65.0
+    },
+    {
+      "scene": "10-dense",
+      "fpsOff": 16.18122977342425,
+      "fpsOn": 22.06205326853592,
+      "fpsRatio": 1.3634348919987667,
+      "gpuP95OffMs": 59.23709,
+      "gpuP95OnMs": 50.09348,
+      "staticTextureMiB": 17.894420623779297,
+      "cacheHitsPerFrame": 129.0
+    }
+  ],
+  "limitations": [
+    "One 10-second round per setting on an RX 6750 GRE, windowed 4K buffer, display-refresh mode.",
+    "Level 8 average estimate exceeds 60 fps, but its 18.8 ms frame-interval P95 does not establish smooth 60-Hz presentation.",
+    "Static-cache results precede animated-object texture caching.",
+    "GPU/submission timings overlap and must not be summed.",
+    "Level 10 compile costs 12.8–12.9 seconds separately from playback."
+  ]
+}

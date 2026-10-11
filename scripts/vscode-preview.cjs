@@ -132,11 +132,11 @@ exports.run=async()=>{
  compacted=compactReplay(compacted,child);assert.deepEqual(observed(compacted).displayList,observed(child).displayList);
  evidence.checks.push('24 replay updates compact to one lossless delta; ancestor/descendant, root-count and resource replacement validated');
  const enqueue=PreviewWorker.prototype.enqueue;let releaseOlder,hold=true;
- PreviewWorker.prototype.enqueue=function(job){if(hold&&job.file===file){hold=false;const done=job.done;job={...job,done:response=>{releaseOlder=()=>done(response);}};}return enqueue.call(this,job);};
+ PreviewWorker.prototype.enqueue=function(job){if(hold&&job.file===file&&!job.request.presentation_revision){hold=false;const done=job.done;job={...job,done:response=>{releaseOlder=()=>done(response);}};}return enqueue.call(this,job);};
  try{
   await replace(dependencyDoc,'export top=7');await until(()=>releaseOlder,'Held older result');
   count=host.messages.length;await replace(dependencyDoc,'export top=8');await until(()=>host.messages.slice(count).find(m=>m.displayList),'Newer result');
-  const beforeRelease=host.messages.length;releaseOlder();await pause(100);assert.equal(host.messages.length,beforeRelease,'Older completed result must be discarded');
+  const beforeRelease=host.messages.filter(m=>m.type==='result').length;releaseOlder();await pause(100);assert.equal(host.messages.filter(m=>m.type==='result').length,beforeRelease,'Older completed preview result must be discarded');
  }finally{PreviewWorker.prototype.enqueue=enqueue;}
  evidence.checks.push('Older native response arriving after a newer generation is discarded');
  // Test the same persistent transport with a deliberately stalled executable.
@@ -188,6 +188,12 @@ exports.run=async()=>{
  const video=path.join(directory,'animation.mp4');await vscode.commands.executeCommand('laymesh.exportFigure',motionDoc.uri,{output:video,animated:true});assert(fs.statSync(video).size>500);
  const videoProbe=JSON.parse(require('child_process').execFileSync('ffprobe',['-v','error','-show_streams','-of','json',video]));assert.equal(videoProbe.streams[0].width,160);assert.equal(videoProbe.streams[0].r_frame_rate,'5/1');
  evidence.checks.push('Animate.css preview controls, deterministic seeking, static restoration, no playback recompilation, editor MP4 export');host.panel.dispose();
+ if(process.env.LAYMESH_ACADEMIC_DOC){
+  const academicDoc=await vscode.workspace.openTextDocument(process.env.LAYMESH_ACADEMIC_DOC);await vscode.window.showTextDocument(academicDoc);await vscode.commands.executeCommand('laymesh.openPreview',academicDoc.uri);
+  await until(()=>host.messages.find(m=>m.document?.pages.length===32&&m.displayList),'Academic preview');
+  await documentPhase('academic-ready','academic-verified');
+  evidence.checks.push('32-page academic deck: prepared native artifacts, embedded wheel navigation, dense charts/formulas and nonresident revisit');host.panel.dispose();
+ }
  await vscode.commands.executeCommand('workbench.action.closeAllEditors');
  fs.writeFileSync(process.env.LAYMESH_PREVIEW_EVIDENCE,JSON.stringify(evidence,null,2));if(gate)fs.writeFileSync(gate,JSON.stringify({phase:'complete'}));fs.rmSync(directory,{recursive:true,force:true});
 };

@@ -34,6 +34,6 @@ exports.run=async()=>{
  const sha=file=>fs.existsSync(file)?require('crypto').createHash('sha256').update(fs.readFileSync(file)).digest('hex'):null;
  result.fixture_sha256=sha(input);result.extension_version=extension.packageJSON.version;
  const selectedBinary=process.env.LAYMESH_PERFORMANCE_BINARY;
- result.artifact_sha256={native:sha(selectedBinary&&selectedBinary!=='bundled'?selectedBinary:path.join(extension.extensionPath,'bin',process.platform==='win32'?'laymesh.exe':'laymesh')),wasm:sha(path.join(extension.extensionPath,'dist/wasm/laymesh_wasm_bg.wasm'))};
+ result.artifact_sha256={native:sha(selectedBinary&&selectedBinary!=='bundled'?selectedBinary:path.join(extension.extensionPath,'bin',process.platform==='win32'?'laymesh.exe':'laymesh')),wasm:sha(path.join(extension.extensionPath,'dist/wasm',JSON.parse(fs.readFileSync(path.join(extension.extensionPath,'dist/wasm/manifest.json'),'utf8')).wasm))};
  fs.writeFileSync(process.env.LAYMESH_PERFORMANCE_OUTPUT,JSON.stringify(result,null,2));host.dispose();await vscode.commands.executeCommand('workbench.action.closeAllEditors');fs.rmSync(dir,{recursive:true,force:true});
 };

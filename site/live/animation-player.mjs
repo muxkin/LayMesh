@@ -29,10 +29,10 @@ export class AnimationPlayer {
   this.seek(t.steps[n].start);this.start();
  }
  start(){const t=this.timeline;if(!t)return;if(this.time===null||this.time>=t.duration){this.time=0;this.pinnedStep=null;}else if(this.pinnedStep!=null&&this.mode.value==='manual'){this.time=t.steps[this.pinnedStep].start;this.pinnedStep=null;}this.running=true;this.last=performance.now();this.sync();
-  const tick=now=>{if(!this.running)return;const old=this.current,elapsed=now-this.last;let next=this.time+elapsed/1000*this.speed;this.last=now;
-   if(this.mode.value==='manual'){const end=t.steps[old].start+t.steps[old].duration;if(this.time<=end&&next>=end){next=end;this.running=false;}}
+  const tick=now=>{if(!this.running)return;const old=this.current,elapsed=now-this.last;let boundary=old,next=this.time+elapsed/1000*this.speed;this.last=now;
+   if(this.mode.value==='manual'){while(boundary<t.steps.length){const step=t.steps[boundary],end=step.start+step.duration;if(next<end)break;const following=t.steps[boundary+1];if(following?.trigger==='after-previous'){if(next<following.start)break;boundary++;continue;}next=end;this.running=false;break;}}
    if(next>=t.duration){next=t.duration;this.running=false;if(this.mode.value==='auto'&&this.page(1,true))this.resume=true;}
-   this.seek(next,!this.running&&this.mode.value==='manual'?old:null,true);if(this.running)this.raf=requestAnimationFrame(tick);
+   this.seek(next,!this.running&&this.mode.value==='manual'?boundary:null,true);if(this.running)this.raf=requestAnimationFrame(tick);
   };this.raf=requestAnimationFrame(tick);
  }
 }

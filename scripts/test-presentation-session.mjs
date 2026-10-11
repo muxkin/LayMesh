@@ -1,0 +1,5 @@
+import assert from 'node:assert/strict';
+import {PresentationSession} from '../site/live/presentation-session.mjs';
+const requested=[],progress=[],store={async dispose(){this.disposed=true;}};
+const s=new PresentationSession(store,{request:(...a)=>requested.push(a),onProgress:p=>progress.push(p)});s.plan([{id:'a'},{id:'b'}]);s.ready({id:'a',inspection:{}});assert.equal(await s.firstReady,s);s.fail('b',Error('2/2 failure'));await assert.rejects(s.wait(1),/2\/2 failure/);assert.equal((await s.complete).pages[0].status,'ready');const retry=s.wait(1,{retry:true});assert.deepEqual(requested.at(-1),['b',true]);s.ready({id:'b',inspection:{}});assert.equal((await retry).status,'ready');await store.dispose();assert.equal(store.disposed,true);await assert.rejects(s.wait(0),/unavailable/);
+const cancelled=new PresentationSession({async dispose(){}});cancelled.plan([{id:'a'}]);const pending=cancelled.wait(0);await cancelled.store.dispose();await assert.rejects(pending,/cancelled/);await assert.rejects(cancelled.firstReady,/cancelled/);console.log('Session first-ready, isolated failure, retry and cancellation passed.');

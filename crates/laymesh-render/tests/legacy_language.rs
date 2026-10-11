@@ -185,7 +185,12 @@ fn transitive_component_assets_and_font_origins_survive_directory_moves() {
         let pdf = render_pdf(&s).unwrap();
         let pdf = String::from_utf8_lossy(&pdf);
         assert!(pdf.contains("/FontFile2"));
-        assert!(pdf.contains("/FontFile3"));
+        assert!(
+            pdf.contains("/FontFile3")
+                || ((pdf.contains("/Subtype /Type3") || pdf.contains("/Subtype/Type3"))
+                    && pdf.contains("/ToUnicode")),
+            "CFF must retain vector glyphs and Unicode mapping"
+        );
     }
 }
 #[test]

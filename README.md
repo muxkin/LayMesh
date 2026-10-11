@@ -8,11 +8,11 @@
 
 [展示图源码](examples/showcase.lay) · [科研绘图示例](docs/gallery/plots.zh-CN.md)
 
-[可编辑 PPTX 导出](docs/topics/export.zh-CN.md#pptx-可编辑导出) · [艺术字、阴影与发光](docs/topics/art-effects.zh-CN.md) · [更新说明](release/notes/0.5.1.md)
+[动画与演示](docs/topics/animation.zh-CN.md) · [可编辑 PPTX 导出](docs/topics/export.zh-CN.md#pptx-可编辑导出) · [艺术字、阴影与发光](docs/topics/art-effects.zh-CN.md) · [更新说明](release/notes/0.6.0.md)
 
 ## VS Code（推荐）
 
-在扩展面板安装 [LayMesh（发布者 Hyacine）](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language)，或通过 **Extensions: Install from VSIX / 从 VSIX 安装** 安装对应平台的包。**Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon 的 0.5.1 VSIX 均内置原生引擎，无需另装 Python、Rust 或 npm。** [下载平台安装包](https://github.com/muxkin/LayMesh/releases/tag/v0.5.1)。Remote SSH 场景安装与远程扩展宿主匹配的平台包。
+在扩展面板安装 [LayMesh（发布者 Hyacine）](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language)，或通过 **Extensions: Install from VSIX / 从 VSIX 安装** 安装对应平台的包。**Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon 的 0.6.0 VSIX 均内置原生引擎，无需另装 Python、Rust 或 npm。** [下载平台安装包](https://github.com/muxkin/LayMesh/releases/tag/v0.6.0)。Remote SSH 场景安装与远程扩展宿主匹配的平台包。
 
 打开可信任的本地或 Remote SSH 工作文件夹，将下面源码保存为 `figure.lay`：
 
@@ -26,7 +26,7 @@ page.add(rec, offset=(0.1cm, 0.1cm))
 
 ## Python 与 CLI 安装
 
-需要 **Python 3.10+**。本次源码版本为 **`0.5.1`**，Python 包、Rust 引擎和 VS Code 扩展同步版本号，新增形状箭头与锚点连接，改进公式排版并修复 PPTX 图片适配。稳定标签触发审核包构建，批准 PyPI 环境后上传并生成 GitHub Release；当前已公开版本以 PyPI 为准。从 [PyPI](https://pypi.org/project/laymesh/) 安装：
+需要 **Python 3.10+**。本次源码版本为 **`0.6.0`**，Python 包、Rust 引擎和 VS Code 扩展同步版本号，新增多页文档、97 种 Animate.css 动画和完整演示放映，统一使用 Skia 绘制。稳定标签触发审核包构建，批准 PyPI 环境后上传并生成 GitHub Release；当前已公开版本以 PyPI 为准。从 [PyPI](https://pypi.org/project/laymesh/) 安装：
 
 ```sh
 python -m pip install laymesh
@@ -37,7 +37,7 @@ python -m laymesh --version
 
 默认安装包含 NumPy、pandas、Matplotlib 和 IPython，数据绑定、Matplotlib Figure 导入及 Jupyter Magic 均可直接使用。
 
-构建目标为 Windows x64、macOS 14+ 的 Intel / Apple Silicon、Linux x64 / arm64。发布的 Linux wheel 要求 glibc 2.35+。发布流程会检查五个平台的 Python 3.10、3.13、3.14 安装与导出；Windows 包静态链接运行库，无需另装 Visual C++ Redistributable。详见[发布说明](release/README.zh-CN.md)。正文使用系统或用户提供的字体；缺字会警告并显示方框。跨机器复现时请随图提供使用的字体文件。
+构建目标为 Windows x64、macOS 14+ 的 Intel / Apple Silicon、Linux x64 / arm64。Linux 的最低 glibc 版本以发行文件的 `manylinux_2_XX` 标签为准。发布流程会检查五个平台的 Python 3.10、3.13、3.14 安装与导出；Windows 包静态链接运行库，无需另装 Visual C++ Redistributable。详见[发布说明](release/README.zh-CN.md)。正文使用系统或用户提供的字体；缺字会警告并显示方框。跨机器复现时请随图提供使用的字体文件。
 
 ## 第一张图
 

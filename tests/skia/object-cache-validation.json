@@ -1,0 +1,46 @@
+{
+  "status": "passed",
+  "hardwareAcceptance": false,
+  "checks": [
+    {
+      "scene": "08-motion-2d",
+      "firstBuilds": 37,
+      "warmHits": 37,
+      "warmBuilds": 0,
+      "changedPoseBuilds": 0,
+      "textureBytes": 60734120,
+      "staticTextureBytes": 33497996,
+      "limitedBudget": {
+        "hits": 4,
+        "builds": 0,
+        "budgetMisses": 19,
+        "bytes": 11087284
+      },
+      "lifecycle": [
+        "partial edit",
+        "zoom",
+        "bounded admission without rebuild cascade",
+        "zero budget",
+        "context recovery"
+      ]
+    },
+    {
+      "scene": "09-motion-3d",
+      "firstBuilds": 37,
+      "warmHits": 37,
+      "warmBuilds": 0,
+      "changedPoseBuilds": 4,
+      "textureBytes": 89034440,
+      "staticTextureBytes": 19028620
+    },
+    {
+      "scene": "10-dense",
+      "firstBuilds": 73,
+      "warmHits": 73,
+      "warmBuilds": 0,
+      "changedPoseBuilds": 0,
+      "textureBytes": 67770000,
+      "staticTextureBytes": 18763660
+    }
+  ]
+}

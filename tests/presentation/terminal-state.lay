@@ -1,0 +1,23 @@
+# Presentation transforms retain their endpoint without changing static layout.
+style {
+ @keyframes move-and-stay {
+  from { transform: translateX(0px); }
+  to { transform: translateX(320px); }
+ }
+ @keyframes disappear {
+  from { opacity: 1; }
+  to { opacity: 0; }
+ }
+}
+page=canvas(size=(320mm,180mm),background="#fbfcfe")
+page.add(text("动画终态 · Exit and displacement",font_family="Noto Sans CJK SC",font_size=22pt),offset=(16mm,18mm))
+page.add(text("1. Move and stay   2. Exit and stay hidden   3. Hold",font_size=12pt),offset=(16mm,38mm))
+a=page.add(rect(size=(36mm,24mm),fill="#2467a4",border_color="none"),offset=(35mm,75mm))
+b=page.add(rect(size=(36mm,24mm),fill="#d66b32",border_color="none"),offset=(230mm,75mm))
+page.add(text("320px = 84.67mm",font_size=11pt),offset=(100mm,112mm))
+page.add(text("Static view restores the original layout. Back/seek deterministically restores each state.",font_size=10pt),offset=(16mm,148mm))
+s=page.step(name="移动到新位置并保留",hold=1s)
+s.animate(a,name="move-and-stay",duration=1s,easing="linear",fill="forwards")
+s=page.step(name="退出并保持消失",hold=1s)
+s.animate(b,name="disappear",duration=1s,easing="linear",fill="forwards")
+s=page.step(name="检查终态保持",duration=1s,hold=2s)

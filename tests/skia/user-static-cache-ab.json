@@ -1,0 +1,252 @@
+{
+  "source": "User-supplied cache A/B measurements, 2026-10-11",
+  "sourceSha256": "4ef4f49c05fd7097dd32ec1b5caba3093c3b9a4ea6709506dc59cfa616e79bcb",
+  "scope": "Level 07-effects, RX 6750 GRE, 4K buffer, windowed, display-refresh mode; one 10-second round per setting",
+  "hardwareAcceptance": false,
+  "measurements": [
+    {
+      "workloadVersion": "progressive-v1",
+      "rendererVersion": "static-tiles-v1",
+      "cacheStatic": true,
+      "buffer": [
+        3840,
+        2160
+      ],
+      "screen": [
+        1920,
+        1080
+      ],
+      "dpr": 2,
+      "fullscreen": false,
+      "canvasCssSize": [
+        960,
+        540
+      ],
+      "suite": "stress",
+      "targetFps": "display",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
+      "visibility": "visible",
+      "rounds": [
+        {
+          "scene": "07-effects",
+          "label": "07 · 加入透明、阴影与光晕",
+          "round": 1,
+          "elapsedMs": 10006.200000047684,
+          "frames": 1600,
+          "sceneStats": {
+            "nodes": 3283,
+            "groups": 1794,
+            "paths": 1399,
+            "pathElements": 24058,
+            "glyphs": 444,
+            "glyphPathElements": 7084,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 1
+          },
+          "fullscreen": false,
+          "canvasCssSize": [
+            960,
+            540
+          ],
+          "presentationEstimateFps": 159.90086146512914,
+          "submissionFps": 159.90086146512914,
+          "requestFps": 159.90086146512914,
+          "refreshCallbackHz": 158.73015873026873,
+          "refreshIntervalMedianMs": 6.299999999995634,
+          "refreshIntervalP95Ms": 6.400000000001455,
+          "frameIntervalP95Ms": 6.400000000001455,
+          "targetDeliveryShortfallPercent": 0,
+          "drawSubmissionP95": 0.8999999761581421,
+          "sampleP95": 0.10000002384185791,
+          "gpuP95": 1.24132,
+          "gpuQueryCount": 1600,
+          "gpuDrawDutyEstimatePercent": 13.72952569400425,
+          "cachePeakBytes": 0,
+          "staticTexturePeakBytes": 61973704,
+          "staticCacheHits": 3200,
+          "staticCacheBuilds": 0,
+          "gpuBackpressureSkips": 0,
+          "samplerOutputCharsPeak": 85
+        }
+      ],
+      "preparations": [
+        {
+          "scene": "07-effects",
+          "parameters": {
+            "id": "07-effects",
+            "label": "07 · 加入透明、阴影与光晕",
+            "patterns": 256,
+            "charts": 12,
+            "formulas": 24,
+            "effects": true,
+            "motion": "title",
+            "samplesPerLine": 192,
+            "seriesPerLineChart": 3,
+            "heatmapSide": 16
+          },
+          "wallMs": 2143.8000000715256,
+          "metrics": {
+            "initialization": 173.10000002384186,
+            "resources": 0,
+            "compile": 1844,
+            "lower": 11.899999976158142,
+            "raster": 0,
+            "total": 1855.8999999761581
+          },
+          "sceneStats": {
+            "nodes": 3283,
+            "groups": 1794,
+            "paths": 1399,
+            "pathElements": 24058,
+            "glyphs": 444,
+            "glyphPathElements": 7084,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 1
+          }
+        }
+      ],
+      "hardwareAcceptance": false,
+      "presentationDefinition": "Worker-completed draw submissions observed on requestAnimationFrame; neither GPU completion nor compositor scan-out is directly measured by this estimate.",
+      "gpuDefinition": "WebGL timer queries for this canvas draw only; excludes compositor/Copy/other processes. Each completed GPU query counted once.",
+      "tableDefinition": "CPU/sample P95: worst round; GPU P95 and fps: median round; GPU multiplier: previous selected stage.",
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, AMD Radeon RX 6750 GRE 12GB (0x000073DF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "stopped": false
+    },
+    {
+      "workloadVersion": "progressive-v1",
+      "rendererVersion": "static-tiles-v1",
+      "cacheStatic": false,
+      "buffer": [
+        3840,
+        2160
+      ],
+      "screen": [
+        1920,
+        1080
+      ],
+      "dpr": 2,
+      "fullscreen": false,
+      "canvasCssSize": [
+        960,
+        540
+      ],
+      "suite": "stress",
+      "targetFps": "display",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36 Edg/155.0.0.0",
+      "visibility": "visible",
+      "rounds": [
+        {
+          "scene": "07-effects",
+          "label": "07 · 加入透明、阴影与光晕",
+          "round": 1,
+          "elapsedMs": 10010.700000047684,
+          "frames": 543,
+          "sceneStats": {
+            "nodes": 3283,
+            "groups": 1794,
+            "paths": 1399,
+            "pathElements": 24058,
+            "glyphs": 444,
+            "glyphPathElements": 7084,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 1
+          },
+          "fullscreen": false,
+          "canvasCssSize": [
+            960,
+            540
+          ],
+          "presentationEstimateFps": 54.2419611013629,
+          "submissionFps": 54.2419611013629,
+          "requestFps": 57.938006332947474,
+          "refreshCallbackHz": 158.73015873045205,
+          "refreshIntervalMedianMs": 6.2999999999883585,
+          "refreshIntervalP95Ms": 12.5,
+          "frameIntervalP95Ms": 25,
+          "targetDeliveryShortfallPercent": 65.82756450620452,
+          "drawSubmissionP95": 16.700000047683716,
+          "sampleP95": 0.10000002384185791,
+          "gpuP95": 23.20978,
+          "gpuQueryCount": 543,
+          "gpuDrawDutyEstimatePercent": 75.79689941726217,
+          "cachePeakBytes": 0,
+          "staticTexturePeakBytes": 0,
+          "staticCacheHits": 0,
+          "staticCacheBuilds": 0,
+          "gpuBackpressureSkips": 37,
+          "samplerOutputCharsPeak": 85
+        }
+      ],
+      "preparations": [
+        {
+          "scene": "07-effects",
+          "parameters": {
+            "id": "07-effects",
+            "label": "07 · 加入透明、阴影与光晕",
+            "patterns": 256,
+            "charts": 12,
+            "formulas": 24,
+            "effects": true,
+            "motion": "title",
+            "samplesPerLine": 192,
+            "seriesPerLineChart": 3,
+            "heatmapSide": 16
+          },
+          "wallMs": 1880.7999999523163,
+          "metrics": {
+            "initialization": 173.10000002384186,
+            "resources": 0,
+            "compile": 1765.3000000715256,
+            "lower": 11.5,
+            "raster": 0,
+            "total": 1776.8000000715256
+          },
+          "sceneStats": {
+            "nodes": 3283,
+            "groups": 1794,
+            "paths": 1399,
+            "pathElements": 24058,
+            "glyphs": 444,
+            "glyphPathElements": 7084,
+            "images": 4,
+            "effectLayers": 48,
+            "maxDepth": 9,
+            "resources": 5,
+            "animatedTargets": 1
+          }
+        }
+      ],
+      "hardwareAcceptance": false,
+      "presentationDefinition": "Worker-completed draw submissions observed on requestAnimationFrame; neither GPU completion nor compositor scan-out is directly measured by this estimate.",
+      "gpuDefinition": "WebGL timer queries for this canvas draw only; excludes compositor/Copy/other processes. Each completed GPU query counted once.",
+      "tableDefinition": "CPU/sample P95: worst round; GPU P95 and fps: median round; GPU multiplier: previous selected stage.",
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, AMD Radeon RX 6750 GRE 12GB (0x000073DF) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "stopped": false
+    }
+  ],
+  "comparison": {
+    "estimatedFpsRatio": 2.947918147102381,
+    "gpuP95RatioOffOverOn": 18.697660554893176,
+    "gpuP95ReductionPercent": 94.65173732797123,
+    "staticTextureMiB": 59.10272979736328,
+    "cacheHitsPerObservedFrame": 2.0
+  },
+  "limitations": [
+    "Level 7 animates only one title; the other 3282 nodes are not all independently animated.",
+    "These are one-round warm-cache comparisons; cache construction occurred before measurement.",
+    "The browser frame estimate is not physical scan-out measurement.",
+    "GPU timer duty is local canvas drawing time, not total-device utilization.",
+    "Post-cache hardware results for levels 8 through 10 and integrated GPUs remain pending."
+  ]
+}

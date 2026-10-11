@@ -1,9 +1,4 @@
 use super::*;
-use krilla::{
-    Document,
-    geom::{Size, Transform},
-    page::PageSettings,
-};
 /// Render transparent RGBA PNG at the requested physical resolution and write a pHYs chunk.
 pub fn render_png(scene: &Scene, dpi: f64) -> Result<Vec<u8>> {
     super::export::render_export(
@@ -45,7 +40,7 @@ pub fn render_pdf_pages<'a>(
 }
 /// Allows document exporters to release each Scene after writing its page.
 pub struct PdfDocument {
-    doc: Document,
+    pages: Vec<Vec<u8>>,
     count: usize,
 }
 impl Default for PdfDocument {
@@ -56,13 +51,17 @@ impl Default for PdfDocument {
 impl PdfDocument {
     pub fn new() -> Self {
         Self {
-            doc: Document::new(),
+            pages: Vec::new(),
             count: 0,
         }
     }
     pub fn append(&mut self, scene: &Scene, options: &super::export::ExportOptions) -> Result<()> {
         options.validate("pdf")?;
-        append_pdf_page(&mut self.doc, scene, options)?;
+        let optimized = super::raster_policy::pdf_scene(scene, options)?;
+        self.pages.push(super::pdf::render(
+            &to_display_list(&optimized)?,
+            options.dpi.unwrap_or(scene.export_dpi),
+        )?);
         self.count += 1;
         Ok(())
     }
@@ -70,35 +69,8 @@ impl PdfDocument {
         if self.count == 0 {
             return Err(error("PDF 文档至少需要一页"));
         }
-        self.doc
-            .finish()
-            .map_err(|e| error(format!("PDF 导出失败：{e:?}")))
+        super::pdf::merge(self.pages)
     }
-}
-fn append_pdf_page(
-    doc: &mut Document,
-    scene: &Scene,
-    options: &super::export::ExportOptions,
-) -> Result<()> {
-    let optimized = super::raster_policy::pdf_scene(scene, options)?;
-    let scene = &optimized;
-    let list = to_display_list(scene)?;
-    let size = Size::from_wh(
-        (scene.width * 72. / 25.4) as f32,
-        (scene.height * 72. / 25.4) as f32,
-    )
-    .ok_or_else(|| error("PDF 画布尺寸无效"))?;
-    let mut page = doc.start_page_with(PageSettings::new(size));
-    let mut surface = page.surface();
-    surface.push_transform(&Transform::from_scale(
-        (72. / 25.4) as f32,
-        (72. / 25.4) as f32,
-    ));
-    super::pdf::draw(&mut surface, &list, options.dpi.unwrap_or(scene.export_dpi))?;
-    surface.pop();
-    surface.finish();
-    page.finish();
-    Ok(())
 }
 
 #[cfg(test)]

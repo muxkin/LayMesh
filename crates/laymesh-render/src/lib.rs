@@ -1,11 +1,15 @@
-//! Shared drawing commands, Vello CPU rasterization, direct krilla PDF and
+//! Shared drawing commands, Skia rasterization, SkPDF and
 //! DrawingML exports. The SVG serializer serves file exports and explicit
 //! compatibility calls; SVG imports pass through a separate adapter.
 pub mod animation;
 pub mod display_list;
 pub mod display_update;
 mod effects;
+#[cfg(feature = "native")]
 pub mod raster;
+pub mod retained;
+#[cfg(feature = "native")]
+mod skia;
 mod svg_import;
 use base64::Engine;
 pub use display_list::{DisplayList, to_display_list};
@@ -13,6 +17,7 @@ use laymesh_core::{
     Diagnostic, Loc, Result,
     model::{Scene, escape, jnum, jstr},
 };
+#[cfg(feature = "native")]
 pub use raster::{RasterFrame, render_rgba};
 use serde_json::{Value as Json, json};
 fn number(n: f64) -> String {

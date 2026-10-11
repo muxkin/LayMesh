@@ -52,24 +52,24 @@ def main():
                 time.sleep(.3)
                 result=c.evaluate(r'''(async()=>{
                  const base=BASE,wasm=await import(new URL('extensions/vscode/dist/wasm/laymesh_wasm.js',base));
-                 await wasm.default({module_or_path:new URL('extensions/vscode/dist/wasm/laymesh_wasm_bg.wasm',base)});
+                 await wasm.default();const {initializeSkia,SkiaRenderer}=await import(new URL('extensions/vscode/dist/skia-renderer.mjs',base)),meta=await(await fetch(new URL('extensions/vscode/dist/skia/manifest.json',base))).json(),ck=await initializeSkia(new URL('extensions/vscode/dist/skia/'+meta.wasm,base).href),renderer=new SkiaRenderer(ck,new OffscreenCanvas(1,1),{software:true});
                  const frames=await (await fetch(new URL(FRAMES,base))).json(),rows=[];let draw,id;
                  for(const frame of frames){
                   for(const r of frame.resources)wasm.register_render_resource(r.id,new Uint8Array(await (await fetch(new URL(r.url,base))).arrayBuffer()));
                   if(frame.displayListUpdate){if(frame.displayListUpdate.base!==id)throw Error('baseline mismatch');draw.update_display_list(JSON.stringify(frame.displayListUpdate.update));}
                   else {draw?.free();draw=wasm.prepare_display_list(JSON.stringify(frame.displayList));}
-                  id=frame.displayListId;
+                  id=frame.displayListId;await renderer.install(JSON.parse(draw.display_list()),id=>draw.resource_bytes(id),frame.generation);
                   const p=frame.inspection.page,viewports=[[0,0,p.width,p.height],[p.width*.02,p.height*.01,p.width*.91,p.height*.87]];
                   for(const rect of viewports){
                    const w=1200,h=Math.round(w*(rect[3]-rect[1])/(rect[2]-rect[0])),start=performance.now();
-                   const actual=draw.raster_retained(JSON.stringify(rect),w,h).into_rgba(),paintMs=performance.now()-start;
-                   const fresh=wasm.prepare_display_list(draw.display_list()),expected=fresh.raster(JSON.stringify(rect),w,h).into_rgba();fresh.free();
+                   renderer.render(rect,w,h);const actual=renderer.readPixels(),paintMs=performance.now()-start;
+                   const fresh=new SkiaRenderer(ck,new OffscreenCanvas(1,1),{software:true});await fresh.install(JSON.parse(draw.display_list()),id=>draw.resource_bytes(id),frame.generation);fresh.render(rect,w,h);const expected=fresh.readPixels();fresh.dispose();
                    let max=0,above=0,changed=0;for(let i=0;i<actual.length;i++){const delta=Math.abs(actual[i]-expected[i]);max=Math.max(max,delta);above+=delta>1;changed+=delta>0;}
                    if(above)throw Error('retained/full pixels differ: '+JSON.stringify({generation:frame.generation,rect,max,above}));
                    rows.push({generation:frame.generation,incremental:!!frame.displayListUpdate,width:w,height:h,maximumDelta:max,differingChannels:changed,retainedPaintMs:paintMs});
                   }
                  }
-                 draw.free();return {rows,maximumDelta:Math.max(...rows.map(r=>r.maximumDelta)),frames:frames.length,paints:rows.length};
+                 renderer.dispose();draw.free();return {rows,maximumDelta:Math.max(...rows.map(r=>r.maximumDelta)),frames:frames.length,paints:rows.length};
                 })()'''.replace('BASE',json.dumps(a.url)).replace('FRAMES',json.dumps(str((work/'frames.json').relative_to(ROOT)))))
             finally:
                 try: os.killpg(chrome.pid,signal.SIGTERM)
@@ -77,7 +77,7 @@ def main():
                 chrome.wait(timeout=10)
     result['fixture_sha256']=hashlib.sha256(source.read_bytes()).hexdigest()
     result['native_sha256']=hashlib.sha256((ROOT/'target/release/laymesh').read_bytes()).hexdigest()
-    result['wasm_sha256']=hashlib.sha256((ROOT/'extensions/vscode/dist/wasm/laymesh_wasm_bg.wasm').read_bytes()).hexdigest()
+    result['wasm_sha256']=hashlib.sha256((ROOT/'extensions/vscode/dist/wasm'/json.loads((ROOT/'extensions/vscode/dist/wasm/manifest.json').read_text())['wasm']).read_bytes()).hexdigest()
     result['definition']='Seven genuine source versions; same resources; whole-page and shifted viewport; fresh full WASM paint compared with retained update; no precision/quality reduction.'
     a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:result[k] for k in ['frames','paints','maximumDelta']}))

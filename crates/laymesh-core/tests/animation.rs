@@ -221,3 +221,73 @@ fn media_environment_and_time_arithmetic() {
     );
     assert!((s.animation.unwrap().normal.steps[0].duration - 1.4).abs() < 1e-9);
 }
+
+#[test]
+fn linked_actions_follow_computed_css_end_and_delay() {
+    let src = r#"style {
+      @keyframes f { from { opacity: 0; } to { opacity: 1; } }
+      .multi { animation: f 2s .5s 1.5 both, f 1s .2s both; }
+      @media (prefers-reduced-motion: reduce) { .multi { animation-duration: .1s; } }
+    }
+    p=canvas(size=(40,30))
+    a=p.add(rect(size=(5,5)))
+    b=p.add(rect(size=(5,5)))
+    c=p.add(rect(size=(5,5)))
+    s=p.step(start="after-previous",hold=0s)
+    s.animate(a,class="multi")
+    s.animate(b,name="f",duration=1s,start="after-previous",delay=.2s,fill="both")
+    s.animate(c,name="f",duration=1s,start="with-previous",fill="both")
+    "#;
+    let a = compile_source(src, "/main.lay", Host::default())
+        .unwrap()
+        .animation
+        .unwrap();
+    let normal = &a.normal.steps[0];
+    assert_eq!(normal.trigger, "after-previous");
+    assert!((normal.clips[2].delay - 3.7).abs() < 1e-8);
+    assert!((normal.clips[3].delay - 3.7).abs() < 1e-8);
+    assert!((normal.duration - 4.7).abs() < 1e-8);
+    assert!((a.reduced.steps[0].clips[2].delay - 0.85).abs() < 1e-8);
+}
+
+#[test]
+fn linked_actions_reject_unbounded_predecessor_and_invalid_trigger() {
+    let src = "p=canvas(size=(30,20),stylesheet=\"animate.css\")\na=p.add(rect(size=(10,10)))\ns=p.step(duration=3s)\ns.animate(a,name=\"pulse\",duration=1s,iterations=\"infinite\")\ns.animate(a,name=\"fadeOut\",duration=1s,start=\"after-previous\")";
+    assert!(
+        compile_source(src, "/main.lay", host())
+            .unwrap_err()
+            .message
+            .contains("after-previous")
+    );
+    assert!(
+        compile_source(
+            &src.replace("after-previous", "invalid"),
+            "/main.lay",
+            host()
+        )
+        .unwrap_err()
+        .message
+        .contains("animate start")
+    );
+    assert!(
+        compile_source(
+            "p=canvas(size=(30,20))\ns=p.step(start=\"invalid\")",
+            "/main.lay",
+            host()
+        )
+        .unwrap_err()
+        .message
+        .contains("step start")
+    );
+}
+
+#[test]
+fn linked_negative_delay_and_empty_action_have_finite_boundaries() {
+    let src = "p=canvas(size=(30,20),stylesheet=\"animate.css\")\na=p.add(rect(size=(10,10)))\ns=p.step()\ns.animate(a,name=\"pulse\",duration=2s,delay=-.5s,iterations=.5)\ns.animate(a,name=\"none\",start=\"after-previous\")\ns.animate(a,name=\"fadeOut\",duration=1s,start=\"after-previous\",fill=\"both\")";
+    let a = compile_source(src, "/main.lay", host())
+        .unwrap()
+        .animation
+        .unwrap();
+    assert!((a.normal.steps[0].clips[1].delay - 0.5).abs() < 1e-8);
+    assert!((a.normal.steps[0].duration - 1.5).abs() < 1e-8);
+}

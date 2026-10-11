@@ -17390,6 +17390,29 @@
           "description": "动作结束后的停留时长",
           "descriptionEn": "Hold after animation window",
           "default": "1s"
+        },
+        {
+          "name": "start",
+          "type": "enum",
+          "unit": "none",
+          "default": "click",
+          "description": "click：点击开始；after-previous：前一步停留结束后自动开始，第一步则随页面开始。",
+          "descriptionEn": "click: manual trigger; after-previous: start after the previous step hold, or on page entry for the first step.",
+          "values": [
+            "click",
+            "after-previous"
+          ],
+          "valueDescriptions": {
+            "click": {
+              "zh": "等待用户推进后开始。",
+              "en": "Start when the user advances."
+            },
+            "after-previous": {
+              "zh": "前一步 hold 结束后开始；第一步随页面进入开始。",
+              "en": "Start after the previous step hold; the first step starts on page entry."
+            }
+          },
+          "quotedValues": true
         }
       ]
     },
@@ -17485,6 +17508,34 @@
           "unit": "none",
           "description": "running/paused",
           "descriptionEn": "CSS play state"
+        },
+        {
+          "name": "start",
+          "type": "enum",
+          "unit": "none",
+          "default": "step",
+          "description": "step：与步骤一起开始；with-previous：与前一动作同时开始；after-previous：前一动作结束后开始。delay 相对该起点计算。",
+          "descriptionEn": "step, with-previous, or after-previous. Delay is relative to the selected action boundary.",
+          "values": [
+            "step",
+            "with-previous",
+            "after-previous"
+          ],
+          "valueDescriptions": {
+            "step": {
+              "zh": "以当前步骤起点为基准。",
+              "en": "Use the current step start."
+            },
+            "with-previous": {
+              "zh": "以前一动作起点为基准。",
+              "en": "Use the previous action start."
+            },
+            "after-previous": {
+              "zh": "以前一动作结束为基准；前一动作必须具有有限时长。",
+              "en": "Use the previous action end; the preceding action must have a finite duration."
+            }
+          },
+          "quotedValues": true
         }
       ]
     }

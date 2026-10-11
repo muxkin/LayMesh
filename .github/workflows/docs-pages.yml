@@ -21,6 +21,7 @@ jobs:
         with:
           toolchain: '1.93.1'
           targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'

@@ -1345,6 +1345,30 @@ impl LanguageService {
                                     if quoted.is_some() || !named.iter().any(|(n, _)| n == name) {
                                         choices.push(o);
                                     }
+                                } else {
+                                    // Some API enums are literal strings rather than
+                                    // predefined LAY variables (e.g. animation starts).
+                                    let mut o = option(
+                                        &value,
+                                        "value",
+                                        parameter_doc(p, en, e["name"].as_str().unwrap()),
+                                        if quoted.is_some() {
+                                            value.clone()
+                                        } else {
+                                            serde_json::to_string(&value).unwrap()
+                                        },
+                                        "string",
+                                    );
+                                    if let Some(t) = &quoted {
+                                        let quote = t.text.chars().next().unwrap();
+                                        o["from"] = json!(t.from + 1);
+                                        o["to"] = json!(if t.text.len() > 1 && t.text.ends_with(quote) {
+                                            t.to - 1
+                                        } else {
+                                            t.to
+                                        });
+                                    }
+                                    choices.push(o);
                                 }
                             }
                             if quoted.is_some() {

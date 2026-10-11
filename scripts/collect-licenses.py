@@ -25,6 +25,10 @@ def main():
   license=package['license']
   if package['name']=='libwebp-sys':license+=' AND BSD-3-Clause'
   inventory.append({'name':package['name'],'version':package['version'],'license':license,'repository':package['repository'],'texts':refs})
+ (dest/'CanvasKit-0.42.0-LICENSE').write_bytes((ROOT/'vendor/canvaskit/LICENSE').read_bytes())
+ (dest/'Skia-m153-LICENSE').write_bytes((ROOT/'vendor/canvaskit/LICENSE').read_bytes())
+ inventory.append({'name':'Skia','version':'m153-0.101.2','license':'BSD-3-Clause','repository':'https://github.com/rust-skia/skia','texts':[{'file':'Skia-m153-LICENSE','sha256':hashlib.sha256((dest/'Skia-m153-LICENSE').read_bytes()).hexdigest()}]})
+ inventory.append({'name':'CanvasKit standard','version':'0.42.0','license':'BSD-3-Clause','repository':'https://github.com/google/skia','texts':[{'file':'CanvasKit-0.42.0-LICENSE','sha256':hashlib.sha256((dest/'CanvasKit-0.42.0-LICENSE').read_bytes()).hexdigest()}]})
  inventory.append({'name':'Matplotlib colormap data','version':'3.11.2','license':'Matplotlib license','repository':'https://github.com/matplotlib/matplotlib','texts':[{'file':'Matplotlib-3.11.2-LICENSE','sha256':hashlib.sha256((dest/'Matplotlib-3.11.2-LICENSE').read_bytes()).hexdigest()}]})
  (dest/'manifest.json').write_text(json.dumps(inventory,indent=2)+'\n')
  (ROOT/'release/THIRD_PARTY_NOTICES.md').write_text('# Third-party notices\n\nThe native executable and WebAssembly module contain the following locked Rust dependencies. Original license texts are in `licenses/`. KaTeX formula fonts are under SIL OFL 1.1; their FONT_NOTICE and OFL text are included. Colormap LUTs are derived from Matplotlib 3.11.2, quantized to 8-bit RGB with native reversed LUTs and category metadata. Matplotlib copyright and license are retained in Matplotlib-3.11.2-LICENSE. No Matplotlib runtime is bundled. No body fonts are bundled.\n\n| Package | Version | License |\n| --- | --- | --- |\n'+''.join(f'| {p["name"]} | {p["version"]} | {p["license"] or "See source"} |\n' for p in inventory))

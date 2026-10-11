@@ -23,7 +23,7 @@ Install in the same Python environment used by your Notebook kernel. In a Notebo
 | macOS Intel / Apple Silicon | macOS 14+, matching Python architecture |
 | Linux x64 / arm64 | glibc at least as new as the wheel's `manylinux_2_XX` tag |
 
-This release includes wheels for all five platforms, each verified on Python 3.10, 3.13 and 3.14. The Linux wheels are `manylinux_2_35_x86_64` / `manylinux_2_35_aarch64` and require glibc 2.35+. See the [release workflow](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml) for validation. Alpine/musl, 32-bit systems and Windows ARM64 have no wheels.
+The release workflow builds wheels for all five platforms and checks installation/use on Python 3.10, 3.13 and 3.14. Linux tags reflect the engine’s actual GLIBC symbol requirements; inspect the downloaded filename’s `manylinux_2_XX` tag rather than assuming the baseline of an older release. See the [release workflow](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml) for validation. Alpine/musl, 32-bit systems and Windows ARM64 have no wheels.
 
 Wheels contain one Rust native executable, formula fonts and dependency licenses. Rendering downloads no engine or fonts and requires no Rust, Node.js or TeX installation. Body fonts come from the system or user files; missing glyphs warn and display vector boxes. Supply explicit font files when sharing reproducible figures. Documentation browser previews provide their own fonts separately.
 

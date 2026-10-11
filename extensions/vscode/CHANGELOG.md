@@ -1,3 +1,13 @@
+# 0.6.0
+
+- Add `.laydoc` multipage documents and complete presentation playback, with first-page startup, background preparation and editing-preview priority.
+- Support all 97 Animate.css 4.1.1 effects, CSS keyframes, linked steps/actions and persistent exit/movement states.
+- Use shared offline CanvasKit/Skia drawing at the requested resolution; retain resources during playback and avoid per-frame RGBA transfer.
+- Add embedded/browser fullscreen presentation, wheel/keyboard navigation, hidden controls summoned by Tab, and three right-click display modes.
+- Export MP4/GIF through FFmpeg and PNG time/step snapshots; static exports keep complete layouts.
+- Use Skia CPU for native rasters and SkPDF with 16-bit image/ActualText compatibility; retain editable SVG/PPTX adapters.
+- Keep diagnostics in fixed-layout popovers; preserve the previous successful preview on errors and make exit/reopen responsive.
+
 # 0.5.1
 
 - Add reusable filled arrows: `arrow()`, `arrow.arc()`, `arrow.bent()`, `arrow.uturn()`, `arrow.chevron()` and `arrow.path()` with namespace completion, signatures and hover.

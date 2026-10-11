@@ -4,6 +4,7 @@ import argparse,hashlib,json,re,shutil,subprocess
 from pathlib import Path
 from site_support import ROOT,examples,dependencies,engine_files,fingerprint
 import page_fonts
+import skia_assets
 IMPORT=re.compile(r'''((?:\bfrom\s*|\bimport\s*)['"])([^'"]+)(['"])''')
 def runtime_sources():
  return engine_files()+[p.relative_to(ROOT).as_posix() for p in sorted((ROOT/'crates/laymesh-wasm').rglob('*')) if p.is_file() and p.suffix in ('.rs','.toml','.json')]
@@ -17,13 +18,20 @@ def validate_runtime(output):
  for source in (ROOT/'site/live').glob('*.mjs'):
   target,text=browser_module(source,vendor)
   assert (output/target).read_text()==text,f'Stale browser module: {target}; rebuild docs'
+ assert (output/'presentation.css').read_bytes()==(ROOT/'site/live/presentation.css').read_bytes(),'Stale presentation styles'
  provenance=output/'wasm/laymesh-build.json'
  assert provenance.is_file(),'Missing WASM provenance; rebuild docs without --skip-wasm'
  stored=json.loads(provenance.read_text())
  assert stored['engine_fingerprint']==fingerprint(runtime_sources()),'Stale browser WASM sources; rebuild docs without --skip-wasm'
- assert stored['wasm_sha256']==hashlib.sha256((output/'wasm/laymesh_wasm_bg.wasm').read_bytes()).hexdigest(),'Browser WASM fingerprint mismatch'
+ assert stored['wasm_sha256']==hashlib.sha256((output/'wasm'/json.loads((output/'wasm/manifest.json').read_text())['wasm']).read_bytes()).hexdigest(),'Browser WASM fingerprint mismatch'
 def build(output,skip_wasm=False):
  output.mkdir(parents=True,exist_ok=True)
+ skia_assets.stage(output)
+ shutil.copy2(ROOT/'site/live/presentation.css',output/'presentation.css')
+ if output==ROOT/'site/dist/site/live':
+  shutil.copy2(ROOT/'tests/skia/benchmark.html',ROOT/'site/dist/skia-benchmark.html')
+  shutil.copy2(ROOT/'tests/skia/presentation.html',ROOT/'site/dist/presentation-test.html')
+  shutil.copy2(ROOT/'tests/skia/stress-scenes.mjs',ROOT/'site/dist/stress-scenes.mjs')
  manifest={'engine':'rust-ratex','resources':{},'fonts':[],'examples':{}}
  (output/'resources').mkdir(exist_ok=True)
  if (output/'fonts').exists():shutil.rmtree(output/'fonts')
@@ -53,7 +61,7 @@ def build(output,skip_wasm=False):
   subprocess.run(['cargo','build','--release','--locked','--target','wasm32-unknown-unknown','-p','laymesh-wasm','--no-default-features'],cwd=ROOT,check=True)
   subprocess.run(['wasm-bindgen','--target','web','--out-dir',str(output/'wasm'),str(ROOT/'target/wasm32-unknown-unknown/release/laymesh_wasm.wasm')],check=True)
   (output/'wasm/laymesh-build.json').write_text(json.dumps({'engine_fingerprint':fingerprint(runtime_sources()),'wasm_sha256':hashlib.sha256((output/'wasm/laymesh_wasm_bg.wasm').read_bytes()).hexdigest()}))
- if not (output/'wasm/laymesh_wasm_bg.wasm').is_file():raise RuntimeError('Missing WASM binary. Build without --skip-wasm.')
+ skia_assets.stage_rust(output/'wasm')
  validate_runtime(output)
  (output/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False))
  print(f'Built Rust/WASM preview: {len(manifest["examples"])} examples; {len(vendor)} browser modules; {len(manifest["fonts"])} Page-only body fonts')

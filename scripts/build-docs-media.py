@@ -4,7 +4,7 @@ import argparse,hashlib,json,os,subprocess,tempfile
 from pathlib import Path
 from PIL import Image
 from site_support import ROOT,examples,dependencies,fingerprint,engine_files
-RECIPE={'widths':[960,1920,3840],'format':'webp','lossless':True,'version':2,'engine':'rust-ratex'}
+RECIPE={'widths':[960,1920,3840],'format':'webp','lossless':True,'version':3,'engine':'rust-skia-ratex'}
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--check',action='store_true');p.add_argument('--binary',type=Path,default=ROOT/'target/release'/('laymesh.exe' if os.name=='nt' else 'laymesh'));a=p.parse_args();dest=ROOT/'site/media';dest.mkdir(parents=True,exist_ok=True);manifest_path=dest/'manifest.json'
  inputs=examples();seen={e['source'] for e in inputs}

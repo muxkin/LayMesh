@@ -9,7 +9,7 @@ export class Workspace {
   this.resize=new ResizeObserver(()=>{this.layout();this.fit();});this.resize.observe(this.box);this.resize.observe(this.viewport);
   module.querySelectorAll('.preview-canvas img').forEach(img=>img.addEventListener('load',()=>this.fit()));
   module.querySelector('.workspace-expand').addEventListener('click',()=>this.expand());
-  module.querySelectorAll('details:not(.dependencies)').forEach(details=>details.addEventListener('toggle',()=>{if(details.open)module.querySelectorAll('details:not(.dependencies)').forEach(other=>{if(other!==details)other.open=false;});}));
+  module.querySelectorAll('details:not(.dependencies)').forEach(details=>details.addEventListener('toggle',()=>{if(details.open)module.querySelectorAll('details:not(.dependencies)').forEach(other=>{if(other!==details&&!details.contains(other)&&!other.contains(details))other.open=false;});}));
   module.addEventListener('keydown',e=>{if(e.key==='Escape'){const open=module.querySelector('details[open]:not(.dependencies)');if(open){open.open=false;open.querySelector('summary').focus();e.preventDefault();e.stopPropagation();}}});
   document.addEventListener('pointerdown',e=>{for(const menu of module.querySelectorAll('details[open]:not(.dependencies)'))if(!menu.contains(e.target))menu.open=false;});
  }

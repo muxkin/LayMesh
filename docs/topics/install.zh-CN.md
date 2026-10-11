@@ -23,7 +23,7 @@ python -m laymesh --version
 | macOS Intel / Apple Silicon | macOS 14+，Python 架构匹配 |
 | Linux x64 / arm64 | glibc 不低于 wheel 的 `manylinux_2_XX` 标签 |
 
-本次发布包含以上五个平台的 wheel，均已通过 Python 3.10、3.13、3.14 的安装与使用检查。Linux wheel 为 `manylinux_2_35_x86_64` / `manylinux_2_35_aarch64`，要求 glibc 2.35+。完整验证见[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)。当前没有 Alpine/musl、32 位系统和 Windows ARM64 wheel。
+发行流程为以上五个平台构建 wheel，并分别检查 Python 3.10、3.13、3.14 的安装与使用。Linux 标签依据引擎实际 GLIBC 符号要求生成；请检查下载文件名中的 `manylinux_2_XX`，不要按旧版本包推断兼容性。完整验证见[发布工作流](https://github.com/muxkin/LayMesh/actions/workflows/publish-pypi.yml)。当前没有 Alpine/musl、32 位系统和 Windows ARM64 wheel。
 
 wheel 包含一个 Rust 原生程序、公式字体及依赖许可。绘图时不下载引擎或字体，无需额外安装 Rust、Node.js 或 TeX。正文使用系统或用户字体；缺字会警告并显示方框。共享可复现图件时请提供明确的字体文件。文档网页预览单独提供自己的字体。
 

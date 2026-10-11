@@ -1,470 +1,454 @@
-//! Direct, vector-preserving PDF adapter for the shared display list.
-use super::*;
-use display_list::{DisplayList, DrawKind, DrawNode, Paint};
-use krilla::{
-    color::rgb,
-    geom::{Path, PathBuilder, Point, Size, Transform},
-    image::Image,
-    mask::{Mask, MaskType},
-    num::NormalizedF32,
-    paint::{
-        Fill, FillRule, LineCap, LineJoin, LinearGradient, Pattern, RadialGradient, SpreadMethod,
-        Stop, Stroke, StrokeDash,
-    },
-    surface::Surface,
-    tagging::{ContentTag, SpanTag},
-    text::{Font, GlyphId, KrillaGlyph},
+//! SkPDF pages and a narrow object-level precision/semantic compatibility patch.
+use crate::{
+    display_list::*,
+    error,
+    skia::{self, Painter},
 };
-use kurbo::{Affine, BezPath, PathEl};
+use laymesh_core::Result;
+use lopdf::{
+    Document, Object, Stream,
+    content::{Content, Operation},
+    dictionary,
+};
+use skia_safe as sk;
 use std::collections::BTreeMap;
-fn norm(v: f64) -> NormalizedF32 {
-    NormalizedF32::new(v.clamp(0., 1.) as f32).unwrap()
+fn pdf_error(e: impl std::fmt::Display) -> laymesh_core::Diagnostic {
+    error(format!("PDF: {e}"))
 }
-fn transform(t: Affine) -> Transform {
-    let [a, b, c, d, e, f] = t.as_coeffs();
-    Transform::from_row(a as f32, b as f32, c as f32, d as f32, e as f32, f as f32)
+fn utf16(text: &str) -> Object {
+    let mut bytes = vec![0xfe, 0xff];
+    for c in text.encode_utf16() {
+        bytes.extend(c.to_be_bytes());
+    }
+    Object::String(bytes, lopdf::StringFormat::Hexadecimal)
 }
-fn color(c: [f64; 4]) -> rgb::Color {
-    rgb::Color::new(
-        (c[0] * 255.).round() as u8,
-        (c[1] * 255.).round() as u8,
-        (c[2] * 255.).round() as u8,
-    )
+struct OriginalImage {
+    marker: Vec<u8>,
+    width: u32,
+    height: u32,
+    channels: i64,
+    color: Vec<u8>,
+    alpha: Option<Vec<u8>>,
 }
-fn path(p: &BezPath) -> Option<Path> {
-    let mut out = PathBuilder::new();
-    for e in p.iter() {
-        match e {
-            PathEl::MoveTo(p) => out.move_to(p.x as f32, p.y as f32),
-            PathEl::LineTo(p) => out.line_to(p.x as f32, p.y as f32),
-            PathEl::QuadTo(a, b) => out.quad_to(a.x as f32, a.y as f32, b.x as f32, b.y as f32),
-            PathEl::CurveTo(a, b, c) => out.cubic_to(
-                a.x as f32, a.y as f32, b.x as f32, b.y as f32, c.x as f32, c.y as f32,
-            ),
-            PathEl::ClosePath => out.close(),
+fn high_image(resource: &Resource, resource_id: &str) -> Result<Option<OriginalImage>> {
+    let image = image::load_from_memory(&resource.data).map_err(pdf_error)?;
+    if !matches!(
+        image.color(),
+        image::ColorType::L16
+            | image::ColorType::La16
+            | image::ColorType::Rgb16
+            | image::ColorType::Rgba16
+    ) {
+        return Ok(None);
+    }
+    let gray = matches!(
+        image.color(),
+        image::ColorType::L16 | image::ColorType::La16
+    );
+    let channels = if gray { 1 } else { 3 };
+    let mut color = vec![];
+    let mut alpha = image.color().has_alpha().then(Vec::new);
+    for p in image.to_rgba16().pixels() {
+        for k in 0..channels {
+            color.extend(p[k].to_be_bytes());
+        }
+        if let Some(a) = &mut alpha {
+            a.extend(p[3].to_be_bytes());
         }
     }
-    out.finish()
+    // Nonuniform opaque markers survive SkPDF's solid-image optimization.
+    // They are replaced before bytes leave the exporter.
+    let key = laymesh_core::asset_cache::digest(
+        format!(
+            "{resource_id}:{}",
+            laymesh_core::asset_cache::digest(&resource.data)
+        )
+        .as_bytes(),
+    );
+    let marker = (0..105)
+        .map(|i| key.as_bytes()[i % key.len()].wrapping_add(i as u8))
+        .collect();
+    Ok(Some(OriginalImage {
+        marker,
+        width: image.width(),
+        height: image.height(),
+        channels: channels as i64,
+        color,
+        alpha,
+    }))
 }
-fn spread(s: &str) -> SpreadMethod {
-    match s {
-        "repeat" => SpreadMethod::Repeat,
-        "reflect" => SpreadMethod::Reflect,
-        _ => SpreadMethod::Pad,
-    }
-}
-struct Writer<'a> {
-    list: &'a DisplayList,
-    dpi: f64,
-    fonts: BTreeMap<String, Font>,
-    images: BTreeMap<String, Image>,
-    effect_pixels: u64,
-    semantic_depth: usize,
-    semantic_font: Option<Font>,
-}
-impl Writer<'_> {
-    fn fill(&mut self, surface: &mut Surface, p: &Paint, even_odd: bool) -> Result<Option<Fill>> {
-        let stops = |stops: &[display_list::Stop]| {
-            stops
-                .iter()
-                .map(|s| Stop {
-                    offset: norm(s.offset),
-                    color: color(s.rgba).into(),
-                    opacity: norm(s.rgba[3]),
-                })
-                .collect()
-        };
-        let (paint, opacity) = match p {
-            Paint::None => return Ok(None),
-            Paint::Solid { rgba } => (color(*rgba).into(), norm(rgba[3])),
-            Paint::Linear {
-                start,
-                end,
-                stops: s,
-                transform: t,
-                spread: spr,
-            } => (
-                LinearGradient {
-                    x1: start[0] as f32,
-                    y1: start[1] as f32,
-                    x2: end[0] as f32,
-                    y2: end[1] as f32,
-                    transform: transform(*t),
-                    spread_method: spread(spr),
-                    stops: stops(s),
-                    anti_alias: true,
+pub(crate) fn render(list: &DisplayList, dpi: f64) -> Result<Vec<u8>> {
+    let mut painter = Painter::new(list)?;
+    painter.pdf = true;
+    painter.dpi = dpi;
+    let mut root = sk::pdf::StructureElementNode::new("Document");
+    let mut semantic = BTreeMap::new();
+    fn tags(
+        nodes: &[DrawNode],
+        root: &mut sk::pdf::StructureElementNode,
+        ids: &mut BTreeMap<usize, i32>,
+        texts: &mut BTreeMap<String, String>,
+        inside: bool,
+    ) {
+        for n in nodes {
+            let has = n.semantic.is_some();
+            if let Some(text) = &n.semantic {
+                if !inside {
+                    let id = ids.len() as i32 + 1;
+                    let marker = format!("laymesh-semantic-{id}");
+                    let mut tag = sk::pdf::StructureElementNode::new("Span");
+                    tag.set_node_id(id).set_alt(&marker);
+                    root.append_child(tag);
+                    ids.insert(n as *const _ as usize, id);
+                    texts.insert(marker, text.clone());
                 }
-                .into(),
-                NormalizedF32::ONE,
-            ),
-            Paint::Radial {
-                center,
-                focal,
-                radius,
-                stops: s,
-                transform: t,
-                spread: spr,
-            } => (
-                RadialGradient {
-                    fx: focal[0] as f32,
-                    fy: focal[1] as f32,
-                    fr: 0.,
-                    cx: center[0] as f32,
-                    cy: center[1] as f32,
-                    cr: *radius as f32,
-                    transform: transform(*t),
-                    spread_method: spread(spr),
-                    stops: stops(s),
-                    anti_alias: true,
-                }
-                .into(),
-                NormalizedF32::ONE,
-            ),
-            Paint::Pattern {
-                width,
-                height,
-                transform: t,
-                nodes,
-            } => {
-                let mut builder = surface.stream_builder();
-                let mut sub = builder.surface();
-                for node in nodes {
-                    self.node(&mut sub, node, Affine::IDENTITY)?;
-                }
-                sub.finish();
-                let stream = builder.finish();
-                (
-                    Pattern {
-                        stream,
-                        transform: transform(*t),
-                        width: *width as f32,
-                        height: *height as f32,
-                    }
-                    .into(),
-                    NormalizedF32::ONE,
-                )
             }
-        };
-        Ok(Some(Fill {
-            paint,
-            opacity,
-            rule: if even_odd {
-                FillRule::EvenOdd
-            } else {
-                FillRule::NonZero
-            },
-        }))
-    }
-    fn image(&mut self, id: &str, nearest: bool) -> Result<Image> {
-        if let Some(image) = self.images.get(id) {
-            return Ok(image.clone());
-        }
-        let r = self
-            .list
-            .resources
-            .get(id)
-            .ok_or_else(|| error("PDF 缺少图片资源"))?;
-        let image = match r.mime.as_str() {
-            "image/jpeg" => Image::from_jpeg(r.data.clone().into(), !nearest),
-            "image/png" => Image::from_png(r.data.clone().into(), !nearest),
-            "image/webp" => Image::from_webp(r.data.clone().into(), !nearest),
-            _ => return Err(error(format!("PDF 不支持的图片资源：{}", r.mime))),
-        }
-        .map_err(error)?;
-        self.images.insert(id.into(), image.clone());
-        Ok(image)
-    }
-    fn draw_image(surface: &mut Surface, image: Image, r: kurbo::Rect) {
-        if let Some(size) = Size::from_wh(r.width() as f32, r.height() as f32) {
-            surface.push_transform(&Transform::from_translate(r.x0 as f32, r.y0 as f32));
-            surface.draw_image(image, size);
-            surface.pop();
+            if let DrawKind::Group { children, .. } = &n.kind {
+                tags(children, root, ids, texts, inside || has);
+            }
         }
     }
-    fn semantic(&mut self, surface: &mut Surface, source: &str, b: kurbo::Rect) -> Result<()> {
-        if source.is_empty() {
-            return Ok(());
+    tags(
+        &list.nodes,
+        &mut root,
+        &mut painter.semantic_ids,
+        &mut semantic,
+        false,
+    );
+    let mut originals = vec![];
+    for (id, r) in &list.resources {
+        if r.mime.starts_with("image/") && r.mime != "image/x-laymesh-rgba" {
+            if let Some(original) = high_image(r, id)? {
+                let rgba: Vec<_> = original
+                    .marker
+                    .chunks_exact(3)
+                    .flat_map(|p| [p[0], p[1], p[2], 255])
+                    .collect();
+                painter
+                    .images
+                    .insert(id.clone(), skia::rgba_image(7, 5, &rgba)?);
+                originals.push(original);
+            }
         }
-        let data = ratex_katex_fonts::ttf_bytes("KaTeX_Main-Regular.ttf")
-            .ok_or_else(|| error("缺少公式字体"))?
-            .into_owned();
-        let face = ttf_parser::Face::parse(&data, 0).map_err(|_| error("无效公式字体"))?;
-        let font = if let Some(font) = &self.semantic_font {
-            font.clone()
-        } else {
-            let font =
-                Font::new(data.clone().into(), 0).ok_or_else(|| error("PDF 公式字体读取失败"))?;
-            self.semantic_font = Some(font.clone());
-            font
-        };
-        let size = b.height().max(0.1) as f32;
-        let units = face.units_per_em() as f32;
-        let fallback = face.glyph_index('x').unwrap();
-        let glyphs: Vec<_> = source
-            .char_indices()
-            .map(|(offset, ch)| {
-                let gid = face.glyph_index(ch).unwrap_or(fallback);
-                KrillaGlyph::new(
-                    GlyphId::new(gid.0 as u32),
-                    face.glyph_hor_advance(gid).unwrap_or(500) as f32 / units,
-                    0.,
-                    0.,
-                    0.,
-                    offset..offset + ch.len_utf8(),
-                    None,
-                )
+    }
+    let metadata = sk::pdf::Metadata {
+        raster_dpi: Some(dpi as f32),
+        encoding_quality: Some(101),
+        structure_element_tree_root: (!semantic.is_empty()).then_some(root),
+        ..Default::default()
+    };
+    let mut bytes = vec![];
+    {
+        let doc = sk::pdf::new_document(&mut bytes, Some(&metadata));
+        let mut page = doc.begin_page(
+            (
+                (list.width * 72. / 25.4) as f32,
+                (list.height * 72. / 25.4) as f32,
+            ),
+            None,
+        );
+        page.canvas().scale((72. / 25.4, 72. / 25.4));
+        painter.draw(page.canvas(), &BTreeMap::new())?;
+        page.end_page().close();
+    }
+    let mut doc = Document::load_mem(&bytes).map_err(pdf_error)?;
+    // SkPDF rounds its internal device to raster-DPI pixels. Restore the exact
+    // physical page and top-edge origin instead of exposing that rounding.
+    for id in doc.get_pages().values() {
+        let page = doc
+            .get_object(*id)
+            .map_err(pdf_error)?
+            .as_dict()
+            .map_err(pdf_error)?;
+        let bounds = page
+            .get(b"MediaBox")
+            .map_err(pdf_error)?
+            .as_array()
+            .map_err(pdf_error)?;
+        let old_height = bounds[3].as_float().map_err(pdf_error)?;
+        let width = (list.width * 72. / 25.4) as f32;
+        let height = (list.height * 72. / 25.4) as f32;
+        let mut content = format!("q\n1 0 0 1 0 {} cm\n", height - old_height).into_bytes();
+        content.extend(doc.get_page_content(*id).map_err(pdf_error)?);
+        content.extend(b"\nQ\n");
+        doc.change_page_content(*id, content).map_err(pdf_error)?;
+        doc.get_object_mut(*id)
+            .map_err(pdf_error)?
+            .as_dict_mut()
+            .map_err(pdf_error)?
+            .set(
+                "MediaBox",
+                vec![
+                    0.into(),
+                    0.into(),
+                    Object::Real(width),
+                    Object::Real(height),
+                ],
+            );
+    }
+    patch_images(&mut doc, originals)?;
+    patch_semantics(&mut doc, &semantic)?;
+    let mut out = vec![];
+    doc.save_to(&mut out).map_err(pdf_error)?;
+    Ok(out)
+}
+fn patch_images(doc: &mut Document, images: Vec<OriginalImage>) -> Result<()> {
+    for image in images {
+        let ids: Vec<_> = doc
+            .objects
+            .iter()
+            .filter_map(|(id, o)| {
+                let s = o.as_stream().ok()?;
+                if s.dict.get(b"Subtype").ok()?.as_name().ok() != Some(b"Image") {
+                    return None;
+                }
+                if s.dict.get(b"Width").ok()?.as_i64().ok() != Some(7)
+                    || s.dict.get(b"Height").ok()?.as_i64().ok() != Some(5)
+                    || s.dict.get(b"BitsPerComponent").ok()?.as_i64().ok() != Some(8)
+                {
+                    return None;
+                }
+                let bytes = s
+                    .decompressed_content()
+                    .unwrap_or_else(|_| s.content.clone());
+                (bytes == image.marker).then_some(*id)
             })
             .collect();
-        let advance = glyphs.iter().map(|g| g.x_advance).sum::<f32>() * size;
-        surface.push_transform(&Transform::from_row(
-            if advance > 0. {
-                b.width() as f32 / advance
-            } else {
-                1.
-            },
-            0.,
-            0.,
-            1.,
-            b.x0 as f32,
-            b.y0 as f32,
-        ));
-        surface.set_fill(Some(Fill {
-            opacity: NormalizedF32::ZERO,
-            ..Default::default()
-        }));
-        surface.set_stroke(None);
-        surface.start_tagged(ContentTag::Span(
-            SpanTag::empty().with_actual_text(Some(source)),
-        ));
-        surface.draw_glyphs(
-            Point::from_xy(0., size * 0.8),
-            &glyphs,
-            font,
-            source,
-            size,
-            false,
-        );
-        surface.end_tagged();
-        surface.pop();
-        Ok(())
-    }
-    fn node(&mut self, surface: &mut Surface, n: &DrawNode, parent: Affine) -> Result<()> {
-        let semantic = n.semantic.as_deref().filter(|_| self.semantic_depth == 0);
-        if n.semantic.is_some() {
-            self.semantic_depth += 1;
-        }
-        let global = parent * n.transform;
-        surface.push_transform(&transform(n.transform));
-        surface.push_opacity(norm(n.opacity));
-        let tiles = if n.effects.is_empty() {
-            Vec::new()
-        } else {
-            let [a, b, c, d, _, _] = global.as_coeffs();
-            let tiles = raster::effect_tiles(
-                self.list,
-                n,
-                self.dpi / 25.4 * a.hypot(b).max(c.hypot(d)).max(1e-9),
-            )?;
-            for tile in &tiles {
-                self.effect_pixels += tile.pixels.width() as u64 * tile.pixels.height() as u64;
-                if self.effect_pixels > raster::MAX_PIXELS {
-                    return Err(error(
-                        "PDF effects exceed the 100000000-pixel budget; reduce DPI or effect size",
-                    ));
-                }
-            }
-            tiles
-        };
-        for t in tiles.iter().filter(|t| !t.inner) {
-            let image = Image::from_rgba8(
-                t.pixels
-                    .as_ref()
-                    .clone()
-                    .take_rgba8(vello_cpu::peniko::ImageAlphaType::Alpha),
-                t.pixels.width() as u32,
-                t.pixels.height() as u32,
-            );
-            Self::draw_image(surface, image, t.rect);
-        }
-        match &n.kind {
-            DrawKind::Group {
-                children,
-                clip,
-                mask,
-            } => {
-                let mut layers = 0;
-                if let Some(c) = clip {
-                    if let Some(p) = path(&c.path) {
-                        surface.push_clip_path(
-                            &p,
-                            &if c.even_odd {
-                                FillRule::EvenOdd
-                            } else {
-                                FillRule::NonZero
-                            },
-                        );
-                        layers += 1;
-                    }
-                }
-                if let Some(m) = mask {
-                    let mut builder = surface.stream_builder();
-                    let mut sub = builder.surface();
-                    self.node(&mut sub, &m.node, Affine::IDENTITY)?;
-                    sub.finish();
-                    let stream = builder.finish();
-                    surface.push_mask(Mask::new(
-                        stream,
-                        if m.luminance {
-                            MaskType::Luminosity
-                        } else {
-                            MaskType::Alpha
-                        },
-                    ));
-                    layers += 1;
-                }
-                for child in children {
-                    self.node(surface, child, global)?;
-                }
-                for _ in 0..layers {
-                    surface.pop();
-                }
-            }
-            DrawKind::Path {
-                path: p,
-                fill,
-                stroke,
-                even_odd,
-            } => {
-                let fill = self.fill(surface, fill, *even_odd)?;
-                let painted = fill.is_some() || stroke.is_some();
-                surface.set_fill(fill);
-                surface.set_stroke(stroke.as_ref().map(|s| Stroke {
-                    paint: color(s.rgba).into(),
-                    opacity: norm(s.rgba[3]),
-                    width: s.width as f32,
-                    miter_limit: s.miter as f32,
-                    line_cap: match s.cap.as_str() {
-                        "round" => LineCap::Round,
-                        "square" => LineCap::Square,
-                        _ => LineCap::Butt,
-                    },
-                    line_join: match s.join.as_str() {
-                        "round" => LineJoin::Round,
-                        "bevel" => LineJoin::Bevel,
-                        _ => LineJoin::Miter,
-                    },
-                    dash: (!s.dash.is_empty()).then(|| StrokeDash {
-                        array: s.dash.iter().map(|v| *v as f32).collect(),
-                        offset: s.offset as f32,
-                    }),
-                }));
-                if painted {
-                    if let Some(p) = path(p) {
-                        surface.draw_path(&p);
-                    }
-                }
-            }
-            DrawKind::Glyphs {
-                resource,
-                text,
-                size,
-                glyphs,
-                color: c,
-                ..
-            } => {
-                let font = if let Some(font) = self.fonts.get(resource) {
-                    font.clone()
-                } else {
-                    let r = self
-                        .list
-                        .resources
-                        .get(resource)
-                        .ok_or_else(|| error("PDF 缺少字体"))?;
-                    let font = Font::new(r.data.clone().into(), r.font_index.unwrap_or(0))
-                        .ok_or_else(|| error("PDF 无效字体"))?;
-                    self.fonts.insert(resource.clone(), font.clone());
-                    font
-                };
-                let mut cursor = 0.;
-                let glyphs: Vec<_> = glyphs
-                    .iter()
-                    .map(|g| {
-                        let out = KrillaGlyph::new(
-                            GlyphId::new(g.id as u32),
-                            (g.advance / size) as f32,
-                            ((g.x - cursor) / size) as f32,
-                            (g.y / size) as f32,
-                            0.,
-                            g.source.clone(),
-                            None,
-                        );
-                        cursor += g.advance;
-                        out
-                    })
-                    .collect();
-                surface.set_fill(Some(Fill {
-                    paint: color(*c).into(),
-                    opacity: norm(c[3]),
-                    ..Default::default()
-                }));
-                surface.set_stroke(None);
-                if self.semantic_depth > 0 {
-                    surface.start_tagged(ContentTag::Span(
-                        SpanTag::empty().with_actual_text(Some("")),
-                    ));
-                }
-                surface.draw_glyphs(
-                    Point::from_xy(0., 0.),
-                    &glyphs,
-                    font,
-                    text,
-                    *size as f32,
-                    false,
+        for id in ids {
+            let mut dict = dictionary! {"Type"=>"XObject","Subtype"=>"Image","Width"=>image.width as i64,"Height"=>image.height as i64,"BitsPerComponent"=>16,"ColorSpace"=>if image.channels==1{"DeviceGray"}else{"DeviceRGB"}};
+            if let Some(alpha) = &image.alpha {
+                let mut s = Stream::new(
+                    dictionary! {"Type"=>"XObject","Subtype"=>"Image","Width"=>image.width as i64,"Height"=>image.height as i64,"BitsPerComponent"=>16,"ColorSpace"=>"DeviceGray"},
+                    alpha.clone(),
                 );
-                if self.semantic_depth > 0 {
-                    surface.end_tagged();
-                }
+                s.compress().map_err(pdf_error)?;
+                dict.set("SMask", doc.add_object(s));
             }
-            DrawKind::Image {
-                resource,
-                rect,
-                nearest,
-            } => Self::draw_image(surface, self.image(resource, *nearest)?, *rect),
+            let mut stream = Stream::new(dict, image.color.clone());
+            stream.compress().map_err(pdf_error)?;
+            doc.objects.insert(id, Object::Stream(stream));
         }
-        for t in tiles.iter().filter(|t| t.inner) {
-            let image = Image::from_rgba8(
-                t.pixels
-                    .as_ref()
-                    .clone()
-                    .take_rgba8(vello_cpu::peniko::ImageAlphaType::Alpha),
-                t.pixels.width() as u32,
-                t.pixels.height() as u32,
-            );
-            Self::draw_image(surface, image, t.rect);
-        }
-        if let Some(source) = semantic {
-            self.semantic(surface, source, n.local_bounds())?;
-        }
-        if n.semantic.is_some() {
-            self.semantic_depth -= 1;
-        }
-        surface.pop();
-        surface.pop();
-        Ok(())
-    }
-}
-pub(crate) fn draw(surface: &mut Surface, list: &DisplayList, dpi: f64) -> Result<()> {
-    let mut writer = Writer {
-        list,
-        dpi,
-        fonts: BTreeMap::new(),
-        images: BTreeMap::new(),
-        effect_pixels: 0,
-        semantic_depth: 0,
-        semantic_font: None,
-    };
-    for node in &list.nodes {
-        writer.node(surface, node, Affine::IDENTITY)?;
     }
     Ok(())
+}
+fn patch_semantics(doc: &mut Document, texts: &BTreeMap<String, String>) -> Result<()> {
+    // MCIDs are local to a page content stream or a Form XObject. SkPDF
+    // creates Forms for opacity layers; MCID 0 in two Forms is not one tag.
+    type Scope = Option<lopdf::ObjectId>;
+    let mut mcids: BTreeMap<(Scope, i64), String> = BTreeMap::new();
+    fn collect(
+        doc: &Document,
+        object: &Object,
+        text: &str,
+        out: &mut BTreeMap<(Scope, i64), String>,
+    ) {
+        let Ok((_, object)) = doc.dereference(object) else {
+            return;
+        };
+        match object {
+            Object::Integer(id) => {
+                out.insert((None, *id), text.into());
+            }
+            Object::Array(a) => {
+                for object in a {
+                    collect(doc, object, text, out);
+                }
+            }
+            Object::Dictionary(d) => {
+                if let Ok(id) = d.get(b"MCID").and_then(Object::as_i64) {
+                    let stream = d.get(b"Stm").ok().and_then(|o| o.as_reference().ok());
+                    out.insert((stream, id), text.into());
+                }
+            }
+            _ => {}
+        }
+    }
+    let tags: Vec<_> = doc
+        .objects
+        .iter()
+        .filter_map(|(id, object)| {
+            let d = object.as_dict().ok()?;
+            let marker = String::from_utf8_lossy(d.get(b"Alt").ok()?.as_str().ok()?);
+            Some((
+                *id,
+                d.get(b"K").ok()?.clone(),
+                texts.get(marker.as_ref())?.clone(),
+            ))
+        })
+        .collect();
+    for (id, kids, text) in tags {
+        collect(doc, &kids, &text, &mut mcids);
+        let d = doc.objects.get_mut(&id).unwrap().as_dict_mut().unwrap();
+        d.set("ActualText", utf16(&text));
+        d.remove(b"Alt");
+    }
+    // Only parse drawing streams, never embedded fonts or other binary data.
+    let mut streams: BTreeMap<_, Scope> = doc
+        .get_pages()
+        .values()
+        .flat_map(|id| doc.get_page_contents(*id))
+        .map(|id| (id, None))
+        .collect();
+    for (id, object) in &doc.objects {
+        if let Ok(s) = object.as_stream() {
+            if s.dict.get(b"Subtype").ok().and_then(|o| o.as_name().ok()) == Some(b"Form") {
+                streams.insert(*id, Some(*id));
+            }
+        }
+    }
+    for (id, scope) in streams {
+        let Some(Object::Stream(s)) = doc.objects.get_mut(&id) else {
+            continue;
+        };
+        let bytes = s
+            .decompressed_content()
+            .unwrap_or_else(|_| s.content.clone());
+        let Ok(content) = Content::decode(&bytes) else {
+            continue;
+        };
+        let mut depth = Vec::new();
+        let mut changed = false;
+        let mut ops = vec![];
+        for mut op in content.operations {
+            if op.operator == "BDC" || op.operator == "BMC" {
+                let text = op
+                    .operands
+                    .get(1)
+                    .and_then(|o| o.as_dict().ok())
+                    .and_then(|d| d.get(b"MCID").ok())
+                    .and_then(|o| o.as_i64().ok())
+                    .and_then(|id| mcids.get(&(scope, id)));
+                depth.push(text.is_some());
+                if let Some(text) = text {
+                    op.operands[1]
+                        .as_dict_mut()
+                        .unwrap()
+                        .set("ActualText", utf16(text));
+                    changed = true;
+                }
+            }
+            let invisible = depth.iter().any(|v| *v);
+            if invisible && matches!(op.operator.as_str(), "Tj" | "TJ" | "'" | "\"") {
+                ops.push(Operation::new("Tr", vec![3.into()]));
+                ops.push(op);
+                ops.push(Operation::new("Tr", vec![0.into()]));
+            } else {
+                if op.operator == "EMC" {
+                    depth.pop();
+                }
+                ops.push(op);
+            }
+        }
+        if changed {
+            s.set_plain_content(Content { operations: ops }.encode().map_err(pdf_error)?);
+            s.compress().map_err(pdf_error)?;
+        }
+    }
+    Ok(())
+}
+pub(crate) fn merge(pages: Vec<Vec<u8>>) -> Result<Vec<u8>> {
+    if pages.len() == 1 {
+        return Ok(pages.into_iter().next().unwrap());
+    }
+    let mut result = Document::with_version("1.7");
+    let pages_id = result.new_object_id();
+    let structure_id = result.new_object_id();
+    let mut structure_kids = vec![];
+    let mut parent_numbers = vec![];
+    let mut parent_offset = 0i64;
+    let mut kids = vec![];
+    for bytes in pages {
+        let mut doc = Document::load_mem(&bytes).map_err(pdf_error)?;
+        doc.renumber_objects_with(result.max_id + 1);
+        // Each SkPDF page starts its own structure-parent number tree at zero.
+        // Rebase both page/Form keys and number-tree keys before joining pages.
+        if let Some(root) = doc
+            .catalog()
+            .ok()
+            .and_then(|c| c.get(b"StructTreeRoot").ok())
+            .and_then(|o| doc.dereference(o).ok())
+            .and_then(|(_, o)| o.as_dict().ok())
+            .cloned()
+        {
+            if let Ok(k) = root.get(b"K") {
+                let children = match k {
+                    Object::Array(a) => a.clone(),
+                    other => vec![other.clone()],
+                };
+                for child in children {
+                    if let Ok(id) = child.as_reference() {
+                        if let Ok(d) = doc.get_object_mut(id).and_then(Object::as_dict_mut) {
+                            d.set("P", structure_id);
+                        }
+                    }
+                    structure_kids.push(child);
+                }
+            }
+            fn numbers(doc: &Document, node: &Object, output: &mut Vec<Object>) {
+                if let Ok((_, Object::Dictionary(d))) = doc.dereference(node) {
+                    if let Ok(a) = d.get(b"Nums").and_then(Object::as_array) {
+                        output.extend(a.iter().cloned());
+                    }
+                    if let Ok(a) = d.get(b"Kids").and_then(Object::as_array) {
+                        for child in a {
+                            numbers(doc, child, output);
+                        }
+                    }
+                }
+            }
+            let mut entries = vec![];
+            if let Ok(tree) = root.get(b"ParentTree") {
+                numbers(&doc, tree, &mut entries);
+            }
+            let mut next = parent_offset;
+            for pair in entries.chunks_exact_mut(2) {
+                let key = pair[0].as_i64().map_err(pdf_error)? + parent_offset;
+                pair[0] = key.into();
+                next = next.max(key + 1);
+            }
+            for object in doc.objects.values_mut() {
+                let dictionary = match object {
+                    Object::Dictionary(d) => Some(d),
+                    Object::Stream(s) => Some(&mut s.dict),
+                    _ => None,
+                };
+                if let Some(d) = dictionary {
+                    for key in [b"StructParents".as_slice(), b"StructParent".as_slice()] {
+                        if let Ok(n) = d.get(key).and_then(Object::as_i64) {
+                            d.set(key, n + parent_offset);
+                        }
+                    }
+                }
+            }
+            parent_numbers.extend(entries);
+            parent_offset = next;
+        }
+        let page_ids = doc.get_pages();
+        for id in page_ids.values() {
+            doc.get_object_mut(*id)
+                .map_err(pdf_error)?
+                .as_dict_mut()
+                .map_err(pdf_error)?
+                .set("Parent", pages_id);
+            kids.push(Object::Reference(*id));
+        }
+        result.max_id = doc.max_id;
+        result.objects.extend(doc.objects);
+    }
+    result.objects.insert(
+        pages_id,
+        dictionary! {"Type"=>"Pages","Count"=>kids.len() as i64,"Kids"=>kids}.into(),
+    );
+    let mut catalog = dictionary! {"Type"=>"Catalog","Pages"=>pages_id};
+    if !structure_kids.is_empty() {
+        let parent_tree = result.add_object(dictionary! {"Nums"=>parent_numbers});
+        result.objects.insert(structure_id,dictionary!{"Type"=>"StructTreeRoot","K"=>structure_kids,"ParentTree"=>parent_tree,"ParentTreeNextKey"=>parent_offset}.into());
+        catalog.set("StructTreeRoot", structure_id);
+        catalog.set("MarkInfo", dictionary! {"Marked"=>true});
+    }
+    let catalog = result.add_object(catalog);
+    result.trailer.set("Root", catalog);
+    let mut bytes = vec![];
+    result.save_to(&mut bytes).map_err(pdf_error)?;
+    Ok(bytes)
 }

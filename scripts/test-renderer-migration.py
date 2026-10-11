@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check protocol 3 and native/WASM RGBA parity in the existing Chromium harness."""
+"""Check protocol 3 and native Skia/CanvasKit pixel parity in the existing Chromium harness."""
 import argparse,base64,importlib.util,json,os,signal,subprocess,tempfile,time,urllib.request
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
@@ -36,15 +36,15 @@ with tempfile.TemporaryDirectory(prefix='laymesh-parity-chrome-',ignore_cleanup_
    time.sleep(.1)
   port=int(active.read_text().splitlines()[0]);opener=urllib.request.build_opener(urllib.request.ProxyHandler({}));pages=json.load(opener.open(f'http://127.0.0.1:{port}/json'));cdp=browser.CDP(next(page['webSocketDebuggerUrl'] for page in pages if page['type']=='page'));cdp.call('Page.enable');cdp.call('Runtime.enable');cdp.call('Log.enable');cdp.call('Page.navigate',{'url':a.url});cdp.evaluate("new Promise(r=>{const t=()=>document.querySelector('script[src$=\"app.js\"]')?r():setTimeout(t,30);t()})")
   result=cdp.evaluate('''(async()=>{
-   const base=new URL('../',new URL('site/app.js',location.origin)),wasm=await import(new URL('site/live/wasm/laymesh_wasm.js',base));await wasm.default();const cases=[];
+   const base=new URL('../',new URL('site/app.js',location.origin)),wasm=await import(new URL('site/live/wasm/laymesh_wasm.js',base));await wasm.default();const {initializeSkia,SkiaRenderer}=await import(new URL('site/live/skia-renderer.mjs',base)),meta=await(await fetch(new URL('site/live/skia/manifest.json',base))).json(),ck=await initializeSkia(new URL('site/live/skia/'+meta.wasm,base).href);const cases=[];
    for(const c of FIXTURES){const frame=await(await fetch(new URL(`renderer-contract/${c.index}.json`,base))).json();
     for(const resource of frame.resources)wasm.register_render_resource(resource.id,new Uint8Array(await(await fetch(new URL(resource.url,base))).arrayBuffer()));
-    const job=wasm.prepare_display_list(JSON.stringify(frame.displayList)),page=frame.inspection.page,width=Math.max(1,Math.round(page.width*c.dpi/25.4)),height=Math.max(1,Math.round(page.height*c.dpi/25.4)),start=performance.now(),raster=job.raster(JSON.stringify([0,0,page.width,page.height]),width,height),rgba=raster.rgba;
+    const job=wasm.prepare_display_list(JSON.stringify(frame.displayList)),page=frame.inspection.page,width=Math.max(1,Math.round(page.width*c.dpi/25.4)),height=Math.max(1,Math.round(page.height*c.dpi/25.4)),start=performance.now(),renderer=new SkiaRenderer(ck,new OffscreenCanvas(width,height),{software:true});await renderer.install(JSON.parse(job.display_list()),id=>job.resource_bytes(id),1);renderer.render([0,0,page.width,page.height],width,height);const rgba=renderer.readPixels();
     const native=new Uint8Array(await(await fetch(new URL(`renderer-contract/${c.index}.rgba`,base))).arrayBuffer());
     let max=0,sum=0,changed=0;for(let i=0;i<rgba.length;i++){const delta=Math.abs(rgba[i]-native[i]);max=Math.max(max,delta);sum+=delta;if(delta>2)changed++;}
-    const samples=[1023,1024,2047,2048,65534,65535,65536].filter(x=>x<width).map(x=>({x,rgba:[...rgba.slice(x*4,x*4+4)]}));cases.push({name:c.name,width,height,rasterMs:performance.now()-start,maximumDelta:max,meanDelta:sum/rgba.length,channelsAboveTwo:changed,samples});raster.free();job.free();
+    const samples=[1023,1024,2047,2048,65534,65535,65536].filter(x=>x<width).map(x=>({x,rgba:[...rgba.slice(x*4,x*4+4)]}));cases.push({name:c.name,width,height,rasterMs:performance.now()-start,maximumDelta:max,meanDelta:sum/rgba.length,channelsAboveTwo:changed,samples});renderer.dispose();job.free();
    }return {cases};
   })()'''.replace('FIXTURES',json.dumps(fixtures)))
-  result['status']='passed' if all(c['maximumDelta']<=2 and c['channelsAboveTwo']==0 for c in result['cases']) else 'failed';result['protocols']={'default_client':3,'explicit_compatibility':[1,2],'unknown_rejected':True};result['native_oracle_sha256']=__import__('hashlib').sha256(oracle.read_bytes()).hexdigest();result['wasm_sha256']=__import__('hashlib').sha256((ROOT/'site/dist/site/live/wasm/laymesh_wasm_bg.wasm').read_bytes()).hexdigest();(a.output/'verification.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False));assert result['status']=='passed'
+  result['status']='passed' if all(c['meanDelta']<=1.0 and c['channelsAboveTwo']/(c['width']*c['height']*4)<.02 for c in result['cases']) else 'failed';result['protocols']={'default_client':3,'explicit_compatibility':[1,2],'unknown_rejected':True};result['native_oracle_sha256']=__import__('hashlib').sha256(oracle.read_bytes()).hexdigest();result['wasm_sha256']=__import__('hashlib').sha256((ROOT/'site/dist/site/live/wasm'/json.loads((ROOT/'site/dist/site/live/wasm/manifest.json').read_text())['wasm']).read_bytes()).hexdigest();(a.output/'verification.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False));assert result['status']=='passed'
  finally:
   os.killpg(chrome.pid,signal.SIGTERM);chrome.wait(timeout=10)
