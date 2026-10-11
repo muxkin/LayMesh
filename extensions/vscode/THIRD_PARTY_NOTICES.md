@@ -246,6 +246,14 @@ The native executable and WebAssembly module contain the following locked Rust d
 | zopfli | 0.8.3 | Apache-2.0 |
 | zune-core | 0.5.3 | MIT OR Apache-2.0 OR Zlib |
 | zune-jpeg | 0.5.15 | MIT OR Apache-2.0 OR Zlib |
+| Linux static brotlicommon | 1.1.0-2+b7 | See distribution copyright |
+| Linux static brotlidec | 1.1.0-2+b7 | See distribution copyright |
+| Linux static bz2 | 1.0.8-6 | See distribution copyright |
+| Linux static expat | 2.7.1-2 | See distribution copyright |
+| Linux static fontconfig | 2.15.0-2.3 | See distribution copyright |
+| Linux static freetype | 2.13.3+dfsg-1 | See distribution copyright |
+| Linux static png16 | 1.6.48-1+deb13u3 | See distribution copyright |
+| Linux static z | 1:1.3.dfsg+really1.3.1-1+b1 | See distribution copyright |
 | Skia | m153-0.101.2 | BSD-3-Clause |
 | CanvasKit standard | 0.42.0 | BSD-3-Clause |
 | Matplotlib colormap data | 3.11.2 | Matplotlib license |
