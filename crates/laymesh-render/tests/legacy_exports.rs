@@ -386,9 +386,11 @@ fn legacy_unavailable_fonts_warn_and_ttc_otc_faces_are_embedded_correctly() {
     assert!(s.warnings.is_empty());
 }
 fn with_pdf(s: &Scene, check: impl FnOnce(&std::path::Path)) {
+    static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
     let path = std::env::temp_dir().join(format!(
-        "laymesh-legacy-export-{}-{}.pdf",
+        "laymesh-legacy-export-{}-{}-{}.pdf",
         std::process::id(),
+        NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
         std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()

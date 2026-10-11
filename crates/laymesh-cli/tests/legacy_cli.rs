@@ -3,9 +3,11 @@ use std::{path::PathBuf, process::Command};
 struct Temp(PathBuf);
 impl Temp {
     fn new() -> Self {
+        static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
         let p = std::env::temp_dir().join(format!(
-            "LayMesh-中文路径-{}-{}",
+            "LayMesh-中文路径-{}-{}-{}",
             std::process::id(),
+            NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()

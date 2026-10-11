@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse, hashlib, json, os, platform, re, shutil, subprocess, sys, tempfile, tomllib, zipfile, struct
 from pathlib import Path
+from native_runtime import check_linux_runtime
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = json.loads((ROOT / "release/runtime.json").read_text())
 def target():
@@ -26,6 +27,7 @@ def build(output,binary=None,target_name=None):
     if not binary.is_file(): raise SystemExit(f"Missing native engine: {binary}")
     data=binary.read_bytes()
     if name.startswith('linux-'):
+        check_linux_runtime(data)
         assert data[:4]==b'\x7fELF' and data[4:6]==b'\x02\x01','Expected a 64-bit little-endian ELF binary'
         assert struct.unpack_from('<H',data,18)[0]==(62 if name.endswith('x64') else 183),'Native architecture does not match requested wheel'
     elif name.startswith('darwin-'):

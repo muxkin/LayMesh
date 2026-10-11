@@ -41,6 +41,8 @@ python -m unittest discover -s python/tests -v
 
 冒烟测试切换到临时目录并清空 PATH，通过内置引擎检查 SVG/PDF/PNG/JPEG/TIFF/WebP 等导出、CLI 与模块入口、数据保存、Matplotlib 导入、两种 Notebook Magic 及独立示例。本机检查仅证明实测平台通过。工作流在 Python 3.13 上构建五个平台，并在 Python 3.10 和 3.14 上安装同一批 wheel 验证兼容性。
 
+Linux 源码构建需要 `pkg-config`、`libfontconfig1-dev`、`libfreetype-dev`、`libbrotli-dev`、`libbz2-dev`、`libexpat1-dev`、`libpng-dev` 和 `zlib1g-dev`（Debian/Ubuntu 包名）。原生引擎静态链接这些字体和编解码库；wheel 与 VSIX 审计会拒绝未打包的可选 Linux 动态库，安装包保留相应发行版版权声明。使用安装包不需要显卡或这些开发包。
+
 ## GitHub 与 PyPI 配置
 
 现有[发布工作流](../.github/workflows/publish-pypi.yml)使用 [PyPA 的 Trusted Publishing 流程](https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/)。首次上传前：

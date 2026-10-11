@@ -4,6 +4,7 @@ import argparse, hashlib, json, struct, tomllib, zipfile
 from email.parser import BytesParser
 from packaging.requirements import Requirement
 from pathlib import Path
+from native_runtime import check_linux_runtime
 ROOT=Path(__file__).resolve().parents[1]
 
 def windows_imports(data):
@@ -59,6 +60,7 @@ def main():
    native=vendor+'bin/'+('laymesh.exe' if target.startswith('win-') else 'laymesh')
    assert hashlib.sha256(z.read(native)).hexdigest()==m['binary_sha256']
    if target.startswith('win-'):check_windows_runtime(z.read(native))
+   if target.startswith('linux-'):check_linux_runtime(z.read(native))
    assert len([n for n in names if n.startswith(vendor+'bin/')])==1
    assert not any('node_modules' in n or Path(n).suffix.lower() in ('.ttf','.otf','.ttc','.otc','.woff','.woff2','.js','.mjs','.cjs') for n in names),'Runtime or text font leaked into wheel'
    if not target.startswith('win-'):assert z.getinfo(native).external_attr>>16&0o111

@@ -3694,6 +3694,94 @@
     ]
   },
   {
+    "name": "Linux static brotlicommon",
+    "version": "1.1.0-2+b7",
+    "license": "See distribution copyright",
+    "texts": [
+      {
+        "file": "linux-static-brotlicommon-1.1.0-2+b7-copyright",
+        "sha256": "24a64e5bb83d0960d1835696a1e23c0896ad6055b0ca47c66ab0eb9a766324b1"
+      }
+    ]
+  },
+  {
+    "name": "Linux static brotlidec",
+    "version": "1.1.0-2+b7",
+    "license": "See distribution copyright",
+    "texts": [
+      {
+        "file": "linux-static-brotlidec-1.1.0-2+b7-copyright",
+        "sha256": "24a64e5bb83d0960d1835696a1e23c0896ad6055b0ca47c66ab0eb9a766324b1"
+      }
+    ]
+  },
+  {
+    "name": "Linux static bz2",
+    "version": "1.0.8-6",
+    "license": "See distribution copyright",
+    "texts": [
+      {
+        "file": "linux-static-bz2-1.0.8-6-copyright",
+        "sha256": "832ed535ff3c3d025a8d2348eb1b697b89addcf2eaadbc17650262040b9145e2"
+      }
+    ]
+  },
+  {
+    "name": "Linux static expat",
+    "version": "2.7.1-2",
+    "license": "See distribution copyright",
+    "texts": [
+      {
+        "file": "linux-static-expat-2.7.1-2-copyright",
+        "sha256": "60919fe1a156395ff14511bb6ff79756c50ade2fff59ac60c9bae1d8a7fe6292"
+      }
+    ]
+  },
+  {
+    "name": "Linux static fontconfig",
+    "version": "2.15.0-2.3",
+    "license": "See distribution copyright",
+    "texts": [
+      {
+        "file": "linux-static-fontconfig-2.15.0-2.3-copyright",
+        "sha256": "b215a61cdd3e62b5b17cc28b1852c78acb3dd38be0fb30706f7efc050dba91db"
+      }
+    ]
+  },
+  {
+    "name": "Linux static freetype",
+    "version": "2.13.3+dfsg-1",
+    "license": "See distribution copyright",
+    "texts": [
+      {
+        "file": "linux-static-freetype-2.13.3+dfsg-1-copyright",
+        "sha256": "acdab1506824347784d2cc0a634cfa17dbf525c0d5b4902b4ac9d0d4e1fed6c7"
+      }
+    ]
+  },
+  {
+    "name": "Linux static png16",
+    "version": "1.6.48-1+deb13u3",
+    "license": "See distribution copyright",
+    "texts": [
+      {
+        "file": "linux-static-png16-1.6.48-1+deb13u3-copyright",
+        "sha256": "7e729164c60950b2b57f1712d82a051c9ba54f421c9b69815d9e4686ddc5709b"
+      }
+    ]
+  },
+  {
+    "name": "Linux static z",
+    "version": "1:1.3.dfsg+really1.3.1-1+b1",
+    "license": "See distribution copyright",
+    "texts": [
+      {
+        "file": "linux-static-z-1_1.3.dfsg+really1.3.1-1+b1-copyright",
+        "sha256": "9e5b96d63773a5d177ba264254390f792be07e41748ebd94730981c6cac31cc6"
+      }
+    ]
+  },
+  {
     "name": "Skia",
     "version": "m153-0.101.2",
     "license": "BSD-3-Clause",

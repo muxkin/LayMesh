@@ -3,6 +3,6 @@
 rustflags = ["-C", "target-feature=+crt-static"]
 
 [target.wasm32-unknown-unknown]
-# Vello's f32 pipeline selects its WASM SIMD implementation at compile time.
+# The shared layout, image decoding and animation sampler can use WASM SIMD.
 # SIMD128 is supported by the browsers used by the website and VS Code engine.
 rustflags = ["-C", "target-feature=+simd128"]

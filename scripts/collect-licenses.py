@@ -1,8 +1,25 @@
 #!/usr/bin/env python3
 """Collect license texts for locked Rust dependencies without exposing local paths."""
-import hashlib,json,subprocess
+import hashlib,json,subprocess,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
+def linux_static_licenses(dest):
+ if sys.platform!='linux':return []
+ flags=subprocess.check_output(['pkg-config','--static','--libs','fontconfig','freetype2'],text=True).split()
+ names=sorted({f[2:] for f in flags if f.startswith('-l') and f[2:] not in ('m','pthread','dl','rt')})
+ records=[]
+ for name in names:
+  # Release Linux runners use Ubuntu. Record the exact archive's distribution
+  # copyright, including third-party notices, rather than a guessed license.
+  owner=subprocess.check_output(['dpkg-query','-S',f'*/lib{name}.a'],text=True).splitlines()[0].split(': ',1)[0]
+  package=owner.split(':')[0]
+  version=subprocess.check_output(['dpkg-query','-W','-f=${Version}',owner],text=True)
+  source=Path('/usr/share/doc')/package/'copyright'
+  assert source.is_file(),f'Missing static library copyright: {name}'
+  filename=f'linux-static-{name}-{version.replace(":","_")}-copyright'
+  data=source.read_bytes();(dest/filename).write_bytes(data)
+  records.append({'name':f'Linux static {name}','version':version,'license':'See distribution copyright','texts':[{'file':filename,'sha256':hashlib.sha256(data).hexdigest()}]})
+ return records
 def main():
  external=json.loads((ROOT/'release/license-sources.json').read_text());data=json.loads(subprocess.check_output(['cargo','metadata','--locked','--format-version','1'],cwd=ROOT,text=True));dest=ROOT/'release/licenses';dest.mkdir(exist_ok=True);inventory=[]
  for package in data['packages']:
@@ -25,6 +42,7 @@ def main():
   license=package['license']
   if package['name']=='libwebp-sys':license+=' AND BSD-3-Clause'
   inventory.append({'name':package['name'],'version':package['version'],'license':license,'repository':package['repository'],'texts':refs})
+ inventory.extend(linux_static_licenses(dest))
  (dest/'CanvasKit-0.42.0-LICENSE').write_bytes((ROOT/'vendor/canvaskit/LICENSE').read_bytes())
  (dest/'Skia-m153-LICENSE').write_bytes((ROOT/'vendor/canvaskit/LICENSE').read_bytes())
  inventory.append({'name':'Skia','version':'m153-0.101.2','license':'BSD-3-Clause','repository':'https://github.com/rust-skia/skia','texts':[{'file':'Skia-m153-LICENSE','sha256':hashlib.sha256((dest/'Skia-m153-LICENSE').read_bytes()).hexdigest()}]})

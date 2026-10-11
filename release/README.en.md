@@ -41,6 +41,8 @@ python -m unittest discover -s python/tests -v
 
 The smoke test changes into a temporary directory and empties PATH. It checks SVG/PDF/PNG/JPEG/TIFF/WebP exports, CLI and module entry points, saved data, Matplotlib import, both Notebook magics and standalone example entry points using the bundled engine. Local checks certify only the tested platform. The workflow builds five platforms on Python 3.13 and installs the resulting wheels on Python 3.10 and 3.14 as well.
 
+Linux source builds require `pkg-config`, `libfontconfig1-dev`, `libfreetype-dev`, `libbrotli-dev`, `libbz2-dev`, `libexpat1-dev`, `libpng-dev` and `zlib1g-dev` (Debian/Ubuntu package names). The native engine links these font/codec helpers statically; wheel and VSIX audits reject unbundled optional Linux libraries. Their distribution copyright notices accompany the binary. Installed packages do not require a GPU or these development packages.
+
 ## GitHub and PyPI setup
 
 The existing [publish workflow](../.github/workflows/publish-pypi.yml) uses [PyPA's Trusted Publishing procedure](https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/). Before the first upload:

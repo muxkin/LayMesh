@@ -1,6 +1,6 @@
 //! Document orchestration uses the ordinary Lay parser and evaluator. Page
 //! handles are lazy: drawing a selected page never evaluates its neighbours.
-use crate::{Diagnostic, Loc, Result, engine::Engine, model::*};
+use crate::{engine::Engine, model::*, Diagnostic, Loc, Result};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, path::Path, sync::Arc};
 
@@ -210,7 +210,9 @@ impl Engine {
                 let src = string(&args, "src", "");
                 if src.is_empty()
                     || !src.ends_with(".lay")
-                    || Path::new(&src).is_absolute()
+                    // Page paths are portable slash-separated relative paths.
+                    // On Windows `/a.lay` is rooted but is_absolute() is false.
+                    || src.starts_with('/')
                     || src.contains(":")
                     || src.contains('\\')
                 {

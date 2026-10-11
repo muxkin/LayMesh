@@ -3,6 +3,7 @@
 import argparse, hashlib, json, re, struct, zipfile
 from pathlib import Path
 from xml.etree import ElementTree
+from native_runtime import check_linux_runtime
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('vsix',type=Path);p.add_argument('--binary',type=Path);p.add_argument('--target');p.add_argument('--pre-release',action='store_true');p.add_argument('--marketplace',action='store_true');a=p.parse_args()
 with zipfile.ZipFile(a.vsix) as z:
@@ -13,6 +14,7 @@ with zipfile.ZipFile(a.vsix) as z:
  engines=[n for n in names if n.startswith('extension/bin/')];assert len(engines)==1
  if a.binary:assert z.read(engines[0])==a.binary.read_bytes()
  if not engines[0].endswith('.exe'):assert (z.getinfo(engines[0]).external_attr>>16)&0o111
+ if z.read(engines[0])[:4]==b'\x7fELF':check_linux_runtime(z.read(engines[0]))
  scripts=[n for n in names if Path(n).suffix in ('.js','.mjs','.cjs')];assert sorted(scripts)==sorted(['extension/dist/animation-player.mjs','extension/dist/playback-stats.mjs','extension/dist/client.cjs','extension/dist/color-math.mjs','extension/dist/color-panel.mjs','extension/dist/color-webview.mjs','extension/dist/preview-host.cjs','extension/dist/presentation-host.cjs',*[f'extension/dist/{p.name}' for p in (ROOT/'site/live').glob('presentation*.mjs')],'extension/dist/preview-math.mjs','extension/dist/preview-webview.mjs','extension/dist/preview-worker.mjs','extension/dist/wasm/laymesh_wasm.js','extension/dist/skia-renderer.mjs','extension/dist/skia/canvaskit.mjs','extension/dist/skia/'+json.loads(z.read('extension/dist/skia/manifest.json'))['module']]),scripts
  assert 'extension/dist/preview.css' in names
  assert 'extension/dist/presentation.css' in names

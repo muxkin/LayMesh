@@ -46,6 +46,29 @@ fn selection_is_lazy_and_repeated_sources_share_a_scene() {
     ));
 }
 #[test]
+fn page_paths_reject_roots_drives_and_network_shares_on_every_host() {
+    for src in [
+        "/a.lay",
+        "//server/a.lay",
+        "C:/a.lay",
+        "C:a.lay",
+        "\\a.lay",
+        "\\\\server\\share\\a.lay",
+    ] {
+        let source = format!(
+            "d=document()\nd.add(page(src={}))",
+            serde_json::to_string(src).unwrap()
+        );
+        assert_eq!(
+            plan_source(&source, "/project/report.laydoc", host())
+                .unwrap_err()
+                .code,
+            "E_PAGE",
+            "{src}"
+        );
+    }
+}
+#[test]
 fn document_failures_are_explicit() {
     for (source, code) in [
         ("d=document()", "E_DOCUMENT"),

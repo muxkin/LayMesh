@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.13'
       - if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y poppler-utils mupdf-tools
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils mupdf-tools pkg-config libfontconfig1-dev libfreetype-dev libbrotli-dev libbz2-dev libexpat1-dev libpng-dev zlib1g-dev
       - if: runner.os == 'macOS'
         run: brew install poppler mupdf-tools
       - if: runner.os == 'Windows'
@@ -77,6 +77,9 @@ jobs:
           PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-tests/node_modules/playwright
         run: |
           cargo build --locked --release -p laymesh-core --example animation_reference
+          # Match the normal browser engine used by the app. Headless Shell
+          # 151 drops native wheel scrolling in fullscreen overflow menus.
+          export CHROMIUM_PATH="$(node -e 'process.stdout.write(require(process.env.PLAYWRIGHT_MODULE).chromium.executablePath())')"
           python scripts/serve-preview.py --bind 127.0.0.1 --port 8769 > "$RUNNER_TEMP/preview.log" 2>&1 &
           preview_pid=$!
           trap 'kill "$preview_pid"' EXIT
