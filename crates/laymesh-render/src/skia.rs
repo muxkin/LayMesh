@@ -285,24 +285,29 @@ impl<'a> Painter<'a> {
                     .ok_or_else(|| error("Invalid semantic font"))?;
                 let source = node.semantic.as_deref().unwrap();
                 let b = node.local_bounds();
-                let font = sk::Font::from_typeface(face, b.height().max(0.1) as f32);
-                let placeholder = "x".repeat(source.chars().count());
-                let glyphs = font.str_to_glyphs_vec(&placeholder);
-                let advance = b.width() / glyphs.len().max(1) as f64;
-                let positions: Vec<_> = (0..glyphs.len())
-                    .map(|i| {
-                        sk::Point::new(
-                            (b.x0 + i as f64 * advance) as f32,
-                            (b.y0 + b.height() * 0.8) as f32,
-                        )
+                let mut font = sk::Font::from_typeface(face, b.height().max(0.1) as f32);
+                // Preserve a real ToUnicode fallback for readers that ignore
+                // ActualText (including older MuPDF structured-text output).
+                let glyphs = font.str_to_glyphs_vec(source);
+                let clusters: Vec<_> = source.char_indices().map(|(i, _)| i as u32).collect();
+                let mut widths = vec![0.; glyphs.len()];
+                font.get_widths(&glyphs, &mut widths);
+                let scale = b.width() / f64::from(widths.iter().sum::<f32>().max(0.001));
+                font.set_scale_x(scale as f32);
+                let mut x = b.x0;
+                let positions: Vec<_> = widths.iter()
+                    .map(|width| {
+                        let point = sk::Point::new(x as f32, (b.y0 + b.height() * 0.8) as f32);
+                        x += f64::from(*width) * scale;
+                        point
                     })
                     .collect();
                 sk::pdf::set_node_id(c, tag);
                 c.draw_glyphs_utf8(
                     &glyphs,
                     &positions,
-                    &(0..glyphs.len() as u32).collect::<Vec<_>>(),
-                    &placeholder,
+                    &clusters,
+                    source,
                     (0., 0.),
                     &font,
                     &solid([0., 0., 0., 1.]),

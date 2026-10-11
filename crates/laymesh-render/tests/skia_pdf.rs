@@ -5,6 +5,33 @@ use lopdf::{Document, Object};
 use serde_json::json;
 
 #[test]
+fn formula_source_has_a_to_unicode_fallback_without_actual_text_support() {
+    let formulas = [
+        r"\frac{a}{\sqrt{b^2}}",
+        r"\begin{matrix}a&b\\c&d\end{matrix}",
+    ];
+    let mut source = "p=canvas(size=(100,70))\n".to_owned();
+    for (i, formula) in formulas.iter().enumerate() {
+        source += &format!(
+            "p.add(formula({}),offset=(5,{}))\n",
+            serde_json::to_string(formula).unwrap(),
+            5 + i * 30
+        );
+    }
+    let scene = compile_source(&source, "semantic-fallback.lay", Host::default()).unwrap();
+    let bytes = render_pdf(&scene).unwrap();
+    // lopdf decodes the font ToUnicode map without reading ActualText tags.
+    let text = Document::load_mem(&bytes)
+        .unwrap()
+        .extract_text(&[1])
+        .unwrap();
+    let text: String = text.chars().filter(|c| !c.is_whitespace()).collect();
+    for formula in formulas {
+        assert_eq!(text.matches(formula).count(), 1, "{text}");
+    }
+}
+
+#[test]
 fn pdf_preserves_exact_16bit_color_and_alpha_samples() {
     for gray in [false, true] {
         let rgba = image::ImageBuffer::from_fn(7, 5, |x, y| {
