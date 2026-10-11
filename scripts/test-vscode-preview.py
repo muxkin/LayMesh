@@ -4,15 +4,25 @@
 Uses the repository's native Electron CDP harness; no npm packages or standalone
 web server. Evidence and screenshots are written only to the requested directory.
 """
-import argparse, base64, importlib.util, json, os, signal, socket, subprocess, tempfile, time, urllib.request
+import argparse, base64, importlib.util, json, os, shutil, signal, socket, subprocess, tempfile, time, urllib.request
 from pathlib import Path
 from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('native_cdp',ROOT/'scripts/smoke-browser.py')
 native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--block-worker-resource-fetch',action='store_true',help='Return HTTP 408 for extension resource requests inside blob workers');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup_errors=True) as temp:
  profile=Path(temp);gate=profile/'gate.json';evidence=profile/'evidence.json'
+ extension=a.extension_dir.resolve()
+ if a.block_worker_resource_fetch:
+  extension=profile/'fixture/extensions/vscode'
+  shutil.copytree(a.extension_dir,extension,ignore=shutil.ignore_patterns('*.vsix','src','__pycache__'))
+  (profile/'fixture/tests').symlink_to(ROOT/'tests',target_is_directory=True)
+  # Exercise the real packaged renderer while reproducing the resource proxy
+  # failure. In-memory CanvasKit blobs are allowed; extension URLs return 408.
+  guard="const windowResourceFetch=self.fetch.bind(self);self.fetch=(input,...args)=>String(input?.url||input).startsWith('blob:')?windowResourceFetch(input,...args):Promise.resolve(new Response('Request Timeout',{status:408}));\n"
+  for name in ['preview-worker.mjs','presentation-worker.mjs']:
+   worker=extension/'dist'/name;worker.write_text(guard+worker.read_text())
  (profile/'profile/User').mkdir(parents=True)
  (profile/'profile/User/settings.json').write_text(json.dumps({'workbench.colorTheme':'VS Code Dark','window.autoDetectColorScheme':False,'files.simpleDialog.enable':True}))
  with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
@@ -20,7 +30,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
  transparent=profile/'透明.png';Image.new('RGBA',(20,10),(255,0,0,128)).save(transparent)
  high=profile/'16位.png';Image.new('I;16',(20,10),35000).save(high)
  env={**os.environ,'LAYMESH_PREVIEW_GATE':str(gate),'LAYMESH_PREVIEW_EVIDENCE':str(evidence),'LAYMESH_PREVIEW_BMP':str(bmp),'LAYMESH_PREVIEW_TRANSPARENT':str(transparent),'LAYMESH_PREVIEW_16BIT':str(high)};env.pop('ELECTRON_RUN_AS_NODE',None)
- command=[a.code,'--no-sandbox','--disable-gpu','--disable-updates','--ozone-platform=headless','--force-device-scale-factor=2','--remote-debugging-port='+str(port),'--remote-allow-origins=*','--user-data-dir='+str(profile/'profile'),'--extensions-dir='+str(profile/'extensions'),'--extensionDevelopmentPath='+str(ROOT/'extensions/vscode'),'--extensionTestsPath='+str(ROOT/'scripts/vscode-preview.cjs'),'--skip-welcome','--skip-release-notes','--new-window']
+ command=[a.code,'--no-sandbox','--disable-gpu','--disable-updates','--ozone-platform=headless','--force-device-scale-factor=2','--remote-debugging-port='+str(port),'--remote-allow-origins=*','--user-data-dir='+str(profile/'profile'),'--extensions-dir='+str(profile/'extensions'),'--extensionDevelopmentPath='+str(extension),'--extensionTestsPath='+str(ROOT/'scripts/vscode-preview.cjs'),'--skip-welcome','--skip-release-notes','--new-window']
  log=(profile/'host.log').open('w');host=subprocess.Popen(command,env=env,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
  try:
   opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -57,8 +67,10 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   def quick_text():return root.evaluate("document.querySelector('.quick-input-widget')?.textContent||''")
   until(lambda:all(name in quick_text() for name in ['SVG','PDF','JPEG','TIFF','WebP']),'Export format picker')
   def key(name,code):
-   for kind in ['keyDown','keyUp']:root.call('Input.dispatchKeyEvent',{'type':kind,'key':name,'windowsVirtualKeyCode':code})
-  root.call('Input.insertText',{'text':'TIFF'});key('Enter',13)
+   for kind in ['keyDown','keyUp']:root.call('Input.dispatchKeyEvent',{'type':kind,'key':name,'code':name,'windowsVirtualKeyCode':code})
+  root.call('Input.insertText',{'text':'TIFF'})
+  until(lambda:'TIFF' in quick_text() and 'SVG' not in quick_text(),'Filtered TIFF format')
+  key('Enter',13)
   until(lambda:root.evaluate("!!document.querySelector('.quick-input-widget input')?.value.endsWith('.tif')"),'Direct TIFF save dialog')
   assert 'DPI' not in quick_text() and 'PackBits' not in quick_text(),quick_text()
   key('Escape',27)
@@ -239,10 +251,12 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   wait_phase('complete');host.wait(timeout=20);assert host.returncode==0
   result=json.loads(evidence.read_text());result['ui']={'bmp_pixel':bitmap,'transparent_webp_pixel':transparent_pixel,'opaque_16bit_jpeg_pixel':high_pixel,'direct_export_save_dialog_verified':True,'no_dpi_or_compression_prompts':True,'initial_readout':readout,'english_readout':english_readout,'state':state,'narrow':layout,'console_errors':console_errors,'viewports':['1440x1000 dark DPR 2','760x720 light DPR 2'],'checks':['BMP on a Chinese/space/hash path','canvas/data hover','ruler markers','wheel anchor','Space drag','100%','ruler toggle','fit','continuous motion','pointer exit','narrow resize','DPR ruler pixels','explicit English and auto UI','view preserved on language change','English stale error and source action']}
   result['ui']['documents']={'page_selector':True,'formula_edit_visible':True,'reordering_preserves_page_id':True,'whole_pdf_direct_save_dialog':True,'console_errors':document_errors}
+  result['ui']['worker_resource_fetch_blocked']=a.block_worker_resource_fetch
   (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))
  except Exception:
   try:
-   debug=evaluate("({text:d.body.innerText,figure:d.querySelector('.figure')?.getBoundingClientRect().toJSON(),viewport:d.querySelector('.viewport')?.getBoundingClientRect().toJSON(),events:d.defaultView.previewEvents,panning:d.querySelector('.viewport').className,active:d.activeElement.className})")
+   debug=evaluate("({text:d.body.innerText,error:d.querySelector('.error-location')?.textContent,figure:d.querySelector('.figure')?.getBoundingClientRect().toJSON(),viewport:d.querySelector('.viewport')?.getBoundingClientRect().toJSON(),events:d.defaultView.previewEvents,panning:d.querySelector('.viewport').className,active:d.activeElement.className})")
+   (a.output/'failure.json').write_text(json.dumps(debug,ensure_ascii=False,indent=2)+'\n')
    print(json.dumps(debug,ensure_ascii=False))
    shot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'failure.png').write_bytes(base64.b64decode(shot['data']))
   except Exception:pass

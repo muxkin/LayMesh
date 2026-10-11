@@ -38,9 +38,9 @@ exports.run=async()=>{
  const api=require('module')._load('vscode',{filename:path.join(extension.extensionPath,'dist/client.cjs')});
  let host,panels=0;const create=api.window.createWebviewPanel;
  api.window.createWebviewPanel=(...args)=>{const panel=create(...args);if(args[0]==='laymeshPreview'){
-  panels++;host={panel,messages:[],received:[]};const listen=panel.webview.onDidReceiveMessage,post=panel.webview.postMessage;
-  panel.webview.onDidReceiveMessage=(handler,...rest)=>{host.receive=handler;return listen.call(panel.webview,message=>{host.received.push(message);return handler(message)},...rest);};
-  panel.webview.postMessage=message=>{host.messages.push(observed(message));return post.call(panel.webview,message);};
+  panels++;const previewHost=host={panel,messages:[],received:[]};const listen=panel.webview.onDidReceiveMessage,post=panel.webview.postMessage;
+  panel.webview.onDidReceiveMessage=(handler,...rest)=>{previewHost.receive=handler;return listen.call(panel.webview,message=>{previewHost.received.push(message);return handler(message)},...rest);};
+  panel.webview.postMessage=message=>{previewHost.messages.push(observed(message));return post.call(panel.webview,message);};
  }return panel;};
  const until=async(fn,label,attempts=300)=>{for(let i=0;i<attempts;i++){if(fn())return fn();await pause(50);}throw Error('Timeout: '+label+' '+String(JSON.stringify(host?.messages.slice(-2))).slice(0,1000));};
  const replace=async(document,text)=>{const edit=new vscode.WorkspaceEdit();edit.replace(document.uri,new vscode.Range(document.positionAt(0),document.positionAt(document.getText().length)),text);assert(await vscode.workspace.applyEdit(edit));};
@@ -194,6 +194,19 @@ exports.run=async()=>{
   await documentPhase('academic-ready','academic-verified');
   evidence.checks.push('32-page academic deck: prepared native artifacts, embedded wheel navigation, dense charts/formulas and nonresident revisit');host.panel.dispose();
  }
+ // Keep two previews alive, close the newer one, then recreate the older
+ // webview. Each worker must get resources from its own window throughout.
+ const simpleFile=path.join(directory,'simple-line.lay');
+ fs.writeFileSync(simpleFile,'p=canvas(size=(100mm,75mm),background="#fff")\np.add(line(length=55mm,angle=20deg,line_width=2mm),offset=(12mm,15mm))');
+ const simpleDoc=await vscode.workspace.openTextDocument(simpleFile);await vscode.window.showTextDocument(simpleDoc);
+ await vscode.commands.executeCommand('laymesh.openPreview',simpleDoc.uri);const first=host;
+ await until(()=>first.received.some(m=>m.type==='painted'),'Simple line preview');
+ await vscode.window.showTextDocument(doc);await vscode.commands.executeCommand('laymesh.openPreview',doc.uri);const second=host;
+ await until(()=>second.received.some(m=>m.type==='painted'),'Second preview with image resources');
+ second.panel.dispose();first.panel.reveal(vscode.ViewColumn.Beside,true);
+ const paints=first.received.filter(m=>m.type==='painted').length;first.panel.webview.html+='\n<!-- resource ownership reload -->';
+ await until(()=>first.received.filter(m=>m.type==='painted').length>paints,'Older preview reload after newer panel closes');first.panel.dispose();
+ evidence.checks.push('Two concurrent previews; simple line and image resources; older webview reloads after closing the newer panel');
  await vscode.commands.executeCommand('workbench.action.closeAllEditors');
  fs.writeFileSync(process.env.LAYMESH_PREVIEW_EVIDENCE,JSON.stringify(evidence,null,2));if(gate)fs.writeFileSync(gate,JSON.stringify({phase:'complete'}));fs.rmSync(directory,{recursive:true,force:true});
 };

@@ -3,7 +3,7 @@ import {initializeSkia} from './skia-renderer.mjs';
 import {PresentationRenderer} from './presentation-renderer.mjs';
 export async function createPresentationRuntime(data,notify=()=>{}){
  let renderer,current,lastPaint,latest=0,jobs=new Map(),resources=new Set(),memory;
- const [wasm,ck]=await Promise.all([init({module_or_path:data.wasmURL}),initializeSkia(data.skiaURL)]);memory=wasm.memory;renderer=new PresentationRenderer(ck,data.canvas,{budget:data.budget,onContextChange:ready=>notify({type:'context',ready})});
+ const [wasm,ck]=await Promise.all([init({module_or_path:data.wasmBytes||data.wasmURL}),initializeSkia(data.skiaBytes||data.skiaURL)]);memory=wasm.memory;renderer=new PresentationRenderer(ck,data.canvas,{budget:data.budget,onContextChange:ready=>notify({type:'context',ready})});
 const prune=()=>{for(const id of [...jobs.keys()])if(!renderer.pages.has(id)){jobs.get(id).job.free();jobs.delete(id);}const ids=new Set([...jobs.values()].flatMap(p=>Object.keys(p.list.resources)));retain_render_resources(JSON.stringify([...ids]));resources=ids;};
  return async data=>{let result={};if(data.type==='target'){latest=data.serial;return {};}if(data.type==='activate')latest=Math.max(latest,data.serial);
   if(data.type==='load'||data.type==='prepare'){

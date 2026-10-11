@@ -3,6 +3,7 @@ import {Presentation} from './presentation.mjs';
 import {uiIcon,iconLabel} from './presentation-icons.mjs';
 import {PresentationStore} from './presentation-store.mjs';
 import {PlaybackStats} from './playback-stats.mjs';
+import {loadRendererRuntime,loadDrawingResources} from './renderer-resources.mjs';
 import {AnimationPlayer} from './animation-player.mjs';
 import {mmPerUnit,canvasAt,niceStep,preparePlots,plotAt,formatData} from './preview-math.mjs';
 
@@ -38,21 +39,21 @@ const figure=el('div','figure',viewport),overview=el('canvas','figure-overview',
 let image=el('canvas','figure-pixels',figure);image.style.position='absolute';image.setAttribute('role','img');
 let mainSkia,directCanvas=false,rasterWorker,rasterReady,workerSequence=0,wasmMemoryBytes=0,drawReady=false,drawJobId='',drawKey='',drawGeneration=0,presented,pendingPaint,paintInFlight=false,paintTimer=0;
 const workerCalls=new Map();
-function stopWorker(error){rasterWorker?.terminate();rasterWorker=null;rasterReady=null;drawReady=false;for(const call of workerCalls.values()){clearTimeout(call.timer);call.reject(error);}workerCalls.clear();}
+let rasterResourceIds=new Set();
+function stopWorker(error){rasterWorker?.terminate();rasterWorker=null;rasterReady=null;drawReady=false;rasterResourceIds.clear();for(const call of workerCalls.values()){clearTimeout(call.timer);call.reject(error);}workerCalls.clear();}
 function workerCall(data,transfer=[]){return new Promise((resolve,reject)=>{
- const requestId=++workerSequence,timer=setTimeout(()=>stopWorker(Error('Canvas worker timed out')),30000);
+ const requestId=++workerSequence,timer=setTimeout(()=>stopWorker(Error(`Canvas worker timed out (${data.type})`)),30000);
  workerCalls.set(requestId,{resolve,reject,timer});rasterWorker.postMessage({...data,requestId},transfer);
 });}
 function startWorker(){if(rasterReady)return rasterReady;
- rasterReady=(async()=>{const response=await fetch(new URL('preview-worker.mjs',import.meta.url));if(!response.ok)throw Error('Canvas worker loading failed');
+ rasterReady=(async()=>{const [response,runtime]=await Promise.all([fetch(new URL('preview-worker.mjs',import.meta.url)),loadRendererRuntime(new URL('./',import.meta.url))]);if(!response.ok)throw Error('Canvas worker loading failed');
   const url=URL.createObjectURL(new Blob([await response.text()],{type:'text/javascript'}));
   try{rasterWorker=new Worker(url,{type:'module'});}finally{URL.revokeObjectURL(url);}
   rasterWorker.onmessage=({data})=>{if(data.type==='context'){root.dataset.renderBackend=data.ready?'Skia WebGL2':'Skia restoring';if(data.ready){drawKey='';presented=null;schedule();}return;}const call=workerCalls.get(data.requestId);if(!call)return;workerCalls.delete(data.requestId);clearTimeout(call.timer);if(data.type==='error')call.reject(Error(data.error));else call.resolve(data);};
   rasterWorker.onerror=error=>stopWorker(Error(error.message||'Canvas worker failed'));
   const canvas=image.cloneNode(false);image.replaceWith(canvas);image=canvas;mainSkia?.dispose();mainSkia=null;
   const offscreen=canvas.transferControlToOffscreen?.();directCanvas=!!offscreen;
-  const wasmManifest=await(await fetch(new URL('wasm/manifest.json',import.meta.url))).json();
-  await workerCall({type:'init',wasmURL:new URL('wasm/'+wasmManifest.wasm,import.meta.url).href,skiaBase:new URL('skia/',import.meta.url).href,canvas:offscreen},offscreen?[offscreen]:[]);
+  await workerCall({type:'init',...runtime,canvas:offscreen},[runtime.wasmBytes,runtime.skiaBytes,...(offscreen?[offscreen]:[])]);
  })().catch(error=>{stopWorker(error);throw error;});return rasterReady;
 }
 startWorker().catch(()=>{});
@@ -156,8 +157,12 @@ async function installFrame(data){
  const sequence=++renderSequence;
  if(data.protocol!==3||(!data.displayList&&!data.displayListCompressed&&!data.displayListUpdate))throw Error('Expected drawing protocol 3');
  await startWorker();if(sequence!==renderSequence)return;
+ const resourceStart=performance.now(),resourceBytes=await loadDrawingResources(data.displayListReplay||[data],rasterResourceIds),resourceLoadMs=performance.now()-resourceStart;
+ if(sequence!==renderSequence)return;
  const bytes=data.displayListCompressed?.data,transfer=bytes instanceof Uint8Array?[bytes.buffer]:[];
- const installed=await workerCall({type:'install',generation:data.generation,page:data.inspection.page,displayListId:data.displayListId,displayListUpdate:data.displayListUpdate,displayListReplay:data.displayListReplay,displayList:data.displayList,displayListCompressed:data.displayListCompressed,drawingResources:data.drawingResources,resources:data.resources,previewSettings:data.previewSettings},transfer);
+ const installed=await workerCall({type:'install',generation:data.generation,page:data.inspection.page,displayListId:data.displayListId,displayListUpdate:data.displayListUpdate,displayListReplay:data.displayListReplay,displayList:data.displayList,displayListCompressed:data.displayListCompressed,drawingResources:data.drawingResources,resources:data.resources,resourceBytes,previewSettings:data.previewSettings},[...transfer,...resourceBytes.map(r=>r.bytes)]);
+ rasterResourceIds=new Set(installed.resourceIds);
+ installed.resourcesMs+=resourceLoadMs;
  if(sequence!==renderSequence)return;
  if(!directCanvas){const {initializeSkia,SkiaRenderer}=await import('./skia-renderer.mjs');if(!mainSkia){const meta=await(await fetch(new URL('skia/manifest.json',import.meta.url))).json();mainSkia=new SkiaRenderer(await initializeSkia(new URL('skia/'+meta.wasm,import.meta.url).href),image,{onContextChange:ready=>{if(ready){drawKey='';presented=null;schedule();}}});}await mainSkia.install(installed.scene,id=>installed.sceneResources[id],data.generation,data.previewSettings?.cache_mb??256);}
  drawReady=true;drawJobId=data.displayListId||data.displayListCompressed?.id||String(data.generation);if(!installed.reused)drawKey='';wasmMemoryBytes=installed.wasmMemoryBytes;
@@ -208,9 +213,10 @@ async function flushPaint(){if(paintInFlight||!pendingPaint||!rasterWorker)retur
  }catch(error){if(request.generation===drawGeneration&&request.key===drawKey){drawKey='';diagnostic={code:'E_PREVIEW_RENDER',message:String(error)};showDiagnostic();showStatus('error');}}
  finally{paintInFlight=false;if(pendingPaint&&!paintTimer)flushPaint();}
 }
-function showStatus(value){root.dataset.state=value;status.textContent=({pending:text('等待更新 · 预览已过期','Pending · preview stale'),rendering:text('渲染中 · 预览已过期','Rendering · preview stale'),success:text('已更新','Updated'),error:text('源码有错误 · 显示上次结果','Source error · last successful preview')})[value]||'';}
+function rendererError(){return ['E_PREVIEW_RESOURCE','E_PREVIEW_RENDER','E_PREVIEW_PROTOCOL','E_PRESENTATION'].includes(diagnostic?.code);}
+function showStatus(value){root.dataset.state=value;status.textContent=({pending:text('等待更新 · 预览已过期','Pending · preview stale'),rendering:text('渲染中 · 预览已过期','Rendering · preview stale'),success:text('已更新','Updated'),error:rendererError()?text('预览加载或渲染失败 · 显示上次结果','Preview failed · last successful preview'):text('源码有错误 · 显示上次结果','Source error · last successful preview')})[value]||'';}
 function showDiagnostic(){
- const count=warnings.textContent?warnings.textContent.split('\n').length:0;const label=diagnostic?text(`1 个错误${count?' · '+count+' 个警告':''}`,`1 error${count?' · '+count+' warnings':''}`):text(`${count} 个警告`,`${count} warnings`);iconLabel(diagnosticSummary,'warning',label);errorTitle.textContent=label;diagnosticMenu.hidden=!diagnostic&&!count;if(diagnosticMenu.hidden)diagnosticMenu.open=false;errorNote.textContent=diagnostic?text('源码有错误，显示上次结果','Source error; showing last successful result'):'';sourceError.hidden=!diagnostic;
+ const count=warnings.textContent?warnings.textContent.split('\n').length:0;const label=diagnostic?text(`1 个错误${count?' · '+count+' 个警告':''}`,`1 error${count?' · '+count+' warnings':''}`):text(`${count} 个警告`,`${count} warnings`);iconLabel(diagnosticSummary,'warning',label);errorTitle.textContent=label;diagnosticMenu.hidden=!diagnostic&&!count;if(diagnosticMenu.hidden)diagnosticMenu.open=false;errorNote.textContent=diagnostic?(rendererError()?text('预览资源加载或渲染失败，可刷新重试','Preview resource loading or rendering failed; refresh to retry'):text('源码有错误，显示上次结果','Source error; showing last successful result')):'';sourceError.hidden=!diagnostic||rendererError();errorButton.disabled=rendererError();errorButton.title=rendererError()?'':text('跳转到源码','Go to source');
  errorButton.hidden=!diagnostic;
  if(diagnostic)errorButton.textContent=`${diagnostic.code||'E_PREVIEW'} ${diagnostic.file?diagnostic.file+':'+(diagnostic.loc?.line||1)+':'+(diagnostic.loc?.column||1)+' — ':''}${text(diagnostic.messageZh||diagnostic.message,diagnostic.message)}`;
 }

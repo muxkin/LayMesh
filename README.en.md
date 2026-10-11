@@ -8,11 +8,11 @@
 
 [Showcase source](examples/showcase.lay) · [Scientific plot examples](docs/gallery/plots.en.md)
 
-[Animation and presentations](docs/topics/animation.en.md) · [Editable PPTX export](docs/topics/export.en.md#editable-pptx-export) · [Artistic text, shadows and glow](docs/topics/art-effects.en.md) · [Release notes](release/notes/0.6.0.md)
+[Animation and presentations](docs/topics/animation.en.md) · [Editable PPTX export](docs/topics/export.en.md#editable-pptx-export) · [Artistic text, shadows and glow](docs/topics/art-effects.en.md) · [Release notes](release/notes/0.6.1.md)
 
 ## VS Code (recommended)
 
-Install [LayMesh by Hyacine](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) from Extensions, or use **Extensions: Install from VSIX** with a platform package. **Version 0.6.0 VSIX packages for Windows x64, Linux x64 / ARM64 and macOS Intel / Apple Silicon include the native engine: no Python, Rust or npm installation is needed.** [Download platform packages](https://github.com/muxkin/LayMesh/releases/tag/v0.6.0). With Remote SSH, install the package matching the remote extension host.
+Install [LayMesh by Hyacine](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) from Extensions, or use **Extensions: Install from VSIX** with a platform package. **Version 0.6.1 VSIX packages for Windows x64, Linux x64 / ARM64 and macOS Intel / Apple Silicon include the native engine: no Python, Rust or npm installation is needed.** [Download platform packages](https://github.com/muxkin/LayMesh/releases/tag/v0.6.1). With Remote SSH, install the package matching the remote extension host.
 
 Open a trusted local or Remote SSH folder and save this as `figure.lay`:
 
@@ -26,7 +26,7 @@ Click the preview icon or run **LayMesh: Open Preview** for a live figure beside
 
 ## Python and CLI installation
 
-Requires **Python 3.10+**. The **`0.6.0`** sources synchronize Python, Rust and the VS Code extension, adding multipage documents, 97 Animate.css effects and presentation playback with shared Skia drawing. Stable tags build reviewed packages; PyPI approval precedes publication and the GitHub Release. Check PyPI for the currently published version. Install from [PyPI](https://pypi.org/project/laymesh/):
+Requires **Python 3.10+**. The **`0.6.1`** sources synchronize Python, Rust and the VS Code extension, fixing preview resource timeouts on Windows/Linux while retaining multipage documents, 97 Animate.css effects and presentation playback with shared Skia drawing. Stable tags build reviewed packages; PyPI approval precedes publication and the GitHub Release. Check PyPI for the currently published version. Install from [PyPI](https://pypi.org/project/laymesh/):
 
 ```sh
 python -m pip install laymesh

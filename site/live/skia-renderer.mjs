@@ -3,7 +3,11 @@
 import CanvasKitInit from './skia/canvaskit.mjs';
 
 export async function initializeSkia(wasmURL) {
- return CanvasKitInit({locateFile:()=>wasmURL});
+ // CanvasKit's pinned loader accepts a URL. A blob created from transferred
+ // bytes stays in this worker and never enters VS Code's resource proxy.
+ const blob=wasmURL instanceof ArrayBuffer||ArrayBuffer.isView(wasmURL)?URL.createObjectURL(new Blob([wasmURL],{type:'application/wasm'})):null;
+ try{return await CanvasKitInit({locateFile:()=>blob||wasmURL});}
+ finally{if(blob)URL.revokeObjectURL(blob);}
 }
 const matrix=([a,b,c,d,e,f])=>[a,c,e,b,d,f,0,0,1];
 const point=p=>Array.isArray(p)?p:[p.x,p.y];

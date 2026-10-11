@@ -6,7 +6,7 @@
 
 ## Install
 
-Requires **Python 3.10+**. Version `0.6.0` adds multipage documents, Animate.css animation, Skia rendering and MP4/GIF export and shares its version with the native engine and VS Code extension. Install an uploaded release or a reviewed local platform wheel:
+Requires **Python 3.10+**. Version `0.6.1` fixes VS Code preview resource timeouts and retains multipage documents, Animate.css animation, Skia rendering and MP4/GIF export and shares its version with the native engine and VS Code extension. Install an uploaded release or a reviewed local platform wheel:
 
 ```sh
 python -m pip install laymesh

@@ -1,3 +1,8 @@
+# 0.6.1
+
+- Load preview and presentation WASM in the owning webview and transfer the bytes to Canvas workers, avoiding VS Code local-resource HTTP 408 errors and worker timeouts on Windows and Linux.
+- Load drawing resources through the same webview and report resource/render failures separately from source errors.
+
 # 0.6.0
 
 - Add `.laydoc` multipage documents and complete presentation playback, with first-page startup, background preparation and editing-preview priority.

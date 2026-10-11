@@ -5,7 +5,7 @@ import init,{prepare_display_list,register_render_resource,retain_render_resourc
 let skia, rasterInitialized,rasterJob,rasterJobId='',rasterGeneration,rasterMemory,rasterPage,overviewReady=false,rasterChain=Promise.resolve();
 const rasterResources=new Set();
 self.onmessage=({data})=>{
- if(data.type==='init'){rasterInitialized=Promise.all([init({module_or_path:data.wasmURL}),(async()=>{const meta=await(await fetch(new URL('manifest.json',data.skiaBase))).json();return initializeSkia(new URL(meta.wasm,data.skiaBase).href);})()]).then(([exports,ck])=>{rasterMemory=exports.memory;if(data.canvas)skia=new SkiaRenderer(ck,data.canvas,{onContextChange:ready=>self.postMessage({type:'context',ready})});self.postMessage({requestId:data.requestId,type:'ready'});});rasterInitialized.catch(error=>self.postMessage({type:'error',requestId:data.requestId,error:String(error)}));return;}
+ if(data.type==='init'){rasterInitialized=Promise.all([init({module_or_path:data.wasmBytes}),initializeSkia(data.skiaBytes)]).then(([exports,ck])=>{rasterMemory=exports.memory;if(data.canvas)skia=new SkiaRenderer(ck,data.canvas,{onContextChange:ready=>self.postMessage({type:'context',ready})});self.postMessage({requestId:data.requestId,type:'ready'});});rasterInitialized.catch(error=>self.postMessage({type:'error',requestId:data.requestId,error:String(error)}));return;}
  rasterChain=rasterChain.then(async()=>{
   try{
    const beforeReady=performance.now();await rasterInitialized;
@@ -13,13 +13,14 @@ self.onmessage=({data})=>{
    if(data.type==='install'){
     const beforeResources=performance.now();
     const versions=data.displayListReplay||[data];
+    const resourceBytes=new Map((data.resourceBytes||[]).map(r=>[r.id,r.bytes]));
     let reused=true,resourcesMs=0;
     for(const version of versions){
     const resourceStart=performance.now();
-    await Promise.all((version.resources||[]).map(async resource=>{if(rasterResources.has(resource.id))return;
-     const response=await fetch(resource.uri);if(!response.ok)throw Error('Drawing resource loading failed');
-     register_render_resource(resource.id,new Uint8Array(await response.arrayBuffer()));rasterResources.add(resource.id);
-    }));resourcesMs+=performance.now()-resourceStart;
+    for(const resource of version.resources||[]){if(rasterResources.has(resource.id))continue;
+     const bytes=resourceBytes.get(resource.id);if(!bytes)throw Error(`Drawing resource bytes missing: ${resource.id}`);
+     register_render_resource(resource.id,new Uint8Array(bytes));rasterResources.add(resource.id);
+    }resourcesMs+=performance.now()-resourceStart;
     const compressed=version.displayListCompressed,id=version.displayListId||compressed?.id||'',same=!!rasterJob&&id&&id===rasterJobId;
     reused&&=!!same;
     if(version.displayListUpdate&&!same){
@@ -44,7 +45,7 @@ self.onmessage=({data})=>{
     const ids=Object.keys(data.drawingResources||data.displayList.resources);retain_render_resources(JSON.stringify(ids));
     for(const id of rasterResources)if(!ids.includes(id))rasterResources.delete(id);
     const list=JSON.parse(rasterJob.display_list());if(skia)await skia.install(list,id=>rasterJob.resource_bytes(id),rasterGeneration,budget);
-    self.postMessage({scene:skia?undefined:list,sceneResources:skia?undefined:Object.fromEntries(Object.entries(list.resources).filter(([,r])=>r.mime.startsWith('image/')).map(([id])=>[id,rasterJob.resource_bytes(id)])),type:'installed',requestId:data.requestId,generation:rasterGeneration,reused,wasmMemoryBytes:rasterMemory.buffer.byteLength,initializationWaitMs:beforeResources-beforeReady,resourcesMs,installMs:performance.now()-beforeInstall-resourcesMs});
+    self.postMessage({scene:skia?undefined:list,sceneResources:skia?undefined:Object.fromEntries(Object.entries(list.resources).filter(([,r])=>r.mime.startsWith('image/')).map(([id])=>[id,rasterJob.resource_bytes(id)])),type:'installed',requestId:data.requestId,generation:rasterGeneration,reused,resourceIds:[...rasterResources],wasmMemoryBytes:rasterMemory.buffer.byteLength,initializationWaitMs:beforeResources-beforeReady,resourcesMs,installMs:performance.now()-beforeInstall-resourcesMs});
    }else if(data.type==='paint'){
     if(!rasterJob||data.generation!==rasterGeneration){self.postMessage({type:'paint-skipped',requestId:data.requestId,generation:data.generation});return;}
     const before=performance.now(),states=data.time==null?{}:JSON.parse(rasterJob.frame_state(data.time,!!data.reduced)),sampleMs=performance.now()-before;
