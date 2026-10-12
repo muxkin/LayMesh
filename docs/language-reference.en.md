@@ -171,7 +171,7 @@ laymesh render <file.lay> -o <output.svg|pdf|png> [--dpi <positive-number>]
 
 In this repository, prefix the commands with `cargo run --release --locked -p laymesh-cli --`. `validate` checks syntax, names, units, imports, image/font loading, glyph coverage, and placement constraints. `render` checks the same conditions before writing. `--dpi` applies to raster output and the PDF image resolution cap; the default is 1200. [Export settings](topics/export.en.md) include PDF compression and JSON defaults. Errors report `file:line:column: E_CODE: reason` and return nonzero; warnings such as `W_FONT`, `W_MATH_FONT`, and `W_PLOT_LAYOUT` go to stderr without necessarily failing validation. CLI usage errors exit 2; layout/export errors exit 1.
 
-SVG retains editable paths and ordinary `<text>`; PDF retains vector graphics and embedded ordinary text while storing formula LaTeX source; PNG rasterizes the same Scene. SVG input is allowlisted and rejects scripts, external links, DTDs, filters, and unsupported effects with `E_SVG`. PNG/JPEG/TIFF inputs are normalized to sRGB PNG for the Scene; TIFF is limited to single-page 8-bit grayscale or RGB. See [actual output and failure examples](examples-and-results.en.md) and the [feature gallery](gallery/README.en.md).
+SVG retains editable paths and ordinary `<text>`; PDF retains vector graphics and embedded ordinary text while storing formula LaTeX source; PNG rasterizes the same Scene. SVG input is allowlisted and rejects scripts, external links, DTDs, filters, and unsupported effects with `E_SVG`. PNG/JPEG/TIFF inputs are normalized to sRGB PNG for the Scene; TIFF is limited to single-page unsigned 8/16-bit grayscale or RGB with optional alpha. See [actual output and failure examples](examples-and-results.en.md) and the [feature gallery](gallery/README.en.md).
 
 `inspect --json` exposes plot geometry, mappings, transformations and all diagnostics. Each command accepts `--warnings show|hide`, overriding `LAYMESH_WARNINGS` (default `show`). Hiding warnings does not hide errors or discard inspection diagnostics.
 
@@ -213,3 +213,7 @@ Assignment copies dictionaries: changing `b` after `b=a` does not change `a`. Ne
 `enumerate(seq,start=0)` returns index/value pairs. `zip(a,b,...)` stops at the shortest input, and zero arguments return an empty list. Lists, dictionaries and geometry collections are iterable. Iteration snapshots are fixed at loop entry, so updating the original dictionary does not add work to the current loop. Existing break, continue, scope and evaluation limits remain in force. Dictionary membership uses `key in d` or `key not in d`.
 
 [Complete dictionary plot](../examples/plot/dictionary-series.lay) · [Colormap presets](topics/cmaps.en.md)
+
+## Current topic manuals
+
+[Styles and overrides](topics/lcss.en.md) · [Animation and presentation](topics/animation.en.md) · [Documents](topics/documents.en.md) · [All export formats](topics/export.en.md)

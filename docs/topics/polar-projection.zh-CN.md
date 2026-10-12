@@ -11,10 +11,6 @@ polar 用角度 theta 和半径 r 表示数据。它的默认 0° 朝右、正�
 
 <!-- example:examples/manual/plot.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 设置 theta_zero、theta_direction、inner_radius 可形成仪表或环形图。wrap=shortest 跨周期走最短方向，raw 保留角度差；interpolation=polar 与 chord 分别在数据与页面中连接。
@@ -24,8 +20,6 @@ polar 用角度 theta 和半径 r 表示数据。它的默认 0° 朝右、正�
 ## 常见错误与限制
 
 负半径按角度加半圈后取绝对值，并发出警告；对数径向轴要求正值。plot_* 仍指投影矩形，实际角度轴线应通过 axes 的 spine 查询。
-
-## 逐项功能说明
 
 <!-- walkthrough:end -->
 

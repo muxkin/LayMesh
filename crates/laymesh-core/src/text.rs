@@ -394,6 +394,20 @@ impl FontSystem {
         } else {
             vec![]
         };
+        // Generic families denote the available font catalog, including in
+        // WASM where fontdb's platform defaults (Arial/Times) may not exist.
+        let has_generic = requests.iter().any(|name| {
+            matches!(
+                name.as_str(),
+                "sans-serif"
+                    | "serif"
+                    | "monospace"
+                    | "system-ui"
+                    | "ui-sans-serif"
+                    | "ui-serif"
+                    | "ui-monospace"
+            )
+        });
         let mut candidates = Vec::new();
         for name in requests {
             self.load_path(&name, file, loc, w);
@@ -417,10 +431,19 @@ impl FontSystem {
                         })
                     })
                     .collect()
-            } else if matches!(name.as_str(), "sans-serif" | "serif" | "monospace") {
+            } else if matches!(
+                name.as_str(),
+                "sans-serif"
+                    | "serif"
+                    | "monospace"
+                    | "system-ui"
+                    | "ui-sans-serif"
+                    | "ui-serif"
+                    | "ui-monospace"
+            ) {
                 let family = match name.as_str() {
-                    "serif" => fontdb::Family::Serif,
-                    "monospace" => fontdb::Family::Monospace,
+                    "serif" | "ui-serif" => fontdb::Family::Serif,
+                    "monospace" | "ui-monospace" => fontdb::Family::Monospace,
                     _ => fontdb::Family::SansSerif,
                 };
                 self.db
@@ -434,8 +457,30 @@ impl FontSystem {
                         },
                         ..Default::default()
                     })
-                    .into_iter()
-                    .collect()
+                    .map(|id| vec![id])
+                    .unwrap_or_else(|| {
+                        self.db
+                            .faces()
+                            .filter(|f| match name.as_str() {
+                                "monospace" | "ui-monospace" => f.monospaced,
+                                "serif" | "ui-serif" => f.families.iter().any(|(name, _)| {
+                                    let n = canonical(name);
+                                    (n.contains("serif") && !n.contains("sans"))
+                                        || n.contains("times")
+                                }),
+                                _ => {
+                                    !f.monospaced
+                                        && f.families.iter().any(|(name, _)| {
+                                            let n = canonical(name);
+                                            n.contains("sans")
+                                                || n.contains("arial")
+                                                || n.contains("helvetica")
+                                        })
+                                }
+                            })
+                            .map(|f| f.id)
+                            .collect()
+                    })
             } else {
                 // Preserve catalog order (including equal-weight ties), but
                 // normalize each face name once instead of once per grapheme.
@@ -453,7 +498,7 @@ impl FontSystem {
                 });
                 index.get(&canonical(&name)).cloned().unwrap_or_default()
             };
-            if ids.is_empty() {
+            if ids.is_empty() && !has_generic {
                 warn(w, format!("字体 {name} 不可用"), file, loc);
             }
             ids.sort_by_key(|id| {
@@ -473,7 +518,7 @@ impl FontSystem {
             });
             candidates.extend(ids);
         }
-        if !explicit_list {
+        if !explicit_list || has_generic {
             // Ranking depends on the catalog and style, not the grapheme or
             // diagnostic location. Keep glyph and embedding checks below live.
             let fallback = self

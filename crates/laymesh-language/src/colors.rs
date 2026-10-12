@@ -21,6 +21,11 @@ fn color_key(s: &str) -> bool {
             "stops",
             "under",
             "over",
+            "box_shadow",
+            "text_shadow",
+            "filter",
+            "background_image",
+            "effects",
         ]
         .contains(&s)
 }
@@ -123,7 +128,9 @@ impl LanguageService {
                 })
                 .collect()
         };
-        let re = regex::Regex::new(r#"(?i)#[0-9a-f]+\b|(?:rgb|hsv|oklch)\([^()]*\)"#).unwrap();
+        let re =
+            regex::Regex::new(r#"(?i)#[0-9a-f]+\b|(?:rgba?|hsla?|hsv|oklch)\(|\b[a-z][a-z-]*\b"#)
+                .unwrap();
         for (a, b) in regions {
             let mut css = source[a..b].to_string();
             let comments = regex::Regex::new(r"(?s)/\*.*?\*/").unwrap();
@@ -144,8 +151,37 @@ impl LanguageService {
                 {
                     continue;
                 }
-                if let Ok(c) = Color::parse(m.as_str()) {
-                    out.push(information(a + m.start(), a + m.end(), c, "css", ""));
+                if !laymesh_core::style::property_supported(&key) && !key.starts_with("__") {
+                    continue;
+                }
+                let end = if m.as_str().ends_with('(') {
+                    let mut depth = 1;
+                    let mut end = None;
+                    for (i, ch) in css[m.end()..].char_indices() {
+                        if ch == '(' {
+                            depth += 1;
+                        }
+                        if ch == ')' {
+                            depth -= 1;
+                            if depth == 0 {
+                                end = Some(m.end() + i + 1);
+                                break;
+                            }
+                        }
+                    }
+                    let Some(end) = end else { continue };
+                    end
+                } else {
+                    m.end()
+                };
+                let literal = &css[m.start()..end];
+                if literal.eq_ignore_ascii_case("currentColor") || literal == "none" {
+                    continue;
+                }
+                if let Ok(normalized) = laymesh_core::css_values::color(literal, "#000000") {
+                    if let Ok(c) = Color::parse(&normalized) {
+                        out.push(information(a + m.start(), a + end, c, "css", ""));
+                    }
                 }
             }
         }

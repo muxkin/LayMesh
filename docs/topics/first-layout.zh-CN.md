@@ -11,10 +11,6 @@
 
 <!-- example:examples/manual/add.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 使用 target=first.bottom_right 和 offset=(3mm,3mm) 放置第二个实例。标题用 anchor=center 与卡片 center 对齐，因此字体变化时仍保持中心关系。
@@ -24,8 +20,6 @@
 ## 常见错误与限制
 
 add 的默认 anchor 是 top_left，offset 沿容器方向。页面不会自动增大，超出页面的对象可能在导出时被裁切。
-
-## 逐项功能说明
 
 <!-- walkthrough:end -->
 

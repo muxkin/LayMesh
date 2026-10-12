@@ -11,10 +11,6 @@
 
 <!-- example:examples/manual/str.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 把 [triangle,open,dot] 放入列表并循环生成头部，或把 round 传入函数默认参数。用户作用域优先，因此 round="square" 会改变该作用域中 round 的值。ratex_katex 对应字符串 "ratex-katex"。

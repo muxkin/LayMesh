@@ -344,5 +344,26 @@
         "Use one cmap handle for heatmap, filled contours, numeric scatter and colorbar."
       ]
     }
+  },
+  "styles": {
+    "title": "CSS libraries and shadows",
+    "intro": "Import unmodified libraries offline and tune appearance in project units.",
+    "groups": {
+      "样式与效果": "Styles and effects"
+    },
+    "items": {
+      "libraries": [
+        "Bootstrap and Open Props",
+        "Library colors, radii, gradients and shadows with a local blur override."
+      ],
+      "layers": [
+        "Layered and inset shadows",
+        "Tune individual shadow fields and compare box, glyph and drop shadows."
+      ],
+      "shadow-parameters": [
+        "2mm: blur, spread or offset",
+        "Change only one field of the same library shadow, preserving color and other parameters."
+      ]
+    }
   }
 }

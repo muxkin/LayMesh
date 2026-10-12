@@ -40,13 +40,13 @@ async function sample(p){await ready(p);return p.evaluate(()=>{const m=document.
   }
   {
    const {context,p}=await session();await p.goto(url);await ready(p);const initial=await state(p),staticHash=await pixels(p);
-   assert.equal(initial.data.mode,'summary');assert.equal(initial.data.fullFonts,'idle');assert.equal(initial.label,'完整排版');assert(!initial.canvasHidden);
+   assert.equal(initial.data.mode,'source');assert.equal(initial.data.fullFonts,'idle');assert.equal(initial.label,'完整排版');assert(!initial.canvasHidden);
    await action(p,'play');await p.waitForFunction(()=>Number(document.querySelector('[aria-label="Animation time"]').value)>.25);await action(p,'play');const paused=await state(p);assert.notEqual(await pixels(p),staticHash);
-   await p.locator('[data-source-mode=source]').click();await p.locator('[data-source-mode=summary]').click();assert.equal((await state(p)).label,paused.label);assert.equal((await state(p)).data.generation,initial.data.generation);
+   await p.locator('.source-files [role=tab]').nth(1).click();await p.locator('.source-files [role=tab]').first().click();assert.equal((await state(p)).label,paused.label);assert.equal((await state(p)).data.generation,initial.data.generation);
    await seek(p,.2);assert.match((await state(p)).label,/0.20/);await action(p,'static');assert.equal(await pixels(p),staticHash);
-   await seek(p,7.7);await action(p,'play');await p.waitForFunction(()=>document.querySelector('.document-pages').selectedIndex===1);await ready(p,initial.data.generation);await action(p,'play');assert.match((await state(p)).label,/区域揭示/);
-   await seek(p,0);await action(p,'previous');await p.waitForFunction(()=>document.querySelector('.document-pages').selectedIndex===0);await ready(p);await action(p,'static');await settled(p);assert.equal(await pixels(p),staticHash);
-   await p.screenshot({path:path.join(out,'summary-static.png')});result.checks.push('Summary play/pause/seek, source tabs preserve time, multipage forward/back, static pixel restoration');await context.close();
+   await p.locator('.preview-options-menu').evaluate(e=>e.open=true);await p.locator('.preview-motion-menu').evaluate(e=>e.open=true);await p.getByLabel('Playback mode',{exact:true}).selectOption('auto');await seek(p,7.7);await action(p,'play');await p.waitForFunction(()=>document.querySelector('.document-pages').selectedIndex===1);await ready(p,initial.data.generation);await action(p,'play');assert.match((await state(p)).label,/区域揭示/);
+   await seek(p,0);await action(p,'previous');assert.equal(await p.locator('.document-pages').evaluate(e=>e.selectedIndex),1);await action(p,'previous');await p.waitForFunction(()=>document.querySelector('.document-pages').selectedIndex===0);await ready(p);await action(p,'static');await settled(p);assert.equal(await pixels(p),staticHash);
+   await p.screenshot({path:path.join(out,'source-static.png')});result.checks.push('Full source play/pause/seek, source tabs preserve time, multipage forward/back, static pixel restoration');await context.close();
   }
   {
    const {context,p}=await session();let release;const gate=new Promise(r=>release=r);await context.route('**/'+cjk.file,async route=>{await gate;await route.continue();});
@@ -55,22 +55,22 @@ async function sample(p){await ready(p);return p.evaluate(()=>{const m=document.
   }
   {
    const {context,p}=await session();let failures=0;await context.route('**/'+cjk.file,route=>failures++===0?route.fulfill({body:'bad checksum'}):route.continue());await p.goto(url);
-   await p.waitForFunction(()=>document.querySelector('.example-module').dataset.liveState==='error');assert(await p.locator('.startup-retry').isVisible());assert.match((await state(p)).diagnostics,/SHA-256/);await p.locator('.startup-retry').click();await ready(p);assert.equal((await state(p)).label,'完整排版');result.checks.push('Startup checksum failure is visible in summary; Retry recovers without autoplay');await context.close();
+   await p.waitForFunction(()=>document.querySelector('.example-module').dataset.liveState==='error');assert(await p.locator('.startup-retry').isVisible());assert.match((await state(p)).diagnostics,/SHA-256/);await p.locator('.startup-retry').click();await ready(p);assert.equal((await state(p)).label,'完整排版');result.checks.push('Startup checksum failure is visible beside full source; Retry recovers without autoplay');await context.close();
   }
   {
    const {context,p}=await session();let release,requested=0;const gate=new Promise(r=>release=r);await context.route('**/'+cjk.full.file,async route=>{requested++;await gate;await route.continue();});
-   await p.goto(new URL('animation-second.html',url).href);await ready(p);const before=await state(p);assert.equal(requested,0);await p.locator('[data-source-mode=source]').click();await p.waitForFunction(()=>document.querySelector('.example-module').dataset.fullFonts==='loading');const unchanged=await pixels(p);
+   await p.goto(new URL('animation-second.html',url).href);await ready(p);const before=await state(p);assert.equal(requested,0);await p.locator('.cm-content').waitFor();const unchanged=await pixels(p);
    const source='page=canvas(size=(80,50),background="#ffffff")\nfor i in range(2) {\n    page.add(text("新增龘麤"+str(i),font_family="Noto Sans CJK SC",font_size=12),offset=(4,8+18*i))\n}';
-   await edit(p,source.replace('新增','旧稿'));await p.waitForTimeout(300);await edit(p,source);await p.waitForTimeout(300);assert.equal((await state(p)).data.generation,before.data.generation);assert.equal(await pixels(p),unchanged);assert.match((await state(p)).status,/编辑字体/);
+   await edit(p,source.replace('新增','旧稿'));await p.waitForFunction(()=>document.querySelector('.example-module').dataset.fullFonts==='loading');await edit(p,source);await p.waitForTimeout(300);assert.equal((await state(p)).data.generation,before.data.generation);assert.equal(await pixels(p),unchanged);assert.match((await state(p)).status,/编辑字体/);
    release();await ready(p,before.data.generation);assert(!/W_FONT|missing glyph/i.test((await state(p)).diagnostics));assert.equal(await p.evaluate(()=>window.__qa.posts.filter(x=>x.type==='run').length),2);assert.equal(requested,1);await p.screenshot({path:path.join(out,'new-glyphs.png')});result.checks.push('Deferred full fonts preserve last frame, compile only latest draft, support new Chinese, generated labels and explicit family');await context.close();
   }
   {
-   const {context,p}=await session();await p.goto(url+'#example-animation-presentation-source');await ready(p);await p.waitForFunction(()=>document.querySelector('.example-module').dataset.fullFonts==='ready');assert.equal((await state(p)).data.mode,'source');assert.equal((await state(p)).label,'完整排版');
-   const times=await p.evaluate(()=>({first:Number(document.querySelector('.example-module').dataset.firstFrameMs),request:window.__qa.posts.find(x=>x.type==='full-fonts').at}));assert(times.request>=times.first);result.checks.push('Direct source link starts static; full fonts requested only after first frame');await context.close();
+   const {context,p}=await session();await p.goto(url+'#example-animation-presentation-source');await ready(p);await p.locator('.cm-content').waitFor();assert.equal((await state(p)).data.mode,'source');assert.equal((await state(p)).label,'完整排版');
+   assert.equal((await state(p)).data.fullFonts,'idle');assert.equal(await p.evaluate(()=>window.__qa.posts.filter(x=>x.type==='full-fonts').length),0);result.checks.push('Direct source link starts static; reading full source does not download complete fonts');await context.close();
   }
   {
    const {context,p}=await session();let failures=0;await context.route('**/'+cjk.full.file,route=>failures++===0?route.fulfill({body:'bad checksum'}):route.continue());
-   await p.goto(new URL('animation-second.html',url).href);await ready(p);await p.locator('[data-source-mode=source]').click();await p.waitForFunction(()=>document.querySelector('.example-module').dataset.fullFonts==='error');
+   await p.goto(new URL('animation-second.html',url).href);await ready(p);await p.locator('.cm-content').waitFor();
    const previous=(await state(p)).data.generation;await edit(p,'page=canvas(size=(80,50))\npage.add(text("重试龘",font_family="Noto Sans CJK SC"))');await p.waitForFunction(()=>document.querySelector('.example-module').dataset.liveState==='error');await p.locator('.diagnostics-toggle').click();await p.locator('.live-diagnostics-panel button').filter({hasText:'重试'}).click();await ready(p,previous);assert(!/W_FONT/.test((await state(p)).diagnostics));result.checks.push('Failed full-font download remains retryable after editing and recovers the latest draft');await context.close();
   }
   // Render the shipped corpus at fixed dimensions with the real worker, first

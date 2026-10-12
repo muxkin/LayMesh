@@ -239,7 +239,10 @@ fn localized_docs_field_fallback() {
 }
 #[test]
 fn shipped_examples_static_diagnostics() {
-    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../..")
+        .canonicalize()
+        .unwrap();
     fn collect(p: &std::path::Path, s: &mut LanguageService, generated: &std::path::Path) {
         if p == generated {
             return; // Build artifacts are not shipped source examples.
@@ -250,7 +253,7 @@ fn shipped_examples_static_diagnostics() {
                 collect(&p, s, generated)
             } else if p
                 .extension()
-                .is_some_and(|s| s == "lay" || s == "laydoc" || s == "lcss")
+                .is_some_and(|s| s == "lay" || s == "laydoc" || s == "lcss" || s == "css")
             {
                 s.update(&p.to_string_lossy(), &std::fs::read_to_string(&p).unwrap());
             }
@@ -265,6 +268,7 @@ fn shipped_examples_static_diagnostics() {
     let errors: Vec<_> = s
         .documents
         .keys()
+        .filter(|file| !file.ends_with(".css"))
         .flat_map(|file| {
             s.diagnostics(file)
                 .as_array()
@@ -291,8 +295,9 @@ fn lcss_parts_classes_variables_and_values() {
         ("rect { fill: lin", "linear-gradient()"),
         ("rect { border-w", "border-width"),
     ] {
-        service.update("/main.lcss", source);
-        let result = service.completions("/main.lcss", source.len());
+        let imported = format!("@import \"theme.lcss\";\n{source}");
+        service.update("/main.lcss", &imported);
+        let result = service.completions("/main.lcss", imported.len());
         assert!(
             result
                 .as_array()

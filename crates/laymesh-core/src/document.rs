@@ -1,6 +1,6 @@
 //! Document orchestration uses the ordinary Lay parser and evaluator. Page
 //! handles are lazy: drawing a selected page never evaluates its neighbours.
-use crate::{engine::Engine, model::*, Diagnostic, Loc, Result};
+use crate::{Diagnostic, Loc, Result, engine::Engine, model::*};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, path::Path, sync::Arc};
 

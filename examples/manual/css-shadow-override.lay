@@ -1,0 +1,6 @@
+# Keep reusable imports and local overrides in theme.lcss.
+page = canvas(size=(80mm,50mm), stylesheet="theme.lcss")
+page.add(
+  rect(size=(30mm,20mm), class="bg-primary rounded shadow custom"),
+  anchor=center, target=page.center
+)

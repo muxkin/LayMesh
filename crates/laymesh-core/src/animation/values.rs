@@ -2,6 +2,26 @@ use super::css;
 use cssparser::{Parser, Token};
 use serde::{Deserialize, Serialize};
 
+/// Physical length context shared by static CSS and animation. Export DPI is absent.
+#[derive(Clone, Copy, Debug)]
+pub struct Context {
+    pub dpi: f64,
+    pub font: f64,
+    pub root_font: f64,
+    pub viewport: [f64; 2],
+    pub reference: f64,
+}
+impl Default for Context {
+    fn default() -> Self {
+        Self {
+            dpi: 96.,
+            font: 16. * 25.4 / 96.,
+            root_font: 16. * 25.4 / 96.,
+            viewport: [0.; 2],
+            reference: 0.,
+        }
+    }
+}
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct Quantity {
     n: f64,
@@ -50,13 +70,13 @@ impl Quantity {
         }
     }
 }
-fn sum(p: &mut Parser<'_>) -> std::result::Result<Quantity, String> {
-    let mut v = product(p)?;
+fn sum(p: &mut Parser<'_>, ctx: Context) -> std::result::Result<Quantity, String> {
+    let mut v = product(p, ctx)?;
     loop {
         let state = p.state();
         match p.next().cloned() {
-            Ok(Token::Delim('+')) => v = v.add(product(p)?, 1.)?,
-            Ok(Token::Delim('-')) => v = v.add(product(p)?, -1.)?,
+            Ok(Token::Delim('+')) => v = v.add(product(p, ctx)?, 1.)?,
+            Ok(Token::Delim('-')) => v = v.add(product(p, ctx)?, -1.)?,
             _ => {
                 p.reset(&state);
                 break;
@@ -65,13 +85,13 @@ fn sum(p: &mut Parser<'_>) -> std::result::Result<Quantity, String> {
     }
     Ok(v)
 }
-fn product(p: &mut Parser<'_>) -> std::result::Result<Quantity, String> {
-    let mut v = atom(p)?;
+fn product(p: &mut Parser<'_>, ctx: Context) -> std::result::Result<Quantity, String> {
+    let mut v = atom(p, ctx)?;
     loop {
         let state = p.state();
         match p.next().cloned() {
-            Ok(Token::Delim('*')) => v = v.mul(atom(p)?, false)?,
-            Ok(Token::Delim('/')) => v = v.mul(atom(p)?, true)?,
+            Ok(Token::Delim('*')) => v = v.mul(atom(p, ctx)?, false)?,
+            Ok(Token::Delim('/')) => v = v.mul(atom(p, ctx)?, true)?,
             _ => {
                 p.reset(&state);
                 break;
@@ -80,7 +100,7 @@ fn product(p: &mut Parser<'_>) -> std::result::Result<Quantity, String> {
     }
     Ok(v)
 }
-fn atom(p: &mut Parser<'_>) -> std::result::Result<Quantity, String> {
+fn atom(p: &mut Parser<'_>, ctx: Context) -> std::result::Result<Quantity, String> {
     match p
         .next()
         .cloned()
@@ -94,10 +114,16 @@ fn atom(p: &mut Parser<'_>) -> std::result::Result<Quantity, String> {
         }),
         Token::Dimension { value, unit, .. } => {
             let (f, dim) = match unit.to_ascii_lowercase().as_str() {
-                "px" => (25.4 / 96., 1),
+                "px" => (25.4 / ctx.dpi, 1),
+                "em" => (ctx.font, 1),
+                "rem" => (ctx.root_font, 1),
+                "vw" => (ctx.viewport[0] / 100., 1),
+                "vh" => (ctx.viewport[1] / 100., 1),
+                "vmin" => (ctx.viewport[0].min(ctx.viewport[1]) / 100., 1),
+                "vmax" => (ctx.viewport[0].max(ctx.viewport[1]) / 100., 1),
                 "mm" => (1., 1),
                 "cm" => (10., 1),
-                "in" => (25.4, 1),
+                "in" | "inch" => (25.4, 1),
                 "pt" => (25.4 / 72., 1),
                 "pc" => (25.4 / 6., 1),
                 "q" => (0.25, 1),
@@ -115,24 +141,55 @@ fn atom(p: &mut Parser<'_>) -> std::result::Result<Quantity, String> {
                 dim,
             })
         }
-        Token::Function(ref s) if s.eq_ignore_ascii_case("calc") => nested_quantity(p),
-        Token::ParenthesisBlock => nested_quantity(p),
-        Token::Delim('-') => Ok(atom(p)?.mul(Quantity::scalar(-1.), false)?),
-        Token::Delim('+') => atom(p),
+        Token::Function(ref s) if s.eq_ignore_ascii_case("calc") => nested_quantity(p, ctx),
+        Token::Function(ref s)
+            if ["min", "max", "clamp"]
+                .iter()
+                .any(|v| s.eq_ignore_ascii_case(v)) =>
+        {
+            let name = s.to_ascii_lowercase();
+            p.parse_nested_block(|p| {
+                let mut list = vec![sum(p, ctx).map_err(|s| custom_error(s))?];
+                while p.try_parse(|p| p.expect_comma()).is_ok() {
+                    list.push(sum(p, ctx).map_err(|s| custom_error(s))?);
+                }
+                p.expect_exhausted()?;
+                let first = list[0];
+                for q in &list[1..] {
+                    first.add(*q, 1.).map_err(|s| custom_error(s))?;
+                }
+                let dim = list
+                    .iter()
+                    .find(|q| q.dim == 1)
+                    .map_or(first.dim, |q| q.dim);
+                let vals: Vec<_> = list.iter().map(|q| q.n + q.p * ctx.reference).collect();
+                let n = match name.as_str() {
+                    "min" => vals.iter().copied().fold(f64::INFINITY, f64::min),
+                    "max" => vals.iter().copied().fold(f64::NEG_INFINITY, f64::max),
+                    "clamp" if vals.len() == 3 => vals[0].max(vals[1].min(vals[2])),
+                    _ => return Err(custom_error("clamp() requires three arguments".to_string())),
+                };
+                Ok(Quantity { n, p: 0., dim })
+            })
+            .map_err(|e: cssparser::ParseError<String>| format!("Invalid {name}(): {e:?}"))
+        }
+        Token::ParenthesisBlock => nested_quantity(p, ctx),
+        Token::Delim('-') => Ok(atom(p, ctx)?.mul(Quantity::scalar(-1.), false)?),
+        Token::Delim('+') => atom(p, ctx),
         _ => Err("Expected number, dimension, or calc()".into()),
     }
 }
-fn nested_quantity(p: &mut Parser<'_>) -> std::result::Result<Quantity, String> {
+fn nested_quantity(p: &mut Parser<'_>, ctx: Context) -> std::result::Result<Quantity, String> {
     p.parse_nested_block(|p| {
-        sum(p).map_err(|s| cssparser::ParseError {
+        sum(p, ctx).map_err(|s| cssparser::ParseError {
             kind: cssparser::ParseErrorKind::Custom(s),
         })
     })
     .map_err(|e| format!("Invalid calc(): {e:?}"))
 }
-fn quantity(s: &str) -> std::result::Result<Quantity, String> {
+fn quantity_context(s: &str, ctx: Context) -> std::result::Result<Quantity, String> {
     let mut p = Parser::new(s);
-    let q = sum(&mut p)?;
+    let q = sum(&mut p, ctx)?;
     p.expect_exhausted()
         .map_err(|_| format!("Unexpected CSS numeric suffix: {s}"))?;
     if !q.n.is_finite() || !q.p.is_finite() {
@@ -141,28 +198,50 @@ fn quantity(s: &str) -> std::result::Result<Quantity, String> {
     Ok(q)
 }
 pub fn number(s: &str) -> std::result::Result<f64, String> {
-    let q = quantity(s)?;
+    let q = quantity_context(s, Context::default())?;
     if q.dim != 0 {
         return Err("Expected unitless number".into());
     }
     Ok(q.n)
 }
+pub fn number_percentage(s: &str, reference: f64) -> std::result::Result<f64, String> {
+    let q = quantity_context(
+        s,
+        Context {
+            reference,
+            ..Context::default()
+        },
+    )?;
+    if !matches!(q.dim, 0 | 4) {
+        return Err("Expected number or percentage".into());
+    }
+    Ok(q.n + q.p * reference)
+}
 pub fn time(s: &str) -> std::result::Result<f64, String> {
-    let q = quantity(s)?;
+    let q = quantity_context(s, Context::default())?;
     if q.dim != 2 {
         return Err("Time requires s or ms".into());
     }
     Ok(q.n)
 }
 pub fn length(s: &str, reference: f64) -> std::result::Result<f64, String> {
-    let q = quantity(s)?;
+    length_context(
+        s,
+        Context {
+            reference,
+            ..Context::default()
+        },
+    )
+}
+pub fn length_context(s: &str, ctx: Context) -> std::result::Result<f64, String> {
+    let q = quantity_context(s, ctx)?;
     if !matches!(q.dim, 1 | 4) && !(q.dim == 0 && q.n == 0.) {
         return Err("CSS length requires a unit".into());
     }
-    Ok(q.n + q.p * reference)
+    Ok(q.n + q.p * ctx.reference)
 }
 pub fn angle(s: &str) -> std::result::Result<f64, String> {
-    let q = quantity(s)?;
+    let q = quantity_context(s, Context::default())?;
     if q.dim != 3 && !(q.dim == 0 && q.n == 0.) {
         return Err("Angle requires deg/rad/grad/turn".into());
     }
@@ -300,6 +379,13 @@ pub fn translate(x: f64, y: f64, z: f64) -> Matrix {
     m
 }
 pub fn transform(s: &str, size: [f64; 2]) -> std::result::Result<Vec<Transform>, String> {
+    transform_context(s, size, Context::default())
+}
+pub fn transform_context(
+    s: &str,
+    size: [f64; 2],
+    ctx: Context,
+) -> std::result::Result<Vec<Transform>, String> {
     if s.trim() == "none" {
         return Ok(vec![]);
     }
@@ -328,8 +414,12 @@ pub fn transform(s: &str, size: [f64; 2]) -> std::result::Result<Vec<Transform>,
             parts
         };
         let num = |i: usize, default: f64| parts.get(i).map(|s| number(s)).unwrap_or(Ok(default));
-        let len =
-            |i: usize, reference: f64| parts.get(i).map(|s| length(s, reference)).unwrap_or(Ok(0.));
+        let len = |i: usize, reference: f64| {
+            parts
+                .get(i)
+                .map(|s| length_context(s, Context { reference, ..ctx }))
+                .unwrap_or(Ok(0.))
+        };
         let ang = |i: usize| parts.get(i).map(|s| angle(s)).unwrap_or(Ok(0.));
         let (kind, args, min, max) = match name.as_str() {
             "translate" => (
@@ -516,6 +606,13 @@ pub fn interpolate(a: &[Transform], b: &[Transform], p: f64) -> Matrix {
     result
 }
 pub fn origin(s: &str, size: [f64; 2]) -> std::result::Result<[f64; 3], String> {
+    origin_context(s, size, Context::default())
+}
+pub fn origin_context(
+    s: &str,
+    size: [f64; 2],
+    ctx: Context,
+) -> std::result::Result<[f64; 3], String> {
     let mut v = words(s);
     if v.len() == 1 {
         if matches!(v[0].as_str(), "top" | "bottom") {
@@ -534,11 +631,33 @@ pub fn origin(s: &str, size: [f64; 2]) -> std::result::Result<[f64; 3], String> 
         "center" => Ok(n / 2.),
         "left" | "top" => Ok(0.),
         "right" | "bottom" => Ok(n),
-        _ => length(s, n),
+        _ => length_context(
+            s,
+            Context {
+                reference: n,
+                ..ctx
+            },
+        ),
     };
     Ok([
         val(&v[0], size[0])?,
         val(&v[1], size[1])?,
-        v.get(2).map(|s| length(s, 0.)).unwrap_or(Ok(0.))?,
+        v.get(2)
+            .map(|s| {
+                length_context(
+                    s,
+                    Context {
+                        reference: 0.,
+                        ..ctx
+                    },
+                )
+            })
+            .unwrap_or(Ok(0.))?,
     ])
+}
+
+fn custom_error(s: String) -> cssparser::ParseError<String> {
+    cssparser::ParseError {
+        kind: cssparser::ParseErrorKind::Custom(s),
+    }
 }

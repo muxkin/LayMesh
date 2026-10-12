@@ -1,3 +1,8 @@
+use crate::animation::{
+    css::Declaration as StyleDeclaration,
+    values::{self, Context},
+};
+use crate::css_values;
 use crate::{
     Diagnostic, Loc, Result,
     engine::{API, Engine},
@@ -58,77 +63,205 @@ fn css_color(s: &str) -> &str {
         _ => s,
     }
 }
-fn compound_match(selector: &str, kind: &str, args: &Args) -> bool {
-    let kind = if crate::arrows::is_arrow(kind) {
-        "arrow"
-    } else {
-        kind
-    };
-    let parts: Vec<_> = selector.split('.').collect();
-    let typ = parts[0];
-    (typ.is_empty() || typ == "*" || typ == kind)
-        && parts[1..].iter().all(|c| {
-            string(args, "class", "")
-                .split_whitespace()
-                .any(|v| v == *c)
-        })
-}
 fn matches(selector: &str, kind: &str, args: &Args, parent: &Args) -> bool {
-    let normalized = selector.replace('>', " > ");
-    let mut items: Vec<_> = normalized.split_whitespace().collect();
-    let Some(last) = items.pop() else {
-        return false;
-    };
-    if !compound_match(last, kind, args) {
-        return false;
-    }
-    let mut current = Some(parent.clone());
-    while let Some(item) = items.pop() {
-        let direct = item == ">";
-        let item = if direct {
-            let Some(s) = items.pop() else { return false };
-            s
+    let element = |kind: &str, args: &Args| crate::animation::css::Element {
+        kind: if crate::arrows::is_arrow(kind) {
+            "arrow".into()
         } else {
-            item
+            kind.into()
+        },
+        class: string(args, "class", ""),
+    };
+    let mut chain = vec![element(kind, args)];
+    let mut current = Some(parent.clone());
+    while let Some(p) = current.take() {
+        let kind = string(&p, "__style_type", "");
+        if !kind.is_empty() {
+            chain.push(element(&kind, &p));
+        }
+        current = match p.get("__style_parent") {
+            Some(V::Map(v)) => Some(v.clone()),
+            _ => None,
         };
-        let mut found = false;
-        while let Some(p) = current.take() {
-            let typ = string(&p, "__style_type", "");
-            let ok = compound_match(item, &typ, &p);
-            current = match p.get("__style_parent") {
-                Some(V::Map(v)) => Some(v.clone()),
-                _ => None,
-            };
-            if ok {
-                found = true;
-                break;
-            }
-            if direct {
-                break;
-            }
-        }
-        if !found {
-            return false;
-        }
     }
-    true
+    chain.reverse();
+    crate::animation::css::matches(selector, &chain)
 }
 
-#[derive(Clone, Debug)]
-pub struct StyleDeclaration {
-    property: String,
-    value: String,
-    file: String,
-    loc: Loc,
-}
 #[derive(Clone, Debug)]
 pub struct StyleRule {
     selector: String,
     declarations: Vec<StyleDeclaration>,
     scope: Option<String>,
     specificity: usize,
+    media: String,
+    supports: String,
 }
-const INHERITED: [&str; 8] = [
+#[derive(Clone, Debug, serde::Deserialize)]
+pub struct StylesheetMetadata {
+    pub name: String,
+    pub version: String,
+    pub source: String,
+    pub sha256: String,
+    pub license: String,
+}
+impl StylesheetMetadata {
+    pub fn path(&self) -> String {
+        format!("@laymesh/{}.css", self.name)
+    }
+}
+/// Editor help and the engine's distributed libraries use the pinned manifest.
+pub fn bundled_stylesheets() -> &'static [StylesheetMetadata] {
+    static MANIFEST: std::sync::LazyLock<Vec<StylesheetMetadata>> =
+        std::sync::LazyLock::new(|| {
+            serde_json::from_str(include_str!("../assets/styles/manifest.json")).unwrap()
+        });
+    &MANIFEST
+}
+pub fn bundled_stylesheet(path: &str) -> Option<&'static str> {
+    match path {
+        "@laymesh/bootstrap.css" => Some(include_str!("../assets/styles/bootstrap.css")),
+        "@laymesh/open-props.css" => Some(include_str!("../assets/styles/open-props.css")),
+        "@laymesh/animate.css" => Some(include_str!("../assets/styles/animate.css")),
+        _ => None,
+    }
+}
+pub fn property_supported(key: &str) -> bool {
+    key.starts_with("--")
+        || API["cssProperties"]
+            .as_array()
+            .is_some_and(|props| props.iter().any(|v| v["name"] == key.replace('_', "-")))
+}
+fn selector(selector: &str) -> Option<(String, usize)> {
+    let root = matches!(
+        selector,
+        ":root" | "html" | "body" | ":where(html)" | ":where(:root)"
+    );
+    if root {
+        return Some((
+            "canvas".into(),
+            if selector.starts_with(":where") {
+                0
+            } else if selector == ":root" {
+                100
+            } else {
+                1
+            },
+        ));
+    }
+    let plain = if let Some((plain, part)) = selector.split_once("::") {
+        let name = part.split('(').next().unwrap();
+        if ![
+            "area",
+            "axis",
+            "axis-label",
+            "tick-label",
+            "legend",
+            "colorbar",
+            "marker",
+            "grid",
+        ]
+        .contains(&name)
+            || !regex::Regex::new(r"^[\w-]+(?:\([\w-]+\))?$")
+                .unwrap()
+                .is_match(part)
+        {
+            return None;
+        }
+        plain
+    } else {
+        selector
+    };
+    crate::css_selectors::supported(plain).then(|| {
+        (
+            selector.into(),
+            crate::animation::css::specificity(plain) + usize::from(selector.contains("::")),
+        )
+    })
+}
+fn parse_sheet(
+    source: &str,
+    file: &str,
+    origin: Loc,
+    scope: Option<&str>,
+) -> Result<(Vec<StyleRule>, crate::animation::css::Sheet)> {
+    let (_, mut sheet) = crate::animation::css::extract(source, file, origin, scope)?;
+    let mut parsed = vec![];
+    for rule in &sheet.rules {
+        let declarations: Vec<_> = rule
+            .declarations
+            .iter()
+            .filter_map(|d| {
+                if crate::animation::css::is_motion_property(&d.property) {
+                    return None;
+                }
+                if !property_supported(&d.property) {
+                    sheet.warnings.push(Diagnostic::new(
+                        "W_CSS",
+                        format!("Ignored property {}; geometry belongs in .lay", d.property),
+                        file,
+                        d.loc,
+                    ));
+                    return None;
+                }
+                let mut d = d.clone();
+                if !d.property.starts_with("--") {
+                    d.property = d.property.replace('-', "_");
+                }
+                Some(d)
+            })
+            .collect();
+        if let Some((selector, specificity)) = selector(&rule.selector) {
+            parsed.push(StyleRule {
+                selector,
+                declarations,
+                scope: scope.map(str::to_owned),
+                specificity,
+                media: rule.media.clone(),
+                supports: rule.supports.clone(),
+            });
+        } else if !declarations.is_empty() {
+            sheet.warnings.push(Diagnostic::new(
+                "W_CSS",
+                format!("Ignored selector {}", rule.selector),
+                file,
+                declarations[0].loc,
+            ));
+        }
+    }
+    Ok((parsed, sheet))
+}
+/// Editor validation follows the same recovery policy as compilation.
+pub fn validate_stylesheet(source: &str, file: &str, origin: Loc) -> Result<()> {
+    let (_, sheet) = parse_sheet(source, file, origin, None)?;
+    if let Some(d) = sheet.warnings.iter().find(|d| {
+        d.message.starts_with("Ignored invalid declaration") || d.message.starts_with("CSS syntax")
+    }) {
+        return Err(Diagnostic::new("E_LCSS", &d.message, file, d.loc));
+    }
+    Ok(())
+}
+pub fn stylesheet_diagnostics(source: &str, file: &str, origin: Loc) -> Vec<Diagnostic> {
+    let mut engine = Engine::new(Host::default());
+    engine.file = file.into();
+    if let Ok((rules, sheet)) = parse_sheet(source, file, origin, None) {
+        for d in sheet.warnings {
+            engine.css_warning(d);
+        }
+        for rule in &rules {
+            for d in &rule.declarations {
+                if d.property.starts_with("--") || d.value.contains("var(") {
+                    continue;
+                }
+                if let Err(e) = engine.css_expansion(d, Context::default(), "#000000") {
+                    engine.css_warning(e);
+                }
+            }
+        }
+    }
+    engine.css_diagnostics()
+}
+const INHERITED: [&str; 9] = [
     "math_font",
     "math_text_fallback",
     "font_family",
@@ -137,107 +270,8 @@ const INHERITED: [&str; 8] = [
     "font_style",
     "color",
     "line_height",
+    "text_shadow",
 ];
-fn location(source: &str, origin: Loc, offset: usize) -> Loc {
-    let prefix = &source[..offset];
-    let lines = prefix.bytes().filter(|b| *b == b'\n').count();
-    Loc {
-        line: origin.line + lines,
-        column: if lines == 0 {
-            origin.column + prefix.encode_utf16().count()
-        } else {
-            prefix
-                .rsplit('\n')
-                .next()
-                .unwrap_or("")
-                .encode_utf16()
-                .count()
-                + 1
-        },
-        offset: origin.offset + offset,
-    }
-}
-/// Find a delimiter outside quotes and function arguments. Preserving byte
-/// offsets here makes diagnostics point to declarations in imported stylesheets.
-fn delimiter(source: &str, from: usize, delimiters: &[char]) -> Option<(usize, char)> {
-    let (mut depth, mut quote, mut escaped) = (0usize, '\0', false);
-    for (offset, ch) in source[from..].char_indices() {
-        if escaped {
-            escaped = false;
-            continue;
-        }
-        if ch == '\\' {
-            escaped = true;
-            continue;
-        }
-        if quote != '\0' {
-            if ch == quote {
-                quote = '\0';
-            }
-            continue;
-        }
-        if matches!(ch, '\'' | '"') {
-            quote = ch;
-            continue;
-        }
-        if depth == 0 && delimiters.contains(&ch) {
-            return Some((from + offset, ch));
-        }
-        if matches!(ch, '(' | '[') {
-            depth += 1;
-        }
-        if matches!(ch, ')' | ']') {
-            depth = depth.saturating_sub(1);
-        }
-    }
-    None
-}
-fn uncomment(source: &str, file: &str, origin: Loc) -> Result<String> {
-    let mut bytes = source.as_bytes().to_vec();
-    let (mut at, mut quote) = (0, 0);
-    while at < bytes.len() {
-        if bytes[at] == b'\\' {
-            at += 2;
-            continue;
-        }
-        if quote != 0 {
-            if bytes[at] == quote {
-                quote = 0;
-            }
-            at += 1;
-            continue;
-        }
-        if matches!(bytes[at], b'\'' | b'"') {
-            quote = bytes[at];
-            at += 1;
-            continue;
-        }
-        if bytes[at..].starts_with(b"/*") {
-            let start = at;
-            at += 2;
-            while at + 1 < bytes.len() && &bytes[at..at + 2] != b"*/" {
-                at += 1;
-            }
-            if at + 1 == bytes.len() {
-                return Err(Diagnostic::new(
-                    "E_LCSS",
-                    "未闭合样式注释",
-                    file,
-                    location(source, origin, start),
-                ));
-            }
-            at += 2;
-            for byte in &mut bytes[start..at] {
-                if *byte != b'\n' && *byte != b'\r' {
-                    *byte = b' ';
-                }
-            }
-        } else {
-            at += 1;
-        }
-    }
-    Ok(String::from_utf8(bytes).unwrap())
-}
 pub(crate) fn substitute(
     value: &str,
     vars: &BTreeMap<String, String>,
@@ -273,14 +307,18 @@ pub(crate) fn substitute(
         return Err("样式变量嵌套超过 128 层".into());
     }
     let fallback = args[1..].join(",");
-    let resolved = vars
-        .get(name)
-        .map(String::as_str)
-        .or_else(|| (args.len() > 1).then_some(fallback.as_str()))
-        .ok_or_else(|| format!("未定义样式变量 {name}"))?;
+    let resolved = vars.get(name).map(String::as_str);
     seen.push(name.into());
-    let middle = substitute(resolved, vars, seen)?;
+    let middle = match resolved {
+        Some(resolved) => substitute(resolved, vars, seen),
+        None => Err(format!("未定义样式变量 {name}")),
+    };
     seen.pop();
+    let middle = match middle {
+        Ok(value) => value,
+        Err(_) if args.len() > 1 => substitute(&fallback, vars, seen)?,
+        Err(e) => return Err(e),
+    };
     Ok(format!(
         "{}{}{}",
         &value[..start],
@@ -288,218 +326,6 @@ pub(crate) fn substitute(
         substitute(&value[end + 1..], vars, seen)?
     ))
 }
-/// Parse rules without importing files, evaluating DSL, or discovering fonts.
-fn parse_stylesheet(
-    source: &str,
-    file: &str,
-    origin: Loc,
-    scope: Option<&str>,
-) -> Result<(Vec<StyleRule>, Vec<(String, Loc)>)> {
-    let (filtered, _) = crate::animation::css::extract(source, file, origin, scope)?;
-    let css = uncomment(&filtered, file, origin)?;
-    let fail = |message: &str, offset| {
-        Diagnostic::new("E_LCSS", message, file, location(&css, origin, offset))
-    };
-    let mut at = 0;
-    let mut parsed = vec![];
-    let mut imports = vec![];
-    while at < css.len() {
-        at += css[at..].len() - css[at..].trim_start().len();
-        if at == css.len() {
-            break;
-        }
-        let (open, token) = delimiter(&css, at, &['{', ';', '}'])
-            .ok_or_else(|| fail("需要有效的 LCSS 规则", at))?;
-        if css[at..].starts_with('@') {
-            if token != ';' {
-                return Err(fail("不支持的样式 at-rule", at));
-            }
-            let import = css[at..open]
-                .trim()
-                .strip_prefix("@import")
-                .ok_or_else(|| fail("不支持的样式 at-rule", at))?
-                .trim();
-            let import = import
-                .strip_prefix("url(")
-                .and_then(|s| s.strip_suffix(')'))
-                .unwrap_or(import)
-                .trim()
-                .trim_matches(['\'', '"']);
-            if !(import.ends_with(".lcss") || import.ends_with(".css"))
-                || import.contains(':')
-                || import.starts_with("//")
-                || import.is_empty()
-            {
-                return Err(fail("@import 需要本地 .lcss 路径", at));
-            }
-            imports.push((import.to_string(), location(&css, origin, at)));
-            at = open + 1;
-            continue;
-        }
-        if token != '{' {
-            return Err(fail("需要有效的 LCSS 规则", at));
-        }
-        let (close, token) =
-            delimiter(&css, open + 1, &['{', '}']).ok_or_else(|| fail("未闭合样式规则", open))?;
-        if token != '}' {
-            return Err(fail("样式规则仅接受属性声明", close));
-        }
-        let mut declarations = vec![];
-        let mut pos = open + 1;
-        while pos < close {
-            pos += css[pos..close].len() - css[pos..close].trim_start().len();
-            if pos == close {
-                break;
-            }
-            let end = delimiter(&css[..close], pos, &[';']).map_or(close, |(at, _)| at);
-            if pos == end {
-                pos += 1;
-                continue;
-            }
-            let (colon, _) =
-                delimiter(&css[..end], pos, &[':']).ok_or_else(|| fail("需要属性声明", pos))?;
-            let key = css[pos..colon].trim();
-            let custom = key.starts_with("--");
-            let key = if custom {
-                key.into()
-            } else {
-                key.replace('-', "_")
-            };
-            if !custom
-                && !matches!(key.as_str(), "line" | "border")
-                && !API["styleProperties"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .any(|v| v == &key)
-            {
-                return Err(fail(
-                    &format!("不支持属性 {key}；尺寸和定位在 .lay 中设置"),
-                    pos,
-                ));
-            }
-            let value = css[colon + 1..end].trim();
-            if value.is_empty() {
-                return Err(fail("空样式值", pos));
-            }
-            if value.to_ascii_lowercase().contains("!important") {
-                return Err(fail("LCSS 不支持 !important", pos));
-            }
-            declarations.push(StyleDeclaration {
-                property: key,
-                value: value.into(),
-                file: file.into(),
-                loc: location(&css, origin, pos),
-            });
-            pos = end + 1;
-        }
-        for selector in split(&css[at..open], ',') {
-            let plain = if let Some((plain, part)) = selector.split_once("::") {
-                let name = part.split('(').next().unwrap();
-                if ![
-                    "area",
-                    "axis",
-                    "axis-label",
-                    "tick-label",
-                    "legend",
-                    "colorbar",
-                    "marker",
-                    "grid",
-                ]
-                .contains(&name)
-                {
-                    return Err(fail(&format!("未知图形部件 {name}"), at));
-                }
-                if !regex::Regex::new(r"^[\w-]+(?:\([\w-]+\))?$")
-                    .unwrap()
-                    .is_match(part)
-                {
-                    return Err(fail("无效图形部件选择器", at));
-                }
-                plain
-            } else {
-                selector.as_str()
-            };
-            let normal = plain.replace('>', " > ");
-            let tokens: Vec<_> = normal.split_whitespace().collect();
-            if tokens.is_empty()
-                || tokens.first() == Some(&">")
-                || tokens.last() == Some(&">")
-                || tokens.windows(2).any(|w| w == [">", ">"])
-            {
-                return Err(fail("无效所属关系选择器", at));
-            }
-            let compound = regex::Regex::new(r"^(?:[\w-]+|\*)?(?:\.[\w-]+)*$").unwrap();
-            if tokens.iter().any(|s| *s != ">" && !compound.is_match(s)) {
-                return Err(fail("不支持选择器；使用类型、类、所属关系或 ::部件", at));
-            }
-            let specificity = selector.matches('.').count() * 100
-                + tokens
-                    .iter()
-                    .filter(|s| {
-                        s.chars()
-                            .next()
-                            .is_some_and(|c| c.is_alphanumeric() || c == '_')
-                    })
-                    .count()
-                + usize::from(selector.contains("::"));
-            parsed.push(StyleRule {
-                selector,
-                declarations: declarations.clone(),
-                scope: scope.map(str::to_owned),
-                specificity,
-            });
-        }
-        at = close + 1;
-    }
-    Ok((parsed, imports))
-}
-
-/// Static stylesheet validation used by editors. Imports are syntax checked but
-/// never read; paint/variable evaluation remains a compilation responsibility.
-pub fn validate_stylesheet(source: &str, file: &str, origin: Loc) -> Result<()> {
-    let (rules, _) = parse_stylesheet(source, file, origin, None)?;
-    for rule in rules {
-        for declaration in rule.declarations {
-            let key = &declaration.property;
-            if matches!(key.as_str(), "effects" | "path" | "warp" | "extrude")
-                && !declaration.value.contains("var(")
-            {
-                crate::art::css_config(
-                    &declaration.value,
-                    &declaration.file,
-                    declaration.loc,
-                    "mm",
-                    96.,
-                )?;
-                continue;
-            }
-            if key.starts_with("--")
-                || declaration.value.contains("var(")
-                || matches!(
-                    key.as_str(),
-                    "fill"
-                        | "text_fill"
-                        | "effects"
-                        | "path"
-                        | "warp"
-                        | "extrude"
-                        | "background"
-                        | "border"
-                        | "line"
-                        | "font_family"
-                        | "math_font"
-                )
-                || key.ends_with("color")
-            {
-                continue;
-            }
-            scalar_value(key, &declaration.value, &declaration.file, declaration.loc)?;
-        }
-    }
-    Ok(())
-}
-
 fn scalar_value(key: &str, s: &str, file: &str, l: Loc) -> Result<V> {
     let fail = |m: &str| Diagnostic::new("E_LCSS", m, file, l);
     if matches!(
@@ -526,7 +352,10 @@ fn scalar_value(key: &str, s: &str, file: &str, l: Loc) -> Result<V> {
             _ => Err(fail("math_text_fallback 需要 true 或 false")),
         };
     }
-    let numeric = regex::Regex::new(r"^([+-]?(?:\d*\.)?\d+)(mm|cm|in|inch|pt|px)?$").unwrap();
+    static NUMERIC: std::sync::LazyLock<regex::Regex> = std::sync::LazyLock::new(|| {
+        regex::Regex::new(r"^([+-]?(?:\d*\.)?\d+)(mm|cm|in|inch|pt|px)?$").unwrap()
+    });
+    let numeric = &*NUMERIC;
     let mut values = vec![];
     for token in s.split_whitespace() {
         if let Some(capture) = numeric.captures(token) {
@@ -582,13 +411,30 @@ impl Engine {
         mut stack: Vec<String>,
     ) -> Result<()> {
         stack.push(file.into());
-        let (parsed, imports) = parse_stylesheet(source, file, origin, scope)?;
-        for (import, loc) in imports {
-            let path = resolve(file, &import);
-            if stack.contains(&path) {
-                return Err(Diagnostic::new("E_LCSS", "样式导入循环", file, loc));
+        let (parsed, motion) = parse_sheet(source, file, origin, scope)?;
+        for d in &motion.warnings {
+            self.css_warning(d.clone());
+        }
+        for rule in &parsed {
+            if css_values::media(&rule.media, self.css_context(&Args::new()), false, false)
+                .is_none()
+            {
+                if let Some(d) = rule.declarations.first() {
+                    self.css_warning(Diagnostic::new(
+                        "W_CSS",
+                        format!("Ignored unsupported media condition {}", rule.media),
+                        file,
+                        d.loc,
+                    ));
+                }
             }
-            let result = self.host.read(&path, file, loc).and_then(|data| {
+        }
+        for (import, loc) in &motion.imports {
+            let path = resolve(file, import);
+            if stack.contains(&path) {
+                return Err(Diagnostic::new("E_LCSS", "样式导入循环", file, *loc));
+            }
+            let result = self.host.read(&path, file, *loc).and_then(|data| {
                 self.stylesheet_stack(
                     &String::from_utf8_lossy(&data),
                     &path,
@@ -603,7 +449,6 @@ impl Engine {
             });
             result?;
         }
-        let (_, motion) = crate::animation::css::extract(source, file, origin, scope)?;
         self.animation_sheets.push(motion);
         self.styles.extend(parsed);
         Ok(())
@@ -659,77 +504,6 @@ impl Engine {
         if key == "font_weight" && matches!(s, "normal" | "bold") {
             return Ok(V::num(if s == "bold" { 700. } else { 400. }));
         }
-        if s.starts_with("linear-gradient(") || s.starts_with("radial-gradient(") {
-            let radial = s.starts_with("radial");
-            let mut args = split(&s[s.find('(').unwrap() + 1..s.len() - 1], ',');
-            let mut angle = 180.;
-            if !radial
-                && args
-                    .first()
-                    .is_some_and(|s| s.starts_with("to ") || s.ends_with("deg"))
-            {
-                let direction = args.remove(0);
-                angle = match direction.as_str() {
-                    "to top" => 0.,
-                    "to right" => 90.,
-                    "to bottom" => 180.,
-                    "to left" => 270.,
-                    _ => direction
-                        .trim_end_matches("deg")
-                        .parse()
-                        .map_err(|_| fail("无效渐变角度"))?,
-                };
-            }
-            if radial
-                && args
-                    .first()
-                    .is_some_and(|s| s.starts_with("circle") || s.starts_with("ellipse"))
-            {
-                args.remove(0);
-            }
-            let mut stops = vec![];
-            let mut previous = -1.;
-            for (i, arg) in args.iter().enumerate() {
-                let tokens: Vec<_> = arg.split_whitespace().collect();
-                if tokens.is_empty()
-                    || tokens.len() > 2
-                    || (tokens.len() == 2 && !tokens[1].ends_with('%'))
-                {
-                    return Err(fail("渐变色标需要颜色及可选百分比"));
-                }
-                self.validate_color(&V::text(css_color(tokens[0])), l, "E_LCSS")
-                    .map_err(|mut e| {
-                        e.file = file.into();
-                        e
-                    })?;
-                let at = if tokens.len() > 1 {
-                    tokens[1]
-                        .trim_end_matches('%')
-                        .parse::<f64>()
-                        .map_err(|_| fail("无效渐变色标"))?
-                        / 100.
-                } else {
-                    i as f64 / (args.len() - 1).max(1) as f64
-                };
-                if !(0.0..=1.0).contains(&at) || at < previous {
-                    return Err(fail("渐变色标必须有序且在 0–100% 之间"));
-                }
-                previous = at;
-                stops.push(json!({"at":at,"color":css_color(tokens[0]),"opacity":1.}));
-            }
-            if stops.len() < 2 {
-                return Err(fail("渐变至少需要两个色标"));
-            }
-            let j = if radial {
-                json!({"kind":"radialGradient","center":[0.5,0.5],"radius":0.5,"stops":stops})
-            } else {
-                let dx: f64 = (angle * std::f64::consts::PI / 180.).sin();
-                let dy: f64 = -(angle * std::f64::consts::PI / 180.).cos();
-                let scale = dx.abs().max(dy.abs());
-                json!({"kind":"linearGradient","start":[0.5-dx/scale/2.,0.5-dy/scale/2.],"end":[0.5+dx/scale/2.,0.5+dy/scale/2.],"stops":stops})
-            };
-            return Ok(V::from_json(&j));
-        }
         if s.starts_with("hatch(") {
             let args = split(&s[6..s.len() - 1], ',');
             let get = |i, d: &str| args.get(i).cloned().unwrap_or(d.into());
@@ -739,8 +513,9 @@ impl Engine {
             let spacing = self.css_value("spacing", &get(2, "2mm"), file, l)?;
             let width = self.css_value("line_width", &get(3, "0.5pt"), file, l)?;
             let spacing =
-                value_length(&spacing, "mm", 96.).ok_or_else(|| fail("纹理长度需要单位"))?;
-            let width = value_length(&width, "mm", 96.).ok_or_else(|| fail("纹理长度需要单位"))?;
+                value_length(&spacing, "mm", self.dpi).ok_or_else(|| fail("纹理长度需要单位"))?;
+            let width =
+                value_length(&width, "mm", self.dpi).ok_or_else(|| fail("纹理长度需要单位"))?;
             if spacing <= 0. || width <= 0. {
                 return Err(fail("纹理间距和线宽必须为正"));
             }
@@ -800,9 +575,19 @@ impl Engine {
             Some(V::Map(vars)) => vars.iter().map(|(k, v)| (k.clone(), v.as_str())).collect(),
             _ => BTreeMap::new(),
         };
-        let mut rules = vec![];
+        let mut ctx = self.css_context(parent);
+        let mut declarations = vec![];
         for (order, rule) in self.styles.iter().enumerate() {
-            if rule.scope.as_ref().is_some_and(|scope| scope != &file) {
+            if !crate::css_selectors::scope_applies(
+                rule.scope.as_deref(),
+                &file,
+                self.css_entry_file.as_deref(),
+            ) {
+                continue;
+            }
+            if css_values::media(&rule.media, ctx, false, false) != Some(true)
+                || !self.css_supports(&rule.supports, ctx)
+            {
                 continue;
             }
             let (plain, selector_part) = rule
@@ -822,49 +607,203 @@ impl Engine {
                 _ => false,
             };
             if part_matches && matches(plain, kind, original, parent) {
-                rules.push((rule.scope.is_none(), rule.specificity, order, rule));
+                for (index, d) in rule.declarations.iter().enumerate() {
+                    declarations.push((
+                        d.important,
+                        crate::css_selectors::theme_priority(
+                            rule.scope.as_deref(),
+                            self.css_entry_file.as_deref().or(Some(&self.file)),
+                        ),
+                        rule.specificity,
+                        order,
+                        index,
+                        d,
+                    ));
+                }
             }
         }
-        // Module styles provide local defaults; explicitly attached external
-        // stylesheets override them, matching the original LCSS cascade.
-        rules.sort_by_key(|(global, specificity, order, _)| (*global, *specificity, *order));
-        let mut declarations: Vec<&StyleDeclaration> = vec![];
-        for (_, _, _, rule) in rules {
-            for declaration in &rule.declarations {
-                if declaration.property.starts_with("--") {
-                    vars.insert(declaration.property.clone(), declaration.value.clone());
+        declarations.sort_by_key(|(imp, global, spec, order, index, _)| {
+            (*imp, *global, *spec, *order, *index)
+        });
+        // Custom properties cascade before ordinary declarations and keep empty values.
+        for (_, _, _, _, _, d) in &declarations {
+            if d.property.starts_with("--") {
+                vars.insert(d.property.clone(), d.value.clone());
+            }
+        }
+        // Resolve inherited variables now. A child changing --a must not retroactively
+        // change an inherited --b:var(--a) that was computed on its parent.
+        let raw_vars = vars.clone();
+        for (name, value) in &raw_vars {
+            match substitute(value, &raw_vars, &mut vec![name.clone()]) {
+                Ok(value) => {
+                    vars.insert(name.clone(), value);
+                }
+                Err(_) => {
+                    vars.remove(name);
+                }
+            }
+        }
+        let parent_ctx = ctx;
+        let current = string(&output, "color", "#000000");
+        let mut resolved = vec![];
+        for (_, _, _, _, _, d) in declarations {
+            if d.property.starts_with("--") {
+                continue;
+            }
+            let value = match substitute(&d.value, &vars, &mut vec![]) {
+                Ok(v) => v,
+                Err(m) => {
+                    let message = substitute(&d.value, &raw_vars, &mut vec![])
+                        .err()
+                        .unwrap_or(m);
+                    self.css_warning(Diagnostic::new("W_CSS", message, &d.file, d.loc));
+                    continue;
+                }
+            };
+            let mut d = d.clone();
+            d.value = value;
+            resolved.push(d);
+        }
+        // Compute the font before expanding em-valued shorthands (notably shadows).
+        for d in &resolved {
+            if !matches!(d.property.as_str(), "font" | "font_size") {
+                continue;
+            }
+            if let Ok(parts) = self.css_expansion(d, parent_ctx, &current) {
+                for (key, value) in parts {
+                    if key == "font_size" {
+                        if value == "inherit" || value == "unset" {
+                            continue;
+                        }
+                        if let Ok(v) = self
+                            .css_computed_value(&key, &value, &d.file, d.loc, parent_ctx, &current)
+                        {
+                            ctx.font = value_length(&v, "pt", self.dpi).unwrap_or(ctx.font);
+                        }
+                    }
+                }
+            }
+        }
+        if let Some(v) = original.get("font_size") {
+            ctx.font = value_length(v, "pt", self.dpi).unwrap_or(ctx.font);
+        }
+        if kind == "canvas" {
+            ctx.root_font = ctx.font;
+        }
+        let mut expanded = BTreeMap::new();
+        for d in resolved {
+            match self.css_expansion(
+                &d,
+                if d.property == "font_size" || d.property == "font" {
+                    parent_ctx
                 } else {
-                    declarations.retain(|d| d.property != declaration.property);
-                    declarations.push(declaration);
+                    ctx
+                },
+                &current,
+            ) {
+                Ok(values) => {
+                    for (property, value) in values {
+                        let mut long = d.clone();
+                        long.property = property.clone();
+                        long.value = value;
+                        expanded.insert(property, long);
+                    }
                 }
+                Err(e) => self.css_warning(e),
             }
         }
-        for d in declarations {
-            let value = substitute(&d.value, &vars, &mut vec![])
-                .map_err(|m| Diagnostic::new("E_LCSS", m, &d.file, d.loc))?;
-            if matches!(d.property.as_str(), "border" | "line") {
-                for token in value.split_whitespace() {
-                    let suffix = if matches!(
-                        token,
-                        "solid" | "none" | "dashed" | "dotted" | "dash_dot" | "double" | "triple"
-                    ) {
-                        "style"
-                    } else if token.starts_with('#') || css_color(token) != token {
-                        "color"
-                    } else {
-                        "width"
-                    };
-                    let key = format!("{}_{}", d.property, suffix);
-                    output.insert(key.clone(), self.css_value(&key, token, &d.file, d.loc)?);
+        for key in expanded.keys().cloned().collect::<Vec<_>>() {
+            let value = expanded[&key].value.clone();
+            if matches!(value.as_str(), "inherit" | "unset") {
+                if value == "inherit" || INHERITED.contains(&key.as_str()) {
+                    if let Some(v) = parent.get(&key) {
+                        output.insert(key.clone(), v.clone());
+                    }
+                } else {
+                    output.remove(&key);
                 }
-            } else {
-                output.insert(
-                    d.property.clone(),
-                    self.css_value(&d.property, &value, &d.file, d.loc)?,
-                );
+                expanded.remove(&key);
+            }
+        }
+        // Font size resolves against the parent's font; all other em lengths use
+        // this element's computed font. Root rem is 16 layout pixels until declared.
+        if let Some(d) = expanded.get("font_size") {
+            match self.css_computed_value(
+                "font_size",
+                &d.value,
+                &d.file,
+                d.loc,
+                parent_ctx,
+                &current,
+            ) {
+                Ok(v) => {
+                    ctx.font = value_length(&v, "pt", self.dpi).unwrap_or(ctx.font);
+                    output.insert("font_size".into(), v);
+                }
+                Err(e) => self.css_warning(e),
+            }
+        }
+        if let Some(v) = original.get("font_size") {
+            ctx.font = value_length(v, "pt", self.dpi).unwrap_or(ctx.font);
+        }
+        if kind == "canvas" {
+            ctx.root_font = ctx.font;
+        }
+        if let Some(d) = expanded.get("color") {
+            if let Ok(v) = self.css_computed_value("color", &d.value, &d.file, d.loc, ctx, &current)
+            {
+                output.insert("color".into(), v);
+            }
+        }
+        if let Some(v) = original.get("color") {
+            output.insert("color".into(), v.clone());
+        }
+        let current = string(&output, "color", "#000000");
+        for (key, d) in &expanded {
+            if css_values::SHADOW_PARTS.contains(&key.as_str())
+                || key == "font_size"
+                || key == "color"
+                || key == "__css_shadow_layers"
+            {
+                continue;
+            }
+            match self.css_computed_value(key, &d.value, &d.file, d.loc, ctx, &current) {
+                Ok(v) => {
+                    output.insert(key.clone(), v);
+                }
+                Err(e) => self.css_warning(e),
+            }
+        }
+        match css_values::box_shadows(&expanded, ctx, &current) {
+            Ok(v) if !v.is_empty() => {
+                output.insert("__css_box_shadows".into(), V::from_json(&json!(v)));
+            }
+            Err(m) => {
+                if let Some(d) = expanded.get("box_shadow_offset") {
+                    self.css_warning(Diagnostic::new("W_CSS", m, &d.file, d.loc));
+                }
+            }
+            _ => {}
+        }
+        if let Some(v) = output.remove("background_image") {
+            if v.as_str() != "none" {
+                output.insert("background".into(), v);
+            }
+        }
+        if let Some(v) = output.remove("background_color") {
+            output.entry("background".into()).or_insert(v);
+        }
+        if !matches!(
+            kind,
+            "image" | "text" | "formula" | "group" | "plot" | "legend" | "colorbar" | "canvas"
+        ) {
+            if let Some(v) = output.remove("background") {
+                output.insert("fill".into(), v);
             }
         }
         output.extend(original.clone());
+        output.insert("__css_root_font".into(), V::mm(ctx.root_font));
         output.insert(
             "__style_variables".into(),
             V::Map(vars.into_iter().map(|(k, v)| (k, V::text(v))).collect()),
@@ -873,5 +812,490 @@ impl Engine {
         output.insert("__style_file".into(), V::text(file));
         output.insert("__style_parent".into(), V::Map(parent.clone()));
         Ok(output)
+    }
+}
+
+impl Engine {
+    pub(crate) fn css_warning(&self, mut d: Diagnostic) {
+        d.code = "W_CSS".into();
+        self.css_warnings
+            .borrow_mut()
+            .insert((d.file.clone(), d.loc.offset, d.message.clone()), d);
+    }
+    pub fn css_diagnostics(&self) -> Vec<Diagnostic> {
+        let mut files: BTreeMap<String, Vec<Diagnostic>> = BTreeMap::new();
+        for d in self.css_warnings.borrow().values() {
+            files.entry(d.file.clone()).or_default().push(d.clone());
+        }
+        files
+            .into_iter()
+            .map(|(file, ds)| {
+                let details = ds
+                    .iter()
+                    .take(6)
+                    .map(|d| format!("{}:{} {}", d.loc.line, d.loc.column, d.message))
+                    .collect::<Vec<_>>()
+                    .join("; ");
+                Diagnostic::new(
+                    "W_CSS",
+                    format!(
+                        "Ignored {} unsupported or invalid CSS declarations/rules: {details}{}",
+                        ds.len(),
+                        if ds.len() > 6 { "; …" } else { "" }
+                    ),
+                    &file,
+                    ds[0].loc,
+                )
+            })
+            .collect()
+    }
+    pub(crate) fn css_context(&self, parent: &Args) -> Context {
+        let default = 16. * 25.4 / self.dpi;
+        Context {
+            dpi: self.dpi,
+            font: parent
+                .get("font_size")
+                .and_then(|v| value_length(v, "pt", self.dpi))
+                .unwrap_or(default),
+            root_font: parent
+                .get("__css_root_font")
+                .and_then(|v| value_length(v, "mm", self.dpi))
+                .unwrap_or(default),
+            viewport: self.css_viewport,
+            reference: self.css_viewport[0],
+        }
+    }
+    pub(crate) fn css_supports(&self, query: &str, ctx: Context) -> bool {
+        css_values::condition(query, &|s| {
+            let (property, value) = s.split_once(':')?;
+            let property = property.trim().replace('-', "_");
+            if !property_supported(&property) {
+                return Some(false);
+            }
+            let d = StyleDeclaration {
+                property,
+                value: value.trim().into(),
+                file: "<supports>".into(),
+                loc: Loc::default(),
+                important: false,
+            };
+            Some(self.css_expansion(&d, ctx, "#000000").is_ok())
+        }) == Some(true)
+    }
+    fn css_expansion(
+        &self,
+        d: &StyleDeclaration,
+        ctx: Context,
+        current: &str,
+    ) -> Result<Vec<(String, String)>> {
+        let key = &d.property;
+        let s = d.value.trim();
+        let fail = |m: String| {
+            Diagnostic::new(
+                "W_CSS",
+                format!("Ignored {}: {m}", key.replace('_', "-")),
+                &d.file,
+                d.loc,
+            )
+        };
+        if matches!(s, "inherit" | "unset") {
+            let keys: Vec<String> = match key.as_str() {
+                "border" | "line" => ["width", "color", "style"]
+                    .map(|p| format!("{key}_{p}"))
+                    .to_vec(),
+                "background" => vec!["background_image".into(), "background_color".into()],
+                "font" => [
+                    "font_size",
+                    "font_family",
+                    "font_style",
+                    "font_weight",
+                    "line_height",
+                ]
+                .map(str::to_string)
+                .to_vec(),
+                _ => vec![key.clone()],
+            };
+            return Ok(keys.into_iter().map(|k| (k, s.into())).collect());
+        }
+        if matches!(s, "initial" | "revert" | "revert-layer") {
+            let value = match key.as_str() {
+                "box_shadow" | "text_shadow" | "filter" | "background" | "background_image"
+                | "fill" => "none",
+                "color" => "black",
+                "background_color" => "transparent",
+                "font_family" => "system-ui",
+                "font_weight" => "400",
+                "font_size" => "16px",
+                "font_style" => "normal",
+                "line_height" => "normal",
+                "opacity" | "border_opacity" | "line_opacity" => "1",
+                "border" | "line" => "medium none currentColor",
+                "box_shadow_offset" => "none",
+                "box_shadow_color" => "currentColor",
+                "box_shadow_position" => "outset",
+                _ => "0",
+            };
+            let mut initial = d.clone();
+            initial.value = value.into();
+            return self.css_expansion(&initial, ctx, current);
+        }
+        if key == "box_shadow" {
+            return css_values::shadow_expansion(s, ctx, "currentColor").map_err(fail);
+        }
+        if matches!(key.as_str(), "border" | "line") {
+            let mut width = "medium".to_string();
+            let mut ink = "currentColor".to_string();
+            let mut style = "none".to_string();
+            let (mut w, mut c, mut st) = (false, false, false);
+            for word in values::words(s) {
+                if !st
+                    && matches!(
+                        word.as_str(),
+                        "solid"
+                            | "none"
+                            | "hidden"
+                            | "dashed"
+                            | "dotted"
+                            | "dash_dot"
+                            | "double"
+                            | "triple"
+                    )
+                {
+                    style = if word == "hidden" {
+                        "none".into()
+                    } else {
+                        word
+                    };
+                    st = true;
+                } else if !w
+                    && (values::length_context(&word, ctx).is_ok()
+                        || matches!(word.as_str(), "thin" | "medium" | "thick"))
+                {
+                    width = word;
+                    w = true;
+                } else if !c && css_values::color(&word, current).is_ok() {
+                    ink = word;
+                    c = true;
+                } else {
+                    return Err(fail("Invalid border shorthand".into()));
+                }
+            }
+            return Ok(vec![
+                (format!("{key}_width"), width),
+                (format!("{key}_color"), ink),
+                (format!("{key}_style"), style),
+            ]);
+        }
+        if key == "background" {
+            if s.contains("gradient(") {
+                css_values::gradient(s, ctx, current).map_err(fail)?;
+                return Ok(vec![
+                    ("background_image".into(), s.into()),
+                    ("background_color".into(), "transparent".into()),
+                ]);
+            }
+            if !s.starts_with("hatch(") && !s.starts_with("url(") && !s.starts_with("image(") {
+                css_values::color(s, current).map_err(fail)?;
+                return Ok(vec![
+                    ("background_color".into(), s.into()),
+                    ("background_image".into(), "none".into()),
+                ]);
+            }
+        }
+        if key == "font" {
+            let words = values::words(s);
+            let mut size = None;
+            let mut style = "normal";
+            let mut weight = "normal";
+            for (i, word) in words.iter().enumerate() {
+                let token = word.split('/').next().unwrap();
+                if values::length_context(token, ctx).is_ok() {
+                    size = Some(i);
+                    break;
+                }
+                match word.as_str() {
+                    "italic" | "oblique" => style = "italic",
+                    "bold" => weight = "bold",
+                    "normal" => {}
+                    _ => {
+                        if values::number(word).is_ok() {
+                            weight = word;
+                        } else {
+                            return Err(fail("Unsupported font shorthand".into()));
+                        }
+                    }
+                }
+            }
+            let i = size.ok_or_else(|| fail("Font shorthand needs size and family".into()))?;
+            if i + 1 >= words.len() {
+                return Err(fail("Font shorthand needs family".into()));
+            }
+            let parts: Vec<_> = words[i].split('/').collect();
+            let mut out = vec![
+                ("font_size".into(), parts[0].into()),
+                ("font_style".into(), style.into()),
+                ("font_weight".into(), weight.into()),
+                ("font_family".into(), words[i + 1..].join(" ")),
+            ];
+            if let Some(line) = parts.get(1) {
+                out.push(("line_height".into(), line.to_string()));
+            } else {
+                out.push(("line_height".into(), "normal".into()));
+            }
+            return Ok(out);
+        }
+        if css_values::SHADOW_PARTS.contains(&key.as_str()) {
+            for token in split(s, ',') {
+                let words = values::words(&token);
+                match key.as_str() {
+                    "box_shadow_offset" if token == "none" => {}
+                    "box_shadow_offset" if matches!(words.len(), 1 | 2) => {
+                        for word in words {
+                            if word.contains('%') {
+                                return Err(fail("Offset requires lengths".into()));
+                            }
+                            values::length_context(&word, ctx).map_err(fail)?;
+                        }
+                    }
+                    "box_shadow_color" => {
+                        css_values::color(&token, current).map_err(fail)?;
+                    }
+                    "box_shadow_position" if matches!(token.as_str(), "outset" | "inset") => {}
+                    "box_shadow_blur" | "box_shadow_spread" => {
+                        if token.contains('%') {
+                            return Err(fail("Shadow requires lengths".into()));
+                        }
+                        let n = values::length_context(&token, ctx).map_err(fail)?;
+                        if key == "box_shadow_blur" && n < 0. {
+                            return Err(fail("Blur cannot be negative".into()));
+                        }
+                    }
+                    _ => return Err(fail("Invalid shadow value list".into())),
+                }
+            }
+        } else if !s.contains("var(") {
+            self.css_computed_value(key, s, &d.file, d.loc, ctx, current)?;
+        }
+        Ok(vec![(key.clone(), s.into())])
+    }
+    fn css_computed_value(
+        &self,
+        key: &str,
+        s: &str,
+        file: &str,
+        loc: Loc,
+        ctx: Context,
+        current: &str,
+    ) -> Result<V> {
+        let fail = |m: String| {
+            Diagnostic::new(
+                "W_CSS",
+                format!("Ignored {}: {m}", key.replace('_', "-")),
+                file,
+                loc,
+            )
+        };
+        if key == "text_shadow" {
+            return css_values::shadow(s, ctx, current, "text")
+                .map(|v| V::from_json(&json!(v)))
+                .map_err(fail);
+        }
+        if key == "filter" {
+            if s == "none" {
+                return Ok(V::List(vec![]));
+            }
+            let body = s
+                .strip_prefix("drop-shadow(")
+                .and_then(|s| s.strip_suffix(')'))
+                .ok_or_else(|| fail("Only a single drop-shadow() is supported".into()))?;
+            let shadows = css_values::shadow(body, ctx, current, "drop").map_err(fail)?;
+            if shadows.len() != 1 {
+                return Err(fail("Only a single drop-shadow() is supported".into()));
+            }
+            return Ok(V::from_json(&json!(shadows)));
+        }
+        if key == "background_image" {
+            return if s == "none" {
+                Ok(V::text("none"))
+            } else {
+                css_values::gradient(s, ctx, current)
+                    .map(|v| V::from_json(&v))
+                    .map_err(fail)
+            };
+        }
+        if key.ends_with("color") || matches!(key, "fill" | "text_fill" | "background") {
+            if s.contains("gradient(") {
+                return css_values::gradient(s, ctx, current)
+                    .map(|v| V::from_json(&v))
+                    .map_err(fail);
+            }
+            if !s.starts_with("hatch(") && !s.starts_with("url(") && !s.starts_with("image(") {
+                return css_values::color(s, current).map(V::text).map_err(fail);
+            }
+        }
+        if key == "opacity" || matches!(key, "border_opacity" | "line_opacity") {
+            return values::number_percentage(s, 1.)
+                .map(|n| V::num(n.clamp(0., 1.)))
+                .map_err(fail);
+        }
+        if key == "font_weight" {
+            return match s {
+                "normal" => Ok(V::num(400.)),
+                "bold" | "bolder" => Ok(V::num(700.)),
+                "lighter" => Ok(V::num(300.)),
+                _ => values::number(s)
+                    .and_then(|n| {
+                        if (1.0..=1000.).contains(&n) {
+                            Ok(V::num(n))
+                        } else {
+                            Err("Font weight must be 1–1000".into())
+                        }
+                    })
+                    .map_err(fail),
+            };
+        }
+        if key == "font_style" && !matches!(s, "normal" | "italic" | "oblique") {
+            return Err(fail("Font style must be normal/italic/oblique".into()));
+        }
+        if key == "line_height" && s == "normal" {
+            return Ok(V::mm(ctx.font * 1.2));
+        }
+        if key == "line_height" {
+            if let Ok(n) = values::number(s) {
+                if n < 0. {
+                    return Err(fail("Line height cannot be negative".into()));
+                }
+                return Ok(V::mm(ctx.font * n));
+            }
+        }
+        let lengths = key.ends_with("_font_size")
+            || key == "grid_line_width"
+            || matches!(
+                key,
+                "font_size"
+                    | "line_height"
+                    | "padding"
+                    | "border_radius"
+                    | "border_width"
+                    | "line_width"
+                    | "text_stroke_width"
+                    | "line_dash_offset"
+                    | "border_dash_offset"
+                    | "spacing"
+            )
+            || key.ends_with("_dash");
+        if lengths {
+            let mut items = vec![];
+            let words = values::words(s);
+            if words.is_empty()
+                || (!matches!(key, "padding" | "border_radius")
+                    && !key.ends_with("_dash")
+                    && words.len() != 1)
+                || (key == "padding" && words.len() > 4)
+            {
+                return Err(fail("Invalid length list".into()));
+            }
+            // The current shape pipeline has one uniform radius. Different corner
+            // radii and elliptical radii are ignored as a whole declaration.
+            if key == "border_radius" && words.len() != 1 {
+                return Err(fail(
+                    "Only uniform border-radius is currently supported".into(),
+                ));
+            }
+            if key == "border_radius" && words[0].ends_with('%') {
+                let fraction = values::length_context(
+                    &words[0],
+                    Context {
+                        reference: 1.,
+                        ..ctx
+                    },
+                )
+                .map_err(fail)?;
+                if fraction < 0. {
+                    return Err(fail("Radius cannot be negative".into()));
+                }
+                return Ok(V::Map(
+                    [("__css_fraction".into(), V::num(fraction))]
+                        .into_iter()
+                        .collect(),
+                ));
+            }
+            for word in words {
+                let s = match word.as_str() {
+                    "thin" if key.ends_with("_width") => "1px",
+                    "medium" if key.ends_with("_width") => "3px",
+                    "thick" if key.ends_with("_width") => "5px",
+                    _ => &word,
+                };
+                let ref_length = if matches!(key, "font_size" | "line_height") {
+                    ctx.font
+                } else {
+                    ctx.reference
+                };
+                let n = values::length_context(
+                    s,
+                    Context {
+                        reference: ref_length,
+                        ..ctx
+                    },
+                )
+                .map_err(fail)?;
+                if n < 0. && !key.ends_with("_dash_offset") {
+                    return Err(fail("Length cannot be negative".into()));
+                }
+                // Preserve absolute source units; computed expressions become mm.
+                static LITERAL: std::sync::LazyLock<regex::Regex> =
+                    std::sync::LazyLock::new(|| {
+                        regex::Regex::new(r"^[+-]?(?:\d*\.)?\d+(mm|cm|in|inch|pt|px)?$").unwrap()
+                    });
+                let literal = &*LITERAL;
+                items.push(if literal.is_match(s) {
+                    scalar_value(key, s, file, loc)?
+                } else {
+                    V::mm(n)
+                });
+            }
+            return Ok(if items.len() == 1 {
+                items.remove(0)
+            } else {
+                V::List(items)
+            });
+        }
+        if let Some(meta) = API["cssProperties"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|p| p["name"] == key.replace('_', "-"))
+        {
+            if meta["type"] == "enum" && !matches!(key, "font_style" | "start_cap" | "end_cap") {
+                if !meta["values"]
+                    .as_array()
+                    .is_some_and(|v| v.iter().any(|v| v == s))
+                {
+                    return Err(fail("Unsupported keyword".into()));
+                }
+            }
+            if matches!(key, "line_miter_limit" | "border_miter_limit") {
+                return values::number(s)
+                    .and_then(|n| {
+                        if n >= 1. {
+                            Ok(V::num(n))
+                        } else {
+                            Err("Miter limit must be at least one".into())
+                        }
+                    })
+                    .map_err(fail);
+            }
+        }
+        self.css_value(
+            key,
+            if key == "font_style" && s == "oblique" {
+                "italic"
+            } else {
+                s
+            },
+            file,
+            loc,
+        )
     }
 }

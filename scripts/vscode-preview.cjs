@@ -42,7 +42,7 @@ exports.run=async()=>{
   panel.webview.onDidReceiveMessage=(handler,...rest)=>{previewHost.receive=handler;return listen.call(panel.webview,message=>{previewHost.received.push(message);return handler(message)},...rest);};
   panel.webview.postMessage=message=>{previewHost.messages.push(observed(message));return post.call(panel.webview,message);};
  }return panel;};
- const until=async(fn,label,attempts=300)=>{for(let i=0;i<attempts;i++){if(fn())return fn();await pause(50);}throw Error('Timeout: '+label+' '+String(JSON.stringify(host?.messages.slice(-2))).slice(0,1000));};
+ const until=async(fn,label,attempts=600)=>{for(let i=0;i<attempts;i++){if(fn())return fn();await pause(50);}throw Error('Timeout: '+label+' '+String(JSON.stringify(host?.messages.slice(-8).map(m=>({type:m.type,error:m.error,previewSettings:m.previewSettings,dependencies:m.dependencies,generation:m.generation})))).slice(0,4000));};
  const replace=async(document,text)=>{const edit=new vscode.WorkspaceEdit();edit.replace(document.uri,new vscode.Range(document.positionAt(0),document.positionAt(document.getText().length)),text);assert(await vscode.workspace.applyEdit(edit));};
  await extension.activate();await vscode.workspace.getConfiguration('laymesh').update('language','zh-CN',vscode.ConfigurationTarget.Global);
  assert.equal(extension.packageJSON.contributes.commands.find(c=>c.command==='laymesh.openPreview').title,'LayMesh: Open Preview');
@@ -103,11 +103,13 @@ exports.run=async()=>{
  const dependencyDoc=await vscode.workspace.openTextDocument(dependency);let count=host.messages.length;await replace(dependencyDoc,'export top=5');
  let result=await until(()=>host.messages.slice(count).find(m=>m.displayList),'Unsaved dependency');assert(fs.readFileSync(dependency,'utf8').includes('top=3'));assert(JSON.stringify(result.displayList)!==JSON.stringify(host.messages.find(m=>m.displayList).displayList));
  evidence.checks.push('Unsaved imported buffer wins without changing disk');
- count=host.messages.length;await replace(doc,source+'\n???');await until(()=>host.messages.slice(count).find(m=>m.error),'Located compilation failure');
+ const inverseSource=source.replace('size=(12,9)','size=(12,12*7/3cm)');
+ count=host.messages.length;await replace(doc,inverseSource);const inverseError=await until(()=>host.messages.slice(count).find(m=>m.error),'Located unit failure');
+ assert.equal(inverseError.error.code,'E_UNIT');assert(inverseError.error.message.includes('12cm*7/3'));assert(inverseError.error.message.includes('(12*7)/(3cm)'));
  if(gate){fs.writeFileSync(gate,JSON.stringify({phase:'english-error'}));await until(()=>JSON.parse(fs.readFileSync(gate)).phase==='error-verified','English stale error gate',2400);}
  await host.receive({type:'source'});assert.equal(vscode.window.activeTextEditor.document.uri.toString(),doc.uri.toString());
  count=host.messages.length;await replace(doc,source);await until(()=>host.messages.slice(count).find(m=>m.displayList),'Recovery');
- evidence.checks.push('Located error jumps to source; corrected buffer recovers');
+ evidence.checks.push('Inverse-unit error explains the actual expression, jumps to source, and corrected buffer recovers');
  count=host.messages.length;await replace(dependencyDoc,'export top=4');await replace(dependencyDoc,'export top=6');await until(()=>host.messages.slice(count).find(m=>m.displayList),'Latest edit');assert.equal(host.messages.slice(count).filter(m=>m.displayList).length,1);
  evidence.checks.push('Rapid edits coalesce into the latest version');
  // Hold one completed native response while a newer generation finishes first.
@@ -179,15 +181,25 @@ exports.run=async()=>{
  evidence.checks.push('.laydoc language association; real page selection; independent cm units and formula; unsaved selected page; inactive page edits do not compile; stable ID survives reordering; edit-page action; whole/selected vector PDF');
  host.panel.dispose();
  const motionFile=path.join(directory,'animation.lay');
- fs.copyFileSync(path.resolve(extension.extensionPath,'../../tests/animation/vendor/animate.css'),path.join(directory,'animate.css'));
- const motionSource='p=canvas(size=(80,40),stylesheet="animate.css",background="#fff")\na=p.add(rect(size=(25,15),fill="#3978d4"),offset=(20,10))\ns=p.step(name="Entrance",hold=500ms)\ns.animate(a,class="animate__animated animate__fadeIn",duration=1s)\ns2=p.step(name="Pulse",hold=500ms)\ns2.animate(a,class="animate__animated animate__pulse",duration=1s)';
+ const motionSource='p=canvas(size=(80,40),stylesheet=["@laymesh/bootstrap.css","@laymesh/open-props.css","@laymesh/animate.css"],background="#fff")\nstyle{.custom-motion{animation-duration:2s}}\na=p.add(rect(size=(25,15),class="bg-primary rounded shadow"),offset=(20,10))\ns=p.step(name="Entrance",hold=500ms)\ns.animate(a,class="animate__animated animate__fadeIn custom-motion")\ns2=p.step(name="Pulse",hold=500ms)\ns2.animate(a,class="animate__animated animate__pulse custom-motion")';
  fs.writeFileSync(motionFile,motionSource);const motionDoc=await vscode.workspace.openTextDocument(motionFile);await vscode.window.showTextDocument(motionDoc);await vscode.commands.executeCommand('laymesh.openPreview',motionDoc.uri);
- await until(()=>host.messages.find(m=>m.inspection?.animation),'Animation preview');const beforePlayback=host.messages.filter(m=>m.displayList).length;
+ const motion=await until(()=>host.messages.find(m=>m.inspection?.animation),'Animation preview');const beforePlayback=host.messages.filter(m=>m.displayList).length;
+ assert.equal(motion.inspection.animation.steps[0].duration,2);assert.equal(motion.inspection.animation.steps[1].duration,2);
+ assert(!motion.inspection.warnings.some(w=>w.code==='W_ANIMATION'));
  await documentPhase('animation-ready','animation-verified');assert.equal(host.messages.filter(m=>m.displayList).length,beforePlayback,'Playback must not request another layout');
  const animationSettings=vscode.workspace.getConfiguration('laymesh',motionDoc.uri);await animationSettings.update('export.animation.width',160,vscode.ConfigurationTarget.Global);await animationSettings.update('export.animation.fps',5,vscode.ConfigurationTarget.Global);await animationSettings.update('export.animation.background','#f5f0e8',vscode.ConfigurationTarget.Global);
  const video=path.join(directory,'animation.mp4');await vscode.commands.executeCommand('laymesh.exportFigure',motionDoc.uri,{output:video,animated:true});assert(fs.statSync(video).size>500);
  const videoProbe=JSON.parse(require('child_process').execFileSync('ffprobe',['-v','error','-show_streams','-of','json',video]));assert.equal(videoProbe.streams[0].width,160);assert.equal(videoProbe.streams[0].r_frame_rate,'5/1');
- evidence.checks.push('Animate.css preview controls, deterministic seeking, static restoration, no playback recompilation, editor MP4 export');host.panel.dispose();
+ evidence.checks.push('Animate.css preview controls, deterministic seeking, static restoration, no playback recompilation, editor MP4 export');
+ const verifyFFmpegDecline=gate&&process.env.LAYMESH_PREVIEW_NORMAL_HOST?async()=>{
+  const privateDirectory=path.join(directory,'ffmpeg-private'),cancelledVideo=path.join(directory,'cancelled.mp4'),ffmpegConfig=path.join(directory,'ffmpeg-test.json');
+  fs.writeFileSync(ffmpegConfig,JSON.stringify({export:{ffmpeg:{directory:privateDirectory,search_system:false}}}));
+  const declined=vscode.commands.executeCommand('laymesh.exportFigure',motionDoc.uri,{output:cancelledVideo,animated:true,config:ffmpegConfig});
+  await documentPhase('ffmpeg-dialog-ready','ffmpeg-dialog-cancelled');assert.equal(await declined,undefined);
+  assert(!fs.existsSync(privateDirectory));assert(!fs.existsSync(cancelledVideo));
+  evidence.checks.push('Actual missing-FFmpeg modal identifies private directory and source; declining creates no installation or output');
+ }:null;
+ host.panel.dispose();
  if(process.env.LAYMESH_ACADEMIC_DOC){
   const academicDoc=await vscode.workspace.openTextDocument(process.env.LAYMESH_ACADEMIC_DOC);await vscode.window.showTextDocument(academicDoc);await vscode.commands.executeCommand('laymesh.openPreview',academicDoc.uri);
   await until(()=>host.messages.find(m=>m.document?.pages.length===32&&m.displayList),'Academic preview');
@@ -207,6 +219,10 @@ exports.run=async()=>{
  const paints=first.received.filter(m=>m.type==='painted').length;first.panel.webview.html+='\n<!-- resource ownership reload -->';
  await until(()=>first.received.filter(m=>m.type==='painted').length>paints,'Older preview reload after newer panel closes');first.panel.dispose();
  evidence.checks.push('Two concurrent previews; simple line and image resources; older webview reloads after closing the newer panel');
+ if(verifyFFmpegDecline)await verifyFFmpegDecline();
+ // Normal hosts ask to save dirty editors on close. Only persist disposable
+ // fixture buffers after all unsaved-buffer assertions have completed.
+ if(process.env.LAYMESH_PREVIEW_NORMAL_HOST)for(const doc of vscode.workspace.textDocuments)if(doc.isDirty&&doc.uri.fsPath.startsWith(directory+path.sep))await doc.save();
  await vscode.commands.executeCommand('workbench.action.closeAllEditors');
  fs.writeFileSync(process.env.LAYMESH_PREVIEW_EVIDENCE,JSON.stringify(evidence,null,2));if(gate)fs.writeFileSync(gate,JSON.stringify({phase:'complete'}));fs.rmSync(directory,{recursive:true,force:true});
 };

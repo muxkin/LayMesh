@@ -4119,6 +4119,92 @@ s4.animate(title, class="animate__animated animate__pulse", duration=600ms)
 
 [Concepts and common errors](animation.en.md#animate) · [Composition source](../../examples/animation/presentation.lay)
 
+## css-properties
+
+CSS property support is shared by the compiler, completion, hover and color editing. Unsupported CSS is recovered with one warning per file. Draft shadow longhands follow the rules in [LCSS](lcss.en.md#shadow-overrides).
+
+| Property | Type / units | Meaning |
+| --- | --- | --- |
+| `font-family` | string \| string[] / none | System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes. |
+| `math-font` | string / none | Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default. |
+| `math-text-fallback` | boolean / none | Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font. |
+| `font-size` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Font size; nonzero CSS lengths require units. Inherits when omitted; em and percentages use the parent font size. |
+| `font-weight` | number \| keyword / none | Font weight from 1 to 1000; normal=400, bold/bolder=700 and lighter=300. Relative weight keywords currently use these fixed mappings. |
+| `font-style` | "normal" \| "italic" \| "oblique" / none | normal, italic or oblique; oblique currently maps to italic. |
+| `color` | color / none | Text color; currentColor lets borders and shadows use the computed color. |
+| `line-height` | length \| number / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | An explicit length or unitless font-size multiplier; defaults to 1.2 times font size. |
+| `background` | paint / none | Background paint for the object region, separate from text or lines |
+| `padding` | length \| length[] / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Inner spacing; 1–4 CSS lengths follow all, vertical/horizontal, top/horizontal/bottom, or top/right/bottom/left ordering. |
+| `border-radius` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Uniform box corner radius; nonzero lengths need units and percentages use the layout box. Separate corners and elliptical radii are unsupported. |
+| `border-color` | color / none | Closed-outline color; none disables the border |
+| `border-width` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Closed-outline width; nonzero CSS lengths need units. thin/medium/thick mean 1/3/5 layout px. |
+| `border-style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" / none | Border line pattern, independent of fill |
+| `border-dash` | length[] / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Alternating border dash and gap CSS lengths; paired values with units on nonzero lengths. |
+| `border-dash-offset` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Border dash phase; a signed CSS length, with units required for nonzero values. |
+| `border-cap` | "butt" \| "round" \| "square" / none | Outline dash endpoint shape |
+| `border-join` | "miter" \| "round" \| "bevel" / none | Outline join |
+| `border-miter-limit` | value / none | Maximum miter extension relative to line width |
+| `border-opacity` | value / none | Independent border opacity, 0–1 |
+| `line-color` | color / none | Open-line color; defaults to series or theme color |
+| `line-width` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Open-line width; nonzero CSS lengths need units. thin/medium/thick mean 1/3/5 layout px. |
+| `line-style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" / none | Line pattern; double/triple retain transparent gaps |
+| `line-dash` | length[] / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Alternating dash and gap CSS lengths; nonzero lengths require units. |
+| `line-dash-offset` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Line dash phase; a signed CSS length, with units required for nonzero values. |
+| `line-cap` | "butt" \| "round" \| "square" / none | Open endpoint shape |
+| `line-join` | "miter" \| "round" \| "bevel" / none | Line segment join |
+| `line-miter-limit` | value / none | Maximum miter extension relative to line width |
+| `line-opacity` | value / none | Independent line opacity, 0–1 |
+| `fill` | paint / none | Interior color, gradient, hatch or image paint; none disables fill. |
+| `opacity` | value / none | Object opacity from 0 to 1; multiplied by ancestor opacity. |
+| `tick-font-size` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Tick-label font size; an explicit CSS length, inheriting font size by default. |
+| `label-font-size` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Axis-label font size; an explicit CSS length, inheriting font size by default. |
+| `tick-color` | color / none | Tick and tick-label color |
+| `grid-color` | color / none | Grid-line color |
+| `grid-line-width` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Grid width; an explicit CSS length, defaulting to 0.3pt. |
+| `grid-line-dash` | value / none | Grid dash and gap lengths; units are required on nonzero CSS lengths. |
+| `start-head` | head / none | Start head configuration; absent by default |
+| `end-head` | head / none | End head configuration; absent by default |
+| `start-cap` | "butt" \| "round" \| "square" / none | Independent endpoint cap; inherits line_cap |
+| `end-cap` | "butt" \| "round" \| "square" / none | Independent endpoint cap; inherits line_cap |
+| `text-fill` | paint / none | 字形填充 / Glyph paint; defaults to color |
+| `text-stroke-color` | color / none | 字形描边颜色 / Glyph stroke color |
+| `text-stroke-width` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 字形描边宽度 / Glyph stroke width |
+| `effects` | effect[] / none | 按顺序叠加阴影与发光 / Ordered shadow and glow effects |
+| `path` | material / none | One open path material with its original curve segments preserved; source endpoints are necks and tips extend outward |
+| `warp` | text_warp / none | 字形变形 / Text warp configuration |
+| `extrude` | text_extrude / none | 二维矢量挤出 / Vector extrusion |
+| `shaft-width` | length \| (length,length) \| (number,length)[] / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation |
+| `heads` | "start" \| "end" \| "both" / none | Head endpoints; chevrons support one head only |
+| `head-size` | (length,length) / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Head longitudinal length and transverse width; endpoint sizes override head_size |
+| `start-head-size` | (length,length) / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Head longitudinal length and transverse width; endpoint sizes override head_size |
+| `end-head-size` | (length,length) / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | Head longitudinal length and transverse width; endpoint sizes override head_size |
+| `line` | shorthand / none | Stroke shorthand: width style color |
+| `border` | shorthand / none | Stroke shorthand: width style color |
+| `background-color` | color / none | Background color |
+| `background-image` | paint / none | Single CSS gradient |
+| `font` | string / none | Font shorthand: optional style and weight, required size and family, optional /line-height; resets those component properties. |
+| `box-shadow` | "none" / none | Comma-separated box shadows: x/y offset, optional blur/spread/color and inset. First layer is on top; the shorthand resets all shadow components. |
+| `text-shadow` | "none" / none | Glyph shadows |
+| `filter` | "none" / none | A single drop-shadow() |
+| `box-shadow-blur` | length-list / CSS lengths; px uses layout_dpi | CSS Borders 4 working draft: blur radius; preserves existing layers |
+| `box-shadow-spread` | length-list / CSS lengths; px uses layout_dpi | CSS Borders 4 working draft: signed spread |
+| `box-shadow-offset` | offset-list / CSS lengths; px uses layout_dpi | CSS Borders 4 working draft: offsets control shadow layers |
+| `box-shadow-color` | color-list / none | CSS Borders 4 working draft: shadow colors |
+| `box-shadow-position` | "inset" \| "outset" / none | CSS Borders 4 working draft: inset/outset |
+| `animation` | motion / none | Shorthand for name, duration, easing, delay, iterations, direction, fill and play state; commas separate animations. |
+| `animation-name` | motion / none | List of @keyframes names; none disables animation. |
+| `animation-duration` | motion / none | Nonnegative duration per iteration in s/ms; default 0s means an effect class alone may not play. |
+| `animation-delay` | motion / none | Delay in s/ms relative to the action start; negative values start partway through. |
+| `animation-timing-function` | motion / none | linear, the ease family, cubic-bezier() or steps(); controls progress between keyframes. |
+| `animation-iteration-count` | motion / none | Nonnegative iteration count, including fractions or infinite; infinite animation needs a finite step window. |
+| `animation-direction` | motion / none | normal, reverse, alternate or alternate-reverse; sets iteration direction. |
+| `animation-fill-mode` | motion / none | none, forwards, backwards or both; controls animated values outside the active interval. |
+| `animation-play-state` | motion / none | running or paused; paused actions need a finite step window. |
+| `transform` | motion / none | Ordered animated transform functions; order matters and static layout anchors stay unchanged. |
+| `transform-origin` | motion / none | Animated transform origin; percentages use the untransformed layout box. |
+| `backface-visibility` | motion / none | visible or hidden; controls the back face during 3D flips. |
+| `visibility` | motion / none | visible or hidden; changes animated visibility without reflow. |
+
 ## Geometry view types
 
 [Anchors and path queries](anchors.en.md)

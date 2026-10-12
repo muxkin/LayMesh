@@ -1,0 +1,19 @@
+page=canvas(size=(140mm,80mm),stylesheet=["@laymesh/bootstrap.css","@laymesh/open-props.css","@laymesh/animate.css"],background="#f6f7fb")
+style {
+ .ocean {background:var(--gradient-7);border-radius:var(--radius-3);box-shadow:var(--shadow-3);}
+ .shadow.custom {box-shadow-blur:2mm !important;}
+ .caption {font-size:3mm;color:var(--blue-9);}
+}
+records=[("bg-primary rounded shadow custom","Bootstrap + 2mm blur"),("ocean","Open Props gradient")]
+items=[]
+for appearance,label in records {
+ target=page.top_left
+ gap=(15mm,25mm)
+ if len(items)>0 { target=items[len(items)-1].top_right
+ gap=(20mm,0mm) }
+ item=page.add(rect(size=(45mm,28mm),class=appearance),target=target,offset=gap)
+ items=append(items,item)
+ page.add(text(label,class="caption"),target=item.bottom_left,offset=(0mm,5mm))
+}
+s=page.step(name="Stagger",start="after-previous",hold=1s)
+for i,item in enumerate(items) {s.animate(item,class="animate__animated animate__fadeInUp",duration=800ms,delay=i*200ms)}

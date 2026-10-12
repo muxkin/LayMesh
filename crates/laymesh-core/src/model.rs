@@ -287,6 +287,9 @@ pub fn normalize_path(p: &Path) -> PathBuf {
     out
 }
 pub fn resolve(file: &str, relative: &str) -> String {
+    if relative.starts_with("@laymesh/") {
+        return relative.into();
+    }
     let path = normalize_path(
         &Path::new(file)
             .parent()
@@ -320,6 +323,9 @@ pub struct Host {
 }
 impl Host {
     pub fn read(&self, path: &str, file: &str, loc: Loc) -> Result<Vec<u8>> {
+        if let Some(css) = crate::style::bundled_stylesheet(path) {
+            return Ok(css.as_bytes().to_vec());
+        }
         if let Some(dependencies) = &self.dependencies {
             dependencies.borrow_mut().insert(path.to_owned());
         }

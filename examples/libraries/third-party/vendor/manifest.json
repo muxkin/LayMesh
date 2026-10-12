@@ -1,0 +1,8 @@
+{
+  "name": "milligram",
+  "version": "1.4.1",
+  "source": "https://cdn.jsdelivr.net/npm/milligram@1.4.1/dist/milligram.css",
+  "license": "MIT",
+  "license_source": "https://cdn.jsdelivr.net/npm/milligram@1.4.1/license",
+  "sha256": "0e79dc73372d7747b20efa42310eed3f4b9826ead1d998175ec374a51d363bab"
+}

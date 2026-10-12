@@ -1,0 +1,48 @@
+# Bootstrap 5.3.8, Open Props 1.7.23 and Animate.css 4.1.1 are embedded offline.
+page = canvas(size=(160mm,100mm), stylesheet=["@laymesh/bootstrap.css","@laymesh/open-props.css","@laymesh/animate.css"], background="#f6f7fb")
+style {
+  .card { border-radius: var(--radius-3); }
+  .ocean { background: var(--gradient-7); box-shadow: var(--shadow-3); }
+  .sunset { background: var(--gradient-1); box-shadow: var(--shadow-4); }
+  .inset { background-color: var(--gray-2); box-shadow: inset 1mm 1mm 3mm #0004; }
+  .shadow.custom { box-shadow-blur: 2mm !important; }
+  .caption { font-size: 3mm; color: #364152; }
+  .heading { font-size: 6mm; font-weight: 700; color: var(--gray-9); }
+}
+heading = page.add(text("Offline CSS libraries",class="heading"),target=page.top_left,offset=(12mm,8mm))
+
+function sample(appearance,label) {
+  card = group()
+  plate = card.add(rect(size=(38mm,22mm),class=appearance))
+  card.add(text(label,class="caption"),target=plate.bottom_left,offset=(0mm,3mm))
+  return card
+}
+function row(samples,origin,gap) {
+  cards = []
+  for appearance,label in samples {
+    target = origin
+    offset = (0mm,gap)
+    if len(cards) > 0 {
+      target = cards[len(cards)-1].top_right
+      offset = (11mm,0mm)
+    }
+    item = page.add(sample(appearance,label),target=target,offset=offset)
+    cards = append(cards,item)
+  }
+  return cards
+}
+first = row([
+  ("bg-primary rounded shadow","Bootstrap shadow"),
+  ("bg-primary rounded shadow custom","Blur override: 2 mm"),
+  ("bg-success rounded shadow-lg","Bootstrap shadow-lg")
+],heading.bottom_left,12mm)
+second = row([
+  ("card ocean","Open Props gradient-7"),
+  ("card sunset","Open Props gradient-1"),
+  ("card inset","Inset shadow")
+],first[0].bottom_left,10mm)
+
+# Start the first animation when entering Present; static preview stays complete.
+sunset = second[1]
+s1 = page.step(name="CSS library reveal", start="after-previous", hold=1s)
+s1.animate(sunset, class="animate__animated animate__fadeInUp")

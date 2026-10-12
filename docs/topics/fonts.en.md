@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/text.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Reuse text with different placement widths to reflow each instance independently. font_family accepts names, file paths or ordered fallback lists. Include font resources when reproducing work across machines.

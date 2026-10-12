@@ -131,6 +131,11 @@ pub struct Effect {
     pub spread: f64,
     pub offset: [f64; 2],
     pub rgba: [f64; 4],
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "sourcePath")]
+    pub source_path: Option<BezPath>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub knockout: bool,
 }
 pub(crate) fn rgba(s: &str) -> Result<[f64; 4]> {
     if s == "none" {
@@ -203,7 +208,7 @@ impl DrawNode {
         let mut result = b;
         for e in &self.effects {
             if !e.inner {
-                let pad = 4. * e.blur + e.spread;
+                let pad = 4. * e.blur + e.spread.abs();
                 result =
                     result.union(b.inflate(pad, pad) + kurbo::Vec2::new(e.offset[0], e.offset[1]));
             }
@@ -278,6 +283,11 @@ impl Builder<'_> {
         id
     }
     fn paint(&mut self, p: &Json, bbox: Rect) -> Result<Paint> {
+        let computed = laymesh_core::css_values::gradient_box(
+            p,
+            [bbox.x0, bbox.y0, bbox.width(), bbox.height()],
+        );
+        let p = computed.as_ref();
         if p.is_null() {
             return Ok(Paint::None);
         }
@@ -395,6 +405,17 @@ impl Builder<'_> {
                             spread: "pad".into(),
                         })
                     } else {
+                        let b = p["cssEllipseBox"]
+                            .as_array()
+                            .map(|v| {
+                                Rect::new(
+                                    v[0].as_f64().unwrap(),
+                                    v[1].as_f64().unwrap(),
+                                    v[0].as_f64().unwrap() + v[2].as_f64().unwrap(),
+                                    v[1].as_f64().unwrap() + v[3].as_f64().unwrap(),
+                                )
+                            })
+                            .unwrap_or(b);
                         Ok(Paint::Radial {
                             center,
                             focal: center,
@@ -861,6 +882,12 @@ impl Builder<'_> {
                     spread: jnum(e, "spread", 0.),
                     offset: pair(&e["offset"], [0., 0.]),
                     rgba: color,
+                    source_path: e["sourcePath"]
+                        .as_str()
+                        .map(BezPath::from_svg)
+                        .transpose()
+                        .map_err(|e| error(format!("Invalid CSS shadow box: {e}")))?,
+                    knockout: e["knockout"].as_bool().unwrap_or(false),
                 })
             })
             .collect::<Result<Vec<_>>>()?;

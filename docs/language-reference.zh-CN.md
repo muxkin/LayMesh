@@ -175,7 +175,7 @@ laymesh render <file.lay> -o <output.svg|pdf|png> [--dpi <positive-number>]
 
 仓库中用 `cargo run --release --locked -p laymesh-cli --` 作命令前缀。`validate` 完成语法、名称、单位、导入、图片/字体、字形覆盖和放置约束检查；`render` 先做相同检查再写文件。`--dpi` 用于位图输出和 PDF 图片分辨率上限，默认 1200；[导出配置](topics/export.zh-CN.md)还支持 PDF 压缩与 JSON 默认值。错误以 `文件:行:列: E_代码: 原因` 报告并返回非零状态；`W_FONT`、`W_MATH_FONT`、`W_PLOT_LAYOUT` 等警告写到 stderr，但验证仍可成功。CLI 参数错误退出码为 2，布局或导出错误为 1。
 
-输出区别：SVG 保留可编辑路径与普通 `<text>`；PDF 保留矢量图形并嵌入普通文字，公式额外存放原 LaTeX 源码；PNG 从同一 Scene 栅格化。SVG 输入经过白名单检查，脚本、外链、DTD、滤镜及未支持的特效会以 `E_SVG` 拒绝。PNG/JPEG/TIFF 输入规范化为 sRGB PNG 后进入 Scene；TIFF 限单页 8 位灰度或 RGB。[实测输出和错误示例](examples-and-results.zh-CN.md)给出了完整复现命令。
+输出区别：SVG 保留可编辑路径与普通 `<text>`；PDF 保留矢量图形并嵌入普通文字，公式额外存放原 LaTeX 源码；PNG 从同一 Scene 栅格化。SVG 输入经过白名单检查，脚本、外链、DTD、滤镜及未支持的特效会以 `E_SVG` 拒绝。PNG/JPEG/TIFF 输入规范化为 sRGB PNG 后进入 Scene；TIFF 限单页无符号 8/16 位灰度或 RGB（可带 Alpha）。[实测输出和错误示例](examples-and-results.zh-CN.md)给出了完整复现命令。
 
 逐项源码、命令和结果见[分类画廊](gallery/README.zh-CN.md)。
 
@@ -215,3 +215,7 @@ HEX 最后一字节为透明度。RGB 通道允许 0–255 小数；HSV S/V 与 
 `enumerate(seq,start=0)` 返回编号和值；`zip(a,b,...)` 在最短输入结束时停止，零参数返回空列表。列表、字典和几何集合均可迭代。循环开始时固定遍历快照，修改原字典不会给本轮循环追加工作。break、continue、作用域和执行预算保留原有规则；字典键判断写作 `key in d` 或 `key not in d`。
 
 [完整字典绘图](../examples/plot/dictionary-series.lay) · [预设配色](topics/cmaps.zh-CN.md)
+
+## 当前主题手册
+
+[样式与覆盖](topics/lcss.zh-CN.md) · [动画与放映](topics/animation.zh-CN.md) · [多页文档](topics/documents.zh-CN.md) · [全部导出格式](topics/export.zh-CN.md)

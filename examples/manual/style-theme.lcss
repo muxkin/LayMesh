@@ -1,0 +1,7 @@
+@import "@laymesh/bootstrap.css";
+@import "@laymesh/open-props.css";
+:root { --ink: #243447; font-size: 16px; }
+.card { padding: 1mm; border-radius: var(--radius-3); }
+.ocean { background: var(--gradient-7); box-shadow: var(--shadow-3); }
+.caption { font-size: 3mm; color: var(--ink); }
+.shadow.custom { box-shadow-blur: 2mm !important; }

@@ -8,7 +8,7 @@ let scene = compile_file("figure.lay")?;
 let svg = laymesh_render::render_svg(&scene)?;
 ```
 
-For in-memory sources, call `compile_source(source, filename, Host)` and supply resources in `Host.files`. Native rendering discovers system fonts; WASM uses user-loaded fonts only. Browser bindings expose `render(source, filename, files_json)` and `language_query(files_json, filename, method, offset, locale)`; language offsets use UTF-16. Both targets share parser, layout, font handling, and SVG rendering.
+For in-memory sources, call `compile_source(source, filename, Host)` and supply resources in `Host.files`. Native rendering discovers system fonts; WASM uses host-registered fonts; documentation pages register their supplied body fonts. Browser bindings expose `render(source, filename, files_json)` and `language_query(files_json, filename, method, offset, locale)`; language offsets use UTF-16. Both targets share parser, layout, font handling, and SVG rendering.
 
 Python and Jupyter retain their public interfaces and invoke the native executable. `LAYMESH_CLI` overrides the native binary for development.
 
@@ -31,3 +31,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 ```
 
 Put this in a Cargo binary depending on laymesh-core and laymesh-render from this workspace. Host.files maps absolute normalized resource names to bytes for in-memory input; Host::default() enables native resource/font loading. WASM uses native=false and explicitly supplied resources.
+
+## Interactive rendering and animation
+
+Browser live preview uses prepare_render for a reusable job and draw_job for drawing. Drawing jobs expose display_list and resource_bytes; time sampling produces animation frames, rendered by CanvasKit. The SVG return from render remains available for static integration. Hosts register resources and fonts and satisfy compiler resource requests. Language-service offsets use UTF-16.
+
+See the [worker source](../../site/live/worker.mjs) and [animation implementation](animation-internals.en.md).

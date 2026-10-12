@@ -1,0 +1,20 @@
+@import "@laymesh/bootstrap.css";
+@import "@laymesh/open-props.css";
+@import "@laymesh/animate.css";
+
+:root { --ink:#243447; font-family:"DejaVu Sans"; font-size:3.5mm; color:var(--ink); }
+.heading { font-size:6mm; color:var(--blue-9); }
+.caption { font-size:3mm; color:#526475; }
+.metric { color:white; }
+.metric .label { font-size:3mm; color:white; }
+.metric .value { font-size:6mm; color:white; text-shadow:0.3mm 0.3mm 0.5mm #0005; }
+.metric .footnote { font-size:2.5mm; color:#ffffffcc; }
+.shadow.custom { box-shadow-blur:2mm !important; }
+.ocean { background:var(--gradient-7); border-radius:var(--radius-3); box-shadow:var(--shadow-2); }
+.inset { background:linear-gradient(135deg,var(--teal-7),var(--teal-9)); border-radius:var(--radius-3); box-shadow:inset 0.6mm 0.8mm 1.5mm #0005; }
+.rule { line-color:var(--blue-6); line-width:0.6pt; }
+@keyframes focus-card {
+  from, to { transform:perspective(160mm) rotateY(0deg); }
+  50% { transform:perspective(160mm) rotateY(-12deg) translateY(-2mm); }
+}
+.focus-motion { animation:focus-card 900ms ease-in-out both; transform-origin:50% 50%; }

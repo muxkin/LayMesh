@@ -17,7 +17,7 @@ def main():
    port=int(active.read_text().splitlines()[0]);opener=urllib.request.build_opener(urllib.request.ProxyHandler({}));pages=json.load(opener.open(f'http://127.0.0.1:{port}/json'));cdp=browser.CDP(next(p['webSocketDebuggerUrl'] for p in pages if p['type']=='page'));cdp.call('Page.enable');cdp.call('Runtime.enable');cdp.call('Log.enable');cdp.call('Emulation.setDeviceMetricsOverride',{'width':1440,'height':1000,'deviceScaleFactor':1,'mobile':False});cdp.call('Page.navigate',{'url':a.url})
    def wait(expression):
     return cdp.evaluate('new Promise((resolve,reject)=>{const end=Date.now()+12000;function poll(){const result=('+expression+');if(result)return resolve(result);if(Date.now()>end)return reject(Error("Timed out: "+'+json.dumps(expression)+'));setTimeout(poll,40)}poll()})')
-   wait("document.querySelector('.example-module')?.dataset.liveState==='success'");cdp.evaluate("document.querySelector('[data-source-mode=source]').click()");wait("!!document.querySelector('.cm-content')")
+   wait("document.querySelector('.example-module')?.dataset.liveState==='success'");cdp.evaluate("document.querySelector('.source-panel:not([hidden])').scrollIntoView()");wait("!!document.querySelector('.cm-content')")
    def key(name,code,modifiers=2):
     for kind in ['keyDown','keyUp']:cdp.call('Input.dispatchKeyEvent',{'type':kind,'key':name,'code':{32:'Space',9:'Tab',27:'Escape'}.get(code,'Key'+name.upper()),'modifiers':modifiers,'windowsVirtualKeyCode':code})
    def replace(source):
@@ -170,7 +170,7 @@ def main():
     }finally{w.terminate()}
    })()''')
    # Verify document language reaches the real help widget after page navigation.
-   english=a.url.replace('/examples/','/en/examples/');cdp.call('Page.navigate',{'url':english});wait("document.documentElement.lang==='en'&&document.querySelector('.example-module')?.dataset.liveState==='success'");cdp.evaluate("document.querySelector('[data-source-mode=source]').click()");wait("!!document.querySelector('.cm-content')");replace('page=canvas(size=(30,20))');hover(8);ui.append({'action':'English hover documentation','tooltip':tooltip('.cm-tooltip-hover','Create a page')})
+   english=a.url.replace('/examples/','/en/examples/');cdp.call('Page.navigate',{'url':english});wait("document.documentElement.lang==='en'&&document.querySelector('.example-module')?.dataset.liveState==='success'");cdp.evaluate("document.querySelector('.source-panel:not([hidden])').scrollIntoView()");wait("!!document.querySelector('.cm-content')");replace('page=canvas(size=(30,20))');hover(8);ui.append({'action':'English hover documentation','tooltip':tooltip('.cm-tooltip-hover','Create a page')})
    shot=cdp.call('Page.captureScreenshot',{'format':'png'});(a.output/'language-ui.png').write_bytes(base64.b64decode(shot['data']))
    errors=[e for e in cdp.events if e.get('method')=='Runtime.exceptionThrown' or e.get('method')=='Log.entryAdded' and e['params']['entry']['level']=='error'];assert not errors,errors
    result={'status':'passed','artifact_sha256':browser.provenance(__file__),'ui':ui,'wasm_protocol':protocol,'console_errors':errors,'node_on_path':bool(shutil.which('node')),'npm_on_path':bool(shutil.which('npm')),'wasm_sha256':hashlib.sha256((ROOT/'site/dist/site/live/wasm'/json.loads((ROOT/'site/dist/site/live/wasm/manifest.json').read_text())['wasm']).read_bytes()).hexdigest()};(a.output/'verification.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))

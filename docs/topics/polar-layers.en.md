@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/plot-line.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Compare polar interpolation and chord lines on one page, then add angular/radial errors. Sector cells and contours can share a color scale.
@@ -24,8 +20,6 @@ Compare polar interpolation and chord lines on one page, then add angular/radial
 ## Common errors and limits
 
 Projection handles visibility on original geometry; zero crossings and missing points can split paths. Do not use length units in angular data arrays; angle-configuration parameters support angle-unit syntax.
-
-## Individual functions
 
 <!-- walkthrough:end -->
 

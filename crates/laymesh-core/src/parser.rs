@@ -532,7 +532,7 @@ impl<'a> Parser<'a> {
             return Err(self.err("Expression nesting exceeds 256"));
         }
         let t = self.take();
-        let at = t.loc;
+        let mut at = t.loc;
         let kind = if t.string {
             let (s, r, f) = decode(&t.text, self.file, at)?;
             ExprKind::String(s, r, f)
@@ -567,7 +567,9 @@ impl<'a> Parser<'a> {
                     }
                     self.need(end)?;
                     if !tuple && es.len() == 1 {
-                        es.remove(0).kind
+                        let e = es.remove(0);
+                        at = e.loc;
+                        e.kind
                     } else {
                         ExprKind::List(es)
                     }

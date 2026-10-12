@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/axis.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Use text or formula material in tick_text for independent formatting. tick_rotation rotates about each label center; a fixed plot_area helps compare the occupied space before and after rotation.
@@ -24,8 +20,6 @@ Use text or formula material in tick_text for independent formatting. tick_rotat
 ## Common errors and limits
 
 Explicit text/formula styles remain intact rather than being fully replaced by axis defaults. Do not multiply a displayed scientific factor into the input again. Layout warnings indicate insufficient label space.
-
-## Individual functions
 
 <!-- walkthrough:end -->
 

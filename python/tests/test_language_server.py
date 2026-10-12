@@ -174,10 +174,28 @@ class NativeLanguageServer(unittest.TestCase):
    self.assertTrue(any(d['uri']==uri and d['version']==1 for d in self.published[published_before_delete:]))
  def test_lcss_and_utf16_typed_diagnostics(self):
   uri='file:///audit-types.lay';source='# 😀 中文\nstyle { text { nonsense:1pt; } }\npage=canvas(size=(10deg,20))\nt=text(font_family=["sans",3])\nr=rect(border_width=true)';self.open(uri,source);self.request('textDocument/hover',{'textDocument':{'uri':uri},'position':{'line':1,'character':16}})
-  ds=next(d['diagnostics'] for d in reversed(self.published) if d['uri']==uri);self.assertEqual([d['code'] for d in ds],['E_LCSS','E_UNIT','E_TYPE','E_TYPE']);self.assertEqual(ds[0]['range']['start'],{'line':1,'character':15})
+  ds=next(d['diagnostics'] for d in reversed(self.published) if d['uri']==uri);self.assertEqual([d['code'] for d in ds],['W_CSS','E_UNIT','E_TYPE','E_TYPE']);self.assertEqual(ds[0]['range']['start'],{'line':1,'character':15});self.assertEqual(ds[0]['severity'],2)
   for d in ds:self.assertGreaterEqual(d['range']['end']['line'],d['range']['start']['line'])
  def test_unicode_syntax_error_keeps_server_alive(self):
   uri='file:///unicode-invalid.lay';self.open(uri,'# 😀\n😀')
   self.request('textDocument/hover',{'textDocument':{'uri':uri},'position':{'line':1,'character':0}})
   diagnostics=next(d['diagnostics'] for d in reversed(self.published) if d['uri']==uri);self.assertEqual(diagnostics[0]['range'],{'start':{'line':1,'character':0},'end':{'line':1,'character':2}})
   self.notify('textDocument/didChange',{'textDocument':{'uri':uri,'version':2},'contentChanges':[{'text':'page=canvas(size=(20,10))\npage.add('}]});signature=self.request('textDocument/signatureHelp',{'textDocument':{'uri':uri},'position':{'line':1,'character':9}});self.assertTrue(signature['signatures'][0]['label'].startswith('add('))
+
+ def test_css_graph_disk_buffers_cycles_and_readonly_library(self):
+  with tempfile.TemporaryDirectory(prefix='laymesh CSS 中文 ') as tmp:
+   root=Path(tmp);sub=root/'样式';sub.mkdir();leaf=sub/'颜色.css';leaf.write_text('.local{color:#123456}\n.shared{opacity:.5}',encoding='utf-8')
+   theme=root/'theme.css';theme.write_text('@import url("样式/颜色.css");\n.shared{border-radius:2mm}',encoding='utf-8')
+   main=root/'main.lay';source='page=canvas(size=(60mm,40mm),stylesheet=["theme.css","@laymesh/animate.css"])\npage.add(text("hello",class="local shared"))';self.open(main.as_uri(),source)
+   def query(method,text):
+    at=source.index(text)+1;before=source[:at];return self.request('textDocument/'+method,{'textDocument':{'uri':main.as_uri()},'position':{'line':before.count('\n'),'character':len(before.rsplit('\n',1)[-1])}})
+   matches=query('completion','local');self.assertIn('local',[c['label'] for c in matches]);self.assertIn('animate__fadeInUp',[c['label'] for c in matches])
+   definition=query('definition','local');self.assertEqual(definition['uri'],leaf.as_uri());self.assertIn('#123456',query('hover','local')['contents']['value'])
+   definitions=query('definition','shared');self.assertEqual({d['uri'] for d in definitions},{leaf.as_uri(),theme.as_uri()})
+   self.notify('textDocument/didOpen',{'textDocument':{'uri':leaf.as_uri(),'languageId':'css','text':'.local{color:#abcdef}\n.newclass{opacity:.5}','version':1}})
+   self.assertIn('#abcdef',query('hover','local')['contents']['value']);self.assertIn('newclass',[c['label'] for c in query('completion','local')]);self.assertFalse(any(p['uri']==leaf.as_uri() for p in self.published))
+   leaf.write_text('.disk{color:red}',encoding='utf-8');self.notify('workspace/didChangeWatchedFiles',{'changes':[{'uri':leaf.as_uri(),'type':2}]});self.assertIn('newclass',[c['label'] for c in query('completion','local')])
+   self.notify('textDocument/didClose',{'textDocument':{'uri':leaf.as_uri()}});self.assertIn('disk',[c['label'] for c in query('completion','local')]);self.assertNotIn('newclass',[c['label'] for c in query('completion','local')]);self.assertFalse(any(p['uri']==leaf.as_uri() for p in self.published))
+   leaf.write_text('@import "../theme.css";',encoding='utf-8');self.notify('workspace/didChangeWatchedFiles',{'changes':[{'uri':leaf.as_uri(),'type':2}]});query('completion','local');self.assertTrue(any(d['code']=='E_LCSS' for p in self.published if p['uri']==main.as_uri() for d in p['diagnostics']))
+   leaf.unlink();self.notify('workspace/didChangeWatchedFiles',{'changes':[{'uri':leaf.as_uri(),'type':3}]});query('completion','local');self.assertTrue(any(d['code']=='E_ASSET' for p in self.published if p['uri']==main.as_uri() for d in p['diagnostics']))
+   content=self.request('laymesh/stylesheetContent',{'uri':'laymesh-library:/animate.css'});self.assertTrue(content['readOnly']);self.assertIn('@keyframes fadeInUp',content['text'])

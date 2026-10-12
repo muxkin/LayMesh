@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/path-at.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Target a curve’s arc-length midpoint with text and use its tangent_angle for rotation. offset_space=target applies tangent/normal offsets; choose incoming or outgoing at a corner first. Connect physical coordinates, data points or anchors with start/end in add. start_offset/end_offset adjust each endpoint, while offset translates the whole instance. Each endpoint frame may be container or target.

@@ -1,0 +1,6 @@
+page=canvas(size=(140mm,80mm),stylesheet="theme.css",background="#f6f7fb")
+button=page.add(rect(size=(40mm,25mm),class="button"),target=page.top_left,offset=(15mm,20mm))
+pattern=page.add(rect(size=(40mm,25mm),class="tile"),target=button.top_right,offset=(25mm,0mm))
+for item,label in [(button,"Milligram appearance"),(pattern,"Relative SVG resource")] {
+ page.add(text(label,class="caption"),target=item.bottom_left,offset=(0mm,8mm))
+}

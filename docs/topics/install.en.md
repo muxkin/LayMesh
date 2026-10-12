@@ -1,8 +1,14 @@
 # Installation and validation
 
+## VS Code installation (recommended)
+
+Install the [extension](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) or a [platform VSIX](https://github.com/muxkin/LayMesh/releases/latest). Open a working folder and .lay file, then run LayMesh: Open Preview. The native engine is bundled; Remote SSH packages match the remote host. No Python, Rust or npm is required.
+
+Current-source documentation includes recent changes; release notes describe published packages.
+
 ## Install a platform wheel
 
-Requires Python 3.10+. Release `0.3.1` is published for Windows, Linux and macOS. Install from [PyPI](https://pypi.org/project/laymesh/):
+Requires Python 3.10+. Install a platform release from [PyPI](https://pypi.org/project/laymesh/) and check its version:
 
 ```sh
 python -m pip install laymesh

@@ -34,6 +34,9 @@ jobs:
       - run: node scripts/test-editor-pptx.cjs
       - run: python scripts/check-gallery-docs.py
       - run: python scripts/build-api-reference.py --check
+      - run: python scripts/build-style-animation-docs.py --check
+      - run: python scripts/build-library-docs.py --check
+      - run: node scripts/build-dashboard-data.mjs --check
       - run: python scripts/build-topic-walkthroughs.py --check
       - run: python scripts/check-feature-docs.py
       - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
@@ -55,6 +58,9 @@ jobs:
       - run: python -m pip install -r release/docs-requirements.txt
       - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
       - run: python scripts/build-api-reference.py --check
+      - run: python scripts/build-style-animation-docs.py --check
+      - run: python scripts/build-library-docs.py --check
+      - run: node scripts/build-dashboard-data.mjs --check
       - run: python scripts/build-topic-walkthroughs.py --check
       - run: python scripts/check-feature-docs.py
       - run: python scripts/build-docs.py
@@ -72,11 +78,13 @@ jobs:
           node scripts/test-presentation-wheel.mjs
           node scripts/test-presentation-session.mjs
           node scripts/test-presentation-native-scheduling.cjs
+          node scripts/test-preview-player.mjs
       - name: CSS animation and real presentation browser regressions
         env:
           PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-tests/node_modules/playwright
         run: |
           cargo build --locked --release -p laymesh-core --example animation_reference
+          cargo build --locked --release -p laymesh-cli
           # Match the normal browser engine used by the app. Headless Shell
           # 151 drops native wheel scrolling in fullscreen overflow menus.
           export CHROMIUM_PATH="$(node -e 'process.stdout.write(require(process.env.PLAYWRIGHT_MODULE).chromium.executablePath())')"
@@ -84,7 +92,10 @@ jobs:
           preview_pid=$!
           trap 'kill "$preview_pid"' EXIT
           node scripts/test-animation-browser.cjs "$RUNNER_TEMP/browser-results/css"
+          node scripts/test-css-browser.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/styles"
+          node scripts/test-css-library-presentation.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/style-presentation"
           node scripts/test-presentation-controls.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/controls"
+          node scripts/test-preview-presentation.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/preview"
           node scripts/test-presentation-streaming.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/streaming"
           node scripts/test-academic-presentation.cjs 'http://127.0.0.1:8769/presentation-test.html?deck=academic' "$RUNNER_TEMP/browser-results/academic"
       - uses: actions/upload-artifact@v4

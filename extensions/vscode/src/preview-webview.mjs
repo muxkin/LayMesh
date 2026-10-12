@@ -4,7 +4,7 @@ import {uiIcon,iconLabel} from './presentation-icons.mjs';
 import {PresentationStore} from './presentation-store.mjs';
 import {PlaybackStats} from './playback-stats.mjs';
 import {loadRendererRuntime,loadDrawingResources} from './renderer-resources.mjs';
-import {AnimationPlayer} from './animation-player.mjs';
+import {PreviewPlayer} from './preview-player.mjs';
 import {mmPerUnit,canvasAt,niceStep,preparePlots,plotAt,formatData} from './preview-math.mjs';
 
 const bridge=typeof acquireVsCodeApi==='function'?acquireVsCodeApi():{getState:()=>null,setState(){},postMessage(){}};
@@ -17,20 +17,24 @@ const zoom=el('output','zoom',toolbar),status=el('span','status',toolbar);
 const pageSelect=el('select','page-select',toolbar),openPage=el('button','',toolbar),exportDocument=el('button','',toolbar);
 pageSelect.hidden=openPage.hidden=exportDocument.hidden=true;
 openPage.type=exportDocument.type='button';openPage.dataset.action='open-page';exportDocument.dataset.action='export-document';
-pageSelect.onchange=()=>{view.mode='fit';view.pan={x:0,y:0};bridge.postMessage({type:'select-page',pageId:pageSelect.value});};
+pageSelect.onchange=()=>{view.mode='fit';view.pan={x:0,y:0};syncPages();bridge.postMessage({type:'select-page',pageId:pageSelect.value});};
 openPage.onclick=()=>bridge.postMessage({type:'open-page'});
 exportDocument.onclick=()=>bridge.postMessage({type:'export-document'});
 const playbackStats=new PlaybackStats();let wasRunning=false;
 const details=el('details','render-details',root),summary=el('summary','',details,'Skia'),metrics=el('output','',details);details.style.cssText='font-size:11px;padding:0 8px';
-const player=new AnimationPlayer(root,()=>{if(player?.running)playbackStats.refresh(performance.now());wasRunning=!!player?.running;schedule();},{locale:()=>locale,page:direction=>{const n=pageSelect.selectedIndex+direction;if(n<0||n>=pageSelect.options.length)return false;pageSelect.selectedIndex=n;pageSelect.onchange();return true;}});
-const motionMenu=el('details','motion-menu',toolbar);el('summary','',motionMenu,'▶');motionMenu.append(player.bar);
+const player=new PreviewPlayer(root,()=>{if(player?.running)playbackStats.refresh(performance.now());wasRunning=!!player?.running;schedule();},{locale:()=>locale,page:direction=>{const n=pageSelect.selectedIndex+direction;if(n<0||n>=pageSelect.options.length)return false;pageSelect.selectedIndex=n;pageSelect.onchange();return true;}});
+const motionMenu=el('details','motion-menu',toolbar);el('summary','',motionMenu,'播放设置');motionMenu.append(player.bar);
+const pageTools=el('div','page-tools',toolbar),previousPage=el('button','',pageTools),nextPage=el('button','',pageTools);previousPage.type=nextPage.type='button';previousPage.dataset.action='previous-page';nextPage.dataset.action='next-page';pageTools.append(previousPage,pageSelect,nextPage);pageTools.hidden=true;
+function selectPage(delta){const index=pageSelect.selectedIndex+delta;if(index<0||index>=pageSelect.options.length)return false;player.resume=false;pageSelect.selectedIndex=index;pageSelect.onchange();return true;}
+previousPage.onclick=()=>selectPage(-1);nextPage.onclick=()=>selectPage(1);
+function syncPages(){pageTools.hidden=pageSelect.hidden;previousPage.disabled=pageSelect.selectedIndex<=0;nextPage.disabled=pageSelect.selectedIndex>=pageSelect.options.length-1;}
 const presentationMenu=el('details','presentation-choice',toolbar);el('summary','',presentationMenu,'放映 ▾');
 let previewResume=false;
 let deckResolve,deckReject,deckStore,deckReceive=Promise.resolve(),deckProgress,deckRevision,deckSession,deckRequest=0,deckRestart;
 const presentation=new Presentation({parent:root,base:new URL('./',import.meta.url),blobWorker:true,fullscreen:false,onEnter:()=>{previewResume=player.running;if(previewResume)player.action('play');},provider:({signal,onProgress})=>new Promise((resolve,reject)=>{
  deckRevision=null;const requestId=++deckRequest;deckStore=new PresentationStore();const store=deckStore;deckSession=new PresentationSession(store,{onProgress,request:(id,retry)=>bridge.postMessage({type:'deck-priority',revision:deckRevision,pageId:id,retry}),stop:()=>bridge.postMessage({type:'deck-cancel',requestId})});deckSession.preparation={};deckResolve=resolve;deckReject=reject;deckProgress=onProgress;deckReceive=Promise.resolve();deckSession.firstReady.then(resolve,reject);signal.addEventListener('abort',()=>store.dispose(),{once:true});bridge.postMessage({type:'deck-prepare',requestId});
 }),onExit:()=>{bridge.postMessage({type:'deck-release'});if(previewResume)player.start();}});
-const presentationPopover=el('div','toolbar-popover',presentationMenu);presentationPopover.append(presentation.button);presentation.button.addEventListener('click',()=>{presentationMenu.open=false;bridge.postMessage({type:'deck-pin'});});
+const presentationPopover=el('div','toolbar-popover',presentationMenu);const presentHere=el('button','',presentationPopover);presentHere.type='button';presentHere.onclick=()=>presentation.button.click();presentation.button.addEventListener('click',()=>{presentationMenu.open=false;bridge.postMessage({type:'deck-pin'});});
 const browserPresent=el('button','',presentationPopover,'在浏览器全屏放映');browserPresent.onclick=async()=>{presentationMenu.open=false;try{await presentation.prepare();bridge.postMessage({type:'deck-browser'});}catch(e){diagnostic={message:e.message};showDiagnostic();}};
 window.laymeshPresentation=presentation;
 const workspace=el('div','workspace',root),corner=el('span','corner',workspace),hr=el('canvas','ruler horizontal',workspace),vr=el('canvas','ruler vertical',workspace),viewport=el('div','viewport',workspace);
@@ -65,22 +69,34 @@ iconLabel(closeError,'close');closeError.onclick=()=>diagnosticMenu.open=false;c
 const pathContext=document.createElement('canvas').getContext('2d');let pathCache=new WeakMap();
 const text=(zh,en)=>/^zh/i.test(locale)?zh:en;
 function labels(){
- player.localize();iconLabel(presentationMenu.querySelector('summary'),'play',text('放映','Present'));presentationMenu.querySelector('summary').append(uiIcon('down'));iconLabel(presentation.button,'play',text('内嵌放映','Present here'));summary.textContent=text('详情','Details');closeError.setAttribute('aria-label',text('关闭诊断','Close diagnostics'));sourceError.textContent=text('跳转源码','Go to source');browserPresent.textContent=text('在浏览器全屏放映','Present in browser');copyError.textContent=text('复制','Copy');
+ player.localize();iconLabel(presentationMenu.querySelector('summary'),'down');presentationMenu.querySelector('summary').setAttribute('aria-label',text('放映选项','Presentation options'));iconLabel(presentation.button,'play',text('放映','Present'));presentHere.textContent=text('在 VS Code 中放映','Present in VS Code');summary.textContent=text('详情','Details');closeError.setAttribute('aria-label',text('关闭诊断','Close diagnostics'));sourceError.textContent=text('跳转源码','Go to source');browserPresent.textContent=text('在浏览器全屏放映','Present in browser');copyError.textContent=text('复制','Copy');
  pageSelect.setAttribute('aria-label',text('文档页面','Document page'));
  openPage.textContent=text('编辑页面','Edit page');exportDocument.textContent=text('导出整本 PDF','Export document PDF');
  document.documentElement.lang=/^zh/i.test(locale)?'zh-CN':'en';
- const labels={refresh:text('刷新','Refresh'),export:text('导出','Export'),fit:text('适应窗口','Fit'),actual:'100%',out:'−',in:'+',rulers:text('标尺','Rulers')};
+ const labels={refresh:text('刷新','Refresh'),export:text('导出','Export'),fit:text('适应','Fit'),actual:'100%',out:'−',in:'+',rulers:text('标尺','Rulers')};
  for(const [name,button] of Object.entries(buttons)){button.textContent=labels[name];button.title=labels[name];button.setAttribute('aria-label',name==='out'?text('缩小','Zoom out'):name==='in'?text('放大','Zoom in'):labels[name]);}
- iconLabel(buttons.export,'export',text('导出','Export'));
+ iconLabel(buttons.refresh,'replay',text('刷新','Refresh'));iconLabel(buttons.export,'export',text('导出','Export'));iconLabel(previousPage,'previous');iconLabel(nextPage,'next');previousPage.setAttribute('aria-label',text('上一页','Previous page'));nextPage.setAttribute('aria-label',text('下一页','Next page'));motionMenu.querySelector('summary').textContent=text('播放设置','Playback settings');if(typeof moreSummary!=='undefined')moreSummary.setAttribute('aria-label',text('更多','More'));syncPlaybackButtons();
  viewport.setAttribute('aria-label',text('图形预览；Ctrl 加滚轮缩放，空格加拖动平移','Figure preview; Ctrl/Command + wheel to zoom, Space + drag to pan'));
  image.alt=text('LayMesh 图形预览','LayMesh figure preview');
  hr.setAttribute('aria-label',text('水平标尺','Horizontal ruler'));vr.setAttribute('aria-label',text('垂直标尺','Vertical ruler'));
  errorButton.title=text('跳转到源码','Go to source');
  buttons.rulers.setAttribute('aria-pressed',String(view.rulers));
 }
-const more=el('details','preview-more',toolbar);const moreSummary=el('summary','',more);iconLabel(moreSummary,'more');moreSummary.setAttribute('aria-label','More');const morePopover=el('div','toolbar-popover',more);for(const b of [buttons.refresh,buttons.actual,buttons.out,buttons.in,buttons.rulers,openPage,exportDocument,motionMenu])morePopover.append(b);toolbar.replaceChildren(pageSelect,buttons.fit,zoom,presentationMenu,buttons.export,more);footer.replaceChildren(diagnosticMenu,status,readout,details);
-for(const menu of [more,presentationMenu,diagnosticMenu,details])menu.addEventListener('toggle',()=>{if(menu.open)for(const other of [more,presentationMenu,diagnosticMenu,details])if(other!==menu)other.open=false;});
-document.addEventListener('pointerdown',e=>{for(const menu of [more,presentationMenu,diagnosticMenu,details])if(menu.open&&!menu.contains(e.target))menu.open=false;});
+const more=el('details','preview-more',toolbar);const moreSummary=el('summary','',more);iconLabel(moreSummary,'more');moreSummary.setAttribute('aria-label','More');const morePopover=el('div','toolbar-popover',more);for(const b of [openPage,exportDocument,motionMenu])morePopover.append(b);
+const zoomMenu=el('details','zoom-menu',toolbar),zoomSummary=el('summary','',zoomMenu);zoomSummary.append(zoom,uiIcon('down'));const zoomPopover=el('div','toolbar-popover',zoomMenu);zoomPopover.append(buttons.out,buttons.in,buttons.actual,buttons.rulers);
+const presentGroup=el('div','present-group',toolbar);presentGroup.append(presentation.button,presentationMenu);
+const playbackButtons=el('div','playback-buttons',footer);playbackButtons.setAttribute('role','group');for(const id of ['previous','play','next'])playbackButtons.append(player.buttons[id]);
+function syncPlaybackButtons(){
+ playbackButtons.hidden=!player.metadata?.steps?.length;
+ for(const [id,icon,zh,en]of [['previous','previous','上一步','Previous step'],['play',player.running?'pause':'play',player.running?'暂停':'开始',player.running?'Pause':'Play'],['next','next','下一步','Next step']]){const b=player.buttons[id];iconLabel(b,icon);b.title=text(zh,en);b.setAttribute('aria-label',b.title);}
+ playbackButtons.setAttribute('aria-label',text('动画播放控制','Animation playback controls'));
+}
+const originalSync=player.sync.bind(player);player.sync=(...args)=>{originalSync(...args);syncPlaybackButtons();};
+toolbar.replaceChildren(buttons.refresh,buttons.fit,zoomMenu,pageTools,presentGroup,buttons.export,more);footer.replaceChildren(playbackButtons,diagnosticMenu,status,readout,details);
+viewport.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey||e.repeat||!player.metadata)return;const action={ArrowRight:'next',ArrowDown:'next',ArrowLeft:'previous',ArrowUp:'previous',Enter:'next',s:'play',S:'play',Escape:'static'}[e.key];if(action){e.preventDefault();player.action(action);}});
+
+for(const menu of [more,zoomMenu,presentationMenu,diagnosticMenu,details])menu.addEventListener('toggle',()=>{if(menu.open)for(const other of [more,zoomMenu,presentationMenu,diagnosticMenu,details])if(other!==menu)other.open=false;});
+document.addEventListener('pointerdown',e=>{for(const menu of [more,zoomMenu,presentationMenu,diagnosticMenu,details])if(menu.open&&!menu.contains(e.target))menu.open=false;});
 function persist(){bridge.setState({mode:view.mode,scale:view.scale,pan:view.pan,rulers:view.rulers});}
 function containsPath(shape,p){
  let path=pathCache.get(shape);if(!path){try{path=new Path2D(shape.d);pathCache.set(shape,path);}catch{return false;}}
@@ -167,9 +183,9 @@ async function installFrame(data){
  if(!directCanvas){const {initializeSkia,SkiaRenderer}=await import('./skia-renderer.mjs');if(!mainSkia){const meta=await(await fetch(new URL('skia/manifest.json',import.meta.url))).json();mainSkia=new SkiaRenderer(await initializeSkia(new URL('skia/'+meta.wasm,import.meta.url).href),image,{onContextChange:ready=>{if(ready){drawKey='';presented=null;schedule();}}});}await mainSkia.install(installed.scene,id=>installed.sceneResources[id],data.generation,data.previewSettings?.cache_mb??256);}
  drawReady=true;drawJobId=data.displayListId||data.displayListCompressed?.id||String(data.generation);if(!installed.reused)drawKey='';wasmMemoryBytes=installed.wasmMemoryBytes;
  drawGeneration=data.generation;
- player.update(data.inspection.animation);
+ const resume=player.resume;player.update(data.inspection.animation);if(resume&&player.metadata){const start=player.restorePage(resume);if(start)player.start();}
  page=data.inspection.page;plots=preparePlots(data.inspection);pathCache=new WeakMap();
- warnings.textContent=(data.inspection.warnings||[]).map(w=>`${w.code}: ${w.message}`).join('\n');showDiagnostic();
+ warnings.dataset.count=String((data.inspection.warnings||[]).length);warnings.textContent=(data.inspection.warnings||[]).map(w=>`${w.code}: ${w.message}`).join('\n');showDiagnostic();
  frameTimings={initializationWaitMs:installed.initializationWaitMs,resourcesMs:installed.resourcesMs,installMs:installed.installMs};
  root.dataset.generation=String(data.generation);root.dataset.painted='false';showStatus('success');
  // Present a newly installed frame immediately. Background webviews can defer
@@ -216,7 +232,7 @@ async function flushPaint(){if(paintInFlight||!pendingPaint||!rasterWorker)retur
 function rendererError(){return ['E_PREVIEW_RESOURCE','E_PREVIEW_RENDER','E_PREVIEW_PROTOCOL','E_PRESENTATION'].includes(diagnostic?.code);}
 function showStatus(value){root.dataset.state=value;status.textContent=({pending:text('等待更新 · 预览已过期','Pending · preview stale'),rendering:text('渲染中 · 预览已过期','Rendering · preview stale'),success:text('已更新','Updated'),error:rendererError()?text('预览加载或渲染失败 · 显示上次结果','Preview failed · last successful preview'):text('源码有错误 · 显示上次结果','Source error · last successful preview')})[value]||'';}
 function showDiagnostic(){
- const count=warnings.textContent?warnings.textContent.split('\n').length:0;const label=diagnostic?text(`1 个错误${count?' · '+count+' 个警告':''}`,`1 error${count?' · '+count+' warnings':''}`):text(`${count} 个警告`,`${count} warnings`);iconLabel(diagnosticSummary,'warning',label);errorTitle.textContent=label;diagnosticMenu.hidden=!diagnostic&&!count;if(diagnosticMenu.hidden)diagnosticMenu.open=false;errorNote.textContent=diagnostic?(rendererError()?text('预览资源加载或渲染失败，可刷新重试','Preview resource loading or rendering failed; refresh to retry'):text('源码有错误，显示上次结果','Source error; showing last successful result')):'';sourceError.hidden=!diagnostic||rendererError();errorButton.disabled=rendererError();errorButton.title=rendererError()?'':text('跳转到源码','Go to source');
+ const count=Number(warnings.dataset.count||0);const label=diagnostic?text(`1 个错误${count?' · '+count+' 个警告':''}`,`1 error${count?' · '+count+' warnings':''}`):text(`${count} 个警告`,`${count} warnings`);iconLabel(diagnosticSummary,'warning',label);errorTitle.textContent=label;diagnosticMenu.hidden=!diagnostic&&!count;if(diagnosticMenu.hidden)diagnosticMenu.open=false;errorNote.textContent=diagnostic?(rendererError()?text('预览资源加载或渲染失败，可刷新重试','Preview resource loading or rendering failed; refresh to retry'):text('源码有错误，显示上次结果','Source error; showing last successful result')):'';sourceError.hidden=!diagnostic||rendererError();errorButton.disabled=rendererError();errorButton.title=rendererError()?'':text('跳转到源码','Go to source');
  errorButton.hidden=!diagnostic;
  if(diagnostic)errorButton.textContent=`${diagnostic.code||'E_PREVIEW'} ${diagnostic.file?diagnostic.file+':'+(diagnostic.loc?.line||1)+':'+(diagnostic.loc?.column||1)+' — ':''}${text(diagnostic.messageZh||diagnostic.message,diagnostic.message)}`;
 }
@@ -238,7 +254,7 @@ window.addEventListener('message',({data})=>{
  else if(data?.type==='result'){
   if(data.document){
    pageSelect.replaceChildren();for(const [i,p] of data.document.pages.entries()){const option=el('option','',pageSelect,`${i+1}. ${p.name||p.id}`);option.value=p.id;}
-   pageSelect.value=data.document.pageId;pageSelect.hidden=openPage.hidden=exportDocument.hidden=false;
+   pageSelect.value=data.document.pageId;pageSelect.hidden=openPage.hidden=exportDocument.hidden=false;syncPages();
   }
   diagnostic=data.error;showDiagnostic();
   if(diagnostic){showStatus('error');}

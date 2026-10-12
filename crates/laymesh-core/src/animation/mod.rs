@@ -1,5 +1,5 @@
 //! Deterministic CSS animation effects, scheduled by Lay presentation steps.
-//! All times are seconds, geometry is millimetres, CSS pixels are 1/96 inch.
+//! Times are seconds and geometry is millimetres; CSS pixels use canvas layout_dpi.
 pub mod css;
 pub mod matrix;
 pub mod values;
@@ -251,24 +251,32 @@ impl Engine {
         Ok(V::Null)
     }
     pub(crate) fn compile_animation(
-        &self,
+        &mut self,
         nodes: &[serde_json::Value],
     ) -> Result<Option<Animation>> {
         if self.animation_steps.is_empty() {
             return Ok(None);
         }
-        Ok(Some(Animation {
-            normal: self.compile_timeline(nodes, false, false)?,
-            reduced: self.compile_timeline(nodes, true, false)?,
-            print: self.compile_timeline(nodes, false, true)?,
-            print_reduced: self.compile_timeline(nodes, true, true)?,
-        }))
+        let mut diagnostics = vec![];
+        let animation = Animation {
+            normal: self.compile_timeline(nodes, false, false, &mut diagnostics)?,
+            reduced: self.compile_timeline(nodes, true, false, &mut diagnostics)?,
+            print: self.compile_timeline(nodes, false, true, &mut diagnostics)?,
+            print_reduced: self.compile_timeline(nodes, true, true, &mut diagnostics)?,
+        };
+        for diagnostic in diagnostics {
+            if !self.warnings.contains(&diagnostic) {
+                self.warnings.push(diagnostic);
+            }
+        }
+        Ok(Some(animation))
     }
     fn compile_timeline(
         &self,
         nodes: &[serde_json::Value],
         reduced: bool,
         print: bool,
+        diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<Timeline> {
         let mut timeline = Timeline::default();
         for spec in &self.animation_steps {
@@ -285,7 +293,7 @@ impl Engine {
                     ))?,
                     _ => return Err(animation_error("animate start must be step, with-previous or after-previous", &c.file, c.loc)),
                 };
-                let mut action = self.compile_clip(c, nodes, reduced, print)?;
+                let mut action = self.compile_clip(c, nodes, reduced, print, diagnostics)?;
                 for clip in &mut action {
                     clip.delay += start;
                     if !clip.delay.is_finite() {
@@ -354,6 +362,7 @@ impl Engine {
         nodes: &[serde_json::Value],
         reduced: bool,
         print: bool,
+        diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<Vec<Clip>> {
         let fail = |m: String| animation_error(m, &spec.file, spec.loc);
         let instance = self
@@ -389,6 +398,7 @@ impl Engine {
         let size = [jnum(node, "width", 0.), jnum(node, "height", 0.)];
         let base_opacity = jnum(node, "opacity", 1.);
         let mut chain = vec![];
+        let mut style_chain = vec![];
         let mut current = Some(spec.target);
         let mut target_file = spec.file.clone();
         while let Some(i) = current {
@@ -403,6 +413,12 @@ impl Engine {
             } else {
                 (o.kind.clone(), o.args.clone(), o.file.clone())
             };
+            let mut styled_args = args.clone();
+            if let Some(class) = o.args.get("class") {
+                styled_args.insert("class".into(), class.clone());
+            }
+            styled_args.insert("__style_file".into(), V::text(&file));
+            style_chain.push((kind.clone(), styled_args));
             if i == spec.target {
                 target_file = file;
             }
@@ -417,6 +433,11 @@ impl Engine {
             current = (o.parent != 0).then_some(o.parent);
         }
         chain.reverse();
+        let mut computed = Args::new();
+        for (kind, args) in style_chain.into_iter().rev() {
+            computed = self.styled(&kind, &args, &computed)?;
+        }
+        let ctx = self.css_context(&computed);
         if let Some(c) = spec.args.get("class") {
             if let Some(last) = chain.last_mut() {
                 last.class = format!("{} {}", last.class, c.as_str());
@@ -454,16 +475,85 @@ impl Engine {
             &self.animation_sheets,
             &chain,
             &target_file,
+            self.css_entry_file.as_deref(),
             reduced,
             print,
             &overrides,
+            ctx,
+            &|query| self.css_supports(query, ctx),
         );
-        for d in props.values_mut() {
-            d.value =
-                css::substitute(&d.value, &vars).map_err(|m| animation_error(m, &d.file, d.loc))?;
-        }
-        // Expand shorthand in cascade order before resolving longhands.
+        props.retain(|property, d| {
+            match css::substitute(&d.value, &vars).and_then(|value| {
+                validate_motion(property, &value, size, ctx)?;
+                Ok(value)
+            }) {
+                Ok(value) => {
+                    d.value = value;
+                    true
+                }
+                Err(message) => {
+                    self.css_warning(Diagnostic::new(
+                        "W_CSS",
+                        format!("Ignored {property}: {message}"),
+                        &d.file,
+                        d.loc,
+                    ));
+                    false
+                }
+            }
+        });
+        // Valid shorthands were expanded during cascade; invalid CSS was discarded.
         props = expand_shorthand(props).map_err(fail)?;
+        // An explicit `none` remains a valid no-op, including media overrides.
+        // An animate() call without any resolved animation is usually a missing
+        // stylesheet or mistyped class. Diagnose the .lay call once, on screen.
+        if !reduced
+            && !print
+            && !spec.args.contains_key("name")
+            && !props.contains_key("animation-name")
+        {
+            let classes = chain.last().map(|e| e.class.as_str()).unwrap_or("");
+            let hint = if !props.contains_key("animation-duration")
+                && classes
+                    .split_whitespace()
+                    .any(|c| c.starts_with("animate__"))
+            {
+                " Load Animate.css with stylesheet=\"@laymesh/animate.css\" (or add it to the stylesheet list)."
+            } else {
+                " Check the animation class and stylesheet, or specify name=... with duration=...."
+            };
+            diagnostics.push(Diagnostic::new(
+                "W_ANIMATION",
+                format!("animate() has no matching animation-name for class=\"{classes}\"; this action will not play.{hint}"),
+                &spec.file,
+                spec.loc,
+            ));
+        }
+        if !reduced
+            && !print
+            && !spec.args.contains_key("duration")
+            && !props.contains_key("animation-duration")
+            && (spec
+                .args
+                .get("name")
+                .map(V::as_str)
+                .is_some_and(|name| name != "none")
+                || props
+                    .get("animation-name")
+                    .is_some_and(|d| d.value != "none"))
+        {
+            let classes = chain.last().map(|e| e.class.as_str()).unwrap_or("");
+            let hint = if classes
+                .split_whitespace()
+                .any(|c| c.starts_with("animate__"))
+                && !classes.split_whitespace().any(|c| c == "animate__animated")
+            {
+                " Add animate__animated alongside the effect class, or set duration=... explicitly."
+            } else {
+                " Set animation-duration in LCSS or duration=... in animate()."
+            };
+            diagnostics.push(Diagnostic::new("W_ANIMATION", format!("animate() has an animation name but no duration; CSS defaults to 0s, so this action will not play.{hint}"), &spec.file, spec.loc));
+        }
         let get = |k: &str, default: &str| {
             props
                 .get(k)
@@ -486,12 +576,31 @@ impl Engine {
             }
             let name = name.trim_matches(['\'', '"']);
             let builtin = builtin(name);
-            let keyframes = self
+            let mut definitions: Vec<_> = self
                 .animation_sheets
                 .iter()
-                .filter(|s| s.scope.as_ref().is_none_or(|s| s == &target_file))
-                .flat_map(|s| &s.keyframes)
-                .filter(|k| k.name == name)
+                .filter(|s| {
+                    crate::css_selectors::scope_applies(
+                        s.scope.as_deref(),
+                        &target_file,
+                        self.css_entry_file.as_deref(),
+                    )
+                })
+                .flat_map(|s| {
+                    s.keyframes.iter().map(move |k| {
+                        (
+                            crate::css_selectors::theme_priority(
+                                s.scope.as_deref(),
+                                self.css_entry_file.as_deref(),
+                            ),
+                            k,
+                        )
+                    })
+                })
+                .filter(|(_, k)| k.name == name)
+                .collect();
+            definitions.sort_by_key(|(priority, _)| *priority);
+            let keyframes = definitions.into_iter().map(|(_, k)| k)
                 .fold(None, |previous: Option<&css::Keyframes>, k| {
                     if k.prefixed && previous.is_some_and(|p| !p.prefixed) {
                         previous
@@ -501,7 +610,7 @@ impl Engine {
                 })
                 .cloned()
                 .or(builtin)
-                .ok_or_else(|| fail(format!("Unknown animation: {name}")))?;
+                .ok_or_else(|| fail(format!("Unknown animation: {name}. No matching @keyframes definition was loaded; check the name and explicitly import its stylesheet (Animate.css: @laymesh/animate.css).")))?;
             let parse_time = |key: &str, csskey: &str| -> Result<f64> {
                 if let Some(v) = spec.args.get(key) {
                     timing(v, &spec.file, spec.loc)
@@ -546,7 +655,8 @@ impl Engine {
             }
             let easing = Easing::parse(&option("easing", "animation-timing-function", "ease"))
                 .map_err(fail)?;
-            let origin = values::origin(&get("transform-origin", "50% 50%"), size).map_err(fail)?;
+            let origin = values::origin_context(&get("transform-origin", "50% 50%"), size, ctx)
+                .map_err(fail)?;
             let backface = get("backface-visibility", "visible");
             let mut per_property: BTreeMap<String, Vec<Keyframe>> = BTreeMap::new();
             let mut frames = keyframes.frames.clone();
@@ -562,9 +672,20 @@ impl Engine {
                     .collect();
                 let e = ds
                     .get("animation-timing-function")
-                    .map(|d| css::substitute(&d.value, &vars).and_then(|s| Easing::parse(&s)))
-                    .transpose()
-                    .map_err(fail)?
+                    .and_then(|d| {
+                        match css::substitute(&d.value, &vars).and_then(|s| Easing::parse(&s)) {
+                            Ok(value) => Some(value),
+                            Err(message) => {
+                                self.css_warning(Diagnostic::new(
+                                    "W_CSS",
+                                    format!("Ignored keyframe easing: {message}"),
+                                    &d.file,
+                                    d.loc,
+                                ));
+                                None
+                            }
+                        }
+                    })
                     .unwrap_or_else(|| easing.clone());
                 if at == 0. {
                     endpoint_easing = e.clone();
@@ -573,10 +694,20 @@ impl Engine {
                     if property.starts_with("animation-") || property.starts_with("transition-") {
                         continue;
                     }
-                    let text = css::substitute(&d.value, &vars)
-                        .map_err(|m| animation_error(m, &d.file, d.loc))?;
-                    let value = parse_value(&property, &text, size)
-                        .map_err(|m| animation_error(m, &d.file, d.loc))?;
+                    let value = match css::substitute(&d.value, &vars)
+                        .and_then(|text| parse_value(&property, &text, size, ctx))
+                    {
+                        Ok(value) => value,
+                        Err(message) => {
+                            self.css_warning(Diagnostic::new(
+                                "W_CSS",
+                                format!("Ignored animated {property}: {message}"),
+                                &d.file,
+                                d.loc,
+                            ));
+                            continue;
+                        }
+                    };
                     let track = per_property.entry(property).or_default();
                     if track.last().is_some_and(|f| f.offset == at) {
                         track.pop();
@@ -592,7 +723,7 @@ impl Engine {
             let mut important = BTreeMap::new();
             for (property, mut frames) in per_property {
                 let base = match props.get(&property) {
-                    Some(d) => parse_value(&property, &d.value, size).map_err(fail)?,
+                    Some(d) => parse_value(&property, &d.value, size, ctx).map_err(fail)?,
                     None => base_value(&property, base_opacity, origin),
                 };
                 if frames.first().is_none_or(|f| f.offset > 0.) {
@@ -622,7 +753,7 @@ impl Engine {
                 if let Some(d) = props.get(property) {
                     underlying.insert(
                         property.into(),
-                        parse_value(property, &d.value, size).map_err(fail)?,
+                        parse_value(property, &d.value, size, ctx).map_err(fail)?,
                     );
                 }
             }
@@ -646,13 +777,58 @@ impl Engine {
         Ok(out)
     }
 }
+fn validate_motion(
+    property: &str,
+    s: &str,
+    size: [f64; 2],
+    ctx: values::Context,
+) -> std::result::Result<(), String> {
+    for value in css::split(s, ',') {
+        let valid = match property {
+            "animation" => shorthand(&value).map(|_| true)?,
+            "animation-duration" => values::time(&value)? >= 0.,
+            "animation-delay" => {
+                values::time(&value)?;
+                true
+            }
+            "animation-iteration-count" => value == "infinite" || values::number(&value)? >= 0.,
+            "animation-timing-function" => {
+                Easing::parse(&value)?;
+                true
+            }
+            "animation-direction" => matches!(
+                value.as_str(),
+                "normal" | "reverse" | "alternate" | "alternate-reverse"
+            ),
+            "animation-fill-mode" => {
+                matches!(value.as_str(), "none" | "forwards" | "backwards" | "both")
+            }
+            "animation-play-state" => matches!(value.as_str(), "running" | "paused"),
+            _ => true,
+        };
+        if !valid {
+            return Err("Invalid CSS animation value".into());
+        }
+    }
+    if matches!(
+        property,
+        "transform" | "transform-origin" | "opacity" | "visibility" | "backface-visibility"
+    ) {
+        parse_value(property, s, size, ctx)?;
+    }
+    Ok(())
+}
+
 fn cascade(
     sheets: &[css::Sheet],
     chain: &[css::Element],
     file: &str,
+    entry: Option<&str>,
     reduced: bool,
     print: bool,
     overrides: &BTreeMap<String, String>,
+    ctx: values::Context,
+    supports: &dyn Fn(&str) -> bool,
 ) -> (BTreeMap<String, css::Declaration>, BTreeMap<String, String>) {
     let mut vars = BTreeMap::new();
     let mut target = BTreeMap::new();
@@ -660,18 +836,19 @@ fn cascade(
         let mut candidates = vec![];
         let mut order = 0;
         for sheet in sheets {
-            if sheet.scope.as_ref().is_some_and(|s| s != file) {
+            if !crate::css_selectors::scope_applies(sheet.scope.as_deref(), file, entry) {
                 continue;
             }
             for rule in &sheet.rules {
-                if css::media_matches_environment(&rule.media, reduced, print)
+                if crate::css_values::media(&rule.media, ctx, reduced, print) == Some(true)
+                    && supports(&rule.supports)
                     && css::matches(&rule.selector, &chain[..end])
                 {
                     for d in &rule.declarations {
                         candidates.push((
                             (
                                 d.important,
-                                sheet.scope.is_none(),
+                                crate::css_selectors::theme_priority(sheet.scope.as_deref(), entry),
                                 css::specificity(&rule.selector),
                                 order,
                             ),
@@ -782,16 +959,17 @@ fn shorthand(s: &str) -> std::result::Result<BTreeMap<String, String>, String> {
         .map(|(k, v)| (k.into(), v.join(", ")))
         .collect())
 }
-fn parse_value(property: &str, s: &str, size: [f64; 2]) -> std::result::Result<Value, String> {
+fn parse_value(
+    property: &str,
+    s: &str,
+    size: [f64; 2],
+    ctx: values::Context,
+) -> std::result::Result<Value, String> {
     Ok(match property {
-        "opacity" => Value::Number(if s.trim().ends_with('%') {
-            values::length(s, 1.)?
-        } else {
-            values::number(s)?
-        }),
+        "opacity" => Value::Number(values::number_percentage(s, 1.)?.clamp(0., 1.)),
         "-laymesh-draw" | "-laymesh-reveal" => Value::Number(values::number(s)?),
-        "transform" => Value::Transform(values::transform(s, size)?),
-        "transform-origin" => Value::Origin(values::origin(s, size)?),
+        "transform" => Value::Transform(values::transform_context(s, size, ctx)?),
+        "transform-origin" => Value::Origin(values::origin_context(s, size, ctx)?),
         "visibility" if ["visible", "hidden", "collapse"].contains(&s) => Value::Keyword(s.into()),
         "backface-visibility" if ["visible", "hidden"].contains(&s) => Value::Keyword(s.into()),
         _ => return Err(format!("Unsupported animated property: {property}")),

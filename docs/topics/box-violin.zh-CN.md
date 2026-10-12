@@ -11,10 +11,6 @@ boxplot 概括分位数、须和离群点；violin 用核密度估计展示分�
 
 <!-- example:examples/manual/plot-boxplot.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 把同一批观测放在相邻位置的 boxplot 和 violin 中，使用显式 data_width 保持可比较宽度。R-7 分位数、1.5 IQR 默认须和 Scott 带宽说明统计口径。

@@ -44,7 +44,7 @@ pub fn serve() -> io::Result<()> {
         }
     });
     sender
-        .send(json!({"type":"ready","protocol":1,"capabilities":["animation-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","defaults"]}))
+        .send(json!({"type":"ready","protocol":1,"capabilities":["animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","defaults"]}))
         .unwrap();
     for line in io::stdin().lock().lines() {
         let request: Value = match serde_json::from_str(&line?) {

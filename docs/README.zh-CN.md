@@ -30,9 +30,8 @@
 
 [重建画廊与高清图片](../site/README.md)
 
-语言 0.2 统一了尺寸、单位、公式和样式；网页与 VS Code 共用补全和参数悬停。
+[样式完整手册](topics/lcss.zh-CN.md) · [动画完整手册](topics/animation.zh-CN.md) · [视频教程](https://www.bilibili.com/video/BV1gpHn6eE4V)
 
-- [参数索引](topics/interface-reference.zh-CN.md)
-- [LCSS 主题](topics/lcss.zh-CN.md)
-- [编辑器](topics/editors.zh-CN.md)
-- [迁移说明](topics/migration.zh-CN.md)
+当前源码、已发布包与历史验证分别标明；用实际版本和发布说明确认功能。
+
+先学习[内置库、来源与用法](topics/style-libraries.zh-CN.md)，再读参数手册。

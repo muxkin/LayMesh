@@ -46,5 +46,10 @@
   "config.export.animation.crf": "MP4 质量（0–51）；数值越低，画质越高。",
   "config.export.animation.preset": "FFmpeg libx264 编码速度预设。",
   "config.export.animation.media": "动画导出的媒体环境；不影响静态导出。",
-  "config.export.animation.background": "动画导出中透明区域和页面留边的底色（#RRGGBB）。"
+  "config.export.animation.background": "动画导出中透明区域和页面留边的底色（#RRGGBB）。",
+  "config.ffmpeg.executable": "FFmpeg 可执行文件路径；显式配置时优先使用。留空使用共用查找机制。",
+  "config.ffmpeg.directory": "扩展、CLI、Python 共用的 FFmpeg 私有目录；留空采用用户数据目录。",
+  "config.ffmpeg.searchPaths": "附加 FFmpeg 安装目录，在系统 PATH 之前检查。",
+  "config.ffmpeg.downloadSource": "下载源：自动探测、上游或镜像；仅缺失并确认后下载。",
+  "config.ffmpeg.mirrorBaseUrl": "FFmpeg-static 镜像基础地址；默认使用 npmmirror。"
 }

@@ -520,21 +520,23 @@ fn locale_documentation_completion_sections() {
 #[test]
 fn static_lcss_and_literal_types_match_runtime_boundaries() {
     for (source, needle) in [
-        ("text {font-size:12}", "font_size"),
+        ("text {font-size:12}", "font-size"),
         ("text {nonsense:1pt}", "nonsense"),
-        ("text {color:red !important}", "!important"),
         ("plot::bad {color:red}", "bad"),
     ] {
         let mut s = service("", "en");
         s.update("theme.lcss", source);
         let d = s.diagnostics("theme.lcss");
-        assert_eq!(d[0]["code"], "E_LCSS", "{source}: {d}");
+        assert_eq!(d[0]["code"], "W_CSS", "{source}: {d}");
         has(&d[0]["message"], needle);
     }
+    let mut accepted = service("", "en");
+    accepted.update("theme.lcss", "text {color:red !important}");
+    assert_eq!(accepted.diagnostics("theme.lcss"), serde_json::json!([]));
     let source = "# 😀 中文\nstyle { text { nonsense:1pt; } }";
     let s = service(source, "en");
     let d = s.diagnostics(FILE);
-    assert_eq!(d[0]["code"], "E_LCSS");
+    assert_eq!(d[0]["code"], "W_CSS");
     assert_eq!(d[0]["from"], source.find("nonsense").unwrap());
     for (source, code) in [
         ("page=canvas(size=(10deg,20))", "E_UNIT"),
@@ -544,9 +546,11 @@ fn static_lcss_and_literal_types_match_runtime_boundaries() {
         let d = service(source, "en").diagnostics(FILE);
         assert_eq!(d[0]["code"], code, "{source}: {d}");
     }
-    // Valid text, comments, variables and imports require no disk or font access.
+    // Static imports resolve against supplied documents without disk or font access.
     let mut s = service("", "en");
     s.update("theme.lcss","@import './not-on-disk.lcss';\ntext { --size: 12; font-size:var(--size); font-family:'a}b'; color: red; } /* } */");
+    assert_eq!(s.diagnostics("theme.lcss")[0]["code"], "E_ASSET");
+    s.update("not-on-disk.lcss", "");
     assert_eq!(s.diagnostics("theme.lcss"), serde_json::json!([]));
 }
 #[test]
@@ -566,7 +570,10 @@ fn units_classes_and_factory_return_type_completion() {
         "title"
     );
     s.update("external.lcss", ".external {color:red}");
-    assert!(!completion(&s, FILE, source.len(), "external").is_null());
+    assert!(completion(&s, FILE, source.len(), "external").is_null());
+    let imported = "page=canvas(stylesheet=\"./external.lcss\")\n".to_owned() + source;
+    s.update(FILE, &imported);
+    assert!(!completion(&s, FILE, imported.len(), "external").is_null());
     let source = "## @returns {plot} A plot.\nfunction makeplot() {return plot(size=(20,20))}\np=makeplot()\np.";
     s.update(FILE, source);
     assert!(!completion(&s, FILE, source.len(), "line").is_null());

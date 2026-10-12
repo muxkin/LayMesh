@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/plot.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 theta_zero, theta_direction and inner_radius create gauges/rings. wrap=shortest crosses periods along the shortest route, while raw keeps angular differences. interpolation=polar/chord connects in data/page coordinates.
@@ -24,8 +20,6 @@ theta_zero, theta_direction and inner_radius create gauges/rings. wrap=shortest 
 ## Common errors and limits
 
 Negative radii add half a turn and use their magnitude with a warning; logarithmic radial axes require positive values. plot_* still denotes the projection rectangle; query an axis spine for its actual curve.
-
-## Individual functions
 
 <!-- walkthrough:end -->
 

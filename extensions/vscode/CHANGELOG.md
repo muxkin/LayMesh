@@ -1,3 +1,10 @@
+# 0.6.2
+
+- Resolve bundled `@laymesh/animate.css`, Bootstrap and Open Props in the native engine, and identify outdated configured engines clearly.
+- Keep preview controls on one line with Refresh, Fit/zoom, page navigation and joined Present/options; move animation step/play buttons into the footer and settings into More.
+- Fix shared control stylesheet loading and menu positioning, preserving presentation controls and shortcuts.
+- Share FFmpeg discovery and consent-aware installation across VS Code, CLI and Python, with China mirror selection, fallback, pinned integrity checks, progress and cancellation.
+
 # 0.6.1
 
 - Load preview and presentation WASM in the owning webview and transfer the bytes to Canvas workers, avoiding VS Code local-resource HTTP 408 errors and worker timeouts on Windows and Linux.

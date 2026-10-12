@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/plot.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Match categories with ranges and use closed=true line or area to join endpoints. Original-data anchors accept category/value; labels use categories or separate text.
@@ -24,8 +20,6 @@ Match categories with ranges and use closed=true line or area to join endpoints.
 ## Common errors and limits
 
 Category order is not inferred. Each series must match category count with valid domains and visible values. Continuous polar theta selection is not a category index.
-
-## Individual functions
 
 <!-- walkthrough:end -->
 

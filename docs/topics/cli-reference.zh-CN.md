@@ -2,12 +2,13 @@
 
 ## 操作流程
 
-[main.rs](../../crates/laymesh-cli/src/main.rs) 中的命令行入口提供三个子命令：
+[main.rs](../../crates/laymesh-cli/src/main.rs) 中的命令行入口提供以下子命令：
 
 ```text
-laymesh validate <file.lay> [--warnings show|hide]
-laymesh inspect <file.lay> --json [--warnings show|hide]
-laymesh render <file.lay> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|tga> [--dpi <positive-number>] [--warnings show|hide]
+laymesh validate <file.lay|file.laydoc> [--warnings show|hide]
+laymesh animate <file.lay|file.laydoc> -o <output.mp4|gif>
+laymesh inspect <file.lay|file.laydoc> --json [--warnings show|hide]
+laymesh render <file.lay|file.laydoc> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga> [--dpi <positive-number>] [--warnings show|hide]
 ```
 
 在当前 workspace 中以 `cargo run --release --locked -p laymesh-cli --` 为前缀。`-o` 与 `--output` 等价；扩展名决定格式；`--dpi` 用于所有位图输出、PDF 图片上限与 PPTX 局部图片回退，默认 1200；`--config PATH` 指定项目配置，`--pdf-*` 调节 PDF 压缩、精度和透明度保留。[完整参数与配置](export.zh-CN.md)。成功的 `validate` 打印尺寸与**顶层**实例数；成功的 `render` 打印输出路径。警告写 stderr，成功仍退出 0；源文件/渲染错误退出 1，参数用法错误退出 2。CLI 先渲染再经临时文件改名到目标路径，防止正常错误留下半成品。具体 stdout 见[执行记录](../examples-and-results.zh-CN.md)。
@@ -31,3 +32,7 @@ laymesh --help
 lsp 在标准输入/输出上运行持续的 JSON-RPC 服务，标准输出专供协议。--version/-V 与 --help/-h 是独立命令。--warnings show|hide 覆盖 LAYMESH_WARNINGS；inspect 即使隐藏显示也保留诊断数据。
 
 位图格式包括 PNG、JPEG、TIFF、WebP、BMP、GIF、ICO、PNM 和 TGA；可设置质量、压缩、底色及 WebP 模式。完整选项、默认值及限制见[导出格式与编码参数](export.zh-CN.md)。
+
+## 动画与多页
+
+.laydoc 支持整本 PDF、单页及编号批量导出；非 PDF 需 --page 或 --all-pages。animate 使用连续时间线导出 MP4/GIF，需 FFmpeg。--time/--step 当前只输出 PNG 快照。详见[文档](documents.zh-CN.md)与[动画导出](animation-export.zh-CN.md)。

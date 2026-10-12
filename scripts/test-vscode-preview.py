@@ -10,7 +10,7 @@ from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('native_cdp',ROOT/'scripts/smoke-browser.py')
 native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--block-worker-resource-fetch',action='store_true',help='Return HTTP 408 for extension resource requests inside blob workers');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--normal-host',action='store_true',help='Use a fixture extension in a normal host so native confirmation dialogs are allowed');p.add_argument('--block-worker-resource-fetch',action='store_true',help='Return HTTP 408 for extension resource requests inside blob workers');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup_errors=True) as temp:
  profile=Path(temp);gate=profile/'gate.json';evidence=profile/'evidence.json'
  extension=a.extension_dir.resolve()
@@ -24,13 +24,18 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   for name in ['preview-worker.mjs','presentation-worker.mjs']:
    worker=extension/'dist'/name;worker.write_text(guard+worker.read_text())
  (profile/'profile/User').mkdir(parents=True)
- (profile/'profile/User/settings.json').write_text(json.dumps({'workbench.colorTheme':'VS Code Dark','window.autoDetectColorScheme':False,'files.simpleDialog.enable':True}))
+ (profile/'profile/User/settings.json').write_text(json.dumps({'workbench.colorTheme':'VS Code Dark','window.autoDetectColorScheme':False,'files.simpleDialog.enable':True,'window.dialogStyle':'custom'}))
  with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
  bmp=profile/'中文 # 图片.bmp';Image.new('RGB',(20,10),(30,150,220)).save(bmp)
  transparent=profile/'透明.png';Image.new('RGBA',(20,10),(255,0,0,128)).save(transparent)
  high=profile/'16位.png';Image.new('I;16',(20,10),35000).save(high)
- env={**os.environ,'LAYMESH_PREVIEW_GATE':str(gate),'LAYMESH_PREVIEW_EVIDENCE':str(evidence),'LAYMESH_PREVIEW_BMP':str(bmp),'LAYMESH_PREVIEW_TRANSPARENT':str(transparent),'LAYMESH_PREVIEW_16BIT':str(high)};env.pop('ELECTRON_RUN_AS_NODE',None)
+ env={**os.environ,'LAYMESH_PREVIEW_GATE':str(gate),'LAYMESH_PREVIEW_EVIDENCE':str(evidence),'LAYMESH_PREVIEW_BMP':str(bmp),'LAYMESH_PREVIEW_TRANSPARENT':str(transparent),'LAYMESH_PREVIEW_16BIT':str(high),'LAYMESH_PREVIEW_NORMAL_HOST':'1' if a.normal_host else ''};env.pop('ELECTRON_RUN_AS_NODE',None)
  command=[a.code,'--no-sandbox','--disable-gpu','--disable-updates','--ozone-platform=headless','--force-device-scale-factor=2','--remote-debugging-port='+str(port),'--remote-allow-origins=*','--user-data-dir='+str(profile/'profile'),'--extensions-dir='+str(profile/'extensions'),'--extensionDevelopmentPath='+str(extension),'--extensionTestsPath='+str(ROOT/'scripts/vscode-preview.cjs'),'--skip-welcome','--skip-release-notes','--new-window']
+ if a.normal_host:
+  fixture=profile/'extensions/laymesh-preview-qa-0.0.1';fixture.mkdir(parents=True)
+  (fixture/'package.json').write_text(json.dumps({'name':'laymesh-preview-qa','publisher':'local','version':'0.0.1','engines':{'vscode':'^1.85.0'},'main':'./index.cjs','activationEvents':['onStartupFinished']}))
+  (fixture/'index.cjs').write_text("exports.activate=()=>{require("+json.dumps(str(ROOT/'scripts/vscode-preview.cjs'))+").run().then(()=>{require('vscode').commands.executeCommand('workbench.action.quit').catch(()=>{});},error=>{console.error(error);require('fs').writeFileSync("+json.dumps(str(gate))+",JSON.stringify({phase:'failed',error:String(error)}));});};")
+  command=[arg for arg in command if not arg.startswith('--extensionTestsPath=')]
  log=(profile/'host.log').open('w');host=subprocess.Popen(command,env=env,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
  try:
   opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -56,10 +61,23 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   def evaluate(expression):return c.evaluate("(()=>{const d=document.querySelector('iframe').contentDocument;return ("+expression+");})()")
   def wait(expression):return until(lambda:evaluate(expression),expression)
   def phase(value):gate.write_text(json.dumps({'phase':value}))
-  def wait_phase(value):return until(lambda:json.loads(gate.read_text()).get('phase')==value,'Gate '+value)
+  def wait_phase(value):
+   def check():
+    status=json.loads(gate.read_text())
+    if status.get('phase')=='failed':raise RuntimeError(status.get('error','Fixture failed'))
+    return status.get('phase')==value
+   return until(check,'Gate '+value)
+  def toolbar_layout():
+   layout=evaluate("(()=>{const r=e=>e.getBoundingClientRect().toJSON(),t=d.querySelector('.toolbar'),g=d.querySelector('.present-group');return {toolbar:r(t),present:r(g),buttons:[...g.querySelectorAll('button,summary')].slice(0,2).map(r),visible:[...t.children].filter(e=>e.getBoundingClientRect().width).map(r)}})()")
+   t=layout['toolbar'];assert all(b['top']>=t['top'] and b['bottom']<=t['bottom'] and b['right']<=t['right']+1 for b in layout['visible']),layout
+   a,b=layout['buttons'];assert abs(a['top']-b['top'])<1 and abs(a['right']-b['left'])<2,layout
+   assert evaluate("d.querySelector('[data-action=refresh]').getAttribute('aria-label')==='Refresh'||d.querySelector('[data-action=refresh]').textContent.includes('刷新')")
+   assert not evaluate("!!d.querySelector('.toolbar-label,[data-action=toggle-playback]')")
+   return layout
   evaluate("(()=>{d.defaultView.previewEvents=[];for(const type of ['pointerdown','pointerup','pointerout','pointerleave','mouseout','mouseleave'])d.addEventListener(type,e=>{const es=d.defaultView.previewEvents;es.push({type:e.type,target:e.target.className,related:e.relatedTarget?.className});if(es.length>12)es.shift()},true);return true})()")
   wait("d.querySelector('.preview').dataset.state==='success'&&(d.querySelector('.preview').dataset.painted==='true'||d.querySelector('.figure').complete)")
   wait("d.body.classList.contains('vscode-dark')")
+  toolbar_layout()
   root.call('Page.bringToFront')
   # Follow the real webview -> host -> format picker and save dialog, without replacing VS Code APIs.
   assert evaluate("d.querySelector('[data-action=export]').textContent==='导出'")
@@ -161,6 +179,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   assert layout['body']<=layout['width'] and layout['canvas']==round(layout['viewport']*layout['dpr']),layout
   assert evaluate("(()=>{const b=d.querySelector('.render-details').getBoundingClientRect(),f=d.querySelector('.preview-footer').getBoundingClientRect();return b.right<=f.right&&b.left>=f.left})()"), "Narrow footer details must stay visible beside long coordinates"
   screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'light-narrow.png').write_bytes(base64.b64decode(screenshot['data']))
+  toolbar_layout()
   console_errors=[event for event in c.events if event.get('method')=='Runtime.exceptionThrown' or event.get('method')=='Runtime.consoleAPICalled' and event['params'].get('type')=='error']
   assert not console_errors,console_errors
   stable_before_error=evaluate("d.querySelector('.viewport').getBoundingClientRect().toJSON()")
@@ -175,9 +194,14 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   c=until(attach,'Document preview iframe');c.call('Log.enable')
   wait("d.querySelector('.preview').dataset.state==='success'&&d.querySelector('.preview').dataset.painted==='true'&&d.querySelector('.page-select').value==='cover'")
   assert evaluate("!d.querySelector('.page-select').hidden&&d.querySelector('.page-select').options.length===3")
+  assert evaluate("d.querySelector('[data-action=previous-page]').disabled&&!d.querySelector('[data-action=next-page]').disabled")
+  evaluate("(()=>{d.querySelector('[data-action=next-page]').click();return true})()")
+  wait("d.querySelector('.page-select').selectedIndex===1&&d.querySelector('.preview').dataset.painted==='true'")
+  evaluate("(()=>{d.querySelector('[data-action=previous-page]').click();return true})()")
+  wait("d.querySelector('.page-select').value==='cover'&&d.querySelector('.preview').dataset.painted==='true'")
   evaluate("(()=>{const s=d.querySelector('.page-select');s.value='results';s.dispatchEvent(new d.defaultView.Event('change'));return true})()")
   wait("d.querySelector('.page-select').value==='results'&&d.querySelector('.preview').dataset.state==='success'&&d.querySelector('.corner').textContent==='cm'&&d.querySelector('.preview').dataset.painted==='true'")
-  def drawing_hash():
+  def drawing_hash(name=None, visible_card=False):
    import hashlib
    outer=root.evaluate("document.querySelector('iframe').getBoundingClientRect().toJSON()")
    bounds=evaluate("d.querySelector('.figure-pixels').getBoundingClientRect().toJSON()")
@@ -185,7 +209,13 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
    pixels=Image.open(io.BytesIO(base64.b64decode(shot['data']))).convert('RGBA')
    scale=pixels.width/root.evaluate('innerWidth')
    x=(outer['x']+bounds['x'])*scale;y=(outer['y']+bounds['y'])*scale
-   return hashlib.sha256(pixels.crop((round(x),round(y),round(x+bounds['width']*scale),round(y+bounds['height']*scale))).tobytes()).hexdigest()
+   cropped=pixels.crop((round(x),round(y),round(x+bounds['width']*scale),round(y+bounds['height']*scale)))
+   if visible_card:
+    return cropped.getpixel((round(cropped.width*32.5/80),round(cropped.height*17.5/40)))[:3]==(13,110,253)
+   if name:
+    cropped.save(a.output/(name+'.png'))
+    (a.output/(name+'.json')).write_text(json.dumps({'outer':outer,'bounds':bounds,'scale':scale}))
+   return hashlib.sha256(cropped.tobytes()).hexdigest()
 
   formula_before=drawing_hash();phase('document-results');wait_phase('document-dirty-ready')
   until(lambda:drawing_hash()!=formula_before,'Unsaved formula visible')
@@ -202,15 +232,22 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   phase('document-ui-verified');wait_phase('animation-ready')
   c=until(attach,'Animation preview iframe');c.call('Log.enable')
   wait("d.querySelector('.preview').dataset.painted==='true'&&d.querySelector('.animation-controls').style.display==='flex'")
-  full_hash=drawing_hash()
+  # Painted acknowledges GPU submission. Wait for the expected card to reach
+  # the compositor before recording the static screenshot as our reference.
+  until(lambda:drawing_hash(visible_card=True),'CSS-styled card presented')
+  toolbar_layout()
+  assert evaluate("(()=>{const p=d.querySelector('.playback-buttons'),f=d.querySelector('.preview-footer'),r=p.getBoundingClientRect(),b=f.getBoundingClientRect();return !p.hidden&&p.querySelectorAll('button').length===3&&p.parentElement===f&&r.top>=b.top&&r.bottom<=b.bottom&&!d.querySelector('.animation-controls').contains(p)})()"), 'Three small step buttons belong in the footer'
+  full_hash=drawing_hash('animation-static-before')
   evaluate("(()=>{d.querySelector('[data-action=animation-play]').click();return true})()")
-  wait("d.querySelector('[data-action=animation-play]').textContent==='Pause'")
+  wait("d.querySelector('[data-action=animation-play]').getAttribute('aria-label')==='Pause'")
   evaluate("(()=>{d.querySelector('[data-action=animation-play]').click();const r=d.querySelector('[aria-label=\"Animation time\"]');r.value='0';r.dispatchEvent(new d.defaultView.Event('input'));return true})()")
   wait("d.querySelector('.preview').dataset.painted==='true'");until(lambda:drawing_hash()!=full_hash,'Animation state rendered')
-  evaluate("(()=>{d.querySelector('[data-action=animation-next]').click();d.querySelector('[data-action=animation-play]').click();return true})()")
+  evaluate("(()=>{d.querySelector('[data-action=animation-next]').click();d.querySelector('[data-action=animation-next]').click();d.querySelector('[data-action=animation-play]').click();return true})()")
   wait("d.querySelector('[aria-label=\"Current step\"]').textContent.includes('Pulse')")
   evaluate("(()=>{d.querySelector('[data-action=animation-static]').click();return true})()")
-  wait("d.querySelector('.preview').dataset.painted==='true'");until(lambda:drawing_hash()==full_hash,'Static layout restored')
+  wait("d.querySelector('.preview').dataset.painted==='true'")
+  try:until(lambda:drawing_hash()==full_hash,'Static layout restored')
+  finally:drawing_hash('animation-static-after')
   screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'animation-controls.png').write_bytes(base64.b64decode(screenshot['data']))
   # Full presentation uses an independent prepared snapshot and real webview controls.
   wait("d.defaultView.laymeshPresentation.deck?.pages.length>0")
@@ -224,6 +261,14 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   evaluate("(()=>{d.defaultView.laymeshPresentation.close();return true})()")
   wait("!d.querySelector('.presentation')")
   phase('animation-verified')
+  if a.normal_host:
+   wait_phase('ffmpeg-dialog-ready')
+   until(lambda:'No usable FFmpeg' in root.evaluate("document.querySelector('.monaco-dialog-box')?.innerText||''"),'Missing FFmpeg confirmation')
+   assert 'China mirror' in root.evaluate("document.querySelector('.monaco-dialog-box').innerText")
+   screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'ffmpeg-confirmation.png').write_bytes(base64.b64decode(screenshot['data']))
+   root.evaluate("(()=>{const b=[...document.querySelectorAll('.monaco-dialog-box [role=button],.monaco-dialog-box .monaco-button')].find(b=>b.textContent.trim()==='Cancel');if(!b)throw Error('Cancel button missing');b.click();})()")
+   until(lambda:not root.evaluate("!!document.querySelector('.monaco-dialog-box')"),'Download declined')
+   phase('ffmpeg-dialog-cancelled')
   if os.environ.get('LAYMESH_ACADEMIC_DOC'):
    wait_phase('academic-ready');c=until(attach,'Academic preview iframe');c.call('Log.enable')
    wait("d.defaultView.laymeshPresentation.deck?.pages.length===32")
@@ -248,12 +293,19 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
      screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'academic-dense.png').write_bytes(base64.b64decode(screenshot['data']))
    evaluate("(()=>{d.defaultView.laymeshPresentation.close();return true})()");wait("!d.querySelector('.presentation')")
    phase('academic-verified')
-  wait_phase('complete');host.wait(timeout=20);assert host.returncode==0
+  wait_phase('complete')
+  host.wait(timeout=20)
+  assert host.returncode==0
   result=json.loads(evidence.read_text());result['ui']={'bmp_pixel':bitmap,'transparent_webp_pixel':transparent_pixel,'opaque_16bit_jpeg_pixel':high_pixel,'direct_export_save_dialog_verified':True,'no_dpi_or_compression_prompts':True,'initial_readout':readout,'english_readout':english_readout,'state':state,'narrow':layout,'console_errors':console_errors,'viewports':['1440x1000 dark DPR 2','760x720 light DPR 2'],'checks':['BMP on a Chinese/space/hash path','canvas/data hover','ruler markers','wheel anchor','Space drag','100%','ruler toggle','fit','continuous motion','pointer exit','narrow resize','DPR ruler pixels','explicit English and auto UI','view preserved on language change','English stale error and source action']}
   result['ui']['documents']={'page_selector':True,'formula_edit_visible':True,'reordering_preserves_page_id':True,'whole_pdf_direct_save_dialog':True,'console_errors':document_errors}
   result['ui']['worker_resource_fetch_blocked']=a.block_worker_resource_fetch
+  result['ui']['native_ffmpeg_confirmation']=a.normal_host
+  if a.normal_host:result['ui']['normal_host_shutdown']={'command':'workbench.action.quit','exit_code':host.returncode}
+  result['ui']['toolbar']={'single_line':True,'joined_present_button':True,'refresh':True,'page_arrows':True,'footer_step_buttons':3,'playback_visibility_toggle':False}
   (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');print(json.dumps(result,ensure_ascii=False))
  except Exception:
+  shutil.copy2(profile/'host.log',a.output/'failure-host.log')
+  if gate.exists():shutil.copy2(gate,a.output/'failure-gate.json')
   try:
    debug=evaluate("({text:d.body.innerText,error:d.querySelector('.error-location')?.textContent,figure:d.querySelector('.figure')?.getBoundingClientRect().toJSON(),viewport:d.querySelector('.viewport')?.getBoundingClientRect().toJSON(),events:d.defaultView.previewEvents,panning:d.querySelector('.viewport').className,active:d.activeElement.className})")
    (a.output/'failure.json').write_text(json.dumps(debug,ensure_ascii=False,indent=2)+'\n')

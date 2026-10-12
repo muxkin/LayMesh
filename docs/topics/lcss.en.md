@@ -1,91 +1,74 @@
-# LCSS themes and regional fills
+# Style manual
 
-LCSS is LayMesh's styling language. Separate files use `.lcss`. Selectors and declarations resemble CSS, but this is not browser CSS: geometry, data, domains and placement remain in `.lay`.
+Start with [style and animation libraries](style-libraries.en.md): learn bundled libraries, sources and imports, then explore entries, parameters and composition. One `.lay` file is enough to begin.
 
-<!-- example:examples/unified.lay -->
+Keep dimensions, anchors, data and placement in .lay, with repeated appearance in a theme. Follow these chapters and use the property reference for details.
+
+This manual describes current source. New offline style libraries and diagnostics require an engine build containing those changes; release notes describe published packages.
+
+## Learning path
+
+1. [Getting started and libraries](style-start.en.md)
+2. [Selectors, variables and cascade](style-cascade.en.md)
+3. [Appearance properties and units](style-properties.en.md)
+4. [Shadows and effects](style-shadows.en.md)
+5. [Compatibility and troubleshooting](style-compatibility.en.md)
+
+## Complete projects
+
+Combine libraries and motion in [three worked projects](style-animation-examples.en.md): [styled cards](style-animation-examples.en.md#styled-cards), [artistic poster](style-animation-examples.en.md#art-direction), and the recovered [complex dashboard](style-animation-examples.en.md#complex-dashboard). Each includes editable source, themes and real playback.
+
+## Complete runnable example
+
+<!-- example:examples/manual/style-project.lay -->
+
+The first card sets its page margin relative to `page.top_left`. Subsequent cards follow `top_right`, and each label follows its card's `bottom_left`. `card_size` and `gap` control dimensions and spacing: change width from 30mm to 26mm and the following cards and labels move with their anchors. Themes save appearance, loops remove repetition, and anchors save layout relationships. See [placement](anchors.en.md) and [loops/functions](control-flow.en.md).
+
+## Common questions
+
+Explicit .lay parameters override LCSS, including important declarations. Omit the matching object parameter when the theme should control it; see [cascade](style-cascade.en.md). Change only blur to 2mm with [partial overrides](style-shadows.en.md#partial-overrides).
+
+<details>
+<summary>Previous section links</summary>
 
 ## Loading and precedence
 
-`canvas(stylesheet="language/paper.lcss")` loads a local stylesheet; an ordered path list is also supported. Entry-file `style { … }` blocks follow external sheets. Specificity and source order decide ties; explicit object parameters win. Module styles are scoped to objects from their module and act as component defaults; entry themes can override them.
-
-```lcss
-@import "base.lcss";
-plot::axis(x) { line-color: #444444; line-width: 0.6pt; }
-.annotation {
-  --paper: #ffffff;
-  background: var(--paper);
-  border: 0.5pt solid #b9d5cb;
-  border-radius: 1mm;
-  padding: 1mm;
-}
-```
-
-Use `class="paper annotation"` in `.lay`. Selectors support types, classes, combinations, comma-separated groups, descendants and direct children (`>`). Parts include `plot::area`, `plot::axis(x)`, `plot::tick-label`, `plot::axis-label`, `plot::legend` and `plot::colorbar`.
+[Read the chapter](style-start.en.md)
 
 ## Paints and borders
 
-`fill` paints a shape's interior; `background` paints a region. Values include `none`, colors, `linear-gradient(...)`, `radial-gradient(...)`, `hatch(slash, #666666, 2mm, 0.5pt)`, cross/dot hatches and `url("texture.png")`. DSL counterparts are `linear_gradient`, `radial_gradient`, `hatch` and `image_fill`.
-
-Configure canvas, plot frame, plot area, each axis and its labels, text/formula boxes, legends/colorbars and imported-image boxes independently. Plot-area paint follows polar outlines and visible broken-axis segments. Paint alone does not change data mapping. `padding` is inner spacing and contributes to measured bounds.
-
-Closed outlines use `border_*`; open lines use `line_*`. LCSS uses hyphens, such as `border-width` and `line-width`. Typography inherits; backgrounds and placement do not. Parent and child opacity multiply. Instances of the same material can select independent classes.
+[Read the chapter](style-start.en.md)
 
 ## Resources and limits
 
-LCSS lengths require explicit units (except zero), so a theme is independent of the canvas default unit. Image and font paths are relative to the declaring `.lcss` file. Variables support `var(--name, fallback)`; variable and import cycles are errors.
-
-Web layout, media queries, animation, interactive pseudo-classes and `!important` are unsupported and produce diagnostics. [All parameters](interface-reference.en.md) · [Migration](migration.en.md)
+[Read the chapter](style-start.en.md)
 
 ## style-properties
 
-Each property maps to the following DSL parameter. Types, units and inheritance use the same metadata as parameter hover.
+[Read the chapter](style-properties.en.md)
 
-| LCSS | DSL |
-| --- | --- |
-| `font-family` | `font_family` |
-| `math-font` | `math_font` |
-| `math-text-fallback` | `math_text_fallback` (`true` / `false`) |
-| `font-size` | `font_size` |
-| `font-weight` | `font_weight` |
-| `font-style` | `font_style` |
-| `color` | `color` |
-| `line-height` | `line_height` |
-| `background` | `background` |
-| `padding` | `padding` |
-| `border-radius` | `border_radius` |
-| `border-color` | `border_color` |
-| `border-width` | `border_width` |
-| `border-style` | `border_style` |
-| `border-dash` | `border_dash` |
-| `border-dash-offset` | `border_dash_offset` |
-| `border-cap` | `border_cap` |
-| `border-join` | `border_join` |
-| `border-miter-limit` | `border_miter_limit` |
-| `border-opacity` | `border_opacity` |
-| `line-color` | `line_color` |
-| `line-width` | `line_width` |
-| `line-style` | `line_style` |
-| `line-dash` | `line_dash` |
-| `line-dash-offset` | `line_dash_offset` |
-| `line-cap` | `line_cap` |
-| `line-join` | `line_join` |
-| `line-miter-limit` | `line_miter_limit` |
-| `line-opacity` | `line_opacity` |
-| `fill` | `fill` |
-| `opacity` | `opacity` |
-| `tick-font-size` | `tick_font_size` |
-| `label-font-size` | `label_font_size` |
-| `tick-color` | `tick_color` |
-| `grid-color` | `grid_color` |
-| `grid-line-width` | `grid_line_width` |
-| `grid-line-dash` | `grid_line_dash` |
-| `start-head` | `start_head` |
-| `end-head` | `end_head` |
-| `start-cap` | `start_cap` |
-| `end-cap` | `end_cap` |
+## css-libraries
 
-Endpoint properties accept `head(...)`, for example `end-head: head(shape=triangle,size=(5mm,4mm));`. LCSS identifiers are style values; they are not reads from the DSL variable scope.
+[Read the chapter](style-start.en.md)
+
+## shadow-overrides
+
+[Read the chapter](style-shadows.en.md)
+
+## css-units
+
+[Read the chapter](style-properties.en.md)
+
+## css-effects
+
+[Read the chapter](style-shadows.en.md)
+
+## css-compatibility
+
+[Read the chapter](style-compatibility.en.md)
 
 ## workflow
 
-Complete sources and executable verification fixtures for this workflow are listed in the [feature coverage map](feature-map.en.md). Follow this page’s input conditions and limits when composing features.
+[Read the chapter](style-start.en.md)
+
+</details>

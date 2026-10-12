@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/rgb.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Use colors in fills, text, strokes, gradient stops and chart palettes. linear_gradient and radial_gradient use normalized layout-box coordinates. hatch uses physical spacing; image_fill fits an image inside a shape.

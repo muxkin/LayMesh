@@ -33,11 +33,11 @@ for topic,info in data.items():
    '## '+('Minimal complete example' if en else '最小完整示例'),'',
    ('Run this file directly with `laymesh validate` or `laymesh render`; it contains its own canvas and required definitions.' if en else '此文件包含画布及必要定义，可直接运行 `laymesh validate` 或 `laymesh render`，不依赖前文未声明的变量。'),'',
    '<!-- example:'+minimal+' -->','',
-   '## '+('Parameters and default behavior' if en else '参数与默认行为'),'',
-   ('Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.' if en else '裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。'),'',
    '## '+('Composition' if en else '组合用法'),'',info['composition'+suffix],'','<!-- example:'+composition+' -->','',
    '## '+('Common errors and limits' if en else '常见错误与限制'),'',info['errors'+suffix],'',
-   '## '+('Individual functions' if en else '逐项功能说明'),'']
+   ]
+  if any(coverage['api:'+entry['name']]['topic']==topic for entry in registry['api']):
+   lines += ['## '+('Individual functions' if en else '逐项功能说明'),'']
   for entry in registry['api']:
    key='api:'+entry['name'];feature=coverage[key]
    if feature['topic']!=topic:continue

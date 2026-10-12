@@ -1,0 +1,3 @@
+page=canvas(size=(100mm,65mm),stylesheet="@laymesh/bootstrap.css",background="#f6f7fb")
+card=page.add(rect(size=(40mm,25mm),class="bg-primary rounded shadow"),anchor=center,target=page.center)
+page.add(text("Bootstrap: classes",class="text-primary"),anchor=top_center,target=card.bottom_center,offset=(0mm,8mm))

@@ -35,6 +35,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: python scripts/test-contracts.py
       - run: python scripts/build-api-reference.py --check
+      - run: python scripts/build-style-animation-docs.py --check
+      - run: python scripts/build-library-docs.py --check
+      - run: node scripts/build-dashboard-data.mjs --check
       - run: python scripts/build-topic-walkthroughs.py --check
       - run: python scripts/check-feature-docs.py
       - run: python scripts/build-docs-media.py --check

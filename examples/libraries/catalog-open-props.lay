@@ -1,0 +1,7 @@
+page=canvas(size=(100mm,100mm),stylesheet="@laymesh/open-props.css",background="#f6f7fb")
+style {
+rect {background-color:#0d6efd;border:1px solid #20332f}
+text {background-color:#e9ecef;color:#212529;border:1px solid #adb5bd}
+.sample { background: var(--gradient-7); }
+}
+item=page.add(rect(size=(40mm,25mm),class="sample"),anchor=center,target=page.center)

@@ -5,12 +5,12 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--render',action='store_true');p.add_argument('--binary',type=Path,default=ROOT/'target/release/laymesh');a=p.parse_args()
 r=json.loads((ROOT/'crates/laymesh-core/api.json').read_text());features=json.loads((ROOT/'docs/feature-coverage.json').read_text())['features']
-expected={'api:'+e['name'] for e in r['api']}|{'lcss:'+n for n in r['styleProperties']}
+expected={'api:'+e['name'] for e in r['api']}|{'lcss:'+n for n in r['styleProperties']}|{'css:'+p['name'] for p in r['cssProperties']}
 for typ,info in r['geometryTypes'].items():
  expected.update('geometry:'+typ+'.'+n for k in ['members','methods'] for n in info.get(k,{}))
  if info.get('index'):expected.add('geometry:'+typ+'[i]')
 assert expected<=features.keys(),'Missing features: '+str(sorted(expected-features.keys()))
-assert {k for k in features if k.startswith(('api:','lcss:','geometry:'))}==expected,'Stale feature entries'
+assert {k for k in features if k.startswith(('api:','lcss:','css:','geometry:'))}==expected,'Stale feature entries'
 for name,f in features.items():
  for lang in ['en','zh-CN']:
   doc=ROOT/f'docs/topics/{f["topic"]}.{lang}.md'

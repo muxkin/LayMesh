@@ -11,10 +11,6 @@ axis 配置数据范围、映射、刻度和标签。默认主轴是 x/y；显�
 
 <!-- example:examples/manual/axis.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 ticks 配 tick_text 可显示分类文字或公式；minor_ticks 和 grid 控制细分刻度与背景网格。通过 chart.axes["x"].spine.path 选轴线，通过完整组件 bounds 对齐标题区域。

@@ -295,7 +295,8 @@ impl<'a> Painter<'a> {
                 let scale = b.width() / f64::from(widths.iter().sum::<f32>().max(0.001));
                 font.set_scale_x(scale as f32);
                 let mut x = b.x0;
-                let positions: Vec<_> = widths.iter()
+                let positions: Vec<_> = widths
+                    .iter()
                     .map(|width| {
                         let point = sk::Point::new(x as f32, (b.y0 + b.height() * 0.8) as f32);
                         x += f64::from(*width) * scale;
@@ -340,11 +341,12 @@ impl<'a> Painter<'a> {
         states: &BTreeMap<String, NodeFrame>,
         e: &Effect,
     ) -> Result<()> {
-        let spread = if e.spread > 0. {
-            if e.inner {
-                sk::image_filters::erode((e.spread as f32, e.spread as f32), None, None)
+        let spread = if e.spread != 0. {
+            let radius = e.spread.abs() as f32;
+            if (e.spread > 0.) == e.inner {
+                sk::image_filters::erode((radius, radius), None, None)
             } else {
-                sk::image_filters::dilate((e.spread as f32, e.spread as f32), None, None)
+                sk::image_filters::dilate((radius, radius), None, None)
             }
         } else {
             None
@@ -371,9 +373,20 @@ impl<'a> Painter<'a> {
         };
         let mut paint = sk::Paint::default();
         paint.set_image_filter(filter);
+        let saved = c.save();
+        if e.knockout {
+            if let Some(source) = &e.source_path {
+                c.clip_path(&path(source, false), sk::ClipOp::Difference, true);
+            }
+        }
         c.save_layer(&sk::canvas::SaveLayerRec::default().paint(&paint));
-        self.content(c, node, id, states)?;
+        if let Some(source) = &e.source_path {
+            c.draw_path(&path(source, false), &solid([1., 1., 1., 1.]));
+        } else {
+            self.content(c, node, id, states)?;
+        }
         c.restore();
+        c.restore_to_count(saved);
         Ok(())
     }
     pub fn content(

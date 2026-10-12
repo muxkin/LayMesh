@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/formula.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 text(spans=[...]) combines spans and formulas. Embedded $...$ in ordinary text differs from explicit formula input; use raw/formatted strings deliberately when backslashes or substitutions are involved.
@@ -85,7 +81,7 @@ page.add(formula(r"\frac{a}{b}+\bm{\alpha}",math_font="XITS Math",font_size=16pt
 
 For reproducibility, use a file such as `math_font="./fonts/XITSMath-Regular.otf"`. Paths belong to the defining module or LCSS stylesheet. The property inherits through canvas, text, span, and plot styles, including automatic `$...$` math. Browser hosts must load the font bytes first. The backend reads glyph metrics, math constants, italic corrections, and stretch constructions from the selected font and exports vector outlines.
 
-The current implementation covers mhchem `ce/pu`, `prooftree`, labelled arrows, `middle`, aligned equations/tags, array rules, overlap, braces, cancellation, and the ordinary math constructions. The fixed RaTeX 0.1.14 corpus and domain cases run 15,448 layout checks; all 91 chemistry, 22 physics, and 38 proof-tree examples render with four fonts and both styles. Parser/policy rejections are recorded separately. Missing glyphs use vector boxes and emit `W_FONT`, preserving the rest of the formula. Unavailable fonts or missing MATH tables return `E_MATH_FONT`; selected math faces never silently substitute another font. `mathcal` and `mathscr` currently share the Unicode script alphabet. The standalone XITS bold face has incomplete stretch coverage; regular XITS Math supports `mathbf`, `boldsymbol`, and `bm`. Horizontal arrows without valid assemblies extend the shaft region of the selected font's native outline; other finite constructions use their largest native variant. Use raw DSL strings for LaTeX, especially when chemistry contains embedded `$...$` math.
+The current implementation covers mhchem `ce/pu`, `prooftree`, labelled arrows, `middle`, aligned equations/tags, array rules, overlap, braces, cancellation, and the ordinary math constructions. Historical verification recorded 15,448 layout checks over the fixed RaTeX 0.1.14 corpus and domain cases; all 91 chemistry, 22 physics, and 38 proof-tree examples render with four fonts and both styles. Parser/policy rejections are recorded separately. Missing glyphs use vector boxes and emit `W_FONT`, preserving the rest of the formula. Unavailable fonts or missing MATH tables return `E_MATH_FONT`; selected math faces never silently substitute another font. `mathcal` and `mathscr` currently share the Unicode script alphabet. The standalone XITS bold face has incomplete stretch coverage; regular XITS Math supports `mathbf`, `boldsymbol`, and `bm`. Horizontal arrows without valid assemblies extend the shaft region of the selected font's native outline; other finite constructions use their largest native variant. Use raw DSL strings for LaTeX, especially when chemistry contains embedded `$...$` math.
 
 Inner math alphabet commands override outer ones: `\mathbf{\mathcal A}` selects script A, while `\mathcal{\mathbf A}` selects bold roman A. Use `\mathbf{A1}` for bold letters/digits and `\bm{\alpha x}` for bold italic symbols. Script shapes and stroke weights vary with the selected font.
 

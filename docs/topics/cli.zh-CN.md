@@ -9,17 +9,18 @@ laymesh validate figure.lay
 laymesh render figure.lay -o figure.pdf
 ```
 
-CLI 提供三个命令：
+CLI 提供验证、检查、静态导出、动画导出及语言服务：
 
 ```text
-laymesh validate <file.lay>
-laymesh inspect <file.lay> --json
-laymesh render <file.lay> -o <output.svg|pdf|png|jpg|tif|webp|bmp|gif|ico|pnm|tga> [--dpi <number>]
+laymesh validate <file.lay|file.laydoc>
+laymesh animate <file.lay|file.laydoc> -o <output.mp4|gif>
+laymesh inspect <file.lay|file.laydoc> --json
+laymesh render <file.lay|file.laydoc> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga> [--dpi <number>]
 ```
 
 `python -m laymesh` 与 `laymesh` 等价。源码开发时先运行 `cargo build --release --locked -p laymesh-cli`，再调用 `target/release/laymesh`（Windows 为 `laymesh.exe`），或用 `cargo run --release --locked -p laymesh-cli --` 作为命令开头。`validate` 只检查源文件和素材；`render` 在检查通过后生成文件。出错时命令返回非零状态，并给出文件、行、列及原因。
 
-`inspect --json` 输出绘图区、坐标轴映射、变换和警告。三个命令均支持 `--warnings show|hide`；显式选项优先于环境变量 `LAYMESH_WARNINGS`，默认 `show`。隐藏警告不会隐藏错误，也不会删除检查 JSON 中的诊断。
+`inspect --json` 输出绘图区、坐标轴映射、变换和警告。validate、inspect 和静态 render 支持 `--warnings show|hide`；显式选项优先于环境变量 `LAYMESH_WARNINGS`，默认 `show`。隐藏警告不会隐藏错误，也不会删除检查 JSON 中的诊断。
 
 ## 限制与相关主题
 
@@ -28,3 +29,7 @@ laymesh render <file.lay> -o <output.svg|pdf|png|jpg|tif|webp|bmp|gif|ico|pnm|tg
 ## workflow
 
 本流程的完整源码与可执行验证文件列在[功能覆盖清单](feature-map.zh-CN.md)。组合使用时请遵循本页的输入条件与限制。
+
+## 动画与多页
+
+.laydoc 支持整本 PDF、单页及编号批量导出；非 PDF 需 --page 或 --all-pages。animate 使用连续时间线导出 MP4/GIF，需 FFmpeg。--time/--step 当前只输出 PNG 快照。详见[文档](documents.zh-CN.md)与[动画导出](animation-export.zh-CN.md)。

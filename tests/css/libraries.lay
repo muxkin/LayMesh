@@ -1,0 +1,20 @@
+page=canvas(size=(100mm,70mm),layout_dpi=192,background="#ffffff",font_family="../fonts/DejaVuSans.ttf",stylesheet="@laymesh/bootstrap.css")
+style {
+  @import "@laymesh/open-props.css";
+  :root { font-size:4mm; --empty: ; }
+  .shadow.custom { box-shadow-blur:2mm !important; }
+  .props { background:var(--gradient-1); border-radius:var(--radius-2); box-shadow:var(--shadow-2); }
+  .radial { background:var(--gradient-13); border-radius:2mm; }
+  .inner { background:white; border:0.25mm solid #334155; box-shadow:inset 2mm 1mm 4mm #33415580,2mm 3mm 4mm -1mm #192c4e40; }
+  .drop { filter:drop-shadow(2mm 2mm 1mm #17255480); }
+  .label { font-size:5mm; color:rebeccapurple; text-shadow:0.5mm 0.5mm 1mm #33415580; }
+  @media screen and (min-width:90mm) { .media { background-color:hsl(160deg 70% 30%); } }
+  @supports (box-shadow:0 0 2mm blue) { .media { border-radius:calc(1mm + 1mm); } }
+}
+page.add(rect(size=(24mm,18mm),class="bg-primary rounded shadow custom"),offset=(7mm,8mm))
+page.add(rect(size=(24mm,18mm),class="props"),offset=(38mm,8mm))
+page.add(rect(size=(24mm,18mm),class="radial"),offset=(69mm,8mm))
+page.add(rect(size=(24mm,18mm),class="inner"),offset=(7mm,37mm))
+page.add(rect(size=(24mm,18mm),class="media rounded-circle"),offset=(38mm,37mm))
+page.add(ellipse(size=(18mm,18mm),fill="#0d9488",class="drop"),offset=(72mm,37mm))
+page.add(text("Glyph shadow",class="label"),offset=(7mm,59mm))

@@ -11,10 +11,6 @@
 
 <!-- example:examples/manual/line.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 line() 或只带样式的 line(...) 可作为未指定几何的素材，在 add 中用 start/end 连接两点；也可沿用 dx/dy 或 length/angle 定义，二者互斥。构造可省略几何，放置必须能确定几何。start_head 反向沿起点切线，end_head 沿终点切线；triangle/open/stealth 以尖定位，dot/diamond/bar 以中心定位。零长度显式 angle 可生成独立头部。

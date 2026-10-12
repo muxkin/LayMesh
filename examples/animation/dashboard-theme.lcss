@@ -1,0 +1,16 @@
+:root { font-family:"DejaVu Sans"; color:#20354b; }
+.heading { font-size:16pt; }
+.caption { font-size:8pt; color:#526b82; }
+.motif-plate { border-color:none; border-radius:1mm; background:linear-gradient(135deg,#edf1f7,#d4e2ef); }
+.motif-ring { fill:none; border-width:0.15mm; }
+.motif-stroke { line-color:#a8bdd2; line-width:0.12mm; }
+.chart-card { effects:[shadow(blur=0.75mm,offset=(0.65mm,0.8mm),opacity=0.35),glow(color="#6d9dd0",blur=0.35mm,opacity=0.16)]; }
+.chart-plate { background:white; border:0.12mm solid #9badbf; border-radius:1mm; opacity:0.86; }
+.panel-label { font-size:5.5pt; }
+.formula-card { effects:[shadow(blur=0.5mm,offset=(0.5mm,0.6mm),opacity=0.3)]; }
+.formula-plate { background:white; border:0.12mm solid #b5c5d3; border-radius:0.8mm; opacity:0.88; }
+.equation { font-size:7pt; color:#243b53; }
+@keyframes title-motion {0%,100%{transform:translateX(0px)}50%{transform:translateX(24px)}}
+@keyframes panel-motion {0%,100%{transform:translateY(0px) rotate(-1deg);opacity:.84}50%{transform:translateY(-5px) rotate(1deg);opacity:1}}
+@keyframes panel-flip {0%,100%{transform:perspective(900px) rotateY(-32deg) rotateX(8deg)}50%{transform:perspective(900px) rotateY(32deg) rotateX(-8deg)}}
+@keyframes motif-motion {0%,100%{transform:rotate(-20deg)}50%{transform:rotate(20deg)}}

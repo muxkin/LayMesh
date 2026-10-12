@@ -4119,6 +4119,92 @@ s4.animate(title, class="animate__animated animate__pulse", duration=600ms)
 
 [概念与常见错误](animation.zh-CN.md#animate) · [组合源码](../../examples/animation/presentation.lay)
 
+## css-properties
+
+CSS 属性支持由编译器、补全、悬停与颜色编辑共享。不支持的 CSS 会恢复解析，每文件集中提示一次。草案阴影分项规则见 [LCSS](lcss.zh-CN.md#shadow-overrides)。
+
+| 属性 | 类型 / 单位 | 含义 |
+| --- | --- | --- |
+| `font-family` | string \| string[] / none | 系统字体族名、字体文件路径或有序列表；不内置正文字体；缺字警告并显示方框。 |
+| `math-font` | string / none | 数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。 |
+| `math-text-fallback` | boolean / none | 公式文本使用 font_family 与文本字体回退，并按实际字形尺寸排版；false 仅检查数学字体覆盖。数学符号仍使用 math_font。 |
+| `font-size` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 字号；非零 CSS 长度需要单位，未指定时继承；em 和百分比相对父级字号。 |
+| `font-weight` | number \| keyword / none | 字重数值 1–1000；normal=400、bold/bolder=700、lighter=300。相对字重关键字目前使用这些固定映射。 |
+| `font-style` | "normal" \| "italic" \| "oblique" / none | normal、italic 或 oblique；oblique 当前按 italic 处理。 |
+| `color` | color / none | 文字颜色；currentColor 供边框和阴影引用当前计算颜色。 |
+| `line-height` | length \| number / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 显式长度，或无单位的字号倍数；默认 1.2 倍字号。 |
+| `background` | paint / none | 对象区域的底色或填充，不是文字或轴线颜色 |
+| `padding` | length \| length[] / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 内部留白；接受 1–4 个 CSS 长度，依次采用全边、上下/左右、上/左右/下、上/右/下/左规则。 |
+| `border-radius` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 统一底框圆角；非零长度需要单位，百分比基于布局框；暂不支持独立角或椭圆圆角。 |
+| `border-color` | color / none | 封闭轮廓颜色，none 表示无边框 |
+| `border-width` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 封闭轮廓线宽；非零 CSS 长度需要单位；也接受 thin/medium/thick，分别为 1/3/5 个布局 px。 |
+| `border-style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" / none | 边框线型；与填充独立 |
+| `border-dash` | length[] / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 交替的边框线段和间隔 CSS 长度列表；须成对，非零长度需要单位。 |
+| `border-dash-offset` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 边框虚线相位；接受可正可负的 CSS 长度，非零值需要单位。 |
+| `border-cap` | "butt" \| "round" \| "square" / none | 轮廓虚线端点形状 |
+| `border-join` | "miter" \| "round" \| "bevel" / none | 轮廓交点形状 |
+| `border-miter-limit` | value / none | 尖角的最大延伸与线宽之比 |
+| `border-opacity` | value / none | 边框独立透明度 0–1 |
+| `line-color` | color / none | 开放线条颜色；默认采用数据系列颜色或主题颜色 |
+| `line-width` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 开放线条宽度；非零 CSS 长度需要单位；也接受 thin/medium/thick，分别为 1/3/5 个布局 px。 |
+| `line-style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" / none | 线型；double/triple 保留透明间隔 |
+| `line-dash` | length[] / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 交替的实线段和间隔 CSS 长度列表；非零长度需要单位。 |
+| `line-dash-offset` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 线条虚线相位；接受可正可负的 CSS 长度，非零值需要单位。 |
+| `line-cap` | "butt" \| "round" \| "square" / none | 开放端点形状 |
+| `line-join` | "miter" \| "round" \| "bevel" / none | 线段交点形状 |
+| `line-miter-limit` | value / none | 尖角的最大延伸与线宽之比 |
+| `line-opacity` | value / none | 线条独立透明度 0–1 |
+| `fill` | paint / none | 形状内部的颜色、渐变、纹理或图片；none 表示无填充。 |
+| `opacity` | value / none | 对象透明度，范围 0–1；与父级透明度相乘。 |
+| `tick-font-size` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 刻度字号；使用带单位的 CSS 长度，默认继承字号。 |
+| `label-font-size` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 轴标题字号；使用带单位的 CSS 长度，默认继承字号。 |
+| `tick-color` | color / none | 刻度线与文字的颜色 |
+| `grid-color` | color / none | 网格线颜色 |
+| `grid-line-width` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 网格线宽；使用带单位的 CSS 长度，默认 0.3pt。 |
+| `grid-line-dash` | value / none | 网格虚线长度列表；非零 CSS 长度需要单位。 |
+| `start-head` | head / none | 起始端头部配置，默认无 |
+| `end-head` | head / none | 结束端头部配置，默认无 |
+| `start-cap` | "butt" \| "round" \| "square" / none | 独立端帽，默认继承 line_cap |
+| `end-cap` | "butt" \| "round" \| "square" / none | 独立端帽，默认继承 line_cap |
+| `text-fill` | paint / none | 字形填充 / Glyph paint; defaults to color |
+| `text-stroke-color` | color / none | 字形描边颜色 / Glyph stroke color |
+| `text-stroke-width` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 字形描边宽度 / Glyph stroke width |
+| `effects` | effect[] / none | 按顺序叠加阴影与发光 / Ordered shadow and glow effects |
+| `path` | material / none | 单条开放路径素材，保留原始曲线段；原路径端点为颈部，箭尖向外延伸 |
+| `warp` | text_warp / none | 字形变形 / Text warp configuration |
+| `extrude` | text_extrude / none | 二维矢量挤出 / Vector extrusion |
+| `shaft-width` | length \| (length,length) \| (number,length)[] / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值 |
+| `heads` | "start" \| "end" \| "both" / none | 头部所在端；燕尾只支持单头 |
+| `head-size` | (length,length) / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 头部的纵向长度与横向宽度；两端参数覆盖 head_size |
+| `start-head-size` | (length,length) / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 头部的纵向长度与横向宽度；两端参数覆盖 head_size |
+| `end-head-size` | (length,length) / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 头部的纵向长度与横向宽度；两端参数覆盖 head_size |
+| `line` | shorthand / none | 线条/边框简写：宽度 样式 颜色 |
+| `border` | shorthand / none | 线条/边框简写：宽度 样式 颜色 |
+| `background-color` | color / none | 背景颜色 |
+| `background-image` | paint / none | 单层 CSS 渐变 |
+| `font` | string / none | 字体简写：可选样式与字重、必需字号和字体族、可选 /行高；声明同时重置这些分项。 |
+| `box-shadow` | "none" / none | 逗号分层的盒阴影：x/y 偏移、可选 blur/spread/颜色及 inset；首层在上，声明重置全部阴影分项。 |
+| `text-shadow` | "none" / none | 文字阴影 |
+| `filter` | "none" / none | 单个 drop-shadow() |
+| `box-shadow-blur` | length-list / CSS lengths; px uses layout_dpi | 四级工作草案：模糊半径，保留已有层 |
+| `box-shadow-spread` | length-list / CSS lengths; px uses layout_dpi | 四级工作草案：可正可负的扩散 |
+| `box-shadow-offset` | offset-list / CSS lengths; px uses layout_dpi | 四级工作草案：偏移控制阴影层数 |
+| `box-shadow-color` | color-list / none | 四级工作草案：阴影颜色 |
+| `box-shadow-position` | "inset" \| "outset" / none | 四级工作草案：内外阴影 |
+| `animation` | motion / none | 动画简写：名称、时长、缓动、延迟、次数、方向、填充模式和播放状态；逗号分隔多段动画。 |
+| `animation-name` | motion / none | @keyframes 名称列表；none 不运行动画。 |
+| `animation-duration` | motion / none | 每轮时长，非负 s/ms；默认 0s，只有效果类可能仍不播放。 |
+| `animation-delay` | motion / none | 相对动作起点的 s/ms 延迟；负值从动画中途开始。 |
+| `animation-timing-function` | motion / none | linear、ease 系列、cubic-bezier() 或 steps()；控制关键帧之间的进度。 |
+| `animation-iteration-count` | motion / none | 非负次数，可为小数或 infinite；无限动画需有限步骤窗口。 |
+| `animation-direction` | motion / none | normal、reverse、alternate、alternate-reverse；指定各轮播放方向。 |
+| `animation-fill-mode` | motion / none | none、forwards、backwards、both；控制播放区间外的动画值。 |
+| `animation-play-state` | motion / none | running 或 paused；暂停动作需有限步骤窗口。 |
+| `transform` | motion / none | 动画变换函数列表；顺序影响结果，不改变静态布局及锚点。 |
+| `transform-origin` | motion / none | 动画变换原点；百分比相对未变换布局框。 |
+| `backface-visibility` | motion / none | visible 或 hidden；三维翻转时是否绘制背面。 |
+| `visibility` | motion / none | visible 或 hidden；改变动画可见性，不重排布局。 |
+
 ## 几何视图类型
 
 [锚点与路径查询](anchors.zh-CN.md)

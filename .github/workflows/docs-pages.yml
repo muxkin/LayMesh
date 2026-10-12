@@ -28,6 +28,9 @@ jobs:
       - run: python -m pip install -r release/docs-requirements.txt
       - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
       - run: python scripts/build-api-reference.py --check
+      - run: python scripts/build-style-animation-docs.py --check
+      - run: python scripts/build-library-docs.py --check
+      - run: node scripts/build-dashboard-data.mjs --check
       - run: python scripts/build-topic-walkthroughs.py --check
       - run: python scripts/check-feature-docs.py
       - run: python scripts/build-docs.py

@@ -1,7 +1,7 @@
 {
   "name": "laymesh-language",
   "displayName": "LayMesh",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "publisher": "Hyacine",
   "description": "%extension.description%",
   "icon": "icon.png",
@@ -368,6 +368,37 @@
           "pattern": "^#[0-9a-fA-F]{6}$",
           "scope": "resource",
           "description": "%config.export.animation.background%"
+        },
+        "laymesh.ffmpeg.executable": {
+          "type": "string",
+          "description": "%config.ffmpeg.executable%",
+          "scope": "machine"
+        },
+        "laymesh.ffmpeg.directory": {
+          "type": "string",
+          "description": "%config.ffmpeg.directory%",
+          "scope": "machine"
+        },
+        "laymesh.ffmpeg.searchPaths": {
+          "type": "array",
+          "description": "%config.ffmpeg.searchPaths%",
+          "items": {
+            "type": "string"
+          }
+        },
+        "laymesh.ffmpeg.downloadSource": {
+          "type": "string",
+          "description": "%config.ffmpeg.downloadSource%",
+          "default": "auto",
+          "enum": [
+            "auto",
+            "upstream",
+            "mirror"
+          ]
+        },
+        "laymesh.ffmpeg.mirrorBaseUrl": {
+          "type": "string",
+          "description": "%config.ffmpeg.mirrorBaseUrl%"
         }
       }
     },

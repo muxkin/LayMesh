@@ -139,6 +139,7 @@ pub fn export_options(
             !matches!(
                 k.as_str(),
                 "dpi"
+                    | "ffmpeg"
                     | "animation"
                     | "animation_formats"
                     | "svg"

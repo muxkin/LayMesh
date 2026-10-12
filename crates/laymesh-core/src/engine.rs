@@ -29,6 +29,9 @@ pub fn compile_preview_source(source: &str, file: &str, host: Host) -> Result<Sc
 pub struct Engine {
     pub host: Host,
     pub warnings: Vec<Diagnostic>,
+    pub(crate) css_warnings: RefCell<BTreeMap<(String, usize, String), Diagnostic>>,
+    pub(crate) css_viewport: [f64; 2],
+    pub(crate) css_entry_file: Option<String>,
     pub fonts: crate::text::FontSystem,
     pub(crate) art_cache: BTreeMap<String, Json>,
     pub unit: String,
@@ -112,6 +115,9 @@ impl Engine {
         Self {
             host,
             warnings: vec![],
+            css_warnings: RefCell::new(BTreeMap::new()),
+            css_viewport: [0.; 2],
+            css_entry_file: None,
             fonts,
             art_cache: BTreeMap::new(),
             unit: "mm".into(),
@@ -200,6 +206,7 @@ impl Engine {
     }
     pub(crate) fn run_entry(&mut self, source: &str, file: &str) -> Result<()> {
         self.file = file.into();
+        self.css_entry_file = Some(file.into());
         let stmts = parser::parse(source, file)?;
         let scope = Environment::root();
         if !matches!(self.run(&stmts, &scope)?, Flow::Normal) {
@@ -228,13 +235,13 @@ impl Engine {
                 }
             }
         }
+        let canvas_style = self.styled("canvas", &c.args, &Args::new())?;
         Ok(Scene {
             animation: self.compile_animation(&c.nodes)?,
             schema_version: 8,
             width: c.width,
             height: c.height,
-            background: c
-                .args
+            background: canvas_style
                 .get("background")
                 .map(V::json)
                 .unwrap_or(json!("none")),
@@ -242,7 +249,12 @@ impl Engine {
             canvas_unit: self.unit.clone(),
             export_dpi: 1200.,
             nodes: c.nodes.clone(),
-            warnings: self.warnings.clone(),
+            warnings: self
+                .warnings
+                .iter()
+                .cloned()
+                .chain(self.css_diagnostics())
+                .collect(),
             fonts: self.fonts.assets.clone(),
         })
     }
@@ -490,7 +502,17 @@ impl Engine {
             Ok(V::Bool(true))
         } else {
             let right = self.eval(b, s)?;
-            self.binary(op, left, right, l)
+            self.binary(op, &left, &right, l).map_err(|error| {
+                crate::unit_diagnostics::annotate(
+                    op,
+                    a,
+                    b,
+                    &left,
+                    &right,
+                    error,
+                    |op, a, b, loc| self.binary(op, &a, &b, loc),
+                )
+            })
         }
     }
     #[inline(never)]
@@ -646,7 +668,7 @@ impl Engine {
         );
         Ok((pos, named))
     }
-    fn binary(&self, op: &str, a: V, b: V, l: Loc) -> Result<V> {
+    fn binary(&self, op: &str, a: &V, b: &V, l: Loc) -> Result<V> {
         let a = a.value().clone();
         let b = b.value().clone();
         if op == "+" {
@@ -736,7 +758,7 @@ impl Engine {
                 if da == db {
                     u.clear();
                 } else if db != 0 {
-                    return Err(self.error("E_UNIT", "不支持倒数单位", l));
+                    return Err(self.error("E_UNIT", "不支持倒数或复合单位", l));
                 }
                 x / y
             }
@@ -1141,12 +1163,7 @@ impl Engine {
                     .ok_or_else(|| self.error("E_ARG", "需要数值", l))?;
                 for v in &pos[1..] {
                     if matches!(
-                        self.binary(
-                            if name == "min" { "<" } else { ">" },
-                            v.clone(),
-                            best.clone(),
-                            l
-                        )?,
+                        self.binary(if name == "min" { "<" } else { ">" }, v, &best, l)?,
                         V::Bool(true)
                     ) {
                         best = v.clone();
@@ -1210,6 +1227,7 @@ impl Engine {
             }
             self.unit = string(&a, "unit", "mm");
             self.dpi = num(&a, "layout_dpi", 96.);
+            self.css_viewport = pair(&a, "size", [0., 0.], &self.unit, self.dpi);
             if !matches!(
                 self.unit.as_str(),
                 "mm" | "cm" | "in" | "inch" | "pt" | "px"

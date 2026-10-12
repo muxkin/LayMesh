@@ -1,0 +1,42 @@
+# Reusable appearance and motion live in styled-theme.lcss; geometry stays here.
+page = canvas(size=(200mm,105mm), stylesheet="styled-theme.lcss", background="#f6f7fb")
+title = page.add(text("Style + motion",class="heading"),target=page.top_left,offset=(12mm,8mm))
+note = page.add(text("Three offline libraries / one project theme",class="caption"),target=title.bottom_left,offset=(0mm,5mm))
+
+function metric(label,value,detail,appearance) {
+  card = group(class="metric")
+  plate = card.add(rect(size=(54mm,38mm),class=appearance))
+  label_text = card.add(text(label,class="label"),target=plate.top_left,offset=(5mm,5mm))
+  value_text = card.add(text(value,class="value"),target=label_text.bottom_left,offset=(0mm,6mm))
+  card.add(text(detail,class="footnote"),target=value_text.bottom_left,offset=(0mm,7mm))
+  return card
+}
+metrics = [
+  ("Bootstrap","2 mm","Blur override only","bg-primary rounded shadow custom"),
+  ("Open Props","Gradient","Radius + layered shadow","ocean"),
+  ("Inset shadow","Inside","Same animation pipeline","inset")
+]
+instances = []
+for label,value,detail,appearance in metrics {
+  target = note.bottom_left
+  gap = (0mm,10mm)
+  if len(instances) > 0 {
+    target = instances[len(instances)-1].top_right
+    gap = (7mm,0mm)
+  }
+  item = page.add(metric(label,value,detail,appearance),target=target,offset=gap)
+  instances = append(instances,item)
+}
+rule = page.add(line(length=page.width-24mm,class="rule"),target=instances[0].bottom_left,offset=(0mm,11mm))
+page.add(text("Theme + components + anchors",class="caption"),target=rule.start,offset=(0mm,9mm))
+
+intro = page.step(name="Title",start="after-previous",hold=200ms)
+intro.animate(title,class="animate__animated animate__fadeInDown",duration=600ms)
+intro.animate(note,class="animate__animated animate__fadeIn",duration=400ms,delay=200ms)
+cards = page.step(name="Staggered cards",start="after-previous",hold=400ms)
+for i,item in enumerate(instances) {
+  cards.animate(item,class="animate__animated animate__fadeInUp",duration=700ms,delay=i*150ms)
+}
+cards.animate(rule,name="laymesh-draw",duration=1s,fill="both")
+focus = page.step(name="Inspect one card",start="after-previous",hold=400ms)
+focus.animate(instances[1],class="focus-motion")

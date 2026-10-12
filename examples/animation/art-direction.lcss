@@ -1,0 +1,32 @@
+@import "@laymesh/open-props.css";
+@import "@laymesh/animate.css";
+:root { font-family:"DejaVu Sans"; color:#243447; }
+.heading { font-size:4.5mm; color:#243447; }
+.caption { font-size:3mm; color:#526475; }
+.plate { background:linear-gradient(125deg,var(--violet-9),var(--blue-9)); border-radius:4mm; box-shadow:0.8mm 1.2mm 2mm #24344730; }
+.hero {
+  font-size:10mm;
+  text-fill:linear-gradient(to right,#ea366d,#365de6);
+  text-stroke-color:white; text-stroke-width:0.4pt;
+  extrude:text_extrude(depth=0.6mm,angle=45deg,color="#24376a");
+  effects:[shadow(blur=0.4mm,offset=(0.6mm,1mm),opacity=0.5)];
+}
+.curved { font-size:5mm; color:white; text-shadow:0.4mm 0.4mm 0.6mm #0006; }
+.wave {
+  font-size:6mm; color:white;
+  warp:text_warp(kind="wave",amplitude=1mm,wavelength=25mm);
+  effects:[glow(color="#6fdcff",blur=0.35mm,opacity=0.5)];
+}
+.route { fill:none; border-color:#ffffff70; border-width:0.4pt; }
+.stamp { filter:drop-shadow(0.8mm 0.8mm 0.5mm #0006); }
+.poster-note { font-size:2.6mm; color:#ffffffdd; }
+@keyframes float-wave {
+  from { transform:translateY(0mm); }
+  to { transform:translateY(-2mm); }
+}
+.wave-motion { animation:float-wave 1200ms ease-in-out 2 alternate both; }
+@keyframes inspect-poster {
+  from, to { transform:perspective(220mm) rotateY(0deg) rotateX(0deg); }
+  50% { transform:perspective(220mm) rotateY(12deg) rotateX(-5deg); }
+}
+.poster-motion { animation:inspect-poster 2s ease-in-out both; transform-origin:50% 50%; }

@@ -1,0 +1,122 @@
+# Layout uses components, loops and anchors. Plot data lives in its own file.
+page = canvas(size=(320mm,180mm), stylesheet="dashboard-theme.lcss", background="#f4f6fa")
+data = dict(src="dashboard-data.json")
+colors = ["#2975b9","#d88735","#318b7d","#8867b1"]
+equations = [
+  r"\int_0^\infty e^{-x^2}\,dx=\frac{\sqrt{\pi}}{2}",
+  r"E=\sum_{i=1}^{N}\frac{1}{2}m_i v_i^2",
+  r"\frac{\partial u}{\partial t}=\alpha\nabla^2 u",
+  r"\mathbf{A}=\begin{pmatrix}a&b\\c&d\end{pmatrix}",
+  r"f(x)=\frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}",
+  r"\hat{f}(\omega)=\int_{-\infty}^{\infty}f(t)e^{-i\omega t}\,dt",
+  r"\Delta G=\Delta H-T\Delta S",
+  r"\lim_{n\to\infty}\left(1+\frac{1}{n}\right)^n=e"
+]
+
+# Lay supports arithmetic and loops; cycle a palette without unrolling items.
+function cycle_index(index,count) {
+  while index >= count { index = index - count }
+  return index
+}
+
+# Seed the first item; anchor others to a neighbour or the previous row.
+function in_grid(material,items,columns,origin,inset,gap,opacity=1) {
+  count = len(items)
+  if count == 0 {
+    return page.add(material,target=origin,offset=inset,opacity=opacity)
+  }
+  if cycle_index(count,columns) == 0 {
+    return page.add(material,target=items[count-columns].bottom_left,offset=(0mm,gap[1]),opacity=opacity)
+  }
+  return page.add(material,target=items[count-1].top_right,offset=(gap[0],0mm),opacity=opacity)
+}
+
+function motif(index,size) {
+  tile = group()
+  plate = tile.add(rect(size=size,class="motif-plate"))
+  tile.add(ellipse(size=(size[0]/2,size[1]/2),class="motif-ring",border_color=colors[cycle_index(index,4)]),
+           anchor=center,target=plate.center)
+  tile.add(line(length=size[0]*0.8,class="motif-stroke"),anchor=center,target=plate.center,rotation=18deg)
+  return tile
+}
+motifs = []
+motif_size = (310mm/32-1mm,145mm/8-1mm)
+for i in range(256) {
+  item = in_grid(motif(i,motif_size),motifs,32,page.top_left,(5mm,25mm),(1mm,1mm),opacity=0.6)
+  motifs = append(motifs,item)
+}
+
+title = page.add(text("Complex dashboard / 12 charts + 24 equations",class="heading"),
+                 target=page.top_left,offset=(7mm,5mm))
+note = page.add(text("256 patterns | 12 charts | 24 equations | 3d",class="caption"),
+                target=title.bottom_left,offset=(0mm,4mm))
+
+chart_size = (304mm/4-3mm,90mm/3-3mm)
+function chart(index) {
+  card = group(class="chart-card")
+  plate = card.add(rect(size=chart_size,class="chart-plate"))
+  kind = "Signal"
+  if cycle_index(index,3) == 2 { kind = "Heat map" }
+  card.add(text("Panel "+str(index+1)+" / "+kind,class="panel-label"),
+           target=plate.top_left,offset=(2mm,1mm))
+  q = plot(size=(chart_size[0]-3mm,chart_size[1]-5mm),
+           plot_area=box(offset=(7mm,1mm),size=(chart_size[0]-12mm,chart_size[1]-12mm)),
+           frame=box,style=plot_style(font_family="DejaVu Sans",font_size=4pt,line_width=0.18mm),
+           x=axis(range=(0,10),ticks=[0,5,10]),y=axis(range=(-1.5,1.5),ticks=[-1,0,1]))
+  values = data["panels"][index]
+  if cycle_index(index,3) == 2 {
+    q.heatmap(z=values["z"],extent=(0,10,-1.5,1.5),origin=lower,cmap="viridis")
+  } else {
+    for k,ys in enumerate(values["series"]) {
+      q.line(x=data["x"],y=ys,color=colors[k])
+    }
+    q.scatter(x=data["scatter_x"],y=values["scatter_y"],color="#20354b",marker_size=0.45mm)
+  }
+  card.add(q,target=plate.top_left,offset=(0mm,4mm))
+  return card
+}
+charts = []
+for i in range(len(data["panels"])) {
+  item = in_grid(chart(i),charts,4,page.top_left,(8mm,27mm),(3mm,3mm))
+  charts = append(charts,item)
+}
+
+formula_size = (304mm/6-2mm,52mm/4-2mm)
+function equation_card(source) {
+  card = group(class="formula-card")
+  plate = card.add(rect(size=formula_size,class="formula-plate"))
+  card.add(formula(source=source,class="equation"),anchor=center,target=plate.center)
+  return card
+}
+formulas = []
+for i in range(24) {
+  item = in_grid(equation_card(equations[cycle_index(i,len(equations))]),formulas,6,
+                 charts[len(charts)-4].bottom_left,(0mm,8mm),(2mm,2mm))
+  formulas = append(formulas,item)
+}
+strokes = []
+for i in range(12) {
+  item = in_grid(line(length=20mm,line_color=colors[cycle_index(i,4)],line_width=0.22mm),
+                 strokes,12,formulas[len(formulas)-6].bottom_left,(0mm,4mm),(5mm,0mm))
+  strokes = append(strokes,item)
+}
+
+# Lists keep the placed instances available for a second pass of animation.
+scene = page.step(name="Complex scene",start="after-previous",duration=12s,hold=0s)
+scene.animate(title,name="title-motion",duration=3s,iterations="infinite",easing="linear",fill="both")
+for i,item in enumerate(charts) {
+  scene.animate(item,name="panel-flip",duration=3s,delay=-i*71ms,
+                iterations="infinite",easing="ease-in-out",fill="both")
+}
+for i,item in enumerate(formulas) {
+  scene.animate(item,name="panel-flip",duration=3s,delay=-(i+len(charts))*71ms,
+                iterations="infinite",easing="ease-in-out",fill="both")
+}
+for i in range(0,len(motifs),4) {
+  scene.animate(motifs[i],name="motif-motion",duration=4s,delay=-i*13ms,
+                iterations="infinite",easing="linear",fill="both")
+}
+for i,item in enumerate(strokes) {
+  scene.animate(item,name="laymesh-draw",duration=2s,delay=-i*90ms,
+                iterations="infinite",direction="alternate",easing="linear",fill="both")
+}

@@ -1,0 +1,104 @@
+{
+  "status": "passed",
+  "host": "VS Code actual preview webview",
+  "checks": [
+    "Units, rotated/nonuniform transforms, extra axes, log/symlog/reversed/broken axes, clipping, overlapping inset, polar deg/rad/reversal/center, radar spokes and polygon boundary",
+    "Open and reuse beside the editor; native canvas unit and Canvas",
+    "Actual webview mouse/zoom/pan/rulers/resize do not compile",
+    "English manifest commands/settings; explicit and automatic English UI switching without rendering",
+    "Created/deleted project configuration refreshes effective preview quality",
+    "Disk bitmap modification changes resource identity and restores correctly",
+    "Unsaved imported buffer wins without changing disk",
+    "Inverse-unit error explains the actual expression, jumps to source, and corrected buffer recovers",
+    "Rapid edits coalesce into the latest version",
+    "24 replay updates compact to one lossless delta; ancestor/descendant, root-count and resource replacement validated",
+    "Older native response arriving after a newer generation is discarded",
+    "Timeout kills isolated worker, automatically starts a new worker, and subsequent rendering succeeds",
+    "Panel disposal and fresh native worker after reopening",
+    ".laydoc language association; real page selection; independent cm units and formula; unsaved selected page; inactive page edits do not compile; stable ID survives reordering; edit-page action; whole/selected vector PDF",
+    "Animate.css preview controls, deterministic seeking, static restoration, no playback recompilation, editor MP4 export",
+    "Two concurrent previews; simple line and image resources; older webview reloads after closing the newer panel",
+    "Actual missing-FFmpeg modal identifies private directory and source; declining creates no installation or output"
+  ],
+  "ui": {
+    "bmp_pixel": [
+      29,
+      150,
+      219,
+      255
+    ],
+    "transparent_webp_pixel": [
+      255,
+      128,
+      127,
+      255
+    ],
+    "opaque_16bit_jpeg_pixel": [
+      136,
+      136,
+      136,
+      255
+    ],
+    "direct_export_save_dialog_verified": true,
+    "no_dpi_or_compression_prompts": true,
+    "initial_readout": "画布: X=5.500 cm  Y=4.000 cm  |  绘图 @1: x=4.99990  y=0.0000298187",
+    "english_readout": "Canvas: X=5.500 cm  Y=4.000 cm  |  Plot @1: x=4.99962  y=0.0000312500",
+    "state": {
+      "readout": "画布: X=5.500 cm  Y=4.000 cm  |  绘图 @1: x=4.99990  y=0.0000298187",
+      "blank": false,
+      "errors": true,
+      "unit": "cm"
+    },
+    "narrow": {
+      "body": 492,
+      "width": 492,
+      "canvas": 856,
+      "viewport": 428,
+      "dpr": 2,
+      "theme": "vscode-light"
+    },
+    "console_errors": [],
+    "viewports": [
+      "1440x1000 dark DPR 2",
+      "760x720 light DPR 2"
+    ],
+    "checks": [
+      "BMP on a Chinese/space/hash path",
+      "canvas/data hover",
+      "ruler markers",
+      "wheel anchor",
+      "Space drag",
+      "100%",
+      "ruler toggle",
+      "fit",
+      "continuous motion",
+      "pointer exit",
+      "narrow resize",
+      "DPR ruler pixels",
+      "explicit English and auto UI",
+      "view preserved on language change",
+      "English stale error and source action"
+    ],
+    "documents": {
+      "page_selector": true,
+      "formula_edit_visible": true,
+      "reordering_preserves_page_id": true,
+      "whole_pdf_direct_save_dialog": true,
+      "console_errors": []
+    },
+    "worker_resource_fetch_blocked": true,
+    "native_ffmpeg_confirmation": true,
+    "normal_host_shutdown": {
+      "command": "workbench.action.quit",
+      "exit_code": 0
+    },
+    "toolbar": {
+      "single_line": true,
+      "joined_present_button": true,
+      "refresh": true,
+      "page_arrows": true,
+      "footer_step_buttons": 3,
+      "playback_visibility_toggle": false
+    }
+  }
+}

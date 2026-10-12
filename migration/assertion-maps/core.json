@@ -303,7 +303,7 @@
           "test": "lcss_imports_variables_and_cycle_errors"
         }
       ],
-      "note": "Port of LCSS imports, variables, diagnostics and cycle detection; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+      "note": "Port of LCSS imports, variables, diagnostics and cycle detection; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields. Approved CSS compatibility update: invalid/unsupported CSS declarations now recover with W_CSS; missing assets, import cycles and invalid Lay arguments remain errors."
     },
     {
       "ids": [
@@ -404,7 +404,7 @@
           "test": "nested_interpolation_quotes_raw_comparisons_and_shorthand_order"
         }
       ],
-      "note": "Port of nested quotes in interpolation, raw comparisons and CSS shorthand order; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields."
+      "note": "Port of nested quotes in interpolation, raw comparisons and CSS shorthand order; original captured inputs and all parameter loops retained. Equivalent vector paths and run paints replace backend-specific SVG tags and legacy Scene storage fields. Approved CSS compatibility update: invalid/unsupported CSS declarations now recover with W_CSS; missing assets, import cycles and invalid Lay arguments remain errors."
     },
     {
       "ids": [

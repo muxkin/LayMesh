@@ -1,0 +1,8 @@
+/* Shared offline libraries; nothing is automatically imported. */
+@import "@laymesh/bootstrap.css";
+@import "@laymesh/open-props.css";
+@import "@laymesh/animate.css";
+
+/* Local appearance and motion follow the same cascade. */
+.custom { animation-duration: 2s; }
+.shadow.custom { box-shadow-blur: 2mm !important; }

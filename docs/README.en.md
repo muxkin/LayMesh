@@ -30,9 +30,8 @@ Look up APIs, understand implementation, maintain documentation, and review hist
 
 [Rebuild the gallery and high-resolution media](../site/README.en.md)
 
-Language 0.2 unifies dimensions, units, math and styling; the website and VS Code share completion and parameter hover.
+[Style manual](topics/lcss.en.md) · [Animation manual](topics/animation.en.md) · [Video tutorial](https://www.bilibili.com/video/BV1gpHn6eE4V)
 
-- [Parameters](topics/interface-reference.en.md)
-- [LCSS themes](topics/lcss.en.md)
-- [Editors](topics/editors.en.md)
-- [Migration](topics/migration.en.md)
+Current source, published packages and historical verification are identified separately. Check the installed version and its release notes.
+
+Start with [bundled libraries, sources and usage](topics/style-libraries.en.md), then read the parameter manuals.

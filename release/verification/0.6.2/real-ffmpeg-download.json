@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "distribution": "ffmpeg-static b6.1.1",
+  "source": "https://cdn.npmmirror.com/binaries/ffmpeg-static/b6.1.1/ffmpeg-linux-x64.gz",
+  "binary_sha256": "e7e7fb30477f717e6f55f9180a70386c62677ef8a4d4d1a5d948f4098aa3eb99",
+  "actual_version": "ffmpeg version 7.0.2-static https://johnvansickle.com/ffmpeg/  Copyright (c) 2000-2024 the FFmpeg developers",
+  "locale": "zh-CN",
+  "system_search": false,
+  "confirmed_download": true,
+  "license_and_readme_verified": true,
+  "export": {
+    "format": "mp4",
+    "width": 160,
+    "height": 104,
+    "duration": "2.000000"
+  },
+  "private_directory_scope": "isolated release validation; production defaults unchanged"
+}

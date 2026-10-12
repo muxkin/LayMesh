@@ -11,10 +11,6 @@ radar 为每个类别指定角度和各自的数值范围，再将各项归一�
 
 <!-- example:examples/manual/plot.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 categories 与 ranges 显式匹配，使用 closed=true 的 line 或 area 连接首尾。原始数据锚点可选 category/value，标签用 categories 或独立文本。
@@ -24,8 +20,6 @@ categories 与 ranges 显式匹配，使用 closed=true 的 line 或 area 连接
 ## 常见错误与限制
 
 类别顺序不会自动重排。每条数据数量必须与类别数量一致，范围须有效且值在可见范围内。不要把极坐标连续 theta 查询当作类别索引。
-
-## 逐项功能说明
 
 <!-- walkthrough:end -->
 

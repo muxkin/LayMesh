@@ -74,9 +74,7 @@
             "formulas",
             "shapes",
             "arrows",
-            "fills",
-            "lcss",
-            "animation"
+            "fills"
           ]
         },
         {
@@ -91,6 +89,62 @@
             "modules",
             "library-docs",
             "documents"
+          ]
+        },
+        {
+          "key": "style-libraries",
+          "title": [
+            "样式与动画库",
+            "Style and animation libraries"
+          ],
+          "pages": [
+            "style-libraries",
+            "style-bootstrap",
+            "style-open-props",
+            "style-animate-library",
+            "style-third-party"
+          ]
+        },
+        {
+          "key": "styles",
+          "title": [
+            "样式手册",
+            "Style manual"
+          ],
+          "pages": [
+            "lcss",
+            "style-start",
+            "style-cascade",
+            "style-properties",
+            "style-shadows",
+            "style-compatibility"
+          ]
+        },
+        {
+          "key": "motion",
+          "title": [
+            "动画手册",
+            "Animation manual"
+          ],
+          "pages": [
+            "animation",
+            "animation-start",
+            "animation-timing",
+            "animation-keyframes",
+            "animation-catalog",
+            "animation-extensions",
+            "animation-presentation",
+            "animation-export"
+          ]
+        },
+        {
+          "key": "style-motion-cases",
+          "title": [
+            "综合案例",
+            "Complete projects"
+          ],
+          "pages": [
+            "style-animation-examples"
           ]
         }
       ]
@@ -168,8 +222,8 @@
         "Running and integration"
       ],
       "intro": [
-        "选择 CLI、Python 或 Node 调用方式，完成导出与诊断。",
-        "Choose CLI, Python or Node, then export and inspect your result."
+        "选择 CLI、Python/Jupyter 或 Rust/WASM，完成导出与诊断。",
+        "Choose CLI, Python/Jupyter or Rust/WASM, then export and inspect."
       ],
       "groups": [
         {
@@ -290,7 +344,8 @@
           ],
           "pages": [
             "architecture",
-            "site"
+            "site",
+            "animation-internals"
           ]
         },
         {
@@ -666,8 +721,8 @@
     {
       "key": "node-reference",
       "title": [
-        "Node API",
-        "Node API"
+        "Rust/WASM 接口参考",
+        "Rust/WASM API reference"
       ],
       "example": null
     },
@@ -690,8 +745,8 @@
     {
       "key": "lcss",
       "title": [
-        "LCSS 主题与填充",
-        "LCSS themes and fills"
+        "样式手册",
+        "Style manual"
       ]
     },
     {
@@ -749,8 +804,142 @@
     {
       "key": "animation",
       "title": [
-        "动画与演示",
-        "Animation and presentations"
+        "动画手册",
+        "Animation manual"
+      ]
+    },
+    {
+      "key": "style-start",
+      "title": [
+        "入门与样式库",
+        "Getting started and libraries"
+      ]
+    },
+    {
+      "key": "style-cascade",
+      "title": [
+        "选择器、变量与级联",
+        "Selectors, variables and cascade"
+      ]
+    },
+    {
+      "key": "style-properties",
+      "title": [
+        "外观属性与单位",
+        "Appearance properties and units"
+      ]
+    },
+    {
+      "key": "style-shadows",
+      "title": [
+        "阴影与效果",
+        "Shadows and effects"
+      ]
+    },
+    {
+      "key": "style-compatibility",
+      "title": [
+        "兼容与排错",
+        "Compatibility and troubleshooting"
+      ]
+    },
+    {
+      "key": "animation-start",
+      "title": [
+        "第一段动画",
+        "Your first animation"
+      ]
+    },
+    {
+      "key": "animation-timing",
+      "title": [
+        "步骤与动作参数",
+        "Steps and action parameters"
+      ]
+    },
+    {
+      "key": "animation-keyframes",
+      "title": [
+        "自定义关键帧",
+        "Custom keyframes"
+      ]
+    },
+    {
+      "key": "animation-catalog",
+      "title": [
+        "97 个效果目录",
+        "All 97 effects"
+      ]
+    },
+    {
+      "key": "animation-extensions",
+      "title": [
+        "描线与揭示",
+        "Draw and reveal"
+      ]
+    },
+    {
+      "key": "animation-presentation",
+      "title": [
+        "放映与多页演示",
+        "Presentation and multiple pages"
+      ]
+    },
+    {
+      "key": "animation-export",
+      "title": [
+        "导出、兼容与排错",
+        "Export, compatibility and troubleshooting"
+      ]
+    },
+    {
+      "key": "animation-internals",
+      "title": [
+        "播放实现与验证",
+        "Playback implementation and verification"
+      ]
+    },
+    {
+      "key": "style-animation-examples",
+      "title": [
+        "样式与动画综合案例",
+        "Styles and animation projects"
+      ],
+      "example": "examples/animation/styled-cards.lay"
+    },
+    {
+      "key": "style-libraries",
+      "title": [
+        "样式与动画库",
+        "Style and animation libraries"
+      ]
+    },
+    {
+      "key": "style-bootstrap",
+      "title": [
+        "Bootstrap",
+        "Bootstrap"
+      ]
+    },
+    {
+      "key": "style-open-props",
+      "title": [
+        "Open Props",
+        "Open Props"
+      ]
+    },
+    {
+      "key": "style-animate-library",
+      "title": [
+        "Animate.css",
+        "Animate.css"
+      ]
+    },
+    {
+      "key": "style-third-party",
+      "title": [
+        "第三方 CSS 与共享主题",
+        "Third-party CSS and shared themes"
       ]
     }
   ]

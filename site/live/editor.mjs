@@ -1,9 +1,12 @@
 import {PlaybackStats} from './playback-stats.mjs';
-import {AnimationPlayer} from './animation-player.mjs';
+import {PreviewPlayer} from './preview-player.mjs';
+import {PreviewControls} from './preview-controls.mjs';
+import {presentationEntry} from './presentation-entry.mjs';
 import {Presentation} from './presentation.mjs';
 import {uiIcon,iconLabel} from './presentation-icons.mjs';
 import {webPresentationProvider} from './presentation-web.mjs';
 import { Workspace } from './workspace.mjs';
+import {setupLibraryCatalog} from './library-catalog.mjs';
 const en=document.documentElement.lang==='en', t=(zh,enText)=>en?enText:zh;
 const base=new URL('./',import.meta.url);
 class ExampleEditor {
@@ -15,11 +18,42 @@ class ExampleEditor {
   this.diagnosticPanel=document.createElement('div');this.diagnosticPanel.className='live-diagnostics-panel';this.diagnosticPanel.hidden=true;this.diagnostics.before(this.diagnosticPanel);this.diagnosticPanel.append(this.diagnostics);const heading=document.createElement('div');heading.className='diagnostic-heading';this.diagnosticTitle=document.createElement('strong');const close=document.createElement('button');close.type='button';close.setAttribute('aria-label',t('关闭诊断','Close diagnostics'));close.append(uiIcon('close'));close.onclick=()=>{this.diagnosticsOpen=false;this.sync();};heading.append(this.diagnosticTitle,close);this.diagnosticPanel.prepend(heading);this.diagnosticNote=document.createElement('p');this.diagnosticNote.className='diagnostic-note';heading.after(this.diagnosticNote);
   for(const [label,action]of [[t('复制','Copy'),()=>{const field=document.createElement('textarea');field.value=this.diagnostics.textContent;this.diagnosticPanel.append(field);field.select();document.execCommand('copy');field.remove();}],[t('跳转源码','Go to source'),async()=>{const error=this.currentError;if(!error)return;const file=error.file?.replace(/^\//,'')||this.entry;module.dispatchEvent(new CustomEvent('laymesh:select-source',{bubbles:true}));const tab=[...module.querySelectorAll('.source-files [role=tab]')].find(e=>e.title===file);tab?.click();const panel=module.querySelector('.source-panel:not([hidden])');if(!panel)return;await this.editor(panel);const view=this.views.get(file)?.view;if(view){const line=view.state.doc.line(Math.min(error.loc?.line||1,view.state.doc.lines));view.dispatch({selection:{anchor:Math.min(line.to,line.from+(error.loc?.column||1)-1)}});view.focus();}}],[t('重试','Retry'),()=>this.retry()]]){const button=document.createElement('button');button.type='button';button.textContent=label;button.onclick=action;this.diagnosticPanel.append(button);}
   this.playbackStats=new PlaybackStats();
-  this.player=new AnimationPlayer(module.querySelector('.preview-toolbar').parentElement,()=>{if(this.player?.running)this.playbackStats.refresh(performance.now());this.wasRunning=!!this.player?.running;this.requestPaint(this.player?.running);},{statusInterval:100,page:direction=>{const n=(this.pageSelect?.selectedIndex??-1)+direction;if(!this.pageSelect||n<0||n>=this.pageSelect.options.length)return false;this.pageSelect.selectedIndex=n;this.pageSelect.onchange();return true;}});const motion=document.createElement('details');motion.className='preview-motion-menu';const trigger=document.createElement('summary');trigger.textContent=t('播放控制','Playback controls');motion.append(trigger,this.player.bar);module.querySelector('.preview-toolbar').append(motion);
+  this.player=new PreviewPlayer(module.querySelector('.preview-toolbar').parentElement,()=>{if(this.player?.running)this.playbackStats.refresh(performance.now());this.wasRunning=!!this.player?.running;this.previewControls?.sync();this.requestPaint(this.player?.running);},{statusInterval:100,page:direction=>{const n=(this.pageSelect?.selectedIndex??-1)+direction;if(!this.pageSelect||n<0||n>=this.pageSelect.options.length)return false;this.pageSelect.selectedIndex=n;this.pageSelect.onchange();return true;}});const motion=document.createElement('details');motion.className='preview-motion-menu';const trigger=document.createElement('summary');trigger.textContent=t('播放控制','Playback controls');motion.append(trigger,this.player.bar);module.querySelector('.preview-toolbar').append(motion);
   const canvas=document.createElement('canvas');canvas.className=this.image.className;canvas.hidden=true;canvas.setAttribute('role','img');canvas.setAttribute('aria-label','LayMesh');this.image.replaceWith(canvas);this.image=canvas;
   this.overview=document.createElement('canvas');this.overview.className='live-overview';this.overview.hidden=true;this.overview.setAttribute('aria-hidden','true');this.overview.style.pointerEvents='none';canvas.before(this.overview);
   this.module.addEventListener('laymesh:draw',()=>this.requestPaint());
-  this.workspace=new Workspace(module,offset=>this.editSummary(offset));
+  this.workspace=new Workspace(module);this.previewControls=new PreviewControls(this);
+  const catalog=module.closest('.animation-catalog');
+  if(catalog){
+   this.effectSelect=catalog.querySelector('.effect-select');
+   const effects=JSON.parse(catalog.querySelector('.effect-data').textContent);
+   const describe=()=>{const effect=effects.find(e=>e.name===this.effectSelect.value);catalog.querySelector('.effect-description').textContent=effect?t(effect.description[0],effect.description[1]):'';};
+   describe();
+   this.effectSelect.addEventListener('change',async()=>{
+    const selection=this.effectSelect.value;
+    if(!effects.some(e=>e.name===selection))return;
+    this.effectChange=(this.effectChange||0)+1;const revision=this.effectChange;this.effectPreparing=true;
+    this.player.action('static');this.playAfterPaint=false;this.module.dataset.playRequested='false';describe();
+    const panel=module.querySelector('[data-edit-file="'+this.entry+'"]');
+    module.dispatchEvent(new CustomEvent('laymesh:select-source',{bubbles:true}));
+    await this.editor(panel);
+    if(revision!==this.effectChange)return;
+    const view=this.views.get(this.entry)?.view;
+    if(!view){this.effectPreparing=false;return;}
+    const current=view.state.doc.toString(),effectClass=new RegExp('animate__(?:'+effects.map(e=>e.name).join('|')+')\\b');
+    const source=(effectClass.test(current)?current:this.original[this.entry]).replace(effectClass,'animate__'+selection);
+    view.dispatch({changes:{from:0,to:view.state.doc.length,insert:source}});
+    this.activate();this.schedule(true);this.effectPreparing=false;
+   });
+   catalog.querySelector('.effect-play').addEventListener('click',()=>{
+    this.module.dataset.playRequested='true';this.activate();
+    if(!this.effectPreparing&&this.module.dataset.liveState==='success'&&this.presented&&this.player.metadata){
+     this.module.dataset.playRequested='false';this.player.action('replay');
+    }
+   });
+   catalog.querySelector('.effect-static').addEventListener('click',()=>{this.playAfterPaint=false;this.module.dataset.playRequested='false';this.player.action('static');});
+   module.querySelector('.live-reset').addEventListener('click',()=>{this.effectChange=(this.effectChange||0)+1;this.effectPreparing=false;this.effectSelect.value='fadeInUp';describe();});
+  }
   module.querySelector('.diagnostics-toggle').addEventListener('click',()=>{this.diagnosticsOpen=!this.diagnosticsOpen;this.sync();});
   module.querySelector('.live-run').addEventListener('click',()=>this.retry());
   module.querySelector('.startup-retry').addEventListener('click',()=>this.retry());
@@ -28,7 +62,8 @@ class ExampleEditor {
   module.querySelector('.live-system-fonts').addEventListener('click',()=>this.localFonts());
   module.querySelector('.live-font-file').addEventListener('change',async e=>{for(const file of e.target.files)await this.font(file.name,await file.arrayBuffer());e.target.value='';});
   module.addEventListener('laymesh:tab',()=>this.sync());
-  this.presentation=new Presentation({base,provider:webPresentationProvider(this,base),onEnter:()=>{this.previewResume=this.player.running;if(this.previewResume)this.player.action('play');this.previewView={zoom:this.workspace.zoom,pan:{...this.workspace.pan}};},onExit:()=>{if(this.previewView){Object.assign(this.workspace,this.previewView);this.workspace.fit();}if(this.previewResume)this.player.start();}});window.addEventListener('pagehide',()=>this.presentation.dispose(),{once:true});const previewToolbar=module.querySelector('.preview-toolbar');previewToolbar.append(this.presentation.button);const options=document.createElement('details');options.className='preview-options-menu';const optionsTrigger=document.createElement('summary');optionsTrigger.setAttribute('aria-label',t('更多','More'));optionsTrigger.append(uiIcon('more'));const popover=document.createElement('div');popover.className='preview-options-popover';const zoomControls=module.querySelector('.preview-zoom');previewToolbar.querySelector('h2').after(module.querySelector('.preview-fit'));popover.append(module.querySelector('.preview-backgrounds'),module.querySelector('.preview-enlarge'),zoomControls,motion);options.append(optionsTrigger,popover);previewToolbar.append(options);options.addEventListener('toggle',()=>{if(options.open)module.querySelectorAll('details[open]:not(.dependencies)').forEach(other=>{if(other!==options&&!options.contains(other))other.open=false;});});module.querySelector('.workspace-status').prepend(module.querySelector('.diagnostics-toggle'));this.sync();
+  this.presentation=new Presentation({base,provider:webPresentationProvider(this,base),onEnter:()=>{this.presentation.parent=this.workspace.dialog||document.body;this.previewResume=this.player.running;if(this.previewResume)this.player.action('play');this.previewView={zoom:this.workspace.zoom,pan:{...this.workspace.pan}};},onExit:()=>{if(this.previewView){Object.assign(this.workspace,this.previewView);this.workspace.fit();}if(this.previewResume)this.player.start();}});window.addEventListener('pagehide',()=>this.presentation.dispose(),{once:true});const previewToolbar=module.querySelector('.preview-toolbar');previewToolbar.append(presentationEntry(this.presentation));const options=document.createElement('details');options.className='preview-options-menu';const optionsTrigger=document.createElement('summary');optionsTrigger.setAttribute('aria-label',t('更多','More'));optionsTrigger.append(uiIcon('more'));const popover=document.createElement('div');popover.className='preview-options-popover';const zoomControls=module.querySelector('.preview-zoom');previewToolbar.querySelector('h2').after(module.querySelector('.preview-fit'));popover.append(module.querySelector('.preview-backgrounds'),module.querySelector('.preview-enlarge'),zoomControls,motion);options.append(optionsTrigger,popover);previewToolbar.append(options);options.addEventListener('toggle',()=>{if(options.open)module.querySelectorAll('details[open]:not(.dependencies)').forEach(other=>{if(other!==options&&!options.contains(other))other.open=false;});});module.querySelector('.workspace-status').prepend(module.querySelector('.diagnostics-toggle'));this.sync();
+  setupLibraryCatalog(this,module);
  }
  retry(){if(this.sourceLoadError){location.reload();return;}if(!this.ready||!this.worker){this.worker?.terminate();this.worker=null;this.busy=false;}if(this.fullFontState==='error')this.fullFontState='idle';this.activate();this.schedule(true);}
  ensureFullFonts(){if(!this.ready||this.fullFontState!=='idle')return;this.fullFontState='loading';this.module.dataset.fullFonts='loading';this.worker.postMessage({type:'full-fonts'});}
@@ -88,16 +123,11 @@ class ExampleEditor {
   this.sourceLoading??=import('./source-editor.mjs');
   return this.sourceLoading.then(editor=>{this.sourceEditor=editor;if(!panel.hidden&&this.module.dataset.mode==='source')editor.editor.call(this,panel);},error=>{this.sourceLoadError=true;this.error({message:error.message});});
  }
- async editSummary(offset){
-  this.module.dispatchEvent(new CustomEvent('laymesh:select-source',{bubbles:true}));
-  await this.editor(this.module.querySelector('.source-panel:not([hidden])'));
-  this.sourceEditor?.focusEntry.call(this,offset);this.activate();
- }
  sync(){
-  const summary=this.module.dataset.mode==='summary',panel=this.module.querySelector('.source-panel:not([hidden])'),editable=!summary&&!!panel?.dataset.editFile;
+  const panel=this.module.querySelector('.source-panel:not([hidden])'),editable=!!panel?.dataset.editFile;
   if(this.pageSelect)this.pageSelect.hidden=false;
-  this.toolbar.hidden=!editable;this.module.querySelector('.summary-edit').hidden=!summary;
-  if(editable){this.editor(panel);if(this.presented)this.ensureFullFonts();}
+  this.toolbar.hidden=!editable;
+  if(editable&&this.activated)this.editor(panel);
   // Playback and the current page are independent of the source editor tab.
   const live=!!this.last&&!!this.presented;
   this.static.hidden=live;this.image.hidden=!live;
@@ -108,7 +138,7 @@ class ExampleEditor {
   this.startup.querySelector('.startup-retry').hidden=!failed;
   this.overview.hidden=this.player.time!==null||!live||this.overviewGeneration!==this.last.generation;
   this.module.dataset.previewState=this.module.dataset.liveState||'pending';
-  this.module.querySelector('.live-modified').textContent=this.module.dataset.modified==='true'?(summary?t('草稿已修改 · 仅本页','Draft modified · this page'):t('已修改 · 仅本页','Modified · this page')):t('修改仅保留在本页','Edits stay on this page');
+  this.module.querySelector('.live-modified').textContent=this.module.dataset.modified==='true'?t('已修改 · 仅本页','Modified · this page'):t('修改仅保留在本页','Edits stay on this page');
   this.status.textContent=this.statusText||t('正在准备预览…','Preparing preview…');
   const stale=this.last&&this.last.id!==this.seq;
   this.module.querySelector('.live-total').textContent=this.last?`${stale?t('上次合计','Previous total'):t('合计','Total')} ${this.last.metrics.total.toFixed(1)} ms`:t('合计 —','Total —');
@@ -118,7 +148,7 @@ class ExampleEditor {
   note.hidden=(!stale&&this.module.dataset.liveState!=='error'&&!pendingDraft);
   note.textContent=this.module.dataset.liveState==='error'?(this.last?t('上次成功结果','Last successful result'):t('原始示例 · 编辑未通过','Original example · edits failed')):(this.last?t('上次结果 · 等待更新','Previous result · updating'):t('原始示例 · 等待更新','Original example · updating'));
   const diagnostic=!!this.diagnostics.textContent,button=this.module.querySelector('.diagnostics-toggle');
-  button.hidden=!diagnostic;const diagnosticLabel=this.module.dataset.liveState==='error'?t('1 个错误','1 error'):t(`${this.diagnostics.textContent.split('\n').length} 个警告`,`${this.diagnostics.textContent.split('\n').length} warnings`);iconLabel(button,'warning',diagnosticLabel);this.diagnosticTitle.textContent=diagnosticLabel;this.diagnosticNote.textContent=this.currentError?t('源码有错误，显示上次结果','Source error; showing the last result'):'';button.setAttribute('aria-expanded',String(!!this.diagnosticsOpen));
+  button.hidden=!diagnostic;const diagnosticLabel=this.module.dataset.liveState==='error'?t('1 个错误','1 error'):t(`${this.warningCount||0} 个警告`,`${this.warningCount||0} warnings`);iconLabel(button,'warning',diagnosticLabel);this.diagnosticTitle.textContent=diagnosticLabel;this.diagnosticNote.textContent=this.currentError?t('源码有错误，显示上次结果','Source error; showing the last result'):'';button.setAttribute('aria-expanded',String(!!this.diagnosticsOpen));
   this.diagnostics.hidden=!diagnostic||!this.diagnosticsOpen;this.diagnosticPanel.hidden=this.diagnostics.hidden;
   this.workspace?.fit();
  }
@@ -132,10 +162,11 @@ class ExampleEditor {
   if(data.document)this.updateDocument(data.document);
   this.last=data;
   if(this.readyMs===undefined){this.readyMs=performance.now();this.module.dataset.readyMs=this.readyMs.toFixed(1);}
-  const resume=this.player.resume;this.player.resume=false;this.player.update(data.inspection.animation);
-  this.playAfterPaint=!!data.inspection.animation&&(!!resume||this.module.dataset.playRequested==='true');
-  if(this.playAfterPaint)this.player.seek(resume===-1?this.player.timeline.steps.at(-1).start:0);this.module.dataset.generation=String(data.generation);this.module.dataset.painted='false';this.paintKey='';this.image.dataset.aspectRatio=String(data.inspection.page.width/data.inspection.page.height);this.statusText=data.inspection.animation?t('可以播放','Ready to play'):t('预览已更新','Preview updated');
-  this.currentError=null;if(!data.warnings.length)this.diagnosticsOpen=false;this.diagnostics.textContent=data.warnings.map(w=>`${w.code} ${w.file}:${w.loc.line}:${w.loc.column} — ${w.message}`).join('\n');this.module.dataset.liveState='success';this.sync();this.updateMetrics();this.requestPaint(true);
+  const resume=this.player.resume;this.player.update(data.inspection.animation);
+  const resumeStart=resume?this.player.restorePage(resume):false;
+  this.playAfterPaint=!!data.inspection.animation&&(resumeStart||this.module.dataset.playRequested==='true');
+  if(this.playAfterPaint&&!resume)this.player.seek(0);this.previewControls.update();this.module.dataset.generation=String(data.generation);this.module.dataset.painted='false';this.paintKey='';this.image.dataset.aspectRatio=String(data.inspection.page.width/data.inspection.page.height);this.statusText=data.inspection.animation?t('可以播放','Ready to play'):t('预览已更新','Preview updated');
+  this.currentError=null;this.warningCount=data.warnings.length;if(!this.warningCount)this.diagnosticsOpen=false;this.diagnostics.textContent=data.warnings.map(w=>`${w.code} ${w.file}:${w.loc.line}:${w.loc.column} — ${w.message}`).join('\n');this.module.dataset.liveState='success';this.sync();this.updateMetrics();this.requestPaint(true);
  }
  updateMetrics(){const now=performance.now();if(this.player.running&&now<this.nextMetrics)return;this.nextMetrics=now+250;const m=this.last.metrics,ms=n=>`${n.toFixed(1)} ms`;this.metrics.textContent=t(`编译 ${ms(m.compile)} · 绘制指令 ${ms(m.lower)} · 绘制 ${ms(m.raster)} · 合计 ${ms(m.total)} · 初始化 ${ms(this.initialization||m.initialization)} · 资源 ${ms(m.resources)} · 准备 ${ms(this.readyMs||0)} · 首帧 ${ms(this.firstFrameMs||0)}`,`Compile ${ms(m.compile)} · Commands ${ms(m.lower)} · Raster ${ms(m.raster)} · Total ${ms(m.total)} · Initialize ${ms(this.initialization||m.initialization)} · Resources ${ms(m.resources)} · Ready ${ms(this.readyMs||0)} · First frame ${ms(this.firstFrameMs||0)}`);if(this.playbackStats.fps)this.metrics.textContent+=t(` · 呈现估计 ${this.playbackStats.fps.toFixed(1)} fps · 提交 ${this.playbackStats.submissionFps.toFixed(1)} fps · 错过时隙估计 ${this.playbackStats.missedPercent.toFixed(1)}%`,` · Presentation estimate ${this.playbackStats.fps.toFixed(1)} fps · Submissions ${this.playbackStats.submissionFps.toFixed(1)} fps · Missed slots estimate ${this.playbackStats.missedPercent.toFixed(1)}%`);this.metrics.textContent+=` · ${this.module.dataset.renderBackend||'Skia'} · ${this.module.dataset.renderWidth||0}×${this.module.dataset.renderHeight||0} · ${t('采样','Sample')} ${ms(Number(this.module.dataset.sampleMs||0))}`;if(this.module.dataset.gpuMs)this.metrics.textContent+=` · GPU ${ms(Number(this.module.dataset.gpuMs))}`;this.metrics.title=t('帧率由浏览器刷新回调估计，不代表显示器实际扫描输出。绘制耗时为 CPU 提交；GPU 查询可用时另列。 本设备本次浏览器实测；不包含输入防抖等待。','Presentation is estimated from refresh callbacks, not physical scan-out. Raster time is CPU submission; GPU time is separate when available. Excludes typing debounce.');this.module.querySelector('.live-total').textContent=`${t('合计','Total')} ${ms(m.total)}`;}
  positionPixels(){if(!this.presented||!this.last)return;const box=this.workspace.canvas.getBoundingClientRect(),page=this.last.inspection.page,c=this.presented.rect,sx=box.width/page.width,sy=box.height/page.height;Object.assign(this.image.style,{position:'absolute',left:c[0]*sx+'px',top:c[1]*sy+'px',width:(c[2]-c[0])*sx+'px',height:(c[3]-c[1])*sy+'px',maxWidth:'none',maxHeight:'none'});
@@ -173,7 +204,7 @@ class ExampleEditor {
  }
 
  error(error){this.currentError=error;if(error.document)this.updateDocument(error.document);this.statusText=this.last?t('源码有错误，显示上次结果','Source error; showing last successful result'):t('当前源码未通过','Current source failed');this.diagnostics.textContent=[error.code,error.file,error.loc?`${error.loc.line}:${error.loc.column}`:'',error.message].filter(Boolean).join(' ');this.module.dataset.liveState='error';this.sync();}
- reset(restart=true){this.presentation?.invalidate();this.playAfterPaint=false;this.module.dataset.playRequested='false';const play=this.startup.querySelector('.startup-play');if(play){play.disabled=false;play.textContent=t('播放','Play');}this.player.update(null);this.seq++;this.pageId=undefined;if(this.pageSelect){this.pageSelect.remove();this.pageSelect=null;}clearTimeout(this.debounce);this.worker?.terminate();this.worker=null;clearTimeout(this.initTimeout);clearTimeout(this.timeout);this.busy=false;this.pending=false;this.files={...this.original};this.sourceEditor?.reset.call(this);this.last=null;this.presented=null;clearTimeout(this.paintTimer);this.paintTimer=0;this.paintKey='';this.mainSkia?.dispose();this.mainSkia=null;const blank=this.image.cloneNode(false);this.image.replaceWith(blank);this.image=blank;this.diagnostics.textContent='';this.diagnosticsOpen=false;this.metrics.textContent='';this.statusText='';this.workspace.zoomTo(1);this.sync();this.changed();if(restart)this.schedule(true);}
+ reset(restart=true){this.previewControls?.close();if(this.previewControls)this.previewControls.ready=false;this.presentation?.invalidate();this.playAfterPaint=false;this.module.dataset.playRequested='false';const play=this.startup.querySelector('.startup-play');if(play){play.disabled=false;play.textContent=t('播放','Play');}this.player.update(null);this.seq++;this.pageId=undefined;if(this.pageSelect){this.pageSelect.remove();this.pageSelect=null;}clearTimeout(this.debounce);this.worker?.terminate();this.worker=null;clearTimeout(this.initTimeout);clearTimeout(this.timeout);this.busy=false;this.pending=false;this.files={...this.original};this.sourceEditor?.reset.call(this);this.last=null;this.presented=null;clearTimeout(this.paintTimer);this.paintTimer=0;this.paintKey='';this.mainSkia?.dispose();this.mainSkia=null;const blank=this.image.cloneNode(false);this.image.replaceWith(blank);this.image=blank;this.diagnostics.textContent='';this.diagnosticsOpen=false;this.metrics.textContent='';this.statusText='';this.workspace.zoomTo(1);this.sync();this.changed();if(restart)this.schedule(true);}
 
  async font(name,bytes,alias){this.activate();const id=`font-${this.loadedFonts.length}`,font={id,name,bytes,alias};this.loadedFonts.push(font);this.worker.postMessage({type:'font',...font});}
  async localFonts(){this.diagnosticsOpen=true;if(!window.queryLocalFonts){this.diagnostics.textContent=t('此浏览器无法读取系统字体；请选择字体文件。未加载的字符显示方框。','This browser cannot read installed fonts. Select a font file; missing glyphs display as boxes.');this.sync();return;}

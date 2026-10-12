@@ -65,6 +65,7 @@ class PreviewWorker {
   },job.timeout);
   const request={protocol:3,resource_dir:this.resourceDir,...job.request};if(request.protocol===3&&!this.capabilities.includes('display-list-v3')){clearTimeout(this.renderTimer);this.active=null;job.done({error:{code:'E_PREVIEW_PROTOCOL',message:'Native engine does not support drawing protocol 3'},dependencies:[]});this.pump();return;}
   if(request.type==='animate'&&!this.capabilities.includes('animation-v1')){clearTimeout(this.renderTimer);this.active=null;job.done({error:messageError('Update LayMesh to support animation export','请更新 LayMesh 以支持动画导出')});this.pump();return;}
+  if((job.source?.includes('@laymesh/')||Object.values(job.overlays||{}).some(s=>s.includes('@laymesh/')))&&!this.capabilities.includes('bundled-stylesheets-v1')){clearTimeout(this.renderTimer);this.active=null;job.done({error:messageError('The configured LayMesh engine lacks bundled stylesheets. Update laymesh.executable or use the engine bundled with the current extension.','配置的 LayMesh 引擎不支持内置样式库，请更新 laymesh.executable 或使用当前扩展内置引擎。')});this.pump();return;}
   if(request.protocol===3&&this.capabilities.includes('display-list-gzip-v3'))request.compressed_display_list=true;
   if(!request.presentation_revision&&request.protocol===3&&this.capabilities.includes('display-list-updates-v3'))request.display_list_updates=true;
   this.process.stdin.write(JSON.stringify({...request,id:this.active.id,file:job.file,source:job.source,overlays:job.overlays})+'\n');
@@ -81,6 +82,7 @@ class PreviewWorker {
 function editorDefaults(uri){
  const cfg=vscode.workspace.getConfiguration('laymesh',uri),user={},workspace={};
  const mappings={
+  'ffmpeg.executable':'export.ffmpeg.executable','ffmpeg.directory':'export.ffmpeg.directory','ffmpeg.searchPaths':'export.ffmpeg.search_paths','ffmpeg.downloadSource':'export.ffmpeg.download_source','ffmpeg.mirrorBaseUrl':'export.ffmpeg.mirror_base_url',
   'export.animation.background':'export.animation.background','export.animation.media':'export.animation.media','export.animation.width':'export.animation.width','export.animation.fps':'export.animation.fps','export.animation.reducedMotion':'export.animation.reduced_motion','export.animation.crf':'export.animation.crf','export.animation.preset':'export.animation.preset','export.dpi':'export.dpi','export.quality':['export.jpeg.quality','export.webp.quality'],
   'export.tiffCompression':'export.tiff.compression','export.pngCompression':'export.png.compression',
   'export.background':['export.jpeg.background','export.gif.background','export.ppm.background','export.pgm.background','export.pbm.background'],
@@ -105,6 +107,39 @@ function activatePreview(context,binary,output){
  const locale=()=>{const language=vscode.workspace.getConfiguration('laymesh').get('language','auto');return language==='auto'?vscode.env.language:language;};
  const text=(zh,en)=>/^zh/i.test(locale())?zh:en;
  const relevant=(state,doc)=>doc.uri.scheme==='file'&&(keyOf(doc.uri)===state.file||state.dependencies.has(keyOf(doc.uri)));
+ function ffmpegCommand(command,uri,format,provided={},progress,token,cancelFile){
+  return new Promise((resolve,reject)=>{
+   const args=['ffmpeg',command,'--file',keyOf(uri),'--format',format,'--json','--settings-stdin'];
+   if(provided.config)args.push('--config',String(provided.config));
+   if(command==='install')args.push('--yes','--progress-json','--cancel-file',cancelFile);
+   const proc=spawn(binary,args,{stdio:['pipe','pipe','pipe'],windowsHide:true,env:{...process.env,LAYMESH_FFMPEG_LOCALE:locale()}});
+   let stdout='',stderr='',lines='',previous=0,settled=false;
+   const finish=(error,value)=>{if(settled)return;settled=true;cancellation?.dispose();error?reject(error):resolve(value);};
+   const cancellation=token?.onCancellationRequested(()=>{try{fs.writeFileSync(cancelFile,'cancel');}catch{}});
+   proc.stdout.setEncoding('utf8');proc.stdout.on('data',s=>{stdout+=s;if(stdout.length>1024*1024){proc.kill();finish(Error('Invalid FFmpeg manager response'));}});
+   proc.stderr.setEncoding('utf8');proc.stderr.on('data',s=>{
+    stderr=(stderr+s).slice(-8000);lines+=s;let end;
+    while((end=lines.indexOf('\n'))>=0){const line=lines.slice(0,end);lines=lines.slice(end+1);try{const data=JSON.parse(line);if(data.type==='progress'){const percent=data.total?100*data.bytes/data.total:previous;progress?.report({increment:Math.max(0,percent-previous),message:text('正在下载 FFmpeg…','Downloading FFmpeg…')+` ${(data.bytes/1048576).toFixed(1)} MiB`});previous=percent;}}catch{output.appendLine(line);}}
+   });
+   proc.on('error',e=>finish(e));proc.stdin.on('error',e=>finish(e));
+   proc.on('exit',code=>{if(code!==0){finish(Error(stderr.trim()||text('请更新 LayMesh 引擎以支持 FFmpeg 管理','Update LayMesh to support FFmpeg management')));return;}try{const result=JSON.parse(stdout);if(typeof result.available!=='boolean')throw Error('Invalid FFmpeg status');finish(null,result);}catch(e){finish(e);}});
+   proc.stdin.end(JSON.stringify(editorDefaults(uri)));
+  });
+ }
+ async function ensureFFmpeg(uri,destination,provided={}){
+  const format=path.extname(destination.fsPath).slice(1).toLowerCase();
+  const status=await ffmpegCommand('status',uri,format,provided);
+  if(status.available)return true;
+  if(!status.download?.supported)throw Error(text('当前平台没有自动下载构建，请配置 laymesh.ffmpeg.executable','No download for this platform; configure laymesh.ffmpeg.executable'));
+  const accept=text('下载并继续','Download and continue');
+  const source=status.download.source==='auto'?text('自动选择上游或中国镜像','Automatically select upstream or China mirror'):status.download.source;
+  const detail=text('将下载到共用私有目录：','Shared private directory: ')+status.directory+'\n'+text('下载发行包：ffmpeg-static b','Download bundle: ffmpeg-static b')+status.download.version+'\n'+text('下载源：','Download source: ')+source+'\n'+text('缺失时才下载，扩展、CLI 和 Python 共用。','Downloads only when missing; shared by VS Code, CLI and Python.');
+  const answer=await vscode.window.showWarningMessage(text('未找到可用 FFmpeg，是否下载后继续导出动画？','No usable FFmpeg found. Download it to continue exporting?'),{modal:true,detail},accept);
+  if(answer!==accept)return false;
+  const cancelFile=path.join(os.tmpdir(),'laymesh-ffmpeg-cancel-'+process.pid+'-'+Date.now());
+  try{await vscode.window.withProgress({cancellable:true,location:vscode.ProgressLocation.Notification,title:text('LayMesh：准备 FFmpeg','LayMesh: Prepare FFmpeg')},(progress,token)=>ffmpegCommand('install',uri,format,provided,progress,token,cancelFile));return true;}
+  finally{try{fs.unlinkSync(cancelFile);}catch{}}
+ }
  async function exportFigure(uri,provided,currentPage){
   uri=uri?.scheme?uri:vscode.window.activeTextEditor?.document.uri;
   if(!uri||uri.scheme!=='file'||! /\.(lay|laydoc)$/.test(uri.fsPath)||!vscode.workspace.isTrusted){
@@ -128,6 +163,7 @@ function activatePreview(context,binary,output){
     if(!(aliases[format.extension]||['.'+format.extension]).includes(actual))throw new Error(text('文件后缀与选择的格式不一致','File extension does not match the selected format'));
    }
    // Snapshot after the dialogs: export the current unsaved entry and imported buffers.
+   if(animated&&!await ensureFFmpeg(uri,destination,provided||{}))return;
    const doc=await vscode.workspace.openTextDocument(uri),overlays={};
    for(const buffer of vscode.workspace.textDocuments)if(buffer.uri.scheme==='file'&&buffer.isDirty)overlays[keyOf(buffer.uri)]=buffer.getText();
    const cancelFile=path.join(os.tmpdir(),'laymesh-animation-cancel-'+process.pid+'-'+Date.now());
@@ -207,7 +243,7 @@ function activatePreview(context,binary,output){
   const panel=vscode.window.createWebviewPanel('laymeshPreview',`LayMesh · ${path.basename(file)}`,{viewColumn:vscode.ViewColumn.Beside,preserveFocus:true},{enableScripts:true,localResourceRoots:[vscode.Uri.joinPath(context.extensionUri,'dist'),vscode.Uri.file(worker.resourceDir)]});
   const state={uri,file,panel,generation:0,dirty:true,dependencies:new Set(),watchers:[],disposed:false,resources:new Map(),history:[],historyBytes:0};panels.set(file,state);
   const asset=name=>panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri,'dist',name));
-  panel.webview.html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} blob: data:; font-src ${panel.webview.cspSource} data:; script-src ${panel.webview.cspSource} 'wasm-unsafe-eval'; connect-src ${panel.webview.cspSource} blob:; worker-src blob:; style-src ${panel.webview.cspSource} 'unsafe-inline';"><link rel="stylesheet" href="${asset('preview.css')}"></head><body><script type="module" src="${asset('preview-webview.mjs')}"></script></body></html>`;
+  panel.webview.html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} blob: data:; font-src ${panel.webview.cspSource} data:; script-src ${panel.webview.cspSource} 'wasm-unsafe-eval'; connect-src ${panel.webview.cspSource} blob:; worker-src blob:; style-src ${panel.webview.cspSource} 'unsafe-inline';"><link rel="stylesheet" href="${asset('preview.css')}"><link rel="stylesheet" href="${asset('presentation.css')}"></head><body><script type="module" src="${asset('preview-webview.mjs')}"></script></body></html>`;
   panel.webview.onDidReceiveMessage(async message=>{
    if(message?.type==='ready'){state.displayListId=undefined;post(state,{type:'initial',locale:locale(),showRulers:config().get('showRulers',true)});
     if(state.history.length&&state.lastSuccess)post(state,{...state.lastSuccess,displayListReplay:state.history});
@@ -258,7 +294,7 @@ function activatePreview(context,binary,output){
   vscode.workspace.onDidChangeTextDocument(e=>{for(const state of panels.values())if(relevant(state,e.document))sourceChanged(state,[keyOf(e.document.uri)]);}),
   vscode.workspace.onDidSaveTextDocument(doc=>{for(const state of panels.values())if(relevant(state,doc))sourceChanged(state,[keyOf(doc.uri)]);}),
   vscode.workspace.onDidCloseTextDocument(doc=>{for(const state of panels.values())if(relevant(state,doc))sourceChanged(state,[keyOf(doc.uri)]);}),
-  vscode.workspace.onDidChangeConfiguration(e=>{for(const state of panels.values()){if(e.affectsConfiguration('laymesh.language')||e.affectsConfiguration('laymesh.preview.showRulers'))post(state,{type:'initial',locale:locale(),showRulers:config().get('showRulers',true),forceRulers:e.affectsConfiguration('laymesh.preview.showRulers')});if(e.affectsConfiguration('laymesh.preview')||e.affectsConfiguration('laymesh.export'))invalidate(state);}}),
+  vscode.workspace.onDidChangeConfiguration(e=>{for(const state of panels.values()){if(e.affectsConfiguration('laymesh.language')||e.affectsConfiguration('laymesh.preview.showRulers'))post(state,{type:'initial',locale:locale(),showRulers:config().get('showRulers',true),forceRulers:e.affectsConfiguration('laymesh.preview.showRulers')});if(e.affectsConfiguration('laymesh.preview')||e.affectsConfiguration('laymesh.export')||e.affectsConfiguration('laymesh.ffmpeg'))invalidate(state);}}),
   {dispose(){for(const state of [...panels.values()])state.panel.dispose();worker.dispose();}}
  );
 }

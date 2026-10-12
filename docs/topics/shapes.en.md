@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/line.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Use line() or style-only line(...) as material and supply start/end in add, or retain dx/dy or length/angle, never both. Construction may omit geometry; placement must determine it. start_head points opposite the start tangent and end_head along the end tangent. triangle/open/stealth locate their tip; dot/diamond/bar locate their center. Zero length plus an explicit angle creates standalone heads.

@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "runtime": "Windows EXE through Wine",
+  "version": "laymesh 0.6.2",
+  "binary_sha256": "7bb52b3b07b7d499c1b37ce9723ef9e2a485be0024cf806d3318af8432f1651a",
+  "preview_requests": 33,
+  "checks": [
+    "Packaged engine starts and reports its version",
+    "Six canvas units at four layout DPI values; unsaved modules and Unicode/space paths",
+    "Mixed explicit lengths preserve millimeter inspection geometry",
+    "Structured missing-dependency error and recovery in the same persistent process",
+    "Relative stylesheet/data/image/font paths and unsaved resource overlays",
+    "Native SVG and plot inspection for extra/broken axes, polar, radar and inset examples",
+    "CRLF transport, malformed request recovery and ordered request IDs",
+    "Windows backslash entry and unsaved module paths",
+    "Screenshot Animate.css source resolves offline with one step; Windows backslash path supported; FFmpeg manager capability advertised",
+    "Shared FFmpeg discovery works without downloading or creating install files",
+    "LSP formatting capabilities, unsaved LayMesh/LCSS documents and UTF-16 selection ranges",
+    "File-path LSP initialization, completion, English/Chinese hover and clean shutdown"
+  ],
+  "windows_vscode_host_tested": false
+}

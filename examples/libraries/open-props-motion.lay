@@ -1,0 +1,8 @@
+page=canvas(size=(100mm,65mm),stylesheet="@laymesh/open-props.css",background="#f6f7fb")
+style {
+ .card {background:var(--gradient-7);border-radius:var(--radius-3);box-shadow:var(--shadow-2);}
+ .motion {animation:var(--animation-fade-in);animation-duration:800ms;animation-fill-mode:both;}
+}
+card=page.add(rect(size=(40mm,25mm),class="card"),anchor=center,target=page.center)
+s=page.step(name="Open Props keyframes",start="after-previous",hold=1s)
+s.animate(card,class="motion")

@@ -1,0 +1,24 @@
+{
+  "exit": {
+    "summaryChars": 110,
+    "documentHeight": 531,
+    "pendingCalls": 0,
+    "raf": null,
+    "worker": false
+  },
+  "downloadBytes": 6305365,
+  "errors": [],
+  "checks": [
+    "default hidden",
+    "Tab focus cycle",
+    "three context-menu modes",
+    "bottom-center hover zone",
+    "menu focus isolation",
+    "automatic completion then exit",
+    "bounded on-page diagnostics; full downloadable data",
+    "repeat open/close and closing race",
+    "narrow viewport",
+    "main-thread fallback",
+    "cancel initialization and reopen before the old request returns"
+  ]
+}

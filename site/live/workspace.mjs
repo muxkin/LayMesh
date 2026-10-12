@@ -1,11 +1,11 @@
 // Presentation controls only. Source, worker results and undo remain owned by ExampleEditor.
 const en=document.documentElement.lang==='en',t=(zh,english)=>en?english:zh;
 export class Workspace {
- constructor(module,editSummary) {
+ constructor(module) {
   this.module=module;this.box=module.querySelector('.example-workspace');this.body=module.querySelector('.workspace-body');
   this.viewport=module.querySelector('.preview-viewport');this.canvas=module.querySelector('.preview-canvas');
   this.splitter=module.querySelector('.workspace-splitter');this.ratio=.5;this.zoom=1;this.pan={x:0,y:0};
-  this.bindSplit();this.bindPreview();this.bindSummary(editSummary);
+  this.bindSplit();this.bindPreview();
   this.resize=new ResizeObserver(()=>{this.layout();this.fit();});this.resize.observe(this.box);this.resize.observe(this.viewport);
   module.querySelectorAll('.preview-canvas img').forEach(img=>img.addEventListener('load',()=>this.fit()));
   module.querySelector('.workspace-expand').addEventListener('click',()=>this.expand());
@@ -29,20 +29,6 @@ export class Workspace {
   for(const type of ['pointerup','pointercancel','lostpointercapture'])this.splitter.addEventListener(type,()=>dragging=false);
   this.splitter.addEventListener('dblclick',()=>{this.ratio=.5;this.layout();});
   this.splitter.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End','Enter'].includes(e.key))return;e.preventDefault();this.ratio=e.key==='Home'?0:e.key==='End'?1:e.key==='Enter'?.5:this.ratio+(e.key==='ArrowLeft'?-1:1)*(e.shiftKey?.1:.02);this.layout();});
- }
- bindSummary(edit){
-  const pre=this.module.querySelector('.summary-panel pre');pre.tabIndex=0;pre.setAttribute('aria-label',t('摘要代码；按 Enter 编辑完整源码','Summary code; press Enter to edit full source'));pre.title=t('点击编辑完整源码','Click to edit full source');
-  let start;
-  pre.addEventListener('pointerdown',e=>{start={x:e.clientX,y:e.clientY,scroll:pre.scrollTop};});
-  pre.addEventListener('click',e=>{
-   if(e.button!==0||!start||Math.hypot(e.clientX-start.x,e.clientY-start.y)>6||pre.scrollTop!==start.scroll||!getSelection()?.isCollapsed)return;
-   const line=e.target.closest('.code-line');if(!line)return;
-   const lines=this.module.querySelector('.summary-panel .code-raw').defaultValue.split('\n'),index=[...pre.querySelectorAll('.code-line')].indexOf(line);
-   const offset=lines.slice(0,index).reduce((n,line)=>n+line.length+1,0);
-   edit(Number(this.module.querySelector('.summary-panel').dataset.sourceFrom)+offset);
-  });
-  pre.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();edit(Number(this.module.querySelector('.summary-panel').dataset.sourceFrom));}});
-  this.module.querySelector('.summary-edit').addEventListener('click',()=>edit(Number(this.module.querySelector('.summary-panel').dataset.sourceFrom)));
  }
  activeImage(){return this.module.querySelector('.original-preview').hidden?this.module.querySelector('.live-image'):this.module.querySelector('.original-preview img');}
  fit(){
@@ -68,11 +54,11 @@ export class Workspace {
   this.module.querySelector('.preview-enlarge').addEventListener('click',()=>this.enlargeFigure());
   this.module.querySelectorAll('[data-preview-background]').forEach(button=>button.addEventListener('click',()=>{this.viewport.dataset.background=button.dataset.previewBackground;this.module.querySelectorAll('[data-preview-background]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));}));
   let drag;
-  this.viewport.addEventListener('pointerdown',e=>{if(e.button!==0||(e.pointerType==='touch'&&this.zoom<=1))return;drag={x:e.clientX,y:e.clientY,pan:{...this.pan}};this.viewport.setPointerCapture(e.pointerId);this.viewport.focus({preventScroll:true});e.preventDefault();});
-  this.viewport.addEventListener('pointermove',e=>{if(drag){this.pan={x:drag.pan.x+e.clientX-drag.x,y:drag.pan.y+e.clientY-drag.y};this.fit();}});
-  for(const type of ['pointerup','pointercancel','lostpointercapture'])this.viewport.addEventListener(type,()=>drag=null);
+  this.viewport.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.closest('button,input,select,a,[role=menu],nav')||(e.pointerType==='touch'&&this.zoom<=1))return;this.suppressPreviewClick=false;drag={x:e.clientX,y:e.clientY,pan:{...this.pan},moved:false};this.viewport.setPointerCapture(e.pointerId);this.viewport.focus({preventScroll:true});e.preventDefault();});
+  this.viewport.addEventListener('pointermove',e=>{if(drag){drag.moved||=Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>6;this.pan={x:drag.pan.x+e.clientX-drag.x,y:drag.pan.y+e.clientY-drag.y};this.fit();}});
+  for(const type of ['pointerup','pointercancel','lostpointercapture'])this.viewport.addEventListener(type,()=>{if(drag)this.suppressPreviewClick=drag.moved;drag=null;});
   this.viewport.addEventListener('wheel',e=>{if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();this.zoomTo(this.zoom*(e.deltaY<0?1.1:1/1.1));},{passive:false});
-  this.viewport.addEventListener('keydown',e=>{if(['+','=','-','0'].includes(e.key)){e.preventDefault();this.zoomTo(e.key==='0'?1:this.zoom*(e.key==='-'?1/1.5:1.5));}else if(e.key.startsWith('Arrow')){e.preventDefault();this.pan.x+=e.key==='ArrowLeft'?30:e.key==='ArrowRight'?-30:0;this.pan.y+=e.key==='ArrowUp'?30:e.key==='ArrowDown'?-30:0;this.fit();}});
+  this.viewport.addEventListener('keydown',e=>{if(['+','=','-','0'].includes(e.key)){e.preventDefault();this.zoomTo(e.key==='0'?1:this.zoom*(e.key==='-'?1/1.5:1.5));}else if(e.key.startsWith('Arrow')&&(!this.previewControls||e.altKey)){e.preventDefault();this.pan.x+=e.key==='ArrowLeft'?30:e.key==='ArrowRight'?-30:0;this.pan.y+=e.key==='ArrowUp'?30:e.key==='ArrowDown'?-30:0;this.fit();}});
  }
  enlargeFigure(){
   const img=this.activeImage();if(img.localName==='canvas'){this.expand();return;}if(!img.src)return;

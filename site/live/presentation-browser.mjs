@@ -1,4 +1,5 @@
 import {Presentation} from './presentation.mjs';
+import {presentationEntry} from './presentation-entry.mjs';
 import {PresentationStore} from './presentation-store.mjs';
 import {PresentationSession} from './presentation-session.mjs';
 const status=document.querySelector('#status'),base=new URL('./',import.meta.url),sessionURL=new URL('../',base);
@@ -9,5 +10,5 @@ const presentation=new Presentation({base,blobWorker:true,provider:async({signal
  function pump(){clearTimeout(timer);if(session.closed||active>=2)return;const item=queue.filter(q=>q.state==='pending'&&(!q.retryAt||q.retryAt<=performance.now())).sort((a,b)=>(b.priority||0)-(a.priority||0)||a.index-b.index)[0];if(!item){if(queue.some(q=>q.state==='pending'))timer=setTimeout(pump,100);return;}active++;item.state='loading';load(item).then(ready=>item.state=ready?'ready':'pending',e=>{item.state='error';session.fail(item.page.id,e);}).finally(()=>{active--;pump();});if(session.pages[0].status==='ready')pump();}
  pump();try{return await session.firstReady;}catch(e){await store.dispose();throw e;}
 },onExit:()=>{status.textContent='放映已结束，可重新开始或关闭本页。';}});
-document.body.append(presentation.button);presentation.prepare().then(()=>status.textContent='首页已就绪，可以放映。其余页面在后台准备。',e=>status.textContent=e.message);
+document.body.append(presentationEntry(presentation));presentation.prepare().then(()=>status.textContent='首页已就绪，可以选择窗口放映或全屏放映。其余页面在后台准备。',e=>status.textContent=e.message);
 window.addEventListener('pagehide',()=>{navigator.sendBeacon(new URL('exit',sessionURL));presentation.dispose();});window.laymeshPresentation=presentation;

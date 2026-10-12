@@ -9,6 +9,7 @@ use std::cell::RefCell;
 use std::collections::BTreeMap;
 use wasm_bindgen::prelude::*;
 thread_local! {
+    static LANGUAGE_SERVICE: RefCell<LanguageService> = RefCell::new(LanguageService::new("en"));
     static PREVIEW_FONTS: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new());
     static DRAW_RESOURCES: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new());
 }
@@ -387,42 +388,49 @@ pub fn language_query(
 ) -> Result<String, JsValue> {
     let files: BTreeMap<String, String> =
         serde_json::from_str(files_json).map_err(|e| JsValue::from_str(&e.to_string()))?;
-    let mut service = LanguageService::new(locale);
-    service.documents = files;
-    let source = service
-        .documents
-        .get(filename)
-        .map(String::as_str)
-        .unwrap_or("");
-    let mut result = service.query(method, filename, byte_offset(source, utf16));
-    fn convert(v: &mut J, source: &str, files: &BTreeMap<String, String>) {
-        match v {
-            J::Array(a) => {
-                for x in a {
-                    convert(x, source, files)
-                }
-            }
-            J::Object(m) => {
-                let own = m
-                    .get("uri")
-                    .and_then(J::as_str)
-                    .and_then(|u| files.get(u))
-                    .map(String::as_str)
-                    .unwrap_or(source);
-                for key in ["from", "to"] {
-                    if let Some(n) = m.get(key).and_then(J::as_u64) {
-                        m.insert(key.into(), json!(utf16_offset(own, n as usize)));
+    LANGUAGE_SERVICE.with(|cached| {
+        let mut service = cached.borrow_mut();
+        service.locale = locale.into();
+        service.documents = files;
+        let source = service
+            .documents
+            .get(filename)
+            .map(String::as_str)
+            .unwrap_or("");
+        let mut result = service.query(method, filename, byte_offset(source, utf16));
+        fn convert(v: &mut J, source: &str, files: &BTreeMap<String, String>) {
+            match v {
+                J::Array(a) => {
+                    for x in a {
+                        convert(x, source, files)
                     }
                 }
-                for (key, value) in m.iter_mut() {
-                    if key != "from" && key != "to" {
-                        convert(value, own, files);
+                J::Object(m) => {
+                    let own = m
+                        .get("uri")
+                        .and_then(J::as_str)
+                        .and_then(|u| {
+                            files
+                                .get(u)
+                                .map(String::as_str)
+                                .or_else(|| laymesh_language::stylesheets::content(u))
+                        })
+                        .unwrap_or(source);
+                    for key in ["from", "to"] {
+                        if let Some(n) = m.get(key).and_then(J::as_u64) {
+                            m.insert(key.into(), json!(utf16_offset(own, n as usize)));
+                        }
+                    }
+                    for (key, value) in m.iter_mut() {
+                        if key != "from" && key != "to" {
+                            convert(value, own, files);
+                        }
                     }
                 }
+                _ => {}
             }
-            _ => {}
         }
-    }
-    convert(&mut result, source, &service.documents);
-    Ok(result.to_string())
+        convert(&mut result, source, &service.documents);
+        Ok(result.to_string())
+    })
 }

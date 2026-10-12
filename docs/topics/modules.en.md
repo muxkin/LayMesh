@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/group.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Functions may accept sizes, titles or cap variables and return material or groups. Predefined variables also work in modules, with user/module bindings taking priority. Resource paths are relative to the module file.
@@ -24,8 +20,6 @@ Functions may accept sizes, titles or cap variables and return material or group
 ## Common errors and limits
 
 Imports are read-only; cycles and missing exports error. Modules do not create or draw directly on the entry canvas. Create the entry canvas before using imported components.
-
-## Individual functions
 
 <!-- walkthrough:end -->
 

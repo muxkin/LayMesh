@@ -11,10 +11,6 @@
 
 <!-- example:examples/manual/rgb.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 将颜色用于填充、文字、描边、渐变 stop 和图表配色。linear_gradient 与 radial_gradient 使用布局框的归一化坐标；hatch 是物理间距图案，image_fill 将图片适配到形状内部。

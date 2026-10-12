@@ -54,3 +54,9 @@ PDF keeps the subject, outlines, warp and extrusion as vectors, and rasterizes o
 [Artistic text source](../../examples/effects/art-text.lay) · [Effects source](../../examples/effects/shadow-glow.lay) · [Full API](interface-reference.en.md)
 
 `laymesh inspect --json` includes a `decorations` list with layout, subject and effect bounds plus the local-to-page transform. An explicit span color overrides an inherited text fill; an explicit span text_fill takes priority.
+
+Standard CSS `box-shadow`, `text-shadow` and one `filter: drop-shadow(...)` form independent appearance effects. Existing `effects` constructors retain their blur/sigma, target and ordering semantics. See [CSS effects and partial overrides](lcss.en.md#css-effects).
+
+## Complete styled animation projects
+
+[Library cards and artistic poster](style-animation-examples.en.md) combine themes, layout, keyframes and steps, with complete source for the existing complex dashboard.

@@ -1,0 +1,4 @@
+page=canvas(size=(100mm,65mm),stylesheet="@laymesh/animate.css",background="#f6f7fb")
+card=page.add(rect(size=(40mm,25mm),fill="#0d6efd",border_radius=2mm),anchor=center,target=page.center)
+s=page.step(name="Entrance",start="after-previous",hold=1s)
+s.animate(card,class="animate__animated animate__fadeInUp",duration=800ms)

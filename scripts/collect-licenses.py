@@ -25,7 +25,7 @@ def main():
  for package in data['packages']:
   if package['source'] is None:continue
   base=Path(package['manifest_path']).parent;files=[]
-  for pattern in ['LICENSE*','COPYING*','NOTICE*','fonts/OFL.txt','fonts/FONT_NOTICE.txt','vendor/COPYING','vendor/PATENTS']:
+  for pattern in ['LICENSE*','COPYING*','NOTICE*','license-*','fonts/OFL.txt','fonts/FONT_NOTICE.txt','vendor/COPYING','vendor/PATENTS']:
    files.extend(p for p in base.glob(pattern) if p.is_file())
   if package.get('license_file'):
    p=base/package['license_file']
@@ -48,7 +48,15 @@ def main():
  inventory.append({'name':'Skia','version':'m153-0.101.2','license':'BSD-3-Clause','repository':'https://github.com/rust-skia/skia','texts':[{'file':'Skia-m153-LICENSE','sha256':hashlib.sha256((dest/'Skia-m153-LICENSE').read_bytes()).hexdigest()}]})
  inventory.append({'name':'CanvasKit standard','version':'0.42.0','license':'BSD-3-Clause','repository':'https://github.com/google/skia','texts':[{'file':'CanvasKit-0.42.0-LICENSE','sha256':hashlib.sha256((dest/'CanvasKit-0.42.0-LICENSE').read_bytes()).hexdigest()}]})
  inventory.append({'name':'Matplotlib colormap data','version':'3.11.2','license':'Matplotlib license','repository':'https://github.com/matplotlib/matplotlib','texts':[{'file':'Matplotlib-3.11.2-LICENSE','sha256':hashlib.sha256((dest/'Matplotlib-3.11.2-LICENSE').read_bytes()).hexdigest()}]})
+ styles=ROOT/'crates/laymesh-core/assets/styles'
+ for item in json.loads((styles/'manifest.json').read_text()):
+  asset=styles/f'{item["name"]}.css'
+  assert hashlib.sha256(asset.read_bytes()).hexdigest()==item['sha256'],f'Modified pinned CSS library: {asset.name}'
+  filename=f'css-{item["name"]}-LICENSE.txt';license_data=(styles/f'{item["name"]}.LICENSE').read_bytes();(dest/filename).write_bytes(license_data)
+  inventory.append({'name':f'{item["name"]} CSS','version':item['version'],'license':item['license'],'repository':item['source'],'asset_sha256':item['sha256'],'texts':[{'file':filename,'sha256':hashlib.sha256(license_data).hexdigest(),'source':item['license_source']}]})
  (dest/'manifest.json').write_text(json.dumps(inventory,indent=2)+'\n')
  (ROOT/'release/THIRD_PARTY_NOTICES.md').write_text('# Third-party notices\n\nThe native executable and WebAssembly module contain the following locked Rust dependencies. Original license texts are in `licenses/`. KaTeX formula fonts are under SIL OFL 1.1; their FONT_NOTICE and OFL text are included. Colormap LUTs are derived from Matplotlib 3.11.2, quantized to 8-bit RGB with native reversed LUTs and category metadata. Matplotlib copyright and license are retained in Matplotlib-3.11.2-LICENSE. No Matplotlib runtime is bundled. No body fonts are bundled.\n\n| Package | Version | License |\n| --- | --- | --- |\n'+''.join(f'| {p["name"]} | {p["version"]} | {p["license"] or "See source"} |\n' for p in inventory))
+ with (ROOT/'release/THIRD_PARTY_NOTICES.md').open('a') as notices:
+  notices.write('\n## Bundled CSS libraries\n\nUnmodified Bootstrap 5.3.8, Open Props 1.7.23 and Animate.css 4.1.1 are embedded in the core engine under their MIT licenses. Pinned source URLs and SHA-256 values are in `crates/laymesh-core/assets/styles/manifest.json`; license copies are included in `licenses/css-*-LICENSE.txt`.\n')
  print(f'Collected {len(inventory)} dependency records')
 if __name__=='__main__':main()

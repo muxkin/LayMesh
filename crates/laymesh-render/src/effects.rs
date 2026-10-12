@@ -51,7 +51,7 @@ pub(crate) fn effect_bounds(node: &Json) -> Rect {
         if e["mode"] == "inner" {
             continue;
         }
-        let pad = 4. * jnum(e, "blur", 1.) + jnum(e, "spread", 0.);
+        let pad = 4. * jnum(e, "blur", 1.) + jnum(e, "spread", 0.).abs();
         let xy = pair(&e["offset"], [0., 0.]);
         out = out.union(b.inflate(pad * sx, pad * sy) + kurbo::Vec2::new(xy[0] * sx, xy[1] * sy));
     }
@@ -70,7 +70,7 @@ pub(crate) fn apply(node: &Json, body: String, defs: &mut Vec<String>) -> String
         let blur = jnum(e, "blur", 1.);
         let spread = jnum(e, "spread", 0.);
         let xy = pair(&e["offset"], [0., 0.]);
-        let pad = 4. * blur + spread + xy[0].abs().max(xy[1].abs()) + 0.01;
+        let pad = 4. * blur + spread.abs() + xy[0].abs().max(xy[1].abs()) + 0.01;
         let b = bbox.inflate(pad, pad);
         let col = laymesh_core::color::Color::parse(jstr(e, "color", "#000000")).unwrap();
         let opacity = jnum(e, "opacity", 0.5) * col.alpha;
@@ -80,9 +80,11 @@ pub(crate) fn apply(node: &Json, body: String, defs: &mut Vec<String>) -> String
         } else {
             stages += "<feColorMatrix in='SourceAlpha' type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0' result='alpha'/>";
         }
-        if spread > 0. {
+        if spread != 0. {
             stages += &format!(
-                "<feMorphology in='alpha' operator='dilate' radius='{spread}' result='alpha'/>"
+                "<feMorphology in='alpha' operator='{}' radius='{}' result='alpha'/>",
+                if spread > 0. { "dilate" } else { "erode" },
+                spread.abs()
             );
         }
         if blur > 0. {
@@ -95,13 +97,21 @@ pub(crate) fn apply(node: &Json, body: String, defs: &mut Vec<String>) -> String
         if inner {
             stages += "<feComposite in='alpha' in2='SourceAlpha' operator='in' result='alpha'/>";
         }
+        if e["knockout"] == true {
+            stages += "<feComposite in='alpha' in2='SourceAlpha' operator='out' result='alpha'/>";
+        }
         stages += &format!(
             "<feFlood flood-color='{}' flood-opacity='{opacity}' result='color'/><feComposite in='color' in2='alpha' operator='in'/>",
             escape(&col.hex()[..7])
         );
         defs.push(format!("<filter id='{id}' filterUnits='userSpaceOnUse' primitiveUnits='userSpaceOnUse' color-interpolation-filters='sRGB' x='{}' y='{}' width='{}' height='{}'>{stages}</filter>",b.x0,b.y0,b.width(),b.height()));
+        let source = if let Some(path) = e["sourcePath"].as_str() {
+            format!("<path d=\"{}\" fill=\"white\"/>", escape(path))
+        } else {
+            body.clone()
+        };
         let layer = format!(
-            "<g id=\"{id}-layer\" data-laymesh-effect=\"true\" filter=\"url(#{id})\">{body}</g>"
+            "<g id=\"{id}-layer\" data-laymesh-effect=\"true\" filter=\"url(#{id})\">{source}</g>"
         );
         if inner {
             front += &layer

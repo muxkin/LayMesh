@@ -1,119 +1,64 @@
 # LayMesh
 
-**用可读的代码，绘制数据并排出尺寸精确、可以重复生成的科研图。** 在一个 `.lay` 文件中组合原生图表、图片、矢量形状、文字与公式，将同一布局导出为 SVG、PDF、可编辑 PPTX，或指定 DPI 的 PNG、JPEG、TIFF、WebP 等图片。
+**用可读代码绘制科研图，按物理尺寸组织版面。** 一个可编辑项目可以组合原生图表、图片、矢量图形、文字和公式，生成静态图件或多页演示。
 
-[在线文档](https://muxkin.github.io/LayMesh/) · [English](README.en.md) · [功能画廊](docs/sections/examples.zh-CN.md) · [安装说明](docs/topics/install.zh-CN.md)
+[在线文档](https://muxkin.github.io/LayMesh/) · [视频教程（Bilibili）](https://www.bilibili.com/video/BV1gpHn6eE4V) · [English](README.en.md) · [示例库](docs/sections/examples.zh-CN.md)
 
-![LayMesh 科研图与精确布局展示](site/media/showcase-1920.webp)
+![LayMesh 综合展示](site/media/showcase-1920.webp)
 
-[展示图源码](examples/showcase.lay) · [科研绘图示例](docs/gallery/plots.zh-CN.md)
+[展示图源码](examples/showcase.lay) · [开始使用](docs/sections/start.zh-CN.md)
 
-[动画与演示](docs/topics/animation.zh-CN.md) · [可编辑 PPTX 导出](docs/topics/export.zh-CN.md#pptx-可编辑导出) · [艺术字、阴影与发光](docs/topics/art-effects.zh-CN.md) · [更新说明](release/notes/0.6.1.md)
+## 安装与第一次预览
 
-## VS Code（推荐）
+推荐安装 [VS Code 扩展](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language)，或下载[匹配平台的 VSIX](https://github.com/muxkin/LayMesh/releases/latest)。平台包内置原生引擎，无需另外安装 Python、Rust 或 npm；Remote SSH 选择远程宿主平台的包。
 
-在扩展面板安装 [LayMesh（发布者 Hyacine）](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language)，或通过 **Extensions: Install from VSIX / 从 VSIX 安装** 安装对应平台的包。**Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon 的 0.6.1 VSIX 均内置原生引擎，无需另装 Python、Rust 或 npm。** [下载平台安装包](https://github.com/muxkin/LayMesh/releases/tag/v0.6.1)。Remote SSH 场景安装与远程扩展宿主匹配的平台包。
+打开工作文件夹，把下面保存为 figure.lay，执行 **LayMesh：打开预览**：
 
-打开可信任的本地或 Remote SSH 工作文件夹，将下面源码保存为 `figure.lay`：
+~~~lay
+page = canvas(size=(120mm,90mm), background="#ffffff")
+p = plot(size=(110mm,80mm),
+         x=axis(label="Time (s)"), y=axis(label="Signal"))
+p.line(x=[0,1,2,3], y=[1,3,2,4], label="Experiment")
+p.legend(position="top_left")
+page.add(p, offset=(5mm,5mm))
+~~~
 
-```lay
-page = canvas(size=(15cm, 10cm), unit="cm", background="#ffffff")
-rec = rect(size=(2cm, 2cm), fill="#888888")
-page.add(rec, offset=(0.1cm, 0.1cm))
-```
+尺寸和位置默认 mm，字号和线宽默认 pt。显式单位包括 mm/cm/in/inch/pt/px；布局 px 使用 canvas.layout_dpi，导出 DPI 独立控制栅格密度。详见[单位与尺寸](docs/topics/units.zh-CN.md)。
 
-点击编辑器右上角预览按钮，或执行 **LayMesh：打开预览**，即可在源码旁查看实时图形。Ctrl+Space 补全变量和成员，悬停查看类型，F12 跳转定义，Shift+F12 查找工作区引用，F2 重命名变量；未保存的编辑也会刷新预览。标尺、导航和平台安装包详见[扩展指南](extensions/vscode/README.md)。
+## CLI、Python 与 Notebook
 
-## Python 与 CLI 安装
+需要 Python 3.10+，平台 wheel 内置引擎和公式字体：
 
-需要 **Python 3.10+**。本次源码版本为 **`0.6.1`**，Python 包、Rust 引擎和 VS Code 扩展同步版本号，修复 Windows/Linux 的预览资源加载超时；保留多页文档、97 种 Animate.css 动画、完整演示放映和 Skia 绘制。稳定标签触发审核包构建，批准 PyPI 环境后上传并生成 GitHub Release；当前已公开版本以 PyPI 为准。从 [PyPI](https://pypi.org/project/laymesh/) 安装：
-
-```sh
+~~~sh
 python -m pip install laymesh
 python -m laymesh --version
-```
-
-平台 wheel 内置 Rust 绘图程序和公式字体，安装后即可使用 CLI、Python API 与 Jupyter Magic。使用时无需编译 Rust，也不会下载引擎或字体。也可安装[本地构建的 wheel](release/README.zh-CN.md)。
-
-默认安装包含 NumPy、pandas、Matplotlib 和 IPython，数据绑定、Matplotlib Figure 导入及 Jupyter Magic 均可直接使用。
-
-构建目标为 Windows x64、macOS 14+ 的 Intel / Apple Silicon、Linux x64 / arm64。Linux 的最低 glibc 版本以发行文件的 `manylinux_2_XX` 标签为准。发布流程会检查五个平台的 Python 3.10、3.13、3.14 安装与导出；Windows 包静态链接运行库，无需另装 Visual C++ Redistributable。详见[发布说明](release/README.zh-CN.md)。正文使用系统或用户提供的字体；缺字会警告并显示方框。跨机器复现时请随图提供使用的字体文件。
-
-## 第一张图
-
-把下面的完整源码保存为 `figure.lay`。几何尺寸默认使用 mm，字体和线宽默认使用 pt；也可显式写 `mm/cm/in/pt/px`。
-
-```lay
-page = canvas(size=(120 mm, 90 mm), background="#ffffff")
-p = plot(size=(110 mm, 80 mm),
-         x=axis(label="Time (s)"), y=axis(label="Signal"))
-p.line(x=[0, 1, 2, 3], y=[1, 3, 2, 4], label="Experiment")
-p.legend(position="top_left")
-page.add(p, offset=(5 mm, 5 mm))
-```
-
-```sh
 laymesh validate figure.lay
-laymesh inspect figure.lay --json
-laymesh render figure.lay -o figure.svg
 laymesh render figure.lay -o figure.pdf
-laymesh render figure.lay -o figure.png --dpi 300
-laymesh render figure.lay -o figure.jpg --dpi 300 --quality 95
-laymesh render figure.lay -o figure.tif --dpi 600 --compression lzw
-laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quality 90 --webp-method 6
-```
+laymesh render figure.lay -o figure.png
+~~~
 
-`python -m laymesh` 与 `laymesh` 命令等价，适合命令未加入 PATH 的环境。`--dpi` 改变位图像素数量，保留页面物理尺寸。`.lay` 是独立的受限语言，不执行任意 Python 或 JavaScript 代码。
-
-
-VS Code 预览工具栏的 **导出** 和 **LayMesh：导出图形** 命令支持相同格式及参数；使用未保存缓冲区。[格式、透明度与全部参数](docs/topics/export.zh-CN.md)。
-
-## Python 与 Jupyter
-
-使用 Python API 渲染刚保存的文件：
-
-```python
+~~~python
 from laymesh import render_file
-
 result = render_file("figure.lay", output="figure.pdf")
-print(result.output)
-```
+~~~
 
-`render_source(source, namespace=..., save_source=...)` 可接收字符串源码，绑定数组、字典、DataFrame 或 Matplotlib Figure，并保存布局与数据资源，供 CLI 独立重渲染。完整示例见[Python API](docs/topics/python-reference.zh-CN.md)、[原生数据绑定](docs/topics/python-data.zh-CN.md)和[保存源码](docs/topics/save-source.zh-CN.md)。
+Notebook 先运行 %load_ext laymesh.ipython，再使用 %laymesh figure.lay 或 %%laymesh 编写版面。支持 NumPy/pandas 数据绑定、Matplotlib Figure 导入以及保存可独立复现的源码和资源。[安装与平台要求](docs/topics/install.zh-CN.md) · [Python API](docs/topics/python-reference.zh-CN.md) · [Notebook](docs/topics/notebook.zh-CN.md)
 
-在 Notebook 所用环境中安装 LayMesh，然后先运行一个注册单元格：
+## 学习与查询
 
-```python
-%load_ext laymesh.ipython
-values = [1, 3, 2, 4]
-```
-
-再在单独的单元格中绘图、预览和导出：
-
-```text
-%%laymesh -o notebook.pdf --save-source notebook.lay
-page = canvas(size=(120 mm, 90 mm))
-p = plot(size=(110 mm, 80 mm))
-p.line(x=[0, 1, 2, 3], y={{values}})
-page.add(p, offset=(5 mm, 5 mm))
-```
-
-`{{values}}` 读取 Python 变量。保留 `notebook.lay` 及生成的 `notebook.assets/` 后，可直接运行 `laymesh render notebook.lay -o notebook.svg`。[Notebook 指南](docs/topics/notebook.zh-CN.md)说明行 Magic、警告控制和其他参数。
-
-## 能力与示例
-
-| 能力 | 用法与完整示例 |
+| 任务 | 完整说明 |
 | --- | --- |
-| 精确拼版 | 物理单位、九点锚点、裁剪、旋转、透明度与分组：[基础拼版](examples/basic.lay) |
-| 科研图表 | 折线、散点、误差、柱图、统计、热图与等高线：[原生绘图](docs/sections/plotting.zh-CN.md) |
-| 多面板与坐标系 | 命名轴、断轴、共享颜色标尺、极坐标与雷达图：[直角坐标](docs/cartesian-plots.zh-CN.md) · [极坐标](docs/polar-plots.zh-CN.md) |
-| 配色与数据组织 | 字典循环、多组数据与 87 种配色预设：[字典绘图](examples/plot/dictionary-series.lay) · [配色](docs/topics/cmaps.zh-CN.md) |
-| 矢量与排版 | 路径、渐变、空心轮廓融合、文字与公式：[矢量图](examples/vector.lay) · [文字与公式](examples/typography.lay) |
-| 复用与编辑 | 函数、本地模块、LCSS 样式、网页及 VS Code 补全：[语言参考](docs/language-reference.zh-CN.md) · [编辑器](docs/topics/editors.zh-CN.md) |
+| 尺寸、锚点、分组、复用 | [第一张版面](docs/topics/first-layout.zh-CN.md) · [布局与素材](docs/sections/layout.zh-CN.md) |
+| 折线、散点、误差、统计、热图、极坐标 | [第一张数据图](docs/topics/first-plot.zh-CN.md) · [科研绘图](docs/sections/plotting.zh-CN.md) |
+| 主题、样式库、字体、渐变和阴影 | [样式与动画库：导入、逐项案例、第三方 CSS](docs/topics/style-libraries.zh-CN.md) · [样式完整手册](docs/topics/lcss.zh-CN.md) · [样式图库](docs/gallery/styles.zh-CN.md) |
+| 97 个动画、关键帧、步骤与放映 | [动画完整手册](docs/topics/animation.zh-CN.md) · [效果目录](docs/topics/animation-catalog.zh-CN.md) · [综合案例](docs/topics/style-animation-examples.zh-CN.md) |
+| 编排独立页面和导出整本 PDF | [多页文档](docs/topics/documents.zh-CN.md) |
+| 文字、公式、艺术字与效果 | [字体](docs/topics/fonts.zh-CN.md) · [公式](docs/topics/formulas.zh-CN.md) · [艺术字](docs/topics/art-effects.zh-CN.md) |
+| SVG/PDF、图片、可编辑 PPTX、MP4/GIF | [静态导出](docs/topics/export.zh-CN.md) · [动画导出](docs/topics/animation-export.zh-CN.md) |
 
-![折线、误差棒与热图的原生绘图结果](site/media/plot-scientific-1920.webp)
+.lay 描述独立页面，.laydoc 编排多页；多面板显式定位。PDF 保留主体矢量，模糊效果局部栅格化。VS Code 导出只选择格式与路径，图片默认 1200 DPI、TIFF 默认 LZW，其余参数在设置中调整。视频导出需要 FFmpeg。
 
-图表在首次放入页面前完成图层和装饰设置；多面板使用显式定位。布局以单页为单位，固定绘图区保持指定物理尺寸，装饰空间不足会警告。支持 PNG、JPEG、BMP、WebP、GIF、ICO、PNM、TGA、安全 SVG 和单页无符号 8/16 位灰度/RGB TIFF，保留支持格式的 Alpha 透明度。GIF 和动态 WebP 取首帧；16 位图片保留原始强度范围，不自动拉伸对比度。公式由原生 RaTeX 排版，无需 TeX 安装。具体支持范围见[功能覆盖清单](docs/topics/feature-map.zh-CN.md)。
+主题保存重复外观，.lay 保存尺寸、定位和数据；显式参数优先于样式。当前源码手册包含最新离线样式库及诊断改动，使用这些功能需包含相应改动的引擎构建；已发布包以[发布说明](https://github.com/muxkin/LayMesh/releases)为准。
 
 ## 文档与开发
 

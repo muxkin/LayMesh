@@ -1,0 +1,3 @@
+report=document(name="Shared library theme")
+report.add(page(src="shared-page-1.lay",name="First"))
+report.add(page(src="shared-page-2.lay",name="Second"))

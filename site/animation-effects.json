@@ -1,0 +1,1166 @@
+[
+  {
+    "name": "bounce",
+    "class": "animate__bounce",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "上下弹跳",
+      "Vertical bounce"
+    ]
+  },
+  {
+    "name": "flash",
+    "class": "animate__flash",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "反复闪烁",
+      "Repeated flashing"
+    ]
+  },
+  {
+    "name": "pulse",
+    "class": "animate__pulse",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "轻微缩放脉冲",
+      "Gentle scale pulse"
+    ]
+  },
+  {
+    "name": "rubberBand",
+    "class": "animate__rubberBand",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "橡皮筋拉伸回弹",
+      "Elastic stretch and recoil"
+    ]
+  },
+  {
+    "name": "shakeX",
+    "class": "animate__shakeX",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "水平摇动",
+      "Horizontal shake"
+    ]
+  },
+  {
+    "name": "shakeY",
+    "class": "animate__shakeY",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "竖直摇动",
+      "Vertical shake"
+    ]
+  },
+  {
+    "name": "headShake",
+    "class": "animate__headShake",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "水平位移与三维摇头",
+      "Horizontal movement with a 3D head shake"
+    ]
+  },
+  {
+    "name": "swing",
+    "class": "animate__swing",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "绕上边缘摆动",
+      "Swing around the top edge"
+    ]
+  },
+  {
+    "name": "tada",
+    "class": "animate__tada",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "缩放与旋转强调",
+      "Scale and rotation emphasis"
+    ]
+  },
+  {
+    "name": "wobble",
+    "class": "animate__wobble",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "左右摇摆",
+      "Side-to-side wobble"
+    ]
+  },
+  {
+    "name": "jello",
+    "class": "animate__jello",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "斜切变形回弹",
+      "Elastic skew"
+    ]
+  },
+  {
+    "name": "heartBeat",
+    "class": "animate__heartBeat",
+    "group": [
+      "强调",
+      "Emphasis"
+    ],
+    "description": [
+      "两次心跳式缩放",
+      "Double heartbeat scaling"
+    ]
+  },
+  {
+    "name": "backInDown",
+    "class": "animate__backInDown",
+    "group": [
+      "缩放回弹入场",
+      "Back entrances"
+    ],
+    "description": [
+      "缩放回弹入场，向下",
+      "Back entrances; downward"
+    ]
+  },
+  {
+    "name": "backInLeft",
+    "class": "animate__backInLeft",
+    "group": [
+      "缩放回弹入场",
+      "Back entrances"
+    ],
+    "description": [
+      "缩放回弹入场，向左",
+      "Back entrances; leftward"
+    ]
+  },
+  {
+    "name": "backInRight",
+    "class": "animate__backInRight",
+    "group": [
+      "缩放回弹入场",
+      "Back entrances"
+    ],
+    "description": [
+      "缩放回弹入场，向右",
+      "Back entrances; rightward"
+    ]
+  },
+  {
+    "name": "backInUp",
+    "class": "animate__backInUp",
+    "group": [
+      "缩放回弹入场",
+      "Back entrances"
+    ],
+    "description": [
+      "缩放回弹入场，向上",
+      "Back entrances; upward"
+    ]
+  },
+  {
+    "name": "backOutDown",
+    "class": "animate__backOutDown",
+    "group": [
+      "缩放回弹退场",
+      "Back exits"
+    ],
+    "description": [
+      "缩放回弹退场，向下",
+      "Back exits; downward"
+    ]
+  },
+  {
+    "name": "backOutLeft",
+    "class": "animate__backOutLeft",
+    "group": [
+      "缩放回弹退场",
+      "Back exits"
+    ],
+    "description": [
+      "缩放回弹退场，向左",
+      "Back exits; leftward"
+    ]
+  },
+  {
+    "name": "backOutRight",
+    "class": "animate__backOutRight",
+    "group": [
+      "缩放回弹退场",
+      "Back exits"
+    ],
+    "description": [
+      "缩放回弹退场，向右",
+      "Back exits; rightward"
+    ]
+  },
+  {
+    "name": "backOutUp",
+    "class": "animate__backOutUp",
+    "group": [
+      "缩放回弹退场",
+      "Back exits"
+    ],
+    "description": [
+      "缩放回弹退场，向上",
+      "Back exits; upward"
+    ]
+  },
+  {
+    "name": "bounceIn",
+    "class": "animate__bounceIn",
+    "group": [
+      "弹跳入场",
+      "Bouncing entrances"
+    ],
+    "description": [
+      "弹跳入场",
+      "Bouncing entrances"
+    ]
+  },
+  {
+    "name": "bounceInDown",
+    "class": "animate__bounceInDown",
+    "group": [
+      "弹跳入场",
+      "Bouncing entrances"
+    ],
+    "description": [
+      "弹跳入场，向下",
+      "Bouncing entrances; downward"
+    ]
+  },
+  {
+    "name": "bounceInLeft",
+    "class": "animate__bounceInLeft",
+    "group": [
+      "弹跳入场",
+      "Bouncing entrances"
+    ],
+    "description": [
+      "弹跳入场，向左",
+      "Bouncing entrances; leftward"
+    ]
+  },
+  {
+    "name": "bounceInRight",
+    "class": "animate__bounceInRight",
+    "group": [
+      "弹跳入场",
+      "Bouncing entrances"
+    ],
+    "description": [
+      "弹跳入场，向右",
+      "Bouncing entrances; rightward"
+    ]
+  },
+  {
+    "name": "bounceInUp",
+    "class": "animate__bounceInUp",
+    "group": [
+      "弹跳入场",
+      "Bouncing entrances"
+    ],
+    "description": [
+      "弹跳入场，向上",
+      "Bouncing entrances; upward"
+    ]
+  },
+  {
+    "name": "bounceOut",
+    "class": "animate__bounceOut",
+    "group": [
+      "弹跳退场",
+      "Bouncing exits"
+    ],
+    "description": [
+      "弹跳退场",
+      "Bouncing exits"
+    ]
+  },
+  {
+    "name": "bounceOutDown",
+    "class": "animate__bounceOutDown",
+    "group": [
+      "弹跳退场",
+      "Bouncing exits"
+    ],
+    "description": [
+      "弹跳退场，向下",
+      "Bouncing exits; downward"
+    ]
+  },
+  {
+    "name": "bounceOutLeft",
+    "class": "animate__bounceOutLeft",
+    "group": [
+      "弹跳退场",
+      "Bouncing exits"
+    ],
+    "description": [
+      "弹跳退场，向左",
+      "Bouncing exits; leftward"
+    ]
+  },
+  {
+    "name": "bounceOutRight",
+    "class": "animate__bounceOutRight",
+    "group": [
+      "弹跳退场",
+      "Bouncing exits"
+    ],
+    "description": [
+      "弹跳退场，向右",
+      "Bouncing exits; rightward"
+    ]
+  },
+  {
+    "name": "bounceOutUp",
+    "class": "animate__bounceOutUp",
+    "group": [
+      "弹跳退场",
+      "Bouncing exits"
+    ],
+    "description": [
+      "弹跳退场，向上",
+      "Bouncing exits; upward"
+    ]
+  },
+  {
+    "name": "fadeIn",
+    "class": "animate__fadeIn",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场",
+      "Fading entrances"
+    ]
+  },
+  {
+    "name": "fadeInDown",
+    "class": "animate__fadeInDown",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，向下",
+      "Fading entrances; downward"
+    ]
+  },
+  {
+    "name": "fadeInDownBig",
+    "class": "animate__fadeInDownBig",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，向下，大幅位移",
+      "Fading entrances; downward, large displacement"
+    ]
+  },
+  {
+    "name": "fadeInLeft",
+    "class": "animate__fadeInLeft",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，向左",
+      "Fading entrances; leftward"
+    ]
+  },
+  {
+    "name": "fadeInLeftBig",
+    "class": "animate__fadeInLeftBig",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，向左，大幅位移",
+      "Fading entrances; leftward, large displacement"
+    ]
+  },
+  {
+    "name": "fadeInRight",
+    "class": "animate__fadeInRight",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，向右",
+      "Fading entrances; rightward"
+    ]
+  },
+  {
+    "name": "fadeInRightBig",
+    "class": "animate__fadeInRightBig",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，向右，大幅位移",
+      "Fading entrances; rightward, large displacement"
+    ]
+  },
+  {
+    "name": "fadeInUp",
+    "class": "animate__fadeInUp",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，向上",
+      "Fading entrances; upward"
+    ]
+  },
+  {
+    "name": "fadeInUpBig",
+    "class": "animate__fadeInUpBig",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，向上，大幅位移",
+      "Fading entrances; upward, large displacement"
+    ]
+  },
+  {
+    "name": "fadeInTopLeft",
+    "class": "animate__fadeInTopLeft",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，左上角",
+      "Fading entrances; top left"
+    ]
+  },
+  {
+    "name": "fadeInTopRight",
+    "class": "animate__fadeInTopRight",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，右上角",
+      "Fading entrances; top right"
+    ]
+  },
+  {
+    "name": "fadeInBottomLeft",
+    "class": "animate__fadeInBottomLeft",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，左下角",
+      "Fading entrances; bottom left"
+    ]
+  },
+  {
+    "name": "fadeInBottomRight",
+    "class": "animate__fadeInBottomRight",
+    "group": [
+      "淡入",
+      "Fading entrances"
+    ],
+    "description": [
+      "透明度渐变入场，右下角",
+      "Fading entrances; bottom right"
+    ]
+  },
+  {
+    "name": "fadeOut",
+    "class": "animate__fadeOut",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场",
+      "Fading exits"
+    ]
+  },
+  {
+    "name": "fadeOutDown",
+    "class": "animate__fadeOutDown",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，向下",
+      "Fading exits; downward"
+    ]
+  },
+  {
+    "name": "fadeOutDownBig",
+    "class": "animate__fadeOutDownBig",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，向下，大幅位移",
+      "Fading exits; downward, large displacement"
+    ]
+  },
+  {
+    "name": "fadeOutLeft",
+    "class": "animate__fadeOutLeft",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，向左",
+      "Fading exits; leftward"
+    ]
+  },
+  {
+    "name": "fadeOutLeftBig",
+    "class": "animate__fadeOutLeftBig",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，向左，大幅位移",
+      "Fading exits; leftward, large displacement"
+    ]
+  },
+  {
+    "name": "fadeOutRight",
+    "class": "animate__fadeOutRight",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，向右",
+      "Fading exits; rightward"
+    ]
+  },
+  {
+    "name": "fadeOutRightBig",
+    "class": "animate__fadeOutRightBig",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，向右，大幅位移",
+      "Fading exits; rightward, large displacement"
+    ]
+  },
+  {
+    "name": "fadeOutUp",
+    "class": "animate__fadeOutUp",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，向上",
+      "Fading exits; upward"
+    ]
+  },
+  {
+    "name": "fadeOutUpBig",
+    "class": "animate__fadeOutUpBig",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，向上，大幅位移",
+      "Fading exits; upward, large displacement"
+    ]
+  },
+  {
+    "name": "fadeOutTopLeft",
+    "class": "animate__fadeOutTopLeft",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，左上角",
+      "Fading exits; top left"
+    ]
+  },
+  {
+    "name": "fadeOutTopRight",
+    "class": "animate__fadeOutTopRight",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，右上角",
+      "Fading exits; top right"
+    ]
+  },
+  {
+    "name": "fadeOutBottomRight",
+    "class": "animate__fadeOutBottomRight",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，右下角",
+      "Fading exits; bottom right"
+    ]
+  },
+  {
+    "name": "fadeOutBottomLeft",
+    "class": "animate__fadeOutBottomLeft",
+    "group": [
+      "淡出",
+      "Fading exits"
+    ],
+    "description": [
+      "透明度渐变退场，左下角",
+      "Fading exits; bottom left"
+    ]
+  },
+  {
+    "name": "flip",
+    "class": "animate__flip",
+    "group": [
+      "三维翻转",
+      "Flips"
+    ],
+    "description": [
+      "透视三维翻转",
+      "Perspective 3D flip"
+    ]
+  },
+  {
+    "name": "flipInX",
+    "class": "animate__flipInX",
+    "group": [
+      "三维翻转",
+      "Flips"
+    ],
+    "description": [
+      "三维翻转入场，绕 x 轴",
+      "Flips; around the x axis"
+    ]
+  },
+  {
+    "name": "flipInY",
+    "class": "animate__flipInY",
+    "group": [
+      "三维翻转",
+      "Flips"
+    ],
+    "description": [
+      "三维翻转入场，绕 y 轴",
+      "Flips; around the y axis"
+    ]
+  },
+  {
+    "name": "flipOutX",
+    "class": "animate__flipOutX",
+    "group": [
+      "三维翻转",
+      "Flips"
+    ],
+    "description": [
+      "三维翻转退场，绕 x 轴",
+      "Flips; around the x axis"
+    ]
+  },
+  {
+    "name": "flipOutY",
+    "class": "animate__flipOutY",
+    "group": [
+      "三维翻转",
+      "Flips"
+    ],
+    "description": [
+      "三维翻转退场，绕 y 轴",
+      "Flips; around the y axis"
+    ]
+  },
+  {
+    "name": "lightSpeedInRight",
+    "class": "animate__lightSpeedInRight",
+    "group": [
+      "快速滑动",
+      "Lightspeed"
+    ],
+    "description": [
+      "快速倾斜滑动入场，向右",
+      "Lightspeed; rightward"
+    ]
+  },
+  {
+    "name": "lightSpeedInLeft",
+    "class": "animate__lightSpeedInLeft",
+    "group": [
+      "快速滑动",
+      "Lightspeed"
+    ],
+    "description": [
+      "快速倾斜滑动入场，向左",
+      "Lightspeed; leftward"
+    ]
+  },
+  {
+    "name": "lightSpeedOutRight",
+    "class": "animate__lightSpeedOutRight",
+    "group": [
+      "快速滑动",
+      "Lightspeed"
+    ],
+    "description": [
+      "快速倾斜滑动退场，向右",
+      "Lightspeed; rightward"
+    ]
+  },
+  {
+    "name": "lightSpeedOutLeft",
+    "class": "animate__lightSpeedOutLeft",
+    "group": [
+      "快速滑动",
+      "Lightspeed"
+    ],
+    "description": [
+      "快速倾斜滑动退场，向左",
+      "Lightspeed; leftward"
+    ]
+  },
+  {
+    "name": "rotateIn",
+    "class": "animate__rotateIn",
+    "group": [
+      "旋转入场",
+      "Rotating entrances"
+    ],
+    "description": [
+      "旋转入场",
+      "Rotating entrances"
+    ]
+  },
+  {
+    "name": "rotateInDownLeft",
+    "class": "animate__rotateInDownLeft",
+    "group": [
+      "旋转入场",
+      "Rotating entrances"
+    ],
+    "description": [
+      "旋转入场",
+      "Rotating entrances"
+    ]
+  },
+  {
+    "name": "rotateInDownRight",
+    "class": "animate__rotateInDownRight",
+    "group": [
+      "旋转入场",
+      "Rotating entrances"
+    ],
+    "description": [
+      "旋转入场",
+      "Rotating entrances"
+    ]
+  },
+  {
+    "name": "rotateInUpLeft",
+    "class": "animate__rotateInUpLeft",
+    "group": [
+      "旋转入场",
+      "Rotating entrances"
+    ],
+    "description": [
+      "旋转入场",
+      "Rotating entrances"
+    ]
+  },
+  {
+    "name": "rotateInUpRight",
+    "class": "animate__rotateInUpRight",
+    "group": [
+      "旋转入场",
+      "Rotating entrances"
+    ],
+    "description": [
+      "旋转入场",
+      "Rotating entrances"
+    ]
+  },
+  {
+    "name": "rotateOut",
+    "class": "animate__rotateOut",
+    "group": [
+      "旋转退场",
+      "Rotating exits"
+    ],
+    "description": [
+      "旋转退场",
+      "Rotating exits"
+    ]
+  },
+  {
+    "name": "rotateOutDownLeft",
+    "class": "animate__rotateOutDownLeft",
+    "group": [
+      "旋转退场",
+      "Rotating exits"
+    ],
+    "description": [
+      "旋转退场",
+      "Rotating exits"
+    ]
+  },
+  {
+    "name": "rotateOutDownRight",
+    "class": "animate__rotateOutDownRight",
+    "group": [
+      "旋转退场",
+      "Rotating exits"
+    ],
+    "description": [
+      "旋转退场",
+      "Rotating exits"
+    ]
+  },
+  {
+    "name": "rotateOutUpLeft",
+    "class": "animate__rotateOutUpLeft",
+    "group": [
+      "旋转退场",
+      "Rotating exits"
+    ],
+    "description": [
+      "旋转退场",
+      "Rotating exits"
+    ]
+  },
+  {
+    "name": "rotateOutUpRight",
+    "class": "animate__rotateOutUpRight",
+    "group": [
+      "旋转退场",
+      "Rotating exits"
+    ],
+    "description": [
+      "旋转退场",
+      "Rotating exits"
+    ]
+  },
+  {
+    "name": "hinge",
+    "class": "animate__hinge",
+    "group": [
+      "特殊效果",
+      "Specials"
+    ],
+    "description": [
+      "从铰链处摆动后掉落",
+      "Swing on a hinge, then drop"
+    ]
+  },
+  {
+    "name": "jackInTheBox",
+    "class": "animate__jackInTheBox",
+    "group": [
+      "特殊效果",
+      "Specials"
+    ],
+    "description": [
+      "缩放旋转弹出",
+      "Scale and rotate into view"
+    ]
+  },
+  {
+    "name": "rollIn",
+    "class": "animate__rollIn",
+    "group": [
+      "特殊效果",
+      "Specials"
+    ],
+    "description": [
+      "边滚动边入场",
+      "Roll into view"
+    ]
+  },
+  {
+    "name": "rollOut",
+    "class": "animate__rollOut",
+    "group": [
+      "特殊效果",
+      "Specials"
+    ],
+    "description": [
+      "边滚动边退场",
+      "Roll out of view"
+    ]
+  },
+  {
+    "name": "zoomIn",
+    "class": "animate__zoomIn",
+    "group": [
+      "缩放入场",
+      "Zooming entrances"
+    ],
+    "description": [
+      "缩放入场",
+      "Zooming entrances"
+    ]
+  },
+  {
+    "name": "zoomInDown",
+    "class": "animate__zoomInDown",
+    "group": [
+      "缩放入场",
+      "Zooming entrances"
+    ],
+    "description": [
+      "缩放入场，向下",
+      "Zooming entrances; downward"
+    ]
+  },
+  {
+    "name": "zoomInLeft",
+    "class": "animate__zoomInLeft",
+    "group": [
+      "缩放入场",
+      "Zooming entrances"
+    ],
+    "description": [
+      "缩放入场，向左",
+      "Zooming entrances; leftward"
+    ]
+  },
+  {
+    "name": "zoomInRight",
+    "class": "animate__zoomInRight",
+    "group": [
+      "缩放入场",
+      "Zooming entrances"
+    ],
+    "description": [
+      "缩放入场，向右",
+      "Zooming entrances; rightward"
+    ]
+  },
+  {
+    "name": "zoomInUp",
+    "class": "animate__zoomInUp",
+    "group": [
+      "缩放入场",
+      "Zooming entrances"
+    ],
+    "description": [
+      "缩放入场，向上",
+      "Zooming entrances; upward"
+    ]
+  },
+  {
+    "name": "zoomOut",
+    "class": "animate__zoomOut",
+    "group": [
+      "缩放退场",
+      "Zooming exits"
+    ],
+    "description": [
+      "缩放退场",
+      "Zooming exits"
+    ]
+  },
+  {
+    "name": "zoomOutDown",
+    "class": "animate__zoomOutDown",
+    "group": [
+      "缩放退场",
+      "Zooming exits"
+    ],
+    "description": [
+      "缩放退场，向下",
+      "Zooming exits; downward"
+    ]
+  },
+  {
+    "name": "zoomOutLeft",
+    "class": "animate__zoomOutLeft",
+    "group": [
+      "缩放退场",
+      "Zooming exits"
+    ],
+    "description": [
+      "缩放退场，向左",
+      "Zooming exits; leftward"
+    ]
+  },
+  {
+    "name": "zoomOutRight",
+    "class": "animate__zoomOutRight",
+    "group": [
+      "缩放退场",
+      "Zooming exits"
+    ],
+    "description": [
+      "缩放退场，向右",
+      "Zooming exits; rightward"
+    ]
+  },
+  {
+    "name": "zoomOutUp",
+    "class": "animate__zoomOutUp",
+    "group": [
+      "缩放退场",
+      "Zooming exits"
+    ],
+    "description": [
+      "缩放退场，向上",
+      "Zooming exits; upward"
+    ]
+  },
+  {
+    "name": "slideInDown",
+    "class": "animate__slideInDown",
+    "group": [
+      "滑入",
+      "Sliding entrances"
+    ],
+    "description": [
+      "滑动入场，向下",
+      "Sliding entrances; downward"
+    ]
+  },
+  {
+    "name": "slideInLeft",
+    "class": "animate__slideInLeft",
+    "group": [
+      "滑入",
+      "Sliding entrances"
+    ],
+    "description": [
+      "滑动入场，向左",
+      "Sliding entrances; leftward"
+    ]
+  },
+  {
+    "name": "slideInRight",
+    "class": "animate__slideInRight",
+    "group": [
+      "滑入",
+      "Sliding entrances"
+    ],
+    "description": [
+      "滑动入场，向右",
+      "Sliding entrances; rightward"
+    ]
+  },
+  {
+    "name": "slideInUp",
+    "class": "animate__slideInUp",
+    "group": [
+      "滑入",
+      "Sliding entrances"
+    ],
+    "description": [
+      "滑动入场，向上",
+      "Sliding entrances; upward"
+    ]
+  },
+  {
+    "name": "slideOutDown",
+    "class": "animate__slideOutDown",
+    "group": [
+      "滑出",
+      "Sliding exits"
+    ],
+    "description": [
+      "滑动退场，向下",
+      "Sliding exits; downward"
+    ]
+  },
+  {
+    "name": "slideOutLeft",
+    "class": "animate__slideOutLeft",
+    "group": [
+      "滑出",
+      "Sliding exits"
+    ],
+    "description": [
+      "滑动退场，向左",
+      "Sliding exits; leftward"
+    ]
+  },
+  {
+    "name": "slideOutRight",
+    "class": "animate__slideOutRight",
+    "group": [
+      "滑出",
+      "Sliding exits"
+    ],
+    "description": [
+      "滑动退场，向右",
+      "Sliding exits; rightward"
+    ]
+  },
+  {
+    "name": "slideOutUp",
+    "class": "animate__slideOutUp",
+    "group": [
+      "滑出",
+      "Sliding exits"
+    ],
+    "description": [
+      "滑动退场，向上",
+      "Sliding exits; upward"
+    ]
+  }
+]

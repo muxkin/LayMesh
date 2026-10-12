@@ -1,0 +1,2 @@
+:root { --project-ink:#243447; }
+.caption {color:var(--project-ink);font-size:3mm;}

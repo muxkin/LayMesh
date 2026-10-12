@@ -1,0 +1,36 @@
+{
+  "checks": [
+    "Art Direction: versioned head styles load once; refresh, 3840/1440/390 widths, joined entry, hidden focus isolation, Tab, labelled bounded menus, resize and dark theme",
+    "Delayed presentation CSS blocks control initialization until styled; no duplicate unversioned stylesheet request",
+    "Single Present entry; Windowed lives in dropdown; preview suppresses automatic entry",
+    "First preview click starts entry and automatically follows linked step, then waits at click step",
+    "Click/arrow navigation shares finish-current and backward-boundary behavior",
+    "Preview context menu pauses/resumes; shortcuts and Escape restore static",
+    "Dragging does not advance; preview navigation does not recompile",
+    "Selecting Auto keeps initial preview static; explicit click runs automatically; timeline sampling works from static",
+    "Present starts fullscreen with automatic entry; Escape ends it directly",
+    "Browser fullscreen exit also ends presentation without a windowed overlay",
+    "Dropdown starts windowed presentation and restores preview on exit",
+    "Windowed presentation works above the expanded workspace",
+    "Mobile dropdown remains within viewport"
+  ],
+  "errors": [],
+  "consoleMessages": [
+    {
+      "level": "warning",
+      "text": "Modifier function used at start of tag"
+    },
+    {
+      "level": "warning",
+      "text": "Modifier function used at start of tag"
+    },
+    {
+      "level": "warning",
+      "text": "Modifier function used at start of tag"
+    },
+    {
+      "level": "warning",
+      "text": "Modifier function used at start of tag"
+    }
+  ]
+}

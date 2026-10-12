@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "runtime": "posix",
+  "version": "laymesh 0.6.2",
+  "binary_sha256": "fb0704d757cfa1363a7a798143aa5b7c0ff17a512566396b181ba5dc9265ebd8",
+  "preview_requests": 32,
+  "checks": [
+    "Packaged engine starts and reports its version",
+    "Six canvas units at four layout DPI values; unsaved modules and Unicode/space paths",
+    "Mixed explicit lengths preserve millimeter inspection geometry",
+    "Structured missing-dependency error and recovery in the same persistent process",
+    "Relative stylesheet/data/image/font paths and unsaved resource overlays",
+    "Native SVG and plot inspection for extra/broken axes, polar, radar and inset examples",
+    "CRLF transport, malformed request recovery and ordered request IDs",
+    "Screenshot Animate.css source resolves offline with one step; Windows backslash path supported; FFmpeg manager capability advertised",
+    "Shared FFmpeg discovery works without downloading or creating install files",
+    "LSP formatting capabilities, unsaved LayMesh/LCSS documents and UTF-16 selection ranges",
+    "File-path LSP initialization, completion, English/Chinese hover and clean shutdown"
+  ],
+  "windows_vscode_host_tested": false
+}

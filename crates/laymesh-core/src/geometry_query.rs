@@ -177,6 +177,9 @@ fn paths(node: &NodeView, e: &Engine, l: Loc) -> Result<Paths> {
     let mut routes = vec![];
     if n["kind"] == "group" {
         for child in n["children"].as_array().into_iter().flatten() {
+            if child["__css_shadow_layer"] == true || child["__css_duplicate_path"] == true {
+                continue;
+            }
             routes.extend(
                 paths(
                     &NodeView {

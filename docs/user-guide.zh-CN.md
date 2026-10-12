@@ -46,10 +46,6 @@
 
 <a id="first-data-plot"></a>
 
-## 7. 图形、边框与脚本
-
-[形状与路径](topics/shapes.zh-CN.md) →
-
 <a id="8-原生科研绘图"></a>
 
 ## 8. 原生科研绘图
@@ -67,3 +63,7 @@
 ## 9. 常见问题
 
 [检查与警告](topics/diagnostics.zh-CN.md) →
+
+## 样式、动画与多页
+
+[样式完整手册](topics/lcss.zh-CN.md) · [动画完整手册](topics/animation.zh-CN.md) · [多页文档](topics/documents.zh-CN.md)

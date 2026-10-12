@@ -1,0 +1,12 @@
+page = canvas(size=(132mm,65mm), stylesheet="style-theme.lcss", background="#f6f7fb")
+card_size = (30mm,22mm)
+gap = 9mm
+library = page.add(rect(size=card_size,class="bg-primary rounded shadow"),
+                   target=page.top_left,offset=(12mm,12mm))
+custom = page.add(rect(size=card_size,class="bg-primary rounded shadow custom"),
+                  target=library.top_right,offset=(gap,0mm))
+props = page.add(rect(size=card_size,class="card ocean"),
+                 target=custom.top_right,offset=(gap,0mm))
+for card,label in [(library,"Library shadow"),(custom,"Blur: 2 mm"),(props,"Open Props")] {
+  page.add(text(label,class="caption"),target=card.bottom_left,offset=(0mm,gap))
+}

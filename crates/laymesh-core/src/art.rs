@@ -786,7 +786,7 @@ pub(crate) fn decorated_bounds(n: &Json) -> Option<Rect> {
         if e["mode"] == "inner" {
             continue;
         }
-        let pad = 4. * jnum(e, "blur", 1.) + jnum(e, "spread", 0.);
+        let pad = 4. * jnum(e, "blur", 1.) + jnum(e, "spread", 0.).abs();
         let xy = e["offset"].as_array();
         let dx = xy.and_then(|v| v[0].as_f64()).unwrap_or(0.);
         let dy = xy.and_then(|v| v[1].as_f64()).unwrap_or(0.);

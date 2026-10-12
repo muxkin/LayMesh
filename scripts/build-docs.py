@@ -6,10 +6,14 @@ from pathlib import Path
 from urllib.parse import unquote
 from jinja2 import Environment,FileSystemLoader,select_autoescape
 from markdown_it import MarkdownIt
-from site_support import ROOT,examples,dependencies,summary
+from site_support import ROOT,examples,dependencies
 import page_fonts
 OUT=ROOT/'site/dist';ENV=Environment(loader=FileSystemLoader(ROOT/'site/templates'),autoescape=select_autoescape());NAV=json.loads((ROOT/'site/navigation.json').read_text());EXAMPLES=examples();EX={e['source']:e for e in EXAMPLES};PAGES=[];BY_KEY={};BY_SOURCE={};MEDIA=json.loads((ROOT/'site/media/manifest.json').read_text())
+STYLESHEET_VERSIONS={name:hashlib.sha256((ROOT/'site'/name).read_bytes()).hexdigest()[:16] for name in ['styles.css','live/presentation.css']}
 def relative(page,target):return posixpath.relpath(str(target),posixpath.dirname(page['output']) or '.')
+def asset(page,name):
+ url=relative(page,'site/'+name)
+ return url+'?v='+STYLESHEET_VERSIONS[name] if name in STYLESHEET_VERSIONS else url
 def output_name(source,en):
  if source=='README.md':return 'index.html'
  if source=='README.en.md':return 'en/index.html'
@@ -71,7 +75,7 @@ def picture(page,source,alt=''):
 def context(page):
  en=page['lang']=='en'
  def get(key):return BY_KEY.get((key,page['lang'])) or BY_KEY.get(('home',page['lang']))
- return dict(page=page,navigation=NAV,tr=lambda zh,en_text:en_text if en else zh,translated=lambda values:values[int(en)],href=lambda key:relative(page,get(key)['output']),known=lambda key:(key,page['lang']) in BY_KEY,title=lambda key:get(key)['title'],asset=lambda f:relative(page,'site/'+f),counterpart=relative(page,BY_KEY.get((page['key'],'zh-CN' if en else 'en'),BY_KEY[('home','zh-CN' if en else 'en')])['output']),search_base=json.dumps({'base':relative(page,'index.html')}))
+ return dict(page=page,navigation=NAV,tr=lambda zh,en_text:en_text if en else zh,translated=lambda values:values[int(en)],href=lambda key:relative(page,get(key)['output']),known=lambda key:(key,page['lang']) in BY_KEY,title=lambda key:get(key)['title'],asset=lambda f:asset(page,f),counterpart=relative(page,BY_KEY.get((page['key'],'zh-CN' if en else 'en'),BY_KEY[('home','zh-CN' if en else 'en')])['output']),search_base=json.dumps({'base':relative(page,'index.html')}))
 def example_module(page,source):
  e=EX.get(source)
  if not e:return ''
@@ -79,9 +83,8 @@ def example_module(page,source):
  if (ROOT/python).is_file() and python not in files:files.append(python)
  panels=[]
  for i,file in enumerate(files):panels.append(dict(file=file,editable=Path(file).suffix in ('.lay','.laydoc','.lcss','.css','.csv','.json'),name=Path(file).name,id='example-'+e['id']+('-source' if i==0 else '-'+re.sub(r'[^\w-]','-',Path(file).name)),code=code((ROOT/file).read_text(),Path(file).suffix[1:],Path(file).name)))
- text,start,line=summary(source)
  has_animation=any(re.search(r'\.animate\s*\(', (ROOT/f).read_text()) for f in deps if Path(f).suffix=='.lay')
- return ENV.get_template('example.html').render(**context(page),example=e,has_animation=has_animation,panels=panels,summary_from=start,summary_code=code(text,'lay',Path(source).name,line-1),preview=picture(page,source,e['title'][page['lang']=='en']),dependencies=deps)
+ return ENV.get_template('example.html').render(**context(page),example=e,has_animation=has_animation,panels=panels,preview=picture(page,source,e['title'][page['lang']=='en']),dependencies=deps)
 def gallery(page):
  return '<div class="example-grid gallery-grid">'+''.join(f'<a class="example-card" data-category="{e["category"]}" href="{relative(page,BY_KEY[("example-"+e["id"],page["lang"])]["output"])}">{picture(page,e["source"],e["title"][page["lang"]=="en"])}<strong>{html.escape(e["title"][page["lang"]=="en"])}</strong></a>' for e in EXAMPLES)+'</div>'
 def rewrite(page,url):
@@ -92,9 +95,40 @@ def rewrite(page,url):
  return relative(page,dest or target)+('#'+parts[1] if len(parts)>1 else '')
 def markdown(page,text):
  placeholders={}
+ def catalog_embed(_):
+  effects=json.loads((ROOT/'site/animation-effects.json').read_text());en=page['lang']=='en';index=int(en)
+  options=[]
+  for group in dict.fromkeys(e['group'][index] for e in effects):
+   options.append('<optgroup label="'+html.escape(group,quote=True)+'">')
+   for e in effects:
+    if e['group'][index]==group:options.append('<option value="'+e['name']+'"'+(' selected' if e['name']=='fadeInUp' else '')+'>'+e['class']+'</option>')
+   options.append('</optgroup>')
+  key=f'LAYMESHBLOCK{len(placeholders)}'
+  controls='<div class="effect-controls"><label>'+('效果 ' if not en else 'Effect ')+'<select class="effect-select" aria-label="'+('动画效果' if not en else 'Animation effect')+'">'+''.join(options)+'</select></label><button type="button" class="effect-play">'+('播放 / 重播' if not en else 'Play / Replay')+'</button><button type="button" class="effect-static">'+('完整排版' if not en else 'Static')+'</button></div><p class="effect-description" aria-live="polite"></p>'
+  metadata='<script type="application/json" class="effect-data">'+json.dumps(effects,ensure_ascii=False).replace('<','\\u003c')+'</script>'
+  placeholders[key]='<section class="animation-catalog">'+controls+metadata+example_module(page,'examples/animation/catalog.lay')+'</section>'
+  return '\n\n'+key+'\n\n'
+ text=re.sub(r'<!-- animation-catalog -->',catalog_embed,text)
+
+ def library_embed(match):
+  lib=next(l for l in json.loads((ROOT/'site/style-libraries.json').read_text())['libraries'] if l['name']==match[1]);en=page['lang']=='en'
+  tr=lambda zh,eng:eng if en else zh
+  default={'bootstrap':'bg-primary','open-props':'--gradient-7','animate':'animate__fadeInUp'}[lib['name']]
+  status=[('',tr('所有状态','All statuses')),('supported',tr('可用','Supported')),('partial',tr('部分支持','Partial')),('resources',tr('需要字体等资源','Needs resources')),('unsupported',tr('不支持 / 未验证','Unsupported / unverified'))]
+  kinds=[('',tr('所有类型','All kinds')),('class',tr('类','Classes')),('variable',tr('变量','Variables')),('keyframe',tr('关键帧','Keyframes'))]
+  select=lambda cls,values:'<select class="'+cls+'" aria-label="'+cls+'">'+''.join('<option value="'+v+'">'+label+'</option>' for v,label in values)+'</select>'
+  controls='<div class="library-filter"><label>'+tr('检索','Search')+'<input class="library-search" type="search" placeholder="'+tr('类名、变量、属性或类别','Class, variable, property or category')+'"></label>'+select('library-kind',kinds)+select('library-status',status)+'</div><p class="library-count" aria-live="polite"></p><div class="library-browser"><select class="library-items" size="9" aria-label="'+tr('库条目','Library entries')+'"></select><div class="library-detail" aria-live="polite"></div></div>'
+  properties=['background-color','border-radius','box-shadow-blur','box-shadow-spread','box-shadow-offset','box-shadow-color','color','font-size','opacity','padding','animation-duration','animation-delay','animation-iteration-count']
+  controls+='<details class="library-tuning"><summary>'+tr('调参：选择属性并输入项目单位','Adjust a property using project units')+'</summary><div class="library-parameters"><label>layout_dpi<input class="library-dpi" type="number" min="1" placeholder="96"></label><label>'+tr('覆盖属性','Override property')+select('library-property',[(v,v) for v in properties])+'</label><label>'+tr('值','Value')+'<input class="library-value" placeholder="'+tr('例如 2mm、#e8590c、0.8s','e.g. 2mm, #e8590c, 0.8s')+'"></label><button type="button" class="library-apply">'+tr('应用覆盖','Apply override')+'</button></div><p>'+tr('完整源码可继续编辑。切换条目会载入该项的原始案例；恢复清除修改。动画时间定位位于预览的“更多 → 播放控制”。','Edit the full source too. Selecting an entry loads its original recipe; Restore clears edits. Seek animation time under More → Playback controls.')+'</p></details>'
+  controls+='<div class="effect-controls"><button type="button" class="library-play">'+tr('播放 / 重播','Play / Replay')+'</button><button type="button" class="library-static">'+tr('完整排版','Static')+'</button></div>'
+  metadata='<script type="application/json" class="library-data">'+json.dumps(lib,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c')+'</script>'
+  key=f'LAYMESHBLOCK{len(placeholders)}';placeholders[key]='<section class="style-library-catalog" data-default="'+default+'">'+controls+metadata+example_module(page,'examples/libraries/catalog-'+lib['name']+'.lay')+'</section>'
+  return '\n\n'+key+'\n\n'
+ text=re.sub(r'<!-- style-catalog:(bootstrap|open-props|animate) -->',library_embed,text)
+
  def embed(m):
-  key=f'LAYMESHBLOCK{len(placeholders)}';placeholders[key]=example_module(page,m[2]) if m[1]=='example' else gallery(page) if m[2]=='examples' else overview(page,m[2]);return '\n\n'+key+'\n\n'
- text=re.sub(r'<!-- (example|overview):([^ ]+) -->',embed,text)
+  key=f'LAYMESHBLOCK{len(placeholders)}';placeholders[key]=example_module(page,m[2]) if m[1]=='example' else code((ROOT/m[2]).read_text(),Path(m[2]).suffix[1:],Path(m[2]).name) if m[1]=='source' else gallery(page) if m[2]=='examples' else overview(page,m[2]);return '\n\n'+key+'\n\n'
+ text=re.sub(r'<!-- (example|source|overview):([^ ]+) -->',embed,text)
  md=MarkdownIt('commonmark',{'html':True,'linkify':False}).enable('table')
  def fence(tokens,i,options,env):return code(tokens[i].content,tokens[i].info)
  md.renderer.rules['fence']=fence
@@ -128,6 +162,21 @@ def check():
  count=0
  for p in OUT.rglob('*.html'):
   text=p.read_text()
+  if 'class="example-module"' in text:
+   head=text.split('</head>',1)[0]
+   for name,version in STYLESHEET_VERSIONS.items():
+    assert f'href="{relative({"output":p.relative_to(OUT).as_posix()},"site/"+name)}?v={version}"' in head,f'Missing or stale preview stylesheet: {p} -> {name}'
+  for workspace in re.findall(r'<section class="example-module".*?(?=<div class="workspace-splitter")',text,re.S):
+   assert 'data-mode="source"' in workspace and 'data-source-mode=' not in workspace and 'class="summary-panel"' not in workspace, f'Tutorial must show full source: {p}'
+   entry=re.search(r'data-entry="([^"]+)"',workspace)[1]
+   panels=list(re.finditer(r'<div class="source-panel"([^>]*)>.*?<textarea class="code-raw" hidden>(.*?)</textarea>',workspace,re.S))
+   assert panels and ' hidden' not in panels[0][1], f'Initial source is hidden: {p}'
+   for panel in panels:
+    label=re.search(r'aria-labelledby="([^"]+)"',panel[1])[1]
+    tab=re.search(r'<button\b[^>]*id="'+re.escape(label)+r'"[^>]*title="([^"]+)"',workspace)
+    source=html.unescape(tab[1])
+    assert html.unescape(panel[2])==(ROOT/source).read_text(), f'Truncated or stale source: {p} -> {source}'
+   assert html.unescape(panels[0][2])==(ROOT/html.unescape(entry)).read_text(), f'Wrong initial file: {p}'
   if p.relative_to(OUT).as_posix() in ('skia-benchmark.html','tests/skia/benchmark.html'):
    assert text==(ROOT/'tests/skia/benchmark.html').read_text(),f'Stale standalone benchmark: {p}'
   elif p.relative_to(OUT).as_posix() in ('presentation-test.html','tests/skia/presentation.html'):
@@ -157,6 +206,16 @@ def check():
   if (ROOT/sibling).is_file():
    for prefix in ('','en/'):
     page=(OUT/(prefix+'examples/'+e['id']+'.html')).read_text();assert f'title="{sibling}"' in page and f'data-edit-file="{sibling}"' not in page,f'Missing read-only Python tab: {sibling}'
+
+ inventory=json.loads((ROOT/'site/style-libraries.json').read_text())
+ for lib in inventory['libraries']:
+  topic={'bootstrap':'style-bootstrap','open-props':'style-open-props','animate':'style-animate-library'}[lib['name']]
+  for prefix,suffix in [('','.zh-CN'),('en/','')]:
+   text=(OUT/(prefix+'docs/topics/'+topic+suffix+'.html')).read_text()
+   assert text.count('class="style-library-catalog"')==1
+   assert text.count('class="example-module"')==1, 'Catalog must have one live workspace'
+   embedded=re.search(r'<script type="application/json" class="library-data">(.*?)</script>',text,re.S)
+   assert embedded and json.loads(embedded[1])==lib, 'Stale catalog inventory'
  live=OUT/'site/live';manifest=json.loads((live/'manifest.json').read_text())
  page_fonts.validate(live,manifest)
  assert (live/'wasm'/json.loads((live/'wasm/manifest.json').read_text())['wasm']).is_file();print(f'Checked {count} documentation pages, startup fonts and full editing fonts')
@@ -181,9 +240,16 @@ def main():
  for page in PAGES:
   page['body']=body(page);page['sections']=[{'depth':int(m[1]),'id':m[2],'title':html.unescape(re.sub(r'<[^>]+>','',re.sub(r'<a class="heading-anchor".*?</a>','',m[3])))} for m in re.finditer(r'<h([23]) id="([^"]+)">(.*?)</h\1>',page['body'],re.S)]
  for lang in ['zh-CN','en']:
-  search=[dict(title=p['title'],group=p.get('area',''),url=p['output'],terms=re.sub(r'<[^>]+>',' ',p['body'])[:5000]) for p in PAGES if p['lang']==lang];(OUT/f'site/search.{lang}.js').write_text('window.LAYMESH_SEARCH='+json.dumps(search,ensure_ascii=False).replace('<','\\u003c')+';\n')
+  search=[]
+  for page in PAGES:
+   if page['lang']!=lang:continue
+   prose=re.sub(r'<script\b[^>]*>[\s\S]*?</script>','',page['body'])
+   headings=' '.join(section['title'] for section in page['sections'])
+   identifiers=' '.join(dict.fromkeys(html.unescape(re.sub(r'<[^>]+>',' ',item)) for item in re.findall(r'<code>(.*?)</code>',prose,re.S) if len(item)<120))
+   search.append(dict(title=page['title'],group=page.get('area',''),url=page['output'],terms=headings+' '+identifiers+' '+re.sub(r'<[^>]+>',' ',prose)[:5000]))
+  (OUT/f'site/search.{lang}.js').write_text('window.LAYMESH_SEARCH='+json.dumps(search,ensure_ascii=False).replace('<','\\u003c')+';\n')
  for page in PAGES:
-  target=OUT/page['output'];target.parent.mkdir(parents=True,exist_ok=True);target.write_text(ENV.get_template('page.html').render(**context(page),body=page['body'],sections=page['sections']))
+  target=OUT/page['output'];target.parent.mkdir(parents=True,exist_ok=True);target.write_text(ENV.get_template('page.html').render(**context(page),body=page['body'],sections=page['sections'],has_preview='class="example-module"' in page['body']))
  spec=importlib.util.spec_from_file_location('build_live',ROOT/'scripts/build-docs-live.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);module.build(OUT/'site/live',a.skip_wasm)
  (OUT/'.nojekyll').write_text('');print(f'Built {len(PAGES)} documentation pages')
  check()

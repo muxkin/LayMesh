@@ -17,4 +17,7 @@ png = "0.18"
 ctrlc = "3.5"
 kurbo = "0.13"
 serde = { workspace = true, features = ["derive"] }
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "rustls-tls"] }
+sha2 = "0.10"
+sys-locale = "0.3"
 

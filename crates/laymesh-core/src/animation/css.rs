@@ -10,12 +10,18 @@ pub struct Sheet {
     pub rules: Vec<Rule>,
     pub keyframes: Vec<Keyframes>,
     pub scope: Option<String>,
+    #[serde(skip)]
+    pub imports: Vec<(String, Loc)>,
+    #[serde(skip)]
+    pub warnings: Vec<Diagnostic>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Rule {
     pub selector: String,
     pub declarations: Vec<Declaration>,
     pub media: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub supports: String,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Declaration {
@@ -37,7 +43,6 @@ struct Block {
     head: String,
     body: Option<String>,
     start: usize,
-    end: usize,
     body_start: usize,
 }
 fn location(source: &str, origin: Loc, offset: usize) -> Loc {
@@ -68,7 +73,7 @@ fn blocks(source: &str) -> std::result::Result<Vec<Block>, String> {
                 .clone();
             match t {
                 Token::CurlyBracketBlock => {
-                    let head = p.slice(start..before).trim().to_string();
+                    let head = clean(p.slice(start..before));
                     let body_start = p.position().byte_index();
                     let body = p
                         .parse_nested_block(|q| {
@@ -81,7 +86,6 @@ fn blocks(source: &str) -> std::result::Result<Vec<Block>, String> {
                         head,
                         body: Some(body),
                         start: start.byte_index(),
-                        end: p.position().byte_index(),
                         body_start,
                     });
                     ended = true;
@@ -96,10 +100,9 @@ fn blocks(source: &str) -> std::result::Result<Vec<Block>, String> {
                 }
                 Token::Semicolon => {
                     out.push(Block {
-                        head: p.slice(start..before).trim().to_string(),
+                        head: clean(p.slice(start..before)),
                         body: None,
                         start: start.byte_index(),
-                        end: p.position().byte_index(),
                         body_start: 0,
                     });
                     ended = true;
@@ -109,86 +112,139 @@ fn blocks(source: &str) -> std::result::Result<Vec<Block>, String> {
                 | Token::BadUrl(_)
                 | Token::CloseCurlyBracket
                 | Token::CloseParenthesis
-                | Token::CloseSquareBracket => return Err("Invalid CSS token".into()),
+                | Token::CloseSquareBracket => {
+                    ended = true;
+                    break;
+                }
                 _ => {}
             }
         }
         if !ended && !p.slice_from(start).trim().is_empty() {
-            return Err("Expected CSS rule block or semicolon".into());
+            out.push(Block {
+                head: clean(p.slice_from(start)),
+                body: None,
+                start: start.byte_index(),
+                body_start: 0,
+            });
         }
     }
     Ok(out)
 }
-fn declarations(body: &str, file: &str, origin: Loc) -> Result<Vec<Declaration>> {
+fn clean(s: &str) -> String {
+    let mut bytes = s.as_bytes().to_vec();
+    let (mut i, mut quote) = (0, 0);
+    while i < bytes.len() {
+        if bytes[i] == b'\\' {
+            i += 2;
+            continue;
+        }
+        if quote != 0 {
+            if bytes[i] == quote {
+                quote = 0;
+            }
+            i += 1;
+            continue;
+        }
+        if matches!(bytes[i], b'\'' | b'"') {
+            quote = bytes[i];
+            i += 1;
+            continue;
+        }
+        if bytes[i..].starts_with(b"/*") {
+            let start = i;
+            i += 2;
+            while i + 1 < bytes.len() && &bytes[i..i + 2] != b"*/" {
+                i += 1;
+            }
+            i = (i + 2).min(bytes.len());
+            for byte in &mut bytes[start..i] {
+                if !matches!(*byte, b'\n' | b'\r') {
+                    *byte = b' ';
+                }
+            }
+        } else {
+            i += 1;
+        }
+    }
+    String::from_utf8(bytes).unwrap().trim().into()
+}
+pub(crate) fn declarations(
+    body: &str,
+    file: &str,
+    origin: Loc,
+    warnings: &mut Vec<Diagnostic>,
+) -> Vec<Declaration> {
     let mut p = Parser::new(body);
     let mut result = vec![];
     while !p.is_exhausted() {
         p.skip_whitespace();
-        let start = p.position();
-        let loc = location(body, origin, start.byte_index());
-        let fail = |s: String| Diagnostic::new("E_LCSS", s, file, loc);
-        let token = p
-            .next()
-            .map_err(|e| fail(format!("CSS declaration: {e:?}")))?
-            .clone();
-        if token == Token::Semicolon {
+        if p.try_parse(|p| p.expect_semicolon()).is_ok() {
             continue;
         }
-        let Token::Ident(key) = token else {
-            return Err(fail("Expected CSS property".into()));
-        };
-        p.expect_colon().map_err(|_| fail("Expected ':'".into()))?;
-        let value_start = p.position();
-        let mut end = value_start;
-        while !p.is_exhausted() {
-            let before = p.position();
-            let token = p
-                .next_including_whitespace_and_comments()
-                .map_err(|e| fail(format!("CSS value: {e:?}")))?
-                .clone();
-            if token == Token::Semicolon {
-                end = before;
-                break;
+        let start = p.position();
+        let loc = location(body, origin, start.byte_index());
+        let parsed = p.parse_until_before(cssparser::Delimiter::Semicolon, |p| {
+            let key = p.expect_ident_cloned()?.to_string();
+            p.expect_colon()?;
+            let value_start = p.position();
+            while let Ok(token) = p.next_including_whitespace_and_comments().cloned() {
+                if matches!(
+                    token,
+                    Token::BadString(_)
+                        | Token::BadUrl(_)
+                        | Token::CloseCurlyBracket
+                        | Token::CloseParenthesis
+                        | Token::CloseSquareBracket
+                ) {
+                    return Err(custom_error("Invalid CSS value".to_string()));
+                }
+                if matches!(
+                    token,
+                    Token::Function(_) | Token::ParenthesisBlock | Token::SquareBracketBlock
+                ) {
+                    p.parse_nested_block(|q| {
+                        while q.next_including_whitespace_and_comments().is_ok() {}
+                        Ok::<_, cssparser::ParseError<String>>(())
+                    })?;
+                }
             }
-            // Consume function/block tokens, so slicing includes the complete value.
-            if matches!(
-                token,
-                Token::Function(_) | Token::ParenthesisBlock | Token::SquareBracketBlock
-            ) {
-                p.parse_nested_block(|q| {
-                    while q.next_including_whitespace_and_comments().is_ok() {}
-                    Ok::<_, cssparser::ParseError<()>>(())
-                })
-                .map_err(|e| fail(format!("CSS value: {e:?}")))?;
+            let value = clean(p.slice_from(value_start));
+            static IMPORTANT: std::sync::LazyLock<regex::Regex> = std::sync::LazyLock::new(|| {
+                regex::Regex::new(r"(?i)\s*!\s*important\s*$").unwrap()
+            });
+            let important = IMPORTANT.is_match(&value);
+            let value = IMPORTANT.replace(&value, "").trim().to_string();
+            if value.is_empty() && !key.starts_with("--") {
+                return Err(custom_error("Empty CSS value".to_string()));
             }
-            end = p.position();
-        }
-        let mut value = p.slice(value_start..end).trim().to_string();
-        static IMPORTANT: std::sync::LazyLock<regex::Regex> =
-            std::sync::LazyLock::new(|| regex::Regex::new(r"(?i)\s*!\s*important\s*$").unwrap());
-        let important = &*IMPORTANT;
-        let imp = important.is_match(&value);
-        value = important.replace(&value, "").trim().to_string();
-        if value.is_empty() {
-            return Err(fail("Empty CSS value".into()));
-        }
-        let property = if key.starts_with("--") {
-            key.to_string()
-        } else {
-            key.to_ascii_lowercase()
-        };
-        result.push(Declaration {
-            property: property
-                .strip_prefix("-webkit-")
-                .unwrap_or(&property)
-                .into(),
-            value,
-            important: imp,
-            file: file.into(),
-            loc,
+            let property = if key.starts_with("--") {
+                key
+            } else {
+                key.to_ascii_lowercase()
+            };
+            Ok(Declaration {
+                property: property
+                    .strip_prefix("-webkit-")
+                    .unwrap_or(&property)
+                    .into(),
+                value,
+                important,
+                file: file.into(),
+                loc,
+            })
         });
+        match parsed {
+            Ok(d) => result.push(d),
+            Err(e) => warnings.push(Diagnostic::new(
+                "W_CSS",
+                format!("Ignored invalid declaration: {e:?}"),
+                file,
+                loc,
+            )),
+        }
+        let _ = p.try_parse(|p| p.expect_semicolon());
     }
-    Ok(result)
+    result
 }
 pub fn is_motion_property(key: &str) -> bool {
     let k = key.strip_prefix("-webkit-").unwrap_or(key);
@@ -207,52 +263,66 @@ pub fn is_motion_property(key: &str) -> bool {
         )
         || k.starts_with("-laymesh-")
 }
-/// Returns a whitespace-masked source for the legacy drawing cascade and the
-/// complete motion stylesheet. Offsets in the masked source are unchanged.
+/// One token parser serves both static and animation styles. Unsupported CSS
+/// is recorded and recovered at a declaration or rule boundary.
 pub fn extract(
     source: &str,
     file: &str,
     origin: Loc,
     scope: Option<&str>,
 ) -> Result<(String, Sheet)> {
-    let mut legacy = source.as_bytes().to_vec();
     let mut sheet = Sheet {
         scope: scope.map(str::to_owned),
         ..Sheet::default()
     };
-    let mut blank = |a: usize, b: usize| {
-        for c in &mut legacy[a..b] {
-            if !matches!(*c, b'\n' | b'\r') {
-                *c = b' ';
-            }
-        }
-    };
-    parse_rules(source, file, origin, "", &mut sheet, &mut blank, 0)?;
-    Ok((String::from_utf8(legacy).unwrap(), sheet))
+    parse_rules(source, file, origin, "", "", &mut sheet);
+    Ok((String::new(), sheet))
 }
 fn parse_rules(
     source: &str,
     file: &str,
     origin: Loc,
     media: &str,
+    supports: &str,
     sheet: &mut Sheet,
-    blank: &mut dyn FnMut(usize, usize),
-    base: usize,
-) -> Result<()> {
-    let rules = blocks(source).map_err(|m| Diagnostic::new("E_LCSS", m, file, origin))?;
+) {
+    let rules = match blocks(source) {
+        Ok(v) => v,
+        Err(m) => {
+            sheet
+                .warnings
+                .push(Diagnostic::new("W_CSS", m, file, origin));
+            return;
+        }
+    };
     for b in rules {
         let loc = location(source, origin, b.start);
         let Some(body) = &b.body else {
             if b.head.starts_with("@charset") {
-                blank(base + b.start, base + b.end);
-            } else if !b.head.starts_with("@import") {
-                return Err(Diagnostic::new(
-                    "E_LCSS",
-                    "Unsupported CSS at-rule",
-                    file,
-                    loc,
-                ));
+                continue;
             }
+            if let Some(import) = b.head.strip_prefix("@import") {
+                let import = import.trim();
+                let import = import
+                    .strip_prefix("url(")
+                    .and_then(|s| s.strip_suffix(')'))
+                    .unwrap_or(import)
+                    .trim()
+                    .trim_matches(['\'', '"']);
+                if (import.ends_with(".css") || import.ends_with(".lcss"))
+                    && !import.contains(':')
+                    && !import.starts_with("//")
+                {
+                    sheet.imports.push((import.into(), loc));
+                    continue;
+                }
+            }
+            sheet.warnings.push(Diagnostic::new(
+                "W_CSS",
+                format!("Ignored CSS rule: {}", b.head),
+                file,
+                loc,
+            ));
             continue;
         };
         let body_loc = location(source, origin, b.body_start);
@@ -265,133 +335,89 @@ fn parse_rules(
                 .trim()
                 .trim_matches(['\'', '"'])
                 .to_string();
-            if name.is_empty() {
-                return Err(Diagnostic::new(
-                    "E_LCSS",
-                    "Missing animation name",
-                    file,
-                    loc,
-                ));
-            }
-            let mut frames = vec![];
-            for frame in blocks(body).map_err(|m| Diagnostic::new("E_LCSS", m, file, body_loc))? {
-                let fb = frame.body.ok_or_else(|| {
-                    Diagnostic::new("E_LCSS", "Expected keyframe block", file, body_loc)
-                })?;
-                let ds = declarations(&fb, file, location(body, body_loc, frame.body_start))?;
-                for at in split(&frame.head, ',') {
-                    let at = match at.trim() {
-                        "from" => 0.,
-                        "to" => 1.,
-                        x => x
-                            .strip_suffix('%')
-                            .and_then(|v| v.parse::<f64>().ok())
-                            .map(|v| v / 100.)
-                            .ok_or_else(|| {
-                                Diagnostic::new(
-                                    "E_LCSS",
-                                    "Keyframe requires from/to or percentage",
-                                    file,
-                                    loc,
-                                )
-                            })?,
-                    };
-                    if !(0.0..=1.0).contains(&at) {
-                        return Err(Diagnostic::new(
-                            "E_LCSS",
-                            "Keyframe outside 0–100%",
-                            file,
-                            loc,
-                        ));
-                    }
-                    frames.push((at, ds.iter().filter(|d| !d.important).cloned().collect()));
+            let parsed = (|| -> std::result::Result<Vec<(f64, Vec<Declaration>)>, String> {
+                if name.is_empty() {
+                    return Err("Missing animation name".into());
                 }
+                let mut frames = vec![];
+                for frame in blocks(body)? {
+                    let fb = frame.body.ok_or("Expected keyframe block")?;
+                    let ds = declarations(
+                        &fb,
+                        file,
+                        location(body, body_loc, frame.body_start),
+                        &mut sheet.warnings,
+                    );
+                    for at in split(&frame.head, ',') {
+                        let at = match at.trim() {
+                            "from" => 0.,
+                            "to" => 1.,
+                            x => x
+                                .strip_suffix('%')
+                                .and_then(|v| v.parse::<f64>().ok())
+                                .map(|v| v / 100.)
+                                .ok_or("Keyframe requires from/to or percentage")?,
+                        };
+                        if !(0.0..=1.).contains(&at) {
+                            return Err("Keyframe outside 0–100%".into());
+                        }
+                        frames.push((at, ds.iter().filter(|d| !d.important).cloned().collect()));
+                    }
+                }
+                Ok(frames)
+            })();
+            match parsed {
+                Ok(frames) => sheet.keyframes.push(Keyframes {
+                    name,
+                    frames,
+                    prefixed: b.head.starts_with("@-"),
+                    file: file.into(),
+                    loc,
+                }),
+                Err(m) => sheet.warnings.push(Diagnostic::new("W_CSS", m, file, loc)),
             }
-            sheet.keyframes.push(Keyframes {
-                name,
-                frames,
-                prefixed: b.head.starts_with("@-"),
-                file: file.into(),
-                loc,
-            });
-            blank(base + b.start, base + b.end);
         } else if let Some(query) = b.head.strip_prefix("@media ") {
-            if !media.is_empty() {
-                return Err(Diagnostic::new(
-                    "E_LCSS",
-                    "Nested media queries are not supported",
-                    file,
-                    loc,
-                ));
-            }
-            if split(query, ',').iter().any(|q| {
-                !matches!(
-                    q.trim(),
-                    "screen"
-                        | "all"
-                        | "print"
-                        | "(prefers-reduced-motion: reduce)"
-                        | "(prefers-reduced-motion: no-preference)"
-                )
-            }) {
-                return Err(Diagnostic::new(
-                    "E_LCSS",
-                    "Unsupported animation media query",
-                    file,
-                    loc,
-                ));
-            }
-            parse_rules(
-                body,
-                file,
-                body_loc,
-                query,
-                sheet,
-                blank,
-                base + b.body_start,
-            )?;
-            blank(base + b.start, base + b.end);
+            // Nested conditions are retained, including each comma alternative.
+            let query = if media.is_empty() {
+                query.to_string()
+            } else {
+                split(media, ',')
+                    .iter()
+                    .flat_map(|a| {
+                        split(query, ',')
+                            .into_iter()
+                            .map(move |b| format!("{a} and {b}"))
+                    })
+                    .collect::<Vec<_>>()
+                    .join(",")
+            };
+            parse_rules(body, file, body_loc, &query, supports, sheet);
+        } else if let Some(query) = b.head.strip_prefix("@supports ") {
+            let query = if supports.is_empty() {
+                query.to_string()
+            } else {
+                format!("{supports} and {query}")
+            };
+            parse_rules(body, file, body_loc, media, &query, sheet);
         } else if b.head.starts_with('@') {
-            return Err(Diagnostic::new(
-                "E_LCSS",
-                "Unsupported CSS at-rule",
+            sheet.warnings.push(Diagnostic::new(
+                "W_CSS",
+                format!("Ignored at-rule: {}", b.head),
                 file,
                 loc,
             ));
         } else {
-            let ds = declarations(body, file, body_loc)?;
+            let ds = declarations(body, file, body_loc, &mut sheet.warnings);
             for sel in split(&b.head, ',') {
                 sheet.rules.push(Rule {
                     selector: sel,
                     declarations: ds.clone(),
                     media: media.into(),
+                    supports: supports.into(),
                 });
-            }
-            if !media.is_empty() || b.head.contains(":root") || b.head.contains('[') {
-                blank(base + b.start, base + b.end);
-                continue;
-            }
-            // Mask only motion declarations; keep normal drawing declarations and
-            // their exact source offsets, including existing strict diagnostics.
-            for d in &ds {
-                if is_motion_property(&d.property) {
-                    let start = d.loc.offset - origin.offset;
-                    let relative = start - b.body_start;
-                    let mut p = Parser::new(&body[relative..]);
-                    while !p.is_exhausted() {
-                        if matches!(
-                            p.next_including_whitespace_and_comments(),
-                            Ok(Token::Semicolon)
-                        ) {
-                            break;
-                        }
-                    }
-                    blank(base + start, base + start + p.position().byte_index());
-                }
             }
         }
     }
-    Ok(())
 }
 pub fn split(s: &str, delimiter: char) -> Vec<String> {
     let (mut depth, mut quote, mut escape, mut start) = (0, '\0', false, 0);
@@ -447,86 +473,10 @@ pub fn media_matches_environment(query: &str, reduced: bool, print: bool) -> boo
         })
 }
 
-/// Selector context is a root-to-target chain of material type and class lists.
-#[derive(Clone, Debug, Default)]
-pub struct Element {
-    pub kind: String,
-    pub class: String,
-}
-fn compound(sel: &str, e: &Element, root: bool) -> bool {
-    if sel == ":root" {
-        return root;
+pub use crate::css_selectors::{Element, matches, specificity};
+
+fn custom_error(s: String) -> cssparser::ParseError<String> {
+    cssparser::ParseError {
+        kind: cssparser::ParseErrorKind::Custom(s),
     }
-    static RE: std::sync::LazyLock<regex::Regex> = std::sync::LazyLock::new(|| {
-        regex::Regex::new(r#"\[class\s*([*~^$|]?=)\s*['\"]([^'\"]+)['\"]\s*\]"#).unwrap()
-    });
-    let re = &*RE;
-    for c in re.captures_iter(sel) {
-        let v = &c[2];
-        if !match &c[1] {
-            "=" => e.class == v,
-            "*=" => e.class.contains(v),
-            "~=" => e.class.split_whitespace().any(|x| x == v),
-            "^=" => e.class.starts_with(v),
-            "$=" => e.class.ends_with(v),
-            "|=" => e.class == v || e.class.starts_with(&format!("{v}-")),
-            _ => false,
-        } {
-            return false;
-        }
-    }
-    let s = re.replace_all(sel, "");
-    if s.contains(['[', ']', ':', '#']) {
-        return false;
-    }
-    let mut parts = s.split('.');
-    let typ = parts.next().unwrap_or("");
-    (typ.is_empty() || typ == "*" || typ == e.kind)
-        && parts.all(|c| e.class.split_whitespace().any(|x| x == c))
-}
-pub fn matches(selector: &str, chain: &[Element]) -> bool {
-    fn test(parts: &[&str], chain: &[Element]) -> bool {
-        if parts.is_empty() {
-            return true;
-        }
-        if chain.is_empty() {
-            return false;
-        }
-        if !compound(
-            parts[parts.len() - 1],
-            chain.last().unwrap(),
-            chain.len() == 1,
-        ) {
-            return false;
-        }
-        if parts.len() == 1 {
-            return true;
-        }
-        if parts[parts.len() - 2] == ">" {
-            test(&parts[..parts.len() - 2], &chain[..chain.len() - 1])
-        } else {
-            (1..chain.len())
-                .rev()
-                .any(|n| test(&parts[..parts.len() - 1], &chain[..n]))
-        }
-    }
-    // Split combinators only outside attribute selectors and quoted values.
-    let normalized = selector.replace('>', " > ");
-    test(
-        &split(&normalized, ' ')
-            .iter()
-            .filter(|s| !s.is_empty())
-            .map(String::as_str)
-            .collect::<Vec<_>>(),
-        chain,
-    )
-}
-pub fn specificity(selector: &str) -> usize {
-    selector.matches('.').count() * 100
-        + selector.matches('[').count() * 100
-        + selector.matches(":root").count() * 100
-        + selector
-            .split([' ', '>'])
-            .filter(|s| s.chars().next().is_some_and(|c| c.is_ascii_alphabetic()))
-            .count()
 }

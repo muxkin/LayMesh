@@ -1,0 +1,3 @@
+@import "vendor/milligram.css";
+@import url("palette.css");
+.tile {background-image:url("assets/pattern.svg");border-radius:2mm;box-shadow:1mm 1mm 2mm #0004;}

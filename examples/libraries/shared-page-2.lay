@@ -1,0 +1,5 @@
+page=canvas(size=(100mm,65mm),stylesheet="shared-theme.lcss",background="#f6f7fb")
+card=page.add(rect(size=(40mm,25mm),class="card"),anchor=center,target=page.center)
+page.add(text("Shared theme / page 2",class="caption"),anchor=top_center,target=card.bottom_center,offset=(0mm,8mm))
+s=page.step(start="after-previous",hold=1s)
+s.animate(card,class="animate__animated animate__fadeInUp",duration=800ms)

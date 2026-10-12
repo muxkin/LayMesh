@@ -1,8 +1,14 @@
 # 安装与验证
 
+## VS Code 安装（推荐）
+
+安装 [LayMesh 扩展](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language)或[平台 VSIX](https://github.com/muxkin/LayMesh/releases/latest)，打开工作文件夹和 .lay 文件，执行“LayMesh：打开预览”。平台包内置原生引擎；Remote SSH 选择远程宿主平台。无需额外安装 Python、Rust 或 npm。
+
+当前源码文档包含最新改动；发行包功能以对应发布说明为准。
+
 ## 安装平台 wheel
 
-要求 Python 3.10+。PyPI 已发布版本为 `0.3.1`，覆盖 Windows、Linux 和 macOS，从 [PyPI](https://pypi.org/project/laymesh/) 安装：
+要求 Python 3.10+。从 [PyPI](https://pypi.org/project/laymesh/) 安装对应平台的发行包；使用 `--version` 核对实际版本：
 
 ```sh
 python -m pip install laymesh

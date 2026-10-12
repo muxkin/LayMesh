@@ -45,10 +45,31 @@ export const layLanguage=StreamLanguage.define({
 const signatureEffect=StateEffect.define();
 const signatureField=StateField.define({create:()=>null,update:(value,tr)=>{for(const effect of tr.effects)if(effect.is(signatureEffect))return effect.value;return tr.docChanged||tr.selection?null:value;},provide:f=>showTooltip.from(f)});
 export function languageSupport(editor,file){
+ if(file.endsWith(".css"))return [css(),autocompletion({defaultKeymap:false}),Prec.highest(keymap.of([
+  {key:'Tab',run:view=>!view.composing&&(acceptCompletion(view)||indentMore(view)),shift:view=>!view.composing&&indentLess(view)},
+  {key:'Enter',run:view=>{if(!view.composing)closeCompletion(view);return false;}},
+  ...completionKeymap.filter(binding=>binding.key!=='Enter').map(binding=>({...binding,run:view=>!view.composing&&binding.run(view)}))
+ ]))];
  const current=()=>editor.views.get(file)?.view;
  const active=()=>editor.module.dataset.mode!=='summary'&&editor.module.querySelector('.source-panel:not([hidden])')?.dataset.editFile===file;
  const signature=view=>{const pos=view.state.selection.main.head,doc=view.state.doc;query(editor,file,'signature',pos).then(result=>{if(result&&active()&&current()===view&&view.state.doc===doc&&view.state.selection.main.head===pos)view.dispatch({effects:signatureEffect.of({pos,above:true,create:()=>({dom:signatureDOM(result,view)})})});});};
- const jump=async view=>{const result=await query(editor,file,'definition',view.state.selection.main.head);if(!result)return;const tab=[...editor.module.querySelectorAll('[role=tab]')].find(tab=>editor.module.querySelector('#'+CSS.escape(tab.getAttribute('aria-controls')))?.dataset.editFile===result.uri);tab?.click();const target=editor.views.get(result.uri)?.view;if(target){target.dispatch({selection:{anchor:result.from}});target.focus();}};
+ const jump=async view=>{
+  const result=await query(editor,file,'definition',view.state.selection.main.head);if(!result)return;
+  const locations=Array.isArray(result)?result:[result];
+  let target=locations[0];
+  if(locations.length>1){
+   const picker=document.createElement('dialog');picker.className='definition-picker';
+   const title=document.createElement('p');title.textContent=en?'Choose a definition':'选择定义';picker.append(title);
+   target=await new Promise(resolve=>{for(const d of locations){const b=document.createElement('button');b.textContent=d.uri+' · '+d.from;b.onclick=()=>{picker.close();resolve(d);};picker.append(b);}picker.addEventListener('cancel',()=>resolve(null),{once:true});document.body.append(picker);picker.showModal();});picker.remove();if(!target)return;
+  }
+  if(target.uri.startsWith('laymesh-library:/')){
+   const content=await query(editor,target.uri,'stylesheetContent');if(!content)return;
+   const dialog=document.createElement('dialog');dialog.className='library-source-dialog';const title=document.createElement('p');title.textContent=target.uri+' · '+(en?'Read only':'只读');
+   const close=document.createElement('button');close.textContent=en?'Close':'关闭';close.onclick=()=>dialog.close();const pre=document.createElement('pre');pre.tabIndex=0;const code=document.createElement('code');
+   code.append(document.createTextNode(content.text.slice(0,target.from)));const mark=document.createElement('mark');mark.textContent=content.text.slice(target.from,target.to)||' ';code.append(mark,document.createTextNode(content.text.slice(target.to)));pre.append(code);dialog.append(title,close,pre);document.body.append(dialog);dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();mark.scrollIntoView({block:'center'});return;
+  }
+  const tab=[...editor.module.querySelectorAll('[role=tab]')].find(tab=>editor.module.querySelector('#'+CSS.escape(tab.getAttribute('aria-controls')))?.dataset.editFile===target.uri);tab?.click();const panel=editor.module.querySelector('.source-panel:not([hidden])');if(panel?.dataset.editFile===target.uri)await editor.editor(panel);const destination=editor.views.get(target.uri)?.view;if(destination){destination.dispatch({selection:{anchor:target.from}});destination.focus();}
+ };
  const dependencyRefresh=ViewPlugin.fromClass(class {
   constructor(view){this.refresh=()=>{closeCompletion(view);view.dispatch({effects:signatureEffect.of(null)});};editor.module.addEventListener('laymesh:tab',this.refresh);}
   destroy(){editor.module.removeEventListener('laymesh:tab',this.refresh);}
@@ -61,7 +82,7 @@ export function languageSupport(editor,file){
   return {from:Math.min(...options.map(o=>o.from)),to:context.pos,options:options.map(({from,to,info,...o})=>{
    const tail=Math.max(0,(to??context.pos)-context.pos),text=o.apply??o.label;
    return {...o,apply:tail?(view,completion,start,end)=>view.dispatch({...insertCompletionText(view.state,text,start,end+tail),annotations:pickedCompletion.of(completion)}):o.apply,info:info?()=>helpDOM(info):undefined};
-  }),validFor:/^[\w@-]*$/};
+  }),validFor:/^[\w@./-]*$/};
  }]}),hoverTooltip(async(view,pos)=>{const doc=view.state.doc,result=await query(editor,file,'hover',pos);if(!result||view.state.doc!==doc)return null;return{pos:result.from,end:result.to,above:true,create:()=>({dom:helpDOM(result.contents)})};}),
  linter(async view=>{const doc=view.state.doc,result=await query(editor,file,'diagnostics');if(view.state.doc!==doc)return [];return(result||[]).map(d=>({...d,from:Math.min(doc.length,d.from),to:Math.min(doc.length,d.to),actions:d.replacement?[{name:en?'Rename':'改名',apply:(v,from,to)=>v.dispatch({changes:{from,to,insert:d.replacement}})}]:undefined}));},{delay:350}),signatureField,
  Prec.highest(keymap.of([

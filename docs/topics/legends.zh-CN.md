@@ -11,10 +11,6 @@
 
 <!-- example:examples/manual/color_scale.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 p.legend/p.colorbar 是图表内部装饰；legend(layers=...) 和 colorbar(scale=...) 是可独立放置的素材。共享色标需要显式范围与同一配置对象，不能只选同名配色。

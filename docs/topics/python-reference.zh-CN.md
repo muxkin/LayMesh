@@ -49,3 +49,7 @@ page = canvas(size=(100 mm, 70 mm))
 `render_source` 和 `render_file` 还接受 `quality=None`、`compression=None`、`background=None`、`webp_lossless=None`、`webp_method=None`、`webp_alpha_quality=None`、`webp_near_lossless=None`。Magics 接受相应的 `--quality`、`--compression`、`--background` 与 `--webp-*` 参数。[导出格式与编码参数](export.zh-CN.md)
 
 `render_source` 和 `render_file` 的默认导出 DPI 为 1200，支持 `config=PATH`，并接受 `pdf_image_compression`、`pdf_jpeg_quality`、`pdf_downsample`、`pdf_recompress_jpeg`、`pdf_preserve_16bit`、`pdf_preserve_alpha`、`pdf_alpha_background`、`pdf_auto_palette_limit`、`pdf_auto_flatness_threshold`。对应的 Notebook 参数使用 `--pdf-*`；参数默认值与配置优先级见[导出配置](export.zh-CN.md)。
+
+## 样式与动画
+
+Python 传入的 `.lay` 使用同一引擎和样式规则。项目主题负责重复外观，显式参数继续优先；样式文件与资源随项目一起保存。完整语法、离线库和局部阴影覆盖见[样式手册](lcss.zh-CN.md)，关键帧、步骤及导出见[动画手册](animation.zh-CN.md)。新增库与诊断功能需使用包含这些改动的构建。

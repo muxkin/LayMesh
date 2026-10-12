@@ -8,7 +8,7 @@ let scene = compile_file("figure.lay")?;
 let svg = laymesh_render::render_svg(&scene)?;
 ```
 
-内存源码使用 `compile_source(source, filename, Host)`，资源通过 `Host.files` 提供。原生 CLI 使用系统字体；WASM 仅使用用户加载的字体。浏览器绑定提供 `render(source, filename, files_json)` 和 `language_query(files_json, filename, method, offset, locale)`，使用同一解析、布局、字体与 SVG 实现；偏移量为 UTF-16。
+内存源码使用 `compile_source(source, filename, Host)`，资源通过 `Host.files` 提供。原生 CLI 使用系统字体；WASM 使用宿主显式注册的字体，文档网站会注册随网页提供的正文字体。浏览器绑定提供 `render(source, filename, files_json)` 和 `language_query(files_json, filename, method, offset, locale)`，使用同一解析、布局、字体与 SVG 实现；偏移量为 UTF-16。
 
 Python/Jupyter 公共接口保持不变，调用本地原生程序；`LAYMESH_CLI` 可指定另一原生构建。
 
@@ -54,4 +54,16 @@ console.log(help);
 
 render 返回 JSON，并非单独 SVG 字符串；资源参数是资源名到文本或字节数组的 JSON 映射。渲染文字前需注册实际字体字节；需要分开计时可用 prepare_render 返回的 job.svg()/inspection()。language_query 使用 UTF-16 偏移，静态分析不执行源码；失败时抛出包含诊断的 JS 异常。
 
-原生 `laymesh_render::render_export(&scene, extension, &ExportOptions)` 提供与 CLI 相同的导出参数；`ExportOptions::validate` 可先校验。此接口仅启用 native 功能；浏览器 WASM 继续提供 SVG。[导出格式与编码参数](export.zh-CN.md)
+原生 `laymesh_render::render_export(&scene, extension, &ExportOptions)` 提供与 CLI 相同的导出参数；`ExportOptions::validate` 可先校验。此接口仅启用 native 功能；浏览器 WASM 提供 SVG，也提供可复用的编译任务与 DisplayList 供 CanvasKit 绘制。[导出格式与编码参数](export.zh-CN.md)
+
+## 交互绘制与动画
+
+浏览器实时预览使用 prepare_render 创建可复用任务，通过 draw_job 得到绘制任务。绘制任务提供 display_list 与 resource_bytes；时间采样得到对应动画帧，CanvasKit 绘制这些指令。render 的 SVG 返回值仍可用于静态集成；不能把它误认为全部浏览器绘制能力。宿主提供资源和字体，缺失资源通过实际编译请求补齐。语言服务偏移使用 UTF-16。
+
+参见 [worker 源码](../../site/live/worker.mjs)及[动画实现](animation-internals.zh-CN.md)。
+
+## 只读样式查询
+
+`language_query` 与原生 LSP 共享依赖索引。`files_json` 中提供本地 CSS 文本及未保存内容。`definition` 单个命中仍返回一个位置；多个 CSS 定义返回位置数组。以 `filename="laymesh-library:/animate.css"` 查询 `stylesheetContent`，返回 `{uri,text,languageId:"css",readOnly:true}`；普通本地文件返回 `null`。
+
+原生 LSP 通过 `laymesh/stylesheetContent` 接受 `{uri}` 并返回同一内容。内置定义使用虚拟 URI，避免跳到不存在的磁盘路径。

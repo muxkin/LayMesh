@@ -1,0 +1,7 @@
+page=canvas(size=(100mm,65mm),stylesheet="@laymesh/open-props.css",background="#f6f7fb")
+style {
+ .card { background:var(--gradient-7);border-radius:var(--radius-3);box-shadow:var(--shadow-3); }
+ .label { color:var(--blue-9);font-size:4mm; }
+}
+card=page.add(rect(size=(40mm,25mm),class="card"),anchor=center,target=page.center)
+page.add(text("Open Props: variables",class="label"),anchor=top_center,target=card.bottom_center,offset=(0mm,8mm))

@@ -155,6 +155,8 @@ fn clips_transforms_effects_and_two_accumulated_updates_remain_correct() {
         spread: 0.03,
         offset: [0.1, 0.2],
         rgba: [0., 0., 0., 0.6],
+        source_path: None,
+        knockout: false,
     });
     prepared
         .update(DisplayUpdate::between(&old, &scene))

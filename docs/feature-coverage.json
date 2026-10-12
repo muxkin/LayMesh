@@ -2113,6 +2113,559 @@
       "minimal": "examples/animation/presentation.lay",
       "composition": "examples/animation/presentation.lay",
       "exercise": "\\.animate\\s*\\("
+    },
+    "css:font-family": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:math-font": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:math-text-fallback": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:font-size": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:font-weight": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:font-style": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:color": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:line-height": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:background": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:padding": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:border-radius": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:border-color": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:border-width": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:border-style": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:border-dash": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:border-dash-offset": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:border-cap": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:border-join": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:border-miter-limit": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:border-opacity": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:line-color": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:line-width": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:line-style": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:line-dash": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:line-dash-offset": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:line-cap": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:line-join": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:line-miter-limit": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:line-opacity": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:fill": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:opacity": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:tick-font-size": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:label-font-size": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:tick-color": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:grid-color": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:grid-line-width": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:grid-line-dash": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:start-head": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:end-head": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:start-cap": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:end-cap": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:text-fill": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:text-stroke-color": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:text-stroke-width": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:effects": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:path": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:warp": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:extrude": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:shaft-width": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:heads": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:head-size": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:start-head-size": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:end-head-size": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:line": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:border": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:background-color": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:background-image": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:font": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:box-shadow": {
+      "topic": "lcss",
+      "anchor": "shadow-overrides",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:text-shadow": {
+      "topic": "lcss",
+      "anchor": "css-effects",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:filter": {
+      "topic": "lcss",
+      "anchor": "css-effects",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:box-shadow-blur": {
+      "topic": "lcss",
+      "anchor": "shadow-overrides",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:box-shadow-spread": {
+      "topic": "lcss",
+      "anchor": "shadow-overrides",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:box-shadow-offset": {
+      "topic": "lcss",
+      "anchor": "shadow-overrides",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:box-shadow-color": {
+      "topic": "lcss",
+      "anchor": "shadow-overrides",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:box-shadow-position": {
+      "topic": "lcss",
+      "anchor": "shadow-overrides",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:animation": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:animation-name": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:animation-duration": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:animation-delay": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:animation-timing-function": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:animation-iteration-count": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:animation-direction": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:animation-fill-mode": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:animation-play-state": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:transform": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:transform-origin": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:backface-visibility": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "css:visibility": {
+      "topic": "lcss",
+      "anchor": "css-compatibility",
+      "reference": "css-properties",
+      "minimal": "examples/manual/css-shadow-override.lay",
+      "composition": "examples/gallery/styles/libraries.lay"
     }
   }
 }

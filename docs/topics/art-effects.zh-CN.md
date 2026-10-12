@@ -54,3 +54,9 @@ PDF 保留主体、描边、变形和挤出为矢量，仅将效果层按有效�
 [艺术字源码](../../examples/effects/art-text.lay) · [阴影与发光源码](../../examples/effects/shadow-glow.lay) · [完整参数](interface-reference.zh-CN.md)
 
 `laymesh inspect --json` 的 `decorations` 列表提供布局、主体和效果边界及到页面的变换。span 显式颜色覆盖继承的字形填充；span 自身的 text_fill 优先。
+
+标准 CSS `box-shadow`、`text-shadow` 与单个 `filter: drop-shadow(...)` 构成独立的外观效果。原有 `effects` 构造器保留模糊标准差、作用对象和叠放语义，见[CSS 效果与局部覆盖](lcss.zh-CN.md#css-effects)。
+
+## 样式与动画综合案例
+
+[三库卡片与艺术字海报](style-animation-examples.zh-CN.md)展示主题、布局、关键帧和步骤如何一起使用，并提供已有复杂仪表板场景的完整源码。

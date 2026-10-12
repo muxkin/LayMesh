@@ -1,0 +1,5 @@
+page=canvas(size=(100mm,65mm),stylesheet=["@laymesh/open-props.css","@laymesh/animate.css"],background="#f6f7fb")
+style { .card { background:var(--gradient-7);border-radius:var(--radius-3);box-shadow:var(--shadow-3); } }
+card=page.add(rect(size=(40mm,25mm),class="card"),anchor=center,target=page.center)
+s=page.step(name="Gradient entrance",start="after-previous",hold=1s)
+s.animate(card,class="animate__animated animate__fadeInUp",duration=800ms)

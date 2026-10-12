@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/cmaps.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Iterate over cmap_names() to explore every preset. Categorical colors retain native order, sequential maps sample evenly and cyclic maps omit the repeated endpoint. Shared color_scale keeps layers and colorbars consistent.

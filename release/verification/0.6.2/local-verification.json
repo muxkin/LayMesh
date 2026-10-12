@@ -1,0 +1,58 @@
+{
+  "version": "0.6.2",
+  "vscode": {
+    "status": "passed",
+    "host": "real normal VS Code",
+    "checks": 17,
+    "worker_resource_fetch_blocked": true
+  },
+  "website": {
+    "status": "passed",
+    "preview_checks": 13,
+    "viewports": [
+      [
+        3840,
+        1840
+      ],
+      [
+        1440,
+        1000
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "errors": []
+  },
+  "presentation": {
+    "status": "passed",
+    "checks": 11,
+    "errors": []
+  },
+  "ffmpeg": {
+    "unit_tests": 7,
+    "real_download_and_mp4": "passed",
+    "source": "npmmirror",
+    "private_directory": "persistent user data directory; isolated overrides only in tests"
+  },
+  "native": {
+    "linux": "passed",
+    "windows_executable_wine": "passed",
+    "windows_vscode_gui_tested": false
+  },
+  "docs": {
+    "pages": 745,
+    "media_sources": 220,
+    "library_entries": 3316,
+    "verified_recipes": 1168
+  },
+  "local_linux_glibc": "2.39",
+  "publication": "pending cross-platform CI and publication",
+  "contracts": {
+    "status": "passed",
+    "rust_tests": 606,
+    "test_groups": 73,
+    "assertion_coverage": "assertion-coverage.json"
+  }
+}

@@ -46,10 +46,6 @@ This page preserves existing addresses and section links. Detailed content is or
 
 <a id="first-data-plot"></a>
 
-## 7. Drawing, outlines, and scripting
-
-[Shapes and paths](topics/shapes.en.md) →
-
 <a id="8-native-scientific-plots"></a>
 
 ## 8. Native scientific plots
@@ -67,3 +63,7 @@ This page preserves existing addresses and section links. Detailed content is or
 ## 9. Troubleshooting
 
 [Inspection and warnings](topics/diagnostics.en.md) →
+
+## Styles, animation and documents
+
+[Style manual](topics/lcss.en.md) · [Animation manual](topics/animation.en.md) · [Documents](topics/documents.en.md)

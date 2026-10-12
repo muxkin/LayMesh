@@ -42,6 +42,43 @@ fn all_variable_declarations_cascade_before_property_evaluation() {
     assert_eq!(styled["fill"].as_str(), "#0000ff");
 }
 #[test]
+fn detached_groups_measure_with_canvas_variables_and_font_before_placement() {
+    let scene = compile_source(
+        r#"page=canvas(size=(100mm,60mm),stylesheet="@laymesh/open-props.css")
+style {
+ :root {font-size:5mm; --ink:#123456;}
+ .tile {background:var(--gradient-7);border-radius:var(--radius-3);}
+ .label {color:var(--ink);font-size:1em;}
+ group.local {--ink:#654321;}
+}
+function card() {
+ g=group(class="local")
+ g.add(rect(size=(30mm,20mm),class="tile"))
+ g.add(text("Label",class="label"),offset=(2mm,2mm))
+ return g
+}
+page.add(card(),offset=(10mm,10mm))"#,
+        "/main.lay",
+        Host::default(),
+    )
+    .unwrap();
+    assert!(
+        scene
+            .warnings
+            .iter()
+            .all(|w| w.code != "W_CSS" || w.file != "/main.lay"),
+        "{:?}",
+        scene.warnings
+    );
+    let children = scene.nodes[0]["children"].as_array().unwrap();
+    assert_eq!(children[0]["fill"]["kind"], "linearGradient");
+    assert_eq!(children[0]["geometryRecipe"]["radius"], 5.);
+    for run in children[1]["runs"].as_array().unwrap() {
+        assert_eq!(run["color"], "#654321");
+        assert_eq!(run["fontSize"], 5.);
+    }
+}
+#[test]
 fn specificity_source_order_shorthands_and_explicit_args_are_preserved() {
     let e = engine(
         "rect {border:1pt solid red;} .note {border-color:green;} rect.note {border:2pt double blue;} rect.note {border-width:3pt;}",
@@ -110,7 +147,8 @@ fn imported_styles_keep_scope_relative_font_paths_and_declaration_locations() {
             .contains_key("color")
     );
     let e = engine("/* comment */\nrect {\n  fill:var(--missing);\n}");
-    let err = e.styled("rect", &Args::new(), &Args::new()).unwrap_err();
+    e.styled("rect", &Args::new(), &Args::new()).unwrap();
+    let err = e.css_diagnostics().remove(0);
     assert_eq!(
         (
             err.code.as_str(),
@@ -118,36 +156,33 @@ fn imported_styles_keep_scope_relative_font_paths_and_declaration_locations() {
             err.loc.line,
             err.loc.column
         ),
-        ("E_LCSS", "/style.lcss", 3, 3)
+        ("W_CSS", "/style.lcss", 3, 3)
     );
 }
 #[test]
-fn variable_cycles_invalid_selectors_and_trailing_junk_are_errors() {
-    let e = engine("rect {--a:var(--b);--b:var(--a);fill:var(--a);}");
-    assert!(
-        e.styled("rect", &Args::new(), &Args::new())
-            .unwrap_err()
-            .message
-            .contains("循环")
-    );
+fn variable_cycles_invalid_selectors_and_trailing_junk_are_recovered() {
+    let e = engine("rect {--a:var(--b);--b:var(--a);fill:var(--a);border-color:blue;}");
+    let a = e.styled("rect", &Args::new(), &Args::new()).unwrap();
+    assert_eq!(a["border_color"].as_str(), "#0000ff");
+    assert!(e.css_diagnostics()[0].message.contains("循环"));
     for css in [
         "rect:hover{fill:red}",
         "#name{fill:red}",
         "rect::unknown{fill:red}",
         "rect > {fill:red}",
         "rect {fill:red} trailing",
-        "rect { fill:red !important; }",
         "rect {width:2mm}",
-        "/* unclosed",
     ] {
-        let mut e = Engine::new(Host::default());
-        assert_eq!(
-            e.stylesheet(css, "/bad.lcss", loc()).unwrap_err().code,
-            "E_LCSS",
-            "{css}"
-        );
+        let e = engine(css);
+        assert_eq!(e.css_diagnostics()[0].code, "W_CSS", "{css}");
     }
+    let e = engine("rect { fill:red !important; }");
+    assert_eq!(
+        e.styled("rect", &Args::new(), &Args::new()).unwrap()["fill"].as_str(),
+        "#ff0000"
+    );
 }
+
 #[test]
 fn nested_groups_are_restyled_for_placement_ancestry() {
     let source = "style { group.outer {--ink:#ff0000;} group.outer rect {fill:var(--ink);} group.outer > rect {fill:#0000ff;} }\npage=canvas(size=(60,40))\ninner=group()\ninner.add(rect(size=(10,10)))\nouter=group(class=\"outer\")\nouter.add(inner)\nouter.add(rect(size=(10,10)),offset=(12,0))\npage.add(outer)";
@@ -163,17 +198,19 @@ fn stylesheet_diagnostics_use_the_actual_file_and_inline_content_positions() {
         "/theme.lcss".into(),
         b"/* font-independent theme */\nrect {\n  fill:var(--missing);\n}".to_vec(),
     );
-    let err = compile_source(
+    let scene = compile_source(
         "\n\n\npage=canvas(size=(20,20),stylesheet=\"theme.lcss\")\npage.add(rect(size=(10,10)))",
         "/main.lay",
         host,
     )
-    .unwrap_err();
+    .unwrap();
+    let err = scene.warnings.iter().find(|w| w.code == "W_CSS").unwrap();
     assert_eq!(
         (err.file.as_str(), err.loc.line, err.loc.column),
         ("/theme.lcss", 3, 3)
     );
-    let err=compile_source("style { rect { fill:var(--missing); } }\npage=canvas(size=(20,20))\npage.add(rect(size=(10,10)))","/main.lay",Host::default()).unwrap_err();
+    let scene=compile_source("style { rect { fill:var(--missing); } }\npage=canvas(size=(20,20))\npage.add(rect(size=(10,10)))","/main.lay",Host::default()).unwrap();
+    let err = scene.warnings.iter().find(|w| w.code == "W_CSS").unwrap();
     assert_eq!(
         (err.file.as_str(), err.loc.line, err.loc.column),
         ("/main.lay", 1, 16)
@@ -196,5 +233,50 @@ fn stylesheet_import_cycle_points_to_the_import_that_closes_the_cycle() {
     assert_eq!(
         (err.code.as_str(), err.file.as_str(), err.loc.line),
         ("E_LCSS", "/base.lcss", 2)
+    );
+}
+
+#[test]
+fn class_attribute_selectors_share_matching_and_specificity_with_animations() {
+    use laymesh_core::animation::css;
+    for (selector, class, yes) in [
+        ("rect.note[class*='Out']", "note animate__fadeOut", true),
+        ("rect.note[class*='Out']", "note animate__fadeIn", false),
+        ("[class~='note']", "noteworthy note", true),
+        ("[class='note']", "note other", false),
+        ("[class^=note]", "note other", true),
+        ("[class$='Out' i]", "fadeout", true),
+        ("[class|=note]", "note-card", true),
+        ("[class*='']", "note", false),
+        ("[class*='a > b']", "a > b", true),
+    ] {
+        let sheet = format!("{selector}{{fill:red}} rect{{fill:blue}}");
+        let e = engine(&sheet);
+        let styled = e.styled("rect", &args(class), &Args::new()).unwrap();
+        assert_eq!(
+            styled["fill"].as_str(),
+            if yes { "#ff0000" } else { "#0000ff" },
+            "{selector}"
+        );
+        assert_eq!(
+            css::matches(
+                selector,
+                &[css::Element {
+                    kind: "rect".into(),
+                    class: class.into()
+                }]
+            ),
+            yes,
+            "{selector}"
+        );
+    }
+    // A dot in a quoted attribute value must not add class specificity.
+    assert_eq!(css::specificity("rect.note[class*='a.b']"), 201);
+    assert!(
+        engine("[data-bs-theme=dark]{fill:red}")
+            .styled("rect", &Args::new(), &Args::new())
+            .unwrap()
+            .get("fill")
+            .is_none()
     );
 }

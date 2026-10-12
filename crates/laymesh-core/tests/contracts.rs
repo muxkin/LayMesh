@@ -73,6 +73,71 @@ fn unsafe_calls_and_execution_limits_have_diagnostics() {
     }
 }
 #[test]
+fn proportional_lengths_attach_units_to_numbers_and_diagnose_inverse_units() {
+    for height in ["160mm*100/90", "(160*100/90)*1mm", "16cm*(100mm/90mm)"] {
+        let s = scene(&format!("page=canvas(size=(160mm,{height}),unit=\"cm\")"));
+        close(s.width, 160.);
+        close(s.height, 160. * 100. / 90.);
+    }
+    let source = "page=canvas(size=(160mm,160*100/90mm))";
+    let error = compile_source(source, "/ratio.lay", Host::default()).unwrap_err();
+    assert_eq!(error.code, "E_UNIT");
+    assert_eq!(error.loc.offset, source.find('/').unwrap());
+    assert!(error.message.contains("倒数长度"));
+    assert!(error.message.contains("mm 属于数字 90"));
+    assert!(error.message.contains("(160*100)/(90mm)"));
+    assert!(error.message.contains("160mm*100/90"));
+    let source = "page=canvas(size=(160mm,(160*100/90mm)))";
+    let error = compile_source(source, "/ratio.lay", Host::default()).unwrap_err();
+    assert_eq!(error.loc.offset, source.find('/').unwrap());
+}
+#[test]
+fn unit_suggestions_use_actual_literals_and_only_offer_valid_arithmetic() {
+    for unit in [
+        "mm", "cm", "in", "inch", "pt", "px", "deg", "rad", "s", "ms",
+    ] {
+        let source = format!("# 单位诊断\npage=canvas(size=(20,20),unit=\"cm\")\nx=12*7/3{unit}");
+        let e = compile_source(&source, "/units.lay", Host::default()).unwrap_err();
+        assert_eq!(e.code, "E_UNIT");
+        assert_eq!(e.loc.offset, source.find('/').unwrap());
+        assert_eq!(e.loc.line, 3);
+        assert_eq!(e.loc.column, 7);
+        assert!(e.message.contains(&format!("{unit} 属于数字 3")), "{e}");
+        assert!(!e.message.contains("160"), "{e}");
+        for candidate in [format!("12{unit}*7/3"), format!("(12*7/3)*1{unit}")] {
+            assert!(e.message.contains(&candidate), "{e}");
+            scene(&format!("page=canvas(size=(20,20))\nx={candidate}"));
+        }
+    }
+    let source = "x=(12+7)/3cm\npage=canvas(size=(20,20))";
+    let e = compile_source(source, "/units.lay", Host::default()).unwrap_err();
+    assert!(e.message.contains("((12+7)/3)*1cm"), "{e}");
+    assert!(!e.message.contains("12cm+7"), "{e}");
+    scene("x=((12+7)/3)*1cm\npage=canvas(size=(20,20))");
+    for expression in ["ratio/divisor", "12/(3cm+2mm)"] {
+        let source = format!("ratio=12\ndivisor=3cm\nx={expression}\npage=canvas(size=(20,20))");
+        let e = compile_source(&source, "/complex.lay", Host::default()).unwrap_err();
+        assert!(e.message.contains("倒数长度"), "{e}");
+        assert!(e.message.contains("明确各部分的量纲"), "{e}");
+        assert!(!e.message.contains("可以写："), "{e}");
+    }
+    let zero = compile_source("x=12/0cm", "/zero.lay", Host::default()).unwrap_err();
+    assert_eq!(zero.message, "除数不能为零");
+}
+#[test]
+fn default_units_apply_at_parameter_boundaries_without_entering_arithmetic() {
+    let s = scene("ratio=10mm/2mm\npage=canvas(size=(ratio,2+3),unit=\"cm\")");
+    close(s.width, 50.);
+    close(s.height, 50.);
+    for source in ["x=1+2mm", "page=canvas(size=(1+2mm,10),unit=\"mm\")"] {
+        let e = compile_source(source, "/mixed.lay", Host::default()).unwrap_err();
+        assert_eq!(e.code, "E_UNIT");
+        assert_eq!(e.loc.offset, source.find('+').unwrap());
+        assert!(e.message.contains("左侧为无量纲数，右侧为长度"));
+        assert!(e.message.contains("参数消费时应用默认单位"));
+    }
+}
+#[test]
 fn recursive_calls_report_limits_on_a_small_stack() {
     std::thread::Builder::new()
         // Half Rust's usual test stack, with room for native ABI differences.

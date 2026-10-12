@@ -36,7 +36,7 @@ def main():
     c.evaluate('view.focus()');key('a',65,2);c.call('Input.insertText',{'text':source});wait("document.querySelector('.example-module')?.dataset.liveState==='success'");wait('document.querySelectorAll(".laymesh-color-swatch").length===3')
    def check(name,condition):assert condition,name;checks.append(name)
    def shot(name):(a.output/name).write_bytes(base64.b64decode(c.call('Page.captureScreenshot',{'format':'png'})['data']))
-   wait("document.querySelector('.example-module')?.dataset.liveState==='success'");click('[data-source-mode=source]');wait("document.querySelector('.laymesh-color-swatch')")
+   wait("document.querySelector('.example-module')?.dataset.liveState==='success'");wait("document.querySelector('.laymesh-color-swatch')")
    c.evaluate(r'''(async()=>{const base=new URL('live/',document.querySelector('script[src$="app.js"]').src);const {EditorView}=await import(new URL('vendor/@codemirror/view/index.js',base));window.view=EditorView.findFromDOM(document.querySelector('.cm-editor'));window.frontend=await import(new URL('color-math.mjs',base));window.rust=await import(new URL('wasm/laymesh_wasm.js',base));await rust.default();})()''')
    source='page=canvas(size=(80,60),background="#2471bd90")\npage.add(rect(size=(20,10),fill="#ffee00",border_color="#223344"))'
    checks=[];replace(source)

@@ -4,7 +4,7 @@ The website and VS Code share a language-analysis layer for `.lay` and `.lcss`. 
 
 ## Website workspace
 
-Choose Full source to edit. `Ctrl+Space` requests function, method, parameter, predefined variable, unit, class and part completion. Hover over parameters for meanings, units and defaults. `Ctrl+Shift+Space` displays a call signature; `F12` goes to a definition. Renamed-parameter diagnostics offer quick fixes. `.lcss`, modules, CSV and JSON have file tabs and jointly affect preview.
+Tutorials display full source immediately, ready to edit. `Ctrl+Space` requests function, method, parameter, predefined variable, unit, class and part completion. Hover over parameters for meanings, units and defaults. `Ctrl+Shift+Space` displays a call signature; `F12` goes to a definition. Renamed-parameter diagnostics offer quick fixes. `.lcss`, modules, CSV and JSON have file tabs and jointly affect preview.
 
 Rendering remains in a separate Worker with 250ms debounce and IME protection. Edits, theme changes and undo history live only in page memory. Reloading, restoring or returning from the browser's back-forward cache restores original sources. Python/Notebook files remain read-only.
 
@@ -16,9 +16,20 @@ The candidate list and selected item's details stay available while typing, whet
 
 [Library documentation comments](library-docs.en.md) supply the same help for your functions, parameters and exported variables.
 
+
+## CSS dependencies and bundled definitions
+
+Start with [Style and animation libraries](style-libraries.en.md). Completion follows the current file's explicit `stylesheet` and `@import` graph, including recursive local `.css`/`.lcss` dependencies and embedded `style` blocks. Imported module styles retain their module scope. Unrelated workspace classes are excluded; suggestions never import a library for you.
+
+Use completion in a single path, a `stylesheet` list, local directories, quoted `@import` or `url()` imports, object/`animate()` class strings, selectors, `var(--...)`, and animation names. Hover shows declarations, variable values, keyframes, origin and bundled versions. F12 goes to local CSS; multiple matches let you choose. Bundled definitions open an on-demand read-only `laymesh-library:/...css` document.
+
+Unsaved dependency buffers take priority. Changes, creates, deletes and closes refresh related queries. Statically known missing files and import cycles are reported at the reference; dynamic expressions are not guessed into errors. The parsed bundled indexes are reused between queries.
+
+**External `.css` remains native CSS in VS Code.** LayMesh synchronizes its unsaved text only to analyze imports from Lay/LCSS. It does not register CSS completion/hover/format/color providers, change CSS language associations, or publish LayMesh diagnostics to CSS documents. In the browser, external CSS uses the regular CSS editor while its edits update Lay dependencies and preview.
+
 ## VS Code
 
-Install the [LayMesh extension](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) or a platform VSIX. Version 0.3.9 platform VSIX builds cover Windows x64, Linux x64 / ARM64 and macOS Intel / Apple Silicon. Packages bundle the engine and need no Python, Rust or npm; Remote SSH packages match the remote host. Variable hover shows inferred types, Shift+F12 finds workspace references and F2 safely renames bindings, prioritizing unsaved buffers. Explicit import aliases rename locally; exported-name changes update import source names and unaliased uses. Incomplete affected code and name conflicts prevent rename. The following commands build packages for source developers.
+Install the [LayMesh extension](https://marketplace.visualstudio.com/items?itemName=Hyacine.laymesh-language) or a platform VSIX. Platform VSIX builds cover Windows x64, Linux x64 / ARM64 and macOS Intel / Apple Silicon. Packages bundle the engine and need no Python, Rust or npm; Remote SSH packages match the remote host. Variable hover shows inferred types, Shift+F12 finds workspace references and F2 safely renames bindings, prioritizing unsaved buffers. Explicit import aliases rename locally; exported-name changes update import source names and unaliased uses. Incomplete affected code and name conflicts prevent rename. The following commands build packages for source developers.
 
 Run from the repository root:
 
@@ -110,6 +121,17 @@ Completion after `anchor=` suggests nine bounds names and `self.`; legacy start/
 
 The web computes necessary colors locally during input events and coalesces complete DOM commits by animation frame. Hidden spaces are evaluated on demand and alpha changes reuse chromatic results. RGB and HSV tracks use piecewise sRGB gradients; OKLCH tracks retain gamut-mapping precision. Inputs keep their identity and focus during dragging, and gradients do not wait for a pause. Closing validates/formats through Rust and makes one undoable replacement; invalid drafts and concurrent document edits cannot overwrite source.
 
+
+
+## CSS dependencies and bundled definitions
+
+Start with [Style and animation libraries](style-libraries.en.md). Completion follows the current file's explicit `stylesheet` and `@import` graph, including recursive local `.css`/`.lcss` dependencies and embedded `style` blocks. Imported module styles retain their module scope. Unrelated workspace classes are excluded; suggestions never import a library for you.
+
+Use completion in a single path, a `stylesheet` list, local directories, quoted `@import` or `url()` imports, object/`animate()` class strings, selectors, `var(--...)`, and animation names. Hover shows declarations, variable values, keyframes, origin and bundled versions. F12 goes to local CSS; multiple matches let you choose. Bundled definitions open an on-demand read-only `laymesh-library:/...css` document.
+
+Unsaved dependency buffers take priority. Changes, creates, deletes and closes refresh related queries. Statically known missing files and import cycles are reported at the reference; dynamic expressions are not guessed into errors. The parsed bundled indexes are reused between queries.
+
+**External `.css` remains native CSS in VS Code.** LayMesh synchronizes its unsaved text only to analyze imports from Lay/LCSS. It does not register CSS completion/hover/format/color providers, change CSS language associations, or publish LayMesh diagnostics to CSS documents. In the browser, external CSS uses the regular CSS editor while its edits update Lay dependencies and preview.
 
 ## VS Code figure preview
 

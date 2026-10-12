@@ -4,23 +4,23 @@ Preview and edit scientific figures in `.lay` and `.lcss`. Get live Canvas previ
 
 支持 `.lay` 与 `.lcss`：实时 Canvas 预览、单位标尺、鼠标画布和绘图坐标、代码补全、参数说明、诊断与选色器，界面支持中文和英文。
 
-Version **0.6.1** shares its version with the Python package and Rust engine. Platform VSIX builds cover **Windows x64**, **Linux x64 / ARM64** and **macOS Intel / Apple Silicon**, including matching remote extension hosts. Preview uses a bundled native Rust program; no Python, Rust toolchain or npm installation is needed by extension users. Windows ARM64 and browser-only VS Code require their own compatible packages. Language analysis is static and never executes figure code; preview rendering is a separate opt-in process in a trusted workspace.
+Version **0.6.2** shares its version with the Python package and Rust engine. Platform VSIX builds cover **Windows x64**, **Linux x64 / ARM64** and **macOS Intel / Apple Silicon**, including matching remote extension hosts. Preview uses a bundled native Rust program; no Python, Rust toolchain or npm installation is needed by extension users. Windows ARM64 and browser-only VS Code require their own compatible packages. Language analysis is static and never executes figure code; preview rendering is a separate opt-in process in a trusted workspace.
 
-Build with Rust 1.93.1, `rustup target add wasm32-unknown-unknown` and `cargo install wasm-bindgen-cli --version 0.2.129 --locked`, then run `python scripts/build-editors.py` from the repository root. The extension bundles CanvasKit 0.42.0 and Rust WASM sampling, receives drawing protocol 3 from the native engine, and draws offline with WebGL2 or Skia software fallback. Create a stable Marketplace package with `python scripts/package-editor.py --target linux-x64 --output release/dist/laymesh-language-0.6.1-linux-x64.vsix`, then audit it with `python scripts/check-editor.py release/dist/laymesh-language-0.6.1-linux-x64.vsix --binary target/release/laymesh --target linux-x64 --marketplace`. No npm packages are needed. To install locally, use VS Code's **Extensions: Install from VSIX** command.
+Build with Rust 1.93.1, `rustup target add wasm32-unknown-unknown` and `cargo install wasm-bindgen-cli --version 0.2.129 --locked`, then run `python scripts/build-editors.py` from the repository root. The extension bundles CanvasKit 0.42.0 and Rust WASM sampling, receives drawing protocol 3 from the native engine, and draws offline with WebGL2 or Skia software fallback. Create a stable Marketplace package with `python scripts/package-editor.py --target linux-x64 --output release/dist/laymesh-language-0.6.2-linux-x64.vsix`, then audit it with `python scripts/check-editor.py release/dist/laymesh-language-0.6.2-linux-x64.vsix --binary target/release/laymesh --target linux-x64 --marketplace`. No npm packages are needed. To install locally, use VS Code's **Extensions: Install from VSIX** command.
 
-Build Windows x64 on Windows with `cargo build --release --locked -p laymesh-cli`, then stage `target/release/laymesh.exe`. A Linux build host with MinGW-w64 can instead run `rustup target add x86_64-pc-windows-gnu` and `cargo build --release --locked -p laymesh-cli --target x86_64-pc-windows-gnu`. Package it in a separate directory to preserve the Linux development binary:
+Build Windows x64 with the MSVC target on Windows using `cargo build --release --locked -p laymesh-cli`, then stage `target/release/laymesh.exe`. Linux cross builds require the MSVC SDK, LLVM and a compatible static Skia build; MinGW is not supported by this Skia release. Package Windows in a separate directory to preserve the Linux development binary:
 
 ```sh
-python scripts/build-editors.py --binary target/x86_64-pc-windows-gnu/release/laymesh.exe --extension-dir release/staging/vscode-win32-x64
-python scripts/package-editor.py --extension-dir release/staging/vscode-win32-x64 --target win32-x64 --output release/dist/laymesh-language-0.6.1-win32-x64.vsix
-python scripts/check-editor.py release/dist/laymesh-language-0.6.1-win32-x64.vsix --binary target/x86_64-pc-windows-gnu/release/laymesh.exe --target win32-x64 --marketplace
+python scripts/build-editors.py --binary target/release/laymesh.exe --extension-dir release/staging/vscode-win32-x64
+python scripts/package-editor.py --extension-dir release/staging/vscode-win32-x64 --target win32-x64 --output release/dist/laymesh-language-0.6.2-win32-x64.vsix
+python scripts/check-editor.py release/dist/laymesh-language-0.6.2-win32-x64.vsix --binary target/release/laymesh.exe --target win32-x64 --marketplace
 ```
 
 Run `python scripts/smoke-native-editor.py --binary target/release/laymesh.exe --output release/dist/windows-native-evidence.json` on Windows to verify the preview protocol, resources, units, paths, error recovery and bilingual language service. On Linux, `--wine /path/to/wine` runs the cross-built EXE through Wine. This protocol check is separate from testing the actual Windows VS Code interface.
 
 Stable version tags build and audit five platform VSIX packages in GitHub Actions. After the existing PyPI approval and upload, GitHub Release provides these exact packages and `SHA256SUMS`. Marketplace uploads are manual through the [Hyacine publisher portal](https://marketplace.visualstudio.com/manage/publishers/Hyacine); no Actions Marketplace secret is needed. See the [release procedure](https://github.com/muxkin/LayMesh/blob/main/release/README.en.md) and [platform-specific publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#platform-specific-extensions).
 
-0.6.1 与 Python 包、Rust 引擎使用相同版本，构建 Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon 独立安装包，内置原生语言服务与预览程序。稳定标签触发五平台构建，PyPI 人工审批和上传成功后生成 GitHub Release；从 Release 下载审核包，通过发布者门户手动上传 Marketplace。远程开发时，安装包平台应匹配远程扩展宿主。
+0.6.2 与 Python 包、Rust 引擎使用相同版本，构建 Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon 独立安装包，内置原生语言服务与预览程序。稳定标签触发五平台构建，PyPI 人工审批和上传成功后生成 GitHub Release；从 Release 下载审核包，通过发布者门户手动上传 Marketplace。远程开发时，安装包平台应匹配远程扩展宿主。
 
 Artistic text supports glyph gradients/outlines, open paths, arc/wave/perspective warps and vector extrusion. Text, shapes, transparent images and groups support inner/outer shadow and glow. See the [effects guide](https://muxkin.github.io/LayMesh/en/docs/topics/art-effects.html).
 
@@ -43,7 +43,7 @@ The website uses Tab to accept completion and Enter to insert a newline. This ex
 
 Open a `.lay` or `.laydoc` preview and choose **Present**. The first ready page can play while later pages compile in the background. Up to four native compiler processes yield to editing previews. Click, wheel or arrow keys advance; right-click opens navigation and playback options. **Tab** reveals the hidden control bar; its menu offers always visible, bottom-position hover, or hidden. Escape ends the presentation. Inline presentation fills the preview; the browser entry provides fullscreen through a session-scoped Tailscale service. The current document version stays fixed until exit.
 
-打开 `.lay` 或 `.laydoc` 预览后选择**放映**，首页就绪即可开始，其余页在后台准备。最多四个原生编译进程，编辑预览优先。支持点击、滚轮、键盘、右键菜单、手动/自动推进。控制栏默认隐藏，**Tab** 呼出；右键可选一直显示、鼠标到位置显示或不显示，Esc 退出。错误详情使用浮层，编译失败保留上次成功画面。浏览器全屏入口复用已编译产物；MP4/GIF 导出需要 PATH 中安装 FFmpeg。
+打开 `.lay` 或 `.laydoc` 预览后选择**放映**，首页就绪即可开始，其余页在后台准备。最多四个原生编译进程，编辑预览优先。支持点击、滚轮、键盘、右键菜单、手动/自动推进。控制栏默认隐藏，**Tab** 呼出；右键可选一直显示、鼠标到位置显示或不显示，Esc 退出。错误详情使用浮层，编译失败保留上次成功画面。浏览器全屏入口复用已编译产物；MP4/GIF 导出自动查找已有 FFmpeg；缺少时确认后下载。
 
 See the [animation and step guide](https://muxkin.github.io/LayMesh/en/docs/topics/animation.html) for `start="click"`, `start="with-previous"`, `start="after-previous"`, durations and CSS compatibility.
 
@@ -149,3 +149,13 @@ Version 0.5.0 includes PPTX export as **PowerPoint (PPTX)** in the format picker
 打开 `.laydoc` 可预览独立 `.lay` 页面，通过页面选择器切换、打开页面源码、导出当前页或整本 PDF。编排语法与 Lay 相同，页面顺序由 `doc.add(page(...))` 决定。
 
 Open `.laydoc` to preview independent `.lay` pages, select pages, open their sources, and export the current page or the entire PDF. Orchestration uses the same Lay DSL; `doc.add(page(...))` determines page order.
+
+## Preview toolbar and FFmpeg / 预览工具栏与 FFmpeg
+
+The preview toolbar provides Refresh, Fit/zoom, page navigation, joined Present/options, Export and More. Animated pages use three small footer buttons for previous step, play/pause and next step. Playback settings remain in More. There is no playback visibility toggle. Presentation keeps its existing hidden controls and Tab/Escape shortcuts. Bundled `@laymesh/animate.css`, Bootstrap and Open Props resolve inside the engine without fetching CSS.
+
+工具栏提供刷新、适应/缩放、页面切换、放映及选项、导出、更多。动画页底部只保留上一步、开始/暂停、下一步三个小按钮；播放设置放在“更多”中，没有播放控制显示开关。
+
+VS Code, CLI and Python share one FFmpeg manager and per-user host directory. An explicit `laymesh.ffmpeg.executable` overrides discovery. Otherwise the private copy is checked first, then the previously recorded external program, configured search paths, PATH and common installation locations. External programs are verified and recorded without being copied. If none works, a confirmation dialog precedes downloading; cancellation cleans staging files. Auto mode uses locale/timezone hints and bounded source probes to select the reachable faster upstream or China mirror, with automatic fallback and pinned SHA-256 checks. Set `laymesh.ffmpeg.downloadSource` or `mirrorBaseUrl` to override source selection. Remote extension hosts store FFmpeg on the remote host.
+
+默认目录：Windows `%LOCALAPPDATA%/laymesh/ffmpeg`；Linux `${XDG_DATA_HOME:-~/.local/share}/laymesh/ffmpeg`；macOS `~/Library/Application Support/laymesh/ffmpeg`。仅缺少可用程序时请求下载确认，配置文件不能免除确认。下载的版本同时保留 LICENSE、README 和安装来源记录。

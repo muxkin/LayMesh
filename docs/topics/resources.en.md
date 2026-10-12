@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/image.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Keep pictures, fonts and components beside the work and use relative paths. Python save_source writes bound data/images to a sibling .assets directory; preserve relative locations when sharing.
@@ -24,8 +20,6 @@ Keep pictures, fonts and components beside the work and use relative paths. Pyth
 ## Common errors and limits
 
 WASM’s virtual file map must contain every dependency; a browser cannot freely read local files. Resource errors locate the defining file, and font-name resolution depends on the runtime.
-
-## Individual functions
 
 <!-- walkthrough:end -->
 

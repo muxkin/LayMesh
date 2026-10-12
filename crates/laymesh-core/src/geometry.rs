@@ -366,6 +366,9 @@ pub fn visible(n: &Json) -> BezPath {
     visible_transformed(n, Affine::IDENTITY)
 }
 pub fn visible_transformed(n: &Json, parent: Affine) -> BezPath {
+    if n["__css_shadow_layer"] == true {
+        return BezPath::new();
+    }
     let transform = parent * node_transform(n);
     let mut p = BezPath::new();
     if n["endpointRecipe"].is_object() {
@@ -682,7 +685,22 @@ impl Engine {
             } else {
                 let mut args = owner.args.clone();
                 args.insert("__style_file".into(), V::text(&owner.file));
-                self.styled(&owner.kind, &args, &Args::new())?
+                // Detached groups are measured before placement. Use the current
+                // canvas defaults for that provisional pass, then replay recipes
+                // against the actual ancestor chain when the group is placed.
+                let inherited = if owner.kind == "group" {
+                    if let Some(canvas) = &self.canvas {
+                        let canvas = canvas.borrow();
+                        let mut root = canvas.args.clone();
+                        root.insert("__style_file".into(), V::text(&canvas.file));
+                        self.styled("canvas", &root, &Args::new())?
+                    } else {
+                        Args::new()
+                    }
+                } else {
+                    Args::new()
+                };
+                self.styled(&owner.kind, &args, &inherited)?
             }
         };
         let vector = connection.map(|p| [p[1].x - p[0].x, p[1].y - p[0].y]);
@@ -1130,8 +1148,10 @@ impl Engine {
                 n["children"] = json!(children);
                 n
             }
-            "plot" => return crate::plot::layout(self, o, a),
-            "legend" | "colorbar" => return crate::plot::decoration(self, o, a),
+            "plot" => return crate::plot::layout(self, o, a).map(|n| self.css_effects(n, a)),
+            "legend" | "colorbar" => {
+                return crate::plot::decoration(self, o, a).map(|n| self.css_effects(n, a));
+            }
             _ => self.shape(o, a, size)?,
         };
         if jnum(&n, "width", 0.) < 0. || jnum(&n, "height", 0.) < 0. {
@@ -1194,14 +1214,7 @@ impl Engine {
             );
             g["contentWidth"] = g["width"].clone();
             g["contentHeight"] = g["height"].clone();
-            let bg = kurbo::RoundedRect::new(
-                0.,
-                0.,
-                jnum(&g, "width", 0.),
-                jnum(&g, "height", 0.),
-                length(a, "border_radius", 0., &self.unit, self.dpi),
-            )
-            .to_path(0.0001);
+            let bg = self.css_box_path(a, jnum(&g, "width", 0.), jnum(&g, "height", 0.), 0.);
             let mut back = path_node(
                 bg,
                 a.get("background").map(V::json).unwrap_or(json!("none")),
@@ -1213,6 +1226,23 @@ impl Engine {
             g["children"] = json!([back, n]);
             n = g;
         }
+        // CSS text shadows use the glyph/content alpha, independently of the
+        // historical LayMesh effect stack. CSS lists paint their first layer last.
+        if matches!(o.kind.as_str(), "text" | "formula") {
+            let css_text = array(a, "text_shadow");
+            let target =
+                if n["kind"] == "group" && n["children"].as_array().is_some_and(|c| c.len() == 2) {
+                    &mut n["children"][1]
+                } else {
+                    &mut n
+                };
+            let mut stack = target["effects"].as_array().cloned().unwrap_or_default();
+            stack.extend(css_text.iter().rev().map(V::json));
+            if !stack.is_empty() {
+                target["effects"] = json!(stack);
+            }
+        }
+        n = self.css_effects(n, a);
         let object_effects: Vec<_> = effects
             .iter()
             .filter(|e| e["target"] == "object")
@@ -1228,6 +1258,99 @@ impl Engine {
             n["effectsBounds"] = json!({"x":b.x0,"y":b.y0,"width":b.width(),"height":b.height()});
         }
         Ok(n)
+    }
+    fn css_box_path(&self, a: &Args, w: f64, h: f64, inset: f64) -> BezPath {
+        let radius = length(a, "border_radius", 0., &self.unit, self.dpi);
+        let fraction =
+            a.get("border_radius").map(V::json).unwrap_or(Json::Null)["__css_fraction"].as_f64();
+        let radii = fraction.map(|f| [f * w, f * h]).unwrap_or([radius, radius]);
+        crate::geometry_recipe::rounded_box(w, h, radii, inset, 0.0001)
+    }
+    fn css_effects(&self, mut n: Json, a: &Args) -> Json {
+        let css_box = array(a, "__css_box_shadows");
+        if !css_box.is_empty() {
+            let (w, h) = (jnum(&n, "width", 0.), jnum(&n, "height", 0.));
+            let border = length(a, "border_width", 0., "pt", self.dpi) / 2.;
+            let outline = self.css_box_path(a, w, h, 0.);
+            let padding_box = self.css_box_path(a, w, h, border);
+            let shadow_node = |inner: bool| {
+                let source = if inner { &padding_box } else { &outline };
+                let mut shadow = path_node(source.clone(), json!("none"), "none", 0.);
+                shadow["__css_shadow_layer"] = json!(true);
+                let mut stack = vec![];
+                for v in css_box.iter().rev() {
+                    let mut e = v.json();
+                    if (e["mode"] == "inner") != inner {
+                        continue;
+                    }
+                    e["sourcePath"] = json!(source.to_svg());
+                    e["knockout"] = json!(!inner);
+                    stack.push(e);
+                }
+                shadow["effects"] = json!(stack);
+                shadow
+            };
+            let mut children = vec![shadow_node(false)];
+            let mut after = vec![];
+            let has_inner = css_box.iter().any(|v| v.json()["mode"] == "inner");
+            if !has_inner {
+                after.push(n.clone());
+            } else if n["kind"] == "group"
+                && n["children"].as_array().is_some_and(|c| c.len() == 2)
+                && n["children"][0]["kind"] == "path"
+            {
+                let mut back = n["children"][0].clone();
+                let mut stroke = back.clone();
+                stroke["__css_duplicate_path"] = json!(true);
+                stroke["fill"] = json!("none");
+                back["strokeColor"] = json!("none");
+                back["strokeWidth"] = json!(0.);
+                back["strokeStyle"] = Json::Null;
+                children.push(back);
+                after.push(stroke);
+                after.push(n["children"][1].clone());
+            } else if n["kind"] == "path" {
+                let mut back = n.clone();
+                let mut stroke = n.clone();
+                stroke["__css_duplicate_path"] = json!(true);
+                stroke["fill"] = json!("none");
+                stroke["effects"] = Json::Null;
+                back["strokeColor"] = json!("none");
+                back["strokeWidth"] = json!(0.);
+                back["strokeStyle"] = Json::Null;
+                children.push(back);
+                after.push(stroke);
+            } else {
+                after.push(n.clone());
+            }
+            children.push(shadow_node(true));
+            children.extend(after);
+            let mut wrapper = base("group", w, h);
+            for key in [
+                "geometryRecipe",
+                "endpoints",
+                "zeroAngle",
+                "plotBounds",
+                "plotAxes",
+                "plotDecorations",
+                "plotProjection",
+            ] {
+                if let Some(value) = n.get(key) {
+                    wrapper[key] = value.clone();
+                }
+            }
+            wrapper["contentWidth"] = json!(w);
+            wrapper["contentHeight"] = json!(h);
+            wrapper["children"] = json!(children);
+            n = wrapper;
+        }
+        let css_drop = array(a, "filter");
+        if !css_drop.is_empty() {
+            let mut stack = n["effects"].as_array().cloned().unwrap_or_default();
+            stack.extend(css_drop.iter().map(V::json));
+            n["effects"] = json!(stack);
+        }
+        n
     }
     pub fn shape(&self, o: &Object, a: &Args, size: [f64; 2]) -> Result<Json> {
         if crate::arrows::is_arrow(&o.kind) {
@@ -1245,12 +1368,19 @@ impl Engine {
                     return Err(self.error("E_LAYOUT", "size 需要正尺寸", l));
                 }
                 p = if o.kind == "rect" {
-                    kurbo::RoundedRect::new(0., 0., w, h, g("border_radius", 0.)).to_path(0.0001)
+                    self.css_box_path(a, w, h, 0.)
                 } else {
                     kurbo::Ellipse::new((w / 2., h / 2.), (w / 2., h / 2.), 0.).to_path(0.0001)
                 };
                 fixed = Some((w, h));
                 recipe = json!({"kind":o.kind,"width":w,"height":h,"radius":g("border_radius",0.)});
+                if let Some(fraction) = a
+                    .get("border_radius")
+                    .map(V::json)
+                    .and_then(|v| v["__css_fraction"].as_f64())
+                {
+                    recipe["radiusFraction"] = json!(fraction);
+                }
             }
             "line" => {
                 let (dx, dy) = crate::endpoints::line_vector(self, a, l)?;

@@ -60,7 +60,7 @@ def main():
             cdp.call('Page.enable');cdp.call('Runtime.enable');cdp.call('Page.addScriptToEvaluateOnNewDocument',{'source':SHIM})
             cdp.call('Emulation.setDeviceMetricsOverride',{'width':1440,'height':1000,'deviceScaleFactor':2,'mobile':False})
             cdp.call('Page.navigate',{'url':a.url})
-            cdp.evaluate("new Promise(r=>{function tick(){const b=document.querySelector('[data-source-mode=source]');if(b&&document.querySelector('.live-image')?.localName==='canvas'){b.click();r();}else setTimeout(tick,20);}tick();})")
+            cdp.evaluate("new Promise(r=>{function tick(){if(document.querySelector('.cm-content')&&document.querySelector('.live-image')?.localName==='canvas'){r();}else setTimeout(tick,20);}tick();})")
             first=cdp.evaluate(READY)
             zoom=cdp.evaluate(r'''(async()=>{
              const wait=ms=>new Promise(r=>setTimeout(r,ms)),raf=()=>new Promise(r=>requestAnimationFrame(r));

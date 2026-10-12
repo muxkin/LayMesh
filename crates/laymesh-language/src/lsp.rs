@@ -47,7 +47,7 @@ fn path(uri: &str) -> String {
     }
 }
 fn range(service: &LanguageService, uri: &str, a: usize, b: usize) -> J {
-    let s = service.documents.get(uri).map(String::as_str).unwrap_or("");
+    let s = service.stylesheet_source(uri);
     json!({"start":position(s,a),"end":position(s,b)})
 }
 fn roots(params: &J) -> BTreeSet<String> {
@@ -203,25 +203,23 @@ fn dependencies(
     let Some(text) = service.documents.get(uri).cloned() else {
         return;
     };
-    for token in crate::index::tokens(&text)
-        .into_iter()
-        .filter(|t| t.kind == "string")
-    {
-        let Ok(expr) = laymesh_core::parser::expression(&token.text, uri) else {
-            continue;
-        };
-        let laymesh_core::parser::ExprKind::String(source, _, false) = expr.kind else {
-            continue;
-        };
-        if !source.ends_with(".lay")
-            && !source.ends_with(".laydoc")
-            && !source.ends_with(".lcss")
-            && !source.ends_with(".css")
-        {
-            continue;
+    for (target, _, _) in service.stylesheet_dependencies(uri) {
+        if crate::stylesheets::content(&target).is_none() {
+            dependencies(service, &target, opened, seen);
         }
-        let target = crate::resolve(uri, &source);
-        dependencies(service, &target, opened, seen)
+    }
+    // Actual module imports only; ordinary strings ending in .css are not dependencies.
+    let ts = crate::index::tokens(&text);
+    for (i, t) in ts.iter().enumerate() {
+        if t.kind == "string" && i > 0 && ts[i - 1].text == "from" {
+            if let Ok(e) = laymesh_core::parser::expression(&t.text, uri) {
+                if let laymesh_core::parser::ExprKind::String(name, _, false) = e.kind {
+                    if name.ends_with(".lay") || name.ends_with(".laydoc") {
+                        dependencies(service, &crate::resolve(uri, &name), opened, seen);
+                    }
+                }
+            }
+        }
     }
 }
 fn diagnostics(service: &LanguageService, uri: &str, version: J) -> J {
@@ -240,7 +238,9 @@ fn refresh(
         dependencies(service, uri, opened, &mut seen);
     }
     for (uri, version) in opened {
-        send(out, diagnostics(service, uri, version.clone()))?;
+        if !uri.ends_with(".css") {
+            send(out, diagnostics(service, uri, version.clone()))?;
+        }
     }
     Ok(())
 }
@@ -385,12 +385,12 @@ pub fn serve() -> io::Result<()> {
         let mut result = J::Null;
         let mut unknown = false;
         let mut response_error = None;
-        match method{"initialize"=>{workspace_roots=roots(p);workspace(&mut service,&workspace_roots,&opened,&mut workspace_documents);versioned_edits=p["capabilities"]["workspace"]["workspaceEdit"]["documentChanges"].as_bool().unwrap_or(false);pull_configuration=p["capabilities"]["workspace"]["configuration"].as_bool().unwrap_or(false);register_configuration=p["capabilities"]["workspace"]["didChangeConfiguration"]["dynamicRegistration"].as_bool().unwrap_or(false);ui=p["locale"].as_str().unwrap_or("en").into();initial=p["initializationOptions"]["language"].as_str().unwrap_or("").into();service.locale=chosen_locale(&ui,&initial,"");for(i,v)in ["completion","hover","signatureHelp"].iter().enumerate(){let options=if *v=="completion"{&p["capabilities"]["textDocument"][v]["completionItem"]["documentationFormat"]}else if *v=="signatureHelp"{&p["capabilities"]["textDocument"][v]["signatureInformation"]["documentationFormat"]}else{&p["capabilities"]["textDocument"][v]["contentFormat"]};markdown[i]=options.as_array().and_then(|a|a.iter().find(|v|*v=="markdown"||*v=="plaintext")).is_some_and(|v|v=="markdown");}labels=p["capabilities"]["textDocument"]["signatureHelp"]["signatureInformation"]["parameterInformation"]["labelOffsetSupport"].as_bool().unwrap_or(false);result=json!({"capabilities":{"positionEncoding":"utf-16","textDocumentSync":{"openClose":true,"change":2,"save":true},"completionProvider":{"triggerCharacters":[".","(",":","_","\"","'","=",","]},"documentFormattingProvider":true,"documentRangeFormattingProvider":true,"hoverProvider":true,"colorProvider":true,"signatureHelpProvider":{"triggerCharacters":["(",",","="]},"definitionProvider":true,"referencesProvider":true,"documentHighlightProvider":true,"renameProvider":{"prepareProvider":true},"workspace":{"workspaceFolders":{"supported":true,"changeNotifications":true}},"codeActionProvider":{"codeActionKinds":["quickfix"]}},"serverInfo":{"name":"LayMesh Rust","version":env!("CARGO_PKG_VERSION")}})},
+        match method{"initialize"=>{workspace_roots=roots(p);workspace(&mut service,&workspace_roots,&opened,&mut workspace_documents);versioned_edits=p["capabilities"]["workspace"]["workspaceEdit"]["documentChanges"].as_bool().unwrap_or(false);pull_configuration=p["capabilities"]["workspace"]["configuration"].as_bool().unwrap_or(false);register_configuration=p["capabilities"]["workspace"]["didChangeConfiguration"]["dynamicRegistration"].as_bool().unwrap_or(false);ui=p["locale"].as_str().unwrap_or("en").into();initial=p["initializationOptions"]["language"].as_str().unwrap_or("").into();service.locale=chosen_locale(&ui,&initial,"");for(i,v)in ["completion","hover","signatureHelp"].iter().enumerate(){let options=if *v=="completion"{&p["capabilities"]["textDocument"][v]["completionItem"]["documentationFormat"]}else if *v=="signatureHelp"{&p["capabilities"]["textDocument"][v]["signatureInformation"]["documentationFormat"]}else{&p["capabilities"]["textDocument"][v]["contentFormat"]};markdown[i]=options.as_array().and_then(|a|a.iter().find(|v|*v=="markdown"||*v=="plaintext")).is_some_and(|v|v=="markdown");}labels=p["capabilities"]["textDocument"]["signatureHelp"]["signatureInformation"]["parameterInformation"]["labelOffsetSupport"].as_bool().unwrap_or(false);result=json!({"capabilities":{"positionEncoding":"utf-16","textDocumentSync":{"openClose":true,"change":2,"save":true},"completionProvider":{"triggerCharacters":[".","(",":","_","\"","'","=",",","/","-"," "]},"documentFormattingProvider":true,"documentRangeFormattingProvider":true,"hoverProvider":true,"colorProvider":true,"signatureHelpProvider":{"triggerCharacters":["(",",","="]},"definitionProvider":true,"referencesProvider":true,"documentHighlightProvider":true,"renameProvider":{"prepareProvider":true},"workspace":{"workspaceFolders":{"supported":true,"changeNotifications":true}},"codeActionProvider":{"codeActionKinds":["quickfix"]}},"serverInfo":{"name":"LayMesh Rust","version":env!("CARGO_PKG_VERSION")}})},
  "shutdown"=>{closed=true},"exit"=>return if closed{Ok(())}else{Err(io::Error::new(io::ErrorKind::Other,"exit without shutdown"))},"initialized"=>{if register_configuration{send(&mut output,json!({"jsonrpc":"2.0","id":"laymesh/register","method":"client/registerCapability","params":{"registrations":[{"id":"laymesh-configuration","method":"workspace/didChangeConfiguration"}]}}))?;}if pull_configuration{waiting_configuration=true;send(&mut output,json!({"jsonrpc":"2.0","id":"laymesh/configuration","method":"workspace/configuration","params":{"items":[{"section":"laymesh"}]}}))?;}},"$/cancelRequest"|"$/setTrace"=>{},
  "workspace/didChangeConfiguration"=>{if pull_configuration{waiting_configuration=true;send(&mut output,json!({"jsonrpc":"2.0","id":"laymesh/configuration","method":"workspace/configuration","params":{"items":[{"section":"laymesh"}]}}))?;}service.locale=chosen_locale(&ui,&initial,p["settings"]["laymesh"]["language"].as_str().unwrap_or(""));refresh(&mut service, &opened, &mut output)?;},
  "textDocument/didOpen"=>{opened.insert(uri.into(),p["textDocument"]["version"].clone());service.update(uri,p["textDocument"]["text"].as_str().unwrap_or(""));refresh(&mut service,&opened,&mut output)?;},
  "textDocument/didChange"=>{let mut text=service.documents.get(uri).cloned().unwrap_or_default();if let Some(changes)=p["contentChanges"].as_array(){for change in changes{let value=change["text"].as_str().unwrap_or("");if change["range"].is_object(){let a=offset(&text,&change["range"]["start"]);let b=offset(&text,&change["range"]["end"]);if a<=b{text.replace_range(a..b,value)}}else{text=value.into()}}}opened.insert(uri.into(),p["textDocument"]["version"].clone());service.update(uri,&text);refresh(&mut service,&opened,&mut output)?;},
- "textDocument/didClose"=>{opened.remove(uri);service.remove(uri);dependencies(&mut service,uri,&opened,&mut BTreeSet::new());send(&mut output,json!({"jsonrpc":"2.0","method":"textDocument/publishDiagnostics","params":{"uri":uri,"diagnostics":[]}}))?;refresh(&mut service,&opened,&mut output)?;},"textDocument/didSave"=>{refresh(&mut service,&opened,&mut output)?;},
+ "textDocument/didClose"=>{opened.remove(uri);service.remove(uri);dependencies(&mut service,uri,&opened,&mut BTreeSet::new());if !uri.ends_with(".css"){send(&mut output,json!({"jsonrpc":"2.0","method":"textDocument/publishDiagnostics","params":{"uri":uri,"diagnostics":[]}}))?;}refresh(&mut service,&opened,&mut output)?;},"textDocument/didSave"=>{refresh(&mut service,&opened,&mut output)?;},
  "workspace/didChangeWorkspaceFolders"=>{if let Some(removed)=p["event"]["removed"].as_array(){for folder in removed{if let Some(uri)=folder["uri"].as_str(){workspace_roots.remove(uri);}}}if let Some(added)=p["event"]["added"].as_array(){for folder in added{if let Some(uri)=folder["uri"].as_str().filter(|uri|uri.starts_with("file://")){workspace_roots.insert(uri.into());}}}workspace(&mut service,&workspace_roots,&opened,&mut workspace_documents);refresh(&mut service,&opened,&mut output)?;},
  "workspace/didChangeWatchedFiles"=>{if let Some(changes)=p["changes"].as_array(){for c in changes{if let Some(uri)=c["uri"].as_str(){if !opened.contains_key(uri){if let Ok(source)=std::fs::read_to_string(path(uri)){service.update(uri,&source);}else{service.remove(uri);workspace_documents.remove(uri);}}dependencies(&mut service,uri,&opened,&mut BTreeSet::new());}}}refresh(&mut service,&opened,&mut output)?;},
  "textDocument/completion"=>{dependencies(&mut service,uri,&opened,&mut BTreeSet::new());result=json!(service.completions(uri,at).as_array().unwrap().iter().map(|c|json!({"label":c["label"],"detail":c["detail"],"kind":match c["type"].as_str().unwrap_or(""){"function"=>3,"property"=>10,"variable"=>6,"keyword"=>14,"class"=>7,_=>1},"documentation":docs(c["info"].as_str().unwrap_or(""),markdown[0]),"textEdit":{"range":range(&service,uri,c["from"].as_u64().unwrap_or(0)as usize,c["to"].as_u64().map(|n| n as usize).unwrap_or(at)),"newText":c["apply"]}})).collect::<Vec<_>>())},
@@ -402,7 +402,8 @@ pub fn serve() -> io::Result<()> {
  "laymesh/documentColors"=>{result=service.document_colors(uri);let source=service.documents.get(uri).map(String::as_str).unwrap_or("");for v in result.as_array_mut().unwrap(){for key in ["from","to"]{v[key]=json!(crate::utf16_offset(source,v[key].as_u64().unwrap()as usize));}}},
  "textDocument/hover"=>{dependencies(&mut service,uri,&opened,&mut BTreeSet::new());let h=service.hover(uri,at);if !h.is_null(){result=json!({"contents":docs(h["contents"].as_str().unwrap_or(""),markdown[1]),"range":range(&service,uri,h["from"].as_u64().unwrap_or(0)as usize,h["to"].as_u64().unwrap_or(0)as usize)})}},
  "textDocument/signatureHelp"=>{dependencies(&mut service,uri,&opened,&mut BTreeSet::new());let s=service.signature(uri,at);if !s.is_null(){let label=s["label"].as_str().unwrap();let params:Vec<J>=s["parameters"].as_array().unwrap().iter().map(|v|{let label=if labels{v["label"].clone()}else{let a=crate::byte_offset(label,v["label"][0].as_u64().unwrap()as usize);let b=crate::byte_offset(label,v["label"][1].as_u64().unwrap()as usize);json!(&label[a..b])};json!({"label":label,"documentation":docs(v["documentation"].as_str().unwrap_or(""),markdown[2])})}).collect();result=json!({"signatures":[{"label":label,"documentation":docs(s["documentation"].as_str().unwrap_or(""),markdown[2]),"parameters":params}],"activeSignature":0,"activeParameter":s["activeParameter"]})}},
- "textDocument/definition"=>{dependencies(&mut service,uri,&opened,&mut BTreeSet::new());let d=service.definition(uri,at);if !d.is_null(){result=json!({"uri":d["uri"],"range":range(&service,d["uri"].as_str().unwrap(),d["from"].as_u64().unwrap()as usize,d["to"].as_u64().unwrap()as usize)})}},
+ "textDocument/definition"=>{dependencies(&mut service,uri,&opened,&mut BTreeSet::new());let d=service.definition(uri,at);if !d.is_null(){let convert=|d:&J|json!({"uri":d["uri"],"range":range(&service,d["uri"].as_str().unwrap(),d["from"].as_u64().unwrap()as usize,d["to"].as_u64().unwrap()as usize)});result=if let Some(ds)=d.as_array(){json!(ds.iter().map(convert).collect::<Vec<_>>())}else{convert(&d)};}},
+ "laymesh/stylesheetContent"=>{result=service.stylesheet_content(p["uri"].as_str().unwrap_or(uri));},
  "textDocument/references"=>{result=locations(&service,service.references(uri,at,p["context"]["includeDeclaration"].as_bool().unwrap_or(false)),false)},
  "textDocument/documentHighlight"=>{result=locations(&service,service.highlights(uri,at),true)},
  "textDocument/prepareRename"=>{let prepared=service.prepare_rename(uri,at);if !prepared.is_null(){result=json!({"range":range(&service,uri,prepared["from"].as_u64().unwrap()as usize,prepared["to"].as_u64().unwrap()as usize),"placeholder":prepared["placeholder"]})}},

@@ -256,9 +256,12 @@ fn instance_classes_cascade_and_explicit_overrides_are_independent() {
 fn lcss_imports_variables_and_cycle_errors() {
     let s = unified(6);
     assert_eq!(runs(&s.nodes[0])[0]["color"], "#245447");
-    for line in [7, 8, 9] {
-        error(UNIFIED, line)
+    // Approved CSS compatibility policy: invalid CSS is a recoverable warning.
+    for line in [7, 8] {
+        let scene = unified(line);
+        assert!(scene.warnings.iter().any(|d| d.code == "W_CSS"));
     }
+    error(UNIFIED, 9); // Missing imports remain hard errors.
 }
 #[test]
 fn plot_part_styles_keep_the_data_rectangle_and_vector_math() {
@@ -340,7 +343,13 @@ fn nested_interpolation_quotes_raw_comparisons_and_shorthand_order() {
         jnum(&s.nodes[0]["children"][0]["strokeStyle"], "width", 0.),
         2. * PT,
     );
-    error(UNIFIED, 20);
+    let recovered = unified(20);
+    assert!(
+        recovered
+            .warnings
+            .iter()
+            .any(|w| w.code == "W_CSS" && w.message.contains("纹理"))
+    );
 }
 #[test]
 fn axis_background_compound_series_and_text_colors_are_independent() {

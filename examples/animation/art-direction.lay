@@ -1,0 +1,30 @@
+# Adapted from examples/effects/art-text.lay and images-groups.lay.
+page = canvas(size=(180mm,125mm),stylesheet="art-direction.lcss",background="#f6f7fb")
+heading = page.add(text("ART DIRECTION / styled and animated",class="heading"),target=page.top_left,offset=(12mm,8mm))
+art = group()
+plate = art.add(rect(size=(156mm,83mm),class="plate"))
+hero = art.add(text("Layers in motion",class="hero"),target=plate.top_left,offset=(8mm,8mm))
+route = path(commands=[move_to(0mm,10mm),cubic_to(35mm,0mm,95mm,0mm,128mm,10mm)],class="route")
+# Path and path text share their local origin; place their group as a unit.
+curve = group()
+trace = curve.add(route,target=curve.top_left)
+curved = curve.add(text("Text follows a curved path",class="curved",path=text_path(route,align="center")),target=curve.top_left)
+art.add(curve,anchor=top_center,target=plate.top_center,offset=(0mm,31mm))
+wave = art.add(text("Wave and glow",class="wave"),target=plate.bottom_left,anchor=bottom_left,offset=(12mm,-25mm))
+stamp = art.add(image(src="../effects/alpha-ring.png",class="stamp"),size=(20mm,20mm),
+                target=plate.bottom_right,anchor=bottom_right,offset=(-10mm,-15mm))
+art.add(text("Glyph paint / outline / extrusion / alpha shadows",class="poster-note"),
+         target=plate.bottom_left,anchor=bottom_left,offset=(8mm,-10mm))
+poster = page.add(art,target=heading.bottom_left,offset=(0mm,12mm))
+page.add(text("Child motion and parent perspective compose without changing layout.",class="caption"),
+          target=poster.bottom_left,offset=(0mm,7mm))
+
+entrance = page.step(name="Glyphs and curved path",start="after-previous",hold=300ms)
+entrance.animate(hero,class="animate__animated animate__fadeInUp",duration=800ms)
+entrance.animate(trace,name="laymesh-draw",duration=1200ms,fill="both")
+entrance.animate(curved,class="animate__animated animate__fadeIn",duration=600ms,start="after-previous",delay=200ms)
+details = page.step(name="Independent child animations",start="after-previous",hold=300ms)
+details.animate(wave,class="wave-motion")
+details.animate(stamp,class="animate__animated animate__flipInY",duration=1200ms)
+inspect = page.step(name="Whole poster in perspective",start="after-previous",hold=600ms)
+inspect.animate(poster,class="poster-motion")

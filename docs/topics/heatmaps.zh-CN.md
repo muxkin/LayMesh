@@ -11,10 +11,6 @@ heatmap 表示单元格数值，contour 表示采样场等值线，contourf 填�
 
 <!-- example:examples/manual/plot-heatmap.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 用共享 color_scale 让热图与等高线采用相同颜色规则。x_edges/y_edges 定义热图边缘，contour 的 x/y 定义采样坐标；非均匀轴或断轴采用矢量单元格保证映射。

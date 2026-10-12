@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/plot.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Replace inline x/y lists with table columns for experimental data. Explicit axis ranges aid comparisons; plot_area keeps equal physical data regions.
@@ -24,8 +20,6 @@ Replace inline x/y lists with table columns for experimental data. Explicit axis
 ## Common errors and limits
 
 A chart is sealed after its first placement. x/y lengths must match. Do not add mm to data values: physical styles and data units serve different purposes.
-
-## Individual functions
 
 <!-- walkthrough:end -->
 

@@ -27,7 +27,7 @@ export class PresentationToolbar {
   v.menuPanels.toolbar.querySelectorAll('[data-toolbar-mode]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.toolbarMode===mode)));
  }
  tab(event){
-  const bar=this.view.bar,items=[...bar.querySelectorAll('button')].filter(b=>!b.disabled),at=items.indexOf(document.activeElement);
+  const bar=this.view.bar,items=[...bar.querySelectorAll('button')].filter(b=>!b.disabled&&!b.hidden),at=items.indexOf(document.activeElement);
   if(!items.length)return;
   event.preventDefault();event.stopPropagation();bar.inert=false;bar.classList.remove('idle');bar.setAttribute('aria-hidden','false');
   items[at<0?(event.shiftKey?items.length-1:0):(at+(event.shiftKey?items.length-1:1))%items.length].focus({preventScroll:true});

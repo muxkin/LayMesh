@@ -1,0 +1,4 @@
+page = canvas(size=(100mm,60mm), stylesheet="keyframes.lcss", background="#ffffff")
+card = page.add(rect(size=(25mm,20mm), fill="#0d6efd", border_radius=2mm), target=page.top_left, offset=(12mm,20mm))
+s = page.step(name="Custom keyframes", start="after-previous", hold=1s)
+s.animate(card, class="motion")

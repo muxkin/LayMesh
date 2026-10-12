@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/plot-boxplot.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Place boxplot and violin for one sample at neighboring positions with explicit data_width. R-7 quantiles, default 1.5 IQR whiskers and Scott bandwidth specify the statistical convention.

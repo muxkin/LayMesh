@@ -40,6 +40,10 @@ for en in (False,True):
   block += ['','### '+('Minimal complete example' if en else '最小完整示例'),'','```lay',(ROOT/f['minimal']).read_text().strip(),'```','',
    ('[Concepts and common errors]('+f['topic']+'.'+lang+'.md#'+f['anchor']+') · [Composition source](../../'+f['composition']+')' if en else '[概念与常见错误]('+f['topic']+'.'+lang+'.md#'+f['anchor']+') · [组合源码](../../'+f['composition']+')'),'']
   detailed+=block
+ css_lines=['## css-properties','',('CSS property support is shared by the compiler, completion, hover and color editing. Unsupported CSS is recovered with one warning per file. Draft shadow longhands follow the rules in [LCSS](lcss.en.md#shadow-overrides).' if en else 'CSS 属性支持由编译器、补全、悬停与颜色编辑共享。不支持的 CSS 会恢复解析，每文件集中提示一次。草案阴影分项规则见 [LCSS](lcss.zh-CN.md#shadow-overrides)。'),'','| '+('Property | Type / units | Meaning' if en else '属性 | 类型 / 单位 | 含义')+' |','| --- | --- | --- |']
+ for prop in registry['cssProperties']:
+  css_lines.append(table_row(['`'+prop['name']+'`',typ(prop)+' / '+prop.get('unit','none'),prop[key]]))
+ detailed+=css_lines+['']
  # Root reference links have one less directory level.
  root_blocks='\n'.join(detailed).replace('](../../examples/','](../examples/')
  for feature in coverage.values():root_blocks=root_blocks.replace(']('+feature['topic']+'.'+lang+'.md','](topics/'+feature['topic']+'.'+lang+'.md')

@@ -1,91 +1,74 @@
-# LCSS 主题与区域填充
+# 样式手册
 
-LCSS 是 LayMesh 的样式语言，独立文件使用 `.lcss`。它采用 CSS 风格的选择器和声明，但不是浏览器 CSS；几何尺寸、数据、范围和定位仍写在 `.lay`。
+从[样式与动画库](style-libraries.zh-CN.md)开始：先了解内置库、来源和导入方法，再逐项尝试、调参和组合；单文件 `.lay` 就能起步。
 
-<!-- example:examples/unified.lay -->
+尺寸、锚点、数据和定位写在 .lay；重复外观放入主题。按下列章节学习，再用逐项参考查询参数。
+
+本手册描述当前源码；新增离线样式库和诊断功能应使用包含这些改动的引擎构建。发行包功能以对应发布说明为准。
+
+## 学习路线
+
+1. [入门与样式库](style-start.zh-CN.md)
+2. [选择器、变量与级联](style-cascade.zh-CN.md)
+3. [外观属性与单位](style-properties.zh-CN.md)
+4. [阴影与效果](style-shadows.zh-CN.md)
+5. [兼容与排错](style-compatibility.zh-CN.md)
+
+## 样式与动画一起使用
+
+从[三组综合案例](style-animation-examples.zh-CN.md)学习完整组合：[三库卡片](style-animation-examples.zh-CN.md#styled-cards)、[艺术字海报](style-animation-examples.zh-CN.md#art-direction)、找回的[复杂仪表板](style-animation-examples.zh-CN.md#complex-dashboard)。每组包含可编辑布局、主题和实际播放。
+
+## 完整可运行示例
+
+<!-- example:examples/manual/style-project.lay -->
+
+第一张卡片相对 `page.top_left` 设置页边距；后续卡片连接前一张的 `top_right`，标签连接各自卡片的 `bottom_left`。`card_size` 和 `gap` 统一控制尺寸与间距：例如把宽度从 30mm 改成 26mm，后两张卡片和标签随锚点移动。主题保存外观，循环消除重复，锚点保存排版关系，见[定位手册](anchors.zh-CN.md)与[循环和函数](control-flow.zh-CN.md)。
+
+## 常用问题
+
+显式 .lay 参数优先于 LCSS，包括重要声明。主题控制圆角时应省略对象的同名参数；[覆盖规则](style-cascade.zh-CN.md)说明原因。只把阴影模糊改成 2mm，见[局部覆盖](style-shadows.zh-CN.md#partial-overrides)。
+
+<details>
+<summary>原章节链接</summary>
 
 ## 加载与覆盖顺序
 
-`canvas(stylesheet="language/paper.lcss")` 加载本地样式表，也可传入有序文件列表。入口内嵌 `style { … }` 在外部文件之后生效；同一层按具体程度、声明顺序覆盖，对象显式参数优先。模块样式仅作用于模块创建的对象，作为组件默认值，入口主题可以覆盖。
-
-```lcss
-@import "base.lcss";
-plot::axis(x) { line-color: #444444; line-width: 0.6pt; }
-.annotation {
-  --paper: #ffffff;
-  background: var(--paper);
-  border: 0.5pt solid #b9d5cb;
-  border-radius: 1mm;
-  padding: 1mm;
-}
-```
-
-`.lay` 使用 `class="paper annotation"`。支持类型、类、类型与类组合、逗号分组、所属关系及 `>` 直接所属选择器；图形部件包括 `plot::area`、`plot::axis(x)`、`plot::tick-label`、`plot::axis-label`、`plot::legend` 和 `plot::colorbar`。
+[查看完整章节](style-start.zh-CN.md)
 
 ## 填充与边框
 
-`fill` 控制形状内部；`background` 控制区域底色。支持 `none`、颜色、`linear-gradient(...)`、`radial-gradient(...)`、`hatch(slash, #666666, 2mm, 0.5pt)`、`hatch(cross, …)`、`hatch(dots, …)` 和 `url("texture.png")`。DSL 对应 `linear_gradient`、`radial_gradient`、`hatch`、`image_fill` 构造器。
-
-画布、图表外框、绘图区、轴及其文字区域、文字/公式、图例/色标和导入图片底框分别设置。绘图区填充遵循极坐标轮廓及断轴可见分段，纯填充不改变数据映射。`padding` 是内部留白并参与边界测量。
-
-封闭轮廓使用 `border_*`，开放线条使用 `line_*`。LCSS 对应连字符写法，例如 `border-width` 和 `line-width`。文字与字体属性继承，背景和定位不继承；透明度按父子层级相乘。同一素材的实例可以通过 `class` 独立设置样式。
+[查看完整章节](style-start.zh-CN.md)
 
 ## 资源和限制
 
-所有 LCSS 长度必须显式带单位（零可以省略），主题不会随画布默认单位变化。图片和字体路径相对于声明它的 `.lcss` 解析。变量 `var(--name)` 支持默认值，变量或导入循环报错。
-
-不支持网页布局、媒体查询、动画、交互伪类及 `!important`；这些写法会明确报错，不会静默忽略。[完整参数](interface-reference.zh-CN.md) · [迁移](migration.zh-CN.md)
+[查看完整章节](style-start.zh-CN.md)
 
 ## style-properties
 
-每个属性映射到以下 DSL 参数；类型、单位和继承与参数悬停使用同一份元数据。
+[查看完整章节](style-properties.zh-CN.md)
 
-| LCSS | DSL |
-| --- | --- |
-| `font-family` | `font_family` |
-| `math-font` | `math_font` |
-| `math-text-fallback` | `math_text_fallback`（`true` / `false`） |
-| `font-size` | `font_size` |
-| `font-weight` | `font_weight` |
-| `font-style` | `font_style` |
-| `color` | `color` |
-| `line-height` | `line_height` |
-| `background` | `background` |
-| `padding` | `padding` |
-| `border-radius` | `border_radius` |
-| `border-color` | `border_color` |
-| `border-width` | `border_width` |
-| `border-style` | `border_style` |
-| `border-dash` | `border_dash` |
-| `border-dash-offset` | `border_dash_offset` |
-| `border-cap` | `border_cap` |
-| `border-join` | `border_join` |
-| `border-miter-limit` | `border_miter_limit` |
-| `border-opacity` | `border_opacity` |
-| `line-color` | `line_color` |
-| `line-width` | `line_width` |
-| `line-style` | `line_style` |
-| `line-dash` | `line_dash` |
-| `line-dash-offset` | `line_dash_offset` |
-| `line-cap` | `line_cap` |
-| `line-join` | `line_join` |
-| `line-miter-limit` | `line_miter_limit` |
-| `line-opacity` | `line_opacity` |
-| `fill` | `fill` |
-| `opacity` | `opacity` |
-| `tick-font-size` | `tick_font_size` |
-| `label-font-size` | `label_font_size` |
-| `tick-color` | `tick_color` |
-| `grid-color` | `grid_color` |
-| `grid-line-width` | `grid_line_width` |
-| `grid-line-dash` | `grid_line_dash` |
-| `start-head` | `start_head` |
-| `end-head` | `end_head` |
-| `start-cap` | `start_cap` |
-| `end-cap` | `end_cap` |
+## css-libraries
 
-端部属性接受 `head(...)`，例如 `end-head: head(shape=triangle,size=(5mm,4mm));`。LCSS 标识符是样式值，不读取 DSL 的变量作用域。
+[查看完整章节](style-start.zh-CN.md)
+
+## shadow-overrides
+
+[查看完整章节](style-shadows.zh-CN.md)
+
+## css-units
+
+[查看完整章节](style-properties.zh-CN.md)
+
+## css-effects
+
+[查看完整章节](style-shadows.zh-CN.md)
+
+## css-compatibility
+
+[查看完整章节](style-compatibility.zh-CN.md)
 
 ## workflow
 
-本流程的完整源码与可执行验证文件列在[功能覆盖清单](feature-map.zh-CN.md)。组合使用时请遵循本页的输入条件与限制。
+[查看完整章节](style-start.zh-CN.md)
+
+</details>

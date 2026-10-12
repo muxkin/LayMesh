@@ -49,3 +49,7 @@ Complete sources and executable verification fixtures for this workflow are list
 `render_source` and `render_file` also accept `quality=None`, `compression=None`, `background=None`, `webp_lossless=None`, `webp_method=None`, `webp_alpha_quality=None`, and `webp_near_lossless=None`. Magics accept the corresponding `--quality`, `--compression`, `--background` and `--webp-*` flags. [Export formats and encoding options](export.en.md)
 
 `render_source` and `render_file` default to 1200 export DPI, support `config=PATH`, and accept `pdf_image_compression`, `pdf_jpeg_quality`, `pdf_downsample`, `pdf_recompress_jpeg`, `pdf_preserve_16bit`, `pdf_preserve_alpha`, `pdf_alpha_background`, `pdf_auto_palette_limit`, and `pdf_auto_flatness_threshold`. Notebook flags use `--pdf-*`; see [export configuration](export.en.md) for defaults and precedence.
+
+## Styles and animation
+
+Python sources use the same engine and style rules. Project themes hold repeated appearance, explicit parameters retain priority, and styles/resources travel with the project. See the [style manual](lcss.en.md) for syntax, offline libraries and selective shadow overrides, and the [animation manual](animation.en.md) for keyframes, steps and export. New library and diagnostic support requires a build containing those changes.

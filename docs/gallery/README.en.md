@@ -63,3 +63,15 @@ Cartesian, polar and radar plots with fixed physical data areas and manually pla
 ## More examples
 
 [Native scientific plots and output](../plotting.en.md) · [Matplotlib and Notebook output](notebook.en.md) · [Eight complete examples](comprehensive.en.md) · [Execution results and tests](../examples-and-results.en.md)
+
+### [CSS libraries and shadows](styles.en.md) · 3 examples
+
+Import unmodified libraries offline and tune appearance in project units.
+
+![CSS libraries and shadows](../../site/media/gallery-styles-libraries-1920.webp)
+
+[Bootstrap / Open Props](styles.en.md#libraries) · [Layered and inset shadows](styles.en.md#layers) · [Blur, spread and offset](styles.en.md#shadow-parameters)
+
+## Complete styled animation projects
+
+[Complete projects](../topics/style-animation-examples.en.md) cover library cards, an artistic poster and the existing complex stress scene.

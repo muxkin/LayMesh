@@ -2,11 +2,11 @@
 
 **Reproducible scientific figures and precise physical layouts from readable code.** Compose native plots, images, vector shapes, text and formulas in one editable `.lay` source; export SVG, PDF, editable PPTX and PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA with a native Rust engine.
 
-[中文文档](https://muxkin.github.io/LayMesh/) · [English documentation](https://muxkin.github.io/LayMesh/en/) · [Examples](https://github.com/muxkin/LayMesh/tree/main/examples) · [Source](https://github.com/muxkin/LayMesh)
+[中文文档](https://muxkin.github.io/LayMesh/) · [English documentation](https://muxkin.github.io/LayMesh/en/) · [Examples](https://github.com/muxkin/LayMesh/tree/main/examples) · [Source](https://github.com/muxkin/LayMesh) · [Video tutorial (Bilibili)](https://www.bilibili.com/video/BV1gpHn6eE4V)
 
 ## Install
 
-Requires **Python 3.10+**. Version `0.6.1` fixes VS Code preview resource timeouts and retains multipage documents, Animate.css animation, Skia rendering and MP4/GIF export and shares its version with the native engine and VS Code extension. Install an uploaded release or a reviewed local platform wheel:
+Requires **Python 3.10+**. Platform releases bundle the native engine. Install from PyPI and use --version to check the installed version; current-source documentation can include features newer than the published package:
 
 ```sh
 python -m pip install laymesh
@@ -19,7 +19,7 @@ The standard installation includes NumPy, pandas, Matplotlib and IPython. Data b
 
 Wheel targets are Windows x64, macOS 14+ on Intel and Apple Silicon, and Linux x64 / arm64. Linux requires glibc at least as new as the wheel's `manylinux_2_XX` tag. Availability depends on uploaded wheels; Alpine/musl, 32-bit platforms and Windows ARM64 have no wheels. Plots are rendered by the native engine.
 
-MP4/GIF animation export requires FFmpeg on PATH. Static exports remain complete layouts; animations run only during playback or explicit time/step snapshots. See the [animation guide](https://muxkin.github.io/LayMesh/en/docs/topics/animation.html).
+MP4/GIF animation export reuses existing FFmpeg or requests confirmation before installing it in the shared user directory. Static exports remain complete layouts; animations run only during playback or explicit time/step snapshots. See the [animation guide](https://muxkin.github.io/LayMesh/en/docs/topics/animation.html).
 
 ## First figure: CLI
 
@@ -44,7 +44,7 @@ laymesh render figure.lay -o figure.png --dpi 300
 
 `python -m laymesh` invokes the same CLI. Geometry defaults to mm; typography and line widths default to pt. Raster DPI changes output pixels while preserving physical dimensions. `.lay` is a restricted standalone language, separate from Python.
 
-## Connect annotations (0.3.9)
+## Connect annotations
 
 Line materials may define only their appearance. Both endpoints determine the geometry when placed:
 
@@ -58,7 +58,7 @@ page.add(pointer, start=label.bottom_right, end=(60mm, 35mm),
 
 Endpoints also accept placed chart data points and selected path anchors. Each endpoint offset uses physical units; target-space offsets follow a path's tangent and left normal. Existing `line(dx=..., dy=...)` and `line(length=..., angle=...)` materials remain reusable, with endpoints overriding geometry for that placement. [Anchors and connections](https://muxkin.github.io/LayMesh/en/docs/topics/anchors.html).
 
-## Image export options (0.3.2)
+## Image export options
 
 ```sh
 laymesh render figure.lay -o figure.jpg --dpi 300 --quality 95 --background "#ffffff"
@@ -114,7 +114,7 @@ The magic displays a 192 DPI JPEG preview (quality 95, 4:4:4 sampling, white mat
 
 LayMesh provides physical units, anchors, cropping, paths, reusable modules, LCSS styles and native scientific plots including statistical, polar and radar layers. Artistic text adds glyph gradients and outlines, path text, arc/wave/perspective warps and two-dimensional vector extrusion. Text, shapes, transparent images and groups support inner/outer shadows and glow via `effects=[shadow(...), glow(...)]`. These source interfaces work through `render_source` and Notebook cells. PDF subjects stay vector, while effect layers use tiled raster rendering at the configured DPI (default 1200). See the [effects guide](https://muxkin.github.io/LayMesh/en/docs/topics/art-effects.html).
 
-Layouts are single-page; panels use explicit positioning. Finish plot layers and decorations before placing a chart. Fixed plot areas keep their physical dimensions; decoration overflow emits a warning. [Language reference](https://muxkin.github.io/LayMesh/en/docs/language-reference.html).
+.lay defines one page; .laydoc sequences multiple pages. Panels use explicit positioning. Finish plot layers and decorations before placing a chart. Fixed plot areas keep their physical dimensions; decoration overflow emits a warning. [Language reference](https://muxkin.github.io/LayMesh/en/docs/language-reference.html).
 
 ## 中文
 
@@ -122,7 +122,7 @@ LayMesh 用一个可编辑的 `.lay` 文件组织科研图表、图片、文字�
 
 LayMesh is [MIT licensed](https://github.com/muxkin/LayMesh/blob/main/LICENSE). Bundled native dependencies, formula fonts and colormap data retain their own license texts inside the installed package. `_vendor/manifest.json` records engine, platform and build hashes; `_vendor/licenses/manifest.json` records dependency license provenance.
 
-Exports default to 1200 DPI, independently of `layout_dpi`. PDF accepts `dpi`, `pdf_image_compression`, `pdf_jpeg_quality`, `pdf_downsample`, `pdf_recompress_jpeg`, `pdf_preserve_16bit`, `pdf_preserve_alpha`, `pdf_alpha_background`, `pdf_auto_palette_limit`, and `pdf_auto_flatness_threshold`. `config=PATH` selects project defaults; Notebook magics support corresponding `--config` and `--pdf-*` flags. See [configuration](../docs/topics/export.en.md).
+Exports default to 1200 DPI, independently of `layout_dpi`. PDF accepts `dpi`, `pdf_image_compression`, `pdf_jpeg_quality`, `pdf_downsample`, `pdf_recompress_jpeg`, `pdf_preserve_16bit`, `pdf_preserve_alpha`, `pdf_alpha_background`, `pdf_auto_palette_limit`, and `pdf_auto_flatness_threshold`. `config=PATH` selects project defaults; Notebook magics support corresponding `--config` and `--pdf-*` flags. See [configuration](https://muxkin.github.io/LayMesh/en/docs/topics/export.html).
 
 ## Editable PowerPoint export
 
@@ -135,6 +135,22 @@ render_file("figure.lay", output="figure.pptx")
 
 CLI and Jupyter magics also accept `-o figure.pptx`. Each canvas becomes one slide; text is editable, formulas use grouped outlines, and complex effects may fall back locally to PNG. Fonts are not embedded. `dpi` controls fallback resolution only (default 1200).
 
-多页文档使用 `render_document("report.laydoc", output="report.pdf")`；`page=2` 导出单页，`preview_page=2` 只选择 JPEG 预览页。编排文件复用 Lay 语法，详见 [多页文档](../docs/topics/documents.zh-CN.md)。
+多页文档使用 `render_document("report.laydoc", output="report.pdf")`；`page=2` 导出单页，`preview_page=2` 只选择 JPEG 预览页。编排文件复用 Lay 语法，详见 [多页文档](https://muxkin.github.io/LayMesh/docs/topics/documents.zh-CN.html)。
 
-Multi-page documents use `render_document("report.laydoc", output="report.pdf")`; `page=2` exports one page and `preview_page=2` selects only the JPEG preview. The orchestration file uses the Lay DSL. See [multi-page documents](../docs/topics/documents.en.md).
+Multi-page documents use `render_document("report.laydoc", output="report.pdf")`; `page=2` exports one page and `preview_page=2` selects only the JPEG preview. The orchestration file uses the Lay DSL. See [multi-page documents](https://muxkin.github.io/LayMesh/en/docs/topics/documents.html).
+
+## Styles and animation
+
+Keep repeated appearance in a project theme and placement/data in .lay. Explicit parameters take priority over styles. Current-source manuals cover offline libraries, selective shadow overrides, custom keyframes, all 97 effects and step scheduling: [Style manual](https://muxkin.github.io/LayMesh/en/docs/topics/lcss.html) · [Animation manual](https://muxkin.github.io/LayMesh/en/docs/topics/animation.html). New library and diagnostic support requires a build containing those changes.
+
+## Animation export and shared FFmpeg
+
+```python
+from laymesh import animate_file, animate_source, ffmpeg_status
+
+print(ffmpeg_status())  # Local discovery only; no download.
+result = animate_file("figure.lay", "figure.mp4", width=1920, fps=30)
+result = animate_source(source, "figure.gif", base_dir=".", width=960, fps=20)
+```
+
+Python uses the same native manager and private FFmpeg directory as the CLI and VS Code on the same host. Existing programs are verified and recorded, without copying. A missing encoder requests confirmation on an interactive terminal; noninteractive calls raise `FFmpegDownloadRequired`. Use `allow_download=True` only to authorize that particular call, or run `python -m laymesh ffmpeg install --yes` once. Global/project JSON settings cannot authorize downloads. `config=` accepts the same native JSON configuration as the CLI. The manager automatically measures the upstream and China mirror, checks pinned SHA-256 values, and keeps downloaded LICENSE/README files.

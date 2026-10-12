@@ -6,6 +6,7 @@ mod formatting;
 mod index;
 pub mod inspect;
 pub mod lsp;
+pub mod stylesheets;
 use index::{Symbol, Token, index, tokens};
 use laymesh_core::{
     engine::{API, predefined_value, predefined_variables},
@@ -22,6 +23,7 @@ use std::{
 pub struct LanguageService {
     pub documents: BTreeMap<String, String>,
     pub locale: String,
+    stylesheet_indexes: RefCell<BTreeMap<String, (u64, std::sync::Arc<stylesheets::Index>)>>,
     indexes: RefCell<BTreeMap<String, (u64, bool, index::Index)>>,
     bindings: RefCell<Option<(u64, bindings::Graph)>>,
 }
@@ -33,6 +35,69 @@ struct Context {
     used: Vec<String>,
     positional: usize,
     prefix: String,
+}
+// Restrict library suggestions to stylesheet arguments and CSS import paths;
+// arbitrary strings and comments must keep their ordinary editor behavior.
+fn stylesheet_range(source: &str, offset: usize, css: bool) -> Option<(usize, usize, bool)> {
+    let offset = offset.min(source.len());
+    if let Some(t) = tokens(source)
+        .into_iter()
+        .find(|t| t.kind == "string" && t.from < offset && offset <= t.to)
+    {
+        let quote = t.text.chars().next()?;
+        if !matches!(quote, '\'' | '"') {
+            return None;
+        }
+        let import = css
+            && Regex::new(r"(?s)@import\s+(?:url\(\s*)?$")
+                .unwrap()
+                .is_match(&source[..t.from]);
+        let argument = !css && context(source, t.from).is_some_and(|c| c.parameter == "stylesheet");
+        if import || argument {
+            return Some((
+                t.from + 1,
+                t.to - usize::from(t.text.len() > 1 && t.text.ends_with(quote)),
+                true,
+            ));
+        }
+    }
+    if css
+        && Regex::new(r"(?s)@import\s+(?:url\(\s*)?$")
+            .unwrap()
+            .is_match(&source[..offset])
+    {
+        return Some((offset, offset, false));
+    }
+    if !css
+        && context(source, offset).is_some_and(|c| c.parameter == "stylesheet")
+        && source[..offset].trim_end().ends_with(['=', '[', ','])
+    {
+        return Some((offset, offset, false));
+    }
+    None
+}
+fn stylesheet_doc(library: &laymesh_core::style::StylesheetMetadata, en: bool) -> String {
+    format!(
+        "**{} {}** · {}\n\n`{}`\n\n{}\n\nSHA-256: `{}`",
+        library.name,
+        library.version,
+        library.license,
+        library.path(),
+        if en {
+            "Bundled offline. Explicitly import with canvas(stylesheet=...) or CSS @import. Inline style blocks allow one .lay file; shared themes are optional."
+        } else {
+            "离线内置，需通过 canvas(stylesheet=...) 或 CSS @import 显式导入。内嵌 style 可使用单个 .lay 文件；共享主题是可选的。"
+        },
+        library.sha256
+    ) + &format!(
+        "\n\n[{}]({})",
+        if en {
+            "Upstream source"
+        } else {
+            "上游来源"
+        },
+        library.source
+    )
 }
 pub(crate) fn resolve(uri: &str, relative: &str) -> String {
     if let Some(path) = uri.strip_prefix("file://") {
@@ -97,6 +162,9 @@ fn strs(j: &J) -> Vec<String> {
                 .collect()
         })
         .unwrap_or_default()
+}
+fn api() -> &'static J {
+    &laymesh_core::engine::API
 }
 fn entries() -> &'static Vec<J> {
     API["api"].as_array().unwrap()
@@ -623,13 +691,6 @@ impl LanguageService {
             self.type_of(uri, name, offset)
         })
     }
-    fn classes(&self) -> BTreeSet<String> {
-        let pattern = Regex::new(r"\.([A-Za-z_][\w-]*)\s*(?:[.{,:>])").unwrap();
-        self.documents
-            .values()
-            .flat_map(|source| pattern.captures_iter(source).map(|c| c[1].to_string()))
-            .collect()
-    }
     fn callable(&self, uri: &str, offset: usize, c: &Context) -> Option<J> {
         if c.receiver == "arrow"
             && self
@@ -731,6 +792,26 @@ impl LanguageService {
     }
     pub fn hover(&self, uri: &str, offset: usize) -> J {
         let source = self.source(uri);
+        if let Some((from, to, name, kind)) = self.stylesheet_at(uri, offset) {
+            let matches: Vec<_> = self
+                .stylesheet_symbols(uri)
+                .into_iter()
+                .filter(|s| s.name == name && s.kind == kind)
+                .collect();
+            if !matches.is_empty() {
+                return json!({"from":from,"to":to,"contents":matches.iter().map(|s|s.documentation(self.en())).collect::<Vec<_>>().join("\n\n")});
+            }
+        }
+        let css =
+            uri.ends_with(".lcss") || uri.ends_with(".css") || css_region(source, offset).is_some();
+        if let Some((from, to, _)) = stylesheet_range(source, offset, css) {
+            if let Some(library) = laymesh_core::style::bundled_stylesheets()
+                .iter()
+                .find(|l| l.path() == source[from..to])
+            {
+                return json!({"from":from,"to":to,"contents":stylesheet_doc(library,self.en())});
+            }
+        }
         let (from, to, w) = word(source, offset);
         if w.is_empty() {
             return J::Null;
@@ -757,10 +838,11 @@ impl LanguageService {
             {
                 return json!({"from":from,"to":to,"contents":if en{en_text}else{zh}});
             }
-            if let Some(p) = entries()
+            if let Some(p) = api()["cssProperties"]
+                .as_array()
+                .unwrap()
                 .iter()
-                .flat_map(|e| e["parameters"].as_array().unwrap())
-                .find(|p| p["name"] == canonical)
+                .find(|p| p["name"] == w.replace('_', "-"))
             {
                 return json!({"from":from,"to":to,"contents":parameter_doc(p,en,"")});
             }
@@ -829,6 +911,10 @@ impl LanguageService {
         J::Null
     }
     pub fn definition(&self, uri: &str, offset: usize) -> J {
+        let css = self.stylesheet_definition(uri, offset);
+        if !css.is_null() {
+            return css;
+        }
         let source = self.source(uri);
         let (_, _, w) = word(source, offset);
         let graph = self.binding_graph();
@@ -992,6 +1078,24 @@ impl LanguageService {
         {
             return json!([]);
         }
+        let css_path =
+            uri.ends_with(".lcss") || uri.ends_with(".css") || css_region(source, offset).is_some();
+        if let Some((path_from, path_to, quoted)) = stylesheet_range(source, offset, css_path) {
+            return self.stylesheet_paths(uri, path_from, path_to, quoted);
+        }
+        if let Some(c) = context(source, offset) {
+            if c.name == "animate" && c.parameter == "name" {
+                let mut out = self
+                    .stylesheet_completions(uri, "keyframe", from, to)
+                    .as_array()
+                    .unwrap()
+                    .clone();
+                for name in ["laymesh-draw", "laymesh-reveal", "none"] {
+                    out.push(option(name, "value", String::new(), name.into(), "LayMesh"));
+                }
+                return json!(out);
+            }
+        }
         if let Some(c) = context(source, offset) {
             let preset_name = c.receiver.is_empty()
                 && ["cmap", "palette"].contains(&c.name.as_str())
@@ -1053,52 +1157,74 @@ impl LanguageService {
                 );
             }
             if Regex::new(r"var\(\s*--[\w-]*$").unwrap().is_match(local) {
-                let pattern = Regex::new(r"(--[A-Za-z_][\w-]*)\s*:").unwrap();
-                let names: BTreeSet<String> = self
-                    .documents
-                    .values()
-                    .flat_map(|text| pattern.captures_iter(text).map(|c| c[1].to_string()))
-                    .collect();
-                return json!(
-                    names
-                        .iter()
-                        .map(|name| option(
-                            name,
-                            "variable",
-                            String::new(),
-                            name.clone(),
-                            "LCSS variable"
-                        ))
-                        .collect::<Vec<_>>()
-                );
+                return self.stylesheet_completions(uri, "variable", from, to);
             }
-            if Regex::new(r"\.[\w-]*$").unwrap().is_match(local) {
-                let names = self.classes();
-                return json!(
-                    names
-                        .iter()
-                        .map(|name| option(
-                            name,
-                            "class",
-                            String::new(),
-                            name.clone(),
-                            "LCSS class"
-                        ))
-                        .collect::<Vec<_>>()
-                );
+            if Regex::new(r#"\[\s*class\s*(?:~=|=)\s*[\"'][^\"']*$"#)
+                .unwrap()
+                .is_match(local)
+                || Regex::new(r"\.[\w-]*$").unwrap().is_match(local)
+            {
+                return self.stylesheet_completions(uri, "class", from, to);
             }
             if local.rfind('{') > local.rfind('}') {
                 if let Some(cap) = Regex::new(r"([\w-]+)\s*:\s*([^;{}]*)$")
                     .unwrap()
                     .captures(local)
                 {
+                    if &cap[1] == "animation-name"
+                        || (&cap[1] == "animation" && !cap[2].contains(' '))
+                    {
+                        let mut names = self
+                            .stylesheet_completions(uri, "keyframe", from, to)
+                            .as_array()
+                            .unwrap()
+                            .clone();
+                        names.push(option(
+                            "none",
+                            "keyword",
+                            String::new(),
+                            "none".into(),
+                            "CSS animation",
+                        ));
+                        return json!(names);
+                    }
                     let key = cap[1].replace('-', "_");
-                    let p = entries()
+                    // Effect literals use the same constructor metadata as .lay.
+                    if let Some(call) = Regex::new(r"(shadow|glow)\([^)]*$")
+                        .unwrap()
+                        .captures(&cap[2])
+                    {
+                        let mut options = vec![];
+                        if let Some(entry) = entries().iter().find(|a| a["name"] == &call[1]) {
+                            for p in entry["parameters"].as_array().unwrap() {
+                                let name = p["name"].as_str().unwrap();
+                                options.push(option(
+                                    name,
+                                    "property",
+                                    parameter_doc(p, en, ""),
+                                    format!("{name}="),
+                                    "LCSS effect",
+                                ));
+                            }
+                        }
+                        return json!(options);
+                    }
+                    let metadata = api();
+                    let p = metadata["cssProperties"]
+                        .as_array()
+                        .unwrap()
                         .iter()
-                        .flat_map(|a| a["parameters"].as_array().unwrap())
-                        .find(|p| p["name"] == key);
+                        .find(|p| p["name"] == key.replace('_', "-"));
                     let mut values = p.map(|p| strs(&p["values"])).unwrap_or_default();
                     values.push("var()".into());
+                    if key == "effects" {
+                        values.extend(["[shadow()]", "[glow()]"].map(str::to_string));
+                    }
+                    if key.starts_with("box_shadow") || key == "text_shadow" || key == "filter" {
+                        values.extend(
+                            ["currentColor", "calc()", "2mm", "drop-shadow()"].map(str::to_string),
+                        );
+                    }
                     if key.contains("fill") || key == "background" {
                         values.extend(
                             [
@@ -1118,24 +1244,24 @@ impl LanguageService {
                             .collect::<Vec<_>>()
                     );
                 }
-                let mut names = BTreeSet::new();
                 let mut options = vec![];
-                for p in entries()
-                    .iter()
-                    .flat_map(|a| a["parameters"].as_array().unwrap())
-                {
-                    let name = p["name"].as_str().unwrap().replace('_', "-");
-                    if names.insert(name.clone()) {
-                        options.push(option(
-                            &name,
-                            "property",
-                            parameter_doc(p, en, ""),
-                            format!("{name}: "),
-                            "",
-                        ))
-                    }
+                for p in api()["cssProperties"].as_array().unwrap() {
+                    let name = p["name"].as_str().unwrap();
+                    options.push(option(
+                        name,
+                        "property",
+                        parameter_doc(p, en, ""),
+                        format!("{name}: "),
+                        "LCSS",
+                    ));
                 }
-                for (name, zh, en_text) in MOTION_PROPERTIES {
+                for (name, zh, en_text) in MOTION_PROPERTIES.iter().filter(|(name, _, _)| {
+                    !api()["cssProperties"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .any(|p| p["name"] == *name)
+                }) {
                     options.push(option(
                         name,
                         "property",
@@ -1160,16 +1286,11 @@ impl LanguageService {
                     .collect::<Vec<_>>()
             );
         }
-        if Regex::new(r#"\bclass\s*=\s*["'][^"']*$"#)
+        if Regex::new(r#"\b(?:class|classes)\s*=\s*["'][^"']*$"#)
             .unwrap()
             .is_match(before)
         {
-            return json!(
-                self.classes()
-                    .iter()
-                    .map(|name| option(name, "class", String::new(), name.clone(), "LCSS class"))
-                    .collect::<Vec<_>>()
-            );
+            return self.stylesheet_completions(uri, "class", from, to);
         }
         if let Some(receiver) = receiver_before(source, from) {
             let typ = self
@@ -1362,11 +1483,12 @@ impl LanguageService {
                                     if let Some(t) = &quoted {
                                         let quote = t.text.chars().next().unwrap();
                                         o["from"] = json!(t.from + 1);
-                                        o["to"] = json!(if t.text.len() > 1 && t.text.ends_with(quote) {
-                                            t.to - 1
-                                        } else {
-                                            t.to
-                                        });
+                                        o["to"] =
+                                            json!(if t.text.len() > 1 && t.text.ends_with(quote) {
+                                                t.to - 1
+                                            } else {
+                                                t.to
+                                            });
                                     }
                                     choices.push(o);
                                 }
@@ -1527,34 +1649,16 @@ impl LanguageService {
             "prepareRename" => self.prepare_rename(uri, offset),
             "diagnostics" => self.diagnostics(uri),
             "colors" => self.document_colors(uri),
+            "stylesheetContent" => self.stylesheet_content(uri),
             _ => J::Null,
         }
     }
 }
 pub fn css_region(source: &str, offset: usize) -> Option<usize> {
-    let ts = tokens(source);
-    for i in 0..ts.len().saturating_sub(1) {
-        if ts[i].text == "style" && ts[i + 1].text == "{" {
-            let from = ts[i + 1].to;
-            let mut depth = 1;
-            let mut end = source.len();
-            for t in &ts[i + 2..] {
-                if t.text == "{" {
-                    depth += 1
-                } else if t.text == "}" {
-                    depth -= 1;
-                    if depth == 0 {
-                        end = t.from;
-                        break;
-                    }
-                }
-            }
-            if offset >= from && offset <= end {
-                return Some(from);
-            }
-        }
-    }
-    None
+    stylesheets::inline_ranges(source)
+        .into_iter()
+        .find(|(from, end)| offset >= *from && offset <= *end)
+        .map(|(from, _)| from)
 }
 pub fn byte_offset(source: &str, utf16: usize) -> usize {
     let mut n = 0;
@@ -1599,6 +1703,7 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
     } else {
         index(uri, source, en).issues
     };
+    out.extend(service.stylesheet_issues(uri));
     let emit = |out: &mut Vec<J>,
                 from: usize,
                 to: usize,
@@ -1617,7 +1722,7 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
         out.push(d)
     };
     if uri.ends_with(".lcss") || uri.ends_with(".css") {
-        if let Err(error) = laymesh_core::style::validate_stylesheet(
+        for d in laymesh_core::style::stylesheet_diagnostics(
             source,
             uri,
             laymesh_core::Loc {
@@ -1626,14 +1731,7 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                 offset: 0,
             },
         ) {
-            emit(
-                &mut out,
-                error.loc.offset,
-                error.loc.offset + 1,
-                &error.code,
-                error.message,
-                None,
-            );
+            out.push(json!({"from":d.loc.offset,"to":(d.loc.offset+1).min(source.len()),"severity":"warning","code":d.code,"message":d.message}));
         }
         return json!(out);
     }
@@ -2162,8 +2260,8 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                     statements(b, out, names, inferred, source, en)
                 }
                 StmtKind::Style(css) => {
-                    if let Err(error) = laymesh_core::style::validate_stylesheet(css, "", s.loc) {
-                        out.push(json!({"from":error.loc.offset.min(source.len()),"to":(error.loc.offset+1).min(source.len()),"severity":"error","code":error.code,"message":error.message}));
+                    for d in laymesh_core::style::stylesheet_diagnostics(css, "", s.loc) {
+                        out.push(json!({"from":d.loc.offset.min(source.len()),"to":(d.loc.offset+1).min(source.len()),"severity":"warning","code":d.code,"message":d.message}));
                     }
                 }
                 _ => {}
@@ -2219,8 +2317,8 @@ const MOTION_PROPERTIES: &[(&str, &str, &str)] = &[
     ("animation-play-state", "running/paused", "running/paused"),
     (
         "transform",
-        "标准 CSS 2D/3D 变换；px 固定为 1/96 英寸",
-        "CSS 2D/3D transforms; px is always 1/96 inch",
+        "标准 CSS 2D/3D 变换；px 使用画布 layout_dpi（默认 96），与静态样式一致",
+        "CSS 2D/3D transforms; px uses canvas layout_dpi (default 96), shared with static styles",
     ),
     (
         "transform-origin",

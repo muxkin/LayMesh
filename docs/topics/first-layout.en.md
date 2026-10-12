@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/add.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Place the second instance using target=first.bottom_right and offset=(3mm,3mm). Align a title’s center to a card’s center so font changes preserve the relationship.
@@ -24,8 +20,6 @@ Place the second instance using target=first.bottom_right and offset=(3mm,3mm). 
 ## Common errors and limits
 
 The default add anchor is top_left, with offsets along container axes. Pages do not grow automatically; objects outside the page can be clipped during export.
-
-## Individual functions
 
 <!-- walkthrough:end -->
 

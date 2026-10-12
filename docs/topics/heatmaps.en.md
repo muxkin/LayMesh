@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/plot-heatmap.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 Share color_scale across heatmaps and contours. x_edges/y_edges are heatmap boundaries; contour x/y are sample coordinates. Nonuniform or broken axes use vector cells for accurate mapping.

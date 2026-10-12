@@ -1,0 +1,4 @@
+page = canvas(size=(100mm,65mm), stylesheet="@laymesh/animate.css", background="#ffffff")
+title = page.add(text("Research results", font_size=6mm, color="#243447"), target=page.top_left, offset=(12mm,22mm))
+intro = page.step(name="Title entrance", hold=1s)
+intro.animate(title, class="animate__animated animate__fadeInUp")

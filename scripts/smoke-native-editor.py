@@ -117,6 +117,24 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-editor-') as temporary:
         assert 'svg' in results[-1] and module in results[-1]['dependencies']
         checks.append('Windows backslash entry and unsaved module paths')
 
+    source = 'page=canvas(size=(100mm,65mm),stylesheet="@laymesh/animate.css",background="#ffffff")\ntitle=page.add(text("Research results",font_size=6mm,color="#243447"),target=page.top_left,offset=(12mm,22mm))\nintro=page.step(name="Title entrance",hold=1s)\nintro.animate(title,class="animate__animated animate__fadeInUp")'
+    request = {'id': 99, 'protocol': 3, 'file': file, 'source': source, 'resource_dir': host_path(root / 'resources')}
+    if args.wine or os.name == 'nt':
+        request['file'] = file.replace('/', '\\')
+    bundled = [json.loads(line) for line in run(['preview', '--stdio'], (json.dumps(request)+'\n').encode()).decode().splitlines()]
+    assert {'bundled-stylesheets-v1', 'ffmpeg-manager-v1'} <= set(bundled[0]['capabilities'])
+    assert 'error' not in bundled[1], bundled[1]
+    assert len(bundled[1]['inspection']['animation']['steps']) == 1
+    assert not any('@laymesh' in dep for dep in bundled[1]['dependencies'])
+    checks.append('Screenshot Animate.css source resolves offline with one step; Windows backslash path supported; FFmpeg manager capability advertised')
+
+    manager_config = root / 'ffmpeg.json'
+    manager_config.write_text(json.dumps({'export': {'ffmpeg': {'directory': host_path(root / 'ffmpeg-private'), 'search_system': False}}}), encoding='utf-8')
+    status = json.loads(run(['ffmpeg', 'status', '--file', file, '--config', host_path(manager_config), '--json']))
+    assert status['available'] is False and status['download']['supported'] is True
+    assert not (root / 'ffmpeg-private').exists()
+    checks.append('Shared FFmpeg discovery works without downloading or creating install files')
+
     source = 'page=canvas(size=(10,10),background="#ff0000")\ncan'
     uri = 'file:///' + quote(file, safe='/:') if args.wine or os.name == 'nt' else Path(file).as_uri()
     messages = [

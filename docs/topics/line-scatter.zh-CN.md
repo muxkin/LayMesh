@@ -11,10 +11,6 @@ line 连续连接有效点，scatter 只绘制标记。二者保留输入顺序�
 
 <!-- example:examples/manual/plot-line.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 同一 x/y 可用浅色线连接并用不同标记强调点。scatter 的 c 配 color_scale 显示第三变量，marker_size 和 opacity 可以是与数据长度相同的列表。

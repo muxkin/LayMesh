@@ -11,10 +11,6 @@
 
 <!-- example:examples/manual/path-at.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 将曲线的弧长中点用作文字 target，并将 rotation 设置为该点的 tangent_angle。需要沿线与法线偏移时使用 offset_space=target；尖角先选择 incoming 或 outgoing。 线条和形状箭头可在 add 中用 start/end 连接物理坐标、数据点或锚点；start_offset/end_offset 分别微调两端，offset 平移整个实例。每端的 *_offset_space 可选 container 或 target。

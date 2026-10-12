@@ -11,10 +11,6 @@ bar 的 positions、values、baseline 和 data_width 都是数据单位。step �
 
 <!-- example:examples/manual/plot-bar.lay -->
 
-## 参数与默认行为
-
-裸几何长度使用画布单位，裸字号和描边宽度使用 pt。显式调用参数优先于继承和主题默认值；下面的接口参考逐项列出允许类型、可选值与默认来源。
-
 ## 组合用法
 
 用不同 positions 手工形成分组柱，使用逐点 baseline 形成堆叠柱。将 hline 的零线、step 曲线和带透明度 area 组合，可比较离散与连续表达。

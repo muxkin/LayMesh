@@ -1,5 +1,5 @@
 /* Original Animate.css 4.1.1, imported without rewriting. */
-@import "../../tests/animation/vendor/animate.css";
+@import "@laymesh/animate.css";
 .title-motion { --animate-duration: 800ms; }
 .draw-motion { animation: laymesh-draw 1200ms ease both; }
 .reveal-motion { animation: laymesh-reveal 1s ease both; }

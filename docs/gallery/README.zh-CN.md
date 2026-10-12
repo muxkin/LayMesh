@@ -63,3 +63,15 @@
 ## 更多示例
 
 [原生科研绘图与实际图片](../plotting.zh-CN.md) · [Matplotlib 与 Notebook 的实际输出](notebook.zh-CN.md) · [八份综合应用示例](comprehensive.zh-CN.md) · [执行结果与测试证据](../examples-and-results.zh-CN.md)
+
+### [CSS 样式库与阴影](styles.zh-CN.md) · 3 个示例
+
+离线原样导入样式库，按项目单位调整外观和阴影。
+
+![CSS 样式库与阴影](../../site/media/gallery-styles-libraries-1920.webp)
+
+[Bootstrap / Open Props](styles.zh-CN.md#libraries) · [多层与内阴影](styles.zh-CN.md#layers) · [模糊、扩散与偏移](styles.zh-CN.md#shadow-parameters)
+
+## 样式与动画综合项目
+
+[综合案例](../topics/style-animation-examples.zh-CN.md)提供三库卡片、艺术字海报及原有复杂压力场景。

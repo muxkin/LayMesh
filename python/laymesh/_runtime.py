@@ -1,4 +1,4 @@
-"""Locate the native Rust engine; never download code or fonts at runtime."""
+"""Locate the native engine offline; explicit FFmpeg installation is native-managed."""
 from __future__ import annotations
 import os
 import subprocess

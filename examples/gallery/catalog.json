@@ -464,6 +464,31 @@
           "source": "examples/plot/cmap-scales.lay"
         }
       ]
+    },
+    {
+      "slug": "styles",
+      "title": "CSS 样式库与阴影",
+      "intro": "离线原样导入样式库，按项目单位调整外观和阴影。",
+      "items": [
+        {
+          "group": "样式与效果",
+          "slug": "libraries",
+          "title": "Bootstrap 与 Open Props",
+          "description": "使用库配色、圆角、渐变和阴影，再局部覆盖模糊半径。"
+        },
+        {
+          "group": "样式与效果",
+          "slug": "layers",
+          "title": "多层、内阴影与局部修改",
+          "description": "保留阴影其他参数，分别调整各层；比较盒阴影、文字阴影与 drop-shadow。"
+        },
+        {
+          "group": "样式与效果",
+          "slug": "shadow-parameters",
+          "title": "2mm：模糊、扩散还是偏移",
+          "description": "同一库阴影分别只改一个字段，保留颜色及其他参数。"
+        }
+      ]
     }
   ]
 }

@@ -40,6 +40,26 @@ fn original_animate_css_all_97_effects_compile_and_seek() {
             compile_source(&src, "/main.lay", host()).unwrap_or_else(|e| panic!("{name}: {e}"));
         let anim = scene.animation.unwrap();
         assert_eq!(anim.normal.steps.len(), 1);
+        assert!(
+            !scene
+                .warnings
+                .iter()
+                .any(|w| w.code == "W_CSS" || w.code == "W_ANIMATION"),
+            "{name}: {:?}",
+            scene.warnings
+        );
+        for media in [&anim.reduced, &anim.print, &anim.print_reduced] {
+            assert!((media.steps[0].duration - 0.001).abs() < 1e-9, "{name}");
+            let clip = &media.steps[0].clips[0];
+            assert_eq!(clip.iterations, Some(1.));
+            if format!("animate__{name}").contains("Out") {
+                assert_eq!(
+                    clip.underlying.get("opacity"),
+                    Some(&laymesh_core::animation::Value::Number(0.)),
+                    "{name}"
+                );
+            }
+        }
         assert!(anim.normal.duration > 0.);
         for fraction in [0., 0.1, 0.25, 0.5, 0.75, 0.99, 1.] {
             let result = anim.normal.sample(fraction * anim.normal.steps[0].duration);
@@ -53,6 +73,88 @@ fn original_animate_css_all_97_effects_compile_and_seek() {
                 );
             }
         }
+    }
+}
+#[test]
+fn stylesheet_and_import_share_inline_overrides_important_and_explicit_parameters() {
+    let action = "a=p.add(rect(size=(10,10)))\ns=p.step()\ns.animate(a,class=\"animate__animated animate__fadeInUp custom\")";
+    for (css, args, duration) in [
+        (".custom{animation-duration:2s}", "", 2.),
+        (".custom{animation-duration:2s!important}", "", 2.),
+        (
+            ".animate__animated.custom{animation:fadeInUp 3s both}",
+            "",
+            3.,
+        ),
+        (
+            ".custom{animation-duration:2s!important}",
+            ",duration=4s",
+            4.,
+        ),
+    ] {
+        let action = action.replace("custom\")", &format!("custom\"{args})"));
+        let external = format!(
+            "p=canvas(size=(30,20),stylesheet=\"@laymesh/animate.css\")\nstyle{{{css}}}\n{action}"
+        );
+        let imported = format!(
+            "p=canvas(size=(30,20))\nstyle{{@import \"@laymesh/animate.css\"; {css}}}\n{action}"
+        );
+        let first = compile_source(&external, "/main.lay", Host::default()).unwrap();
+        let second = compile_source(&imported, "/main.lay", Host::default()).unwrap();
+        let (a, b) = (first.animation.unwrap(), second.animation.unwrap());
+        assert_eq!(a, b);
+        assert_eq!(a.normal.steps[0].duration, duration);
+        assert_eq!(
+            a.reduced.steps[0].duration,
+            if args.is_empty() && !css.contains("important") {
+                0.001
+            } else {
+                duration
+            }
+        );
+    }
+}
+#[test]
+fn module_animation_defaults_are_scoped_and_entry_theme_can_override_them() {
+    let mut h = Host::default();
+    h.files.insert("/card.lay".into(), b"style{@keyframes reveal{from{opacity:0}to{opacity:1}} .local{animation:reveal 1s both; background:red}}\nexport function card(){return rect(size=(10,10),class=\"local\")}".to_vec());
+    let source = "import {card} from \"card.lay\"\np=canvas(size=(30,20))\nstyle{.local{animation-duration:2s;background:blue}}\na=p.add(card())\ns=p.step()\ns.animate(a)";
+    let s = compile_source(source, "/main.lay", h.clone()).unwrap();
+    assert_eq!(s.nodes[0]["fill"], "#0000ff");
+    assert_eq!(s.animation.unwrap().normal.steps[0].duration, 2.);
+    let s = compile_source(
+        &format!("{source}\nb=p.add(rect(size=(10,10),class=\"local\"))\ns.animate(b)"),
+        "/main.lay",
+        h,
+    )
+    .unwrap();
+    assert_eq!(
+        s.warnings
+            .iter()
+            .filter(|w| w.code == "W_ANIMATION")
+            .count(),
+        1
+    );
+}
+#[test]
+fn missing_animate_base_class_has_a_duration_hint_and_explicit_zero_is_valid() {
+    let source = "p=canvas(size=(30,20),stylesheet=\"@laymesh/animate.css\")\na=p.add(rect(size=(10,10)))\ns=p.step()\ns.animate(a,class=\"animate__fadeInUp\")";
+    let s = compile_source(source, "/main.lay", Host::default()).unwrap();
+    let warnings: Vec<_> = s
+        .warnings
+        .iter()
+        .filter(|w| w.code == "W_ANIMATION")
+        .collect();
+    assert_eq!(warnings.len(), 1);
+    assert!(warnings[0].message.contains("animate__animated"));
+    for duration in ["0s", "2s"] {
+        let s = compile_source(
+            &source.replace("fadeInUp\")", &format!("fadeInUp\",duration={duration})")),
+            "/main.lay",
+            Host::default(),
+        )
+        .unwrap();
+        assert!(s.warnings.iter().all(|w| w.code != "W_ANIMATION"));
     }
 }
 #[test]
@@ -70,6 +172,63 @@ fn typed_calc_and_css_pixels() {
     assert!((values::time("calc(800ms * 0.75)").unwrap() - 0.6).abs() < 1e-7);
     assert!((values::length("96px", 0.).unwrap() - 25.4).abs() < 1e-8);
     assert!(values::time("calc(1s + 2mm)").is_err());
+}
+#[test]
+fn missing_animation_stylesheet_warns_once_at_the_lay_call_and_import_recovers() {
+    let source = "p=canvas(size=(80mm,50mm),stylesheet=[\"@laymesh/bootstrap.css\",\"@laymesh/open-props.css\"])\na=p.add(rect(size=(20mm,15mm),class=\"bg-primary rounded shadow\"))\ns=p.step()\ns.animate(a,class=\"animate__animated animate__fadeInUp\")";
+    let missing = compile_source(source, "/missing-animation.lay", Host::default()).unwrap();
+    let diagnostics: Vec<_> = missing
+        .warnings
+        .iter()
+        .filter(|w| w.code == "W_ANIMATION")
+        .collect();
+    assert_eq!(diagnostics.len(), 1);
+    assert_eq!(diagnostics[0].file, "/missing-animation.lay");
+    assert_eq!(diagnostics[0].loc.line, 4);
+    assert!(diagnostics[0].message.contains("@laymesh/animate.css"));
+    assert!(missing.animation.unwrap().normal.steps[0].clips.is_empty());
+    let fixed = compile_source(
+        &source.replace(
+            "\"@laymesh/open-props.css\"]",
+            "\"@laymesh/open-props.css\",\"@laymesh/animate.css\"]",
+        ),
+        "/fixed-animation.lay",
+        Host::default(),
+    )
+    .unwrap();
+    assert!(fixed.warnings.iter().all(|w| w.code != "W_ANIMATION"));
+    let animation = fixed.animation.unwrap();
+    assert_eq!(animation.normal.steps[0].clips.len(), 1);
+    assert_eq!(animation.normal.steps[0].duration, 1.);
+    assert_eq!(animation.normal.sample(0.)["a"].opacity, Some(0.));
+    assert!(animation.normal.sample(0.5)["a"].opacity.unwrap() > 0.);
+    assert_eq!(animation.normal.sample(1.)["a"].opacity, Some(1.));
+}
+#[test]
+fn missing_animation_class_warns_but_explicit_none_and_media_disabling_are_valid() {
+    let source = "style { @keyframes fade { from {opacity:0} to {opacity:1} } .fade {animation:fade 1s both;} .off {animation:none;} @media print { .fade {animation:none;} } @media (prefers-reduced-motion:reduce) { .fade {animation:none;} } }\np=canvas(size=(30,20))\na=p.add(rect(size=(10,10)))\ns=p.step()\n";
+    for action in ["class=\"off\"", "name=\"none\"", "class=\"fade\""] {
+        let scene = compile_source(
+            &format!("{source}s.animate(a,{action})"),
+            "/animation.lay",
+            Host::default(),
+        )
+        .unwrap();
+        assert!(scene.warnings.iter().all(|w| w.code != "W_ANIMATION"));
+    }
+    let scene = compile_source(
+        &format!("{source}s.animate(a,class=\"typo\")"),
+        "/animation.lay",
+        Host::default(),
+    )
+    .unwrap();
+    let warnings: Vec<_> = scene
+        .warnings
+        .iter()
+        .filter(|w| w.code == "W_ANIMATION")
+        .collect();
+    assert_eq!(warnings.len(), 1);
+    assert!(warnings[0].message.contains("typo"));
 }
 #[test]
 fn infinite_needs_step_window() {

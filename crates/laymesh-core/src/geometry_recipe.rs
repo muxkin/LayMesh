@@ -125,14 +125,18 @@ pub fn resolved_path(n: &Json, transform: Affine) -> BezPath {
             -origin[1].as_f64().unwrap_or(0.),
         ));
     let mut path = match kind {
-        "rect" => kurbo::RoundedRect::new(
-            0.,
-            0.,
-            jnum(recipe, "width", 0.),
-            jnum(recipe, "height", 0.),
-            jnum(recipe, "radius", 0.),
-        )
-        .to_path(tol),
+        "rect" => {
+            let (w, h, r) = (
+                jnum(recipe, "width", 0.),
+                jnum(recipe, "height", 0.),
+                jnum(recipe, "radius", 0.),
+            );
+            let radii = recipe["radiusFraction"]
+                .as_f64()
+                .map(|f| [f * w, f * h])
+                .unwrap_or([r, r]);
+            rounded_box(w, h, radii, 0., tol)
+        }
         "ellipse" => {
             let w = jnum(recipe, "width", 0.);
             let h = jnum(recipe, "height", 0.);
@@ -310,4 +314,19 @@ fn arc_bounds(arc: kurbo::Arc) -> kurbo::Rect {
         }
     }
     bounds
+}
+
+/// Uniform CSS percentages use each box axis, producing elliptical corners.
+pub(crate) fn rounded_box(w: f64, h: f64, radii: [f64; 2], inset: f64, tolerance: f64) -> BezPath {
+    let (width, height) = ((w - 2. * inset).max(0.), (h - 2. * inset).max(0.));
+    let (rx, ry) = (
+        (radii[0] - inset).max(0.).min(width / 2.),
+        (radii[1] - inset).max(0.).min(height / 2.),
+    );
+    if rx <= 1e-12 || ry <= 1e-12 {
+        return kurbo::Rect::new(inset, inset, inset + width, inset + height).to_path(tolerance);
+    }
+    let path = kurbo::RoundedRect::new(0., 0., width / rx, height / ry, 1.)
+        .to_path(tolerance / rx.max(ry));
+    Affine::translate((inset, inset)) * Affine::scale_non_uniform(rx, ry) * path
 }

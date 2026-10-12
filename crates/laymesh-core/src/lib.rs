@@ -6,6 +6,8 @@ pub mod assets;
 mod collections;
 pub mod color;
 pub mod colormap;
+mod css_selectors;
+pub mod css_values;
 mod data;
 pub mod document;
 pub mod endpoints;
@@ -23,6 +25,7 @@ pub mod plot;
 mod query_path;
 pub mod style;
 pub mod text;
+mod unit_diagnostics;
 mod validation;
 use serde::{Deserialize, Serialize};
 
@@ -32,7 +35,7 @@ pub struct Loc {
     pub column: usize,
     pub offset: usize,
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Diagnostic {
     pub code: String,
     pub message: String,

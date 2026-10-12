@@ -46,5 +46,10 @@
   "config.export.animation.crf": "MP4 quality, 0–51; lower values improve quality.",
   "config.export.animation.preset": "FFmpeg libx264 encoding preset.",
   "config.export.animation.media": "Media environment for animation export. Static exports are unaffected.",
-  "config.export.animation.background": "Background for transparent areas and page padding in animation exports (#RRGGBB)."
+  "config.export.animation.background": "Background for transparent areas and page padding in animation exports (#RRGGBB).",
+  "config.ffmpeg.executable": "Explicit FFmpeg executable; otherwise use shared discovery.",
+  "config.ffmpeg.directory": "Private FFmpeg directory shared with CLI and Python; defaults to user data.",
+  "config.ffmpeg.searchPaths": "Additional FFmpeg directories checked before system PATH.",
+  "config.ffmpeg.downloadSource": "Download source: auto, upstream or mirror; only downloads after confirmation when missing.",
+  "config.ffmpeg.mirrorBaseUrl": "FFmpeg-static mirror base URL; defaults to npmmirror."
 }

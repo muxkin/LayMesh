@@ -92,12 +92,12 @@ export class SkiaRenderer {
    const paint=this.paint({kind:'solid',rgba:[1,1,1,1]});
    if(e.inner){
     // A * (1 - shifted/blurred A), then tint; never an opaque bounding box.
-    const erosion=e.spread?ck.ImageFilter.MakeErode(e.spread,e.spread,null):null;
+    const erosion=e.spread?(e.spread>0?ck.ImageFilter.MakeErode:ck.ImageFilter.MakeDilate)(Math.abs(e.spread),Math.abs(e.spread),null):null;
     const opaqueShadow=ck.ImageFilter.MakeDropShadowOnly(e.offset[0],e.offset[1],e.blur,e.blur,this.color([0,0,0,1]),erosion);erosion?.delete();
     const inside=ck.ImageFilter.MakeBlend(ck.BlendMode.SrcOut,opaqueShadow,null),tint=ck.ColorFilter.MakeBlend(this.color(e.rgba),ck.BlendMode.SrcIn),filter=ck.ImageFilter.MakeColorFilter(tint,inside);
     paint.setImageFilter(filter);filter.delete();tint.delete();inside.delete();opaqueShadow.delete();
    }else paint.setImageFilter(shadow);
-   shadow.delete();v.effects.push({paint,inner:e.inner});
+   shadow.delete();v.effects.push({paint,inner:e.inner,source:e.sourcePath?this.path(e.sourcePath):null,knockout:e.knockout,fill:this.paint({kind:'solid',rgba:[1,1,1,1]})});
    if(!e.inner){const pad=4*e.blur+Math.abs(e.spread);v.bounds=union(v.bounds,[v.bounds[0]+e.offset[0]-pad,v.bounds[1]+e.offset[1]-pad,v.bounds[2]+e.offset[0]+pad,v.bounds[3]+e.offset[1]+pad]);}
   }
   v.cost+=k.kind==='group'?k.children.reduce((n,child)=>n+this.prepare(child).cost,0):k.kind==='path'?k.path.length:k.kind==='glyphs'?k.outlines.reduce((n,path)=>n+path.length,0):1;
@@ -285,10 +285,16 @@ export class SkiaRenderer {
   if(p.picture&&!state?.content)c.drawPicture(p.picture);else this.localContent(c,node,id,states);
   if(layer)c.restore();c.restore();
  }
+ drawEffect(c,node,id,states,p,effect){
+  c.save();if(effect.knockout&&effect.source)c.clipPath(effect.source,this.ck.ClipOp.Difference,true);
+  c.saveLayer(effect.paint,p.dynamicChildren?undefined:p.bounds);
+  if(effect.source)c.drawPath(effect.source,effect.fill);else this.content(c,node,id,states);
+  c.restore();c.restore();
+ }
  localContent(c,node,id,states){const p=this.prepare(node);
-  for(const effect of p.effects)if(!effect.inner){c.saveLayer(effect.paint,p.dynamicChildren?undefined:p.bounds);this.content(c,node,id,states);c.restore();}
+  for(const effect of p.effects)if(!effect.inner)this.drawEffect(c,node,id,states,p,effect);
   this.content(c,node,id,states);
-  for(const effect of p.effects)if(effect.inner){c.saveLayer(effect.paint,p.dynamicChildren?undefined:p.bounds);this.content(c,node,id,states);c.restore();}
+  for(const effect of p.effects)if(effect.inner)this.drawEffect(c,node,id,states,p,effect);
  }
  render(viewport,width,height,states={},generation=this.generation,allowSkip=false,cacheStatic=true,cacheLayers=true,preparing=false){
   if(generation!==this.generation)return false;

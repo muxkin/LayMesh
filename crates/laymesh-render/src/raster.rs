@@ -204,11 +204,10 @@ pub(crate) fn effect_tiles(
             .iter()
             .all(|v| v.is_finite())
             || e.blur < 0.
-            || e.spread < 0.
         {
             return Err(error("Invalid effect parameters"));
         }
-        let pad = 4. * e.blur + e.spread;
+        let pad = 4. * e.blur + e.spread.abs();
         let b = if e.inner {
             bounds
         } else {

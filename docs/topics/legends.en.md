@@ -11,10 +11,6 @@ Run this file directly with `laymesh validate` or `laymesh render`; it contains 
 
 <!-- example:examples/manual/color_scale.lay -->
 
-## Parameters and default behavior
-
-Unitless geometry uses the canvas unit; unitless type and stroke sizes use pt. Explicit call parameters override inherited/theme defaults. The linked interface reference lists accepted types, choices and defaults per parameter.
-
 ## Composition
 
 p.legend/p.colorbar decorate a chart. legend(layers=...) and colorbar(scale=...) are independently placed material. Shared mapping requires an explicit domain and the same configuration object, not merely the same palette name.

@@ -1,0 +1,10 @@
+{
+  "0.6.1": {
+    "returncode": 1,
+    "diagnostic": "/tmp/laymesh-version-compare-rhl3xp_b/test.lay:1:8: E_ASSET: 无法读取资源：/tmp/laymesh-version-compare-rhl3xp_b/@laymesh/animate.css"
+  },
+  "0.6.2": {
+    "returncode": 0,
+    "diagnostic": ""
+  }
+}

@@ -3,10 +3,11 @@ use std::{env, path::Path, process};
 mod animation;
 mod documents;
 mod export;
+mod ffmpeg;
 mod preview;
 
 fn usage(status: i32) -> ! {
-    let help = "用法:\n  laymesh animate <file.lay|laydoc> -o <output.mp4|gif> [--width N] [--fps N] [--reduced-motion reduce|no-preference]\n  laymesh render <file.lay|laydoc> -o frame.png --time SECONDS|--step N [--width N]\n  laymesh validate <file.lay>\n  laymesh inspect <file.lay> --json\n  laymesh render <file.lay> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga>\n    [--dpi <number>] [--quality <1–100 (JPEG) / 0–100 (WebP)>]\n    [--compression <fast|default|best (PNG) / none|lzw|deflate|packbits (TIFF)>]\n    [--background <#RRGGBB>] [--webp-lossless <true|false>]\n    [--webp-method <0–6>] [--webp-alpha-quality <0–100>] [--webp-near-lossless <0–100>]\n    [--config <file.json>] [--pdf-image-compression <auto|lossless|jpeg>]\n    [--pdf-jpeg-quality <1–100>] [--pdf-downsample <true|false>]\n    [--pdf-recompress-jpeg <true|false>] [--pdf-preserve-16bit <true|false>] [--pdf-preserve-alpha <true|false>] [--pdf-alpha-background <#RRGGBB>]\n    [--pdf-auto-palette-limit <0–16384>] [--pdf-auto-flatness-threshold <0–1>]\n    [--preview-output <preview.jpg> [--preview-dpi <number>] [--preview-quality <1–100>] [--preview-background <#RRGGBB>]]\n  laymesh render <file.lay> --preview-output <preview.jpg>\n  laymesh lsp --stdio\n  laymesh preview --stdio\n所有命令支持 --warnings show|hide（默认读取 LAYMESH_WARNINGS）\n几何默认 mm；字号与线宽默认 pt；样式表使用 .lcss";
+    let help = "用法:\n  laymesh animate <file.lay|laydoc> -o <output.mp4|gif> [--width N] [--fps N] [--reduced-motion reduce|no-preference]\n  laymesh render <file.lay|laydoc> -o frame.png --time SECONDS|--step N [--width N]\n  laymesh validate <file.lay>\n  laymesh inspect <file.lay> --json\n  laymesh render <file.lay> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga>\n    [--dpi <number>] [--quality <1–100 (JPEG) / 0–100 (WebP)>]\n    [--compression <fast|default|best (PNG) / none|lzw|deflate|packbits (TIFF)>]\n    [--background <#RRGGBB>] [--webp-lossless <true|false>]\n    [--webp-method <0–6>] [--webp-alpha-quality <0–100>] [--webp-near-lossless <0–100>]\n    [--config <file.json>] [--pdf-image-compression <auto|lossless|jpeg>]\n    [--pdf-jpeg-quality <1–100>] [--pdf-downsample <true|false>]\n    [--pdf-recompress-jpeg <true|false>] [--pdf-preserve-16bit <true|false>] [--pdf-preserve-alpha <true|false>] [--pdf-alpha-background <#RRGGBB>]\n    [--pdf-auto-palette-limit <0–16384>] [--pdf-auto-flatness-threshold <0–1>]\n    [--preview-output <preview.jpg> [--preview-dpi <number>] [--preview-quality <1–100>] [--preview-background <#RRGGBB>]]\n  laymesh render <file.lay> --preview-output <preview.jpg>\n  laymesh lsp --stdio\n  laymesh preview --stdio\nFFmpeg：laymesh ffmpeg status|install [--file SOURCE] [--config FILE] [--format mp4|gif] [--json] [--yes]\n所有命令支持 --warnings show|hide（默认读取 LAYMESH_WARNINGS）\n几何默认 mm；字号与线宽默认 pt；样式表使用 .lcss";
     let document_help = "多页文档：validate/inspect/render 支持 .laydoc；--page N 从 1 开始。\n  laymesh render report.laydoc -o report.pdf\n  laymesh render report.laydoc -o page.png --page 2\n  laymesh render report.laydoc -o page.png --all-pages\n  inspect report.laydoc --json 列出页面；--preview-page N 只选择 JPEG 预览页。";
     if status == 0 {
         println!("{help}\n{document_help}")
@@ -31,6 +32,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     if args == ["preview", "--stdio"] {
         preview::serve()?;
         return Ok(());
+    }
+    if args.first().is_some_and(|s| s == "ffmpeg") {
+        return ffmpeg::run(&args);
     }
     if args.len() < 2 || args.iter().any(|s| s == "--help" || s == "-h") {
         usage(2)

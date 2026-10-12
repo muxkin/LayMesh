@@ -1,0 +1,7 @@
+page = canvas(size=(100mm,65mm), stylesheet="@laymesh/animate.css", background="#f6f7fb")
+card = page.add(rect(size=(38mm,23mm), fill="#0d6efd", border_radius=3mm),
+                anchor=top_center, target=page.top_center, offset=(0mm,17mm))
+page.add(text("Animate.css · LayMesh", font_size=4mm, color="#243447"),
+          anchor=top_center, target=card.bottom_center, offset=(0mm,8mm))
+s = page.step(name="Effect", start="after-previous", hold=1s)
+s.animate(card, class="animate__animated animate__fadeInUp", duration=1s)

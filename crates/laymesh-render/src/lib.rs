@@ -39,6 +39,8 @@ fn paint(p: &Json, defs: &mut Vec<String>) -> String {
     paint_box(p, defs, [1., 1.])
 }
 fn paint_box(p: &Json, defs: &mut Vec<String>, size: [f64; 2]) -> String {
+    let computed = laymesh_core::css_values::gradient_box(p, [0., 0., size[0], size[1]]);
+    let p = computed.as_ref();
     if let Some(s) = p.as_str() {
         return escape(&laymesh_core::color::css(s));
     }
@@ -168,6 +170,10 @@ fn paint_box(p: &Json, defs: &mut Vec<String>, size: [f64; 2]) -> String {
                 defs.push(format!("<linearGradient id='{id}' x1='{}%' y1='{}%' x2='{}%' y2='{}%'>{stops}</linearGradient>",a[0]*100.,a[1]*100.,b[0]*100.,b[1]*100.));
             } else {
                 let c = pair(&p["center"], [0.5, 0.5]);
+                if let Some(b) = p["cssEllipseBox"].as_array() {
+                    defs.push(format!("<radialGradient id='{id}' gradientUnits='userSpaceOnUse' cx='{}' cy='{}' r='{}' gradientTransform='matrix({} 0 0 {} {} {})'>{stops}</radialGradient>",c[0],c[1],jnum(p,"radius",0.5),b[2],b[3],b[0],b[1]));
+                    return format!("url(#{id})");
+                }
                 if let Some(bb) = p["paintBox"].as_array() {
                     let r: Vec<f64> = bb.iter().map(|v| v.as_f64().unwrap_or(0.)).collect();
                     defs.push(format!("<radialGradient id='{id}' gradientUnits='userSpaceOnUse' cx='{}' cy='{}' r='{}'>{stops}</radialGradient>",r[0]+c[0]*r[2],r[1]+c[1]*r[3],jnum(p,"radius",0.5)*r[2].max(r[3])));

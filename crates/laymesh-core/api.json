@@ -18457,5 +18457,868 @@
       },
       "methods": {}
     }
-  }
+  },
+  "cssProperties": [
+    {
+      "name": "font-family",
+      "unit": "none",
+      "type": "string | string[]",
+      "description": "系统字体族名、字体文件路径或有序列表；不内置正文字体；缺字警告并显示方框。",
+      "descriptionEn": "System family, font file path or ordered list. No body fonts are bundled; missing glyphs warn and render as boxes.",
+      "default": "system sans-serif"
+    },
+    {
+      "name": "math-font",
+      "unit": "none",
+      "type": "string",
+      "description": "数学字体：默认 ratex-katex；也可指定带 OpenType MATH 表的已安装字体名称或字体文件路径。旧 mathjax-* 名称警告后映射到默认字体。",
+      "descriptionEn": "Math font: ratex-katex by default, or an installed font name / file path with an OpenType MATH table. Legacy mathjax-* names warn and map to the default.",
+      "default": "ratex-katex (inherit)",
+      "example": "\"XITS Math\""
+    },
+    {
+      "name": "math-text-fallback",
+      "unit": "none",
+      "type": "boolean",
+      "description": "公式文本使用 font_family 与文本字体回退，并按实际字形尺寸排版；false 仅检查数学字体覆盖。数学符号仍使用 math_font。",
+      "descriptionEn": "Shape formula text with font_family and text fallback using actual glyph metrics; false checks only math-font coverage. Mathematical symbols retain math_font.",
+      "default": "true (inherit)"
+    },
+    {
+      "name": "font-size",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length",
+      "description": "字号；非零 CSS 长度需要单位，未指定时继承；em 和百分比相对父级字号。",
+      "descriptionEn": "Font size; nonzero CSS lengths require units. Inherits when omitted; em and percentages use the parent font size.",
+      "default": "继承 / inherit",
+      "example": "10pt"
+    },
+    {
+      "name": "font-weight",
+      "unit": "none",
+      "type": "number | keyword",
+      "description": "字重数值 1–1000；normal=400、bold/bolder=700、lighter=300。相对字重关键字目前使用这些固定映射。",
+      "descriptionEn": "Font weight from 1 to 1000; normal=400, bold/bolder=700 and lighter=300. Relative weight keywords currently use these fixed mappings.",
+      "default": "400"
+    },
+    {
+      "name": "font-style",
+      "unit": "none",
+      "type": "enum",
+      "description": "normal、italic 或 oblique；oblique 当前按 italic 处理。",
+      "descriptionEn": "normal, italic or oblique; oblique currently maps to italic.",
+      "default": "normal",
+      "values": [
+        "normal",
+        "italic",
+        "oblique"
+      ],
+      "valueDescriptions": {
+        "normal": {
+          "zh": "正常字形",
+          "en": "Upright font style"
+        },
+        "italic": {
+          "zh": "斜体字形",
+          "en": "Italic font style"
+        },
+        "oblique": {
+          "zh": "目前按 italic 字形处理",
+          "en": "Currently rendered with italic styling"
+        }
+      }
+    },
+    {
+      "name": "color",
+      "type": "color",
+      "unit": "none",
+      "description": "文字颜色；currentColor 供边框和阴影引用当前计算颜色。",
+      "descriptionEn": "Text color; currentColor lets borders and shadows use the computed color.",
+      "default": "#555555"
+    },
+    {
+      "name": "line-height",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length | number",
+      "description": "显式长度，或无单位的字号倍数；默认 1.2 倍字号。",
+      "descriptionEn": "An explicit length or unitless font-size multiplier; defaults to 1.2 times font size.",
+      "default": "1.2 × font_size"
+    },
+    {
+      "name": "background",
+      "unit": "none",
+      "type": "paint",
+      "description": "对象区域的底色或填充，不是文字或轴线颜色",
+      "descriptionEn": "Background paint for the object region, separate from text or lines",
+      "default": "none"
+    },
+    {
+      "name": "padding",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length | length[]",
+      "description": "内部留白；接受 1–4 个 CSS 长度，依次采用全边、上下/左右、上/左右/下、上/右/下/左规则。",
+      "descriptionEn": "Inner spacing; 1–4 CSS lengths follow all, vertical/horizontal, top/horizontal/bottom, or top/right/bottom/left ordering.",
+      "default": "0"
+    },
+    {
+      "name": "border-radius",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length",
+      "description": "统一底框圆角；非零长度需要单位，百分比基于布局框；暂不支持独立角或椭圆圆角。",
+      "descriptionEn": "Uniform box corner radius; nonzero lengths need units and percentages use the layout box. Separate corners and elliptical radii are unsupported.",
+      "default": "0"
+    },
+    {
+      "name": "border-color",
+      "unit": "none",
+      "type": "color",
+      "description": "封闭轮廓颜色，none 表示无边框",
+      "descriptionEn": "Closed-outline color; none disables the border",
+      "default": "none"
+    },
+    {
+      "name": "border-width",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length",
+      "description": "封闭轮廓线宽；非零 CSS 长度需要单位；也接受 thin/medium/thick，分别为 1/3/5 个布局 px。",
+      "descriptionEn": "Closed-outline width; nonzero CSS lengths need units. thin/medium/thick mean 1/3/5 layout px."
+    },
+    {
+      "name": "border-style",
+      "unit": "none",
+      "type": "enum",
+      "description": "边框线型；与填充独立",
+      "descriptionEn": "Border line pattern, independent of fill",
+      "default": "solid",
+      "values": [
+        "none",
+        "solid",
+        "dashed",
+        "dotted",
+        "dash_dot",
+        "double",
+        "triple"
+      ],
+      "valueDescriptions": {
+        "none": {
+          "zh": "不绘制此项",
+          "en": "Do not draw this item"
+        },
+        "solid": {
+          "zh": "连续实线",
+          "en": "Continuous solid stroke"
+        },
+        "dashed": {
+          "zh": "虚线；可用 dash 参数覆盖长度",
+          "en": "Dashed stroke; explicit dash values override the pattern"
+        },
+        "dotted": {
+          "zh": "点线",
+          "en": "Dotted stroke"
+        },
+        "dash_dot": {
+          "zh": "点划线",
+          "en": "Dash-dot stroke"
+        },
+        "double": {
+          "zh": "双线描边",
+          "en": "Double compound stroke"
+        },
+        "triple": {
+          "zh": "三线描边",
+          "en": "Triple compound stroke"
+        }
+      }
+    },
+    {
+      "name": "border-dash",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length[]",
+      "description": "交替的边框线段和间隔 CSS 长度列表；须成对，非零长度需要单位。",
+      "descriptionEn": "Alternating border dash and gap CSS lengths; paired values with units on nonzero lengths."
+    },
+    {
+      "name": "border-dash-offset",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length",
+      "description": "边框虚线相位；接受可正可负的 CSS 长度，非零值需要单位。",
+      "descriptionEn": "Border dash phase; a signed CSS length, with units required for nonzero values.",
+      "default": "0"
+    },
+    {
+      "name": "border-cap",
+      "unit": "none",
+      "type": "enum",
+      "description": "轮廓虚线端点形状",
+      "descriptionEn": "Outline dash endpoint shape",
+      "default": "butt",
+      "values": [
+        "butt",
+        "round",
+        "square"
+      ],
+      "valueDescriptions": {
+        "butt": {
+          "zh": "平端帽，不向端点外延伸",
+          "en": "Flat cap; does not extend beyond the endpoint"
+        },
+        "round": {
+          "zh": "圆端帽，向外延伸半个线宽",
+          "en": "Round cap; extends half the stroke width"
+        },
+        "square": {
+          "zh": "方端帽，向外延伸半个线宽",
+          "en": "Square cap; extends half the stroke width"
+        }
+      }
+    },
+    {
+      "name": "border-join",
+      "unit": "none",
+      "type": "enum",
+      "description": "轮廓交点形状",
+      "descriptionEn": "Outline join",
+      "default": "miter",
+      "values": [
+        "miter",
+        "round",
+        "bevel"
+      ],
+      "valueDescriptions": {
+        "miter": {
+          "zh": "延长边缘形成尖角，受尖角限制约束",
+          "en": "Extend edges to a pointed join, subject to the miter limit"
+        },
+        "round": {
+          "zh": "以圆弧连接相邻描边边缘",
+          "en": "Join adjacent stroke edges with a circular arc"
+        },
+        "bevel": {
+          "zh": "以平边截去连接尖角",
+          "en": "Cut off the corner with a straight edge"
+        }
+      }
+    },
+    {
+      "name": "border-miter-limit",
+      "unit": "none",
+      "type": "value",
+      "description": "尖角的最大延伸与线宽之比",
+      "descriptionEn": "Maximum miter extension relative to line width",
+      "default": "4"
+    },
+    {
+      "name": "border-opacity",
+      "unit": "none",
+      "type": "value",
+      "description": "边框独立透明度 0–1",
+      "descriptionEn": "Independent border opacity, 0–1",
+      "default": "1"
+    },
+    {
+      "name": "line-color",
+      "unit": "none",
+      "type": "color",
+      "description": "开放线条颜色；默认采用数据系列颜色或主题颜色",
+      "descriptionEn": "Open-line color; defaults to series or theme color"
+    },
+    {
+      "name": "line-width",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length",
+      "description": "开放线条宽度；非零 CSS 长度需要单位；也接受 thin/medium/thick，分别为 1/3/5 个布局 px。",
+      "descriptionEn": "Open-line width; nonzero CSS lengths need units. thin/medium/thick mean 1/3/5 layout px."
+    },
+    {
+      "name": "line-style",
+      "unit": "none",
+      "type": "enum",
+      "description": "线型；double/triple 保留透明间隔",
+      "descriptionEn": "Line pattern; double/triple retain transparent gaps",
+      "default": "solid",
+      "values": [
+        "none",
+        "solid",
+        "dashed",
+        "dotted",
+        "dash_dot",
+        "double",
+        "triple"
+      ],
+      "valueDescriptions": {
+        "none": {
+          "zh": "不绘制此项",
+          "en": "Do not draw this item"
+        },
+        "solid": {
+          "zh": "连续实线",
+          "en": "Continuous solid stroke"
+        },
+        "dashed": {
+          "zh": "虚线；可用 dash 参数覆盖长度",
+          "en": "Dashed stroke; explicit dash values override the pattern"
+        },
+        "dotted": {
+          "zh": "点线",
+          "en": "Dotted stroke"
+        },
+        "dash_dot": {
+          "zh": "点划线",
+          "en": "Dash-dot stroke"
+        },
+        "double": {
+          "zh": "双线描边",
+          "en": "Double compound stroke"
+        },
+        "triple": {
+          "zh": "三线描边",
+          "en": "Triple compound stroke"
+        }
+      }
+    },
+    {
+      "name": "line-dash",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length[]",
+      "description": "交替的实线段和间隔 CSS 长度列表；非零长度需要单位。",
+      "descriptionEn": "Alternating dash and gap CSS lengths; nonzero lengths require units."
+    },
+    {
+      "name": "line-dash-offset",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length",
+      "description": "线条虚线相位；接受可正可负的 CSS 长度，非零值需要单位。",
+      "descriptionEn": "Line dash phase; a signed CSS length, with units required for nonzero values.",
+      "default": "0"
+    },
+    {
+      "name": "line-cap",
+      "unit": "none",
+      "type": "enum",
+      "description": "开放端点形状",
+      "descriptionEn": "Open endpoint shape",
+      "default": "butt",
+      "values": [
+        "butt",
+        "round",
+        "square"
+      ],
+      "valueDescriptions": {
+        "butt": {
+          "zh": "平端帽，不向端点外延伸",
+          "en": "Flat cap; does not extend beyond the endpoint"
+        },
+        "round": {
+          "zh": "圆端帽，向外延伸半个线宽",
+          "en": "Round cap; extends half the stroke width"
+        },
+        "square": {
+          "zh": "方端帽，向外延伸半个线宽",
+          "en": "Square cap; extends half the stroke width"
+        }
+      }
+    },
+    {
+      "name": "line-join",
+      "unit": "none",
+      "type": "enum",
+      "description": "线段交点形状",
+      "descriptionEn": "Line segment join",
+      "default": "miter",
+      "values": [
+        "miter",
+        "round",
+        "bevel"
+      ],
+      "valueDescriptions": {
+        "miter": {
+          "zh": "延长边缘形成尖角，受尖角限制约束",
+          "en": "Extend edges to a pointed join, subject to the miter limit"
+        },
+        "round": {
+          "zh": "以圆弧连接相邻描边边缘",
+          "en": "Join adjacent stroke edges with a circular arc"
+        },
+        "bevel": {
+          "zh": "以平边截去连接尖角",
+          "en": "Cut off the corner with a straight edge"
+        }
+      }
+    },
+    {
+      "name": "line-miter-limit",
+      "unit": "none",
+      "type": "value",
+      "description": "尖角的最大延伸与线宽之比",
+      "descriptionEn": "Maximum miter extension relative to line width",
+      "default": "4"
+    },
+    {
+      "name": "line-opacity",
+      "unit": "none",
+      "type": "value",
+      "description": "线条独立透明度 0–1",
+      "descriptionEn": "Independent line opacity, 0–1",
+      "default": "1"
+    },
+    {
+      "name": "fill",
+      "type": "paint",
+      "unit": "none",
+      "description": "形状内部的颜色、渐变、纹理或图片；none 表示无填充。",
+      "descriptionEn": "Interior color, gradient, hatch or image paint; none disables fill.",
+      "default": "none"
+    },
+    {
+      "name": "opacity",
+      "type": "value",
+      "unit": "none",
+      "description": "对象透明度，范围 0–1；与父级透明度相乘。",
+      "descriptionEn": "Object opacity from 0 to 1; multiplied by ancestor opacity.",
+      "default": "1"
+    },
+    {
+      "name": "tick-font-size",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length",
+      "description": "刻度字号；使用带单位的 CSS 长度，默认继承字号。",
+      "descriptionEn": "Tick-label font size; an explicit CSS length, inheriting font size by default.",
+      "default": "继承字号 / inherit font_size"
+    },
+    {
+      "name": "label-font-size",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length",
+      "description": "轴标题字号；使用带单位的 CSS 长度，默认继承字号。",
+      "descriptionEn": "Axis-label font size; an explicit CSS length, inheriting font size by default.",
+      "default": "继承字号 / inherit font_size"
+    },
+    {
+      "name": "tick-color",
+      "unit": "none",
+      "type": "color",
+      "description": "刻度线与文字的颜色",
+      "descriptionEn": "Tick and tick-label color"
+    },
+    {
+      "name": "grid-color",
+      "unit": "none",
+      "type": "color",
+      "description": "网格线颜色",
+      "descriptionEn": "Grid-line color",
+      "default": "#dddddd"
+    },
+    {
+      "name": "grid-line-width",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "type": "length",
+      "description": "网格线宽；使用带单位的 CSS 长度，默认 0.3pt。",
+      "descriptionEn": "Grid width; an explicit CSS length, defaulting to 0.3pt.",
+      "default": "0.3pt"
+    },
+    {
+      "name": "grid-line-dash",
+      "unit": "none",
+      "type": "value",
+      "description": "网格虚线长度列表；非零 CSS 长度需要单位。",
+      "descriptionEn": "Grid dash and gap lengths; units are required on nonzero CSS lengths.",
+      "default": "[]"
+    },
+    {
+      "name": "start-head",
+      "type": "head",
+      "unit": "none",
+      "description": "起始端头部配置，默认无",
+      "descriptionEn": "Start head configuration; absent by default"
+    },
+    {
+      "name": "end-head",
+      "type": "head",
+      "unit": "none",
+      "description": "结束端头部配置，默认无",
+      "descriptionEn": "End head configuration; absent by default"
+    },
+    {
+      "name": "start-cap",
+      "type": "enum",
+      "unit": "none",
+      "description": "独立端帽，默认继承 line_cap",
+      "descriptionEn": "Independent endpoint cap; inherits line_cap",
+      "values": [
+        "butt",
+        "round",
+        "square"
+      ],
+      "defaultFrom": "line_cap",
+      "valueDescriptions": {
+        "butt": {
+          "zh": "平端帽，不向端点外延伸",
+          "en": "Flat cap; does not extend beyond the endpoint"
+        },
+        "round": {
+          "zh": "圆端帽，向外延伸半个线宽",
+          "en": "Round cap; extends half the stroke width"
+        },
+        "square": {
+          "zh": "方端帽，向外延伸半个线宽",
+          "en": "Square cap; extends half the stroke width"
+        }
+      }
+    },
+    {
+      "name": "end-cap",
+      "type": "enum",
+      "unit": "none",
+      "description": "独立端帽，默认继承 line_cap",
+      "descriptionEn": "Independent endpoint cap; inherits line_cap",
+      "values": [
+        "butt",
+        "round",
+        "square"
+      ],
+      "defaultFrom": "line_cap",
+      "valueDescriptions": {
+        "butt": {
+          "zh": "平端帽，不向端点外延伸",
+          "en": "Flat cap; does not extend beyond the endpoint"
+        },
+        "round": {
+          "zh": "圆端帽，向外延伸半个线宽",
+          "en": "Round cap; extends half the stroke width"
+        },
+        "square": {
+          "zh": "方端帽，向外延伸半个线宽",
+          "en": "Square cap; extends half the stroke width"
+        }
+      }
+    },
+    {
+      "name": "text-fill",
+      "type": "paint",
+      "unit": "none",
+      "description": "字形填充 / Glyph paint; defaults to color",
+      "descriptionEn": "字形填充 / Glyph paint; defaults to color"
+    },
+    {
+      "name": "text-stroke-color",
+      "type": "color",
+      "unit": "none",
+      "description": "字形描边颜色 / Glyph stroke color",
+      "descriptionEn": "字形描边颜色 / Glyph stroke color",
+      "default": "none"
+    },
+    {
+      "name": "text-stroke-width",
+      "type": "length",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "description": "字形描边宽度 / Glyph stroke width",
+      "descriptionEn": "字形描边宽度 / Glyph stroke width",
+      "default": "0"
+    },
+    {
+      "name": "effects",
+      "type": "effect[]",
+      "unit": "none",
+      "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+      "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+      "default": "[]"
+    },
+    {
+      "name": "path",
+      "type": "material",
+      "unit": "none",
+      "description": "单条开放路径素材，保留原始曲线段；原路径端点为颈部，箭尖向外延伸",
+      "descriptionEn": "One open path material with its original curve segments preserved; source endpoints are necks and tips extend outward"
+    },
+    {
+      "name": "warp",
+      "type": "text_warp",
+      "unit": "none",
+      "description": "字形变形 / Text warp configuration",
+      "descriptionEn": "字形变形 / Text warp configuration"
+    },
+    {
+      "name": "extrude",
+      "type": "text_extrude",
+      "unit": "none",
+      "description": "二维矢量挤出 / Vector extrusion",
+      "descriptionEn": "二维矢量挤出 / Vector extrusion"
+    },
+    {
+      "name": "shaft-width",
+      "type": "length | (length,length) | (number,length)[]",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "description": "箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值",
+      "descriptionEn": "Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation",
+      "default": "3mm"
+    },
+    {
+      "name": "heads",
+      "type": "enum",
+      "unit": "none",
+      "description": "头部所在端；燕尾只支持单头",
+      "descriptionEn": "Head endpoints; chevrons support one head only",
+      "default": "end",
+      "values": [
+        "start",
+        "end",
+        "both"
+      ],
+      "valueDescriptions": {
+        "start": {
+          "zh": "起点头部",
+          "en": "Start head"
+        },
+        "end": {
+          "zh": "终点头部",
+          "en": "End head"
+        },
+        "both": {
+          "zh": "双头",
+          "en": "Both heads"
+        }
+      }
+    },
+    {
+      "name": "head-size",
+      "type": "(length,length)",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+      "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+      "default": "twice the corresponding neck width"
+    },
+    {
+      "name": "start-head-size",
+      "type": "(length,length)",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+      "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+      "default": "head_size"
+    },
+    {
+      "name": "end-head-size",
+      "type": "(length,length)",
+      "unit": "explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi",
+      "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
+      "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
+      "default": "head_size"
+    },
+    {
+      "name": "line",
+      "type": "shorthand",
+      "description": "线条/边框简写：宽度 样式 颜色",
+      "descriptionEn": "Stroke shorthand: width style color",
+      "unit": "none"
+    },
+    {
+      "name": "border",
+      "type": "shorthand",
+      "description": "线条/边框简写：宽度 样式 颜色",
+      "descriptionEn": "Stroke shorthand: width style color",
+      "unit": "none"
+    },
+    {
+      "name": "background-color",
+      "type": "color",
+      "description": "背景颜色",
+      "values": [],
+      "descriptionEn": "Background color",
+      "unit": "none"
+    },
+    {
+      "name": "background-image",
+      "type": "paint",
+      "description": "单层 CSS 渐变",
+      "values": [],
+      "descriptionEn": "Single CSS gradient",
+      "unit": "none"
+    },
+    {
+      "name": "font",
+      "type": "string",
+      "description": "字体简写：可选样式与字重、必需字号和字体族、可选 /行高；声明同时重置这些分项。",
+      "values": [],
+      "descriptionEn": "Font shorthand: optional style and weight, required size and family, optional /line-height; resets those component properties.",
+      "unit": "none"
+    },
+    {
+      "name": "box-shadow",
+      "type": "shadow-list",
+      "description": "逗号分层的盒阴影：x/y 偏移、可选 blur/spread/颜色及 inset；首层在上，声明重置全部阴影分项。",
+      "values": [
+        "none"
+      ],
+      "descriptionEn": "Comma-separated box shadows: x/y offset, optional blur/spread/color and inset. First layer is on top; the shorthand resets all shadow components.",
+      "unit": "none",
+      "default": "none"
+    },
+    {
+      "name": "text-shadow",
+      "type": "shadow-list",
+      "description": "文字阴影",
+      "values": [
+        "none"
+      ],
+      "descriptionEn": "Glyph shadows",
+      "unit": "none",
+      "default": "none"
+    },
+    {
+      "name": "filter",
+      "type": "filter",
+      "description": "单个 drop-shadow()",
+      "values": [
+        "none"
+      ],
+      "descriptionEn": "A single drop-shadow()",
+      "unit": "none",
+      "default": "none"
+    },
+    {
+      "name": "box-shadow-blur",
+      "type": "length-list",
+      "description": "四级工作草案：模糊半径，保留已有层",
+      "values": [],
+      "descriptionEn": "CSS Borders 4 working draft: blur radius; preserves existing layers",
+      "unit": "CSS lengths; px uses layout_dpi"
+    },
+    {
+      "name": "box-shadow-spread",
+      "type": "length-list",
+      "description": "四级工作草案：可正可负的扩散",
+      "values": [],
+      "descriptionEn": "CSS Borders 4 working draft: signed spread",
+      "unit": "CSS lengths; px uses layout_dpi"
+    },
+    {
+      "name": "box-shadow-offset",
+      "type": "offset-list",
+      "description": "四级工作草案：偏移控制阴影层数",
+      "values": [],
+      "descriptionEn": "CSS Borders 4 working draft: offsets control shadow layers",
+      "unit": "CSS lengths; px uses layout_dpi"
+    },
+    {
+      "name": "box-shadow-color",
+      "type": "color-list",
+      "description": "四级工作草案：阴影颜色",
+      "values": [],
+      "descriptionEn": "CSS Borders 4 working draft: shadow colors",
+      "unit": "none"
+    },
+    {
+      "name": "box-shadow-position",
+      "type": "keyword-list",
+      "description": "四级工作草案：内外阴影",
+      "values": [
+        "inset",
+        "outset"
+      ],
+      "descriptionEn": "CSS Borders 4 working draft: inset/outset",
+      "unit": "none"
+    },
+    {
+      "name": "animation",
+      "type": "motion",
+      "description": "动画简写：名称、时长、缓动、延迟、次数、方向、填充模式和播放状态；逗号分隔多段动画。",
+      "descriptionEn": "Shorthand for name, duration, easing, delay, iterations, direction, fill and play state; commas separate animations.",
+      "unit": "none"
+    },
+    {
+      "name": "animation-name",
+      "type": "motion",
+      "description": "@keyframes 名称列表；none 不运行动画。",
+      "descriptionEn": "List of @keyframes names; none disables animation.",
+      "unit": "none",
+      "default": "none"
+    },
+    {
+      "name": "animation-duration",
+      "type": "motion",
+      "description": "每轮时长，非负 s/ms；默认 0s，只有效果类可能仍不播放。",
+      "descriptionEn": "Nonnegative duration per iteration in s/ms; default 0s means an effect class alone may not play.",
+      "unit": "none",
+      "default": "0s"
+    },
+    {
+      "name": "animation-delay",
+      "type": "motion",
+      "description": "相对动作起点的 s/ms 延迟；负值从动画中途开始。",
+      "descriptionEn": "Delay in s/ms relative to the action start; negative values start partway through.",
+      "unit": "none",
+      "default": "0s"
+    },
+    {
+      "name": "animation-timing-function",
+      "type": "motion",
+      "description": "linear、ease 系列、cubic-bezier() 或 steps()；控制关键帧之间的进度。",
+      "descriptionEn": "linear, the ease family, cubic-bezier() or steps(); controls progress between keyframes.",
+      "unit": "none",
+      "default": "ease"
+    },
+    {
+      "name": "animation-iteration-count",
+      "type": "motion",
+      "description": "非负次数，可为小数或 infinite；无限动画需有限步骤窗口。",
+      "descriptionEn": "Nonnegative iteration count, including fractions or infinite; infinite animation needs a finite step window.",
+      "unit": "none",
+      "default": "1"
+    },
+    {
+      "name": "animation-direction",
+      "type": "motion",
+      "description": "normal、reverse、alternate、alternate-reverse；指定各轮播放方向。",
+      "descriptionEn": "normal, reverse, alternate or alternate-reverse; sets iteration direction.",
+      "unit": "none",
+      "default": "normal"
+    },
+    {
+      "name": "animation-fill-mode",
+      "type": "motion",
+      "description": "none、forwards、backwards、both；控制播放区间外的动画值。",
+      "descriptionEn": "none, forwards, backwards or both; controls animated values outside the active interval.",
+      "unit": "none",
+      "default": "none"
+    },
+    {
+      "name": "animation-play-state",
+      "type": "motion",
+      "description": "running 或 paused；暂停动作需有限步骤窗口。",
+      "descriptionEn": "running or paused; paused actions need a finite step window.",
+      "unit": "none",
+      "default": "running"
+    },
+    {
+      "name": "transform",
+      "type": "motion",
+      "description": "动画变换函数列表；顺序影响结果，不改变静态布局及锚点。",
+      "descriptionEn": "Ordered animated transform functions; order matters and static layout anchors stay unchanged.",
+      "unit": "none",
+      "default": "none"
+    },
+    {
+      "name": "transform-origin",
+      "type": "motion",
+      "description": "动画变换原点；百分比相对未变换布局框。",
+      "descriptionEn": "Animated transform origin; percentages use the untransformed layout box.",
+      "unit": "none",
+      "default": "50% 50%"
+    },
+    {
+      "name": "backface-visibility",
+      "type": "motion",
+      "description": "visible 或 hidden；三维翻转时是否绘制背面。",
+      "descriptionEn": "visible or hidden; controls the back face during 3D flips.",
+      "unit": "none",
+      "default": "visible"
+    },
+    {
+      "name": "visibility",
+      "type": "motion",
+      "description": "visible 或 hidden；改变动画可见性，不重排布局。",
+      "descriptionEn": "visible or hidden; changes animated visibility without reflow.",
+      "unit": "none",
+      "default": "visible"
+    }
+  ]
 }

@@ -10,7 +10,7 @@
     "version": 3,
     "engine": "rust-skia-ratex"
   },
-  "engine": "e4205253fab02b103aeb1dc4aad70390031539d3a022be7984e72db247d32247",
+  "engine": "def7e8eb9cecf1b03c522aa68a5c686129d5dc66534c8f71ee12b4a8338fb85c",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -370,19 +370,19 @@
           "file": "site/media/gallery-positioning-rotation-960.webp",
           "width": 960,
           "height": 640,
-          "sha256": "c48a247fda48ff2aac2759e15e746bbc3be4416b4db0a78ff4d39ccf22132fe7"
+          "sha256": "e634dc10becd92ea96aeb4beca8816c2d0bf0cb51753d7e778f8dfa17b6cbffb"
         },
         {
           "file": "site/media/gallery-positioning-rotation-1920.webp",
           "width": 1920,
           "height": 1280,
-          "sha256": "92117b5345fff33f41c9924eaa19987cbe1a82b7c10618934e743578cae01405"
+          "sha256": "0316cbf14e05499d7634dd6c306d362e4bdc364bcbcf85aaa6181afefbe9fdf5"
         },
         {
           "file": "site/media/gallery-positioning-rotation-3840.webp",
           "width": 3840,
           "height": 2560,
-          "sha256": "24cb61b5b598389665852f5bfeca1e26aceacb31789ec743ef030b384838841c"
+          "sha256": "f13e580023759183a977e2cb4ef925a10de0f8ff4a3c158e2a9116a99ad3980b"
         }
       ]
     },
@@ -512,7 +512,7 @@
           "file": "site/media/gallery-positioning-chart-parts-3840.webp",
           "width": 3840,
           "height": 2880,
-          "sha256": "645612b5979a9049bc7a908ddf73d19d58bd56dc0cdd1b5f77310c67c67037a7"
+          "sha256": "55165af297e4afca99ff1065317b39743f15f81fe913a5b6be050c8396e20fa1"
         }
       ]
     },
@@ -532,13 +532,13 @@
           "file": "site/media/gallery-positioning-line-connections-1920.webp",
           "width": 1920,
           "height": 1408,
-          "sha256": "c745e000a7ecd095116295bb73ea73e7758d67f2937a491456156aaa0469f050"
+          "sha256": "7276f9ba49299a6d625b607f0767ae6e951e560499e71e2c349ecae7efb8d8cf"
         },
         {
           "file": "site/media/gallery-positioning-line-connections-3840.webp",
           "width": 3840,
           "height": 2816,
-          "sha256": "b6f955a27a03d49724a0357c25e6019b7d0746b11d3351e6d3a86fe987845f6b"
+          "sha256": "3e10b357acc5fb29340a998d36dcdb44b2ac59bfae9d5139e28d5f37fa5a3f60"
         }
       ]
     },
@@ -1769,12 +1769,224 @@
         }
       ]
     },
+    "examples/gallery/styles/libraries.lay": {
+      "fingerprint": "fc812070239b8c1d98913e679b2edda308e711a662dbee1f3e2ecbd7f31a3a29",
+      "dependencies": [
+        "examples/gallery/styles/libraries.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-styles-libraries-960.webp",
+          "width": 960,
+          "height": 600,
+          "sha256": "12708c697c0a0250a1c6f096f24dc7dfdbe9ff1d432c8ecc335a8f33e42c3218"
+        },
+        {
+          "file": "site/media/gallery-styles-libraries-1920.webp",
+          "width": 1920,
+          "height": 1200,
+          "sha256": "8b743903f9ea4b3b0732fa5b99eef71af5260203c55bbd0ec0fb31777bf19fbe"
+        },
+        {
+          "file": "site/media/gallery-styles-libraries-3840.webp",
+          "width": 3840,
+          "height": 2400,
+          "sha256": "4578bd59920b2d4f07cb21385a6d31390f07f393bbc481fa41a6c90175e4044b"
+        }
+      ]
+    },
+    "examples/gallery/styles/layers.lay": {
+      "fingerprint": "eb97698b603f82d9398db17e05870994b34fa584387238db777ff84a3b419007",
+      "dependencies": [
+        "examples/gallery/styles/layers.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-styles-layers-960.webp",
+          "width": 960,
+          "height": 548,
+          "sha256": "4fab988fec8f68b171fe1406f47439fd38a6301052e1e95f5072a9f6b4dc762d"
+        },
+        {
+          "file": "site/media/gallery-styles-layers-1920.webp",
+          "width": 1920,
+          "height": 1097,
+          "sha256": "f0f10a7a985075b10984b17f89d81c8addfe905bd6c48a5ad6e330cf6cf7df17"
+        },
+        {
+          "file": "site/media/gallery-styles-layers-3840.webp",
+          "width": 3840,
+          "height": 2194,
+          "sha256": "1d9b82379f447bdf4638c978084032098265a9b7003e833d8d3869d4ea0f6789"
+        }
+      ]
+    },
+    "examples/gallery/styles/shadow-parameters.lay": {
+      "fingerprint": "57fbf6674ea3e6f4ef5a3aa7feaa64efc0358a25e30ea3945f1283c62026218c",
+      "dependencies": [
+        "examples/gallery/styles/shadow-parameters.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/gallery-styles-shadow-parameters-960.webp",
+          "width": 960,
+          "height": 390,
+          "sha256": "6efcbaf3b98bd1350f9dbaae5697c916f6c02c32c4d4c7d7a9f15fe714869b0d"
+        },
+        {
+          "file": "site/media/gallery-styles-shadow-parameters-1920.webp",
+          "width": 1920,
+          "height": 780,
+          "sha256": "dd5fc59d09139ae28a0588eb42cec5245255b47687397587c520ec7625822056"
+        },
+        {
+          "file": "site/media/gallery-styles-shadow-parameters-3840.webp",
+          "width": 3840,
+          "height": 1560,
+          "sha256": "c61868956d44b009cbd16c02bced5f028edfaa538e9c8e2d2c38006c50a188eb"
+        }
+      ]
+    },
+    "examples/animation/art-direction.lay": {
+      "fingerprint": "984b303536b1efed70b05283a9a50cc6ad031c9cab659e04e77cc528bc487cbf",
+      "dependencies": [
+        "examples/animation/art-direction.lay",
+        "examples/animation/art-direction.lcss",
+        "examples/effects/alpha-ring.png"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-art-direction-960.webp",
+          "width": 960,
+          "height": 667,
+          "sha256": "767e5a5776580b6ee746ddfdb1bae2a6d5a8928d4a035e9f518aee66f4a50db4"
+        },
+        {
+          "file": "site/media/animation-art-direction-1920.webp",
+          "width": 1920,
+          "height": 1334,
+          "sha256": "e3a24226bd829467b3f6c0e39c8264f4bcedd3d05d70640c10a2dff2c9db1442"
+        },
+        {
+          "file": "site/media/animation-art-direction-3840.webp",
+          "width": 3840,
+          "height": 2667,
+          "sha256": "131c1b83b06c62b2baa8e25dbfc97e079f5cd3ceb3e8b84aedc052ffa48732f5"
+        }
+      ]
+    },
+    "examples/animation/catalog.lay": {
+      "fingerprint": "9ec2784b5fd41f52df2e6b7947fe44cf4491bbcb065b73cbbb6c4f6829d359d4",
+      "dependencies": [
+        "examples/animation/catalog.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-catalog-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "92272d443b60eed2cef90d1885ddc693881bff6f59b69dbbe407adadf5507438"
+        },
+        {
+          "file": "site/media/animation-catalog-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "e99787efe3341e0237e0ed8b4652b140170eb47e0da7400bdcc7ea7691033244"
+        },
+        {
+          "file": "site/media/animation-catalog-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "2f95e28af5b912431b451ec05f3a7ad9bab9ebe9bc06c4b0764afee57bfcedc5"
+        }
+      ]
+    },
+    "examples/animation/complex-dashboard.lay": {
+      "fingerprint": "510f2f8ba2a5b7086051bfda5f1cb40cb23373d4a25bca57ff5b8ed9fb1a1f9c",
+      "dependencies": [
+        "examples/animation/complex-dashboard.lay",
+        "examples/animation/dashboard-data.json",
+        "examples/animation/dashboard-theme.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-complex-dashboard-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "9683dc11b26d4aefd1e5b7fe08f59d1068aa6af2be2b407c7525667447b1a989"
+        },
+        {
+          "file": "site/media/animation-complex-dashboard-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "ee193e9bdb05c42d8420fad09ca3e4cad0bbecf9c1825d17cc572caa24d50e93"
+        },
+        {
+          "file": "site/media/animation-complex-dashboard-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "74719bcdc987fe0df798af4ef516743735719e71489fa792e8109ad4b0d88cb7"
+        }
+      ]
+    },
+    "examples/animation/first.lay": {
+      "fingerprint": "b59341395428922cea3705c2505a892acfd6b993b81092b85ddce24c764dd6b8",
+      "dependencies": [
+        "examples/animation/first.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-first-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "4f13fa8d400af91c4fe083d4054545369e118921af3ebd8aaeef6a520abe9375"
+        },
+        {
+          "file": "site/media/animation-first-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "c61dc077a886a09a891a8ec81239c2adb455886900e26517ea503c4fe810776b"
+        },
+        {
+          "file": "site/media/animation-first-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "357fd1b950fedd5d94c3cd03d391383af4088d9fffaa4c368920eccf7b58b66c"
+        }
+      ]
+    },
+    "examples/animation/keyframes.lay": {
+      "fingerprint": "1d4304f7069a2944cccb78f42da57f4838e72b4e7b6a145a72b3e2b2c5c6ae8d",
+      "dependencies": [
+        "examples/animation/keyframes.lay",
+        "examples/animation/keyframes.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-keyframes-960.webp",
+          "width": 960,
+          "height": 576,
+          "sha256": "e94f0332c1becf52f4636c3be06cfe81431374b5a4014cf04d6ae1028e4df77f"
+        },
+        {
+          "file": "site/media/animation-keyframes-1920.webp",
+          "width": 1920,
+          "height": 1152,
+          "sha256": "851acc07e4bf1c9a63fee67a3aa7f927f30d21112c04f8a962a2e7ddf9cf6d5b"
+        },
+        {
+          "file": "site/media/animation-keyframes-3840.webp",
+          "width": 3840,
+          "height": 2304,
+          "sha256": "49dc96f56ea8a7a02a11bc8571b16c699bef7f749caa194e63bafbd97318984c"
+        }
+      ]
+    },
     "examples/animation/presentation.lay": {
-      "fingerprint": "2a6f011d2da1b11ea2df45aafe6c1e77d0037d89ba12ed5131666e69b07b906a",
+      "fingerprint": "f764bf34952c7bc923ac88ba152ba7d1598bda98c148313465473972b4fa6d7a",
       "dependencies": [
         "examples/animation/motion.lcss",
-        "examples/animation/presentation.lay",
-        "tests/animation/vendor/animate.css"
+        "examples/animation/presentation.lay"
       ],
       "variants": [
         {
@@ -1798,11 +2010,10 @@
       ]
     },
     "examples/animation/second.lay": {
-      "fingerprint": "d3c0f91782a758856bfa71042539b6c99637edcdfeffbd23956dce36988cde55",
+      "fingerprint": "f7ab29c2d30b0a4fcf801187a6bd235121a81716624351e3f012944edde478a3",
       "dependencies": [
         "examples/animation/motion.lcss",
-        "examples/animation/second.lay",
-        "tests/animation/vendor/animate.css"
+        "examples/animation/second.lay"
       ],
       "variants": [
         {
@@ -1822,6 +2033,59 @@
           "width": 3840,
           "height": 3840,
           "sha256": "a86730117f48a61d626265e32354ccc1d0381cf6ad8361f86629746596df33b5"
+        }
+      ]
+    },
+    "examples/animation/styled-cards.lay": {
+      "fingerprint": "ae04be09098cfdd39493072e1a53e52ed99e5fa2f2590a4ad2a63b18fbde43ae",
+      "dependencies": [
+        "examples/animation/styled-cards.lay",
+        "examples/animation/styled-theme.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-styled-cards-960.webp",
+          "width": 960,
+          "height": 504,
+          "sha256": "da328b8b114395b6c6f4de7993d5ac57f0679cbc98f03215bf341b5191b57992"
+        },
+        {
+          "file": "site/media/animation-styled-cards-1920.webp",
+          "width": 1920,
+          "height": 1008,
+          "sha256": "ee3a432baa67e28142e277b6710641fe6e4d4b0d4db0842a44222df6d205234d"
+        },
+        {
+          "file": "site/media/animation-styled-cards-3840.webp",
+          "width": 3840,
+          "height": 2016,
+          "sha256": "3382698a34e243617f015e1137d9cbe3dc0fa0b65474176b4c27bfd950e6c2cc"
+        }
+      ]
+    },
+    "examples/animation/timing.lay": {
+      "fingerprint": "d0ecba88e5fe5f973808206e25d3ed2bc867c1b45d66a5d5cb1b99f5ca74b48c",
+      "dependencies": [
+        "examples/animation/timing.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-timing-960.webp",
+          "width": 960,
+          "height": 520,
+          "sha256": "2ec3a871c746ca70d5272598c7ce62e7af7b949cf7080f437b009f89cf2c4971"
+        },
+        {
+          "file": "site/media/animation-timing-1920.webp",
+          "width": 1920,
+          "height": 1040,
+          "sha256": "16eb057d66061322326ac2000033cca97056812549b6c126a4bf961b0f1ce575"
+        },
+        {
+          "file": "site/media/animation-timing-3840.webp",
+          "width": 3840,
+          "height": 2080,
+          "sha256": "cd67a7f5a0e5ea709bac30aa6f4d76c6fff63b840305079c362252c652d657ee"
         }
       ]
     },
@@ -1849,7 +2113,7 @@
           "file": "site/media/basic-3840.webp",
           "width": 3840,
           "height": 2560,
-          "sha256": "b282900b10faf19c5540f365a2ee46e72b2275f5ab7c648c843d429909b8c190"
+          "sha256": "4dcb0cc9322ff0406b27ea4fd865ebc8bebebc83e7a04f8ecd50afea1543b1de"
         }
       ]
     },
@@ -2193,6 +2457,378 @@
           "width": 3840,
           "height": 2400,
           "sha256": "ce0d56cec2bd228851bfec700c4c422246995bebc65d1e473765b59453ff9ddd"
+        }
+      ]
+    },
+    "examples/libraries/all-three.lay": {
+      "fingerprint": "8e73b4e2a82381040adbc26cdea0fe4f3c392fd9f58d2acd6512ce6cc9f663db",
+      "dependencies": [
+        "examples/libraries/all-three.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-all-three-960.webp",
+          "width": 960,
+          "height": 548,
+          "sha256": "835551940c2e0c8cfaca318a7d5ad277483b6b25186a4cacb80b29b72600a18b"
+        },
+        {
+          "file": "site/media/libraries-all-three-1920.webp",
+          "width": 1920,
+          "height": 1097,
+          "sha256": "4d792919ace0bb7d6ffd8c3d1d54d5e46e76d1ddd678614e40bef17eedb31631"
+        },
+        {
+          "file": "site/media/libraries-all-three-3840.webp",
+          "width": 3840,
+          "height": 2194,
+          "sha256": "c30ddc140f80705eb3cee4abcb1709840fc390bb61b08b7d634269e33650b734"
+        }
+      ]
+    },
+    "examples/libraries/animate.lay": {
+      "fingerprint": "10be7450b9ad131265643b267e5a060eadc421acba0a479cd2c7d73d171586c6",
+      "dependencies": [
+        "examples/libraries/animate.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-animate-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "e8ad922256260a52d1c35930d2d9c7cdce01c747d7b3a85ed03154e001321b8f"
+        },
+        {
+          "file": "site/media/libraries-animate-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "b84964073d2a3b89c8cf235fac4a37fb521eaa23f93ab16e387c19a2bdd98f65"
+        },
+        {
+          "file": "site/media/libraries-animate-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "77b861caad5282b06bf6bdc84837b05fab5fb5f37f9aa5477a33d95e616ab189"
+        }
+      ]
+    },
+    "examples/libraries/bootstrap-animate.lay": {
+      "fingerprint": "09a97e58504137cdadd6b34c99310115efeba7a6cd41e1741aac01e5b32e36b8",
+      "dependencies": [
+        "examples/libraries/bootstrap-animate.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-bootstrap-animate-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "b1652983c21ecd6e138b5bc4705a88afa6e142bc1ee9a5c508190035993f69a3"
+        },
+        {
+          "file": "site/media/libraries-bootstrap-animate-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "7b061b6b2988140560d68a73fb0cb3e4d7c6805f89d985f288feca2dc685725d"
+        },
+        {
+          "file": "site/media/libraries-bootstrap-animate-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "19e5c3a07cd47462c852acabab744c7b3c76f69dd263d50394ba945a731a03a3"
+        }
+      ]
+    },
+    "examples/libraries/bootstrap.lay": {
+      "fingerprint": "e7188bb2a978f884bda3ec72fe66b60eb819c88a8960acf2bb994a5bc8f6187a",
+      "dependencies": [
+        "examples/libraries/bootstrap.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-bootstrap-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "caf61e391de628903eae3949338938542d1ce123a67dcae49a8d03e6342a97ac"
+        },
+        {
+          "file": "site/media/libraries-bootstrap-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "b1a4eaab882c4aad94a9e32393e0c05422d388371a795ff288849391fdb1c8f4"
+        },
+        {
+          "file": "site/media/libraries-bootstrap-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "2454040cd5fdbba2a67712598ac1d14b4ebfbbec388c89fd3b7ebd614acc8830"
+        }
+      ]
+    },
+    "examples/libraries/catalog-animate.lay": {
+      "fingerprint": "c6148141ac723cc0df381af4c88da3e0b7a719d7048c1c647ca7fba902b9b3d4",
+      "dependencies": [
+        "examples/libraries/catalog-animate.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-catalog-animate-960.webp",
+          "width": 960,
+          "height": 960,
+          "sha256": "5b395d7e6ca898759ca5c403bd19e153466b0bff088591acb836ffd72fb65b07"
+        },
+        {
+          "file": "site/media/libraries-catalog-animate-1920.webp",
+          "width": 1920,
+          "height": 1920,
+          "sha256": "a702d77ec0ea5854572f229fc60b8d03d866d4fa5009e44648fc1f971c2e63d4"
+        },
+        {
+          "file": "site/media/libraries-catalog-animate-3840.webp",
+          "width": 3840,
+          "height": 3840,
+          "sha256": "46989c014cdad1e6dd7de8fb467b624b3b7ddf2a30f44e9206e3f6726970b92e"
+        }
+      ]
+    },
+    "examples/libraries/catalog-bootstrap.lay": {
+      "fingerprint": "ce0668641727d01e8c42c6146f2aa5140731d04db15ebcc72252b015756035be",
+      "dependencies": [
+        "examples/libraries/catalog-bootstrap.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-catalog-bootstrap-960.webp",
+          "width": 960,
+          "height": 960,
+          "sha256": "5b395d7e6ca898759ca5c403bd19e153466b0bff088591acb836ffd72fb65b07"
+        },
+        {
+          "file": "site/media/libraries-catalog-bootstrap-1920.webp",
+          "width": 1920,
+          "height": 1920,
+          "sha256": "a702d77ec0ea5854572f229fc60b8d03d866d4fa5009e44648fc1f971c2e63d4"
+        },
+        {
+          "file": "site/media/libraries-catalog-bootstrap-3840.webp",
+          "width": 3840,
+          "height": 3840,
+          "sha256": "46989c014cdad1e6dd7de8fb467b624b3b7ddf2a30f44e9206e3f6726970b92e"
+        }
+      ]
+    },
+    "examples/libraries/catalog-open-props.lay": {
+      "fingerprint": "84d16d9a3b92dbef9a1f8c16fe943d17c3c9b2a1c0781513f94a1748680f4b65",
+      "dependencies": [
+        "examples/libraries/catalog-open-props.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-catalog-open-props-960.webp",
+          "width": 960,
+          "height": 960,
+          "sha256": "579d823ac2f6887964c09b39b5f71f5fc73db1e5ea46d572bbb8c8fd55843102"
+        },
+        {
+          "file": "site/media/libraries-catalog-open-props-1920.webp",
+          "width": 1920,
+          "height": 1920,
+          "sha256": "a7d283f31769280919d38a42b987bd603c3dfb5ade8ef6e01411b37f34cbdf34"
+        },
+        {
+          "file": "site/media/libraries-catalog-open-props-3840.webp",
+          "width": 3840,
+          "height": 3840,
+          "sha256": "6664803db3fe91349515f34348ca89fe1cb73fac20bda3bb9bfc5d302cd5f3c3"
+        }
+      ]
+    },
+    "examples/libraries/open-props-animate.lay": {
+      "fingerprint": "ac4c2cf8f45bb40451a98fb2af59a9766fa6d1ef1747378dc59bfc467f9e5387",
+      "dependencies": [
+        "examples/libraries/open-props-animate.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-open-props-animate-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "0e7309a2f170fde98f8ae0b6553c4ad98a48a9da0288e1ae5c211b1bd529b01c"
+        },
+        {
+          "file": "site/media/libraries-open-props-animate-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "82c49fff81e1aed309a98499c874e95be43e5c246449bb2f4a42c6915c99e6af"
+        },
+        {
+          "file": "site/media/libraries-open-props-animate-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "eb87971fb9514e9e976544332c7d5f224abe5065faf70f3630c10f74db425855"
+        }
+      ]
+    },
+    "examples/libraries/open-props-motion.lay": {
+      "fingerprint": "e2d713a776a62f36b06c974b55d003879eb5c451f5e4b9982b48f12878b7162d",
+      "dependencies": [
+        "examples/libraries/open-props-motion.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-open-props-motion-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "24b1bfde6ab7616c88ba6348ab0824fbf4e2891d5c7569bbf3919848e2d9ee32"
+        },
+        {
+          "file": "site/media/libraries-open-props-motion-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "c8d91198479f9475444e7bebcb4a2902e08975ef8666adc6639fef32bbf7bd08"
+        },
+        {
+          "file": "site/media/libraries-open-props-motion-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "fa6fde1c584ba9116600de893b615ab66f421db6d5b4df3084ed6ccc201e310b"
+        }
+      ]
+    },
+    "examples/libraries/open-props.lay": {
+      "fingerprint": "035541e7af2fbd47b57435a83eb7eb170763d270322b283de35d98296e72d964",
+      "dependencies": [
+        "examples/libraries/open-props.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-open-props-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "f33afb9d1d22df7ab29bdb6206f2ecaadda42c77dffeebcdbdd0fb7521766e03"
+        },
+        {
+          "file": "site/media/libraries-open-props-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "871001d4f954321f47ef56d6bb4f6ef5a31167343059a82411e74d53a917dd2c"
+        },
+        {
+          "file": "site/media/libraries-open-props-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "bded7d66d293d02543f0df1f34f3ccee1afc90d61e3c1f438c865a3b58c76285"
+        }
+      ]
+    },
+    "examples/libraries/shared-page-1.lay": {
+      "fingerprint": "1f3d0dbd124c171856f51bd97f881095239a9c597294885f63027021c8293371",
+      "dependencies": [
+        "examples/libraries/shared-page-1.lay",
+        "examples/libraries/shared-theme.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-shared-page-1-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "cd76a690640b7c435807f15d25d7c1225dcc0a70952e07aa7018870e928b1638"
+        },
+        {
+          "file": "site/media/libraries-shared-page-1-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "3dacdf8187c9477bd043ae488b619b361b30533ecfb9e2b14a2f122722ef7a2b"
+        },
+        {
+          "file": "site/media/libraries-shared-page-1-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "9d55eb8bf9b6cfdcb005e91a071a27afbd65629404d40483db1a9478943ea8de"
+        }
+      ]
+    },
+    "examples/libraries/shared-page-2.lay": {
+      "fingerprint": "c8a45444a878fc3d9f7cd61584d44362c34d60c8f3febe1cfa7b31922ab5c91a",
+      "dependencies": [
+        "examples/libraries/shared-page-2.lay",
+        "examples/libraries/shared-theme.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-shared-page-2-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "f3b8d93ff94927018bedb37a6d8210a15a2e901c7387f05c9fae3dc53f557dd1"
+        },
+        {
+          "file": "site/media/libraries-shared-page-2-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "96a59a05c2b95a76f8c253afbf5e44446ac803a737852b9be06de1ce92d31c75"
+        },
+        {
+          "file": "site/media/libraries-shared-page-2-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "3a340c836c07d92215b3fca5a61af7e1753ea4cb5140ff8d538265d2d838d6b3"
+        }
+      ]
+    },
+    "examples/libraries/third-party/direct.lay": {
+      "fingerprint": "e87dbd43e71a60ac379f237147538b727159a746e12b7e2a2062282917899c43",
+      "dependencies": [
+        "examples/libraries/third-party/direct.lay",
+        "examples/libraries/third-party/palette.css",
+        "examples/libraries/third-party/vendor/milligram.css"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-third-party-direct-960.webp",
+          "width": 960,
+          "height": 548,
+          "sha256": "102d7ed00d3d6787e980b5bba2274562b8e92349251059449c5a4e8f58d4edf2"
+        },
+        {
+          "file": "site/media/libraries-third-party-direct-1920.webp",
+          "width": 1920,
+          "height": 1097,
+          "sha256": "dfeefbf25218f4ae409cf271528c3ff9a8cacfde7a65da195c074504570dc7f5"
+        },
+        {
+          "file": "site/media/libraries-third-party-direct-3840.webp",
+          "width": 3840,
+          "height": 2194,
+          "sha256": "7c0f29e6a07b53d07c15d07615673cc9e171facdc7925b690ac800112a53c0ab"
+        }
+      ]
+    },
+    "examples/libraries/third-party/main.lay": {
+      "fingerprint": "6fdf8cd54993f489622cb7109030e788f283981f8c126529d00d682d5fde8b03",
+      "dependencies": [
+        "examples/libraries/third-party/assets/pattern.svg",
+        "examples/libraries/third-party/main.lay",
+        "examples/libraries/third-party/palette.css",
+        "examples/libraries/third-party/theme.css",
+        "examples/libraries/third-party/vendor/milligram.css"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-third-party-main-960.webp",
+          "width": 960,
+          "height": 548,
+          "sha256": "25dfdc5c1238e78972cb995bd1094e713169a5728aade68262590600b66fc588"
+        },
+        {
+          "file": "site/media/libraries-third-party-main-1920.webp",
+          "width": 1920,
+          "height": 1097,
+          "sha256": "246fa9d5deca27664228f46cdca284a724a0cb830d5bc1a0f66a28b9a2b39c02"
+        },
+        {
+          "file": "site/media/libraries-third-party-main-3840.webp",
+          "width": 3840,
+          "height": 2194,
+          "sha256": "23126f2bb3e5b92b61d33f703a0f77d2da7dce902d434c06ed1df67302ae62e0"
         }
       ]
     },
@@ -2741,6 +3377,33 @@
           "width": 3840,
           "height": 2880,
           "sha256": "f89a3bdff7a4adcb1bd6ce971d1ba3dc2aa130790a4a66de536443a5fa6927e8"
+        }
+      ]
+    },
+    "examples/manual/css-shadow-override.lay": {
+      "fingerprint": "825b2c6a2bfa22603abccdad86e6e53f6de514e088bb56cb51bdc7392e84cf81",
+      "dependencies": [
+        "examples/manual/css-shadow-override.lay",
+        "examples/manual/theme.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-css-shadow-override-960.webp",
+          "width": 960,
+          "height": 600,
+          "sha256": "a7f2602d8e1c6af77048a4d6d9295c2fa60205a69b4bb57cc773ede9a18aa6da"
+        },
+        {
+          "file": "site/media/manual-css-shadow-override-1920.webp",
+          "width": 1920,
+          "height": 1200,
+          "sha256": "9e5a0a4051f64c0cdba590aef734a593263b27b9b07544faef1bd5f32b30f801"
+        },
+        {
+          "file": "site/media/manual-css-shadow-override-3840.webp",
+          "width": 3840,
+          "height": 2400,
+          "sha256": "2813d245693f23c483bc4a35d551b2e9740e82b1408ed38ba5b8f0721403d3ec"
         }
       ]
     },
@@ -4541,6 +5204,33 @@
         }
       ]
     },
+    "examples/manual/style-project.lay": {
+      "fingerprint": "2a86a53b552f9d0b95281d520b1d037efe50faecbd9ada3e53f88a7ee095aa33",
+      "dependencies": [
+        "examples/manual/style-project.lay",
+        "examples/manual/style-theme.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-style-project-960.webp",
+          "width": 960,
+          "height": 473,
+          "sha256": "db4b74c6ffcc248eb697767bfb4ba1d209beb7c9f0df0c8b7d7569b9bac72242"
+        },
+        {
+          "file": "site/media/manual-style-project-1920.webp",
+          "width": 1920,
+          "height": 946,
+          "sha256": "5a70e5ec029e888ae45529f16084a2138c1d06101f54f45dc73155b14f9fa9b3"
+        },
+        {
+          "file": "site/media/manual-style-project-3840.webp",
+          "width": 3840,
+          "height": 1891,
+          "sha256": "0b6c652b744962b01df134b48fb6629c5564a8f2564ec31016774ab356bcd364"
+        }
+      ]
+    },
     "examples/manual/table.lay": {
       "fingerprint": "0e8a7a72a0d5360284ef4be16c386a8bd9d65593093db12213cb4a9a6b1aea55",
       "dependencies": [
@@ -5027,13 +5717,12 @@
       ]
     },
     "examples/animation/presentation.laydoc": {
-      "fingerprint": "d6d86ff09ed9fe6213be91c071315cede10fc8608ab1e3c0679b9d628998e0fe",
+      "fingerprint": "73c1283e4ca0e133affe24fb1bf35dc0f7f51943f6b67bce26ae4426ea5802d1",
       "dependencies": [
         "examples/animation/motion.lcss",
         "examples/animation/presentation.lay",
         "examples/animation/presentation.laydoc",
-        "examples/animation/second.lay",
-        "tests/animation/vendor/animate.css"
+        "examples/animation/second.lay"
       ],
       "variants": [
         {
@@ -5082,6 +5771,35 @@
           "width": 3840,
           "height": 2160,
           "sha256": "45a3cbfa02b54e53ad502755933c20ecbdedcf645da5bae5cca0a9166ebe9a00"
+        }
+      ]
+    },
+    "examples/libraries/shared.laydoc": {
+      "fingerprint": "63c4c36eba2f45b75c98234f70b438bf14699bbfa48fdfb6209205e525aa96e0",
+      "dependencies": [
+        "examples/libraries/shared-page-1.lay",
+        "examples/libraries/shared-page-2.lay",
+        "examples/libraries/shared-theme.lcss",
+        "examples/libraries/shared.laydoc"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-shared-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "cd76a690640b7c435807f15d25d7c1225dcc0a70952e07aa7018870e928b1638"
+        },
+        {
+          "file": "site/media/libraries-shared-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "3dacdf8187c9477bd043ae488b619b361b30533ecfb9e2b14a2f122722ef7a2b"
+        },
+        {
+          "file": "site/media/libraries-shared-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "9d55eb8bf9b6cfdcb005e91a071a27afbd65629404d40483db1a9478943ea8de"
         }
       ]
     }
