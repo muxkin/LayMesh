@@ -1,0 +1,7 @@
+{
+  "status": "local checks passed; native cross-platform CI pending",
+  "windows_language_test": "MSVC release test executable through Wine; all shipped example stylesheet diagnostics passed",
+  "macos_ffmpeg_test": "compare canonical physical paths rather than temporary-directory aliases",
+  "python_encoder_test": "compare file identity, including Windows verbatim paths",
+  "example_resources": "every documentation-media dependency and engine input is staged/tracked"
+}

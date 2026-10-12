@@ -1,0 +1,20 @@
+{
+  "nativeWasmSVG": "identical",
+  "nativeWasmPNG": {
+    "mean": 0.0354075,
+    "max": 27
+  },
+  "offlineLibraries": [
+    "bootstrap@5.3.8",
+    "open-props@1.7.23"
+  ],
+  "fontStack": "registered WASM fonts; no font warnings",
+  "warnings": 2,
+  "blurOverride": {
+    "beforeRadius": 2,
+    "afterRadius": 4,
+    "otherFields": "preserved"
+  },
+  "effects": 7,
+  "consoleErrors": []
+}

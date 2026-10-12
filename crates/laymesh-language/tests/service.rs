@@ -255,7 +255,13 @@ fn shipped_examples_static_diagnostics() {
                 .extension()
                 .is_some_and(|s| s == "lay" || s == "laydoc" || s == "lcss" || s == "css")
             {
-                s.update(&p.to_string_lossy(), &std::fs::read_to_string(&p).unwrap());
+                // Match the normalized virtual Host keys used by dependency
+                // resolution, including Windows canonical verbatim paths.
+                let key = laymesh_core::model::resolve(
+                    &p.to_string_lossy(),
+                    &p.file_name().unwrap().to_string_lossy(),
+                );
+                s.update(&key, &std::fs::read_to_string(&p).unwrap());
             }
         }
     }

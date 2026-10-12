@@ -71,5 +71,5 @@ class AnimationExports(unittest.TestCase):
             ], text=True))
             self.assertEqual(python_status["found"]["path"], cli_status["found"]["path"])
             self.assertTrue((root / "private/discovery.json").is_file())
-            self.assertEqual(ensure_ffmpeg(file=file, config=config), Path(shutil.which("ffmpeg")).resolve())
+            self.assertTrue(ensure_ffmpeg(file=file, config=config).samefile(shutil.which("ffmpeg")))
             self.assertFalse((root / "private/install.lock").exists())

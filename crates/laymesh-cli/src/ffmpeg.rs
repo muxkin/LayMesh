@@ -985,7 +985,7 @@ mod tests {
             (a.join().unwrap(), b.join().unwrap())
         });
         assert_eq!(results.0.path, results.1.path);
-        assert!(results.0.path.starts_with(&stage.0));
+        assert!(results.0.path.starts_with(stage.0.canonicalize().unwrap()));
         assert_eq!(origin_hits.load(Ordering::Relaxed), 4); // HEAD, binary, README, license.
         assert_eq!(mirror_hits.load(Ordering::Relaxed), 2); // HEAD then rejected binary.
         assert!(results.0.path.parent().unwrap().join("LICENSE").exists());
