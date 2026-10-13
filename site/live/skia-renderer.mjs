@@ -1,12 +1,24 @@
 // Shared by the website and the offline VS Code worker. Layout and animation
 // sampling remain in Rust; these retained commands never reshape text.
 import CanvasKitInit from './skia/canvaskit.mjs';
+import {PageTransitions,decodeSkiaImage} from './presentation-transitions.mjs';
 
 export async function initializeSkia(wasmURL) {
  // CanvasKit's pinned loader accepts a URL. A blob created from transferred
  // bytes stays in this worker and never enters VS Code's resource proxy.
  const blob=wasmURL instanceof ArrayBuffer||ArrayBuffer.isView(wasmURL)?URL.createObjectURL(new Blob([wasmURL],{type:'application/wasm'})):null;
- try{return await CanvasKitInit({locateFile:()=>blob||wasmURL});}
+ try{
+  let url=blob||wasmURL;
+  if(blob?.startsWith('blob:null/')){
+   // Opaque file:// workers in WebKit cannot fetch or FileReader-read even
+   // their own blobs. Build a local data URL from the bytes directly. Keep
+   // blob URLs in ordinary hosts (including VS Code's stricter data: CSP).
+   const bytes=wasmURL instanceof ArrayBuffer?new Uint8Array(wasmURL):new Uint8Array(wasmURL.buffer,wasmURL.byteOffset,wasmURL.byteLength),chunks=[];
+   for(let i=0;i<bytes.length;i+=32768)chunks.push(String.fromCharCode(...bytes.subarray(i,i+32768)));
+   url='data:application/wasm;base64,'+btoa(chunks.join(''));
+  }
+  return await CanvasKitInit({locateFile:()=>url});
+ }
  finally{if(blob)URL.revokeObjectURL(blob);}
 }
 const matrix=([a,b,c,d,e,f])=>[a,c,e,b,d,f,0,0,1];
@@ -31,14 +43,14 @@ export function projectedDensity(m,b){
 }
 
 export class SkiaRenderer {
- constructor(ck,canvas,{cacheMB=256,software=false,onContextChange=()=>{}}={}) {
-  this.ck=ck;this.canvas=canvas;this.budget=cacheMB*1048576;this.images=new Map();this.imageBytes=new Map();this.commandCache=new Map();this.prepared=new WeakMap();this.owned=[];this.animatedNames=new Set();this.pictureBytes=0;this.generation=0;this.frameCount=0;
+ constructor(ck,canvas,{cacheMB=256,software=false,preserveDrawingBuffer=false,onContextChange=()=>{}}={}) {
+  this.ck=ck;this.canvas=canvas;this.transitions=new PageTransitions(this);this.budget=cacheMB*1048576;this.images=new Map();this.imageBytes=new Map();this.commandCache=new Map();this.prepared=new WeakMap();this.owned=[];this.animatedNames=new Set();this.pictureBytes=0;this.generation=0;this.frameCount=0;
   this.nextCommandId=0;this.staticTextures=new Map();this.staticTextureBytes=0;this.sceneRuns=[];
   this.layerTextures=new Map();this.layerTextureBytes=0;
-  this.context=software?0:ck.GetWebGLContext(canvas,{majorVersion:2,alpha:1,antialias:1,preserveDrawingBuffer:0});
+  this.context=software?0:ck.GetWebGLContext(canvas,{majorVersion:2,alpha:1,antialias:1,preserveDrawingBuffer:Number(preserveDrawingBuffer)});
   this.gr=this.context?ck.MakeWebGLContext(this.context):null;
   this.backend=this.gr?'Skia WebGL2':'Skia CPU';this.updateCacheLimit();this.gl=this.gr?canvas.getContext('webgl2'):null;this.timer=this.gl?.getExtension('EXT_disjoint_timer_query_webgl2');this.queries=[];this.fences=[];const debug=this.gl?.getExtension('WEBGL_debug_renderer_info');this.device=debug?this.gl.getParameter(debug.UNMASKED_RENDERER_WEBGL):'';if(/SwiftShader|llvmpipe|softpipe/i.test(this.device))this.backend+=' (software driver)';
-  this.onLost=e=>{e.preventDefault();this.lost=true;this.clearStaticTextures();this.clearLayerTextures();this.queries=[];this.fences=[];this.gpuMs=undefined;onContextChange(false);};canvas.addEventListener?.('webglcontextlost',this.onLost);
+  this.onLost=e=>{e.preventDefault();this.lost=true;this.transitions.cancel();this.transitions.warmed.clear();this.clearStaticTextures();this.clearLayerTextures();this.queries=[];this.fences=[];this.gpuMs=undefined;onContextChange(false);};canvas.addEventListener?.('webglcontextlost',this.onLost);
   this.onRestored=()=>{this.surface?.dispose();this.surface=null;this.gr?.delete();this.gr=ck.MakeWebGLContext(this.context);this.updateCacheLimit();this.timer=this.gl?.getExtension('EXT_disjoint_timer_query_webgl2');this.backend=this.gr?'Skia WebGL2'+(/SwiftShader|llvmpipe|softpipe/i.test(this.device)?' (software driver)':''):'Skia CPU';this.lost=false;onContextChange(true);};canvas.addEventListener?.('webglcontextrestored',this.onRestored);
  }
  own(value){if(value){this.owned.push(value);this.owner?.objects.push(value);}return value;}
@@ -104,7 +116,8 @@ export class SkiaRenderer {
   this.owner=parent;return v;
  }
  bind(n){const p=this.prepare(n),k=n.kind;if(k.kind==='group'){k.children.forEach(n=>p.dependencies.add(this.bind(n)));if(k.mask)p.dependencies.add(this.bind(k.mask.node));}if(k.kind==='path'&&k.fill.kind==='pattern')k.fill.nodes.forEach(n=>p.dependencies.add(this.bind(n)));return p;}
- async install(list,readResource,generation,cacheMB=256){
+ async install(list,readResource,generation,cacheMB=256,navigation){
+  if(navigation!==undefined)this.transitions.navigate(list,navigation);
   if(list.schemaVersion!==1)throw Error('Unsupported Skia display list version');
   const incoming=new Map(),bytesById=new Map(),old={list:this.list,images:this.images,imageBytes:this.imageBytes,animatedNames:this.animatedNames,generation:this.generation};
   const ownedBefore=this.owned.length,cacheBefore=new Map(this.commandCache);let resourceChanged=false;
@@ -113,13 +126,7 @@ export class SkiaRenderer {
     const bytes=await readResource(id,meta),previous=this.imageBytes.get(id);bytesById.set(id,bytes);
     if(previous&&previous.length===bytes.length&&previous.every((v,i)=>v===bytes[i])){incoming.set(id,this.images.get(id));continue;}
     if(previous)resourceChanged=true;
-    let image;
-    if(meta.mime==='image/x-laymesh-rgba'){
-     if(bytes.length<8)throw Error(`Invalid image header: ${id}`);
-     const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),width=view.getUint32(0,true),height=view.getUint32(4,true);
-     if(!width||!height||bytes.length!==8+width*height*4)throw Error(`Invalid image dimensions: ${id}`);
-     image=this.ck.MakeImage({width,height,colorType:this.ck.ColorType.RGBA_8888,alphaType:this.ck.AlphaType.Unpremul,colorSpace:this.ck.ColorSpace.SRGB},bytes.subarray(8),width*4);
-    }else image=this.ck.MakeImageFromEncoded(bytes);
+    const image=decodeSkiaImage(this.ck,bytes,meta.mime);
     if(!image)throw Error(`Skia image decode failed: ${id}`);incoming.set(id,image);
    }
    // Commands are keyed by content; unchanged paths, glyphs and pictures survive
@@ -323,5 +330,5 @@ export class SkiaRenderer {
  // Explicit readback for static export and test oracles; playback never calls it.
  readPixels(){const image=this.surface.makeImageSnapshot();try{return image.readPixels(0,0,{width:this.canvas.width,height:this.canvas.height,colorType:this.ck.ColorType.RGBA_8888,alphaType:this.ck.AlphaType.Unpremul,colorSpace:this.ck.ColorSpace.SRGB});}finally{image.delete();}}
  trim(){this.clearStaticTextures();this.clearLayerTextures();if(this.gr){this.gr.setResourceCacheLimitBytes(0);this.updateCacheLimit();}}
- dispose(){this.canvas.removeEventListener?.('webglcontextlost',this.onLost);this.canvas.removeEventListener?.('webglcontextrestored',this.onRestored);this.queries.forEach(q=>this.gl?.deleteQuery(q));this.queries=[];this.fences.forEach(f=>this.gl?.deleteSync(f));this.fences=[];this.clearStaticTextures();this.clearLayerTextures();this.clearCommands();for(const image of this.images.values())image.delete();this.images.clear();this.imageBytes.clear();this.surface?.dispose();this.gr?.releaseResourcesAndAbandonContext();this.gr?.delete();if(this.context)this.ck.deleteContext(this.context);}
+ dispose(){this.transitions.dispose();this.canvas.removeEventListener?.('webglcontextlost',this.onLost);this.canvas.removeEventListener?.('webglcontextrestored',this.onRestored);this.queries.forEach(q=>this.gl?.deleteQuery(q));this.queries=[];this.fences.forEach(f=>this.gl?.deleteSync(f));this.fences=[];this.clearStaticTextures();this.clearLayerTextures();this.clearCommands();for(const image of this.images.values())image.delete();this.images.clear();this.imageBytes.clear();this.surface?.dispose();this.gr?.releaseResourcesAndAbandonContext();this.gr?.delete();if(this.context)this.ck.deleteContext(this.context);}
 }

@@ -24,13 +24,14 @@ class NativePresentation {
   }));}
  }
  async prepare(file,source,overlays,defaults){
+  this.entry=file;this.entrySource=source;
   this.started=performance.now();this.startedAt=Date.now();this.overlays={...overlays,[file]:source};this.defaults=defaults;this.signatures=new Map();
   const first=await this.compile(this.worker,file,source,{});if(this.cancelled)throw Error('Presentation preparation cancelled');
   this.settings=first.previewSettings||{};this.config=path.join(this.directory,'defaults.json');fs.writeFileSync(this.config,JSON.stringify({preview:this.settings}));this.budget=(this.settings.cache_mb??256)*1048576;
   this.pages=(first.document?.pages||[{id:'page',name:path.basename(file),src:file}]).map((p,index)=>({...p,index,status:'pending'}));
   for(const p of this.pages)if(!(p.src in this.overlays)){this.record(p.src);this.overlays[p.src]=fs.readFileSync(p.src,'utf8');}
   this.notify({type:'deck-plan',pages:this.pages.map(({id,name,src})=>({id,name,src})),budget:this.budget});
-  const seen=new Map();this.jobs=[];for(const p of this.pages){if(seen.has(p.src))seen.get(p.src).specs.push(p);else{const job={specs:[p],status:'pending'};seen.set(p.src,job);this.jobs.push(job);}}
+  const seen=new Map();this.jobs=[];for(const p of this.pages){const key=p.src+"|"+JSON.stringify(p.transition||null);if(seen.has(key))seen.get(key).specs.push(p);else{const job={specs:[p],status:'pending'};seen.set(key,job);this.jobs.push(job);}}
   await this.accept(first,this.worker,this.jobs[0].specs);this.jobs[0].status='ready';this.ready=true;this.firstPageMs=performance.now()-this.started;
   for(let i=1;i<Math.min(this.limit,this.jobs.length-1);i++)this.workers.push(this.createWorker());
   this.preparation={workers:this.workers.length,firstPageMs:this.firstPageMs};
@@ -39,7 +40,7 @@ class NativePresentation {
  pump(){
   if(this.cancelled)return;clearTimeout(this.timer);if(!this.canPrepare()){this.timer=setTimeout(()=>this.pump(),25);return;}
   for(const worker of this.workers){if(worker.deckBusy)continue;const job=this.jobs.filter(j=>j.status==='pending').sort((a,b)=>(b.priority||0)-(a.priority||0)||a.specs[0].index-b.specs[0].index)[0];if(!job)break;
-   worker.deckBusy=true;job.status='working';const p=job.specs[0];this.compile(worker,p.src,this.overlays[p.src],{}).then(frame=>this.accept(frame,worker,job.specs)).then(()=>{job.status='ready';},error=>{job.status='error';if(!this.cancelled)for(const p of job.specs){p.status='error';p.error=`${p.index+1}/${this.pages.length}. ${p.name||p.id}: ${error.message}`;this.notify({type:'deck-error',pageId:p.id,error:p.error});}}).finally(()=>{worker.deckBusy=false;this.pump();});
+   worker.deckBusy=true;job.status='working';const p=job.specs[0];this.compile(worker,this.entry.endsWith(".laydoc")?this.entry:p.src,this.entry.endsWith(".laydoc")?this.entrySource:this.overlays[p.src],{page:p.index+1}).then(frame=>this.accept(frame,worker,job.specs)).then(()=>{job.status='ready';},error=>{job.status='error';if(!this.cancelled)for(const p of job.specs){p.status='error';p.error=`${p.index+1}/${this.pages.length}. ${p.name||p.id}: ${error.message}`;this.notify({type:'deck-error',pageId:p.id,error:p.error});}}).finally(()=>{worker.deckBusy=false;this.pump();});
   }
   if(this.jobs.every(j=>j.status==='ready'||j.status==='error')){this.prepareMs=performance.now()-this.started;this.preparation.interrupted=this.interrupted||0;this.notify({type:'deck-ready',prepareMs:this.prepareMs,preparation:this.preparation,budget:this.budget});this.finish?.();this.finish=null;for(const worker of this.workers)worker.stop?.();}
  }

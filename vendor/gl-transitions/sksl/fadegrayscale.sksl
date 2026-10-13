@@ -1,0 +1,34 @@
+// fadegrayscale — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/fadegrayscale.glsl
+// Author: gre
+// License: MIT
+// Description: A crossfade through grayscale
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float intensity; 
+ 
+vec3 grayscale (vec3 color) {
+  return vec3(0.2126*color.r + 0.7152*color.g + 0.0722*color.b);
+}
+ 
+vec4 transition (vec2 uv) {
+  vec4 fc = getFromColor(uv);
+  vec4 tc = getToColor(uv);
+  return mix(
+    mix(vec4(grayscale(fc.rgb), 1.0), fc, smoothstep(1.0-intensity, 0.0, progress)),
+    mix(vec4(grayscale(tc.rgb), 1.0), tc, smoothstep(    intensity, 1.0, progress)),
+    progress);
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

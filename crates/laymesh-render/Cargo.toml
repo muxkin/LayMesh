@@ -6,6 +6,7 @@ license.workspace = true
 [features]
 default = ["native"]
 native = ["dep:lopdf","dep:skia-safe","dep:jpeg-encoder", "dep:png", "dep:ratex-katex-fonts", "dep:tiff", "dep:webp", "dep:zip"]
+portable-export = ["dep:png", "dep:tiff", "dep:zip"]
 [dependencies]
 laymesh-core = { path = "../laymesh-core", default-features = false }
 serde_json.workspace = true

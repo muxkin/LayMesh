@@ -261,7 +261,7 @@ pub fn is_motion_property(key: &str) -> bool {
                 | "rotate"
                 | "scale"
         )
-        || k.starts_with("-laymesh-")
+        || (k.starts_with("-laymesh-") && !crate::page_transition::supported(k))
 }
 /// One token parser serves both static and animation styles. Unsupported CSS
 /// is recorded and recovered at a declaration or rule boundary.

@@ -1,0 +1,42 @@
+// Rectangle — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/Rectangle.glsl
+// Author: martiniti
+// License: MIT
+// Description: A rectangle grows from the center to cover the outgoing image, then shrinks to reveal the incoming one
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform vec4 bgcolor; 
+
+vec4 transition(vec2 p) {
+  float s = pow(2.0 * abs(progress - 0.5), 3.0);
+  
+   vec2 sq = p.xy / vec2(1.0).xy;
+   
+    
+    vec2 bl = step(vec2(abs(1. - 2.*progress)), sq + .25);
+    float dist = bl.x * bl.y;
+
+    
+    vec2 tr = step(vec2(abs(1. - 2.*progress)), 1.25-sq);
+    dist *= 1. * tr.x * tr.y;
+  
+  return mix(
+    progress < 0.5 ? getFromColor(p) : getToColor(p),
+    bgcolor,
+    step(s, dist)
+  );
+  
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

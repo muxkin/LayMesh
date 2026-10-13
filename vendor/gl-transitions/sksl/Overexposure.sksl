@@ -1,0 +1,38 @@
+// Overexposure — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/Overexposure.glsl
+// Author: Ben Zhang
+// License: MIT
+// Description: A crossfade through a washed-out, overexposed white
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float strength; 
+const float PI = 3.141592653589793;
+
+vec4 transition (vec2 uv) {
+  vec4 from = getFromColor(uv);
+  vec4 to = getToColor(uv);
+
+  
+  float from_m = 1.0 - progress + sin(PI * progress) * strength;
+  float to_m = progress + sin(PI * progress) * strength;
+  
+  return vec4(
+    from.r * from.a * from_m + to.r * to.a * to_m,
+    from.g * from.a * from_m + to.g * to.a * to_m,
+    from.b * from.a * from_m + to.b * to.a * to_m,
+    mix(from.a, to.a, progress)
+  );
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

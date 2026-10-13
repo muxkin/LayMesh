@@ -1,0 +1,44 @@
+[
+  {
+    "engine": "chromium",
+    "decodedFormats": 15,
+    "rasterSize": [
+      1890,
+      1417
+    ],
+    "pdfPages": 2,
+    "pdfVector": true,
+    "pptxEditableText": true,
+    "pptxEffectFallback": true,
+    "alphaAndDPI": true,
+    "passed": true
+  },
+  {
+    "engine": "firefox",
+    "decodedFormats": 15,
+    "rasterSize": [
+      1890,
+      1417
+    ],
+    "pdfPages": 2,
+    "pdfVector": true,
+    "pptxEditableText": true,
+    "pptxEffectFallback": true,
+    "alphaAndDPI": true,
+    "passed": true
+  },
+  {
+    "engine": "webkit",
+    "decodedFormats": 15,
+    "rasterSize": [
+      1890,
+      1417
+    ],
+    "pdfPages": 2,
+    "pdfVector": true,
+    "pptxEditableText": true,
+    "pptxEffectFallback": true,
+    "alphaAndDPI": true,
+    "passed": true
+  }
+]

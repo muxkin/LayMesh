@@ -1,0 +1,17 @@
+[
+  {
+    "browser": "chromium",
+    "automaticSameFontImport": true,
+    "errors": []
+  },
+  {
+    "browser": "firefox",
+    "automaticSameFontImport": true,
+    "errors": []
+  },
+  {
+    "browser": "webkit",
+    "automaticSameFontImport": true,
+    "errors": []
+  }
+]

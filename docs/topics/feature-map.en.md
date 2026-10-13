@@ -373,3 +373,7 @@ This map covers public functions, geometry members, LCSS properties and integrat
 | `css:transform-origin` | [→](lcss.en.md#css-compatibility) | [→](../../examples/manual/css-shadow-override.lay) | [→](../../examples/gallery/styles/libraries.lay) |
 | `css:backface-visibility` | [→](lcss.en.md#css-compatibility) | [→](../../examples/manual/css-shadow-override.lay) | [→](../../examples/gallery/styles/libraries.lay) |
 | `css:visibility` | [→](lcss.en.md#css-compatibility) | [→](../../examples/manual/css-shadow-override.lay) | [→](../../examples/gallery/styles/libraries.lay) |
+| `api:transition` | [→](page-transitions.en.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
+| `css:-laymesh-transition` | [→](page-transitions.en.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
+| `css:-laymesh-transition-duration` | [→](page-transitions.en.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
+| `css:-laymesh-transition-timing-function` | [→](page-transitions.en.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |

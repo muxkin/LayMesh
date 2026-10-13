@@ -1,0 +1,46 @@
+// Swirl — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/Swirl.glsl
+// Author: Sergey Kosarevsky
+// License: MIT
+// Description: Both images swirl around the center while crossfading
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+vec4 transition(vec2 UV)
+{
+	float Radius = 1.0;
+
+	float T = progress;
+
+	UV -= vec2( 0.5, 0.5 );
+
+	float Dist = length(UV);
+
+	if ( Dist < Radius )
+	{
+		float Percent = (Radius - Dist) / Radius;
+		float A = ( T <= 0.5 ) ? mix( 0.0, 1.0, T/0.5 ) : mix( 1.0, 0.0, (T-0.5)/0.5 );
+		float Theta = Percent * Percent * A * 8.0 * 3.14159;
+		float S = sin( Theta );
+		float C = cos( Theta );
+		UV = vec2( dot(UV, vec2(C, -S)), dot(UV, vec2(S, C)) );
+	}
+	UV += vec2( 0.5, 0.5 );
+
+	vec4 C0 = getFromColor(UV);
+	vec4 C1 = getToColor(UV);
+
+	return mix( C0, C1, T );
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

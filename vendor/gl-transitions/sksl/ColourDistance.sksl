@@ -1,0 +1,32 @@
+// ColourDistance — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/ColourDistance.glsl
+// Author: P-Seebauer
+// License: MIT
+// Description: Pixels switch to the incoming image in order of how close their colors are
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float power; 
+
+vec4 transition(vec2 p) {
+  vec4 fTex = getFromColor(p);
+  vec4 tTex = getToColor(p);
+  float m = step(distance(fTex, tTex), progress);
+  return mix(
+    mix(fTex, tTex, m),
+    tTex,
+    pow(progress, power)
+  );
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

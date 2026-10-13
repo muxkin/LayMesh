@@ -1,0 +1,177 @@
+//! Offline export codecs. No filesystem, source execution, or system font access.
+use laymesh_render::{DisplayList, ExportOptions};
+use pdf_writer::{Content, Finish, Name, Pdf, Rect, Ref};
+use serde_json::{Value, json};
+use std::{
+    cell::RefCell,
+    collections::{BTreeMap, HashMap},
+};
+use wasm_bindgen::prelude::*;
+fn err(e: impl std::fmt::Display) -> JsValue {
+    JsValue::from_str(&e.to_string())
+}
+fn options(raw: &str, format: &str) -> Result<ExportOptions, JsValue> {
+    let options: ExportOptions = serde_json::from_str(raw).map_err(err)?;
+    options.validate(format).map_err(err)?;
+    Ok(options)
+}
+thread_local! { static RESOURCES: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new()); }
+#[wasm_bindgen]
+pub fn clear_resources() {
+    RESOURCES.with(|r| r.borrow_mut().clear());
+}
+#[wasm_bindgen]
+pub fn register_resource(id: &str, bytes: &[u8]) {
+    RESOURCES.with(|r| r.borrow_mut().insert(id.into(), bytes.into()));
+}
+#[wasm_bindgen]
+pub fn dimensions(width: f64, height: f64, format: &str, raw: &str) -> Result<Vec<u32>, JsValue> {
+    let options = options(raw, format)?;
+    let (w, h) =
+        laymesh_render::raster_dimensions(width, height, options.dpi.unwrap_or(1200.), format)
+            .map_err(err)?;
+    Ok(vec![w, h])
+}
+#[wasm_bindgen]
+pub fn encode_pixels(
+    w: u32,
+    h: u32,
+    pixels: &[u8],
+    format: &str,
+    raw: &str,
+) -> Result<Vec<u8>, JsValue> {
+    let options = options(raw, format)?;
+    laymesh_render::encode_rgba(w, h, pixels, options.dpi.unwrap_or(1200.), format, &options)
+        .map_err(err)
+}
+#[wasm_bindgen]
+pub fn export_pdf(pages: &str, raw: &str) -> Result<Vec<u8>, JsValue> {
+    let options = options(raw, "pdf")?;
+    let pages: Vec<Value> = serde_json::from_str(pages).map_err(err)?;
+    if pages.is_empty() {
+        return Err(err("PDF has no pages"));
+    }
+    let mut pdf = Pdf::new();
+    let mut alloc = Ref::new(1);
+    let catalog = alloc.bump();
+    let root = alloc.bump();
+    pdf.catalog(catalog).pages(root);
+    let mut ids = Vec::new();
+    for page in pages {
+        let svg = page["svg"].as_str().ok_or_else(|| {
+            err("This older file has no vector export data; re-export it with LayMesh 0.6.3")
+        })?;
+        let width = page["width"]
+            .as_f64()
+            .ok_or_else(|| err("Missing page width"))?;
+        let height = page["height"]
+            .as_f64()
+            .ok_or_else(|| err("Missing page height"))?;
+        if ![width, height].iter().all(|v| v.is_finite() && *v > 0.) {
+            return Err(err("Invalid PDF page dimensions"));
+        }
+        let tree =
+            svg2pdf::usvg::Tree::from_str(svg, &svg2pdf::usvg::Options::default()).map_err(err)?;
+        let (chunk, form) = svg2pdf::to_chunk(
+            &tree,
+            svg2pdf::ConversionOptions {
+                embed_text: false,
+                raster_scale: (options.dpi.unwrap_or(1200.) / 96.) as f32,
+                ..Default::default()
+            },
+        )
+        .map_err(err)?;
+        let mut map = HashMap::new();
+        let chunk = chunk.renumber(|old| *map.entry(old).or_insert_with(|| alloc.bump()));
+        let form = map[&form];
+        let id = alloc.bump();
+        let content_id = alloc.bump();
+        ids.push(id);
+        let (w, h) = ((width * 72. / 25.4) as f32, (height * 72. / 25.4) as f32);
+        let mut p = pdf.page(id);
+        p.parent(root)
+            .media_box(Rect::new(0., 0., w, h))
+            .contents(content_id);
+        p.resources().x_objects().pair(Name(b"Page"), form);
+        p.finish();
+        let mut content = Content::new();
+        content
+            .transform([w, 0., 0., h, 0., 0.])
+            .x_object(Name(b"Page"));
+        pdf.stream(content_id, &content.finish());
+        pdf.extend(&chunk);
+    }
+    pdf.pages(root)
+        .kids(ids.iter().copied())
+        .count(ids.len() as i32);
+    Ok(pdf.finish())
+}
+#[wasm_bindgen]
+pub struct PptxJob {
+    list: DisplayList,
+    dpi: f64,
+    requests: Vec<Value>,
+    images: Vec<Vec<u8>>,
+}
+#[wasm_bindgen]
+impl PptxJob {
+    #[wasm_bindgen(constructor)]
+    pub fn new(raw_list: &str, raw_options: &str) -> Result<PptxJob, JsValue> {
+        let options = options(raw_options, "pptx")?;
+        let dpi = options.dpi.unwrap_or(1200.);
+        let mut list: DisplayList = serde_json::from_str(raw_list).map_err(err)?;
+        RESOURCES.with(|resources| {
+            let resources = resources.borrow();
+            for (id, r) in &mut list.resources {
+                if let Some(bytes) = resources.get(id) {
+                    r.data = bytes.clone();
+                }
+            }
+        });
+        let mut requests = Vec::new();
+        laymesh_render::pptx::render_pptx_list(&list, dpi, &mut |list, rect, width, height| {
+            let mut list = list.clone(); for r in list.resources.values_mut() { r.data.clear(); }
+            requests.push(json!({"list":list,"rect":[rect.x0,rect.y0,rect.x1,rect.y1],"width":width,"height":height}));
+            Ok(Vec::new())
+        }).map_err(err)?;
+        Ok(Self {
+            list,
+            dpi,
+            images: vec![Vec::new(); requests.len()],
+            requests,
+        })
+    }
+    pub fn requests(&self) -> String {
+        serde_json::to_string(&self.requests).unwrap()
+    }
+    pub fn set_image(&mut self, index: usize, bytes: &[u8]) -> Result<(), JsValue> {
+        let image = self
+            .images
+            .get_mut(index)
+            .ok_or_else(|| err("Invalid PPTX fallback index"))?;
+        *image = bytes.into();
+        Ok(())
+    }
+    pub fn finish(&self) -> Result<Vec<u8>, JsValue> {
+        if self.images.iter().any(Vec::is_empty) {
+            return Err(err("PPTX fallback image missing"));
+        }
+        let mut i = 0;
+        let (bytes, _) =
+            laymesh_render::pptx::render_pptx_list(&self.list, self.dpi, &mut |_, _, _, _| {
+                let data = self.images[i].clone();
+                i += 1;
+                Ok(data)
+            })
+            .map_err(err)?;
+        Ok(bytes)
+    }
+    pub fn warnings(&self) -> Result<String, JsValue> {
+        let (_, warnings) =
+            laymesh_render::pptx::render_pptx_list(&self.list, self.dpi, &mut |_, _, _, _| {
+                Ok(Vec::new())
+            })
+            .map_err(err)?;
+        Ok(serde_json::to_string(&warnings).unwrap())
+    }
+}

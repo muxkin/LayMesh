@@ -1,0 +1,50 @@
+// static_wipe — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/static_wipe.glsl
+// Author: Ben Lucas
+// License: MIT
+// Description: A wipe from top to bottom with a band of TV static at its edge
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+float rnd (vec2 st) {
+    return fract(sin(dot(st.xy,
+                         vec2(10,70)))*
+        12345.5453123);
+}
+
+uniform int u_transitionUpToDown; 
+
+uniform float u_max_static_span; 
+
+vec4 transition (vec2 uv) {
+  
+
+  float span = u_max_static_span*pow(sin(3.14159265359*progress),0.5);
+  
+  float transitionEdge = (u_transitionUpToDown != 0) ? 1.0-uv.y : uv.y;
+  float mixRatio = 1.0 - step(progress, transitionEdge);
+
+  vec4 transitionMix = mix(
+    getFromColor(uv),
+    getToColor(uv),
+    mixRatio
+  );
+  
+  float noiseEnvelope = smoothstep(progress-span, progress, transitionEdge) * (1.0 - smoothstep(progress, progress + span, transitionEdge));
+  vec4 noise = vec4(vec3(rnd(uv*(1.0+progress))), 1.0);
+  
+
+  return mix(transitionMix, noise, noiseEnvelope);
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

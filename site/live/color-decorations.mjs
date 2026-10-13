@@ -70,5 +70,5 @@ export function colorDecorations(editor,file,query){
   update(update){if(update.docChanged)this.schedule();}
   destroy(){this.dead=true;clearTimeout(this.timer);if(activeSession?.view===this.view)activeSession.control.dispose();}
  });
- return [field,plugin,EditorView.theme({'.laymesh-color-swatch':{display:'inline-block',width:'12px',height:'12px',border:'1px solid #adc9ba',borderRadius:'2px',marginRight:'4px',padding:'0',cursor:'pointer',verticalAlign:'middle'}})];
+ return [field,plugin,EditorView.theme({'.laymesh-color-swatch':{boxSizing:'border-box',minWidth:'12px',maxWidth:'12px',minHeight:'12px',maxHeight:'12px',lineHeight:'0',gap:'0',display:'inline-block',width:'12px',height:'12px',border:'1px solid #adc9ba',borderRadius:'2px',marginRight:'4px',padding:'0',cursor:'pointer',verticalAlign:'middle'}})];
 }

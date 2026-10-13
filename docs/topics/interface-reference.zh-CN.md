@@ -138,6 +138,7 @@
 | 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
 | --- | --- | --- | --- |
 | `name` | string | 文档名称 | "Untitled" |
+| `transition` | transition\|string | 进入页面的转场；页面覆盖文档默认值，none 关闭，省略继承 LCSS | — |
 
 ### 最小完整示例
 
@@ -171,6 +172,7 @@ for p in pages {
 | `src` | string | 相对于调用所在文件的本地 .lay 路径 | — |
 | `id` | string | 稳定且唯一的页面标识；默认文件名 | — |
 | `name` | string | 显示名称；默认 id | — |
+| `transition` | transition\|string | 进入页面的转场；页面覆盖文档默认值，none 关闭，省略继承 LCSS | — |
 
 ### 最小完整示例
 
@@ -191,11 +193,44 @@ for p in pages {
 
 [概念与常见错误](documents.zh-CN.md#page) · [组合源码](../../examples/document/report.laydoc)
 
+## transition
+
+配置 GL Transitions 页间转场，纹理路径相对于声明文件。
+
+返回：可复用的页间转场描述，用于 document 或 page 的 transition 参数。
+
+必需：`name`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `name` | string | 效果名称或 none | — |
+| `duration` | time | 转场时长，使用 ms 或 s 单位 | 700ms |
+| `easing` | string | 缓动函数 | "ease-in-out" |
+| `params` | dict | 效果参数，使用 kebab-case 名称 | {} |
+| `textures` | dict | 额外纹理相对路径 | {} |
+
+### 最小完整示例
+
+```lay
+doc = document(
+    name="GL Transitions · Page turns",
+    transition=transition(name="InvertedPageCurl", duration=700ms, easing="ease-in-out")
+)
+doc.add(page(src="pages/start.lay", id="start", name="Start"))
+doc.add(page(src="pages/curl.lay", id="curl", name="Page curl"))
+doc.add(page(src="pages/cube.lay", id="cube", name="Cube",
+    transition=transition(name="cube", params={"persp":0.6})))
+doc.add(page(src="pages/mask.lay", id="mask", name="Texture reveal",
+    transition=transition(name="luma", textures={"luma":"assets/mask.png"})))
+```
+
+[概念与常见错误](page-transitions.zh-CN.md#transition) · [组合源码](../../examples/animation/transitions/demo.laydoc)
+
 ## document.add
 
-追加页面引用；同一文档中 id 必须唯一。切换动画尚未实现。
+追加页面引用；同一文档中 id 必须唯一。转场通过 document/page 的 transition 参数设置。
 
-返回：追加页面引用；同一文档中 id 必须唯一。切换动画尚未实现。
+返回：追加页面引用；同一文档中 id 必须唯一。转场通过 document/page 的 transition 参数设置。
 
 位置参数：`page`.
 
@@ -4204,6 +4239,9 @@ CSS 属性支持由编译器、补全、悬停与颜色编辑共享。不支持�
 | `transform-origin` | motion / none | 动画变换原点；百分比相对未变换布局框。 |
 | `backface-visibility` | motion / none | visible 或 hidden；三维翻转时是否绘制背面。 |
 | `visibility` | motion / none | visible 或 hidden；改变动画可见性，不重排布局。 |
+| `-laymesh-transition` | text / none | 进入此页的 GL Transitions 效果名；none 直接切换。 |
+| `-laymesh-transition-duration` | text / none | 页间转场时长，ms 或 s。 |
+| `-laymesh-transition-timing-function` | text / none | 页间转场缓动，支持 cubic-bezier() 和 steps()。 |
 
 ## 几何视图类型
 

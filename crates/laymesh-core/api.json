@@ -18,6 +18,13 @@
           "description": "文档名称",
           "descriptionEn": "Document name",
           "default": "\"Untitled\""
+        },
+        {
+          "name": "transition",
+          "type": "transition|string",
+          "description": "进入页面的转场；页面覆盖文档默认值，none 关闭，省略继承 LCSS",
+          "descriptionEn": "Entering transition; page overrides document default, none disables, omitted inherits LCSS",
+          "unit": "none"
         }
       ],
       "positional": []
@@ -55,18 +62,80 @@
           "unit": "none",
           "description": "显示名称；默认 id",
           "descriptionEn": "Display name; defaults to id"
+        },
+        {
+          "name": "transition",
+          "type": "transition|string",
+          "description": "进入页面的转场；页面覆盖文档默认值，none 关闭，省略继承 LCSS",
+          "descriptionEn": "Entering transition; page overrides document default, none disables, omitted inherits LCSS",
+          "unit": "none"
         }
       ],
       "positional": []
     },
     {
+      "name": "transition",
+      "description": "配置 GL Transitions 页间转场，纹理路径相对于声明文件。",
+      "descriptionEn": "Configure a GL Transitions page transition; texture paths are relative to this declaration.",
+      "returnType": "transition",
+      "required": [
+        "name"
+      ],
+      "positional": [],
+      "parameters": [
+        {
+          "name": "name",
+          "type": "string",
+          "description": "效果名称或 none",
+          "descriptionEn": "Effect name or none",
+          "unit": "none"
+        },
+        {
+          "name": "duration",
+          "type": "time",
+          "description": "转场时长，使用 ms 或 s 单位",
+          "descriptionEn": "Duration in ms or s",
+          "unit": "none",
+          "default": "700ms"
+        },
+        {
+          "name": "easing",
+          "type": "string",
+          "description": "缓动函数",
+          "descriptionEn": "Easing",
+          "unit": "none",
+          "default": "\"ease-in-out\""
+        },
+        {
+          "name": "params",
+          "type": "dict",
+          "description": "效果参数，使用 kebab-case 名称",
+          "descriptionEn": "Effect parameters in kebab-case",
+          "unit": "none",
+          "default": "{}"
+        },
+        {
+          "name": "textures",
+          "type": "dict",
+          "description": "额外纹理相对路径",
+          "descriptionEn": "Extra texture relative paths",
+          "unit": "none",
+          "default": "{}"
+        }
+      ],
+      "returns": {
+        "zh": "可复用的页间转场描述，用于 document 或 page 的 transition 参数。",
+        "en": "A reusable page-transition descriptor for document or page."
+      }
+    },
+    {
       "name": "document.add",
-      "description": "追加页面引用；同一文档中 id 必须唯一。切换动画尚未实现。",
-      "descriptionEn": "Append a page reference with a unique ID. Page transitions are not implemented.",
+      "description": "追加页面引用；同一文档中 id 必须唯一。转场通过 document/page 的 transition 参数设置。",
+      "descriptionEn": "Append a page reference with a unique ID. Configure transitions with document/page transition parameters.",
       "returnType": "page",
       "returns": {
-        "zh": "追加页面引用；同一文档中 id 必须唯一。切换动画尚未实现。",
-        "en": "Append a page reference with a unique ID. Page transitions are not implemented."
+        "zh": "追加页面引用；同一文档中 id 必须唯一。转场通过 document/page 的 transition 参数设置。",
+        "en": "Append a page reference with a unique ID. Configure transitions with document/page transition parameters."
       },
       "required": [
         "page"
@@ -19319,6 +19388,30 @@
       "descriptionEn": "visible or hidden; changes animated visibility without reflow.",
       "unit": "none",
       "default": "visible"
+    },
+    {
+      "name": "-laymesh-transition",
+      "type": "text",
+      "description": "进入此页的 GL Transitions 效果名；none 直接切换。",
+      "descriptionEn": "GL Transitions effect on entering this page; none switches immediately.",
+      "unit": "none",
+      "default": "none"
+    },
+    {
+      "name": "-laymesh-transition-duration",
+      "type": "text",
+      "description": "页间转场时长，ms 或 s。",
+      "descriptionEn": "Page transition duration in ms or s.",
+      "unit": "none",
+      "default": "700ms"
+    },
+    {
+      "name": "-laymesh-transition-timing-function",
+      "type": "text",
+      "description": "页间转场缓动，支持 cubic-bezier() 和 steps()。",
+      "descriptionEn": "Page transition easing, including cubic-bezier() and steps().",
+      "unit": "none",
+      "default": "ease-in-out"
     }
   ]
 }

@@ -11,6 +11,8 @@ coverage/
 !extensions/vscode/icons/*.svg
 !examples/assets/*.svg
 !examples/assets/*.png
+!examples/animation/transitions/assets/mask.png
+!site/media/page-transitions-midpoints.png
 !examples/*-preview.png
 !examples/showcase-1200dpi.png
 !examples/showcase.pdf

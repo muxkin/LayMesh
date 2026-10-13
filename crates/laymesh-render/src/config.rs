@@ -142,6 +142,7 @@ pub fn export_options(
                     | "ffmpeg"
                     | "animation"
                     | "animation_formats"
+                    | "html"
                     | "svg"
                     | "pdf"
                     | "pptx"
@@ -162,7 +163,7 @@ pub fn export_options(
     }) {
         return Err(error("Unknown export configuration key"));
     }
-    if format != "svg" {
+    if !matches!(format, "svg" | "html") {
         if let Some(dpi) = common.get("dpi") {
             value["dpi"] = dpi.clone();
         }

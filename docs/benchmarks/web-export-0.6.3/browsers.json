@@ -1,0 +1,44 @@
+[
+  {
+    "engine": "chromium",
+    "formats": 15,
+    "defaultDPI": 1200,
+    "defaultTiff": "lzw",
+    "zeroCompiles": true,
+    "settingsRoundTrip": true,
+    "playbackExport": true,
+    "fileHandleWriteAndFailure": true,
+    "cancelled": true,
+    "networkRequests": [],
+    "errors": [],
+    "passed": true
+  },
+  {
+    "engine": "firefox",
+    "formats": 15,
+    "defaultDPI": 1200,
+    "defaultTiff": "lzw",
+    "zeroCompiles": true,
+    "settingsRoundTrip": true,
+    "playbackExport": true,
+    "fileHandleWriteAndFailure": true,
+    "cancelled": true,
+    "networkRequests": [],
+    "errors": [],
+    "passed": true
+  },
+  {
+    "engine": "webkit",
+    "formats": 15,
+    "defaultDPI": 1200,
+    "defaultTiff": "lzw",
+    "zeroCompiles": true,
+    "settingsRoundTrip": true,
+    "playbackExport": true,
+    "fileHandleWriteAndFailure": true,
+    "cancelled": true,
+    "networkRequests": [],
+    "errors": [],
+    "passed": true
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "native": {
+    "names": [
+      "cube",
+      "fade",
+      null,
+      "cube"
+    ],
+    "compiled": 3,
+    "passed": true
+  },
+  "web": {
+    "names": [
+      "cube",
+      "fade",
+      null,
+      "cube"
+    ],
+    "compiled": 3,
+    "errors": [],
+    "passed": true
+  }
+}

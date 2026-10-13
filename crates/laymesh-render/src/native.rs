@@ -78,6 +78,7 @@ mod tests {
     use super::*;
     fn scene() -> Scene {
         Scene {
+            page_transition: None,
             animation: None,
             schema_version: 8,
             width: 25.4,
@@ -89,6 +90,7 @@ mod tests {
             nodes: vec![],
             warnings: vec![],
             fonts: Default::default(),
+            font_requests: Default::default(),
         }
     }
 
@@ -186,6 +188,7 @@ mod extraction_tests {
         formula["x"] = json!(2.);
         formula["y"] = json!(10.);
         let scene = Scene {
+            page_transition: None,
             animation: None,
             schema_version: 8,
             width: 60.,
@@ -196,6 +199,7 @@ mod extraction_tests {
             export_dpi: 96.,
             nodes: vec![text, formula],
             fonts: fs.assets,
+            font_requests: Default::default(),
             warnings,
         };
         let bytes = render_pdf(&scene).unwrap();

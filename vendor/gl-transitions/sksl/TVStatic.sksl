@@ -1,0 +1,41 @@
+// TVStatic — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/TVStatic.glsl
+// Author: Brandon Anzaldi
+// License: MIT
+// Description: Cuts to full-screen TV static, then to the incoming image
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float offset; 
+
+highp float noise(vec2 co)
+{
+    highp float a = 12.9898;
+    highp float b = 78.233;
+    highp float c = 43758.5453;
+    highp float dt= dot(co.xy * progress, vec2(a, b));
+    highp float sn= mod(dt,3.14);
+    return fract(sin(sn) * c);
+}
+
+vec4 transition(vec2 p) {
+  if (progress < offset) {
+    return getFromColor(p);
+  } else if (progress > (1.0 - offset)) {
+    return getToColor(p);
+  } else {
+    return vec4(vec3(noise(p)), 1.0);
+  }
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

@@ -62,6 +62,7 @@ struct Writer<'a> {
     warnings: Vec<Diagnostic>,
     fonts: BTreeSet<String>,
     bounds: Vec<Rect>,
+    rasterize: &'a mut dyn FnMut(&DisplayList, Rect, u32, u32) -> Result<Vec<u8>>,
 }
 impl Writer<'_> {
     fn id(&mut self) -> u32 {
@@ -178,20 +179,14 @@ impl Writer<'_> {
             nodes: vec![node],
             ..self.list.clone()
         };
-        let frame = raster::render_region(
+        let bytes = (self.rasterize)(
             &list,
             rect,
             (rect.width() * density).round() as u32,
             (rect.height() * density).round() as u32,
         )?;
-        let im = image::RgbaImage::from_raw(frame.width, frame.height, frame.rgba)
-            .ok_or_else(|| error("PPTX 图片尺寸无效"))?;
-        let mut bytes = Cursor::new(Vec::new());
-        image::DynamicImage::ImageRgba8(im)
-            .write_to(&mut bytes, image::ImageFormat::Png)
-            .map_err(|e| error(e.to_string()))?;
         Ok(self.picture(
-            bytes.into_inner(),
+            bytes,
             "png",
             rect,
             0.,
@@ -366,6 +361,18 @@ impl Writer<'_> {
         if !n.effects.is_empty() {
             return self.fallback(n, parent, inherited, name, "滤镜或特效");
         }
+        if !formula && n.hint.get("exportText").is_some() {
+            let mut text = n.clone();
+            let mut kind = n.hint["exportText"].clone();
+            kind["kind"] = json!("glyphs");
+            kind["resource"] = json!("");
+            kind["glyphs"] = json!([]);
+            kind["outlines"] = json!([]);
+            text.kind = serde_json::from_value(kind).map_err(|e| error(e.to_string()))?;
+            if let Some(result) = self.text(&text, t, opacity, name)? {
+                return Ok(result);
+            }
+        }
         if let DrawKind::Group {
             children,
             clip,
@@ -483,6 +490,7 @@ fn similarity(t: Affine) -> Option<(f64, f64)> {
 fn placed_rect(t: Affine, r: Rect, scale: f64) -> Rect {
     Rect::from_center_size(t * r.center(), (r.width() * scale, r.height() * scale))
 }
+#[cfg(feature = "native")]
 fn preserve_jpeg(value: &mut Json) {
     if let (Some(key), Some(hash)) = (
         value["rasterKey"].as_str(),
@@ -497,6 +505,7 @@ fn preserve_jpeg(value: &mut Json) {
         }
     }
 }
+#[cfg(feature = "native")]
 fn normalize_caps(nodes: &mut [Json]) {
     for n in nodes {
         if n["kind"] == "image" && n["sourceImage"].is_object() {
@@ -536,6 +545,7 @@ fn normalize_caps(nodes: &mut [Json]) {
         }
     }
 }
+#[cfg(feature = "native")]
 pub fn render_pptx(scene: &Scene, options: &ExportOptions) -> Result<(Vec<u8>, Vec<Diagnostic>)> {
     options.validate("pptx")?;
     if ![scene.width, scene.height]
@@ -553,9 +563,39 @@ pub fn render_pptx(scene: &Scene, options: &ExportOptions) -> Result<(Vec<u8>, V
     let mut lowered = scene.clone();
     normalize_caps(&mut lowered.nodes);
     let list = to_display_list(&lowered)?;
+    render_pptx_list(&list, dpi, &mut |list, rect, w, h| {
+        let frame = raster::render_region(list, rect, w, h)?;
+        let im = image::RgbaImage::from_raw(frame.width, frame.height, frame.rgba)
+            .ok_or_else(|| error("PPTX 图片尺寸无效"))?;
+        let mut bytes = Cursor::new(Vec::new());
+        image::DynamicImage::ImageRgba8(im)
+            .write_to(&mut bytes, image::ImageFormat::Png)
+            .map_err(|e| error(e.to_string()))?;
+        Ok(bytes.into_inner())
+    })
+}
+
+/// DrawingML is platform-independent; the host supplies raster fallbacks only.
+pub fn render_pptx_list(
+    list: &DisplayList,
+    dpi: f64,
+    rasterize: &mut dyn FnMut(&DisplayList, Rect, u32, u32) -> Result<Vec<u8>>,
+) -> Result<(Vec<u8>, Vec<Diagnostic>)> {
+    if ![list.width, list.height]
+        .into_iter()
+        .all(|v| (25.4..=1422.4).contains(&v))
+    {
+        return Err(error("PPTX 画布宽高须为 25.4–1422.4 mm（1–56 英寸）"));
+    }
+    ExportOptions {
+        dpi: Some(dpi),
+        ..Default::default()
+    }
+    .validate("pptx")?;
     let mut writer = Writer {
-        list: &list,
+        list,
         dpi,
+        rasterize,
         next_id: 2,
         media: vec![],
         warnings: vec![],
@@ -577,9 +617,9 @@ pub fn render_pptx(scene: &Scene, options: &ExportOptions) -> Result<(Vec<u8>, V
             Loc::default(),
         ));
     }
-    Ok((package(scene, &body, &writer.media)?, writer.warnings))
+    Ok((package(list, &body, &writer.media)?, writer.warnings))
 }
-fn package(scene: &Scene, body: &str, media: &[Media]) -> Result<Vec<u8>> {
+fn package(scene: &DisplayList, body: &str, media: &[Media]) -> Result<Vec<u8>> {
     let mut zip = ZipWriter::new(Cursor::new(Vec::new()));
     let mut add = |path: &str, data: &[u8]| -> Result<()> {
         zip.start_file(

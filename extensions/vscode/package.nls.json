@@ -51,5 +51,8 @@
   "config.ffmpeg.directory": "Private FFmpeg directory shared with CLI and Python; defaults to user data.",
   "config.ffmpeg.searchPaths": "Additional FFmpeg directories checked before system PATH.",
   "config.ffmpeg.downloadSource": "Download source: auto, upstream or mirror; only downloads after confirmation when missing.",
-  "config.ffmpeg.mirrorBaseUrl": "FFmpeg-static mirror base URL; defaults to npmmirror."
+  "config.ffmpeg.mirrorBaseUrl": "FFmpeg-static mirror base URL; defaults to npmmirror.",
+  "config.export.html.imageCompression": "HTML/ZIP image compression: automatic WebP, original bytes, or lossless.",
+  "config.export.html.imageQuality": "HTML/ZIP automatic image quality; source pixel dimensions are retained.",
+  "config.export.html.embedFonts": "Include used system fonts in editable HTML/ZIP. Project fonts are always preserved."
 }

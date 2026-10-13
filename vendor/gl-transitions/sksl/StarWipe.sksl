@@ -1,0 +1,62 @@
+// StarWipe — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/StarWipe.glsl
+// Author: Ben Lucas
+// License: MIT
+// Description: A growing star reveals the incoming image
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float border_thickness;
+uniform float star_rotation;
+
+uniform vec4 border_color; 
+
+uniform vec2 star_center;
+
+vec2 rotate(vec2 v, float theta) {
+    float cosTheta = cos(theta);
+    float sinTheta = sin(theta);
+
+    return vec2(
+        cosTheta * v.x - sinTheta * v.y,
+        sinTheta * v.x + cosTheta * v.y
+    );
+}
+
+bool inStar(vec2 uv, vec2 center, float radius){
+  vec2 uv_centered = uv - center;
+  uv_centered = rotate(uv_centered, star_rotation * 1.2566370614359172);
+  float theta = atan(uv_centered.y, uv_centered.x) + 3.141592653589793;
+
+  vec2 uv_rotated = rotate(uv_centered, -1.2566370614359172 * (floor(theta / 1.2566370614359172) + 0.5));
+
+  float slope = 0.3;
+  if(uv_rotated.y > 0.0){
+      return (radius + uv_rotated.x * slope > uv_rotated.y);
+  } else {
+     return (-radius - uv_rotated.x * slope < uv_rotated.y);
+  }
+}
+
+vec4 transition (vec2 uv) {
+  float progressScaled = (2.0 * border_thickness + 1.0) * progress - border_thickness;
+  if(inStar(uv, star_center, progressScaled)){
+    return getToColor(uv);
+  } else if(inStar(uv, star_center, progressScaled+border_thickness)){
+    return border_color;
+  } else {
+    return getFromColor(uv);
+  }
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

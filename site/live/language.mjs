@@ -9,9 +9,9 @@ import {colorDecorations} from './color-decorations.mjs';
 import {StreamLanguage} from '@codemirror/language';
 const en=document.documentElement.lang==='en';
 let worker,serial=0,workspaceSerial=0;const workspaces=new WeakMap();const requests=new Map();
-function query(editor,file,method,offset=0,params={}){
+export function query(editor,file,method,offset=0,params={}){
  if(!workspaces.has(editor))workspaces.set(editor,++workspaceSerial);
- if(!worker){worker=new Worker(new URL('language-worker.js',import.meta.url),{type:'module'});worker.onmessage=({data})=>{const pending=requests.get(data.id);if(pending){clearTimeout(pending.timer);requests.delete(data.id);pending.resolve(data.error?undefined:data.result);}};worker.onerror=()=>{for(const p of requests.values()){clearTimeout(p.timer);p.resolve(undefined);}requests.clear();worker.terminate();worker=null;};}
+ if(!worker){worker=editor.createLanguageWorker?.()||new Worker(new URL('language-worker.js',import.meta.url),{type:'module'});worker.onmessage=({data})=>{const pending=requests.get(data.id);if(pending){clearTimeout(pending.timer);requests.delete(data.id);pending.resolve(data.error?undefined:data.result);}};worker.onerror=()=>{for(const p of requests.values()){clearTimeout(p.timer);p.resolve(undefined);}requests.clear();worker.terminate();worker=null;};}
  return new Promise(resolve=>{const id=++serial,timer=setTimeout(()=>{requests.delete(id);resolve(undefined);},5000);requests.set(id,{resolve,timer});worker.postMessage({id,workspace:workspaces.get(editor),file,offset,method,params,files:{...editor.files},locale:en?'en':'zh'});});
 }
 // Stateful highlighting preserves multi-line strings and embedded LCSS regions.
@@ -62,6 +62,7 @@ export function languageSupport(editor,file){
    const title=document.createElement('p');title.textContent=en?'Choose a definition':'选择定义';picker.append(title);
    target=await new Promise(resolve=>{for(const d of locations){const b=document.createElement('button');b.textContent=d.uri+' · '+d.from;b.onclick=()=>{picker.close();resolve(d);};picker.append(b);}picker.addEventListener('cancel',()=>resolve(null),{once:true});document.body.append(picker);picker.showModal();});picker.remove();if(!target)return;
   }
+  if(editor.openDefinition){await editor.openDefinition(target,uri=>query(editor,uri,'stylesheetContent'));return;}
   if(target.uri.startsWith('laymesh-library:/')){
    const content=await query(editor,target.uri,'stylesheetContent');if(!content)return;
    const dialog=document.createElement('dialog');dialog.className='library-source-dialog';const title=document.createElement('p');title.textContent=target.uri+' · '+(en?'Read only':'只读');

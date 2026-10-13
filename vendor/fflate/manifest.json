@@ -1,0 +1,9 @@
+{
+  "version": "0.8.2",
+  "source": "https://registry.npmjs.org/fflate/-/fflate-0.8.2.tgz",
+  "tarball_sha256": "61fd5061e2fc8e5e3e3129f7f2fec7bd78a313e1bf4becbf1cc1cc9998d141dc",
+  "files": {
+    "LICENSE": "805f6cb28bb8b6d3a0badd83c93bccd9671fa01a3b4b92b7042b0743325ac243",
+    "fflate.mjs": "8cc1f687e0159e977addb6b85e274dbd11e622cf151f4fcb7b85d49622ea43e7"
+  }
+}

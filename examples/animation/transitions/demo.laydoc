@@ -1,0 +1,10 @@
+doc = document(
+    name="GL Transitions · Page turns",
+    transition=transition(name="InvertedPageCurl", duration=700ms, easing="ease-in-out")
+)
+doc.add(page(src="pages/start.lay", id="start", name="Start"))
+doc.add(page(src="pages/curl.lay", id="curl", name="Page curl"))
+doc.add(page(src="pages/cube.lay", id="cube", name="Cube",
+    transition=transition(name="cube", params={"persp":0.6})))
+doc.add(page(src="pages/mask.lay", id="mask", name="Texture reveal",
+    transition=transition(name="luma", textures={"luma":"assets/mask.png"})))

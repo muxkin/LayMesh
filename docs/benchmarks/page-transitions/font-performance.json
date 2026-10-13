@@ -1,0 +1,49 @@
+{
+  "environment": "Headless Chromium; synthetic catalog, four real DOM pickers; SFNT Blob reads use DejaVuSans fixture, warm filesystem cache",
+  "results": [
+    {
+      "version": "before",
+      "count": 1005,
+      "connectMs": 4.799999952316284,
+      "indexMs": 756.8000000715256,
+      "nameTableReads": 4020,
+      "searchP95Ms": 1.5,
+      "selectionP95Ms": 0.10000002384185791,
+      "refreshP95Ms": 7,
+      "selections": 80
+    },
+    {
+      "version": "before",
+      "count": 5000,
+      "connectMs": 3.200000047683716,
+      "indexMs": 3809.600000023842,
+      "nameTableReads": 20000,
+      "searchP95Ms": 4.399999976158142,
+      "selectionP95Ms": 0.10000002384185791,
+      "refreshP95Ms": 25.09999990463257,
+      "selections": 80
+    },
+    {
+      "version": "after",
+      "count": 1005,
+      "connectMs": 0.6999999284744263,
+      "indexMs": 433.1999999284744,
+      "nameTableReads": 2010,
+      "searchP95Ms": 0.6000000238418579,
+      "selectionP95Ms": 0.10000002384185791,
+      "refreshP95Ms": 0.40000009536743164,
+      "selections": 81
+    },
+    {
+      "version": "after",
+      "count": 5000,
+      "connectMs": 3.100000023841858,
+      "indexMs": 2066.899999976158,
+      "nameTableReads": 10000,
+      "searchP95Ms": 1.7000000476837158,
+      "selectionP95Ms": 0.10000002384185791,
+      "refreshP95Ms": 3.200000047683716,
+      "selections": 81
+    }
+  ]
+}

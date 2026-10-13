@@ -1,6 +1,6 @@
 # Third-party notices
 
-The native executable and WebAssembly module contain the following locked Rust dependencies. Original license texts are in `licenses/`. KaTeX formula fonts are under SIL OFL 1.1; their FONT_NOTICE and OFL text are included. Colormap LUTs are derived from Matplotlib 3.11.2, quantized to 8-bit RGB with native reversed LUTs and category metadata. Matplotlib copyright and license are retained in Matplotlib-3.11.2-LICENSE. No Matplotlib runtime is bundled. No body fonts are bundled.
+The native executable and WebAssembly module contain the following locked Rust dependencies. Original license texts are in `licenses/`. KaTeX formula fonts are under SIL OFL 1.1; their FONT_NOTICE and OFL text are included. Colormap LUTs are derived from Matplotlib 3.11.2, quantized to 8-bit RGB with native reversed LUTs and category metadata. Matplotlib copyright and license are retained in Matplotlib-3.11.2-LICENSE. No Matplotlib runtime is bundled. No body fonts are bundled. The editable web workbench includes Headless Tree 1.7.0, jQuery-contextMenu 2.10.2 and a private jQuery 3.7.1; all use MIT licenses and pinned local assets with no CDN. Page effects reuse GL Transitions 1.74.0 (MIT, BSD-2-Clause and BSD-3-Clause); upstream shader sources and conversion tools are pinned in vendor/gl-transitions. Per-effect attribution and license texts are in licenses/GL-Transitions.txt.
 
 | Package | Version | License |
 | --- | --- | --- |
@@ -18,6 +18,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | bindgen | 0.72.1 | BSD-3-Clause |
 | bit-set | 0.8.0 | Apache-2.0 OR MIT |
 | bit-vec | 0.8.0 | Apache-2.0 OR MIT |
+| bitflags | 1.3.2 | MIT/Apache-2.0 |
 | bitflags | 2.13.2 | MIT OR Apache-2.0 |
 | block-buffer | 0.10.4 | MIT OR Apache-2.0 |
 | block-buffer | 0.12.1 | MIT OR Apache-2.0 |
@@ -89,6 +90,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | getrandom | 0.2.17 | MIT OR Apache-2.0 |
 | getrandom | 0.3.4 | MIT OR Apache-2.0 |
 | getrandom | 0.4.3 | MIT OR Apache-2.0 |
+| gif | 0.13.3 | MIT OR Apache-2.0 |
 | gif | 0.14.2 | MIT OR Apache-2.0 |
 | glob | 0.3.4 | MIT OR Apache-2.0 |
 | half | 2.7.1 | MIT OR Apache-2.0 |
@@ -118,6 +120,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | idna_adapter | 1.2.2 | Apache-2.0 OR MIT |
 | image | 0.25.10 | MIT OR Apache-2.0 |
 | image-webp | 0.2.4 | MIT OR Apache-2.0 |
+| imagesize | 0.13.0 | MIT |
 | imagesize | 0.14.0 | MIT |
 | indexmap | 2.14.2 | Apache-2.0 OR MIT |
 | inout | 0.1.4 | MIT OR Apache-2.0 |
@@ -127,6 +130,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | jobserver | 0.1.35 | MIT OR Apache-2.0 |
 | jpeg-encoder | 0.7.1 | (MIT OR Apache-2.0) AND IJG |
 | js-sys | 0.3.106 | MIT OR Apache-2.0 |
+| kurbo | 0.11.3 | Apache-2.0 OR MIT |
 | kurbo | 0.13.1 | Apache-2.0 OR MIT |
 | lazy_static | 1.5.1 | MIT OR Apache-2.0 |
 | libc | 0.2.190 | MIT OR Apache-2.0 |
@@ -157,6 +161,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | objc2 | 0.6.5 | MIT |
 | objc2-encode | 4.1.0 | MIT |
 | once_cell | 1.21.4 | MIT OR Apache-2.0 |
+| pdf-writer | 0.12.1 | MIT OR Apache-2.0 |
 | percent-encoding | 2.3.2 | MIT OR Apache-2.0 |
 | phf | 0.11.3 | MIT |
 | phf | 0.14.0 | MIT |
@@ -169,6 +174,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | pico-args | 0.5.0 | MIT |
 | pin-project-lite | 0.2.17 | Apache-2.0 OR MIT |
 | pkg-config | 0.3.34 | MIT OR Apache-2.0 |
+| png | 0.17.16 | MIT OR Apache-2.0 |
 | png | 0.18.1 | MIT OR Apache-2.0 |
 | polycool | 0.4.0 | MIT OR Apache-2.0 |
 | potential_utf | 0.1.6 | Unicode-3.0 |
@@ -203,6 +209,8 @@ The native executable and WebAssembly module contain the following locked Rust d
 | regex-lite | 0.1.9 | MIT OR Apache-2.0 |
 | regex-syntax | 0.8.11 | MIT OR Apache-2.0 |
 | reqwest | 0.12.28 | MIT OR Apache-2.0 |
+| resvg | 0.45.1 | Apache-2.0 OR MIT |
+| rgb | 0.8.53 | MIT |
 | ring | 0.17.14 | Apache-2.0 AND ISC |
 | roxmltree | 0.20.0 | MIT OR Apache-2.0 |
 | roxmltree | 0.21.1 | MIT OR Apache-2.0 |
@@ -244,6 +252,8 @@ The native executable and WebAssembly module contain the following locked Rust d
 | strict-num | 0.1.1 | MIT |
 | stringprep | 0.1.5 | MIT/Apache-2.0 |
 | subtle | 2.6.1 | BSD-3-Clause |
+| svg2pdf | 0.13.0 | MIT OR Apache-2.0 |
+| svgtypes | 0.15.3 | Apache-2.0 OR MIT |
 | svgtypes | 0.16.1 | Apache-2.0 OR MIT |
 | syn | 2.0.119 | MIT OR Apache-2.0 |
 | syn | 3.0.6 | MIT OR Apache-2.0 |
@@ -256,6 +266,8 @@ The native executable and WebAssembly module contain the following locked Rust d
 | thiserror-impl | 1.0.69 | MIT OR Apache-2.0 |
 | thiserror-impl | 2.0.21 | MIT OR Apache-2.0 |
 | tiff | 0.11.3 | MIT |
+| tiny-skia | 0.11.4 | BSD-3-Clause |
+| tiny-skia-path | 0.11.4 | BSD-3-Clause |
 | tiny-skia-path | 0.12.0 | BSD-3-Clause |
 | tinystr | 0.8.4 | Unicode-3.0 |
 | tinyvec | 1.13.3 | Zlib OR Apache-2.0 OR MIT |
@@ -287,6 +299,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | unicode-vo | 0.1.0 | MIT/Apache-2.0 |
 | untrusted | 0.9.0 | ISC |
 | url | 2.5.8 | MIT OR Apache-2.0 |
+| usvg | 0.45.1 | Apache-2.0 OR MIT |
 | usvg | 0.47.0 | Apache-2.0 OR MIT |
 | utf8_iter | 1.0.4 | Apache-2.0 OR MIT |
 | version_check | 0.9.5 | MIT/Apache-2.0 |
@@ -336,7 +349,9 @@ The native executable and WebAssembly module contain the following locked Rust d
 | zlib-rs | 0.6.8 | Zlib |
 | zmij | 1.0.23 | MIT |
 | zopfli | 0.8.3 | Apache-2.0 |
+| zune-core | 0.4.12 | MIT OR Apache-2.0 OR Zlib |
 | zune-core | 0.5.3 | MIT OR Apache-2.0 OR Zlib |
+| zune-jpeg | 0.4.21 | MIT OR Apache-2.0 OR Zlib |
 | zune-jpeg | 0.5.15 | MIT OR Apache-2.0 OR Zlib |
 | Linux static brotlicommon | 1.1.0-2+b7 | See distribution copyright |
 | Linux static brotlidec | 1.1.0-2+b7 | See distribution copyright |
@@ -352,6 +367,10 @@ The native executable and WebAssembly module contain the following locked Rust d
 | bootstrap CSS | 5.3.8 | MIT |
 | open-props CSS | 1.7.23 | MIT |
 | animate CSS | 4.1.1 | MIT |
+| gl-transitions CSS | 1.74.0 | MIT, BSD-2-Clause, BSD-3-Clause |
+| @headless-tree/core | 1.7.0 | MIT |
+| jquery | 3.7.1 | MIT |
+| jquery-contextmenu | 2.10.2 | MIT |
 
 ## Bundled CSS libraries
 

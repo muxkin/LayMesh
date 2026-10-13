@@ -112,5 +112,17 @@
     "entry": "marked/index.js",
     "sha256": "6540aa2544be84b3abdd9424fa287120e9ed7c7600512dd92c097493121a5951",
     "license": "marked/LICENSE"
+  },
+  "workspace-ui": {
+    "version": "contextmenu-2.10.2_jquery-3.7.1",
+    "entry": "workspace-ui/index.js",
+    "sha256": "0ada0876e43b988eb8570e566079e7f6be8a278158977dab993a03ea5ad5aaf6",
+    "license": "workspace-ui/LICENSE"
+  },
+  "@headless-tree/core": {
+    "version": "1.7.0",
+    "entry": "@headless-tree/core/index.js",
+    "sha256": "9a7d7057f3bc3d73950d6c14d9b916c0852c4270b04ec8eb415378afec850809",
+    "license": "@headless-tree/core/LICENSE"
   }
 }

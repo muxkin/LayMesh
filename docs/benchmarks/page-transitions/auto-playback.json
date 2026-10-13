@@ -1,0 +1,125 @@
+[
+  {
+    "engine": "chromium",
+    "visits": [
+      {
+        "index": 1,
+        "time": 0,
+        "running": true
+      },
+      {
+        "index": 2,
+        "time": 0,
+        "running": true
+      },
+      {
+        "index": 3,
+        "time": 0,
+        "running": true
+      }
+    ],
+    "clocks": [
+      {
+        "before": 1,
+        "after": 1,
+        "effect": "InvertedPageCurl",
+        "frames": 20
+      },
+      {
+        "before": 1,
+        "after": 1,
+        "effect": "cube",
+        "frames": 37
+      },
+      {
+        "before": 1,
+        "after": 1,
+        "effect": "luma",
+        "frames": 38
+      }
+    ],
+    "index": 3
+  },
+  {
+    "engine": "firefox",
+    "visits": [
+      {
+        "index": 1,
+        "time": 0,
+        "running": true
+      },
+      {
+        "index": 2,
+        "time": 0,
+        "running": true
+      },
+      {
+        "index": 3,
+        "time": 0,
+        "running": true
+      }
+    ],
+    "clocks": [
+      {
+        "before": 1,
+        "after": 1,
+        "effect": "InvertedPageCurl",
+        "frames": 4
+      },
+      {
+        "before": 1,
+        "after": 1,
+        "effect": "cube",
+        "frames": 4
+      },
+      {
+        "before": 1,
+        "after": 1,
+        "effect": "luma",
+        "frames": 5
+      }
+    ],
+    "index": 3
+  },
+  {
+    "engine": "webkit",
+    "visits": [
+      {
+        "index": 1,
+        "time": 0,
+        "running": true
+      },
+      {
+        "index": 2,
+        "time": 0,
+        "running": true
+      },
+      {
+        "index": 3,
+        "time": 0,
+        "running": true
+      }
+    ],
+    "clocks": [
+      {
+        "before": 1,
+        "after": 1,
+        "effect": "InvertedPageCurl",
+        "frames": 45
+      },
+      {
+        "before": 1,
+        "after": 1,
+        "effect": "cube",
+        "frames": 45
+      },
+      {
+        "before": 1,
+        "after": 1,
+        "effect": "luma",
+        "frames": 45
+      }
+    ],
+    "index": 3
+  }
+]

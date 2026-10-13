@@ -1,0 +1,15 @@
+{
+  "version": "1.7.0",
+  "source": "https://registry.npmjs.org/@headless-tree/core/-/core-1.7.0.tgz",
+  "integrity": "sha512-LxcX7LNepwfOPrZcs4PNfDwCzbi326uCAX5jYBfw94jI+pZQA7ANaE/No3LW0XFgcBcQtK/G2bInbVEhLF1C/Q==",
+  "license": "MIT",
+  "files": {
+    "package.json": "5d1498a3dcf5c9efcdbcb3372ed1a17c2401737d65d1687f78c16d03798b74d2",
+    "dist/index.mjs": "9a7d7057f3bc3d73950d6c14d9b916c0852c4270b04ec8eb415378afec850809",
+    "dist/index.d.mts": "8225cdfb0467fe8c73397997875438f67e84e867e4c2d295c1ea3c3e001b6375",
+    "dist/index.d.ts": "8225cdfb0467fe8c73397997875438f67e84e867e4c2d295c1ea3c3e001b6375",
+    "dist/index.js": "d6ff6dea0a7fb34a07029279ec90c14f519a49277e80eb2d8141c5897ea92a74",
+    "LICENSE": "cac45d63b6a0bf68f7aba2219c0d74470135ead032a0872e533476492abb2559"
+  },
+  "license_source": "https://raw.githubusercontent.com/lukasbach/headless-tree/main/LICENSE"
+}

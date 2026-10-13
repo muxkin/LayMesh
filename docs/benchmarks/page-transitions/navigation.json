@@ -1,0 +1,83 @@
+[
+  {
+    "engine": "chromium",
+    "backend": "Skia WebGL2 (software driver)",
+    "transitionFrames": 3,
+    "transitionMs": 216.20000004768372,
+    "transitionRasterSize": [
+      1280,
+      800
+    ],
+    "fullscreen": true,
+    "skiaMemoryBytes": 134217728,
+    "checks": [
+      "first display",
+      "forward",
+      "reverse texture",
+      "jump",
+      "rapid navigation",
+      "bounded memory",
+      "reduced motion",
+      "window presentation",
+      "resize cancellation",
+      "exit cancellation",
+      "fullscreen",
+      "offline/no requests",
+      "zero playback compiles"
+    ]
+  },
+  {
+    "engine": "firefox",
+    "backend": "Skia CPU",
+    "transitionFrames": 2,
+    "transitionMs": 1047,
+    "transitionRasterSize": [
+      128,
+      80
+    ],
+    "fullscreen": true,
+    "skiaMemoryBytes": 134217728,
+    "checks": [
+      "first display",
+      "forward",
+      "reverse texture",
+      "jump",
+      "rapid navigation",
+      "bounded memory",
+      "reduced motion",
+      "window presentation",
+      "resize cancellation",
+      "exit cancellation",
+      "fullscreen",
+      "offline/no requests",
+      "zero playback compiles"
+    ]
+  },
+  {
+    "engine": "webkit",
+    "backend": "Skia WebGL2",
+    "transitionFrames": 14,
+    "transitionMs": 196,
+    "transitionRasterSize": [
+      1280,
+      800
+    ],
+    "fullscreen": true,
+    "skiaMemoryBytes": 134217728,
+    "checks": [
+      "first display",
+      "forward",
+      "reverse texture",
+      "jump",
+      "rapid navigation",
+      "bounded memory",
+      "reduced motion",
+      "window presentation",
+      "resize cancellation",
+      "exit cancellation",
+      "fullscreen",
+      "offline/no requests",
+      "zero playback compiles"
+    ]
+  }
+]

@@ -149,6 +149,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             node["x"] = json!(x);
                             node["y"] = json!(y);
                             let scene = Scene {
+                                page_transition: None,
                                 animation: None,
                                 schema_version: 1,
                                 width: bounds.width() + 1.,
@@ -159,6 +160,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 export_dpi: 1200.,
                                 nodes: vec![node],
                                 warnings: vec![],
+                                font_requests: Default::default(),
                                 fonts: fonts
                                     .assets
                                     .iter()

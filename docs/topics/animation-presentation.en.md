@@ -45,3 +45,5 @@ The first ready page can present while later pages prepare. Jumping to an unread
 Presentation fixes the current document version; edits apply after exit. Exit restores original static geometry, selected page, zoom, scroll and focus. Screens fit at the original aspect ratio without stretching or cropping.
 
 VS Code browser presentation uses a temporary session service bound to Tailscale; closing the session releases it. Choose embedded presentation for local-only use. Font, GPU, cache and measurement details belong in [Implementation and verification](animation-internals.en.md).
+
+[Page transitions](page-transitions.en.md) provides 125 configurable effects, including page curl.

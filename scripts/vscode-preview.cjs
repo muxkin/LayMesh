@@ -158,7 +158,7 @@ exports.run=async()=>{
  const coverSource='p=canvas(size=(80,40),background="#fff")\np.add(text("Cover",font_size=16),offset=(4,6))';
  const resultsSource='p=canvas(size=(8,4),unit="cm",background="#fff")\np.add(formula(source="E=mc^2",font_size=18),offset=(0.4,0.6))';
  const summarySource='p=canvas(size=(80,40),background="#fff")\np.add(text("Summary",font_size=16),offset=(4,6))';
- const bookSource='d=document(name="Report")\ncover=page(src="cover.lay",id="cover")\nresults=page(src="results.lay",id="results")\nsummary=page(src="summary.lay",id="summary")\nfor p in [cover,results,summary] { d.add(p) }';
+ const bookSource='d=document(name="Report"'+(process.env.LAYMESH_PREVIEW_TRANSITIONS?',transition=transition(name="InvertedPageCurl",duration=250ms)':'')+')\ncover=page(src="cover.lay",id="cover")\nresults=page(src="results.lay",id="results")\nsummary=page(src="summary.lay",id="summary")\nfor p in [cover,results,summary] { d.add(p) }';
  fs.writeFileSync(bookFile,bookSource);fs.writeFileSync(coverFile,coverSource);fs.writeFileSync(resultsFile,resultsSource);fs.writeFileSync(summaryFile,summarySource);
  const bookDoc=await vscode.workspace.openTextDocument(bookFile);await vscode.window.showTextDocument(bookDoc);assert.equal(bookDoc.languageId,'laymesh');
  await vscode.commands.executeCommand('laymesh.openPreview',bookDoc.uri);await until(()=>host.messages.find(m=>m.document?.pageId==='cover'&&m.displayList),'Document preview');

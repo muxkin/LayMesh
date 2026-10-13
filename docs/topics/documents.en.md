@@ -10,7 +10,7 @@
 
 `cover = page(src="./pages/cover.lay", id="cover", name="Cover")` creates a lazy page reference. `src` is a local relative `.lay` path resolved against the calling file, including imported function definitions. IDs must be unique within a document and default to the file stem; names default to IDs. Read `cover.id`, `cover.name` and `cover.src`.
 
-Pages have independent variables, units, layout DPI and styles. Their assets remain relative to the original page file. Repeated source references share one compiled scene within a full document compilation, with distinct IDs.
+Pages have independent variables, units, layout DPI and styles. Their assets remain relative to the original page file. Repeated source references with identical transition configurations share one compiled scene within a full document compilation, with distinct IDs.
 
 ## document.add
 
@@ -25,7 +25,7 @@ for p in pages {
 }
 ```
 
-Execution order determines page order. Reorder, add or remove list entries to manage pages. A document has 1–10,000 pages. Duplicate IDs, missing sources and page compilation errors are reported explicitly. Transitions are not implemented; passing `transition` is an error.
+Execution order determines page order. Reorder, add or remove list entries to manage pages. A document has 1–10,000 pages. Duplicate IDs, missing sources and page compilation errors are reported explicitly. Use `document(transition=...)` for a default and `page(transition=...)` for an override; `transition="none"` explicitly disables it. See [page transitions](page-transitions.en.md#transition).
 
 ## Export and preview
 

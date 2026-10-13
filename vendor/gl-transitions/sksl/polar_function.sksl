@@ -1,0 +1,35 @@
+// polar_function — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/polar_function.glsl
+// Author: Fernando Kuteken
+// License: MIT
+// Description: A flower shape with several petals grows to reveal the incoming image
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform int segments; 
+
+vec4 transition (vec2 uv) {
+  
+  float angle = atan(uv.y - 0.5, uv.x - 0.5) - 0.5 * 3.14159265359;
+  float normalized = (angle + 1.5 * 3.14159265359) * (2.0 * 3.14159265359);
+  
+  float radius = (cos(float(segments) * angle) + 4.0) / 4.0;
+  float difference = length(uv - vec2(0.5, 0.5));
+  
+  if (difference > radius * progress)
+    return getFromColor(uv);
+  else
+    return getToColor(uv);
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

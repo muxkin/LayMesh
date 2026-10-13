@@ -1,0 +1,68 @@
+// dissolve — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/dissolve.glsl
+// Author: hjm1fb
+// License: MIT
+// Description: The incoming image spreads over the outgoing one with a hot, glowing edge
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float uLineWidth; 
+
+uniform vec3 uSpreadClr; 
+
+uniform vec3 uHotClr; 
+uniform float uPow; 
+uniform float uIntensity; 
+
+vec2 hash(vec2 p)  
+{
+  p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+  return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+}
+
+float noise(in vec2 p) {
+  const float K1 = 0.366025404;  
+  const float K2 = 0.211324865;  
+
+  vec2 i = floor(p + (p.x + p.y) * K1);
+  vec2 a = p - i + (i.x + i.y) * K2;
+  float m = step(a.y, a.x);
+  vec2 o = vec2(m, 1.0 - m);
+  vec2 b = a - o + K2;
+  vec2 c = a - 1.0 + 2.0 * K2;
+  vec3 h = max(0.5 - vec3(dot(a, a), dot(b, b), dot(c, c)), 0.0);
+  vec3 n = h * h * h * h * vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0)));
+  return dot(n, vec3(70.0));
+}
+
+vec4 transition(vec2 uv) {
+  vec4 from = getFromColor(uv);
+  vec4 to = getToColor(uv);
+  vec4 outColor;
+  float burn;
+  burn = 0.5 + 0.5 * (0.299 * from.r + 0.587 * from.g + 0.114 * from.b);
+
+  float show = burn - progress;
+  if (show < 0.001) {
+    outColor = to;
+  } else {
+    float factor = 1.0 - smoothstep(0.0, uLineWidth, show);
+    vec3 burnColor = mix(uSpreadClr, uHotClr, factor);
+    burnColor = pow(burnColor, vec3(uPow)) * uIntensity;
+    vec3 finalRGB = mix(from.rgb, burnColor, factor * step(0.0001, progress));
+    outColor = vec4(finalRGB * from.a, from.a);
+  }
+  return outColor;
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

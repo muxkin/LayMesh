@@ -1,0 +1,30 @@
+// cannabisleaf — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/cannabisleaf.glsl
+// Author: @Flexi23
+// License: MIT
+// Description: A cannabis-leaf shape grows from the center to reveal the incoming image
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+vec4 transition (vec2 uv) {
+  if(progress == 0.0){
+    return getFromColor(uv);
+  }
+  vec2 leaf_uv = (uv - vec2(0.5))/10./pow(progress,3.5);
+	leaf_uv.y += 0.35;
+	float r = 0.18;
+	float o = atan(leaf_uv.y, leaf_uv.x);
+  return mix(getFromColor(uv), getToColor(uv), 1.-step(1. - length(leaf_uv)+r*(1.+sin(o))*(1.+0.9 * cos(8.*o))*(1.+0.1*cos(24.*o))*(0.9+0.05*cos(200.*o)), 1.));
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

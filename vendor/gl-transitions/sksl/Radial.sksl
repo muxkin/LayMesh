@@ -1,0 +1,32 @@
+// Radial — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/Radial.glsl
+// Author: Xaychru
+// License: MIT
+// Description: A radial wipe that sweeps around the center like a clock hand
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float smoothness; 
+
+const float PI = 3.141592653589;
+
+vec4 transition(vec2 p) {
+  vec2 rp = p*2.-1.;
+  return mix(
+    getToColor(p),
+    getFromColor(p),
+    smoothstep(0., smoothness, atan(rp.y,rp.x) - (progress-.5) * PI * 2.5)
+  );
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

@@ -22,5 +22,13 @@
     "sha256": "c1b6f9ed1effff87233740ce612ed3cd3fbd3cb34c0863373d820fde1b2c8d8f",
     "license": "MIT",
     "license_source": "https://cdn.jsdelivr.net/npm/animate.css@4.1.1/LICENSE"
+  },
+  {
+    "name": "gl-transitions",
+    "version": "1.74.0",
+    "source": "https://registry.npmjs.org/gl-transitions/-/gl-transitions-1.74.0.tgz",
+    "sha256": "e87d2ad97abe5aa05539b216b4e8207346706ecd5042f8434c0794a30821c569",
+    "license": "MIT, BSD-2-Clause, BSD-3-Clause",
+    "license_source": "https://github.com/gl-transitions/gl-transitions/blob/master/LICENSE"
   }
 ]

@@ -1,5 +1,6 @@
 //! Static, non-evaluating language services shared by native LSP and WebAssembly.
 mod bindings;
+mod file_references;
 mod colors;
 mod connections;
 mod formatting;
@@ -1643,6 +1644,7 @@ impl LanguageService {
             "completions" => self.completions(uri, offset),
             "hover" => self.hover(uri, offset),
             "signature" => self.signature(uri, offset),
+            "fileReferences" => file_references::references(self, uri),
             "definition" => self.definition(uri, offset),
             "references" => self.references(uri, offset, true),
             "highlights" => self.highlights(uri, offset),

@@ -10,7 +10,7 @@
     "version": 3,
     "engine": "rust-skia-ratex"
   },
-  "engine": "e112827349e608058a7bf2b3e0c985f2d05e940f7ef135464cb1f04bbbc8323f",
+  "engine": "6cccb3895ea9f5a84062b68f59e000f92972c5b3f4b7abe8fb1e8fd32e2ed72e",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -2086,6 +2086,118 @@
           "width": 3840,
           "height": 2080,
           "sha256": "cd67a7f5a0e5ea709bac30aa6f4d76c6fff63b840305079c362252c652d657ee"
+        }
+      ]
+    },
+    "examples/animation/transitions/pages/cube.lay": {
+      "fingerprint": "b249151b387a8f6aa1306bc92e5b02e1c73bf1374f7971988af80584c24deb48",
+      "dependencies": [
+        "examples/animation/transitions/assets/mask.png",
+        "examples/animation/transitions/pages/cube.lay",
+        "examples/animation/transitions/styles/transitions.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-transitions-pages-cube-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "fd556007421d5749228ff31d688b418d82b12f04082a14c799d77beba8958f61"
+        },
+        {
+          "file": "site/media/animation-transitions-pages-cube-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "0890e7592af922e027072db33436a68a8cf0904d951043be58d81a8922130764"
+        },
+        {
+          "file": "site/media/animation-transitions-pages-cube-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "9d0bca5bfec1122c34cc28a82d9732e789b6773a2a815127e60a72f393faa891"
+        }
+      ]
+    },
+    "examples/animation/transitions/pages/curl.lay": {
+      "fingerprint": "361f1f9e71a9a556c652d2274298829d48b2bf4b9c5e2b5b5fff6219b32fd862",
+      "dependencies": [
+        "examples/animation/transitions/assets/mask.png",
+        "examples/animation/transitions/pages/curl.lay",
+        "examples/animation/transitions/styles/transitions.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-transitions-pages-curl-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "f568ba0632b0c2b7f6044dc1ef02e178a2ff4f35ed0c1a213bb401400cdd4d51"
+        },
+        {
+          "file": "site/media/animation-transitions-pages-curl-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "f8a19226393eaeebee98ed4fb40a1ed915e9b1c293747c7a35f3004604cd85cf"
+        },
+        {
+          "file": "site/media/animation-transitions-pages-curl-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "fc723a3f413ac6a980288bd7a81987a5a9f47c5a380dbebc43f6eb84bb2b4bb8"
+        }
+      ]
+    },
+    "examples/animation/transitions/pages/mask.lay": {
+      "fingerprint": "a2bc70b285d32388b03d3b3ac28b02b907129d01585833d9175748901412077f",
+      "dependencies": [
+        "examples/animation/transitions/assets/mask.png",
+        "examples/animation/transitions/pages/mask.lay",
+        "examples/animation/transitions/styles/transitions.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-transitions-pages-mask-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "d256198f1b266c9333787b3f77256c817578bb09dd7463b57c678eda14beb3a1"
+        },
+        {
+          "file": "site/media/animation-transitions-pages-mask-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "95bb9bd13a3315162a6475543a9b1b69de4dac351a6e7f0f3307b726f33f83f0"
+        },
+        {
+          "file": "site/media/animation-transitions-pages-mask-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "b187654b583b1782932ceb649d751bf2abf7781ae67fdf4121298bdbf1480a04"
+        }
+      ]
+    },
+    "examples/animation/transitions/pages/start.lay": {
+      "fingerprint": "3a8c5d2a461ad49c8b612c886825c29044a78c0bf78e6288cc0d2e66f1dcca8a",
+      "dependencies": [
+        "examples/animation/transitions/assets/mask.png",
+        "examples/animation/transitions/pages/start.lay",
+        "examples/animation/transitions/styles/transitions.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-transitions-pages-start-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "a332b1ed5cc31ccf2d4647cb8361ce4704178bc86ca8cdb8f98bc5174bb2d64b"
+        },
+        {
+          "file": "site/media/animation-transitions-pages-start-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "b6191b62ba4eee84a0404b6d8a960f6c6e0c5c0941d05fde19d4d1f9ece3ee8b"
+        },
+        {
+          "file": "site/media/animation-transitions-pages-start-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "aba72b18ac04a557302f397e6ecc9d56fce8120500914e5194cd0cd2c573e211"
         }
       ]
     },
@@ -5742,6 +5854,38 @@
           "width": 3840,
           "height": 2160,
           "sha256": "e13e8a9e5d2e3180879c5d53f5a629ce6e7d08de1576a2c77b14a51f46425c8f"
+        }
+      ]
+    },
+    "examples/animation/transitions/demo.laydoc": {
+      "fingerprint": "64d92a8118fdc6be4c081bf6284cd87f8120a5dd905e6a062d116c6b9f89de7d",
+      "dependencies": [
+        "examples/animation/transitions/assets/mask.png",
+        "examples/animation/transitions/demo.laydoc",
+        "examples/animation/transitions/pages/cube.lay",
+        "examples/animation/transitions/pages/curl.lay",
+        "examples/animation/transitions/pages/mask.lay",
+        "examples/animation/transitions/pages/start.lay",
+        "examples/animation/transitions/styles/transitions.lcss"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-transitions-demo-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "a332b1ed5cc31ccf2d4647cb8361ce4704178bc86ca8cdb8f98bc5174bb2d64b"
+        },
+        {
+          "file": "site/media/animation-transitions-demo-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "b6191b62ba4eee84a0404b6d8a960f6c6e0c5c0941d05fde19d4d1f9ece3ee8b"
+        },
+        {
+          "file": "site/media/animation-transitions-demo-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "aba72b18ac04a557302f397e6ecc9d56fce8120500914e5194cd0cd2c573e211"
         }
       ]
     },

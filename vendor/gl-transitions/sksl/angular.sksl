@@ -1,0 +1,36 @@
+// angular — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/angular.glsl
+// Author: Fernando Kuteken
+// License: MIT
+// Description: A wipe that sweeps around the center from a starting angle
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float startingAngle; 
+
+vec4 transition (vec2 uv) {
+  
+  float offset = startingAngle * 3.141592653589 / 180.0;
+  float angle = atan(uv.y - 0.5, uv.x - 0.5) + offset;
+  float normalizedAngle = (angle + 3.141592653589) / (2.0 * 3.141592653589);
+  
+  normalizedAngle = normalizedAngle - floor(normalizedAngle);
+
+  return mix(
+    getFromColor(uv),
+    getToColor(uv),
+    step(normalizedAngle, progress)
+    );
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

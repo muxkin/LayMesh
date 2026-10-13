@@ -1,7 +1,7 @@
 {
   "name": "laymesh-language",
   "displayName": "LayMesh",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "publisher": "Hyacine",
   "description": "%extension.description%",
   "icon": "icon.png",
@@ -399,6 +399,31 @@
         "laymesh.ffmpeg.mirrorBaseUrl": {
           "type": "string",
           "description": "%config.ffmpeg.mirrorBaseUrl%"
+        },
+        "laymesh.export.html.imageCompression": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "original",
+            "lossless"
+          ],
+          "default": "auto",
+          "description": "%config.export.html.imageCompression%",
+          "scope": "resource"
+        },
+        "laymesh.export.html.imageQuality": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 85,
+          "description": "%config.export.html.imageQuality%",
+          "scope": "resource"
+        },
+        "laymesh.export.html.embedFonts": {
+          "type": "boolean",
+          "default": false,
+          "description": "%config.export.html.embedFonts%",
+          "scope": "resource"
         }
       }
     },

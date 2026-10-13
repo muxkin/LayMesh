@@ -221,6 +221,22 @@
   },
   {
     "name": "bitflags",
+    "version": "1.3.2",
+    "license": "MIT/Apache-2.0",
+    "repository": "https://github.com/bitflags/bitflags",
+    "texts": [
+      {
+        "file": "bitflags-1.3.2-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "bitflags-1.3.2-LICENSE-MIT",
+        "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
+      }
+    ]
+  },
+  {
+    "name": "bitflags",
     "version": "2.13.2",
     "license": "MIT OR Apache-2.0",
     "repository": "https://github.com/bitflags/bitflags",
@@ -1295,6 +1311,22 @@
   },
   {
     "name": "gif",
+    "version": "0.13.3",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/image-rs/image-gif",
+    "texts": [
+      {
+        "file": "gif-0.13.3-LICENSE-APACHE",
+        "sha256": "769f80b5bcb42ed0af4e4d2fd74e1ac9bf843cb80c5a29219d1ef3544428a6bb"
+      },
+      {
+        "file": "gif-0.13.3-LICENSE-MIT",
+        "sha256": "77257f3d2181236b1aee78920238062ae64efe13c5d858b2db126e79c9e1b14f"
+      }
+    ]
+  },
+  {
+    "name": "gif",
     "version": "0.14.2",
     "license": "MIT OR Apache-2.0",
     "repository": "https://github.com/image-rs/image-gif",
@@ -1706,6 +1738,18 @@
   },
   {
     "name": "imagesize",
+    "version": "0.13.0",
+    "license": "MIT",
+    "repository": "https://github.com/Roughsketch/imagesize",
+    "texts": [
+      {
+        "file": "imagesize-0.13.0-LICENSE",
+        "sha256": "436637bd4909fde7e14c899e9ff2cdd440b5968df12d431f1651f11db19bc2ef"
+      }
+    ]
+  },
+  {
+    "name": "imagesize",
     "version": "0.14.0",
     "license": "MIT",
     "repository": "https://github.com/Roughsketch/imagesize",
@@ -1845,6 +1889,22 @@
       {
         "file": "js-sys-0.3.106-LICENSE-MIT",
         "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    ]
+  },
+  {
+    "name": "kurbo",
+    "version": "0.11.3",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/kurbo",
+    "texts": [
+      {
+        "file": "kurbo-0.11.3-LICENSE-APACHE",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "file": "kurbo-0.11.3-LICENSE-MIT",
+        "sha256": "23c23145f6eac25c28cdcc03d38506a5712a9a8cffb5bd5301457f6173ea696e"
       }
     ]
   },
@@ -2311,6 +2371,22 @@
     ]
   },
   {
+    "name": "pdf-writer",
+    "version": "0.12.1",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/typst/pdf-writer",
+    "texts": [
+      {
+        "file": "pdf-writer-0.12.1-LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "file": "pdf-writer-0.12.1-LICENSE-MIT",
+        "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1"
+      }
+    ]
+  },
+  {
     "name": "percent-encoding",
     "version": "2.3.2",
     "license": "MIT OR Apache-2.0",
@@ -2463,6 +2539,22 @@
       {
         "file": "pkg-config-0.3.34-LICENSE-MIT",
         "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    ]
+  },
+  {
+    "name": "png",
+    "version": "0.17.16",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/image-rs/image-png",
+    "texts": [
+      {
+        "file": "png-0.17.16-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "png-0.17.16-LICENSE-MIT",
+        "sha256": "eaf40297c75da471f7cda1f3458e8d91b4b2ec866e609527a13acfa93b638652"
       }
     ]
   },
@@ -2980,6 +3072,34 @@
       {
         "file": "reqwest-0.12.28-LICENSE-MIT",
         "sha256": "47d4e1803702728e03d30f8a848ae2249ba274bbd9f8443e803f7924d83cd371"
+      }
+    ]
+  },
+  {
+    "name": "resvg",
+    "version": "0.45.1",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/resvg",
+    "texts": [
+      {
+        "file": "resvg-0.45.1-LICENSE-APACHE",
+        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+      },
+      {
+        "file": "resvg-0.45.1-LICENSE-MIT",
+        "sha256": "f5d934dc281b44e0003ee461ac740b18b6629a454decd872c774d34e4ee0b21d"
+      }
+    ]
+  },
+  {
+    "name": "rgb",
+    "version": "0.8.53",
+    "license": "MIT",
+    "repository": "https://github.com/kornelski/rust-rgb",
+    "texts": [
+      {
+        "file": "rgb-0.8.53-LICENSE",
+        "sha256": "457b464bc0fba8a3d67d2458569104f5611869f0c1563a1a12d9c51a0bca9261"
       }
     ]
   },
@@ -3610,6 +3730,42 @@
     ]
   },
   {
+    "name": "svg2pdf",
+    "version": "0.13.0",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/typst/svg2pdf",
+    "texts": [
+      {
+        "file": "svg2pdf-0.13.0-LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "file": "svg2pdf-0.13.0-LICENSE-MIT",
+        "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1"
+      },
+      {
+        "file": "svg2pdf-0.13.0-NOTICE",
+        "sha256": "74544feeaa2083014e5c62c4d3eda0e6dfb77f621310b5b602b074df199dcc20"
+      }
+    ]
+  },
+  {
+    "name": "svgtypes",
+    "version": "0.15.3",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/svgtypes",
+    "texts": [
+      {
+        "file": "svgtypes-0.15.3-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "svgtypes-0.15.3-LICENSE-MIT",
+        "sha256": "f3c9fe731c701ed77fd5fbaac573872af04dc5869385eb9bd5e3c73c42713814"
+      }
+    ]
+  },
+  {
     "name": "svgtypes",
     "version": "0.16.1",
     "license": "Apache-2.0 OR MIT",
@@ -3786,6 +3942,30 @@
       {
         "file": "tiff-0.11.3-LICENSE",
         "sha256": "20c097d0de27e2adc179140a3d542091951a030699c7e1c78655f2a2d08d4e3e"
+      }
+    ]
+  },
+  {
+    "name": "tiny-skia",
+    "version": "0.11.4",
+    "license": "BSD-3-Clause",
+    "repository": "https://github.com/RazrFalcon/tiny-skia",
+    "texts": [
+      {
+        "file": "tiny-skia-0.11.4-LICENSE",
+        "sha256": "6d41e05f1d54fe726997cb0334ec539f1dff50600b1d5d90462ec2b392770ced"
+      }
+    ]
+  },
+  {
+    "name": "tiny-skia-path",
+    "version": "0.11.4",
+    "license": "BSD-3-Clause",
+    "repository": "https://github.com/RazrFalcon/tiny-skia/tree/master/path",
+    "texts": [
+      {
+        "file": "tiny-skia-path-0.11.4-LICENSE",
+        "sha256": "6d41e05f1d54fe726997cb0334ec539f1dff50600b1d5d90462ec2b392770ced"
       }
     ]
   },
@@ -4246,6 +4426,22 @@
       {
         "file": "url-2.5.8-LICENSE-MIT",
         "sha256": "b38f11f6096706e6de553dabe2a7ed142d59b6fa8c97e290c67496154745cdd5"
+      }
+    ]
+  },
+  {
+    "name": "usvg",
+    "version": "0.45.1",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/resvg",
+    "texts": [
+      {
+        "file": "usvg-0.45.1-LICENSE-APACHE",
+        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+      },
+      {
+        "file": "usvg-0.45.1-LICENSE-MIT",
+        "sha256": "f5d934dc281b44e0003ee461ac740b18b6629a454decd872c774d34e4ee0b21d"
       }
     ]
   },
@@ -5011,6 +5207,24 @@
   },
   {
     "name": "zune-core",
+    "version": "0.4.12",
+    "license": "MIT OR Apache-2.0 OR Zlib",
+    "repository": null,
+    "texts": [
+      {
+        "file": "zune-core-0.4.12-LICENSE.md",
+        "sha256": "c6dff146a9f31848ac296faa5a08a4253caf2c384c86f906dc99e7fc0a39cc8c",
+        "source": "https://raw.githubusercontent.com/etemesi254/zune-image/f8fbb123d5ed04441e8324a555bfcda0cb1bd28f/LICENSE.md"
+      },
+      {
+        "file": "zune-core-0.4.12-LICENSE-ZLIB",
+        "sha256": "7fa429541e55b1509909e058f2d21a37467e4958ec713b357f6e0cf9dc4ee352",
+        "source": "https://raw.githubusercontent.com/etemesi254/zune-image/f8fbb123d5ed04441e8324a555bfcda0cb1bd28f/LICENSE-ZLIB"
+      }
+    ]
+  },
+  {
+    "name": "zune-core",
     "version": "0.5.3",
     "license": "MIT OR Apache-2.0 OR Zlib",
     "repository": "https://github.com/etemesi254/zune-image",
@@ -5026,6 +5240,24 @@
       {
         "file": "zune-core-0.5.3-LICENSE-ZLIB",
         "sha256": "d201d14804d3bcd3b944147173175e4abfbd838b7c8069b6bd3452496bf13e6c"
+      }
+    ]
+  },
+  {
+    "name": "zune-jpeg",
+    "version": "0.4.21",
+    "license": "MIT OR Apache-2.0 OR Zlib",
+    "repository": "https://github.com/etemesi254/zune-image/tree/dev/crates/zune-jpeg",
+    "texts": [
+      {
+        "file": "zune-jpeg-0.4.21-LICENSE.md",
+        "sha256": "c6dff146a9f31848ac296faa5a08a4253caf2c384c86f906dc99e7fc0a39cc8c",
+        "source": "https://raw.githubusercontent.com/etemesi254/zune-image/fa2c767a01d7d9373911d0bf63e0588553d67e0e/LICENSE.md"
+      },
+      {
+        "file": "zune-jpeg-0.4.21-LICENSE-ZLIB",
+        "sha256": "7fa429541e55b1509909e058f2d21a37467e4958ec713b357f6e0cf9dc4ee352",
+        "source": "https://raw.githubusercontent.com/etemesi254/zune-image/fa2c767a01d7d9373911d0bf63e0588553d67e0e/LICENSE-ZLIB"
       }
     ]
   },
@@ -5212,6 +5444,56 @@
         "file": "css-animate-LICENSE.txt",
         "sha256": "aa4b4f6ba47ac6a4b3443615b5a18576d4d28ad8b3da8b4cb8cb2bd28fdd54b2",
         "source": "https://cdn.jsdelivr.net/npm/animate.css@4.1.1/LICENSE"
+      }
+    ]
+  },
+  {
+    "name": "gl-transitions CSS",
+    "version": "1.74.0",
+    "license": "MIT, BSD-2-Clause, BSD-3-Clause",
+    "repository": "https://registry.npmjs.org/gl-transitions/-/gl-transitions-1.74.0.tgz",
+    "asset_sha256": "e87d2ad97abe5aa05539b216b4e8207346706ecd5042f8434c0794a30821c569",
+    "texts": [
+      {
+        "file": "css-gl-transitions-LICENSE.txt",
+        "sha256": "c464072d61c35f40c9e826fde36f0e569f6dcd987e8509a1ea8492542db2c930",
+        "source": "https://github.com/gl-transitions/gl-transitions/blob/master/LICENSE"
+      }
+    ]
+  },
+  {
+    "name": "@headless-tree/core",
+    "version": "1.7.0",
+    "license": "MIT",
+    "repository": "https://registry.npmjs.org/@headless-tree/core/-/core-1.7.0.tgz",
+    "texts": [
+      {
+        "file": "headless-tree-core-1.7.0-LICENSE",
+        "sha256": "cac45d63b6a0bf68f7aba2219c0d74470135ead032a0872e533476492abb2559"
+      }
+    ]
+  },
+  {
+    "name": "jquery",
+    "version": "3.7.1",
+    "license": "MIT",
+    "repository": "https://registry.npmjs.org/jquery/-/jquery-3.7.1.tgz",
+    "texts": [
+      {
+        "file": "jquery-3.7.1-LICENSE",
+        "sha256": "d4db9ebe6f29f5168eac45ad713f055623ac5d0dcd5ba92da23d650ae012020d"
+      }
+    ]
+  },
+  {
+    "name": "jquery-contextmenu",
+    "version": "2.10.2",
+    "license": "MIT",
+    "repository": "https://registry.npmjs.org/jquery-contextmenu/-/jquery-contextmenu-2.10.2.tgz",
+    "texts": [
+      {
+        "file": "jquery-contextmenu-2.10.2-LICENSE",
+        "sha256": "0a647ff0b7a8ce5cc7c6cbb0e87d05f10ba476c9bad50dfd7253352dee415e0c"
       }
     ]
   }

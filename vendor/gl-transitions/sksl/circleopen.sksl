@@ -1,0 +1,32 @@
+// circleopen — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/circleopen.glsl
+// Author: gre
+// License: MIT
+// Description: A soft-edged circle opens from the center to reveal the incoming image
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float smoothness; 
+
+uniform int opening; 
+
+const vec2 center = vec2(0.5, 0.5);
+const float SQRT_2 = 1.414213562373;
+
+vec4 transition (vec2 uv) {
+  float x = (opening != 0) ? progress : 1.-progress;
+  float m = smoothstep(-smoothness, 0.0, SQRT_2*distance(center, uv) - x*(1.+smoothness));
+  return mix(getFromColor(uv), getToColor(uv), (opening != 0) ? 1.-m : m);
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

@@ -1,0 +1,44 @@
+// DirectionalScaled — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/DirectionalScaled.glsl
+// Author: Thibaut Foussard
+// License: MIT
+// Description: Like Directional, with both images scaled down while they slide
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform vec2 direction; 
+uniform float scale; 
+
+float parabola(float x) {
+  float y = pow(sin(x * acos(-1.0)), 1.);
+  return y;
+}
+
+vec4 transition (vec2 uv) {
+  float easedProgress = pow(sin(progress  * acos(-1.0) / 2.), 3.);
+  vec2 p = uv + easedProgress * sign(direction);
+  vec2 f = fract(p);
+  
+  float s = 1. - (1. - (1. / scale)) * parabola(progress);
+  f = (f - 0.5) * s  + 0.5;
+  
+  float mixer = step(0.0, p.y) * step(p.y, 1.0) * step(0.0, p.x) * step(p.x, 1.0);
+  vec4 col = mix(getToColor(f), getFromColor(f), mixer);
+  
+  float border = step(0., f.x) * step(0., (1. - f.x)) * step(0., f.y) * step(0., 1. - f.y);
+  col *= border;
+  
+  return col;
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

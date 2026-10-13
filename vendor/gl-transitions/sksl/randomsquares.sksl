@@ -1,0 +1,33 @@
+// randomsquares — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/randomsquares.glsl
+// Author: gre
+// License: MIT
+// Description: The incoming image appears in random squares
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform ivec2 size; 
+
+uniform float smoothness; 
+ 
+float rand (vec2 co) {
+  return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+vec4 transition(vec2 p) {
+  float r = rand(floor(vec2(size) * p));
+  float m = smoothstep(0.0, -smoothness, r - (progress * (1.0 + smoothness)));
+  return mix(getFromColor(p), getToColor(p), m);
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

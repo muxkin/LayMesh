@@ -1,0 +1,48 @@
+// Bounce — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/Bounce.glsl
+// Author: Adrian Purser
+// License: MIT
+// Description: The outgoing image drops out of the frame with a few bounces, revealing the incoming one
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform vec4 shadow_colour; 
+
+uniform float shadow_height; 
+
+uniform float bounces; 
+
+const float PI = 3.14159265358;
+
+vec4 transition (vec2 uv) {
+  float time = progress;
+  float stime = sin(time * PI / 2.);
+  float phase = time * PI * bounces;
+  float y = (abs(cos(phase))) * (1.0 - stime);
+  float d = uv.y - y;
+  return mix(
+    mix(
+      getToColor(uv),
+      shadow_colour,
+      step(d, shadow_height) * (1. - mix(
+        ((d / shadow_height) * shadow_colour.a) + (1.0 - shadow_colour.a),
+        1.0,
+        smoothstep(0.95, 1., progress) 
+      ))
+    ),
+    getFromColor(vec2(uv.x, uv.y + (1.0 - y))),
+    step(d, 0.0)
+  );
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

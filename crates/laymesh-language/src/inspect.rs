@@ -148,6 +148,11 @@ pub fn inspect_scene(scene: &Scene) -> J {
         }
     }
     let mut result = json!({"schema_version":scene.schema_version,"units":"mm","page":{"width":scene.width,"height":scene.height,"unit":scene.canvas_unit,"layout_dpi":scene.layout_dpi},"plots":plots,"warnings":scene.warnings});
+    if let Some(transition) = &scene.page_transition {
+        let mut transition = transition.clone();
+        transition.assets.clear();
+        result["pageTransition"] = json!(transition);
+    }
     if let Some(animation) = &scene.animation {
         result["animation"] = json!({"duration":animation.normal.duration,"steps":animation.normal.steps.iter().enumerate().map(|(i,s)|json!({"number":i+1,"name":s.name,"trigger":s.trigger,"start":s.start,"duration":s.duration,"hold":s.hold,"animations":s.clips.iter().map(|c|json!({"name":c.name,"target":c.target,"delay":c.delay,"duration":c.duration,"properties":c.tracks.iter().map(|t|&t.property).collect::<Vec<_>>(),"compatibility":if c.tracks.iter().any(|t|t.property.starts_with("-laymesh-")){"laymesh-extension"}else{"css-animation-subset"}})).collect::<Vec<_>>()})).collect::<Vec<_>>(),"printDuration":animation.print.duration,"reducedDuration":animation.reduced.duration,"reducedSteps":animation.reduced.steps.iter().enumerate().map(|(i,s)|json!({"number":i+1,"name":s.name,"trigger":s.trigger,"start":s.start,"duration":s.duration,"hold":s.hold})).collect::<Vec<_>>()});
     }

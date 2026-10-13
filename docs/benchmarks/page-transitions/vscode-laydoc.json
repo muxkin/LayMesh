@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "host": "VS Code actual preview webview",
+  "pageTransitionVerified": true,
+  "documents": {
+    "page_selector": true,
+    "formula_edit_visible": true,
+    "reordering_preserves_page_id": true,
+    "whole_pdf_direct_save_dialog": true,
+    "console_errors": []
+  },
+  "consoleErrors": []
+}

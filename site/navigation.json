@@ -134,6 +134,7 @@
             "animation-catalog",
             "animation-extensions",
             "animation-presentation",
+            "page-transitions",
             "animation-export"
           ]
         },
@@ -883,6 +884,13 @@
       "title": [
         "放映与多页演示",
         "Presentation and multiple pages"
+      ]
+    },
+    {
+      "key": "page-transitions",
+      "title": [
+        "页间转场",
+        "Page transitions"
       ]
     },
     {

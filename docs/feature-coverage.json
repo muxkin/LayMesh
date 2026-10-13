@@ -2666,6 +2666,34 @@
       "reference": "css-properties",
       "minimal": "examples/manual/css-shadow-override.lay",
       "composition": "examples/gallery/styles/libraries.lay"
+    },
+    "api:transition": {
+      "topic": "page-transitions",
+      "anchor": "transition",
+      "reference": "canvas",
+      "minimal": "examples/animation/transitions/demo.laydoc",
+      "composition": "examples/animation/transitions/demo.laydoc"
+    },
+    "css:-laymesh-transition": {
+      "topic": "page-transitions",
+      "anchor": "transition",
+      "reference": "canvas",
+      "minimal": "examples/animation/transitions/demo.laydoc",
+      "composition": "examples/animation/transitions/demo.laydoc"
+    },
+    "css:-laymesh-transition-duration": {
+      "topic": "page-transitions",
+      "anchor": "transition",
+      "reference": "canvas",
+      "minimal": "examples/animation/transitions/demo.laydoc",
+      "composition": "examples/animation/transitions/demo.laydoc"
+    },
+    "css:-laymesh-transition-timing-function": {
+      "topic": "page-transitions",
+      "anchor": "transition",
+      "reference": "canvas",
+      "minimal": "examples/animation/transitions/demo.laydoc",
+      "composition": "examples/animation/transitions/demo.laydoc"
     }
   }
 }

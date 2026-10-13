@@ -19,12 +19,14 @@ pub struct FontSystem {
     name_index: Option<BTreeMap<String, Vec<ID>>>,
     fallback_candidates: BTreeMap<(u16, bool), Vec<ID>>,
     pub assets: BTreeMap<String, FontAsset>,
+    pub requests: BTreeMap<(String, u16, bool), Json>,
     paths: BTreeMap<String, Vec<ID>>,
     choices: BTreeMap<String, Option<String>>,
     keys: BTreeMap<ID, String>,
     origins: BTreeMap<String, String>,
     face_names: BTreeMap<String, String>,
     host: Host,
+    bindings: BTreeMap<String, String>,
 }
 fn warn(w: &mut Vec<Diagnostic>, s: impl Into<String>, file: &str, loc: Loc) {
     let s = s.into();
@@ -95,6 +97,20 @@ fn embedding_restriction(face: &ttf_parser::Face<'_>) -> Option<&'static str> {
         None
     }
 }
+/// Face metadata shared by portable packages and the offline font chooser.
+pub fn font_metadata(data: &[u8]) -> Vec<serde_json::Value> {
+    (0..ttf_parser::fonts_in_collection(data).unwrap_or(1)).filter_map(|index| {
+        let face = ttf_parser::Face::parse(data, index).ok()?;
+        let name = |id| face.names().into_iter().filter(|n| n.name_id == id).find_map(|n| n.to_string()).unwrap_or_default();
+        let names: Vec<_> = face.names().into_iter().filter(|n| [1,2,4,6,16,17].contains(&n.name_id)).filter_map(|n| {
+            let value = n.to_string()?;
+            let language = match n.language_id { 0x0804|0x1004=>"zh-Hans", 0x0404|0x0c04|0x1404=>"zh-Hant",0x0409=>"en-US",_=>"und"};
+            Some(json!({"nameID":n.name_id,"language":language,"value":value}))
+        }).collect();
+        Some(json!({"family":name(ttf_parser::name_id::FAMILY), "postscriptName":name(ttf_parser::name_id::POST_SCRIPT_NAME),
+            "style":name(ttf_parser::name_id::SUBFAMILY), "names":names,"fontIndex":index, "weight":face.weight().to_number(), "italic":face.is_italic()}))
+    }).collect()
+}
 impl FontSystem {
     pub fn new(native: bool) -> Self {
         #[allow(unused_mut)]
@@ -121,6 +137,7 @@ impl FontSystem {
             name_index: None,
             fallback_candidates: BTreeMap::new(),
             assets: BTreeMap::new(),
+            requests: BTreeMap::new(),
             paths: BTreeMap::new(),
             choices: BTreeMap::new(),
             keys: BTreeMap::new(),
@@ -130,6 +147,7 @@ impl FontSystem {
                 native,
                 ..Host::default()
             },
+            bindings: BTreeMap::new(),
         }
     }
     /// Add user-provided font bytes (including TTC/OTC collections), without accessing the filesystem.
@@ -151,6 +169,12 @@ impl FontSystem {
         loc: Loc,
         warnings: &mut Vec<Diagnostic>,
     ) -> Result<std::sync::Arc<FontAsset>> {
+        let request = self
+            .bindings
+            .get(request)
+            .cloned()
+            .unwrap_or_else(|| request.into());
+        let request = request.as_str();
         let cache_key = format!("{file}:{request}");
         if !self.math_assets.contains_key(&cache_key) {
             self.load_path(request, file, loc, warnings);
@@ -244,7 +268,7 @@ impl FontSystem {
         loc: Loc,
         warnings: &mut Vec<Diagnostic>,
     ) {
-        self.host = host.clone();
+        self.bind_host(host);
         self.load_bound_requested(v, file, loc, warnings);
     }
     /// Bind the immutable resource snapshot once per compilation, rather than
@@ -259,6 +283,12 @@ impl FontSystem {
             return;
         }
         self.host = host.clone();
+        self.bindings = host
+            .files
+            .get("/@laymesh/font-bindings.json")
+            .and_then(|b| serde_json::from_slice(b).ok())
+            .unwrap_or_default();
+        self.choices.clear();
     }
     pub(crate) fn load_bound_requested(
         &mut self,
@@ -376,6 +406,15 @@ impl FontSystem {
         w: &mut Vec<Diagnostic>,
         outlined: bool,
     ) -> Option<String> {
+        let requested: Vec<&str> = request
+            .as_array()
+            .map(|a| a.iter().filter_map(Json::as_str).collect())
+            .unwrap_or_else(|| vec![request.as_str().unwrap_or("sans-serif")]);
+        for name in requested {
+            self.requests
+                .entry((name.into(), weight, italic))
+                .or_insert_with(|| json!({"family":name,"weight":weight,"italic":italic}));
+        }
         let choice_key = format!(
             "{request}:{weight}:{italic}:{content}:{file}:{}:{}:{outlined}",
             loc.line, loc.column
@@ -410,6 +449,7 @@ impl FontSystem {
         });
         let mut candidates = Vec::new();
         for name in requests {
+            let name = self.bindings.get(&name).cloned().unwrap_or(name);
             self.load_path(&name, file, loc, w);
             let mut ids: Vec<ID> = if font_path(&name) {
                 let mut p = name.splitn(2, '#');
@@ -1929,6 +1969,35 @@ mod matching_tests {
             include_bytes!("../../../tests/fonts/DejaVuSans.ttf").to_vec(),
         );
         assert!(fonts.fallback_candidates.is_empty());
+    }
+
+    #[test]
+    fn portable_font_binding_is_explicit_and_does_not_change_source() {
+        let mut host = Host::default();
+        host.files.insert(
+            "/@laymesh/font-bindings.json".into(),
+            br#"{"Missing Family":"DejaVu Sans"}"#.to_vec(),
+        );
+        let mut fonts = FontSystem::new(false);
+        fonts.bind_host(&host);
+        fonts.register_font(
+            "/project/face.ttf",
+            include_bytes!("../../../tests/fonts/DejaVuSans.ttf").to_vec(),
+        );
+        let request = json!("Missing Family");
+        let key = fonts
+            .choose(
+                &request,
+                400,
+                false,
+                "Test",
+                "a.lay",
+                Loc::default(),
+                &mut vec![],
+            )
+            .unwrap();
+        assert_eq!(fonts.assets[&key].family, "DejaVu Sans");
+        assert_eq!(request, json!("Missing Family"));
     }
 
     #[test]

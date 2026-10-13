@@ -11,6 +11,8 @@ pub const DISPLAY_LIST_VERSION: u32 = 1;
 #[serde(rename_all = "camelCase")]
 pub struct DisplayList {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub page_transition: Option<laymesh_core::page_transition::PageTransition>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub animation: Option<laymesh_core::animation::Animation>,
     pub schema_version: u32,
     pub width: f64,
@@ -994,7 +996,25 @@ fn build(scene: &Scene, preview: bool) -> Result<DisplayList> {
     for n in &scene.nodes {
         nodes.push(b.node(n, Affine::IDENTITY)?);
     }
+    let mut page_transition = scene.page_transition.clone();
+    if let Some(transition) = &mut page_transition {
+        for (name, asset) in std::mem::take(&mut transition.assets) {
+            let data = if jstr(&asset, "data", "").is_empty() {
+                let key = asset["rasterKey"]
+                    .as_str()
+                    .ok_or_else(|| error("Missing transition texture"))?;
+                laymesh_core::asset_cache::png(key)?.as_ref().clone()
+            } else {
+                base64::engine::general_purpose::STANDARD
+                    .decode(jstr(&asset, "data", ""))
+                    .map_err(|e| error(e.to_string()))?
+            };
+            let id = b.resource(jstr(&asset, "mime", "image/png"), data, None);
+            transition.textures.insert(name, id);
+        }
+    }
     Ok(DisplayList {
+        page_transition,
         animation: scene.animation.clone(),
         schema_version: DISPLAY_LIST_VERSION,
         width: scene.width,

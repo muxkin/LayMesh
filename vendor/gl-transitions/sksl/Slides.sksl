@@ -1,0 +1,48 @@
+// Slides — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/Slides.glsl
+// Author: Mark Craig
+// License: MIT
+// Description: The outgoing image slides out, or the incoming one slides in, toward an edge, a corner or the center
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform int type; 
+
+uniform int In; 
+
+vec4 transition(vec2 uv)
+{
+vec2 uv0 = uv;
+float rad = (In != 0) ? progress : 1.0 - progress;
+float xc1, yc1;
+
+if (type == 0) { xc1 = .5 - rad / 2.0; yc1 = 0.0; }
+else if (type == 1) { xc1 = 1.0 - rad; yc1 = .5 - rad / 2.0; }
+else if (type == 2) { xc1 = .5 - rad / 2.0; yc1 = 1.0 - rad; }
+else if (type == 3) { xc1 = 0.0; yc1 = .5 - rad / 2.0; }
+else if (type == 4) { xc1 = 1.0 - rad; yc1 = 0.0; }
+else if (type == 5) { xc1 = 1.0 - rad; yc1 = 1.0 - rad; }
+else if (type == 6) { xc1 = 0.0; yc1 = 1.0 - rad; }
+else if (type == 7) { xc1 = 0.0; yc1 = 0.0; }
+else if (type == 8) { xc1 = .5 - rad / 2.0; yc1 = .5 - rad / 2.0; }
+uv.y = 1.0 - uv.y;
+vec2 uv2;
+if ((uv.x >= xc1) && (uv.x <= xc1 + rad) && (uv.y >= yc1) && (uv.y <= yc1 + rad))
+	{
+	uv2 = vec2((uv.x - xc1) / rad, 1.0 - (uv.y - yc1) / rad);
+	return((In != 0) ? getToColor(uv2) : getFromColor(uv2));
+	}
+return((In != 0) ? getFromColor(uv0) : getToColor(uv0));
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

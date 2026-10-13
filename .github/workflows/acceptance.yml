@@ -26,12 +26,15 @@ jobs:
       - if: runner.os == 'Windows'
         run: choco install poppler mupdf ffmpeg -y
       - run: python -m pip install -e './python' pillow
+      - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
+      - run: python scripts/build-web-export.py
       - run: python scripts/test-contracts.py
       - run: cargo build --locked --release -p laymesh-cli
       - run: python -m pip install -e './python' pillow
       - run: python -m unittest discover -s python/tests -v
       - run: python scripts/test-pptx-export.py
       - run: node scripts/test-editor-pptx.cjs
+      - run: node scripts/test-editor-web-export.cjs
       - run: python scripts/check-gallery-docs.py
       - run: python scripts/build-api-reference.py --check
       - run: python scripts/build-style-animation-docs.py --check
@@ -39,7 +42,6 @@ jobs:
       - run: node scripts/build-dashboard-data.mjs --check
       - run: python scripts/build-topic-walkthroughs.py --check
       - run: python scripts/check-feature-docs.py
-      - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
       - run: python scripts/build-editors.py
       - run: python scripts/package-editor.py --output release/dist/laymesh.vsix
       - run: python scripts/check-editor.py release/dist/laymesh.vsix
@@ -57,7 +59,7 @@ jobs:
           python-version: '3.13'
       - run: python -m pip install -r release/docs-requirements.txt
       - name: Install native libraries for CSS catalog and raster parity
-        run: sudo apt-get update && sudo apt-get install -y pkg-config libfontconfig1-dev libfreetype-dev libbrotli-dev libbz2-dev libexpat1-dev libpng-dev zlib1g-dev
+        run: sudo apt-get update && sudo apt-get install -y pkg-config libfontconfig1-dev libfreetype-dev libbrotli-dev libbz2-dev libexpat1-dev libpng-dev zlib1g-dev poppler-utils
       - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
       - run: python scripts/build-api-reference.py --check
       - run: python scripts/build-style-animation-docs.py --check
@@ -73,7 +75,7 @@ jobs:
       - name: Install pinned browser test runtime
         run: |
           npm install --prefix "$RUNNER_TEMP/browser-tests" --no-save playwright@1.62.1
-          "$RUNNER_TEMP/browser-tests/node_modules/.bin/playwright" install --with-deps chromium
+          "$RUNNER_TEMP/browser-tests/node_modules/.bin/playwright" install --with-deps chromium firefox webkit
       - name: Presentation timing and preparation contracts
         run: |
           node scripts/test-presentation-clock.mjs
@@ -85,6 +87,7 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-tests/node_modules/playwright
         run: |
+          python scripts/build-web-export.py
           cargo build --locked --release -p laymesh-core --example animation_reference
           cargo build --locked --release -p laymesh-cli
           # Match the normal browser engine used by the app. Headless Shell
@@ -93,6 +96,15 @@ jobs:
           python scripts/serve-preview.py --bind 127.0.0.1 --port 8769 > "$RUNNER_TEMP/preview.log" 2>&1 &
           preview_pid=$!
           trap 'kill "$preview_pid"' EXIT
+          node scripts/test-web-export.cjs "$RUNNER_TEMP/browser-results/web-export"
+          node scripts/test-web-static-export.cjs "$RUNNER_TEMP/browser-results/static-export"
+          python scripts/check-web-static-export.py "$RUNNER_TEMP/browser-results/static-export"
+          node scripts/test-workspace-files.mjs
+          node scripts/test-workspace-interactions.cjs "$RUNNER_TEMP/browser-results/workspace-interactions"
+          LAYMESH_TEST_HOST=127.0.0.1 node scripts/test-page-transitions.cjs "$RUNNER_TEMP/browser-results/page-transitions"
+          node scripts/test-laydoc-transitions.cjs "$RUNNER_TEMP/browser-results/laydoc" http://127.0.0.1:8769/
+          node scripts/test-web-workspace.cjs "$RUNNER_TEMP/browser-results/web-workspace"
+          node scripts/test-web-fonts-viewport.cjs "$RUNNER_TEMP/browser-results/web-fonts-viewport"
           node scripts/test-animation-browser.cjs "$RUNNER_TEMP/browser-results/css"
           node scripts/test-css-browser.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/styles"
           node scripts/test-css-library-presentation.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/style-presentation"

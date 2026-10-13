@@ -44,7 +44,7 @@ pub fn serve() -> io::Result<()> {
         }
     });
     sender
-        .send(json!({"type":"ready","protocol":1,"capabilities":["animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","defaults"]}))
+        .send(json!({"type":"ready","protocol":1,"capabilities":["web-export-v1","animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","defaults"]}))
         .unwrap();
     for line in io::stdin().lock().lines() {
         let request: Value = match serde_json::from_str(&line?) {
@@ -144,6 +144,47 @@ pub fn serve() -> io::Result<()> {
                     &request["options"],
                     None,
                     request["cancel_file"].as_str().map(Path::new),
+                );
+            }
+            if request["type"] == "export"
+                && request["output"].as_str().is_some_and(|s| {
+                    s.to_ascii_lowercase().ends_with(".html")
+                        || s.to_ascii_lowercase().ends_with(".zip")
+                })
+            {
+                let output = Path::new(request["output"].as_str().unwrap());
+                if !output.is_absolute() {
+                    return Err("Output must be absolute".into());
+                }
+                let explicit: laymesh_render::ExportOptions = if request["options"].is_null() {
+                    Default::default()
+                } else {
+                    serde_json::from_value(request["options"].clone())?
+                };
+                let options = config::export_options(
+                    &defaults,
+                    output
+                        .extension()
+                        .and_then(|s| s.to_str())
+                        .unwrap_or("html"),
+                    &explicit,
+                )?;
+                let page = if request["document_all"].as_bool().unwrap_or(true) {
+                    None
+                } else if let Some(id) = request["page_id"].as_str() {
+                    let p = laymesh_core::document::plan_source(source, file, host.clone())?;
+                    Some(
+                        p.pages
+                            .iter()
+                            .position(|p| p.id == id)
+                            .ok_or("Unknown page")?
+                            + 1,
+                    )
+                } else {
+                    request["page"].as_u64().map(|n| n as usize)
+                };
+                return super::web_export::export(
+                    file, source, host, output, &options, page, "hide",
                 );
             }
             let mut drawing_key = file.to_owned();

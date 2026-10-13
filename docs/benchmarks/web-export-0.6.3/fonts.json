@@ -1,0 +1,27 @@
+{
+  "environment": "Headless Chromium; synthetic FontData enumeration; real font manager, picker DOM and loaded SFNT parsing. OS enumeration and FontData.blob latency are not measured.",
+  "results": [
+    {
+      "count": 1005,
+      "connectionMs": 11.700000000186265,
+      "syntheticEnumerationMs": 0,
+      "requiredLoadMs": 9,
+      "unrelatedFontBlobCalls": 0,
+      "requiredFontBlobCalls": 1,
+      "searchP95Ms": 0.40000000037252903,
+      "selectionP95Ms": 0.10000000055879354,
+      "automaticCompiles": 2
+    },
+    {
+      "count": 5000,
+      "connectionMs": 12.299999999813735,
+      "syntheticEnumerationMs": 0,
+      "requiredLoadMs": 19.09999999962747,
+      "unrelatedFontBlobCalls": 0,
+      "requiredFontBlobCalls": 1,
+      "searchP95Ms": 0.599999999627471,
+      "selectionP95Ms": 0.10000000055879354,
+      "automaticCompiles": 2
+    }
+  ]
+}

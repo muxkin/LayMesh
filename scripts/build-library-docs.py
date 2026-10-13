@@ -10,6 +10,9 @@ if a.check:
  data=json.loads(path.read_text())
 else:
  data=json.loads(a.data.read_text()) if a.data else json.loads(subprocess.check_output(['cargo','run','--release','--locked','-p','laymesh-language','--example','css_catalog','--','--verify'],cwd=ROOT,text=True))
+ # Page transitions have a two-page shader catalog and compatibility suite.
+ # The single-object appearance browser cannot preview them meaningfully.
+ data['libraries']=[lib for lib in data['libraries'] if lib['name']!='gl-transitions']
  for library in data['libraries']:
   for entry in library['entries']:
    if entry['status']=='unsupported':continue
@@ -27,6 +30,16 @@ assert data['engine']==fingerprint(engine_files()), 'Engine changed; regenerate 
 inventory=json.loads(subprocess.check_output(['cargo','run','--release','--locked','-p','laymesh-language','--example','css_catalog','--','--inventory'],cwd=ROOT,text=True))
 expected={l['name']:{(e['kind'],e['name']) for e in l['entries']} for l in inventory['libraries']}
 manifest=json.loads((ROOT/'crates/laymesh-core/assets/styles/manifest.json').read_text())
+transitions=next(lib for lib in manifest if lib['name']=='gl-transitions')
+raw=(ROOT/'crates/laymesh-core/assets/styles/gl-transitions.css').read_bytes()
+assert hashlib.sha256(raw).hexdigest()==transitions['sha256']
+effects=json.loads((ROOT/'crates/laymesh-core/assets/transitions.json').read_text())
+assert expected['gl-transitions']=={('class','gl-transition-'+e['name']) for e in effects}
+for lang in ['en','zh-CN']:
+ catalog=(ROOT/f'docs/topics/page-transitions.{lang}.md').read_text()
+ assert all('| `'+e['name']+'` |' in catalog for e in effects), 'Incomplete page transition catalog'
+manifest=[lib for lib in manifest if lib['name']!='gl-transitions']
+assert [lib['name'] for lib in data['libraries']]==[lib['name'] for lib in manifest]
 seen=set();usable=0
 for lib,pinned in zip(data['libraries'],manifest):
  assert (lib['name'],lib['version'],lib['sha256'])==(pinned['name'],pinned['version'],pinned['sha256'])

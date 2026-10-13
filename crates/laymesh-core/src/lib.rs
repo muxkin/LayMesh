@@ -1,4 +1,5 @@
 pub mod animation;
+pub mod page_transition;
 pub mod arrows;
 mod art;
 pub mod asset_cache;

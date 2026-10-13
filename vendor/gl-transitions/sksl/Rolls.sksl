@@ -1,0 +1,48 @@
+// Rolls — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/Rolls.glsl
+// Author: Mark Craig
+// License: MIT
+// Description: The outgoing image rolls away around a corner, revealing the incoming one
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform int type; 
+
+uniform int RotDown; 
+
+vec4 transition(vec2 uv)
+{
+float theta, c1, s1;
+vec2 iResolution = vec2(ratio, 1.0);
+vec2 uvi;
+
+if (type == 0) { theta = ((RotDown != 0) ? 3.14159265358979323846 : -3.14159265358979323846) / 2.0 * progress; uvi.x = 1.0 - uv.x; uvi.y = uv.y; }
+else if (type == 1) { theta = ((RotDown != 0) ? 3.14159265358979323846 : -3.14159265358979323846) / 2.0 * progress; uvi = uv; }
+else if (type == 2) { theta = ((RotDown != 0) ? -3.14159265358979323846 : 3.14159265358979323846) / 2.0 * progress; uvi.x = uv.x; uvi.y = 1.0 - uv.y; }
+else if (type == 3) { theta = ((RotDown != 0) ? -3.14159265358979323846 : 3.14159265358979323846) / 2.0 * progress; uvi = 1.0 - uv; }
+c1 = cos(theta); s1 = sin(theta);
+vec2 uv2;
+uv2.x = (uvi.x * iResolution.x * c1 - uvi.y * iResolution.y * s1);
+uv2.y = (uvi.x * iResolution.x * s1 + uvi.y * iResolution.y * c1);
+if ((uv2.x >= 0.0) && (uv2.x <= iResolution.x) && (uv2.y >= 0.0) && (uv2.y <= iResolution.y))
+	{
+	uv2 /= iResolution;
+	if (type == 0) { uv2.x = 1.0 - uv2.x; }
+	else if (type == 2) { uv2.y = 1.0 - uv2.y; }
+	else if (type == 3) { uv2 = 1.0 - uv2; }
+	return(getFromColor(uv2));
+	}
+return(getToColor(uv));
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

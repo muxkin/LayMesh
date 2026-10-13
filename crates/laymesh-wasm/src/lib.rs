@@ -6,12 +6,24 @@ use laymesh_core::{
 use laymesh_language::{LanguageService, byte_offset, utf16_offset};
 use serde_json::{Value as J, json};
 use std::cell::RefCell;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
+use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 thread_local! {
     static LANGUAGE_SERVICE: RefCell<LanguageService> = RefCell::new(LanguageService::new("en"));
     static PREVIEW_FONTS: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new());
+    static PREVIEW_ASSETS: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new());
     static DRAW_RESOURCES: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new());
+    static PREVIEW_DEPENDENCIES: Rc<RefCell<BTreeSet<String>>> = Rc::new(RefCell::new(BTreeSet::new()));
+}
+
+#[wasm_bindgen]
+pub fn clear_preview_dependencies() {
+    PREVIEW_DEPENDENCIES.with(|paths| paths.borrow_mut().clear());
+}
+#[wasm_bindgen]
+pub fn preview_dependencies() -> String {
+    PREVIEW_DEPENDENCIES.with(|paths| serde_json::to_string(&*paths.borrow()).unwrap())
 }
 
 #[wasm_bindgen]
@@ -74,7 +86,7 @@ impl DrawJob {
                 )
             })
             .collect();
-        serde_json::to_string(&json!({"schemaVersion":list.schema_version,"width":list.width,"height":list.height,"resources":resources,"animation":list.animation})).map_err(js_error)
+        serde_json::to_string(&json!({"schemaVersion":list.schema_version,"width":list.width,"height":list.height,"resources":resources,"animation":list.animation,"pageTransition":list.page_transition})).map_err(js_error)
     }
     /// Updates are accepted only after the client validates their baseline ID.
     pub fn update_display_list(&mut self, json: &str) -> Result<(), JsValue> {
@@ -121,6 +133,34 @@ fn resolve_resources(
     })
 }
 
+#[wasm_bindgen]
+pub fn register_preview_asset(path: &str, bytes: &[u8]) {
+    PREVIEW_ASSETS.with(|files| files.borrow_mut().insert(path.into(), bytes.to_vec()));
+}
+#[wasm_bindgen]
+pub fn clear_preview_assets() {
+    PREVIEW_ASSETS.with(|files| files.borrow_mut().clear());
+}
+
+#[wasm_bindgen]
+pub fn describe_font(bytes: &[u8]) -> String {
+    serde_json::to_string(&laymesh_core::text::font_metadata(bytes)).unwrap()
+}
+#[wasm_bindgen]
+pub fn decode_image(bytes: &[u8], path: &str) -> Result<String, JsValue> {
+    laymesh_core::assets::load(bytes, path, path, laymesh_core::Loc::default())
+        .and_then(|v| {
+            serde_json::to_string(&v).map_err(|e| {
+                laymesh_core::Diagnostic::new(
+                    "E_IMAGE",
+                    e.to_string(),
+                    path,
+                    laymesh_core::Loc::default(),
+                )
+            })
+        })
+        .map_err(js_error)
+}
 /// Register Page-only body fonts as bytes, avoiding a large JSON byte array on every render.
 #[wasm_bindgen]
 pub fn register_preview_font(filename: &str, bytes: &[u8]) {
@@ -196,8 +236,11 @@ impl RenderJob {
     pub fn svg(&self) -> Result<String, JsValue> {
         laymesh_render::render_svg(&self.scene).map_err(|e| JsValue::from_str(&e.to_string()))
     }
+    pub fn export_svg(&self) -> Result<String, JsValue> {
+        laymesh_render::render_svg_outlined(&self.scene).map_err(js_error)
+    }
     pub fn inspection(&self) -> String {
-        let mut value = json!({"inspection":laymesh_language::inspect::inspect_scene(&self.scene),"warnings":self.scene.warnings});
+        let mut value = json!({"inspection":laymesh_language::inspect::inspect_scene(&self.scene),"warnings":self.scene.warnings,"requestedFonts":self.scene.font_requests});
         if let Some(document) = &self.document {
             value["document"] = document.clone();
         }
@@ -261,6 +304,7 @@ fn render_host(files_json: &str) -> Result<Host, JsValue> {
         serde_json::from_str(files_json).map_err(|e| JsValue::from_str(&e.to_string()))?;
     let mut host = Host {
         native: false,
+        dependencies: Some(PREVIEW_DEPENDENCIES.with(Rc::clone)),
         ..Host::default()
     };
     if let Some(files) = files.as_object() {
@@ -275,6 +319,10 @@ fn render_host(files_json: &str) -> Result<Host, JsValue> {
             host.files.insert(name.clone(), data);
         }
     }
+    PREVIEW_ASSETS.with(|files| {
+        host.files
+            .extend(files.borrow().iter().map(|(k, v)| (k.clone(), v.clone())))
+    });
     PREVIEW_FONTS.with(|fonts| {
         host.files.extend(
             fonts

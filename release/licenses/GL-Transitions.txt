@@ -1,0 +1,1360 @@
+GL Transitions 1.74.0
+MIT License
+
+Copyright (c) 2017-present gl-transitions contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Note: Individual transitions in the transitions/ directory may have their own
+license specified in their file header comments. When no license is specified,
+the transition is covered by this MIT license.
+
+
+AdvancedMosaic — Sergey Kosarevsky — MIT
+// Author: Sergey Kosarevsky
+// License: MIT
+// Description: Both images break into large blocks that blend, then sharpen into the incoming image
+// Tags: pixelate, mosaic, blend
+// Ported from https://gist.github.com/corporateshark/21d2fdd24c706952dc8c
+// = 50.0
+// Remap UV to center the mosaic pattern
+
+BlockDissolve — nwoeanhinnogaehr — MIT
+// Author: nwoeanhinnogaehr
+// License: MIT
+// Description: The incoming image appears in small random blocks
+// Tags: dissolve, blocks, noise
+// Ported from https://gist.github.com/nwoeanhinnogaehr/b93818de23d4511fde10
+// = 0.02
+
+BookFlip — hong — MIT
+// Author: hong
+// License: MIT
+// Description: The outgoing image turns like a book page from right to left, revealing the incoming one
+// Tags: page, flip, 3d
+// Avoids dividing by zero when the page is edge-on (progress = 0.5).
+
+Bounce — Adrian Purser — MIT
+// Author: Adrian Purser
+// License: MIT
+// Description: The outgoing image drops out of the frame with a few bounces, revealing the incoming one
+// Tags: bounce, slide, vertical, shadow
+// @color Color of the shadow cast on the incoming image
+// = vec4(0.,0.,0.,.6)
+// @range(0.01, 0.5) Height of the shadow, relative to the image height
+// = 0.075
+// @range(1, 10, 1) Number of bounces before settling
+// = 3.0
+// fade-out the shadow at the end
+
+BowTieHorizontal — huynx — MIT
+// Author: huynx
+// License: MIT
+// Description: Two triangles grow from the left and right edges into a bow tie that reveals the incoming image
+// Tags: wipe, shape, horizontal
+
+BowTieVertical — huynx — MIT
+// Author: huynx
+// License: MIT
+// Description: Two triangles grow from the top and bottom edges into a bow tie that reveals the incoming image
+// Tags: wipe, shape, vertical
+
+BowTieWithParameter — KMojek — MIT
+// Author: KMojek
+// License: MIT
+// Description: A bow-tie wipe with an adjustable shape that can run in reverse
+// Tags: wipe, shape
+// = 0.5
+// @param Run the wipe in reverse
+// = false
+
+Box — lql — MIT
+// Author: lql
+// License: MIT
+// Description: The outgoing image shrinks into a box, toward the center or a corner, revealing the incoming one
+// Tags: box, zoom, shape
+// =1
+// center:0, left_top:1, left_bottom:2, right_top:3, right_bottom:4
+// @range(0, 4, 1) Where the box goes: 0 center, 1 left top, 2 left bottom, 3 right top, 4 right bottom
+// =0
+// Determine rectangle coordinates based on location
+// Calculate the x and y coordinates based on the location
+// Determine if the point is inside the rectangle
+// Mix colors based on the in_rect value
+
+ButterflyWaveScrawler — mandubian — MIT
+// Author: mandubian
+// License: MIT
+// Description: Wavy, color-separated ripples scramble the outgoing image into the incoming one
+// Tags: wave, distort, chromatic
+// = 1.0
+// = 30.0
+// = 0.3
+// horizontal vector
+// butterfly polar function (don't ask me why this one :))
+
+CircleCrop — fkuteken — MIT
+// License: MIT
+// Author: fkuteken
+// Description: The outgoing image closes into a circle over a background color, then the incoming one opens from it
+// Tags: circle, iris, shape
+// ported by gre from https://gist.github.com/fkuteken/f63e3009c1143950dee9063c3b83fb88
+// @color Background color
+// = vec4(0.0, 0.0, 0.0, 1.0)
+// branching is ok here as we statically depend on progress uniform (branching won't change over pixels)
+
+ColourDistance — P-Seebauer — MIT
+// License: MIT
+// Author: P-Seebauer
+// Description: Pixels switch to the incoming image in order of how close their colors are
+// Tags: blend, color
+// ported by gre from https://gist.github.com/P-Seebauer/2a5fa2f77c883dd661f9
+// = 5.0
+
+CrazyParametricFun — mandubian — MIT
+// Author: mandubian
+// License: MIT
+// Description: The outgoing image is pulled along a parametric curve into a psychedelic swirl
+// Tags: distort, psychedelic
+// = 4
+// = 1
+// = 120
+// = 0.1
+
+CrossZoom — rectalogic — MIT
+// License: MIT
+// Author: rectalogic
+// Description: A crossfade through a strong zoom blur
+// Tags: zoom, blur, blend
+// ported by gre from https://gist.github.com/rectalogic/b86b90161503a0023231
+// Converted from https://github.com/rectalogic/rendermix-basic-effects/blob/master/assets/com/rendermix/CrossZoom/CrossZoom.frag
+// Which is based on https://github.com/evanw/glfx.js/blob/master/src/filters/blur/zoomblur.js
+// With additional easing functions from https://github.com/rectalogic/rendermix-basic-effects/blob/master/assets/com/rendermix/Easing/Easing.glsllib
+// @range(0, 1) Blur strength
+// = 0.4
+// Linear interpolate center across center half of the image
+// Mirrored sinusoidal loop. 0->strength then strength->0
+/* randomize the lookup values to hide the fixed number of samples */
+
+DefocusBlur — Sergey Kosarevsky — MIT
+// Author: Sergey Kosarevsky
+// License: MIT
+// Description: A crossfade through an out-of-focus blur
+// Tags: blur, blend
+// Ported from https://gist.github.com/corporateshark/b9f8e5675c647e615419
+// @param Amount of blur
+// = 0.02
+// 12-tap Poisson disk
+// https://github.com/spite/Wagner/blob/master/fragment-shaders/poisson-disc-blur-fs.glsl
+
+Directional — Gaëtan Renaudeau — MIT
+// Author: Gaëtan Renaudeau
+// License: MIT
+// Description: The incoming image pushes the outgoing one out in a given direction
+// Tags: slide, push, directional
+// @param Direction of the movement
+// = vec2(0.0, 1.0)
+
+DirectionalScaled — Thibaut Foussard — MIT
+// Author: Thibaut Foussard
+// based on Directional transition by Gaëtan Renaudeau
+// https://gl-transitions.com/editor/Directional
+// License: MIT
+// Description: Like Directional, with both images scaled down while they slide
+// Tags: slide, push, zoom, directional
+// @param Direction of the movement
+// = vec2(0.0, 1.0)
+// = .7
+
+DoomScreenTransition — Zeh Fernando — MIT
+// Author: Zeh Fernando
+// License: MIT
+// Description: The outgoing image melts down in uneven columns, like the Doom screen wipe
+// Tags: melt, columns, retro
+// Transition parameters --------
+// Number of total bars/columns
+// = 30
+// Multiplier for speed ratio. 0 = no variation when going down, higher = some elements go much faster
+// = 2
+// Further variations in speed. 0 = no noise, 1 = super noisy (ignore frequency)
+// = 0.1
+// Speed variation horizontally. the bigger the value, the shorter the waves
+// = 0.5
+// How much the bars seem to "run" from the middle of the screen first (sticking to the sides). 0 = no drip, 1 = curved drip
+// = 0.5
+// The code proper --------
+// Finally, apply the color
+
+Dreamy — mikolalysenko — MIT
+// Author: mikolalysenko
+// License: MIT
+// Description: A crossfade with a gentle wavy distortion
+// Tags: wave, blend
+
+DreamyZoom — Zeh Fernando — MIT
+// Author: Zeh Fernando
+// License: MIT
+// Description: Zooms and rotates into a bright flash, then out to the incoming image
+// Tags: zoom, rotate, flash
+// Definitions --------
+// 1/180*PI
+// Transition parameters --------
+// In degrees
+// = 6
+// Multiplier
+// = 1.2
+// The code proper --------
+// Massage parameters
+// Calculate the source point
+// This can probably be optimized (with distance())
+// Finally, apply the color
+
+Drop_Zone_Flicker — bread — MIT
+// Author: bread
+// License: MIT
+// Description: A flickering glitch with RGB offset, ghosting and scanlines that flashes back to the outgoing image
+// Tags: glitch, flicker, chromatic, scanlines
+// Drop_Zone_Flicker.glsl
+// gl-transitions compatible: progress, ratio, getFromColor, getToColor
+// = 24.0
+// = 0.014
+// = 0.72
+// = 0.62
+// = 0.58
+// = 0.075
+// 24fps reference-matched reveal curve.
+// Non-monotonic on purpose: the reference flashes back to the old clip.
+// Keeps the old circular "drop zone" visible as a translucent flash,
+// especially after the first full new-frame hit.
+
+EdgeTransition — Woohyun Kim — MIT
+// Author: Woohyun Kim
+// License: MIT
+// Description: Both images fade through black with their edges glowing
+// Tags: edges, fade
+// = 0.001
+// = 8.0
+/* adjacent texel array for texel c[4]
+    036
+    147
+    258
+  */
+
+FilmBurn — Anastasia Dunbar — MIT
+// Author: Anastasia Dunbar
+// License: MIT
+// Description: Glowing film-burn light leaks wash over the image and reveal the incoming one
+// Tags: burn, film, light-leak
+// @param Random seed
+// = 2.31
+
+Fold — nwoeanhinnogaehr — MIT
+// Author: nwoeanhinnogaehr
+// License: MIT
+// Description: The incoming image unfolds from the left while the outgoing one folds away to the right
+// Tags: fold, slide, horizontal
+// Ported from https://gist.github.com/nwoeanhinnogaehr/f6fc39f4cfcbb97f96a6
+// Only sample the visible side: the other one divides by zero at progress 0 and 1.
+
+GlitchDisplace — Matt DesLauriers — MIT
+// Author: Matt DesLauriers
+// License: MIT
+// Description: Blocks of the image are displaced in a glitch that flashes into the incoming image
+// Tags: glitch, displace
+//gl_FragColor = mix(gl_FragColor, dColor, smoothstep(0.0, 0.5, progress));
+//gl_FragColor = mix(texture2D(from, p), texture2D(to, p), progress);
+
+GlitchMemories — Gunnar Roth — MIT
+// Author: Gunnar Roth
+// based on work from natewave
+// License: MIT
+// Description: A crossfade with glitchy, color-shifted blocks
+// Tags: glitch, chromatic, blend
+
+GridFlip — TimDonselaar — MIT
+// License: MIT
+// Author: TimDonselaar
+// Description: The image splits into a grid of tiles that flip one by one to the incoming image
+// Tags: grid, tiles, flip
+// ported by gre from https://gist.github.com/TimDonselaar/9bcd1c4b5934ba60087bdb55c2ea92e5
+// @param Number of tiles (columns, rows)
+// = ivec2(4)
+// = 0.1
+// = 0.05
+// @color Color behind the tiles
+// = vec4(0.0, 0.0, 0.0, 1.0)
+// = 0.1
+
+HSVfade — nwoeanhinnogaehr — MIT
+// Author: nwoeanhinnogaehr
+// License: MIT
+// Description: A crossfade through the HSV color space that cycles through hues
+// Tags: fade, color, hue
+// Ported from https://gist.github.com/nwoeanhinnogaehr/b185145363d65751009b
+// HSV functions from http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
+
+HorizontalClose — martiniti — MIT
+// Author: martiniti
+// License: MIT
+// Description: The incoming image closes in from the top and bottom edges toward the middle
+// Tags: wipe, split
+
+HorizontalOpen — martiniti — MIT
+// Author: martiniti
+// License: MIT
+// Description: The incoming image opens from a line in the middle toward the top and bottom edges
+// Tags: wipe, split
+
+InvertedPageCurl — Hewlett-Packard — BSD 3 Clause
+// Author: Hewlett-Packard
+// License: BSD 3 Clause
+// Description: The outgoing image curls away like a page, revealing the incoming one
+// Tags: page, curl, 3d
+// Adapted by Sergey Kosarevsky from:
+// http://rectalogic.github.io/webvfx/examples_2transition-shader-pagecurl_8html-example.html
+/*
+Copyright (c) 2010 Hewlett-Packard Development Company, L.P. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+   * Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+     copyright notice, this list of conditions and the following disclaimer
+     in the documentation and/or other materials provided with the
+     distribution.
+   * Neither the name of Hewlett-Packard nor the names of its
+     contributors may be used to endorse or promote products derived from
+     this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+in vec2 texCoord;
+*/
+// These depend on the progress uniform and must be computed per-fragment.
+// Global initializers with uniforms are invalid in GLSL ES and fail on Mesa.
+// Behind surface
+// Flat surface
+
+LeftRight — zhmy — MIT
+// Author: zhmy
+// License: MIT
+// Description: The outgoing image shrinks away to the left while the incoming one slides in from the right
+// Tags: slide, zoom, horizontal
+
+LinearBlur — gre — MIT
+// Author: gre
+// License: MIT
+// Description: A crossfade through a blur
+// Tags: blur, blend
+// @param Amount of blur
+// = 0.1
+
+Mosaic — Xaychru — MIT
+// License: MIT
+// Author: Xaychru
+// Description: The view pans across a mosaic of rotated tiles from both images and settles on the incoming one
+// Tags: mosaic, tiles, zoom
+// ported by gre from https://gist.github.com/Xaychru/130bb7b7affedbda9df5
+// = 2
+// = -1
+
+Overexposure — Ben Zhang — MIT
+// Author: Ben Zhang
+// License: MIT
+// Description: A crossfade through a washed-out, overexposed white
+// Tags: flash, light, fade
+// @param Amount of overexposure
+// = 0.6
+// Multipliers
+
+PolkaDotsCurtain — bobylito — MIT
+// Author: bobylito
+// License: MIT
+// Description: The incoming image appears through growing polka dots
+// Tags: dots, pattern
+// @param Number of dots across the image
+// = 20.0
+// = vec2(0, 0)
+
+PuzzleRight — JustKirillS — MIT
+// Author: JustKirillS
+// License: MIT
+// Description: The image splits into a grid of tiles that flip one by one to the incoming image
+// Tags: grid, tiles, flip
+// Ported from https://gist.github.com/JustKirillS/714f095318834f4d2375de872c53af1e
+// = ivec2(4, 4)
+// = 0.1
+// = 0.005
+
+Radial — Xaychru — MIT
+// License: MIT
+// Author: Xaychru
+// Description: A radial wipe that sweeps around the center like a clock hand
+// Tags: wipe, radial, clock
+// ported by gre from https://gist.github.com/Xaychru/ce1d48f0ce00bb379750
+// = 1.0
+
+Rectangle — martiniti — MIT
+// Author: martiniti
+// License: MIT
+// Description: A rectangle grows from the center to cover the outgoing image, then shrinks to reveal the incoming one
+// Tags: box, shape, iris
+// @color Color of the rectangle
+// = vec4(0.0, 0.0, 0.0, 1.0)
+// bottom-left
+// top-right
+
+RectangleCrop — martiniti — MIT
+// License: MIT
+// Author: martiniti
+// Description: The outgoing image shrinks into a small rectangle over a background color, then the incoming one grows from it
+// Tags: box, iris, zoom
+// @color Background color
+// = vec4(0.0, 0.0, 0.0, 1.0)
+// bottom-left
+// top-right
+
+Revolve_Left — bread — MIT
+// Author: bread
+// License: MIT
+// Description: The outgoing image swirls and zooms with motion blur into the incoming one
+// Tags: swirl, zoom, rotate, blur
+// gl-transitions v1 compatible
+// @param Center of the swirl
+// = vec2(0.46, 0.52)
+// = -1.0
+// = 1.95
+// = 2.22
+// = 2.85
+// = 0.38
+// = 1.0
+// = 0.30
+// = 0.50
+// = 0.16
+
+Rolls — Mark Craig — MIT
+// Author: Mark Craig
+// mrmcsoftware on github and youtube ( http://www.youtube.com/MrMcSoftware )
+// License: MIT
+// Description: The outgoing image rolls away around a corner, revealing the incoming one
+// Tags: rotate, roll
+// Rolls Transition by Mark Craig (Copyright © 2022)
+// @range(0, 3, 1) Corner to roll around
+// = 0
+// @param Roll the outgoing image down instead of up
+// = false
+// type (0-3): Rotate/Roll from which corner
+// RotDown: if true rotate old image down, otherwise rotate old image up
+// I used if/else instead of switch in case it's an old GPU
+
+RotateScaleVanish — Mark Craig — MIT
+// Author: Mark Craig
+// mrmcsoftware on github and youtube ( http://www.youtube.com/MrMcSoftware )
+// License: MIT
+// Description: The outgoing image spins and shrinks away over the incoming one
+// Tags: rotate, zoom, spin
+// RotateScaleVanish Transition by Mark Craig (Copyright © 2022)
+// @param Fade in the incoming image
+// = true
+// @param Run the effect in reverse
+// = false
+// @param Rotate the other way
+// = false
+// could have used mix
+
+SimpleFlip — nwoeanhinnogaehr — MIT
+// Author: nwoeanhinnogaehr
+// License: MIT
+// Description: The outgoing image flips around the vertical axis into the incoming one
+// Tags: flip, horizontal
+// Ported from https://gist.github.com/nwoeanhinnogaehr/408045772d255df97520
+
+SimpleZoom — 0gust1 — MIT
+// Author: 0gust1
+// License: MIT
+// Description: Zooms into the outgoing image, then fades to the incoming one
+// Tags: zoom, fade
+// @range(0.2, 1) Part of the transition spent zooming
+// = 0.8
+
+SimpleZoomOut — Tianshuo — MIT
+// Author: Tianshuo
+// License: MIT
+// Description: The incoming image zooms out into place while fading in
+// Tags: zoom, fade
+// @range(0.2, 1) Part of the transition spent zooming
+// = 0.8
+// @param Fade instead of cutting to the incoming image
+// = true
+
+Slides — Mark Craig — MIT
+// Author: Mark Craig
+// mrmcsoftware on github and youtube ( http://www.youtube.com/MrMcSoftware )
+// License: MIT
+// Description: The outgoing image slides out, or the incoming one slides in, toward an edge, a corner or the center
+// Tags: slide, directional
+// Slides Transition by Mark Craig (Copyright © 2022)
+// = 0
+// @param Slide the incoming image in instead of the outgoing one out
+// = false
+// type: slide to/from which edge, which corner, or center
+// In: if true slide new image in, otherwise slide old image out
+// I used if/else instead of switch in case it's an old GPU
+
+StarWipe — Ben Lucas — MIT
+// Author: Ben Lucas
+// License: MIT
+// Description: A growing star reveals the incoming image
+// Tags: wipe, shape, star
+// @param Thickness of the star's border
+// = 0.01
+// = 0.75
+// @color Color of the star's border
+// = vec4(1.0)
+// @param Center of the star
+// = vec2(0.5)
+
+StaticFade — Ben Lucas — MIT
+// Author: Ben Lucas
+// License: MIT
+// Description: Cuts to the incoming image halfway, hidden behind a burst of TV static
+// Tags: static, noise, retro
+// = 200.0
+// = 0.8
+
+StereoViewer — Ted Schundler — BSD 2 Clause
+// Tunable parameters
+// How much to zoom (out) for the effect ~ 0.5 - 1.0
+// @range(0.5, 1) How much the images zoom out
+// = 0.88
+// Corner radius as a fraction of the image height
+// = 0.22
+// Author: Ted Schundler
+// License: BSD 2 Clause
+// Description: Both images shrink into rounded cards that swap, like a stereo viewer toy
+// Tags: cards, zoom, retro
+// Free for use and modification by anyone with credit
+// Copyright (c) 2016, Theodore K Schundler
+// All rights reserved.
+// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+// 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+///////////////////////////////////////////////////////////////////////////////
+// Stereo Viewer Toy Transition                                              //
+//                                                                           //
+// Inspired by ViewMaster / Image3D image viewer devices.                    //
+// This effect is similar to what you see when you press the device's lever. //
+// There is a quick zoom in / out to make the transition 'valid' for GLSL.io //
+///////////////////////////////////////////////////////////////////////////////
+// the four corner points
+// Check if a point is within a given corner
+// determine the direction we want to be filled
+// warp the point so we are always testing the bottom left point with the
+// circle centered on the origin
+// Check all four corners
+// return a float for v2 for anti-aliasing?
+// Screen blend mode - https://en.wikipedia.org/wiki/Blend_modes
+// This more closely approximates what you see than linear blending
+// Given RGBA, find a value that when screened with itself
+// will yield the original value.
+// Grab a pixel, only if it isn't masked out by the rounded corners
+// special sampling used when zooming - extra zoom parameter and don't unscreen
+// Basic 2D affine transform matrix helpers
+// These really shouldn't be used in a fragment shader - I should work out the
+// the math for a translate & rotate function as a pair of dot products instead
+// Split an image and rotate one up and one down along off screen pivot points
+// easing
+// works out to be a good number of radians
+// Image stays put, but this time move two masks
+// easing
+// for 2D matrix transforms
+// corner is warped to represent to size after mapping to 1.0, 1.0
+// 0.0: start with the base frame always
+// 0.0-0.1: zoom out and add rounded corners
+// 0.1-0.48: Split original image apart
+// 0.48-0.52: black
+// 0.52 - 0.9: unmask new image
+// zoom out and add rounded corners
+// 1.0 end with base frame
+
+StripDatamoshGlitch — bread — MIT
+// Author: bread
+// License: MIT
+// Description: A datamosh glitch: torn strips, chroma shifts and scan noise drag the outgoing image into the incoming one
+// Tags: glitch, datamosh, chromatic
+// = 1.0
+// = 42.0
+// = 18.0
+// = 0.18
+// = 0.032
+// = 0.62
+// = 0.16
+// = 0.13
+// = 0.20
+// Horizontal time-slice residue: old/new frames dragged through uneven scan bands.
+// Thin scan sparks and broken white lines, like the reference clip's bright horizontal noise.
+// Slight desaturation during the damage peak makes it feel more like broadcast/video signal corruption.
+
+Swirl — Sergey Kosarevsky — MIT
+// License: MIT
+// Author: Sergey Kosarevsky
+// Description: Both images swirl around the center while crossfading
+// Tags: swirl, rotate, blend
+// ( http://www.linderdaum.com )
+// ported by gre from https://gist.github.com/corporateshark/cacfedb8cca0f5ce3f7c
+
+TVStatic — Brandon Anzaldi — MIT
+// Author: Brandon Anzaldi
+// License: MIT
+// Description: Cuts to full-screen TV static, then to the incoming image
+// Tags: static, noise, retro
+// @param Part of the transition, at each end, that shows the images instead of static
+// = 0.05
+// Pseudo-random noise function
+// http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
+
+TilesWave — numb3r23 — MIT
+// Author: numb3r23
+// License: MIT
+// Description: The incoming image is revealed tile by tile in a diagonal wave
+// Tags: tiles, wave, wipe
+// Ported from https://gist.github.com/numb3r23/169781bb76f310e2bfde
+// @param Number of tiles (columns, rows)
+// = ivec2(8, 8)
+// = true
+// = false
+// Diagonal wave from bottom-left to top-right
+
+TopBottom — zhmy — MIT
+// Author: zhmy
+// License: MIT
+// Description: The outgoing image shrinks away upward while the incoming one slides in from the bottom
+// Tags: slide, zoom, vertical
+
+VerticalClose — martiniti — MIT
+// Author: martiniti
+// License: MIT
+// Description: The incoming image closes in from the left and right edges toward the middle
+// Tags: wipe, split
+
+VerticalOpen — martiniti — MIT
+// Author: martiniti
+// License: MIT
+// Description: The incoming image opens from a line in the middle toward the left and right edges
+// Tags: wipe, split
+
+WaterDrop — Paweł Płóciennik — MIT
+// Author: Paweł Płóciennik
+// License: MIT
+// Description: Ripples spread from the center like a drop falling into water, crossfading to the incoming image
+// Tags: ripple, water, blend
+// @param Frequency of the ripples
+// = 30
+// @param Speed of the ripples
+// = 30
+
+ZoomInCircles — dycm8009 — MIT
+// License: MIT
+// Author: dycm8009
+// Description: Concentric rings of the outgoing image zoom at different speeds before revealing the incoming one
+// Tags: zoom, circle
+// ported by gre from https://gist.github.com/dycm8009/948e99b1800e81ad909a
+// TODO: some timing are hardcoded but should be one or many parameters
+// TODO: should also be able to configure how much circles
+// TODO: if() branching should be avoided when possible, prefer use of step() & other functions
+// uv = zoom(uv, 0.9 - 0.1 * pro);
+
+ZoomLeftWipe — Handk — MIT
+// Author: Handk
+// License: MIT
+// Description: Zooms into the outgoing image, then the incoming one wipes in from right to left
+// Tags: zoom, wipe, horizontal
+// @param Part of the first half spent zooming (capped at 0.5)
+// = 0.8
+
+ZoomRigthWipe — Handk — MIT
+// Author: Handk
+// License: MIT
+// Description: Zooms into the outgoing image, then the incoming one wipes in from left to right
+// Tags: zoom, wipe, horizontal
+// @param Part of the first half spent zooming (capped at 0.5)
+// = 0.8
+
+angular — Fernando Kuteken — MIT
+// Author: Fernando Kuteken
+// License: MIT
+// Description: A wipe that sweeps around the center from a starting angle
+// Tags: wipe, radial, clock
+// @range(0, 360) Angle where the wipe starts, in degrees
+// = 90
+
+burn — gre — MIT
+// Author: gre
+// License: MIT
+// Description: A crossfade that brightens toward a color in the middle
+// Tags: fade, color, flash
+// @color Color the images brighten toward
+/* = vec3(0.9, 0.4, 0.2) */
+
+burn0 — liubailin2020@gmail.com — MIT
+// Author: liubailin2020@gmail.com
+// License: MIT
+// Description: The outgoing image burns away in noisy, glowing patches
+// Tags: burn, fire, noise
+// @color Color of the burning edges
+// = vec3(1.0, 0.5, 0.0)
+// Based on Morgan McGuire @morgan3d
+// https://www.shadertoy.com/view/4dS3Wd
+
+cannabisleaf — @Flexi23 — MIT
+// Author: @Flexi23
+// License: MIT
+// Description: A cannabis-leaf shape grows from the center to reveal the incoming image
+// Tags: shape, wipe
+// inspired by http://www.wolframalpha.com/input/?i=cannabis+curve
+
+chessboard — lql — MIT
+// Author: lql
+// License: MIT
+// Description: A chessboard pattern of squares reveals the incoming image
+// Tags: grid, squares, pattern
+// @param Number of squares per row
+// = 10.0
+
+circle — Fernando Kuteken — MIT
+// Author: Fernando Kuteken
+// License: MIT
+// Description: The outgoing image closes into a circle over a background color, then the incoming one opens from it
+// Tags: circle, iris, shape
+// @param Center of the circle
+// = vec2(0.5, 0.5)
+// @color Background color
+// = vec3(0.1, 0.1, 0.1)
+
+circleopen — gre — MIT
+// Author: gre
+// License: MIT
+// Description: A soft-edged circle opens from the center to reveal the incoming image
+// Tags: circle, iris, wipe
+// @param Softness of the circle's edge
+// = 0.3
+// @param Open the circle; false closes it instead
+// = true
+
+colorphase — gre — MIT
+// Author: gre
+// License: MIT
+// Description: A crossfade in which each color channel changes at a different time
+// Tags: fade, color
+// Usage: fromStep and toStep must be in [0.0, 1.0] range 
+// and all(fromStep) must be < all(toStep)
+// @range(0, 1) When each channel (r, g, b, a) starts changing
+// = vec4(0.0, 0.2, 0.4, 0.0)
+// @range(0, 1) When each channel (r, g, b, a) finishes changing
+// = vec4(0.6, 0.8, 1.0, 1.0)
+
+coord-from-in — haiyoucuv — MIT
+// Author: haiyoucuv
+// License: MIT
+// Description: A crossfade in which the colors of one image displace the other
+// Tags: displace, distort, blend
+
+crosshatch — pthrasher — MIT
+// License: MIT
+// Author: pthrasher
+// Description: The incoming image appears through a crosshatch of lines spreading from the center
+// Tags: pattern, lines, noise
+// adapted by gre from https://gist.github.com/pthrasher/04fd9a7de4012cbb03f6
+// @param Point the lines spread from
+// = vec2(0.5)
+// = 3.0
+// = 0.1
+
+crosswarp — Eke Péter <peterekepeter@gmail.com> — MIT
+// Author: Eke Péter <peterekepeter@gmail.com>
+// License: MIT
+// Description: The outgoing image zooms in while the incoming one zooms out into place, sweeping from right to left
+// Tags: warp, zoom, horizontal
+
+cube — gre — MIT
+// Author: gre
+// License: MIT
+// Description: The two images are faces of a rotating 3D cube, with a floor reflection
+// Tags: 3d, cube, rotate, reflection
+// @range(0, 1) Amount of perspective
+// = 0.7
+// = 0.3
+// @range(0, 1) Strength of the reflection
+// = 0.4
+// = 3.0
+// FIXME avoid branching might help perf!
+// p : the position
+// persp : the perspective in [ 0, 1 ]
+// center : the xcenter in [0, 1] \ 0.5 excluded
+// FIXME avoid branching might help perf!
+
+directional-easing — Max Plotnikov — MIT
+// Author: Max Plotnikov
+// License: MIT
+// Description: Like Directional, with an eased movement
+// Tags: slide, push, directional
+// @param Direction of the movement
+// = vec2(0.0, 1.0)
+
+directionalwarp — pschroen — MIT
+// Author: pschroen
+// License: MIT
+// Description: A diagonal wipe with a warped, smeared edge
+// Tags: wipe, warp, directional
+// @param Softness of the edge
+// = 0.1
+// @param Direction of the wipe
+// = vec2(-1.0, 1.0)
+
+directionalwipe — gre — MIT
+// Author: gre
+// License: MIT
+// Description: A soft-edged diagonal wipe
+// Tags: wipe, directional
+// @param Direction of the wipe
+// = vec2(1.0, -1.0)
+// @param Softness of the edge
+// = 0.5
+// there is something wrong with our formula that makes m not equals 0.0 with progress is 0.0
+
+displacement — Travis Fischer — MIT
+// Author: Travis Fischer
+// License: MIT
+// Description: A crossfade in which a displacement map (an extra grayscale texture) warps both images
+// Tags: displace, distort, blend
+//
+// Adapted from a Codrops article by Robin Delaporte
+// https://tympanus.net/Development/DistortionHoverEffect
+// @param Strength of the displacement
+// = 0.5
+
+dissolve — hjm1fb — MIT
+// Author: hjm1fb
+// License: MIT
+// Description: The incoming image spreads over the outgoing one with a hot, glowing edge
+// Tags: dissolve, burn, glow
+// = 0.1
+// @color Color of the spreading edge
+// = vec3(1.0, 0.0, 0.0)
+// @color Color of the hottest part of the edge
+// = vec3(0.9, 0.9, 0.2)
+// = 5.0
+// = 1.0
+// replace this by something better
+// (sqrt(3)-1)/2;
+// (3-sqrt(3))/6;
+
+doorway — gre — MIT
+// Author: gre
+// License: MIT
+// Description: The outgoing image opens like double doors as the incoming one comes forward, with a floor reflection
+// Tags: doors, 3d, reflection
+// @param Strength of the reflection
+// = 0.4
+// @param Amount of perspective
+// = 0.4
+// = 3
+
+fade — gre — MIT
+// Author: gre
+// License: MIT
+// Description: A linear crossfade between the two images
+// Tags: fade, blend
+
+fadecolor — gre — MIT
+// Author: gre
+// License: MIT
+// Description: A fade through a solid color, black by default
+// Tags: fade, color
+// @color Color to fade through
+// = vec3(0.0)
+// @range(0, 1) How long the color shows in the middle
+// = 0.4 ; // if 0.0, there is no black phase, if 0.9, the black phase is very important
+
+fadegrayscale — gre — MIT
+// Author: gre
+// License: MIT
+// Description: A crossfade through grayscale
+// Tags: fade, grayscale, color
+// @range(0, 1) How long the grayscale phase lasts
+// = 0.3; // if 0.0, the image directly turn grayscale, if 0.9, the grayscale transition phase is very important
+
+flyeye — gre — MIT
+// Author: gre
+// License: MIT
+// Description: The image breaks into a fly's-eye grid of lenses with color separation
+// Tags: lens, distort, chromatic
+// = 0.04
+// = 50.0
+// = 0.3
+
+fragment — lbl — MIT
+// Author: lbl
+// License: MIT
+// Description: The outgoing image shatters into fragments that fly away
+// Tags: shatter, fragments
+
+heart — gre — MIT
+// Author: gre
+// License: MIT
+// Description: A heart shape grows from the center to reveal the incoming image
+// Tags: shape, wipe, heart
+
+hexagonalize — Fernando Kuteken — MIT
+// Author: Fernando Kuteken
+// License: MIT
+// Description: Both images turn into hexagons, crossfade, then sharpen again
+// Tags: pixelate, hexagon, blend
+// Hexagonal math from: http://www.redblobgames.com/grids/hexagons/
+// = 50
+// @param Number of hexagons across
+// = 20
+
+kaleidoscope — nwoeanhinnogaehr — MIT
+// Author: nwoeanhinnogaehr
+// License: MIT
+// Description: A crossfade through a spinning kaleidoscope
+// Tags: kaleidoscope, distort, blend
+// = 1.0
+// = 1.0
+// = 1.5
+
+luma — gre — MIT
+// Author: gre
+// License: MIT
+// Description: A wipe that follows the brightness of a grayscale mask (the luma texture)
+// Tags: wipe, luma, mask
+
+luminance_melt — 0gust1 — MIT
+// Author: 0gust1
+// License: MIT
+// Description: The outgoing image melts away in noisy vertical streaks, depending on its brightness
+// Tags: melt, noise, luma
+//My own first transition — based on crosshatch code (from pthrasher), using  simplex noise formula (copied and pasted)
+//-> cooler with high contrasted images (isolated dark subject on light background f.e.)
+//TODO : try to rebase it on DoomTransition (from zeh)?
+//optimizations :
+//luminance (see http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color#answer-596241)
+// Y = (R+R+B+G+G+G)/6
+//or Y = (R+R+R+B+G+G+G+G)>>3 
+//direction of movement :  0 : up, 1, down
+// @param Direction of the melt (false: up, true: down)
+// = true
+//luminance threshold
+// @range(0, 1) Luminance threshold
+// = 0.8 
+//does the movement takes effect above or below luminance threshold ?
+// @param Melt the parts above the threshold instead of below
+// = false 
+//Random function borrowed from everywhere
+// Simplex noise :
+// Description : Array and textureless GLSL 2D simplex noise function.
+//      Author : Ian McEwan, Ashima Arts.
+//  Maintainer : ijm
+//     Lastmod : 20110822 (ijm)
+//     License : MIT  
+//               2011 Ashima Arts. All rights reserved.
+//               Distributed under the MIT License. See LICENSE file.
+//               https://github.com/ashima/webgl-noise
+// 
+// (3.0-sqrt(3.0))/6.0
+// 0.5*(sqrt(3.0)-1.0)
+// -1.0 + 2.0 * C.x
+// 1.0 / 41.0
+// First corner
+// Other corners
+//i1.x = step( x0.y, x0.x ); // x0.x > x0.y ? 1.0 : 0.0
+//i1.y = 1.0 - i1.x;
+// x0 = x0 - 0.0 + 0.0 * C.xx ;
+// x1 = x0 - i1 + 1.0 * C.xx ;
+// x2 = x0 - 1.0 + 2.0 * C.xx ;
+// Permutations
+// Avoid truncation effects in permutation
+// Gradients: 41 points uniformly over a line, mapped onto a diamond.
+// The ring size 17*17 = 289 is close to a multiple of 41 (41*7 = 287)
+// Normalise gradients implicitly by scaling m
+// Approximation of: m *= inversesqrt( a0*a0 + h*h );
+// Compute final noise value at P
+// Simplex noise -- end
+//(0.299*R + 0.587*G + 0.114*B)
+
+morph — paniq — MIT
+// Author: paniq
+// License: MIT
+// Description: A crossfade in which each image is displaced by the other's colors, like a morph
+// Tags: morph, distort, blend
+// @param Strength of the displacement
+// = 0.1
+
+mosaic_transition — YueDev — MIT
+// Author: YueDev
+// License: MIT
+// Description: Both images break into mosaic blocks that blend, then sharpen into the incoming image
+// Tags: mosaic, pixelate, blend
+// @param Number of mosaic blocks
+// = 10.0
+
+multiply_blend — Fernando Kuteken — MIT
+// Author: Fernando Kuteken
+// License: MIT
+// Description: A crossfade through the multiplied blend of both images
+// Tags: blend, fade
+
+old_tv_lost_signal — mernking (gitlab.com/Godswork) — MIT
+// Author: mernking (gitlab.com/Godswork)
+// License: MIT
+// Description: A crossfade with drifting tracking lines and tearing, like a TV losing its signal
+// Tags: retro, glitch, scanlines
+// horizontal tracking lines (key effect)
+// make lines drift during transition
+// apply tearing only on selected scanlines
+// mild scanline darkening (CRT feel)
+
+parametric_glitch — Yoni Maltsman @friendlyspinach — MIT
+// Author: Yoni Maltsman @friendlyspinach
+// License: MIT
+// Description: A crossfade with glitchy horizontal bands and color shifts
+// Tags: glitch, blend
+// @param Horizontal amplitude of the glitch
+// =1.0
+// @param Vertical amplitude of the glitch
+//=1.0
+//3 to 1
+//1 to 2
+
+perlin — Rich Harris — MIT
+// Author: Rich Harris
+// License: MIT
+// Description: The incoming image appears through blobs of Perlin noise
+// Tags: noise, dissolve
+// @param Scale of the noise; higher values make smaller blobs
+// = 4.0
+// @param Softness of the blob edges
+// = 0.01
+// @param Random seed
+// = 12.9898
+// http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
+// 2D Noise based on Morgan McGuire @morgan3d
+// https://www.shadertoy.com/view/4dS3Wd
+// Four corners in 2D of a tile
+// Smooth Interpolation
+// Cubic Hermine Curve.  Same as SmoothStep()
+// u = smoothstep(0.,1.,f);
+// Mix 4 coorners porcentages
+
+pinwheel — Mr Speaker — MIT
+// Author: Mr Speaker
+// License: MIT
+// Description: A spinning pinwheel reveals the incoming image
+// Tags: pinwheel, radial, rotate
+// @param Rotation speed
+// = 2.0
+
+pixelize — gre — MIT
+// Author: gre
+// License: MIT
+// Description: Both images pixelate, crossfade, then sharpen again
+// Tags: pixelate, blend
+// forked from https://gist.github.com/benraziel/c528607361d90a072e98
+// minimum number of squares (when the effect is at its higher level)
+// @param Number of squares at the strongest pixelation
+// = ivec2(20)
+// zero disable the stepping
+// @param Number of pixelation steps; 0 for a continuous effect
+// = 50
+
+polar_function — Fernando Kuteken — MIT
+// Author: Fernando Kuteken
+// License: MIT
+// Description: A flower shape with several petals grows to reveal the incoming image
+// Tags: shape, wipe, polar
+// @param Number of petals
+// = 5
+
+powerKaleido — Boundless — MIT
+// Name: Power Kaleido
+// Author: Boundless
+// License: MIT
+// Description: The image folds into an animated kaleidoscope before revealing the incoming one
+// Tags: kaleidoscope, distort
+// change this value to get different mirror effects
+// = 2.0
+// = 1.5
+// = 5.
+// uv.x = fract(uv.x/l/3.0)*l*3.0;
+
+randomNoisex — towrabbit — MIT
+// Author: towrabbit
+// License: MIT
+// Description: The incoming image appears pixel by pixel in random noise
+// Tags: dissolve, noise
+
+randomsquares — gre — MIT
+// Author: gre
+// License: MIT
+// Description: The incoming image appears in random squares
+// Tags: squares, grid, dissolve
+// @param Number of squares (columns, rows)
+// = ivec2(10, 10)
+// @param Softness of each square's switch
+// = 0.5
+
+ripple — gre — MIT
+// Author: gre
+// License: MIT
+// Description: Ripples spread from the center while crossfading
+// Tags: ripple, wave, blend
+// @param Frequency of the ripples
+// = 100.0
+// @param Speed of the ripples
+// = 50.0
+
+rotateTransition — haiyoucuv — MIT
+// Author: haiyoucuv
+// License: MIT
+// Description: The images spin around the center while crossfading
+// Tags: rotate, spin, blend
+
+rotate_scale_fade — Fernando Kuteken — MIT
+// Author: Fernando Kuteken
+// License: MIT
+// Description: The outgoing image spins and zooms while fading to the incoming one, over a background color
+// Tags: rotate, zoom, fade
+// @param Center of the rotation
+// = vec2(0.5, 0.5)
+// @param Number of turns
+// = 1
+// @param Maximum zoom
+// = 8
+// @color Background color
+// = vec4(0.15, 0.15, 0.15, 1.0)
+
+scale-in — haiyoucuv — MIT
+// Author: haiyoucuv
+// License: MIT
+// Description: The incoming image scales in from the center while fading in
+// Tags: zoom, fade
+
+splitSlideInHorizontal — OllyOllyOlly — MIT
+// Author: OllyOllyOlly
+// License: MIT
+// Description: The incoming image slides in as two halves moving horizontally in opposite directions
+// Tags: slide, split, horizontal
+// @param Swap the directions of the halves
+// = false
+
+splitSlideInOutHorizontal — OllyOllyOlly — MIT
+// Author: OllyOllyOlly
+// License: MIT
+// Description: The halves of both images slide horizontally in opposite directions, out and in at once
+// Tags: slide, split, horizontal
+// @param Swap the directions of the halves
+// = false
+
+splitSlideInOutVertical — OllyOllyOlly — MIT
+// Author: OllyOllyOlly
+// License: MIT
+// Description: The halves of both images slide vertically in opposite directions, out and in at once
+// Tags: slide, split, vertical
+// @param Swap the directions of the halves
+// = false
+
+splitSlideInVertical — OllyOllyOlly — MIT
+// Author: OllyOllyOlly
+// License: MIT
+// Description: The incoming image slides in as two halves moving vertically in opposite directions
+// Tags: slide, split, vertical
+// @param Swap the directions of the halves
+// = false
+
+splitSlideOutHorizontal — OllyOllyOlly — MIT
+// Author: OllyOllyOlly
+// License: MIT
+// Description: The outgoing image slides out as two halves moving horizontally in opposite directions
+// Tags: slide, split, horizontal
+// @param Swap the directions of the halves
+// = false
+
+splitSlideOutVertical — OllyOllyOlly — MIT
+// Author: OllyOllyOlly
+// License: MIT
+// Description: The outgoing image slides out as two halves moving vertically in opposite directions
+// Tags: slide, split, vertical
+// @param Swap the directions of the halves
+// = false
+
+squareswire — gre — MIT
+// Author: gre
+// License: MIT
+// Description: Squares grow along a diagonal sweep to reveal the incoming image
+// Tags: squares, grid, wipe, directional
+// @param Number of squares (columns, rows)
+// = ivec2(10,10)
+// @param Direction of the sweep
+// = vec2(1.0, -0.5)
+// @param Softness of the sweep
+// = 1.6
+
+squeeze — gre — MIT
+// Author: gre
+// License: MIT
+// Description: The outgoing image is squeezed into a line with color separation, revealing the incoming one
+// Tags: squeeze, chromatic, vertical
+// @param Amount of color separation
+// = 0.04
+
+static_wipe — Ben Lucas — MIT
+// Author: Ben Lucas
+// License: MIT
+// Description: A wipe from top to bottom with a band of TV static at its edge
+// Tags: wipe, static, noise, vertical
+// @param Wipe from top to bottom; false wipes from bottom to top
+// = true
+// @param Maximum height of the static band
+// = 0.5
+
+swap — gre — MIT
+// Author: gre
+// License: MIT
+// Description: The two images swap places in 3D, with a floor reflection
+// Tags: 3d, swap, reflection
+// General parameters
+// @param Strength of the reflection
+// = 0.4
+// @param Amount of perspective
+// = 0.2
+// = 3.0
+
+tangentMotionBlur — chenkai — MIT
+// License: MIT
+// Author: chenkai
+// Description: The outgoing image is flung away along a curve with motion blur
+// Tags: motion-blur, rotate, slide
+// ported from https://codertw.com/%E7%A8%8B%E5%BC%8F%E8%AA%9E%E8%A8%80/671116/
+// motion blur for texture from
+// motion blur for texture to
+// bezier in gpu
+// iteration to solve
+// linear
+// x to t, t to y
+// norm distribution
+// anchor to origin
+// anchor back
+//getAnimationTime();
+// rotation for current frame
+// frame timeInterval by fps=30
+// rotation for next frame
+// get speed at tagent direction
+
+undulatingBurnOut — pthrasher — MIT
+// License: MIT
+// Author: pthrasher
+// Description: A circle with a wavy edge burns out from the center to reveal the incoming image
+// Tags: circle, burn, wipe
+// adapted by gre from https://gist.github.com/pthrasher/8e6226b215548ba12734
+// @param Softness of the edge
+// = 0.03
+// @param Center of the circle
+// = vec2(0.5)
+// @color Color of the burning edge
+// = vec3(0.0)
+// offset from center
+// The soft edge reaches `smoothness` beyond the radius and the burn band 0.005 inside it:
+// start the radius below both so nothing but the outgoing image shows at progress 0
+// (unchanged from progress 0.1 on).
+
+wind — gre — MIT
+// Author: gre
+// License: MIT
+// Description: A ragged left-to-right wipe, as if the image was blown away by the wind
+// Tags: wipe, horizontal, noise
+// @range(0, 1) Width of the ragged edge
+// = 0.2
+// @param Wipe from right to left instead
+// = false
+
+windowblinds — Fabien Benetou — MIT
+// Author: Fabien Benetou
+// License: MIT
+// Description: A crossfade through horizontal window blinds
+// Tags: blinds, stripes, blend
+
+windowslice — gre — MIT
+// Author: gre
+// License: MIT
+// Description: The incoming image appears through vertical slices that widen
+// Tags: slices, stripes, wipe
+// @param Number of slices
+// = 10.0
+// @param Softness of the slices' edges
+// = 0.5
+
+wipeDown — Jake Nelson — MIT
+// Author: Jake Nelson
+// License: MIT
+// Description: A hard-edged wipe from top to bottom
+// Tags: wipe, vertical
+
+wipeLeft — Jake Nelson — MIT
+// Author: Jake Nelson
+// License: MIT
+// Description: A hard-edged wipe from right to left
+// Tags: wipe, horizontal
+
+wipeRight — Jake Nelson — MIT
+// Author: Jake Nelson
+// License: MIT
+// Description: A hard-edged wipe from left to right
+// Tags: wipe, horizontal
+
+wipeUp — Jake Nelson — MIT
+// Author: Jake Nelson
+// License: MIT
+// Description: A hard-edged wipe from bottom to top
+// Tags: wipe, vertical
+
+x_axis_translation — lizhongjian — MIT
+// Author: lizhongjian
+// License: MIT
+// Description: The outgoing image slides to the right, uncovering a crossfade to the incoming one
+// Tags: slide, horizontal, blend
+
+zoomInOut — OllyOllyOlly — MIT
+// Author: OllyOllyOlly
+// License: MIT
+// Description: Zooms into the outgoing image until it blurs into a flat color, then out to the incoming one
+// Tags: zoom, blur

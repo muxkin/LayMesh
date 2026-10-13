@@ -6,6 +6,8 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def build(binary=None,extension_dir=None):
  if binary is None:
+  import build_web_export
+  build_web_export.build()
   subprocess.run(['cargo','build','--release','--locked','-p','laymesh-cli'],cwd=ROOT,check=True)
   binary=ROOT/'target/release'/('laymesh.exe' if sys.platform=='win32' else 'laymesh')
  if not binary.is_file():raise RuntimeError(f'Missing Rust binary: {binary}')
@@ -32,6 +34,7 @@ def build(binary=None,extension_dir=None):
  shutil.copy2(ROOT/'site/live/renderer-resources.mjs',extension/'dist/renderer-resources.mjs')
  shutil.copy2(ROOT/'site/live/animation-player.mjs',extension/'dist/animation-player.mjs')
  shutil.copy2(ROOT/'site/live/preview-player.mjs',extension/'dist/preview-player.mjs')
+ shutil.copy2(ROOT/'site/live/preview-geometry.mjs',extension/'dist/preview-geometry.mjs')
  for name in ['preview-host.cjs','presentation-host.cjs','preview-math.mjs','preview-webview.mjs','preview.css']:shutil.copy2(source/'src'/name,extension/'dist'/name)
  for presentation_source in (ROOT/'site/live').glob('presentation*'):
   if presentation_source.is_file():shutil.copy2(presentation_source,extension/'dist'/presentation_source.name)
@@ -42,7 +45,7 @@ def build(binary=None,extension_dir=None):
  # bindings with the renderer worker; no Node bundler or runtime is needed.
  worker_source=(source/'src/preview-worker.mjs').read_text()
  worker_source=re.sub(r'^import .*?;\n', '', worker_source, flags=re.M)
- shared=re.sub(r'^import .*?;\n', '', (ROOT/'site/live/skia-renderer.mjs').read_text(), flags=re.M)
+ shared='\n'.join(re.sub(r'^import .*?;\n', '', (ROOT/'site/live'/name).read_text(), flags=re.M) for name in ['presentation-transitions-data.mjs','presentation-transitions.mjs','skia-renderer.mjs'])
  worker_source=(ROOT/'vendor/canvaskit/canvaskit.js').read_text()+'\n'+shared+'\nconst init=__wbg_init;\n'+worker_source
  (extension/'dist/preview-worker.mjs').write_text((extension/'dist/wasm/laymesh_wasm.js').read_text()+'\n'+worker_source)
  # The shared presentation runtime also runs as a self-contained blob worker.

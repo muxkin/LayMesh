@@ -5,10 +5,11 @@ mod documents;
 mod export;
 mod ffmpeg;
 mod preview;
+mod web_export;
 
 fn usage(status: i32) -> ! {
     let help = "用法:\n  laymesh animate <file.lay|laydoc> -o <output.mp4|gif> [--width N] [--fps N] [--reduced-motion reduce|no-preference]\n  laymesh render <file.lay|laydoc> -o frame.png --time SECONDS|--step N [--width N]\n  laymesh validate <file.lay>\n  laymesh inspect <file.lay> --json\n  laymesh render <file.lay> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga>\n    [--dpi <number>] [--quality <1–100 (JPEG) / 0–100 (WebP)>]\n    [--compression <fast|default|best (PNG) / none|lzw|deflate|packbits (TIFF)>]\n    [--background <#RRGGBB>] [--webp-lossless <true|false>]\n    [--webp-method <0–6>] [--webp-alpha-quality <0–100>] [--webp-near-lossless <0–100>]\n    [--config <file.json>] [--pdf-image-compression <auto|lossless|jpeg>]\n    [--pdf-jpeg-quality <1–100>] [--pdf-downsample <true|false>]\n    [--pdf-recompress-jpeg <true|false>] [--pdf-preserve-16bit <true|false>] [--pdf-preserve-alpha <true|false>] [--pdf-alpha-background <#RRGGBB>]\n    [--pdf-auto-palette-limit <0–16384>] [--pdf-auto-flatness-threshold <0–1>]\n    [--preview-output <preview.jpg> [--preview-dpi <number>] [--preview-quality <1–100>] [--preview-background <#RRGGBB>]]\n  laymesh render <file.lay> --preview-output <preview.jpg>\n  laymesh lsp --stdio\n  laymesh preview --stdio\nFFmpeg：laymesh ffmpeg status|install [--file SOURCE] [--config FILE] [--format mp4|gif] [--json] [--yes]\n所有命令支持 --warnings show|hide（默认读取 LAYMESH_WARNINGS）\n几何默认 mm；字号与线宽默认 pt；样式表使用 .lcss";
-    let document_help = "多页文档：validate/inspect/render 支持 .laydoc；--page N 从 1 开始。\n  laymesh render report.laydoc -o report.pdf\n  laymesh render report.laydoc -o page.png --page 2\n  laymesh render report.laydoc -o page.png --all-pages\n  inspect report.laydoc --json 列出页面；--preview-page N 只选择 JPEG 预览页。";
+    let document_help = "Web export: laymesh render input.lay|laydoc -o output.zip.html|zip [--html-editable] [--html-embed-fonts] [--html-image-compression auto|original|lossless] [--html-image-quality 85]\n多页文档：validate/inspect/render 支持 .laydoc；--page N 从 1 开始。\n  laymesh render report.laydoc -o report.pdf\n  laymesh render report.laydoc -o page.png --page 2\n  laymesh render report.laydoc -o page.png --all-pages\n  inspect report.laydoc --json 列出页面；--preview-page N 只选择 JPEG 预览页。";
     if status == 0 {
         println!("{help}\n{document_help}")
     } else {
@@ -158,6 +159,39 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     i = 0;
     while i < rest.len() {
         match rest[i] {
+            "--html-embed-fonts" => {
+                options.html_embed_fonts = Some(true);
+                if rest
+                    .get(i + 1)
+                    .is_some_and(|v| matches!(*v, "true" | "false"))
+                {
+                    i += 1;
+                    options.html_embed_fonts = Some(rest[i] == "true");
+                }
+            }
+            "--html-editable" => {
+                options.html_editable = Some(true);
+                if rest
+                    .get(i + 1)
+                    .is_some_and(|v| matches!(*v, "true" | "false"))
+                {
+                    i += 1;
+                    options.html_editable = Some(rest[i] == "true");
+                }
+            }
+            "--html-image-compression" => {
+                i += 1;
+                options.html_image_compression = Some(
+                    rest.get(i)
+                        .ok_or("Missing HTML image compression")?
+                        .to_string(),
+                );
+            }
+            "--html-image-quality" => {
+                i += 1;
+                options.html_image_quality =
+                    Some(rest.get(i).ok_or("Missing HTML image quality")?.parse()?);
+            }
             "--all-pages" => all_pages = true,
             "--preview-page" => {
                 i += 1;
@@ -326,6 +360,45 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             eprintln!("{error}");
             usage(2);
         }
+    }
+    if matches!(format.as_str(), "html" | "zip") {
+        if preview_output.is_some_and(|p| {
+            output_identity(Path::new(p)).ok()
+                == output.and_then(|o| output_identity(Path::new(o)).ok())
+        }) {
+            return Err("Output and preview must differ".into());
+        }
+        let source = std::fs::read_to_string(&absolute)?;
+        let result = web_export::export(
+            absolute.to_str().ok_or("Invalid input path")?,
+            &source,
+            documents::native_host(),
+            Path::new(output.unwrap()),
+            &options,
+            page_number,
+            &warning_mode,
+        )?;
+        if let Some(path) = preview_output {
+            let plan = if file.ends_with(".laydoc") {
+                Some(laymesh_core::document::plan_file(file)?)
+            } else {
+                None
+            };
+            let scene = if let Some(plan) = plan {
+                laymesh_core::document::compile_page(
+                    plan.page(page_number.or(preview_page).unwrap_or(1))?,
+                    documents::native_host(),
+                )?
+            } else {
+                compile_file(file)?
+            };
+            export::write_atomic(
+                Path::new(path),
+                &laymesh_render::render_jpeg_preview(&scene, &preview_options)?,
+            )?;
+        }
+        println!("{}", result);
+        return Ok(());
     }
     laymesh_core::asset_cache::preview_mode(format == "pdf");
     if let Some(plan) = &plan {

@@ -1,0 +1,31 @@
+// GlitchMemories — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/GlitchMemories.glsl
+// Author: Gunnar Roth
+// License: MIT
+// Description: A crossfade with glitchy, color-shifted blocks
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+vec4 transition(vec2 p) {
+  vec2 block = floor(p.xy / vec2(16));
+  vec2 uv_noise = block / vec2(64);
+  uv_noise += floor(vec2(progress) * vec2(1200.0, 3500.0)) / vec2(64);
+  vec2 dist = progress > 0.0 ? (fract(uv_noise) - 0.5) * 0.3 *(1.0 -progress) : vec2(0.0);
+  vec2 red = p + dist * 0.2;
+  vec2 green = p + dist * .3;
+  vec2 blue = p + dist * .5;
+
+  return vec4(mix(getFromColor(red), getToColor(red), progress).r,mix(getFromColor(green), getToColor(green), progress).g,mix(getFromColor(blue), getToColor(blue), progress).b,1.0);
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

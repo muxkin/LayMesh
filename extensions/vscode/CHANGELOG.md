@@ -1,3 +1,10 @@
+# 0.6.3
+
+- Add editable/playback offline HTML and ZIP export with bundled runtime and browser image/document exports.
+- Add GL Transitions to preview and presentation, including `.laydoc` document defaults and page overrides.
+- Add Headless Tree workspace folders, transactional file operations, app context menus and automatic same-font matching in editable exports.
+- Fix editor color widget sizing; retain native export defaults and settings.
+
 # 0.6.2
 
 - Resolve bundled `@laymesh/animate.css`, Bootstrap and Open Props in the native engine, and identify outdated configured engines clearly.

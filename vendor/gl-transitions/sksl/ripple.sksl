@@ -1,0 +1,34 @@
+// ripple — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/ripple.glsl
+// Author: gre
+// License: MIT
+// Description: Ripples spread from the center while crossfading
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float amplitude; 
+
+uniform float speed; 
+
+vec4 transition (vec2 uv) {
+  vec2 dir = uv - vec2(.5);
+  float dist = length(dir);
+  vec2 offset = dir * (sin(progress * dist * amplitude - progress * speed) + .5) / 30. * progress;
+  return mix(
+    getFromColor(uv + offset),
+    getToColor(uv),
+    smoothstep(0.2, 1.0, progress)
+  );
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

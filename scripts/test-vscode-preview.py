@@ -10,7 +10,7 @@ from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('native_cdp',ROOT/'scripts/smoke-browser.py')
 native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--normal-host',action='store_true',help='Use a fixture extension in a normal host so native confirmation dialogs are allowed');p.add_argument('--block-worker-resource-fetch',action='store_true',help='Return HTTP 408 for extension resource requests inside blob workers');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--normal-host',action='store_true',help='Use a fixture extension in a normal host so native confirmation dialogs are allowed');p.add_argument('--block-worker-resource-fetch',action='store_true',help='Return HTTP 408 for extension resource requests inside blob workers');p.add_argument('--page-transitions',action='store_true');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup_errors=True) as temp:
  profile=Path(temp);gate=profile/'gate.json';evidence=profile/'evidence.json'
  extension=a.extension_dir.resolve()
@@ -30,6 +30,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
  transparent=profile/'透明.png';Image.new('RGBA',(20,10),(255,0,0,128)).save(transparent)
  high=profile/'16位.png';Image.new('I;16',(20,10),35000).save(high)
  env={**os.environ,'LAYMESH_PREVIEW_GATE':str(gate),'LAYMESH_PREVIEW_EVIDENCE':str(evidence),'LAYMESH_PREVIEW_BMP':str(bmp),'LAYMESH_PREVIEW_TRANSPARENT':str(transparent),'LAYMESH_PREVIEW_16BIT':str(high),'LAYMESH_PREVIEW_NORMAL_HOST':'1' if a.normal_host else ''};env.pop('ELECTRON_RUN_AS_NODE',None)
+ if a.page_transitions:env['LAYMESH_PREVIEW_TRANSITIONS']='1'
  command=[a.code,'--no-sandbox','--disable-gpu','--disable-updates','--ozone-platform=headless','--force-device-scale-factor=2','--remote-debugging-port='+str(port),'--remote-allow-origins=*','--user-data-dir='+str(profile/'profile'),'--extensions-dir='+str(profile/'extensions'),'--extensionDevelopmentPath='+str(extension),'--extensionTestsPath='+str(ROOT/'scripts/vscode-preview.cjs'),'--skip-welcome','--skip-release-notes','--new-window']
  if a.normal_host:
   fixture=profile/'extensions/laymesh-preview-qa-0.0.1';fixture.mkdir(parents=True)
@@ -217,6 +218,9 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
     (a.output/(name+'.json')).write_text(json.dumps({'outer':outer,'bounds':bounds,'scale':scale}))
    return hashlib.sha256(cropped.tobytes()).hexdigest()
 
+  if a.page_transitions:
+   wait("d.querySelector('.preview').dataset.transitionName==='InvertedPageCurl'&&Number(d.querySelector('.preview').dataset.transitionFrames)>1")
+   assert not evaluate("d.querySelector('.preview').dataset.transitionError")
   formula_before=drawing_hash();phase('document-results');wait_phase('document-dirty-ready')
   until(lambda:drawing_hash()!=formula_before,'Unsaved formula visible')
   wait("d.querySelector('.preview').dataset.painted==='true'")
@@ -298,6 +302,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   assert host.returncode==0
   result=json.loads(evidence.read_text());result['ui']={'bmp_pixel':bitmap,'transparent_webp_pixel':transparent_pixel,'opaque_16bit_jpeg_pixel':high_pixel,'direct_export_save_dialog_verified':True,'no_dpi_or_compression_prompts':True,'initial_readout':readout,'english_readout':english_readout,'state':state,'narrow':layout,'console_errors':console_errors,'viewports':['1440x1000 dark DPR 2','760x720 light DPR 2'],'checks':['BMP on a Chinese/space/hash path','canvas/data hover','ruler markers','wheel anchor','Space drag','100%','ruler toggle','fit','continuous motion','pointer exit','narrow resize','DPR ruler pixels','explicit English and auto UI','view preserved on language change','English stale error and source action']}
   result['ui']['documents']={'page_selector':True,'formula_edit_visible':True,'reordering_preserves_page_id':True,'whole_pdf_direct_save_dialog':True,'console_errors':document_errors}
+  result['ui']['page_transition_verified']=a.page_transitions
   result['ui']['worker_resource_fetch_blocked']=a.block_worker_resource_fetch
   result['ui']['native_ffmpeg_confirmation']=a.normal_host
   if a.normal_host:result['ui']['normal_host_shutdown']={'command':'workbench.action.quit','exit_code':host.returncode}

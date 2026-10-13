@@ -1,0 +1,47 @@
+// Box — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/Box.glsl
+// Author: lql
+// License: MIT
+// Description: The outgoing image shrinks into a box, toward the center or a corner, revealing the incoming one
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform int rectIn; 
+
+uniform int location; 
+
+vec4 transition(vec2 uv) {
+    float p = rectIn == 1 ? 1.0 - progress : progress;
+    float x1, y1, x2, y2;
+
+    
+    if (location == 0) {
+        x1 = y1 = 0.5 * (1.0 - p);
+        x2 = y2 = 1.0 - x1;
+    } else {
+        
+        x1 = (location == 1 || location == 2) ? 0.0 : 1.0 - p;
+        y1 = (location == 1 || location == 3) ? 1.0 - p : 0.0;
+        x2 = (location == 1 || location == 2) ? p : 1.0;
+        y2 = (location == 1 || location == 3) ? 1.0 : p;
+    }
+
+    
+    float in_rect = step(x1, uv.x) * step(uv.x, x2) * step(y1, uv.y) * step(uv.y, y2);
+    in_rect = rectIn == 1 ? 1.0 - in_rect : in_rect;
+
+    
+    return mix(getFromColor(uv), getToColor(uv), in_rect);
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

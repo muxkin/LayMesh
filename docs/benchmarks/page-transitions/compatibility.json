@@ -1,0 +1,1133 @@
+{
+  "backend": "CanvasKit 0.42.0 CPU (WASM), synthetic 128×72 / 72×128 / transparent 96×96; not hardware GPU",
+  "version": "1.74.0",
+  "count": 125,
+  "passed": 125,
+  "rows": [
+    {
+      "name": "AdvancedMosaic",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 218.479326
+    },
+    {
+      "name": "BlockDissolve",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 138.84116300000005
+    },
+    {
+      "name": "BookFlip",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 344.022413
+    },
+    {
+      "name": "Bounce",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 208.30855500000007
+    },
+    {
+      "name": "BowTieHorizontal",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 565.275043
+    },
+    {
+      "name": "BowTieVertical",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 566.9593129999998
+    },
+    {
+      "name": "BowTieWithParameter",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 355.0550720000001
+    },
+    {
+      "name": "Box",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 206.2814159999998
+    },
+    {
+      "name": "ButterflyWaveScrawler",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 337.8720119999998
+    },
+    {
+      "name": "CircleCrop",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 127.57525400000031
+    },
+    {
+      "name": "ColourDistance",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 140.84088900000006
+    },
+    {
+      "name": "CrazyParametricFun",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 220.94699300000002
+    },
+    {
+      "name": "CrossZoom",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 4130.724604
+    },
+    {
+      "name": "DefocusBlur",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 1256.704189000001
+    },
+    {
+      "name": "Directional",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 163.4573079999991
+    },
+    {
+      "name": "DirectionalScaled",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 262.623071
+    },
+    {
+      "name": "DoomScreenTransition",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 256.550432
+    },
+    {
+      "name": "Dreamy",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 161.01064399999996
+    },
+    {
+      "name": "DreamyZoom",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 195.3672030000016
+    },
+    {
+      "name": "Drop_Zone_Flicker",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 1363.3293380000014
+    },
+    {
+      "name": "EdgeTransition",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 1194.9032019999995
+    },
+    {
+      "name": "FilmBurn",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 23790.046742
+    },
+    {
+      "name": "Fold",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 144.42899999999645
+    },
+    {
+      "name": "GlitchDisplace",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 2539.8714729999992
+    },
+    {
+      "name": "GlitchMemories",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 316.4195420000033
+    },
+    {
+      "name": "GridFlip",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 343.4819120000029
+    },
+    {
+      "name": "HSVfade",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 298.0888350000023
+    },
+    {
+      "name": "HorizontalClose",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 131.36445100000128
+    },
+    {
+      "name": "HorizontalOpen",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 137.57294399999955
+    },
+    {
+      "name": "InvertedPageCurl",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 664.0737689999951
+    },
+    {
+      "name": "LeftRight",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 194.73809299999994
+    },
+    {
+      "name": "LinearBlur",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 3277.8732640000017
+    },
+    {
+      "name": "Mosaic",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 285.5135169999994
+    },
+    {
+      "name": "Overexposure",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 192.76876600000105
+    },
+    {
+      "name": "PolkaDotsCurtain",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 117.22487700000056
+    },
+    {
+      "name": "PuzzleRight",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 312.59694899999886
+    },
+    {
+      "name": "Radial",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 128.7651029999979
+    },
+    {
+      "name": "Rectangle",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 146.50336000000243
+    },
+    {
+      "name": "RectangleCrop",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 155.89645599999494
+    },
+    {
+      "name": "Revolve_Left",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 5329.728079
+    },
+    {
+      "name": "Rolls",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 232.68562999999995
+    },
+    {
+      "name": "RotateScaleVanish",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 290.3955879999994
+    },
+    {
+      "name": "SimpleFlip",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 145.39939700000104
+    },
+    {
+      "name": "SimpleZoom",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 140.0570929999958
+    },
+    {
+      "name": "SimpleZoomOut",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 152.0462600000028
+    },
+    {
+      "name": "Slides",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 189.42530599999736
+    },
+    {
+      "name": "StarWipe",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 331.7335759999987
+    },
+    {
+      "name": "StaticFade",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 254.10545899999852
+    },
+    {
+      "name": "StereoViewer",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 678.8894059999948
+    },
+    {
+      "name": "StripDatamoshGlitch",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 2212.942207
+    },
+    {
+      "name": "Swirl",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 200.97424799999862
+    },
+    {
+      "name": "TVStatic",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 92.7679879999996
+    },
+    {
+      "name": "TilesWave",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 326.66426599999977
+    },
+    {
+      "name": "TopBottom",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 189.39962699999887
+    },
+    {
+      "name": "VerticalClose",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 126.32592100000329
+    },
+    {
+      "name": "VerticalOpen",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 141.8713710000011
+    },
+    {
+      "name": "WaterDrop",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 217.32048799999757
+    },
+    {
+      "name": "ZoomInCircles",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 273.4752339999977
+    },
+    {
+      "name": "ZoomLeftWipe",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 163.5208019999991
+    },
+    {
+      "name": "ZoomRigthWipe",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 162.2348159999965
+    },
+    {
+      "name": "angular",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 142.7162659999958
+    },
+    {
+      "name": "burn",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 132.17111500000465
+    },
+    {
+      "name": "burn0",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 694.404426000001
+    },
+    {
+      "name": "cannabisleaf",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 196.875976000003
+    },
+    {
+      "name": "chessboard",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 158.33962500000052
+    },
+    {
+      "name": "circle",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 121.73275699999795
+    },
+    {
+      "name": "circleopen",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 153.88513799999782
+    },
+    {
+      "name": "colorphase",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 113.15852599999926
+    },
+    {
+      "name": "coord-from-in",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 184.43305200000032
+    },
+    {
+      "name": "crosshatch",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 175.44762099999934
+    },
+    {
+      "name": "crosswarp",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 153.71624300000258
+    },
+    {
+      "name": "cube",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 546.4525409999987
+    },
+    {
+      "name": "directional-easing",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 165.22983899999963
+    },
+    {
+      "name": "directionalwarp",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 209.34294399999635
+    },
+    {
+      "name": "directionalwipe",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 185.18877500000235
+    },
+    {
+      "name": "displacement",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 171.52946499999962
+    },
+    {
+      "name": "dissolve",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 198.2560500000036
+    },
+    {
+      "name": "doorway",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 344.9082150000031
+    },
+    {
+      "name": "fade",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 107.75361100000009
+    },
+    {
+      "name": "fadecolor",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 132.90817100000277
+    },
+    {
+      "name": "fadegrayscale",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 162.40007400000468
+    },
+    {
+      "name": "flyeye",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 249.69085800000175
+    },
+    {
+      "name": "fragment",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 1866.2048520000026
+    },
+    {
+      "name": "heart",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 177.87750499999675
+    },
+    {
+      "name": "hexagonalize",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 363.58136099999683
+    },
+    {
+      "name": "kaleidoscope",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 442.883179000004
+    },
+    {
+      "name": "luma",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 137.14808499999344
+    },
+    {
+      "name": "luminance_melt",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 499.6690499999968
+    },
+    {
+      "name": "morph",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 230.97773400000005
+    },
+    {
+      "name": "mosaic_transition",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 164.4015769999969
+    },
+    {
+      "name": "multiply_blend",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 153.57205599998997
+    },
+    {
+      "name": "old_tv_lost_signal",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 277.12003299999924
+    },
+    {
+      "name": "parametric_glitch",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 233.87469700000656
+    },
+    {
+      "name": "perlin",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 333.0062540000072
+    },
+    {
+      "name": "pinwheel",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 140.0939720000024
+    },
+    {
+      "name": "pixelize",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 173.48916499999177
+    },
+    {
+      "name": "polar_function",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 154.13222299999325
+    },
+    {
+      "name": "powerKaleido",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 3337.650385000001
+    },
+    {
+      "name": "randomNoisex",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 127.39506800001254
+    },
+    {
+      "name": "randomsquares",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 142.41038699999626
+    },
+    {
+      "name": "ripple",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 167.53013299999293
+    },
+    {
+      "name": "rotateTransition",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 141.07553099999495
+    },
+    {
+      "name": "rotate_scale_fade",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 238.01703599999018
+    },
+    {
+      "name": "scale-in",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 119.02482799999416
+    },
+    {
+      "name": "splitSlideInHorizontal",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 137.3167909999902
+    },
+    {
+      "name": "splitSlideInOutHorizontal",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 146.20690000000468
+    },
+    {
+      "name": "splitSlideInOutVertical",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 139.15485700000136
+    },
+    {
+      "name": "splitSlideInVertical",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 134.74300999999105
+    },
+    {
+      "name": "splitSlideOutHorizontal",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 127.87583299999824
+    },
+    {
+      "name": "splitSlideOutVertical",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 126.2989099999977
+    },
+    {
+      "name": "squareswire",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 239.44962999998825
+    },
+    {
+      "name": "squeeze",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 214.39302699999826
+    },
+    {
+      "name": "static_wipe",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 194.33204300000216
+    },
+    {
+      "name": "swap",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 451.12496999998984
+    },
+    {
+      "name": "tangentMotionBlur",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 2177.830132000003
+    },
+    {
+      "name": "undulatingBurnOut",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 286.1080010000005
+    },
+    {
+      "name": "wind",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 159.63609800000268
+    },
+    {
+      "name": "windowblinds",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 138.23245199999656
+    },
+    {
+      "name": "windowslice",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 136.5896630000061
+    },
+    {
+      "name": "wipeDown",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 114.0706199999986
+    },
+    {
+      "name": "wipeLeft",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 119.00257599999895
+    },
+    {
+      "name": "wipeRight",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 115.36927700000524
+    },
+    {
+      "name": "wipeUp",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 114.54751800000668
+    },
+    {
+      "name": "x_axis_translation",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 158.74612699999125
+    },
+    {
+      "name": "zoomInOut",
+      "variants": 4,
+      "frames": 40,
+      "endpoints": true,
+      "intermediateChanges": true,
+      "error": null,
+      "cpuMs": 168.3620729999966
+    }
+  ]
+}

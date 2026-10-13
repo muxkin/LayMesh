@@ -123,11 +123,13 @@ pub fn bundled_stylesheet(path: &str) -> Option<&'static str> {
         "@laymesh/bootstrap.css" => Some(include_str!("../assets/styles/bootstrap.css")),
         "@laymesh/open-props.css" => Some(include_str!("../assets/styles/open-props.css")),
         "@laymesh/animate.css" => Some(include_str!("../assets/styles/animate.css")),
+        "@laymesh/gl-transitions.css" => Some(include_str!("../assets/styles/gl-transitions.css")),
         _ => None,
     }
 }
 pub fn property_supported(key: &str) -> bool {
     key.starts_with("--")
+        || crate::page_transition::supported(key)
         || API["cssProperties"]
             .as_array()
             .is_some_and(|props| props.iter().any(|v| v["name"] == key.replace('_', "-")))
@@ -772,6 +774,9 @@ impl Engine {
                 Ok(v) => {
                     output.insert(key.clone(), v);
                 }
+                // Required transition textures must preserve E_ASSET so the
+                // browser worker can fulfill the compiler's lazy resource request.
+                Err(e) if key.starts_with("_laymesh_transition_texture_") => return Err(e),
                 Err(e) => self.css_warning(e),
             }
         }
@@ -890,6 +895,15 @@ impl Engine {
     ) -> Result<Vec<(String, String)>> {
         let key = &d.property;
         let s = d.value.trim();
+        if crate::page_transition::supported(key) {
+            let initial = match key.as_str() {
+                "_laymesh_transition" => "none",
+                "_laymesh_transition_duration" => "700ms",
+                "_laymesh_transition_timing_function" => "ease-in-out",
+                _ => s,
+            };
+            return Ok(vec![(key.clone(), if matches!(s, "initial" | "revert" | "revert-layer") {initial} else {s}.into())]);
+        }
         let fail = |m: String| {
             Diagnostic::new(
                 "W_CSS",
@@ -1087,6 +1101,18 @@ impl Engine {
         ctx: Context,
         current: &str,
     ) -> Result<V> {
+        if self.page_transition_override.is_some() && crate::page_transition::supported(key) {return Ok(V::Null);}
+        if key.starts_with("_laymesh_transition_texture_") {
+            let path = s.trim().strip_prefix("url(").and_then(|s| s.strip_suffix(')'))
+                .map(|s| s.trim().trim_matches(['\'', '"']))
+                .filter(|s| !s.is_empty() && !s.contains(":") && !s.starts_with("//"))
+                .ok_or_else(|| Diagnostic::new("E_TRANSITION", "Transition texture requires a local image url()", file, loc))?;
+            let path = resolve(file, path);
+            let bytes = self.host.read(&path, file, loc)?;
+            let asset = crate::assets::load(&bytes, &path, file, loc)?;
+            return Ok(V::from_json(&asset));
+        }
+        if crate::page_transition::supported(key) { return Ok(V::text(s)); }
         let fail = |m: String| {
             Diagnostic::new(
                 "W_CSS",

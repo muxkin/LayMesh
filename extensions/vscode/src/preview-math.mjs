@@ -1,22 +1,11 @@
 // All geometry in inspection is mm. Screen pixels are CSS pixels, never export pixels.
-export function mmPerUnit(unit, dpi=96) {
- return ({mm:1,cm:10,in:25.4,inch:25.4,pt:25.4/72,px:25.4/dpi})[unit]??1;
-}
+import {mmPerUnit} from './preview-geometry.mjs';
+export {mmPerUnit,canvasAt,niceStep} from './preview-geometry.mjs';
 export function apply(m, x, y) {return [m[0]*x+m[2]*y+m[4],m[1]*x+m[3]*y+m[5]];}
 export function invert(m) {
  const d=m[0]*m[3]-m[1]*m[2];
  if(!Number.isFinite(d)||Math.abs(d)<1e-20)return null;
  return [m[3]/d,-m[1]/d,-m[2]/d,m[0]/d,(m[2]*m[5]-m[3]*m[4])/d,(m[1]*m[4]-m[0]*m[5])/d];
-}
-export function canvasAt(page, rect, x, y) {
- if(rect.width<=0||rect.height<=0||x<rect.left||x>rect.left+rect.width||y<rect.top||y>rect.top+rect.height)return null;
- const mm=[(x-rect.left)/rect.width*page.width,(y-rect.top)/rect.height*page.height];
- const factor=mmPerUnit(page.unit,page.layout_dpi);
- return {mm,display:mm.map(v=>v/factor)};
-}
-export function niceStep(minimum) {
- const base=10**Math.floor(Math.log10(minimum));
- return ([1,2,5,10].find(n=>n*base>=minimum)||10)*base;
 }
 const transform=(v,scale,c)=>scale==='log'?Math.log(v):scale==='symlog'?Math.sign(v)*Math.log1p(Math.abs(v)/c):v;
 const inverse=(v,scale,c)=>scale==='log'?Math.exp(v):scale==='symlog'?Math.sign(v)*Math.expm1(Math.abs(v))*c:v;

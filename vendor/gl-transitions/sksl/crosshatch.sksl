@@ -1,0 +1,32 @@
+// crosshatch — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/crosshatch.glsl
+// Author: pthrasher
+// License: MIT
+// Description: The incoming image appears through a crosshatch of lines spreading from the center
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform vec2 center; 
+uniform float threshold; 
+uniform float fadeEdge; 
+
+float rand(vec2 co) {
+  return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+vec4 transition(vec2 p) {
+  float dist = distance(center, p) / threshold;
+  float r = progress - min(rand(vec2(p.y, 0.0)), rand(vec2(0.0, p.x)));
+  return mix(getFromColor(p), getToColor(p), mix(0.0, mix(step(dist, r), 1.0, smoothstep(1.0-fadeEdge, 1.0, progress)), smoothstep(0.0, fadeEdge, progress)));    
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

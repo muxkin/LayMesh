@@ -1,0 +1,24 @@
+{
+  "jquery": {
+    "version": "3.7.1",
+    "source": "https://registry.npmjs.org/jquery/-/jquery-3.7.1.tgz",
+    "license": "MIT",
+    "sha256": "68a9f787516da47c680e09c187bcbac4536b6f85d90eb882844e12919e583f53",
+    "files": {
+      "jquery/jquery.min.js": "fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a",
+      "jquery/LICENSE.txt": "d4db9ebe6f29f5168eac45ad713f055623ac5d0dcd5ba92da23d650ae012020d"
+    }
+  },
+  "jquery-contextmenu": {
+    "version": "2.10.2",
+    "source": "https://registry.npmjs.org/jquery-contextmenu/-/jquery-contextmenu-2.10.2.tgz",
+    "license": "MIT",
+    "sha256": "af51985bfc92df676dbb30ab375103c31f4f4622f63138a82f057187fdec09c4",
+    "files": {
+      "jquery-contextmenu/jquery.contextMenu.min.js": "4e58ef63a445cff56ca366b9e64cc0bac40adbd35f29117bbab6a40cab9527c6",
+      "jquery-contextmenu/jquery.ui.position.min.js": "0bb1e351ff5575f549e43c5eb7e9d6f702bbaca2c084490460c8c65ecc3b14cf",
+      "jquery-contextmenu/jquery.contextMenu.min.css": "b98f0ed3188c90e8e6e902c754326fd53f19173cb6e36a55967e85ac700b42b6",
+      "jquery-contextmenu/LICENSE": "0a647ff0b7a8ce5cc7c6cbb0e87d05f10ba476c9bad50dfd7253352dee415e0c"
+    }
+  }
+}

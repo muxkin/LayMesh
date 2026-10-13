@@ -138,6 +138,7 @@ Returns: Create a .laydoc document; doc.add(page) determines page order.
 | Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
 | --- | --- | --- | --- |
 | `name` | string | Document name | "Untitled" |
+| `transition` | transition\|string | Entering transition; page overrides document default, none disables, omitted inherits LCSS | — |
 
 ### Minimal complete example
 
@@ -171,6 +172,7 @@ Required: `src`.
 | `src` | string | Local .lay path relative to the calling file | — |
 | `id` | string | Stable unique page ID; defaults to the file stem | — |
 | `name` | string | Display name; defaults to id | — |
+| `transition` | transition\|string | Entering transition; page overrides document default, none disables, omitted inherits LCSS | — |
 
 ### Minimal complete example
 
@@ -191,11 +193,44 @@ for p in pages {
 
 [Concepts and common errors](documents.en.md#page) · [Composition source](../../examples/document/report.laydoc)
 
+## transition
+
+Configure a GL Transitions page transition; texture paths are relative to this declaration.
+
+Returns: A reusable page-transition descriptor for document or page.
+
+Required: `name`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `name` | string | Effect name or none | — |
+| `duration` | time | Duration in ms or s | 700ms |
+| `easing` | string | Easing | "ease-in-out" |
+| `params` | dict | Effect parameters in kebab-case | {} |
+| `textures` | dict | Extra texture relative paths | {} |
+
+### Minimal complete example
+
+```lay
+doc = document(
+    name="GL Transitions · Page turns",
+    transition=transition(name="InvertedPageCurl", duration=700ms, easing="ease-in-out")
+)
+doc.add(page(src="pages/start.lay", id="start", name="Start"))
+doc.add(page(src="pages/curl.lay", id="curl", name="Page curl"))
+doc.add(page(src="pages/cube.lay", id="cube", name="Cube",
+    transition=transition(name="cube", params={"persp":0.6})))
+doc.add(page(src="pages/mask.lay", id="mask", name="Texture reveal",
+    transition=transition(name="luma", textures={"luma":"assets/mask.png"})))
+```
+
+[Concepts and common errors](page-transitions.en.md#transition) · [Composition source](../../examples/animation/transitions/demo.laydoc)
+
 ## document.add
 
-Append a page reference with a unique ID. Page transitions are not implemented.
+Append a page reference with a unique ID. Configure transitions with document/page transition parameters.
 
-Returns: Append a page reference with a unique ID. Page transitions are not implemented.
+Returns: Append a page reference with a unique ID. Configure transitions with document/page transition parameters.
 
 Positional parameters: `page`.
 
@@ -4204,6 +4239,9 @@ CSS property support is shared by the compiler, completion, hover and color edit
 | `transform-origin` | motion / none | Animated transform origin; percentages use the untransformed layout box. |
 | `backface-visibility` | motion / none | visible or hidden; controls the back face during 3D flips. |
 | `visibility` | motion / none | visible or hidden; changes animated visibility without reflow. |
+| `-laymesh-transition` | text / none | GL Transitions effect on entering this page; none switches immediately. |
+| `-laymesh-transition-duration` | text / none | Page transition duration in ms or s. |
+| `-laymesh-transition-timing-function` | text / none | Page transition easing, including cubic-bezier() and steps(). |
 
 ## Geometry view types
 

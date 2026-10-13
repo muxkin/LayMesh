@@ -1,5 +1,7 @@
 # 导出格式与分辨率
 
+[离线 HTML / ZIP 放映与编辑](web-export.zh-CN.md)
+
 ## workflow
 
 CLI、Python、Jupyter 和 VS Code 使用同一原生导出器。扩展名选择格式，`.jpg/.jpeg`、`.tif/.tiff` 等价；`.pnm` 导出 RGBA PAM。

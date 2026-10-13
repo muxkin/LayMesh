@@ -1,5 +1,7 @@
 # Export formats and resolution
 
+[Offline HTML / ZIP playback and editing](web-export.en.md)
+
 ## workflow
 
 The CLI, Python, Jupyter and VS Code share one native exporter. The file extension selects the format; `.jpg/.jpeg` and `.tif/.tiff` are equivalent. `.pnm` exports RGBA PAM.

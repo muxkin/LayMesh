@@ -17,7 +17,9 @@ static CANCELLED: AtomicBool = AtomicBool::new(false);
 pub fn install_cancel() {
     let _ = ctrlc::set_handler(|| CANCELLED.store(true, Ordering::Relaxed));
 }
-pub fn cancelled() -> bool { CANCELLED.load(Ordering::Relaxed) }
+pub fn cancelled() -> bool {
+    CANCELLED.load(Ordering::Relaxed)
+}
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Options {
@@ -340,7 +342,10 @@ pub fn run(args: &[String]) -> Result<()> {
     while i < args.len() {
         let flag = &args[i];
         i += 1;
-        if flag == "--yes" { authorized_download = true; continue; }
+        if flag == "--yes" {
+            authorized_download = true;
+            continue;
+        }
         let value = args.get(i).ok_or("Missing option value")?;
         i += 1;
         match flag.as_str() {
@@ -362,7 +367,7 @@ pub fn run(args: &[String]) -> Result<()> {
             "--time" => time = Some(value.parse::<f64>()?),
             "--step" => step = Some(value.parse::<usize>()?),
             "--config" => config_path = Some(PathBuf::from(value)),
-            "--warnings" if ["show", "hide"].contains(&value.as_str()) => {},
+            "--warnings" if ["show", "hide"].contains(&value.as_str()) => {}
             _ => return Err(format!("Unknown animation option: {flag}").into()),
         }
     }
@@ -374,15 +379,37 @@ pub fn run(args: &[String]) -> Result<()> {
         if time.is_some() || step.is_some() {
             return Err("Use render for time/step snapshots".into());
         }
-        let result = export(&file, &source, host.clone(), &output, &defaults, &explicit, page, None);
+        let result = export(
+            &file,
+            &source,
+            host.clone(),
+            &output,
+            &defaults,
+            &explicit,
+            page,
+            None,
+        );
         let result = match result {
             Err(error) if error.downcast_ref::<super::ffmpeg::Missing>().is_some() => {
-                let format = output.extension().and_then(|s| s.to_str()).unwrap_or("mp4").to_lowercase();
+                let format = output
+                    .extension()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or("mp4")
+                    .to_lowercase();
                 let info = super::ffmpeg::status(&defaults, Path::new(file.as_ref()), &format)?;
                 let authorized = authorized_download || super::ffmpeg::confirm(&info)?;
-                super::ffmpeg::install(&defaults, Path::new(file.as_ref()), &format, authorized, None, false)?;
-                export(&file, &source, host, &output, &defaults, &explicit, page, None)?
-            },
+                super::ffmpeg::install(
+                    &defaults,
+                    Path::new(file.as_ref()),
+                    &format,
+                    authorized,
+                    None,
+                    false,
+                )?;
+                export(
+                    &file, &source, host, &output, &defaults, &explicit, page, None,
+                )?
+            }
             other => other?,
         };
         println!("{result}");

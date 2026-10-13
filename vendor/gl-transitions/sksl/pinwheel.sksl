@@ -1,0 +1,33 @@
+// pinwheel — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/pinwheel.glsl
+// Author: Mr Speaker
+// License: MIT
+// Description: A spinning pinwheel reveals the incoming image
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float speed; 
+
+vec4 transition(vec2 uv) {
+  
+  vec2 p = uv.xy / vec2(1.0).xy;
+  
+  float circPos = atan(p.y - 0.5, p.x - 0.5) + progress * speed;
+  float modPos = mod(circPos, 3.1415 / 4.);
+  float signed = sign(progress - modPos);
+  
+  return mix(getToColor(p), getFromColor(p), step(signed, 0.5));
+  
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

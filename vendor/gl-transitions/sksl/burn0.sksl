@@ -1,0 +1,65 @@
+// burn0 — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/burn0.glsl
+// Author: liubailin2020@gmail.com
+// License: MIT
+// Description: The outgoing image burns away in noisy, glowing patches
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform vec3 burnColor; 
+
+float random (in vec2 st) {
+    return fract(sin(dot(st.xy,
+                         vec2(12.9898,78.233)))*
+        43758.5453123);
+}
+
+float noise (in vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    float a = random(i);
+    float b = random(i + vec2(1.0, 0.0));
+    float c = random(i + vec2(0.0, 1.0));
+    float d = random(i + vec2(1.0, 1.0));
+
+    vec2 u = f * f * (3.0 - 2.0 * f);
+
+    return mix(a, b, u.x) +
+            (c - a)* u.y * (1.0 - u.x) +
+            (d - b) * u.x * u.y;
+}
+
+float fbm (in vec2 st) {
+    float value = 0.0;
+    float amplitude = .5;
+    for (int i = 0; i < 4; i++) {
+        value += amplitude * noise(st);
+        st *= 2.;
+        amplitude *= .5;
+    }
+    return value;
+}
+
+vec4 transition (vec2 uv) {
+    if (progress <= 0.0) return getFromColor(uv);
+    if (progress >= 1.0) return getToColor(uv);
+    vec4 from = getFromColor(uv);
+    vec4 to = getToColor(uv);
+    float n = fbm(uv * 4.);
+    float l = smoothstep(progress, progress + 0.05, n);
+    float edge = (1.0 - l) * l * 5.0;
+    return mix(to, from, l) + vec4(burnColor, 0.0) * edge;
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

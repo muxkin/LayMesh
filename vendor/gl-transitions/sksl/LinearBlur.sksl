@@ -1,0 +1,44 @@
+// LinearBlur — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/LinearBlur.glsl
+// Author: gre
+// License: MIT
+// Description: A crossfade through a blur
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform float intensity; 
+const int passes = 6;
+
+vec4 transition(vec2 uv) {
+    vec4 c1 = vec4(0.0);
+    vec4 c2 = vec4(0.0);
+
+    float disp = intensity*(0.5-distance(0.5, progress));
+    for (int xi=0; xi<passes; xi++)
+    {
+        float x = float(xi) / float(passes) - 0.5;
+        for (int yi=0; yi<passes; yi++)
+        {
+            float y = float(yi) / float(passes) - 0.5;
+            vec2 v = vec2(x,y);
+            float d = disp;
+            c1 += getFromColor( uv + d*v);
+            c2 += getToColor( uv + d*v);
+        }
+    }
+    c1 /= float(passes*passes);
+    c2 /= float(passes*passes);
+    return mix(c1, c2, progress);
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

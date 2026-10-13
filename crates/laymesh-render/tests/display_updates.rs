@@ -14,6 +14,7 @@ fn node(x: f64, color: [f64; 4]) -> DrawNode {
 }
 fn list() -> DisplayList {
     DisplayList {
+        page_transition: None,
         animation: None,
         schema_version: DISPLAY_LIST_VERSION,
         width: 20.,

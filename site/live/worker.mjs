@@ -56,7 +56,7 @@ function sceneStats(list){
 }
 self.onmessage=({data})=>{
  if(data.type==='compile-deck-page'){compileDeckPage(data).catch(error=>self.postMessage({type:'deck-error',error:detail(error)}));return;}
- if(data.type==='deck-context'){deckContext=data;return;}
+ if(data.type==='deck-context'){deckPlan?.free();deckPlan=null;deckContext=data;return;}
  if(data.type==='deck-ack'){deckAck?.();return;}
  if(data.type==='prepare-deck'){prepareDeck(data).catch(error=>self.postMessage({type:'deck-error',error:detail(error)}));return;}
  if(data.type==='init'){
@@ -82,6 +82,8 @@ self.onmessage=({data})=>{
  if(data.type==='full-fonts'){
   initialized.then(ensureFullFonts).then(()=>self.postMessage({type:'full-fonts-ready'}),error=>self.postMessage({type:'full-fonts-error',error:detail(error)}));return;
  }
+ if(['run','cancel-transition'].includes(data.type))skia?.transitions.cancel();
+ if(data.type==='cancel-transition')return;
  chain=chain.then(async()=>{
   const {id}=data;
   try{
@@ -96,6 +98,7 @@ self.onmessage=({data})=>{
     if(!drawJob||data.generation!==generation){self.postMessage({type:'paint-skipped',id:data.id,generation:data.generation});return;}
     const before=performance.now(),sampled=data.time==null?'{}':drawJob.frame_state(data.time,!!data.reduced),states=JSON.parse(sampled),sampleMs=performance.now()-before;
     lastPaint=data;const metrics=skia?.render(data.rect,data.width,data.height,states,generation,!!data.running,data.cacheStatic!==false,data.cacheLayers!==false)||{};if(metrics.skipped){self.postMessage({type:'paint-skipped',id:data.id,generation,reason:metrics.reason});return;}
+    if(skia)Object.assign(metrics,await skia.transitions.play(data.reduced));
     self.postMessage({type:'painted',id:data.id,generation,width:data.width,height:data.height,rect:data.rect,...metrics,sampleMs,samplerOutputChars:sampled.length,states:skia?undefined:states,wasmMemoryBytes:wasmMemory.buffer.byteLength});return;
    }
    const edited={};for(const [name,text]of Object.entries(data.files))edited[key(name)]=text;
@@ -129,16 +132,16 @@ self.onmessage=({data})=>{
     const lowerMs=performance.now()-before;
     const result=JSON.parse(job.inspection()),drawingInfo=JSON.parse(next.drawing_info());
     const list=JSON.parse(next.display_list()),read=(id)=>next.resource_bytes(id);
-    try{if(skia)await skia.install(list,read,id);}catch(error){next.free();throw error;}
+    try{if(skia)await skia.install(list,read,id,256,{...result.document,reduced:data.reduced});}catch(error){next.free();throw error;}
     drawJob?.free();drawJob=next;generation=id;
-    if(!skia)self.postMessage({type:'skia-scene',generation,list,resources:Object.fromEntries(Object.entries(list.resources).filter(([,r])=>r.mime.startsWith('image/')).map(([id])=>[id,read(id)]))});
+    if(!skia)self.postMessage({type:'skia-scene',generation,list,navigation:{...result.document,reduced:data.reduced},resources:Object.fromEntries(Object.entries(list.resources).filter(([,r])=>r.mime.startsWith('image/')).map(([id])=>[id,read(id)]))});
     self.postMessage({type:'result',id,generation,protocol:3,...result,drawingInfo,sceneStats:data.stats?sceneStats(list):undefined,resources:Object.entries(drawingInfo.resources).map(([id,meta])=>({id,...meta,resident:true})),metrics:{initialization:initMs,resources:resourcesMs,compile:compileMs,lower:lowerMs,raster:0,total:compileMs+lowerMs}});
    }finally{job.free();}
   }catch(error){self.postMessage({type:data.type==='paint'?'paint-error':'error',id,generation:data.generation,error:detail(error)});}
  });
 };
 
-let deckAck,deckContext;
+let deckAck,deckContext,deckPlan;
 async function compileDeckPage({page,index,total,resourceIds=[]}){
  const started=performance.now();await initialized;await chain;
  if(deckContext.fullFonts)await ensureFullFonts();
@@ -147,7 +150,8 @@ async function compileDeckPage({page,index,total,resourceIds=[]}){
  try{
   for(;;)try{
    const path=page.src||key(deckContext.entry);if(!Object.hasOwn(edited,path)&&!Object.hasOwn(assets,path))await resource(path);
-   job=prepare_render(edited[path]??assets[path],path,JSON.stringify({...assets,...fonts,...edited}));break;
+   const encoded=JSON.stringify({...assets,...fonts,...edited});
+   if(deckContext.entry.endsWith('.laydoc')){deckPlan??=prepare_presentation(edited[key(deckContext.entry)],key(deckContext.entry),encoded);job=deckPlan.page(index,encoded);}else job=prepare_render(edited[path]??assets[path],path,encoded);break;
   }catch(e){const d=detail(e);if(!d.resource||tried.has(d.resource)||Object.hasOwn(edited,d.resource)||!manifest.resources[d.resource])throw e;tried.add(d.resource);await resource(d.resource);}
   compiled=performance.now();draw=job.draw_job();lowered=performance.now();
   const list=JSON.parse(draw.display_list()),resources=Object.fromEntries(Object.keys(list.resources).filter(id=>!resourceIds.includes(id)).map(id=>[id,draw.resource_bytes(id)])),inspection=JSON.parse(job.inspection()).inspection;serialized=performance.now();
@@ -166,7 +170,7 @@ async function prepareDeck(data){
   self.postMessage({type:'deck-plan',...metadata});
   if(data.planOnly)return;
   for(let i=0;i<metadata.pages.length;i++){
-   const page=metadata.pages[i];if(page.src&&seen.has(page.src)){const ack=new Promise(resolve=>deckAck=resolve);self.postMessage({type:'deck-alias',page,source:seen.get(page.src)});await ack;continue;}if(page.src)seen.set(page.src,page.id);self.postMessage({type:'deck-progress',completed:i,total:metadata.pages.length,page:page.name||page.id});
+   const page=metadata.pages[i],cacheKey=page.src+'|'+JSON.stringify(page.transition||null);if(page.src&&seen.has(cacheKey)){const ack=new Promise(resolve=>deckAck=resolve);self.postMessage({type:'deck-alias',page,source:seen.get(cacheKey)});await ack;continue;}if(page.src)seen.set(cacheKey,page.id);self.postMessage({type:'deck-progress',completed:i,total:metadata.pages.length,page:page.name||page.id});
    let job,draw;try{job=await attempt(()=>plan?plan.page(i,encoded()):prepare_render(data.files[data.entry],key(data.entry),encoded()));draw=job.draw_job();const list=JSON.parse(draw.display_list()),resources=Object.fromEntries(Object.keys(list.resources).map(id=>[id,draw.resource_bytes(id)]));
     const ack=new Promise(resolve=>deckAck=resolve);self.postMessage({type:'deck-page',page:{id:page.id,name:page.name||page.id,list,resources,inspection:JSON.parse(job.inspection()).inspection}},Object.values(resources).map(b=>b.buffer));await ack;
    }catch(e){const error=detail(e);error.message=`${i+1}/${metadata.pages.length} ${page.name||page.id}: ${error.message}`;throw JSON.stringify(error);}finally{draw?.free();job?.free();}

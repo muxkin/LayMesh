@@ -1,0 +1,70 @@
+// powerKaleido — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/powerKaleido.glsl
+// Author: Boundless
+// License: MIT
+// Description: The image folds into an animated kaleidoscope before revealing the incoming one
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+const float rad = 120.; 
+const float deg = rad / 180. * 3.14159265358979;
+uniform float scale; 
+uniform float z; 
+uniform float speed; 
+vec2 refl(vec2 p,vec2 o,vec2 n)
+{
+	return 2.0*o+2.0*n*dot(p-o,n)-p;
+}
+
+vec2 rot(vec2 p, vec2 o, float a)
+{
+    float s = sin(a);
+    float c = cos(a);
+	return o + mat2(c, -s, s, c) * (p - o);
+}
+
+vec4 mainImage(vec2 uv)
+{
+  float dist = scale / 10.;
+  vec2 uv0 = uv;
+	uv -= 0.5;
+  uv.x *= ratio;
+  uv *= z;
+  uv = rot(uv, vec2(0.0), progress*speed);
+  
+	float theta = progress*6.+3.14159265358979/.5;
+	for(int iter = 0; iter < 10; iter++) {
+    for(float i = 0.; i < 2. * 3.14159265358979; i+=deg) {
+	    float ts = sign(asin(cos(i))) == 1.0 ? 1.0 : 0.0;
+      if(((ts == 1.0) && (uv.y-dist*cos(i) > tan(i)*(uv.x+dist*+sin(i)))) || ((ts == 0.0) && (uv.y-dist*cos(i) < tan(i)*(uv.x+dist*+sin(i))))) {
+        uv = refl(vec2(uv.x+sin(i)*dist*2.,uv.y-cos(i)*dist*2.), vec2(0.,0.), vec2(cos(i),sin(i)));
+      }
+    }
+  }
+  uv += 0.5;
+  uv = rot(uv, vec2(0.5), progress*-speed);
+  uv -= 0.5;
+  uv.x /= ratio;
+  uv += 0.5;
+  uv = 2.*abs(uv/2.-floor(uv/2.+0.5));
+  vec2 uvMix = mix(uv,uv0,cos(progress*3.14159265358979*2.)/2.+0.5);
+  vec4 color = mix(getFromColor(uvMix),getToColor(uvMix),cos((progress-1.)*3.14159265358979)/2.+0.5);
+	return color;
+    
+}
+vec4 transition (vec2 uv) {
+  vec4 color = mainImage(uv);
+  return color;
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}

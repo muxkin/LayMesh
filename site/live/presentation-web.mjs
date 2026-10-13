@@ -20,7 +20,7 @@ export function webPresentationProvider(editor,base,{concurrency}={}){return asy
     if(planner)w.postMessage({type:'prepare-deck',files,entry,planOnly:true});else dispatch(w);
    }else if(data.type==='deck-plan'&&!planned){
     planned=true;timings.planMs=performance.now()-session.started;session.plan(data.pages);const seen=new Map();
-    data.pages.forEach((page,index)=>{if(page.src&&seen.has(page.src))seen.get(page.src).aliases.push(page);else{const item={page,index,aliases:[],status:'pending'};queue.push(item);if(page.src)seen.set(page.src,item);}});dispatch(w);
+    data.pages.forEach((page,index)=>{const key=page.src+"|"+JSON.stringify(page.transition||null);if(page.src&&seen.has(key))seen.get(key).aliases.push(page);else{const item={page,index,aliases:[],status:'pending'};queue.push(item);if(page.src)seen.set(key,item);}});dispatch(w);
    }else if(data.type==='deck-page'){
     const item=w.item;await(storage=storage.catch(()=>{}).then(async()=>{if(session.closed)return;const before=performance.now();await store.add(data.page);session.ready(store.pages.find(p=>p.id===data.page.id));for(const alias of item.aliases){await store.alias(alias.id,alias.name,item.page.id);session.ready(store.pages.find(p=>p.id===alias.id));}timings.storageMs+=performance.now()-before;}));
     if(session.closed)return;timings.pages.push(data.timings);item.status='ready';w.item=null;

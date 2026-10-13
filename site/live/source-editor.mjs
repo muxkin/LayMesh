@@ -1,7 +1,7 @@
 import {languageSupport} from './language.mjs';
 import { EditorView } from '@codemirror/view';
 import { editingSetup } from './setup.mjs';
-import { EditorState, Compartment, ChangeSet } from '@codemirror/state';
+import { EditorState, Compartment, ChangeSet, StateEffect } from '@codemirror/state';
 import { keymap } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
@@ -16,8 +16,19 @@ const theme=EditorView.theme({
  '.cm-cursor':{borderLeftColor:'#fff'},
  '.cm-tooltip':{backgroundColor:'#253d35',color:'#e7f3ef',border:'1px solid #536b63'},
 },{dark:true});
+const lightTheme=EditorView.theme({
+ '&':{fontSize:'13px',height:'100%',lineHeight:'1.8',backgroundColor:'#fff',color:'#334155'},
+ '.cm-content':{fontFamily:'var(--mono, monospace)',padding:'18px 0',caretColor:'#2563eb'},
+ '.cm-gutters':{backgroundColor:'#fff',color:'#9aa4b4',border:'none',paddingRight:'12px'},
+ '.cm-activeLine,.cm-activeLineGutter':{backgroundColor:'#f3f6fb'},
+ '&.cm-focused .cm-selectionBackground,.cm-selectionBackground':{backgroundColor:'#dce9ff !important'},
+ '.cm-scroller':{overflow:'auto',minHeight:'0',height:'100%'},
+ '.cm-cursor':{borderLeftColor:'#2563eb'},
+ '.cm-tooltip':{backgroundColor:'#fff',color:'#334155',border:'1px solid #dce1ea',boxShadow:'0 4px 18px #24334b18'},
+});
+const lightColors=HighlightStyle.define([{tag:tags.keyword,color:'#7c3aed'},{tag:tags.function(tags.variableName),color:'#2563eb'},{tag:tags.propertyName,color:'#35578b'},{tag:tags.operator,color:'#6b7280'},{tag:tags.string,color:'#218257'},{tag:tags.number,color:'#b45309'},{tag:tags.comment,color:'#94a3b8'}]);
 const colors=HighlightStyle.define([{tag:tags.keyword,color:'#7ccde0'},{tag:tags.function(tags.variableName),color:'#91d6c6'},{tag:tags.propertyName,color:'#a7cdea'},{tag:tags.operator,color:'#aabfba'},{tag:tags.string,color:'#b9dd91'},{tag:tags.number,color:'#e5c48c'},{tag:tags.comment,color:'#8caaa0'}]);
-function extensions(file,wrap){return [editingSetup,theme,syntaxHighlighting(colors),file.endsWith('.json')?json():/\.(lay|laydoc|lcss|css)$/.test(file)?languageSupport(this,file):[],wrap.of(EditorView.lineWrapping),keymap.of([{key:'Mod-Enter',run:()=>{this.schedule(true);return true;}}]),EditorView.domEventHandlers({compositionstart:()=>{this.composing=true;this.seq++;this.pending=false;clearTimeout(this.debounce);},compositionend:()=>{this.composing=false;this.schedule();}}),EditorView.updateListener.of(update=>{if(!update.docChanged)return;this.maps.set(file,this.maps.get(file).composeDesc(update.changes.desc));this.files[file]=update.state.doc.toString();if(!this.composing)this.schedule();else this.changed();})];}
+function extensions(file,wrap){return [editingSetup,this.light?lightTheme:theme,syntaxHighlighting(this.light?lightColors:colors),EditorState.readOnly.of(!!this.readonly?.has(file)),EditorState.changeFilter.of(()=>!this.readonly?.has(file)),EditorView.editable.of(!this.readonly?.has(file)),file.endsWith('.json')?json():/\.(lay|laydoc|lcss|css)$/.test(file)?languageSupport(this,file):[],wrap.of(EditorView.lineWrapping),keymap.of([{key:'Mod-Enter',run:()=>{this.schedule(true);return true;}}]),EditorView.domEventHandlers({compositionstart:()=>{this.composing=true;this.seq++;this.pending=false;clearTimeout(this.debounce);},compositionend:()=>{this.composing=false;this.schedule();}}),EditorView.updateListener.of(update=>{if(!update.docChanged||this.readonly?.has(file))return;this.maps.set(file,this.maps.get(file).composeDesc(update.changes.desc));this.files[file]=update.state.doc.toString();if(!this.composing)this.schedule();else this.changed();})];}
 export function editor(panel){const file=panel.dataset.editFile;if(this.views.has(file))return;this.maps.set(file,ChangeSet.empty(this.files[file].length).desc);
   const code=panel.querySelector('.code-block');code.getSource=()=>this.files[file];code.querySelector('pre').hidden=true;const host=document.createElement('div');host.className='live-editor';code.append(host);const wrap=new Compartment();
   const view=new EditorView({state:EditorState.create({doc:this.files[file],extensions:extensions.call(this,file,wrap)}),parent:host});view.contentDOM.setAttribute('aria-label',file);view.contentDOM.setAttribute('spellcheck','false');
@@ -31,4 +42,11 @@ export function focusEntry(offset){
  const view=this.views.get(this.entry)?.view;if(!view)return;
  const anchor=this.maps.get(this.entry).mapPos(offset,1);
  view.dispatch({selection:{anchor},effects:EditorView.scrollIntoView(anchor,{y:'center'})});view.focus();
+}
+
+export function restoreEditorState(file,saved){
+ const current=this.views.get(file);if(!current||!saved)return;
+ const changes=saved.state.doc.toString()===this.files[file]?undefined:{from:0,to:saved.state.doc.length,insert:this.files[file]};
+ current.view.setState(saved.state.update({changes,effects:StateEffect.reconfigure.of(extensions.call(this,file,current.wrap))}).state);
+ current.view.scrollDOM.scrollTop=saved.scrollTop;current.view.scrollDOM.scrollLeft=saved.scrollLeft;
 }

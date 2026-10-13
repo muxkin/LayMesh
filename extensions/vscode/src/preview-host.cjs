@@ -88,7 +88,7 @@ function editorDefaults(uri){
   'export.background':['export.jpeg.background','export.gif.background','export.ppm.background','export.pgm.background','export.pbm.background'],
   'export.webpQuality':'export.webp.quality','export.webpLossless':'export.webp.webp_lossless','export.webpMethod':'export.webp.webp_method',
   'export.webpAlphaQuality':'export.webp.webp_alpha_quality','export.webpNearLossless':'export.webp.webp_near_lossless',
-  'export.pdf.imageCompression':'export.pdf.pdf_image_compression','export.pdf.jpegQuality':'export.pdf.pdf_jpeg_quality',
+  'export.html.embedFonts':'export.html.html_embed_fonts','export.html.imageCompression':'export.html.html_image_compression','export.html.imageQuality':'export.html.html_image_quality','export.pdf.imageCompression':'export.pdf.pdf_image_compression','export.pdf.jpegQuality':'export.pdf.pdf_jpeg_quality',
   'export.pdf.downsample':'export.pdf.pdf_downsample',
   'export.pdf.recompressJpeg':'export.pdf.pdf_recompress_jpeg','export.pdf.autoPaletteLimit':'export.pdf.pdf_auto_palette_limit',
   'export.pdf.preserve16bit':'export.pdf.pdf_preserve_16bit','export.pdf.preserveAlpha':'export.pdf.pdf_preserve_alpha','export.pdf.alphaBackground':'export.pdf.pdf_alpha_background',
@@ -152,11 +152,11 @@ function activatePreview(context,binary,output){
     options=provided.options||{};
     if(!destination||destination.scheme!=='file')throw new Error(text('导出目标必须是本地文件','Export destination must be a local file'));
    }else{
-    const formats=[['svg','SVG'],['pdf','PDF'],['pptx','PowerPoint (PPTX)'],['png','PNG'],['jpg','JPEG'],['tif','TIFF'],['webp','WebP'],['bmp','BMP'],['gif','GIF'],['ico','ICO'],['pam','PAM / PNM'],['ppm','PPM'],['pgm','PGM'],['pbm','PBM'],['tga','TGA'],['mp4','MP4 动画 / Animation',true],['gif','GIF 动画 / Animation',true]];
-    const format=await vscode.window.showQuickPick(formats.map(([extension,label,animated])=>({label,extension,animated})),{title:text('LayMesh：导出图形','LayMesh: Export Figure'),placeHolder:text('选择导出格式','Choose an export format')});
+    const formats=[['svg','SVG'],['pdf','PDF'],['pptx','PowerPoint (PPTX)'],['png','PNG'],['jpg','JPEG'],['tif','TIFF'],['webp','WebP'],['bmp','BMP'],['gif','GIF'],['ico','ICO'],['pam','PAM / PNM'],['ppm','PPM'],['pgm','PGM'],['pbm','PBM'],['tga','TGA'],['html','HTML 播放版 / Playback',false,false],['html','HTML 可编辑版 / Editable',false,true],['zip','ZIP 播放包 / Playback',false,false],['zip','ZIP 可编辑包 / Editable',false,true],['mp4','MP4 动画 / Animation',true],['gif','GIF 动画 / Animation',true]];
+    const format=await vscode.window.showQuickPick(formats.map(([extension,label,animated,editable])=>({label,extension,animated,editable})),{title:text('LayMesh：导出图形','LayMesh: Export Figure'),placeHolder:text('选择导出格式','Choose an export format')});
     if(!format)return;animated=!!format.animated;
-    options={};
-    destination=await vscode.window.showSaveDialog({defaultUri:vscode.Uri.file(uri.fsPath.replace(/\.(lay|laydoc)$/,'.'+format.extension)),filters:{[format.label]:[format.extension]},saveLabel:text('导出','Export')});
+    options=format.editable===undefined?{}:{html_editable:format.editable};
+    destination=await vscode.window.showSaveDialog({defaultUri:vscode.Uri.file(uri.fsPath.replace(/\.(lay|laydoc)$/,(format.extension==='html'?'.zip.html':'.'+format.extension))),filters:{[format.label]:[format.extension]},saveLabel:text('导出','Export')});
     if(!destination)return;
     const actual=path.extname(destination.fsPath).toLowerCase();
     const aliases={jpg:['.jpg','.jpeg'],tif:['.tif','.tiff'],pam:['.pam','.pnm']};
@@ -170,7 +170,7 @@ function activatePreview(context,binary,output){
    const result=await vscode.window.withProgress({cancellable:animated,location:vscode.ProgressLocation.Notification,title:text('LayMesh：正在导出…','LayMesh: Exporting…')},(_progress,token)=>new Promise(resolve=>{
     const cancellation=token.onCancellationRequested(()=>{try{fs.writeFileSync(cancelFile,'cancel');}catch{}});
     const exporter=new PreviewWorker(binary,output);
-    exporter.enqueue({file:keyOf(uri),source:doc.getText(),overlays,request:{type:animated?'animate':'export',cancel_file:cancelFile,output:keyOf(destination),options,...(uri.fsPath.endsWith('.laydoc')?{page_id:currentPage||provided?.pageId||panels.get(keyOf(uri))?.pageId,document_all:provided?.documentAll??(!currentPage&&destination.fsPath.toLowerCase().endsWith('.pdf'))}:{}),...editorDefaults(uri),...(provided?.config?{config:provided.config}:{})},timeout:animated?3600000:300000,done:result=>{cancellation.dispose();try{fs.unlinkSync(cancelFile);}catch{}exporter.dispose();resolve(result);}});
+    exporter.enqueue({file:keyOf(uri),source:doc.getText(),overlays,request:{type:animated?'animate':'export',cancel_file:cancelFile,output:keyOf(destination),options,...(uri.fsPath.endsWith('.laydoc')?{page_id:currentPage||provided?.pageId||panels.get(keyOf(uri))?.pageId,document_all:provided?.documentAll??(/\.(html|zip)$/i.test(destination.fsPath)||(!currentPage&&destination.fsPath.toLowerCase().endsWith('.pdf')))}:{}),...editorDefaults(uri),...(provided?.config?{config:provided.config}:{})},timeout:animated?3600000:300000,done:result=>{cancellation.dispose();try{fs.unlinkSync(cancelFile);}catch{}exporter.dispose();resolve(result);}});
    }));
    if(result.error)throw new Error(result.error.messageZh&&/^zh/i.test(locale())?result.error.messageZh:result.error.message);
    if(!result.exported)throw new Error(text('请更新配置的 LayMesh 可执行文件以支持导出','Update the configured LayMesh executable to support export'));

@@ -1,0 +1,6 @@
+p = canvas(size=(160mm, 90mm), stylesheet="../styles/transitions.lcss", background="#e6edf8", class="gl-transition-InvertedPageCurl")
+title = p.add(text("02 / Page curl", font_size=24pt), offset=(12mm, 14mm))
+p.add(rect(size=(48mm, 29mm), fill="#3978d4", border_color="none"), offset=(12mm, 40mm))
+p.add(rect(size=(48mm, 29mm), fill="#dc7148", border_color="none"), offset=(69mm, 40mm))
+s = p.step(name="Title entry", start="after-previous", hold=500ms)
+s.animate(title, class="animate__animated animate__fadeInUp", duration=500ms)

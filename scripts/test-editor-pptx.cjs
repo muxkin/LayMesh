@@ -16,7 +16,7 @@ const vscode={env:{language:'en'},Uri:{file:uri},ProgressLocation:{Notification:
  getConfiguration:()=>({get:(_key,fallback)=>fallback,inspect:()=>undefined}),
  onDidChangeTextDocument:disposable,onDidSaveTextDocument:disposable,onDidCloseTextDocument:disposable,onDidChangeConfiguration:disposable},
  window:{activeTextEditor:{document:docs[0]},
- showQuickPick:async choices=>{dialogs.push('format');assert.equal(choices.length,17);assert.equal(choices.filter(c=>c.animated).length,2);const choice=choices.find(c=>c.extension==='pptx');assert.equal(choice.label,'PowerPoint (PPTX)');return choice;},
+ showQuickPick:async choices=>{dialogs.push('format');assert.equal(choices.length,21);assert.equal(choices.filter(c=>c.animated).length,2);const choice=choices.find(c=>c.extension==='pptx');assert.equal(choice.label,'PowerPoint (PPTX)');return choice;},
  showSaveDialog:async options=>{dialogs.push('destination');assert.equal(options.defaultUri.fsPath,path.join(directory,'main.pptx'));assert.deepEqual(Array.from(options.filters['PowerPoint (PPTX)']),['pptx']);return destination;},
  showInputBox:()=>{throw new Error('Export must not ask for encoding options');},
  showInformationMessage:async()=>{},showErrorMessage:message=>errors.push(message),withProgress:async(_options,fn)=>fn({}, {onCancellationRequested:disposable})}};

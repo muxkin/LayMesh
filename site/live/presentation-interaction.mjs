@@ -19,12 +19,12 @@ export class PresentationInteraction {
  }
  wheel(e){
   if(!this.ready||!this.root.contains(document.activeElement)||e.ctrlKey||e.metaKey||e.altKey||e.shiftKey||Math.abs(e.deltaX)>=Math.abs(e.deltaY))return;
-  if(e.target.closest('.presentation-menu,.presentation-bar,.presentation-progress,.preview-menu,.preview-bar,.preview-progress,input,select,button'))return;
+  if(e.target.closest('.context-menu-list,.presentation-menu,.presentation-bar,.presentation-progress,.preview-menu,.preview-bar,.preview-progress,input,select,button'))return;
   e.preventDefault();e.stopPropagation();
   // Consume the gesture even while switching, preventing its inertial tail
   // from becoming an action immediately after the target page appears.
   const direction=this.wheelInput.consume(e,performance.now(),this.root.clientHeight);
-  if(!this.menu.hidden||this.switching||!direction)return;
+  if(this.externalMenu||!this.menu.hidden||this.switching||!direction)return;
   this.root.focus({preventScroll:true});this.action(direction>0?'next':'previous');
  }
 

@@ -373,3 +373,7 @@
 | `css:transform-origin` | [→](lcss.zh-CN.md#css-compatibility) | [→](../../examples/manual/css-shadow-override.lay) | [→](../../examples/gallery/styles/libraries.lay) |
 | `css:backface-visibility` | [→](lcss.zh-CN.md#css-compatibility) | [→](../../examples/manual/css-shadow-override.lay) | [→](../../examples/gallery/styles/libraries.lay) |
 | `css:visibility` | [→](lcss.zh-CN.md#css-compatibility) | [→](../../examples/manual/css-shadow-override.lay) | [→](../../examples/gallery/styles/libraries.lay) |
+| `api:transition` | [→](page-transitions.zh-CN.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
+| `css:-laymesh-transition` | [→](page-transitions.zh-CN.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
+| `css:-laymesh-transition-duration` | [→](page-transitions.zh-CN.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
+| `css:-laymesh-transition-timing-function` | [→](page-transitions.zh-CN.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |

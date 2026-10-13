@@ -1,0 +1,5 @@
+@import "@laymesh/gl-transitions.css";
+@import "@laymesh/animate.css";
+canvas { -laymesh-transition-duration: 700ms; -laymesh-transition-timing-function: ease-in-out; }
+canvas.cube { -laymesh-transition-param-persp: 0.6; }
+canvas.mask { -laymesh-transition-texture-luma: url("../assets/mask.png"); }

@@ -96,3 +96,68 @@ fn document_failures_are_explicit() {
         "E_DOCUMENT"
     );
 }
+
+#[test]
+fn document_transition_defaults_overrides_and_repeated_source() {
+    let src = "doc=document(transition=transition(name=\"cube\",duration=350ms,params={\"persp\":0.6}))\ndoc.add(page(src=\"pages/a.lay\",id=\"a\"))\ndoc.add(page(src=\"pages/a.lay\",id=\"b\",transition=\"fade\"))\ndoc.add(page(src=\"pages/a.lay\",id=\"c\",transition=\"none\"))";
+    let d = compile_document_source(src, "/project/demo.laydoc", host()).unwrap();
+    let t = d.pages[0].scene.page_transition.as_ref().unwrap();
+    assert_eq!(t.name, "cube");
+    assert!((t.duration_ms - 350.).abs() < 1e-8);
+    assert_eq!(t.params["persp"], serde_json::json!(0.6));
+    assert_eq!(
+        d.pages[1].scene.page_transition.as_ref().unwrap().name,
+        "fade"
+    );
+    assert!(
+        !d.pages[1]
+            .scene
+            .page_transition
+            .as_ref()
+            .unwrap()
+            .params
+            .contains_key("persp")
+    );
+    assert!(d.pages[2].scene.page_transition.is_none());
+    assert!(!std::sync::Arc::ptr_eq(
+        &d.pages[0].scene,
+        &d.pages[1].scene
+    ));
+}
+#[test]
+fn document_transition_texture_is_lazy_and_relative_to_helper() {
+    let mut h = host();
+    h.files.insert(
+        "/project/helpers/transition.lay".into(),
+        b"export t=transition(name=\"luma\",textures={\"luma\":\"../assets/mask.png\"})".to_vec(),
+    );
+    let plan=plan_source("import {t} from \"helpers/transition.lay\"\ndoc=document()\ndoc.add(page(src=\"pages/a.lay\"))\ndoc.add(page(src=\"pages/b.lay\",transition=t))","/project/demo.laydoc",h.clone()).unwrap();
+    compile_page(plan.page(1).unwrap(), h.clone()).unwrap();
+    let error = compile_page(plan.page(2).unwrap(), h.clone()).unwrap_err();
+    assert_eq!(error.code, "E_ASSET");
+    assert!(error.message.contains("/project/assets/mask.png"));
+    h.files.insert(
+        "/project/assets/mask.png".into(),
+        include_bytes!("../../../examples/gallery/typography/font-preview.png").to_vec(),
+    );
+    assert!(
+        compile_page(plan.page(2).unwrap(), h)
+            .unwrap()
+            .page_transition
+            .unwrap()
+            .assets
+            .contains_key("luma")
+    );
+}
+#[test]
+fn document_override_skips_unused_css_texture() {
+    let mut h = host();
+    h.files.insert("/project/pages/a.lay".into(),b"p=canvas(size=(10,20))\nstyle {canvas {-laymesh-transition:luma;-laymesh-transition-texture-luma:url('missing.png')}}".to_vec());
+    let d = compile_document_source(
+        "doc=document(transition=\"none\")\ndoc.add(page(src=\"pages/a.lay\"))",
+        "/project/demo.laydoc",
+        h,
+    )
+    .unwrap();
+    assert!(d.pages[0].scene.page_transition.is_none());
+}

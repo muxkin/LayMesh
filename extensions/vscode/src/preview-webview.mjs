@@ -1,3 +1,4 @@
+import {drawPreviewRuler} from './preview-geometry.mjs';
 import {PresentationSession} from './presentation-session.mjs';
 import {Presentation} from './presentation.mjs';
 import {uiIcon,iconLabel} from './presentation-icons.mjs';
@@ -107,20 +108,8 @@ function rect(){
  return {left:viewport.clientWidth/2+view.pan.x-w/2,top:viewport.clientHeight/2+view.pan.y-h/2,width:w,height:h};
 }
 function drawRuler(canvas,axis,r){
- const length=axis==='x'?viewport.clientWidth:viewport.clientHeight,dpr=window.devicePixelRatio||1;
- const width=axis==='x'?length:24,height=axis==='x'?24:length;
- if(canvas.width!==Math.round(width*dpr))canvas.width=Math.round(width*dpr);if(canvas.height!==Math.round(height*dpr))canvas.height=Math.round(height*dpr);canvas.style.width=width+'px';canvas.style.height=height+'px';
- const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
- const style=getComputedStyle(root);ctx.strokeStyle=style.getPropertyValue('--ruler-ink').trim();ctx.fillStyle=ctx.strokeStyle;ctx.font='10px '+style.fontFamily;ctx.lineWidth=1;
- const factor=mmPerUnit(page.unit,page.layout_dpi),pixelsPerUnit=view.scale*factor,step=niceStep(60/pixelsPerUnit),minor=step/5,start=axis==='x'?r.left:r.top,max=(axis==='x'?page.width:page.height)/factor;
- const first=Math.max(0,Math.ceil((-start)/pixelsPerUnit/minor)),last=Math.min(Math.floor(max/minor),Math.floor((length-start)/pixelsPerUnit/minor));
- for(let i=first;i<=last;i++){
-  const major=i%5===0;if(!major&&minor*pixelsPerUnit<8)continue;
-  const pos=start+i*minor*pixelsPerUnit,size=major?10:5;ctx.beginPath();
-  if(axis==='x'){ctx.moveTo(pos,24);ctx.lineTo(pos,24-size);}else{ctx.moveTo(24,pos);ctx.lineTo(24-size,pos);}ctx.stroke();
-  if(major){const label=String(Number((i*minor).toPrecision(6)));if(axis==='x')ctx.fillText(label,pos+3,10);else{ctx.save();ctx.translate(10,pos+3);ctx.rotate(-Math.PI/2);ctx.fillText(label,0,0);ctx.restore();}}
- }
- if(lastPointer){const bounds=viewport.getBoundingClientRect(),p=canvasAt(page,r,lastPointer.x-bounds.left,lastPointer.y-bounds.top);if(p){const pos=axis==='x'?lastPointer.x-bounds.left:lastPointer.y-bounds.top;ctx.strokeStyle=style.getPropertyValue('--cursor-ink').trim();ctx.lineWidth=2;ctx.beginPath();if(axis==='x'){ctx.moveTo(pos,0);ctx.lineTo(pos,24);}else{ctx.moveTo(0,pos);ctx.lineTo(24,pos);}ctx.stroke();}}
+ const style=getComputedStyle(root),bounds=viewport.getBoundingClientRect(),p=lastPointer&&canvasAt(page,r,lastPointer.x-bounds.left,lastPointer.y-bounds.top);
+ drawPreviewRuler(canvas,axis,{length:axis==='x'?viewport.clientWidth:viewport.clientHeight,start:axis==='x'?r.left:r.top,scale:view.scale,page,ink:style.getPropertyValue('--ruler-ink').trim(),font:'10px '+style.fontFamily,pointer:p?(axis==='x'?lastPointer.x-bounds.left:lastPointer.y-bounds.top):null});
 }
 function cursor(r){
  if(!lastPointer||!page){readout.textContent='';vertical.hidden=horizontal.hidden=true;return;}
@@ -166,7 +155,9 @@ for(const type of ['pointerup','pointercancel','lostpointercapture'])viewport.ad
 viewport.addEventListener('keydown',e=>{if(e.code==='Space'){space=true;e.preventDefault();}else if(['+','=','-','0'].includes(e.key)){e.preventDefault();if(e.key==='0')buttons.fit.click();else zoomTo(view.scale*(e.key==='-'?1/1.25:1.25));}});
 viewport.addEventListener('keyup',e=>{if(e.code==='Space'){space=false;e.preventDefault();}});
 window.addEventListener('blur',()=>{space=false;lastPointer=null;endDrag();});
-new ResizeObserver(schedule).observe(viewport);
+function cancelTransition(){rasterWorker?.postMessage({type:'cancel-transition'});mainSkia?.transitions.cancel();}
+player.motion.addEventListener('change',cancelTransition);
+new ResizeObserver(()=>{cancelTransition();schedule();}).observe(viewport);
 
 let renderSequence=0,frameTimings={};
 async function installFrame(data){
@@ -176,14 +167,14 @@ async function installFrame(data){
  const resourceStart=performance.now(),resourceBytes=await loadDrawingResources(data.displayListReplay||[data],rasterResourceIds),resourceLoadMs=performance.now()-resourceStart;
  if(sequence!==renderSequence)return;
  const bytes=data.displayListCompressed?.data,transfer=bytes instanceof Uint8Array?[bytes.buffer]:[];
- const installed=await workerCall({type:'install',generation:data.generation,page:data.inspection.page,displayListId:data.displayListId,displayListUpdate:data.displayListUpdate,displayListReplay:data.displayListReplay,displayList:data.displayList,displayListCompressed:data.displayListCompressed,drawingResources:data.drawingResources,resources:data.resources,resourceBytes,previewSettings:data.previewSettings},[...transfer,...resourceBytes.map(r=>r.bytes)]);
+ const installed=await workerCall({type:'install',navigation:{...data.document,reduced:player.reduced},generation:data.generation,page:data.inspection.page,displayListId:data.displayListId,displayListUpdate:data.displayListUpdate,displayListReplay:data.displayListReplay,displayList:data.displayList,displayListCompressed:data.displayListCompressed,drawingResources:data.drawingResources,resources:data.resources,resourceBytes,previewSettings:data.previewSettings},[...transfer,...resourceBytes.map(r=>r.bytes)]);
  rasterResourceIds=new Set(installed.resourceIds);
  installed.resourcesMs+=resourceLoadMs;
  if(sequence!==renderSequence)return;
- if(!directCanvas){const {initializeSkia,SkiaRenderer}=await import('./skia-renderer.mjs');if(!mainSkia){const meta=await(await fetch(new URL('skia/manifest.json',import.meta.url))).json();mainSkia=new SkiaRenderer(await initializeSkia(new URL('skia/'+meta.wasm,import.meta.url).href),image,{onContextChange:ready=>{if(ready){drawKey='';presented=null;schedule();}}});}await mainSkia.install(installed.scene,id=>installed.sceneResources[id],data.generation,data.previewSettings?.cache_mb??256);}
+ if(!directCanvas){const {initializeSkia,SkiaRenderer}=await import('./skia-renderer.mjs');if(!mainSkia){const meta=await(await fetch(new URL('skia/manifest.json',import.meta.url))).json();mainSkia=new SkiaRenderer(await initializeSkia(new URL('skia/'+meta.wasm,import.meta.url).href),image,{onContextChange:ready=>{if(ready){drawKey='';presented=null;schedule();}}});}await mainSkia.install(installed.scene,id=>installed.sceneResources[id],data.generation,data.previewSettings?.cache_mb??256,{...data.document,reduced:player.reduced});}
  drawReady=true;drawJobId=data.displayListId||data.displayListCompressed?.id||String(data.generation);if(!installed.reused)drawKey='';wasmMemoryBytes=installed.wasmMemoryBytes;
  drawGeneration=data.generation;
- const resume=player.resume;player.update(data.inspection.animation);if(resume&&player.metadata){const start=player.restorePage(resume);if(start)player.start();}
+ player.resumeAfterTransition=false;const resume=player.resume;player.update(data.inspection.animation);if(resume&&player.metadata){const start=player.restorePage(resume);if(start)player.resumeAfterTransition=true;}
  page=data.inspection.page;plots=preparePlots(data.inspection);pathCache=new WeakMap();
  warnings.dataset.count=String((data.inspection.warnings||[]).length);warnings.textContent=(data.inspection.warnings||[]).map(w=>`${w.code}: ${w.message}`).join('\n');showDiagnostic();
  frameTimings={initializationWaitMs:installed.initializationWaitMs,resourcesMs:installed.resourcesMs,installMs:installed.installMs};
@@ -219,7 +210,7 @@ async function flushPaint(){if(paintInFlight||!pendingPaint||!rasterWorker)retur
  const request=pendingPaint;pendingPaint=null;paintInFlight=true;if(request.running)playbackStats.submit(performance.now());
  try{const data=await workerCall(request);
   if(data.type==='painted'&&data.generation===drawGeneration&&request.content===drawJobId&&(request.key===drawKey||pendingPaint)){
-   if(!directCanvas){const metrics=mainSkia.render(request.crop,data.width,data.height,data.states,data.generation,!!request.running);if(metrics.skipped)return;Object.assign(data,metrics);}root.dataset.renderBackend=data.backend;root.dataset.renderWidth=String(data.width);root.dataset.renderHeight=String(data.height);root.dataset.sampleMs=String(data.sampleMs);
+   if(!directCanvas){const metrics=mainSkia.render(request.crop,data.width,data.height,data.states,data.generation,!!request.running);if(metrics.skipped)return;Object.assign(metrics,await mainSkia.transitions.play(player.reduced));Object.assign(data,metrics);}if(player.resumeAfterTransition){player.resumeAfterTransition=false;player.start();}root.dataset.renderBackend=data.backend;root.dataset.transitionName=data.transitionName||'';root.dataset.transitionFrames=String(data.transitionFrames||0);root.dataset.transitionError=data.transitionError||'';root.dataset.renderWidth=String(data.width);root.dataset.renderHeight=String(data.height);root.dataset.sampleMs=String(data.sampleMs);
    if(request.time===null&&request.crop[0]===0&&request.crop[1]===0&&request.crop[2]===page.width&&request.crop[3]===page.height){const s=Math.min(768/page.width,2048/page.height,Math.sqrt(500000/(page.width*page.height)));overview.width=Math.max(1,Math.floor(page.width*s));overview.height=Math.max(1,Math.floor(page.height*s));overview.getContext('2d').drawImage(image,0,0,overview.width,overview.height);overviewContent=request.content;}
    if(request.running)requestAnimationFrame(now=>{playbackStats.record(`${request.generation}:${request.time}`,now);});
    summary.textContent=text('详情','Details');summary.title=`${data.backend} · ${data.width}×${data.height}`;
@@ -250,7 +241,7 @@ window.addEventListener('message',({data})=>{
  }
 
  if(data?.type==='initial'){locale=data.locale||'en';if((!initialized&&saved.rulers===undefined)||data.forceRulers)view.rulers=data.showRulers!==false;initialized=true;labels();showDiagnostic();if(root.dataset.state)showStatus(root.dataset.state);schedule();}
- else if(data?.type==='status'){if(data.status!=='success')renderSequence++;showStatus(data.status);}
+ else if(data?.type==='status'){if(data.status!=='success'){renderSequence++;cancelTransition();player.resumeAfterTransition=false;}showStatus(data.status);}
  else if(data?.type==='result'){
   if(data.document){
    pageSelect.replaceChildren();for(const [i,p] of data.document.pages.entries()){const option=el('option','',pageSelect,`${i+1}. ${p.name||p.id}`);option.value=p.id;}

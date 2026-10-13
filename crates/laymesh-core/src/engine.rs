@@ -38,6 +38,7 @@ pub struct Engine {
     pub dpi: f64,
     pub canvas: Option<Rc<RefCell<Object>>>,
     pub(crate) document_mode: bool,
+    pub(crate) page_transition_override: Option<crate::document::TransitionSpec>,
     pub(crate) document: Option<Rc<RefCell<Object>>>,
     pub modules: BTreeMap<String, Scope>,
     pub loading: BTreeSet<String>,
@@ -124,6 +125,7 @@ impl Engine {
             dpi: 96.,
             canvas: None,
             document_mode: false,
+            page_transition_override: None,
             document: None,
             modules: BTreeMap::new(),
             loading: BTreeSet::new(),
@@ -237,6 +239,7 @@ impl Engine {
         }
         let canvas_style = self.styled("canvas", &c.args, &Args::new())?;
         Ok(Scene {
+            page_transition: if let Some(spec)=&self.page_transition_override {spec.compile(Some(&self.host))?} else {crate::page_transition::compile(&canvas_style, &self.file, c.loc)?},
             animation: self.compile_animation(&c.nodes)?,
             schema_version: 8,
             width: c.width,
@@ -256,6 +259,7 @@ impl Engine {
                 .chain(self.css_diagnostics())
                 .collect(),
             fonts: self.fonts.assets.clone(),
+            font_requests: self.fonts.requests.values().cloned().collect(),
         })
     }
     fn module(&mut self, path: &str, l: Loc) -> Result<Scope> {

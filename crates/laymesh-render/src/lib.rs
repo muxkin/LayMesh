@@ -777,6 +777,61 @@ fn used_fonts(scene: &Scene) -> std::collections::BTreeMap<String, (u16, bool)> 
 pub fn render_svg(scene: &Scene) -> Result<String> {
     svg(scene, true)
 }
+/// Font-independent snapshot for offline packages. Preserve vector text without
+/// putting system font files into a package that did not request font embedding.
+pub fn render_svg_outlined(scene: &Scene) -> Result<String> {
+    fn outline(value: &mut Json, scene: &Scene) -> Result<()> {
+        if value["kind"] == "glyph" {
+            let key = jstr(value, "fontFamily", "");
+            let font = scene
+                .fonts
+                .get(key)
+                .ok_or_else(|| error(format!("Missing font: {key}")))?;
+            let face = ttf_parser::Face::parse(&font.data, font.index)
+                .map_err(|e| error(e.to_string()))?;
+            let size = jnum(value, "fontSize", 3.);
+            let scale = size / face.units_per_em() as f64;
+            let mut path = kurbo::BezPath::new();
+            for glyph in laymesh_core::text::shape_glyphs(font, jstr(value, "content", ""), size) {
+                let mut outline = display_list::OutlinePath::default();
+                face.outline_glyph(ttf_parser::GlyphId(glyph.id), &mut outline);
+                let translated = kurbo::Affine::new([
+                    scale,
+                    0.,
+                    0.,
+                    -scale,
+                    glyph.x + jnum(value, "x", 0.),
+                    glyph.y + jnum(value, "baseline", 0.),
+                ]) * outline.0;
+                path.extend(translated.elements().iter().copied());
+            }
+            *value = json!({"kind":"path","d":path.to_svg(),"fill":value["color"]});
+            return Ok(());
+        }
+        match value {
+            Json::Array(values) => {
+                for value in values {
+                    outline(value, scene)?;
+                }
+            }
+            Json::Object(values) => {
+                for value in values.values_mut() {
+                    if value.is_array() || value.is_object() {
+                        outline(value, scene)?;
+                    }
+                }
+            }
+            _ => {}
+        }
+        Ok(())
+    }
+    let mut snapshot = scene.clone();
+    for node in &mut snapshot.nodes {
+        outline(node, scene)?;
+    }
+    snapshot.fonts.clear();
+    svg(&snapshot, false)
+}
 fn svg(scene: &Scene, embed_fonts: bool) -> Result<String> {
     if !scene.width.is_finite()
         || !scene.height.is_finite()
@@ -829,7 +884,7 @@ fn svg(scene: &Scene, embed_fonts: bool) -> Result<String> {
 
 #[cfg(feature = "native")]
 pub mod config;
-#[cfg(feature = "native")]
+#[cfg(any(feature = "native", feature = "portable-export"))]
 mod export;
 #[cfg(feature = "native")]
 mod jpeg_preview;
@@ -837,14 +892,16 @@ mod jpeg_preview;
 mod native;
 #[cfg(feature = "native")]
 mod pdf;
-#[cfg(feature = "native")]
+#[cfg(any(feature = "native", feature = "portable-export"))]
 pub mod pptx;
 #[cfg(feature = "native")]
 pub mod preview_assets;
 #[cfg(feature = "native")]
 pub mod raster_policy;
 #[cfg(feature = "native")]
-pub use export::{ExportOptions, export_format, render_export};
+pub use export::render_export;
+#[cfg(any(feature = "native", feature = "portable-export"))]
+pub use export::{ExportOptions, encode_rgba, export_format, raster_dimensions};
 #[cfg(feature = "native")]
 pub use jpeg_preview::{JpegPreviewOptions, render_jpeg_preview};
 #[cfg(feature = "native")]
@@ -855,6 +912,7 @@ mod tests {
     use super::*;
     fn empty() -> Scene {
         Scene {
+            page_transition: None,
             animation: None,
             schema_version: 8,
             width: 25.4,
@@ -866,6 +924,7 @@ mod tests {
             nodes: vec![],
             warnings: vec![],
             fonts: Default::default(),
+            font_requests: Default::default(),
         }
     }
     #[test]

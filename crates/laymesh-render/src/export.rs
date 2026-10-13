@@ -8,6 +8,10 @@ use std::io::Cursor;
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ExportOptions {
+    pub html_editable: Option<bool>,
+    pub html_embed_fonts: Option<bool>,
+    pub html_image_compression: Option<String>,
+    pub html_image_quality: Option<f32>,
     pub dpi: Option<f64>,
     pub quality: Option<f32>,
     pub compression: Option<String>,
@@ -29,6 +33,7 @@ pub struct ExportOptions {
 
 pub fn export_format(extension: &str) -> Result<&'static str> {
     Ok(match extension.to_ascii_lowercase().as_str() {
+        "html" | "zip" => "html",
         "svg" => "svg",
         "pdf" => "pdf",
         "pptx" => "pptx",
@@ -55,7 +60,26 @@ pub fn export_format(extension: &str) -> Result<&'static str> {
 impl ExportOptions {
     pub fn validate(&self, extension: &str) -> Result<()> {
         let format = export_format(extension)?;
-        let raster = !matches!(format, "svg" | "pdf" | "pptx");
+        let raster = !matches!(format, "svg" | "pdf" | "pptx" | "html");
+        if self.html_editable.is_some()
+            || self.html_embed_fonts.is_some()
+            || self.html_image_compression.is_some()
+            || self.html_image_quality.is_some()
+        {
+            if format != "html"
+                || self
+                    .html_image_compression
+                    .as_ref()
+                    .is_some_and(|s| !matches!(s.as_str(), "auto" | "original" | "lossless"))
+                || self
+                    .html_image_quality
+                    .is_some_and(|q| !q.is_finite() || !(0.0..=100.0).contains(&q))
+            {
+                return Err(error(
+                    "html_* options require HTML/ZIP; compression auto/original/lossless, quality 0-100",
+                ));
+            }
+        }
         if let Some(dpi) = self.dpi {
             if !(raster || matches!(format, "pdf" | "pptx"))
                 || !dpi.is_finite()
@@ -175,9 +199,15 @@ pub(crate) fn matte(rgba: &[u8], background: [u8; 3]) -> Vec<u8> {
 
 /// Raster exports use the renderer's 8-bit straight RGBA, in sRGB, at physical DPI.
 /// Formats with density metadata (PNG/JPEG/TIFF/BMP) also record that resolution.
+#[cfg(feature = "native")]
 pub fn render_export(scene: &Scene, extension: &str, options: &ExportOptions) -> Result<Vec<u8>> {
     options.validate(extension)?;
     let format = export_format(extension)?;
+    if format == "html" {
+        return Err(error(
+            "HTML/ZIP export requires project context; use the native CLI or Python render interfaces",
+        ));
+    }
     if format == "svg" {
         return Ok(render_svg(scene)?.into_bytes());
     }
@@ -188,10 +218,23 @@ pub fn render_export(scene: &Scene, extension: &str, options: &ExportOptions) ->
         return Ok(crate::pptx::render_pptx(scene, options)?.0);
     }
     let dpi = options.dpi.unwrap_or(scene.export_dpi);
-    // Fail before allocating the raster when a codec has a smaller dimension limit.
+    raster_dimensions(scene.width, scene.height, dpi, extension)?;
+    let (w, h, rgba) = native::rasterize(scene, dpi)?;
+    encode_rgba(w, h, &rgba, dpi, extension, options)
+}
+
+/// Validate physical export dimensions before any pixel allocation.
+pub fn raster_dimensions(width: f64, height: f64, dpi: f64, extension: &str) -> Result<(u32, u32)> {
+    let format = export_format(extension)?;
+    if ![width, height, dpi]
+        .iter()
+        .all(|v| v.is_finite() && *v > 0.)
+    {
+        return Err(error("Export size and DPI must be positive"));
+    }
     let dimensions = (
-        (scene.width * dpi / 25.4).round().max(1.),
-        (scene.height * dpi / 25.4).round().max(1.),
+        (width * dpi / 25.4).round().max(1.),
+        (height * dpi / 25.4).round().max(1.),
     );
     let limit = match format {
         "ico" => 256.,
@@ -201,10 +244,37 @@ pub fn render_export(scene: &Scene, extension: &str, options: &ExportOptions) ->
     };
     if dimensions.0 > limit || dimensions.1 > limit {
         return Err(error(format!(
-            "{format} 宽高不能超过 {limit} 像素；请减小 DPI 或画布尺寸"
+            "{format} 宽高不能超过 {limit} 像素；请在导出设置中减小 DPI 或画布尺寸"
         )));
     }
-    let (w, h, rgba) = native::rasterize(scene, dpi)?;
+    if dimensions.0 * dimensions.1 > 100_000_000. {
+        return Err(error(
+            "导出超过 100,000,000 像素；请在导出设置中减小 DPI 或画布尺寸",
+        ));
+    }
+    Ok((dimensions.0 as u32, dimensions.1 as u32))
+}
+
+/// Shared native/browser encoder. Input is straight-alpha sRGB, never a viewport screenshot.
+pub fn encode_rgba(
+    w: u32,
+    h: u32,
+    rgba: &[u8],
+    dpi: f64,
+    extension: &str,
+    options: &ExportOptions,
+) -> Result<Vec<u8>> {
+    options.validate(extension)?;
+    let format = export_format(extension)?;
+    if !dpi.is_finite()
+        || dpi <= 0.
+        || w == 0
+        || h == 0
+        || (w as u64 * h as u64) > 100_000_000
+        || rgba.len() as u64 != w as u64 * h as u64 * 4
+    {
+        return Err(error("Invalid export pixel buffer"));
+    }
     let mut out = Vec::new();
     let encode_error = |e: image::ImageError| error(format!("{format} 编码失败：{e}"));
     match format {
@@ -274,6 +344,7 @@ pub fn render_export(scene: &Scene, extension: &str, options: &ExportOptions) ->
             );
             image.write_data(&rgba).map_err(|e| error(e.to_string()))?;
         }
+        #[cfg(feature = "native")]
         "webp" => {
             let mut config =
                 webp::WebPConfig::new().map_err(|_| error("无法初始化 WebP 编码器"))?;
@@ -290,6 +361,15 @@ pub fn render_export(scene: &Scene, extension: &str, options: &ExportOptions) ->
                 .encode_advanced(&config)
                 .map_err(|e| error(format!("WebP 编码失败：{e:?}")))?
                 .to_vec();
+        }
+        #[cfg(not(feature = "native"))]
+        "webp" => {
+            if options.webp_lossless == Some(false) {
+                return Err(error("浏览器 WebP 导出支持无损编码；请使用无损设置"));
+            }
+            image::codecs::webp::WebPEncoder::new_lossless(&mut out)
+                .write_image(rgba, w, h, ExtendedColorType::Rgba8)
+                .map_err(encode_error)?;
         }
         "bmp" => {
             image::codecs::bmp::BmpEncoder::new(&mut out)
@@ -330,7 +410,7 @@ pub fn render_export(scene: &Scene, extension: &str, options: &ExportOptions) ->
         }
         "pam" => {
             image::codecs::pnm::PnmEncoder::new(&mut out)
-                .encode(rgba.as_slice(), w, h, ExtendedColorType::Rgba8)
+                .encode(rgba, w, h, ExtendedColorType::Rgba8)
                 .map_err(encode_error)?;
         }
         "ppm" | "pgm" | "pbm" => {
@@ -380,7 +460,7 @@ pub fn render_export(scene: &Scene, extension: &str, options: &ExportOptions) ->
                 .encode(pixels.as_slice(), w, h, color)
                 .map_err(encode_error)?;
         }
-        _ => unreachable!(),
+        _ => return Err(error("Expected a raster export format")),
     }
     Ok(out)
 }

@@ -1,0 +1,75 @@
+// TilesWave — generated from https://github.com/gl-transitions/gl-transitions/blob/master/transitions/TilesWave.glsl
+// Author: numb3r23
+// License: MIT
+// Description: The incoming image is revealed tile by tile in a diagonal wave
+
+uniform shader _from;
+uniform shader _to;
+uniform float2 _resolution;
+uniform float progress;
+uniform float ratio;
+
+vec4 getFromColor(vec2 uv) { return vec4(unpremul(_from.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+vec4 getToColor(vec2 uv) { return vec4(unpremul(_to.eval(vec2(uv.x, 1.0 - uv.y) * _resolution))); }
+
+uniform ivec2 tileCount; 
+uniform int flipX; 
+uniform int flipY; 
+
+vec4 transition(vec2 uv) {
+  vec2 tileSize = 1.0 / vec2(tileCount);
+  vec2 posInTile = fract(uv * vec2(tileCount));
+  vec2 tileNum = floor(uv * vec2(tileCount));
+  float countTiles = float(tileCount.x * tileCount.y);
+
+  
+  float offset = (tileNum.y + tileNum.x * float(tileCount.y)) / countTiles;
+  float timeOffset = clamp((progress - offset) * countTiles, 0.0, 0.5);
+  float sinTime = 1.0 - abs(cos(fract(timeOffset) * 3.1415926));
+
+  vec2 texC = posInTile;
+
+  if (sinTime <= 0.5) {
+    if ((flipX != 0)) {
+      if (texC.x < sinTime || texC.x > 1.0 - sinTime)
+        return getFromColor(uv);
+      texC.x = texC.x < 0.5
+        ? (texC.x - sinTime) * 0.5 / (0.5 - sinTime)
+        : (texC.x - 0.5) * 0.5 / (0.5 - sinTime) + 0.5;
+    }
+    if ((flipY != 0)) {
+      if (texC.y < sinTime || texC.y > 1.0 - sinTime)
+        return getFromColor(uv);
+      texC.y = texC.y < 0.5
+        ? (texC.y - sinTime) * 0.5 / (0.5 - sinTime)
+        : (texC.y - 0.5) * 0.5 / (0.5 - sinTime) + 0.5;
+    }
+    vec2 globalUV = tileNum * tileSize + texC * tileSize;
+    return getFromColor(globalUV);
+  } else {
+    if ((flipX != 0)) {
+      if (texC.x > sinTime || texC.x < 1.0 - sinTime)
+        return getToColor(uv);
+      texC.x = texC.x < 0.5
+        ? (texC.x - sinTime) * 0.5 / (0.5 - sinTime)
+        : (texC.x - 0.5) * 0.5 / (0.5 - sinTime) + 0.5;
+      texC.x = 1.0 - texC.x;
+    }
+    if ((flipY != 0)) {
+      if (texC.y > sinTime || texC.y < 1.0 - sinTime)
+        return getToColor(uv);
+      texC.y = texC.y < 0.5
+        ? (texC.y - sinTime) * 0.5 / (0.5 - sinTime)
+        : (texC.y - 0.5) * 0.5 / (0.5 - sinTime) + 0.5;
+      texC.y = 1.0 - texC.y;
+    }
+    vec2 globalUV = tileNum * tileSize + texC * tileSize;
+    return getToColor(globalUV);
+  }
+}
+
+half4 main(float2 _coord) {
+  vec2 _uv = _coord / _resolution;
+  vec4 _c = clamp(transition(vec2(_uv.x, 1.0 - _uv.y)), 0.0, 1.0);
+  return half4(_c.rgb * _c.a, _c.a);
+}
