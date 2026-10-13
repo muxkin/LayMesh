@@ -1,3 +1,5 @@
+import { exportBrowserJPEG } from "./web-jpeg-export.mjs";
+import { exportVectorPDF } from "./web-pdf-export.mjs";
 const formats = [
   ["pdf", "PDF 文档"],
   ["svg", "SVG 矢量图"],
@@ -52,13 +54,26 @@ export function installExportDialog({
     panel = el("export-panel");
   const section = document.createElement("div");
   section.className = "file-export";
-  section.innerHTML = `<div class="export-field"><label for="export-format">格式</label><select id="export-format">${formats.map(([value, name]) => `<option value="${value}">${name}</option>`).join("")}</select><button id="export-settings" class="export-settings-link">设置</button></div><div class="export-field"><label for="export-scope">页面</label><select id="export-scope"><option value="all">全部页面</option><option value="current">当前页</option></select></div><div class="export-field"><label for="export-name">文件名</label><input id="export-name" type="text"><span id="export-extension"></span></div><p id="export-format-note" class="export-note"></p><div class="export-actions"><button id="export-file" class="primary">导出文件</button><button id="export-cancel" hidden>取消</button><span id="export-progress" role="status" aria-live="polite"></span></div>`;
+  section.innerHTML = `<div class="export-field"><label for="export-format">格式</label><select id="export-format">${formats
+    .filter(
+      ([f]) =>
+        manifest.editable || ["pdf", "svg", "png", "jpg", "tif"].includes(f),
+    )
+    .map(([value, name]) => `<option value="${value}">${name}</option>`)
+    .join(
+      "",
+    )}</select><button id="export-settings" class="export-settings-link">设置</button></div><div class="export-field"><label for="export-scope">页面</label><select id="export-scope"><option value="all">全部页面</option><option value="current">当前页</option></select></div><div class="export-field"><label for="export-name">文件名</label><input id="export-name" type="text"><span id="export-extension"></span></div><p id="export-format-note" class="export-note"></p><div class="export-actions"><button id="export-file" class="primary">导出文件</button><button id="export-cancel" hidden>取消</button><span id="export-progress" role="status" aria-live="polite"></span></div>`;
   panel.querySelector(".dialog-heading").after(section);
   const settings = document.createElement("dialog");
   settings.id = "export-settings-panel";
   settings.className = "export-settings-panel";
   settings.innerHTML = `<form><div class="dialog-heading"><h2>导出设置</h2><button type="button" class="dialog-close" aria-label="关闭导出设置">×</button></div><label>图片分辨率（DPI）<input id="export-dpi" type="number" min="1" max="25400" required></label><label>PNG 压缩<select id="export-png-compression"><option value="fast">快速</option><option value="default">标准</option><option value="best">最小体积</option></select></label><label>TIFF 压缩<select id="export-tiff-compression"><option value="lzw">LZW</option><option value="deflate">Deflate</option><option value="packbits">PackBits</option><option value="none">不压缩</option></select></label><label>JPEG 质量<input id="export-jpeg-quality" type="number" min="1" max="100" required></label><label>不透明图片背景<input id="export-background" type="text" required placeholder="#ffffff"></label><p class="export-note">设置随作品保存。WebP 使用无损编码；SVG、PDF 保留矢量内容。PPTX 的复杂特效按此分辨率生成局部图片。</p><div class="export-actions"><button type="button" id="export-defaults">恢复默认</button><button type="submit" class="primary">保存设置</button></div></form>`;
   root.append(settings);
+  if (!manifest.editable) {
+    el("export-png-compression").closest("label").hidden = true;
+    settings.querySelector(".export-note").textContent =
+      "设置随作品保存。PDF、SVG 保留矢量内容；PDF 的复杂蒙版和透明混合生成局部图片。";
+  }
   const defaults = {
     dpi: 1200,
     png: "default",
@@ -106,7 +121,7 @@ export function installExportDialog({
   const options = (format) => {
     const s = { ...defaults, ...manifest.exportSettings };
     return {
-      ...(format === "svg" ? {} : { dpi: s.dpi }),
+      ...(format === "svg" && manifest.editable ? {} : { dpi: s.dpi }),
       ...(format === "png" ? { compression: s.png } : {}),
       ...(format === "tif" ? { compression: s.tiff } : {}),
       ...(format === "jpg" ? { quality: s.jpeg } : {}),
@@ -194,42 +209,50 @@ export function installExportDialog({
       const selection = pages()
         .map((p, i) => ({ ...p, number: i + 1 }))
         .filter((_, i) => el("export-scope").value === "all" || i === index());
-      let result;
-      if (format === "svg")
-        result = {
-          output: selection.map((p) => {
-            if (!p.svg)
-              throw Error(
-                "此旧文件缺少矢量导出数据，请使用新版 LayMesh 重新导出作品",
-              );
-            return { bytes: new TextEncoder().encode(p.svg), page: p.number };
-          }),
-          warnings: [],
+      const result = await new Promise((resolve, reject) => {
+        rejectWork = reject;
+        worker = makeWorker();
+        worker.onerror = (e) => reject(Error(e.message));
+        worker.onmessage = ({ data }) => {
+          if (data.progress) el("export-progress").textContent = data.progress;
+          else if (data.error) reject(Error(data.error));
+          else resolve(data);
         };
-      else
-        result = await new Promise((resolve, reject) => {
-          rejectWork = reject;
-          worker = makeWorker();
-          worker.onerror = (e) => reject(Error(e.message));
-          worker.onmessage = ({ data }) => {
-            if (data.progress)
-              el("export-progress").textContent = data.progress;
-            else if (data.error) reject(Error(data.error));
-            else resolve(data);
-          };
-          worker.postMessage({
-            format,
-            options: options(format),
-            pages: selection.map((p) => ({
-              number: p.number,
-              svg: p.svg,
-              list: p.list,
-              resources: resources(p),
-            })),
-            wasm: bytes("runtime/exporter/laymesh.wasm"),
-            skia: bytes("runtime/skia/canvaskit.wasm"),
-          });
+        worker.postMessage({
+          format,
+          options: options(format),
+          pages: selection.map((p) => ({
+            number: p.number,
+            list: p.list,
+            resources: resources(p),
+          })),
+          wasm: bytes(
+            manifest.editable
+              ? "runtime/exporter-full/laymesh.wasm"
+              : "runtime/exporter/laymesh.wasm",
+          ),
+          skia: bytes("runtime/skia/canvaskit.wasm"),
         });
+      });
+      if (aborted) throw new DOMException("已取消导出", "AbortError");
+      if (format === "jpg" && !manifest.editable) {
+        for (const output of result.output) {
+          if (aborted) throw new DOMException("已取消导出", "AbortError");
+          output.bytes = await exportBrowserJPEG(output, options(format));
+        }
+      }
+      if (format === "pdf" && !manifest.editable) {
+        result.output = [
+          {
+            bytes: await exportVectorPDF(result.output, {
+              cancelled: () => aborted,
+              progress: (message) => {
+                el("export-progress").textContent = message;
+              },
+            }),
+          },
+        ];
+      }
       if (aborted) throw new DOMException("已取消导出", "AbortError");
       const data =
         ext === "zip"

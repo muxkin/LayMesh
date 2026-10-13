@@ -44,6 +44,80 @@ pub fn encode_pixels(
     laymesh_render::encode_rgba(w, h, pixels, options.dpi.unwrap_or(1200.), format, &options)
         .map_err(err)
 }
+fn hydrated_list(raw: &str) -> Result<DisplayList, JsValue> {
+    let mut list: DisplayList = serde_json::from_str(raw).map_err(err)?;
+    RESOURCES.with(|resources| {
+        let resources = resources.borrow();
+        for (id, r) in &mut list.resources {
+            if let Some(bytes) = resources.get(id) {
+                r.data = bytes.clone();
+            }
+        }
+    });
+    Ok(list)
+}
+/// Assemble vector output on demand from the same retained commands used for
+/// playback. Only PDF effect layers need pixels; SVG retains SVG filters.
+#[wasm_bindgen]
+pub struct VectorJob {
+    list: DisplayList,
+    dpi: f64,
+    pdf: bool,
+    requests: Vec<Value>,
+    images: Vec<Vec<u8>>,
+}
+#[wasm_bindgen]
+impl VectorJob {
+    #[wasm_bindgen(constructor)]
+    pub fn new(raw_list: &str, raw_options: &str, pdf: bool) -> Result<VectorJob, JsValue> {
+        let options = options(raw_options, if pdf { "pdf" } else { "svg" })?;
+        let dpi = options.dpi.unwrap_or(1200.);
+        let list = hydrated_list(raw_list)?;
+        let mut requests = Vec::new();
+        if pdf {
+            laymesh_render::portable_svg::render(&list,dpi,Some(&mut |node,rect,width,height,effects_only| {
+                let mut request=list.clone();request.nodes=vec![node.clone()];request.animation=None;request.page_transition=None;
+                for r in request.resources.values_mut(){r.data.clear();}
+                requests.push(json!({"list":request,"rect":[rect.x0,rect.y0,rect.x1,rect.y1],"width":width,"height":height,"effectsOnly":effects_only}));
+                Ok(Vec::new())
+            })).map_err(err)?;
+        }
+        Ok(Self {
+            list,
+            dpi,
+            pdf,
+            images: vec![Vec::new(); requests.len()],
+            requests,
+        })
+    }
+    pub fn requests(&self) -> String {
+        serde_json::to_string(&self.requests).unwrap()
+    }
+    pub fn set_image(&mut self, index: usize, bytes: &[u8]) -> Result<(), JsValue> {
+        *self
+            .images
+            .get_mut(index)
+            .ok_or_else(|| err("Invalid vector effect index"))? = bytes.into();
+        Ok(())
+    }
+    pub fn finish(&self) -> Result<String, JsValue> {
+        if self.images.iter().any(Vec::is_empty) {
+            return Err(err("Vector effect image missing"));
+        }
+        let mut index = 0;
+        let mut raster = |_: &laymesh_render::display_list::DrawNode, _, _, _, _| {
+            let bytes = self.images[index].clone();
+            index += 1;
+            Ok(bytes)
+        };
+        laymesh_render::portable_svg::render(
+            &self.list,
+            self.dpi,
+            if self.pdf { Some(&mut raster) } else { None },
+        )
+        .map_err(err)
+    }
+}
 #[wasm_bindgen]
 pub fn export_pdf(pages: &str, raw: &str) -> Result<Vec<u8>, JsValue> {
     let options = options(raw, "pdf")?;
@@ -58,9 +132,12 @@ pub fn export_pdf(pages: &str, raw: &str) -> Result<Vec<u8>, JsValue> {
     pdf.catalog(catalog).pages(root);
     let mut ids = Vec::new();
     for page in pages {
-        let svg = page["svg"].as_str().ok_or_else(|| {
-            err("This older file has no vector export data; re-export it with LayMesh 0.6.3")
-        })?;
+        let svg = page["svg"]
+            .as_str()
+            .ok_or_else(|| err("Missing assembled vector page"))?;
+        if svg.contains("<filter") {
+            return Err(err("PDF effects must be prepared by the shared renderer"));
+        }
         let width = page["width"]
             .as_f64()
             .ok_or_else(|| err("Missing page width"))?;
@@ -119,15 +196,7 @@ impl PptxJob {
     pub fn new(raw_list: &str, raw_options: &str) -> Result<PptxJob, JsValue> {
         let options = options(raw_options, "pptx")?;
         let dpi = options.dpi.unwrap_or(1200.);
-        let mut list: DisplayList = serde_json::from_str(raw_list).map_err(err)?;
-        RESOURCES.with(|resources| {
-            let resources = resources.borrow();
-            for (id, r) in &mut list.resources {
-                if let Some(bytes) = resources.get(id) {
-                    r.data = bytes.clone();
-                }
-            }
-        });
+        let list = hydrated_list(raw_list)?;
         let mut requests = Vec::new();
         laymesh_render::pptx::render_pptx_list(&list, dpi, &mut |list, rect, width, height| {
             let mut list = list.clone(); for r in list.resources.values_mut() { r.data.clear(); }

@@ -1,4 +1,6 @@
 import { installExportDialog } from "./web-export-dialog.mjs";
+import { selectWebLicenses } from "./web-licenses.mjs";
+import { selectPageTransitions } from "./web-transition-package.mjs";
 import { Presentation } from "./presentation.mjs";
 import { createContextMenu, inputMenu } from "./workspace-menu.mjs";
 import { buildShell } from "./web-shell.mjs";
@@ -288,7 +290,13 @@ export async function mountWebPlayer({
     const binding = decoder.decode(
       bytes(
         "runtime/" +
-          (exporter ? "exporter" : renderer ? "wasm" : "compiler") +
+          (exporter
+            ? manifest.editable
+              ? "exporter-full"
+              : "exporter"
+            : renderer
+              ? "wasm"
+              : "compiler") +
           "/laymesh_wasm.js",
       ),
     );
@@ -301,6 +309,13 @@ export async function mountWebPlayer({
             "skia-renderer.mjs",
             "presentation-resources.mjs",
             "presentation-renderer.mjs",
+            ...(exporter && !manifest.editable
+              ? [
+                  "web-archive.mjs",
+                  "web-image-density.mjs",
+                  "web-vector-export.mjs",
+                ]
+              : []),
             name,
           ]
         : [name];
@@ -1206,23 +1221,17 @@ export async function mountWebPlayer({
             }
           : undefined,
       };
+    const runtimeFiles = new Set(
+      JSON.parse(decoder.decode(bytes("runtime/runtime-files.json")))[
+        editable ? "editable" : "playback"
+      ],
+    );
     for (const [name, data] of Object.entries(files))
-      if (
-        name.startsWith("licenses/") ||
-        (name.startsWith("runtime/") &&
-          (editable ||
-            (!name.startsWith("runtime/compiler/") &&
-              (!name.startsWith("runtime/vendor/") ||
-                name.startsWith("runtime/vendor/workspace-ui/")) &&
-              ![
-                "runtime/source-editor.mjs",
-                "runtime/web-workspace.mjs",
-                "runtime/language.mjs",
-                "runtime/web-compiler-worker.mjs",
-                "runtime/web-language-worker.mjs",
-              ].includes(name))))
-      )
-        out[name] = data;
+      if (name.startsWith("licenses/") || runtimeFiles.has(name))
+        out[name] =
+          name === "licenses/manifest.json"
+            ? selectWebLicenses(data, editable)
+            : data;
     for (let i = 0; i < pages.length; i++) {
       const page = pages[i],
         file = "pages/" + i + ".json",
@@ -1230,7 +1239,6 @@ export async function mountWebPlayer({
           id: page.id,
           name: page.name,
           list: structuredClone(page.list),
-          svg: page.svg,
           inspection: page.inspection,
         };
 
@@ -1275,6 +1283,10 @@ export async function mountWebPlayer({
         if (f.file && !out[f.file]) out[f.file] = bytes(f.file);
       for (const r of next.resourceInfo) out[r.file] = bytes(r.file);
     }
+    if (!editable) {
+      const path = "runtime/presentation-transitions-data.mjs";
+      out[path] = selectPageTransitions(out[path], pages);
+    }
     next.container = zip ? "zip" : "universal";
     out["manifest.json"] = encoder.encode(JSON.stringify(next));
     out["index.html"] = files["index.html"];
@@ -1312,7 +1324,14 @@ export async function mountWebPlayer({
     archive,
     status,
     onError: fail,
-    makeWorker: () => makeWorker("web-static-export-worker.mjs", false, true),
+    makeWorker: () =>
+      makeWorker(
+        manifest.editable
+          ? "web-full-export-worker.mjs"
+          : "web-static-export-worker.mjs",
+        false,
+        true,
+      ),
     async prepare() {
       await workspace?.whenIdle();
       clock.running = false;

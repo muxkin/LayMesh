@@ -236,9 +236,6 @@ impl RenderJob {
     pub fn svg(&self) -> Result<String, JsValue> {
         laymesh_render::render_svg(&self.scene).map_err(|e| JsValue::from_str(&e.to_string()))
     }
-    pub fn export_svg(&self) -> Result<String, JsValue> {
-        laymesh_render::render_svg_outlined(&self.scene).map_err(js_error)
-    }
     pub fn inspection(&self) -> String {
         let mut value = json!({"inspection":laymesh_language::inspect::inspect_scene(&self.scene),"warnings":self.scene.warnings,"requestedFonts":self.scene.font_requests});
         if let Some(document) = &self.document {

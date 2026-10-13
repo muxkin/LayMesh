@@ -58,7 +58,9 @@ def build(binary=None,extension_dir=None):
  shutil.copy2(ROOT/'LICENSE',extension/'LICENSE')
  stale=extension/'dist/server.cjs'
  if stale.exists():stale.unlink()
- if (ROOT/'release/licenses').is_dir():shutil.copytree(ROOT/'release/licenses',extension/'licenses',dirs_exist_ok=True)
+ if (ROOT/'release/licenses').is_dir():
+  from package_licenses import package
+  package(ROOT,extension/'licenses')
  if (ROOT/'release/THIRD_PARTY_NOTICES.md').is_file():shutil.copy2(ROOT/'release/THIRD_PARTY_NOTICES.md',extension/'THIRD_PARTY_NOTICES.md')
  print(f'Built offline CanvasKit preview + native Rust services at {extension} (no npm packages)')
 if __name__=='__main__':

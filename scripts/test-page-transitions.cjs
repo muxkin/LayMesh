@@ -8,7 +8,9 @@ const root=path.resolve(__dirname,'..'),out=path.resolve(process.argv[2]||'/tmp/
   fs.writeFileSync(fixture+'/demo.laydoc',fs.readFileSync(fixture+'/demo.laydoc','utf8').replace('700ms','180ms'));
   cp.execFileSync(binary,['render',fixture+'/demo.laydoc','-o',out+'/demo.html','--warnings','hide']);
   const {webUnzip,webPayload}=await import(root+'/site/live/web-archive.mjs'),files=webUnzip(webPayload(fs.readFileSync(out+'/demo.html')));
-  assert.ok(files['runtime/presentation-transitions-data.mjs']);assert.ok(files['licenses/DEPENDENCIES.txt']);
+  assert.ok(files['runtime/presentation-transitions-data.mjs']);assert.ok(files['licenses/manifest.json']);
+  const catalog=JSON.parse(new TextDecoder().decode(files['runtime/presentation-transitions-data.mjs']).split('export const transitions = ')[1].trim().replace(/;$/,''));
+  assert.deepEqual(Object.keys(catalog).sort(),['InvertedPageCurl','cube','luma']);
   const results=[];
   for(const engine of (process.env.LAYMESH_TEST_ENGINES||'chromium,firefox,webkit').split(',')){
     const browser=await engines[engine].launch({headless:true});try{

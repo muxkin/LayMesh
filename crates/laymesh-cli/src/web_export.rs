@@ -179,7 +179,7 @@ fn page(
         resources.insert(id.clone(), asset(files, data));
     }
     Ok(
-        json!({"id":id,"name":name,"svg":laymesh_render::render_svg_outlined(scene)?,"list":list,"inspection":laymesh_language::inspect::inspect_scene(scene)}),
+        json!({"id":id,"name":name,"list":list,"inspection":laymesh_language::inspect::inspect_scene(scene)}),
     )
 }
 fn runtime(editable: bool) -> Result<BTreeMap<String, Vec<u8>>> {
@@ -215,6 +215,30 @@ fn runtime(editable: bool) -> Result<BTreeMap<String, Vec<u8>>> {
         }
         let mut data = Vec::new();
         f.read_to_end(&mut data)?;
+        if name == "licenses/manifest.json" {
+            let mut inventory: Value = serde_json::from_slice(&data)?;
+            let profile = if editable { "editable" } else { "playback" };
+            if inventory["schemaVersion"] == 1 {
+                let records = inventory["packages"]
+                    .as_array_mut()
+                    .ok_or("Invalid web license inventory")?;
+                records.retain(|p| {
+                    p["profiles"]
+                        .as_array()
+                        .is_some_and(|v| v.iter().any(|v| v == profile))
+                });
+                let used: BTreeSet<String> = records
+                    .iter()
+                    .flat_map(|p| p["texts"].as_array().into_iter().flatten())
+                    .filter_map(|r| r["sha256"].as_str().map(str::to_owned))
+                    .collect();
+                inventory["texts"]
+                    .as_object_mut()
+                    .ok_or("Invalid web license texts")?
+                    .retain(|hash, _| used.contains(hash));
+                data = serde_json::to_vec(&inventory)?;
+            }
+        }
         files.insert(name, data);
     }
     Ok(files)
@@ -293,6 +317,7 @@ pub fn export(
     let mut files = runtime(editable)?;
     let mut resources = BTreeMap::new();
     let mut pages = Vec::new();
+    let mut transitions = BTreeSet::new();
     let mut fonts = BTreeMap::new();
     let mut requested_fonts = BTreeMap::new();
     let mut name = Path::new(file)
@@ -323,6 +348,9 @@ pub fn export(
             &originals,
         )?;
         let path = format!("pages/{}.json", pages.len());
+        if let Some(name) = body["list"]["pageTransition"]["name"].as_str() {
+            transitions.insert(name.to_owned());
+        }
         files.insert(path.clone(), serde_json::to_vec(&body)?);
         pages.push(json!({"id":id,"name":title,"file":path}));
         Ok(())
@@ -344,6 +372,29 @@ pub fn export(
         }
     } else {
         append(compile_source(source, file, host.clone())?, "page", &name)?;
+    }
+    if !editable {
+        // Playback cannot add effects. Keep every used page boundary, including
+        // those traversed backwards, but omit all other upstream shaders.
+        let key = "runtime/presentation-transitions-data.mjs";
+        let source = std::str::from_utf8(files.get(key).ok_or("Missing transition catalog")?)?;
+        let (_, value) = source
+            .split_once("export const transitions = ")
+            .ok_or("Invalid transition catalog")?;
+        let mut catalog: BTreeMap<String, Value> =
+            serde_json::from_str(value.trim().trim_end_matches(';'))?;
+        if transitions.iter().any(|name| !catalog.contains_key(name)) {
+            return Err("Missing used transition in runtime catalog".into());
+        }
+        catalog.retain(|name, _| transitions.contains(name));
+        files.insert(
+            key.into(),
+            format!(
+                "export const transitions = {};\n",
+                serde_json::to_string(&catalog)?
+            )
+            .into_bytes(),
+        );
     }
     let mut font_meta = Vec::new();
     let mut project = json!(null);

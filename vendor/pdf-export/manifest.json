@@ -1,0 +1,101 @@
+{
+  "jspdf": {
+    "version": "4.2.1",
+    "license": "MIT",
+    "source": "https://registry.npmjs.org/jspdf/-/jspdf-4.2.1.tgz",
+    "files": {
+      "jspdf.umd.min.js": "e6551fcdc32f09d6853b2c5126d18d01d9447e0da618a41a11ebeee0f6c20d54",
+      "jspdf-LICENSE": "dc388ec35ff463288cdde3588a36fd4ed12a45deff053243b37309acc9ef583b"
+    }
+  },
+  "svg2pdf": {
+    "version": "2.8.1",
+    "license": "MIT",
+    "source": "https://registry.npmjs.org/svg2pdf.js/-/svg2pdf.js-2.8.1.tgz",
+    "files": {
+      "svg2pdf.umd.min.js": "2f10c0d16959e9a0c4cfd8605cfce0830ddc384337f74fa0351a6eff1c1efb8b",
+      "svg2pdf-LICENSE": "04db7fb792d065c8c9a0e3a7a8255cd36e32b263ca023cbea10daee4a45132b8"
+    }
+  },
+  "@babel/runtime": {
+    "version": "7.28.6",
+    "license": "MIT",
+    "source": "https://registry.npmjs.org/@babel/runtime/-/runtime-7.28.6.tgz",
+    "archiveSha256": "b6e24cd97ad524c9081afd19382ac50d0bd589ce7a56ac22c59faf728faa7db0",
+    "files": {
+      "babel-runtime-7.28.6-LICENSE": "117da2af0d4ce0fe1c8e19b5cff9dcd806adf973d328d27b11d4448c4ff24f76"
+    }
+  },
+  "fflate": {
+    "version": "0.8.1",
+    "license": "See original text",
+    "source": "https://registry.npmjs.org/fflate/-/fflate-0.8.1.tgz",
+    "archiveSha256": "126f69d9b432da2991e43e4231ecbbd042fa3b09d65d64d96c245a43168ac254",
+    "files": {
+      "fflate-0.8.1-LICENSE": "805f6cb28bb8b6d3a0badd83c93bccd9671fa01a3b4b92b7042b0743325ac243"
+    }
+  },
+  "fast-png": {
+    "version": "6.4.0",
+    "license": "MIT",
+    "source": "https://registry.npmjs.org/fast-png/-/fast-png-6.4.0.tgz",
+    "archiveSha256": "8f9e82e4efa942dbca9eeae80a6fd01abe015e4dc243656a4a0b9d8b0a7307c3",
+    "files": {
+      "fast-png-6.4.0-LICENSE": "47ec9747cf2c470a505fcb20f3ec2ff2e60ea4febaf2e1e7041a24fc369fac3c"
+    }
+  },
+  "iobuffer": {
+    "version": "5.4.0",
+    "license": "MIT",
+    "source": "https://registry.npmjs.org/iobuffer/-/iobuffer-5.4.0.tgz",
+    "archiveSha256": "497377ddfee90206d1341c2f65ed252de46c9f29aa946712cf51494e9e4452d6",
+    "files": {
+      "iobuffer-5.4.0-LICENSE": "1c22118fd112e8c394a5ec0598d2e2dfcdc19b3e1055ac3eaccdb2522b777335"
+    }
+  },
+  "pako": {
+    "version": "2.1.0",
+    "license": "(MIT AND Zlib)",
+    "source": "https://registry.npmjs.org/pako/-/pako-2.1.0.tgz",
+    "archiveSha256": "49fedc8866b4abfc8e71dc7fe75ad4ef1ff1ac9601b0642cff88ee5bf2338709",
+    "files": {
+      "pako-2.1.0-LICENSE": "a04665b3b2de56c66730c1f720f528175739e4104f79073614aa611da1e85539"
+    }
+  },
+  "cssesc": {
+    "version": "3.0.0",
+    "license": "See original text",
+    "source": "https://registry.npmjs.org/cssesc/-/cssesc-3.0.0.tgz",
+    "archiveSha256": "31a59523b764560845e79191632d9967d6f83514cc4c97394b0810287c101743",
+    "files": {
+      "cssesc-3.0.0-LICENSE-MIT.txt": "483acb265f182907d1caf6cff9c16c96f31325ed23792832cc5d8b12d5f88c8a"
+    }
+  },
+  "svgpath": {
+    "version": "2.5.0",
+    "license": "See original text",
+    "source": "https://registry.npmjs.org/svgpath/-/svgpath-2.5.0.tgz",
+    "archiveSha256": "2a46dc8600d968eea4d8b8e34ec0cbb0964eca711a890b974477958b4b765147",
+    "files": {
+      "svgpath-2.5.0-LICENSE": "6caa5f5c4e6957535e77e3eb2a4cc8cdf9242040976faaf01dcc8c3934e2ca4f"
+    }
+  },
+  "specificity": {
+    "version": "0.4.1",
+    "license": "See original text",
+    "source": "https://registry.npmjs.org/specificity/-/specificity-0.4.1.tgz",
+    "archiveSha256": "42d72ec6c0d89b6d201b8e854d0fff2e4cdb1b7da87e89144deb78379e6ea2c4",
+    "files": {
+      "specificity-0.4.1-LICENSE": "b2aeda654259630ed67b54e9134623c38cfb11d26201730cdc6d311d3c7c78ed"
+    }
+  },
+  "font-family-papandreou": {
+    "version": "0.2.0-patch1",
+    "license": "See original text",
+    "source": "https://registry.npmjs.org/font-family-papandreou/-/font-family-papandreou-0.2.0-patch1.tgz",
+    "archiveSha256": "6642fe1df268e3825dd2991bf06eca4b0c7a4c897c411b38a4267385c4221a29",
+    "files": {
+      "font-family-papandreou-0.2.0-patch1-LICENSE": "6358b25be58f3ef5efe9705f17a02b294abe47dc607d92c1cb2d714a7def8d45"
+    }
+  }
+}

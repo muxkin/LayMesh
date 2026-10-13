@@ -142,6 +142,9 @@ export class SkiaRenderer {
    const objects=new Set([...live].flatMap(p=>p.objects));
    for(const object of this.owned.reverse())if(!objects.has(object))object.delete();
    this.owned=[...objects];this.commandCache=new Map([...this.commandCache].filter(([,p])=>live.has(p)));
+   // A caller may retain nodes across installs (local export layers). The old
+   // identity map also holds pruned, deleted pictures; rebuild it from live keys.
+   this.prepared=new WeakMap();
    this.pictureBytes=[...live].reduce((n,p)=>n+(p.picture?.approximateBytesUsed()||0),0);this.generation=generation;
    if(this.pictureBytes>this.budget/4){const removed=new Set();for(const p of live)if(p.picture){removed.add(p.picture);p.objects=p.objects.filter(o=>o!==p.picture);p.picture.delete();p.picture=null;}this.owned=this.owned.filter(o=>!removed.has(o));this.pictureBytes=0;}
    for(const [id,image]of old.images)if(incoming.get(id)!==image)image.delete();this.planScene();
@@ -303,7 +306,7 @@ export class SkiaRenderer {
   this.content(c,node,id,states);
   for(const effect of p.effects)if(effect.inner)this.drawEffect(c,node,id,states,p,effect);
  }
- render(viewport,width,height,states={},generation=this.generation,allowSkip=false,cacheStatic=true,cacheLayers=true,preparing=false){
+ render(viewport,width,height,states={},generation=this.generation,allowSkip=false,cacheStatic=true,cacheLayers=true,preparing=false,effectsOnly=null){
   if(generation!==this.generation)return false;
   if(this.lost)return {backend:'Skia restoring',skipped:true,rasterMs:0};
   if(!Number.isSafeInteger(width)||!Number.isSafeInteger(height)||width<=0||height<=0||width*height>100000000)throw Error('Invalid Skia viewport');
@@ -322,7 +325,12 @@ export class SkiaRenderer {
   const query=timer&&this.queries.length<8?gl.createQuery():null;if(query)gl.beginQuery(timer.TIME_ELAPSED_EXT,query);
   this.cacheLayers=allowSkip&&cacheLayers;this.layerHits=0;this.layerBuilds=0;this.layerBudgetMisses=0;this.layerAllocationFailures=0;this.cacheHits=0;this.cacheBuilds=0;this.transient=true;this.transientPrepared=new WeakMap();const count=this.owned.length,c=this.surface.getCanvas(),saved=c.getSaveCount();try{c.clear(ck.TRANSPARENT);c.save();
   c.scale(width/(viewport[2]-viewport[0]),height/(viewport[3]-viewport[1]));c.translate(-viewport[0],-viewport[1]);
-  this.drawScene(c,viewport,width,height,states,allowSkip&&cacheStatic);c.restore();this.surface.flush();}finally{c.restoreToCount(saved);if(query){gl.endQuery(timer.TIME_ELAPSED_EXT);this.queries.push(query);}
+  if(effectsOnly===null)this.drawScene(c,viewport,width,height,states,allowSkip&&cacheStatic);
+  else { // Static PDF export: only the requested effect layers, never the vector subject.
+   const node=this.list.nodes[0],p=this.prepare(node);
+   for(const effect of p.effects)if(effect.inner===effectsOnly)this.drawEffect(c,node,'0',{},p,effect);
+  }
+  c.restore();this.surface.flush();}finally{c.restoreToCount(saved);if(query){gl.endQuery(timer.TIME_ELAPSED_EXT);this.queries.push(query);}
   // Geometry extensions own temporary commands for this frame only.
   while(this.owned.length>count)this.owned.pop().delete();
   this.transient=false;this.cacheLayers=false;}if(gl){const fence=gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE,0);if(fence)this.fences.push(fence);gl.flush();}this.frameCount++;return {backend:this.backend,device:this.device,rasterMs:performance.now()-start,gpuMs:this.gpuMs,gpuSamples,cacheBytes:this.gr?.getResourceCacheUsageBytes()||0,staticTextureBytes:this.staticTextureBytes,staticCacheHits:this.cacheHits,staticCacheBuilds:this.cacheBuilds,layerTextureBytes:this.layerTextureBytes,layerCacheHits:this.layerHits,layerCacheBuilds:this.layerBuilds,layerCacheBudgetMisses:this.layerBudgetMisses,layerCacheAllocationFailures:this.layerAllocationFailures,frameCount:this.frameCount};

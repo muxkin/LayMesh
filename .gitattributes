@@ -9,3 +9,5 @@ crates/laymesh-core/assets/styles/gl-transitions.LICENSE -text -whitespace
 
 # Preserve byte-identical upstream formula fixtures, including intentional whitespace.
 tests/math/ratex-0.1.14/*.txt -whitespace
+
+vendor/pdf-export/** -text -whitespace

@@ -84,7 +84,6 @@ self.onmessage = ({ data }) => {
               id: page.id,
               name: page.name || page.id,
               list,
-              svg: job.export_svg(),
               resources,
               inspection: inspected.inspection,
             });

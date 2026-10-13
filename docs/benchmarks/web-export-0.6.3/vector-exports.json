@@ -1,0 +1,260 @@
+[
+  {
+    "engine": "chromium",
+    "mode": "editable",
+    "errors": [],
+    "requests": [],
+    "meanRGBErrorOf255": {
+      "png": 0.1486,
+      "svg": 0.1785,
+      "pdf": 2.9108
+    },
+    "localImageSizes": [
+      [
+        469,
+        327
+      ],
+      [
+        469,
+        327
+      ],
+      [
+        408,
+        260
+      ],
+      [
+        408,
+        260
+      ],
+      [
+        284,
+        225
+      ],
+      [
+        284,
+        225
+      ]
+    ],
+    "vectorPaths": true,
+    "passed": true
+  },
+  {
+    "engine": "chromium",
+    "mode": "playback",
+    "errors": [],
+    "requests": [],
+    "meanRGBErrorOf255": {
+      "png": 0.1486,
+      "svg": 0.1851,
+      "pdf": 2.9396
+    },
+    "localImageSizes": [
+      [
+        469,
+        327
+      ],
+      [
+        469,
+        327
+      ],
+      [
+        296,
+        296
+      ],
+      [
+        296,
+        296
+      ],
+      [
+        288,
+        233
+      ],
+      [
+        288,
+        233
+      ],
+      [
+        241,
+        185
+      ],
+      [
+        241,
+        185
+      ]
+    ],
+    "vectorPaths": true,
+    "passed": true
+  },
+  {
+    "engine": "firefox",
+    "mode": "editable",
+    "errors": [],
+    "requests": [],
+    "meanRGBErrorOf255": {
+      "png": 0.1486,
+      "svg": 1.0141,
+      "pdf": 2.9108
+    },
+    "localImageSizes": [
+      [
+        469,
+        327
+      ],
+      [
+        469,
+        327
+      ],
+      [
+        408,
+        260
+      ],
+      [
+        408,
+        260
+      ],
+      [
+        284,
+        225
+      ],
+      [
+        284,
+        225
+      ]
+    ],
+    "vectorPaths": true,
+    "passed": true
+  },
+  {
+    "engine": "firefox",
+    "mode": "playback",
+    "errors": [],
+    "requests": [],
+    "meanRGBErrorOf255": {
+      "png": 0.1486,
+      "svg": 0.9873,
+      "pdf": 2.9396
+    },
+    "localImageSizes": [
+      [
+        469,
+        327
+      ],
+      [
+        469,
+        327
+      ],
+      [
+        296,
+        296
+      ],
+      [
+        296,
+        296
+      ],
+      [
+        288,
+        233
+      ],
+      [
+        288,
+        233
+      ],
+      [
+        241,
+        185
+      ],
+      [
+        241,
+        185
+      ]
+    ],
+    "vectorPaths": true,
+    "passed": true
+  },
+  {
+    "engine": "webkit",
+    "mode": "editable",
+    "errors": [],
+    "requests": [],
+    "meanRGBErrorOf255": {
+      "png": 0.1486,
+      "svg": 2.4592,
+      "pdf": 2.9108
+    },
+    "localImageSizes": [
+      [
+        469,
+        327
+      ],
+      [
+        469,
+        327
+      ],
+      [
+        408,
+        260
+      ],
+      [
+        408,
+        260
+      ],
+      [
+        284,
+        225
+      ],
+      [
+        284,
+        225
+      ]
+    ],
+    "vectorPaths": true,
+    "passed": true
+  },
+  {
+    "engine": "webkit",
+    "mode": "playback",
+    "errors": [],
+    "requests": [],
+    "meanRGBErrorOf255": {
+      "png": 0.1486,
+      "svg": 2.4291,
+      "pdf": 2.9396
+    },
+    "localImageSizes": [
+      [
+        469,
+        327
+      ],
+      [
+        469,
+        327
+      ],
+      [
+        296,
+        296
+      ],
+      [
+        296,
+        296
+      ],
+      [
+        288,
+        233
+      ],
+      [
+        288,
+        233
+      ],
+      [
+        241,
+        185
+      ],
+      [
+        241,
+        185
+      ]
+    ],
+    "vectorPaths": true,
+    "passed": true
+  }
+]

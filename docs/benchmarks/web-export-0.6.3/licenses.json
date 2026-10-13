@@ -1,0 +1,14 @@
+{
+  "before": {
+    "package": "release/dist/0.6.3-local/laymesh-0.6.3-linux-x64.vsix",
+    "licenseFiles": 682,
+    "rawBytes": 3736119,
+    "compressedBytes": 1374857
+  },
+  "after": {
+    "package": "release/dist/0.6.3-final/laymesh-0.6.3-linux-x64.vsix",
+    "licenseFiles": 264,
+    "rawBytes": 1185632,
+    "compressedBytes": 406037
+  }
+}

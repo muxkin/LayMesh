@@ -2,6 +2,8 @@
   {
     "engine": "chromium",
     "decodedFormats": 15,
+    "playbackFormats": 5,
+    "playbackCodecPruning": true,
     "rasterSize": [
       1890,
       1417
@@ -16,6 +18,8 @@
   {
     "engine": "firefox",
     "decodedFormats": 15,
+    "playbackFormats": 5,
+    "playbackCodecPruning": true,
     "rasterSize": [
       1890,
       1417
@@ -30,6 +34,8 @@
   {
     "engine": "webkit",
     "decodedFormats": 15,
+    "playbackFormats": 5,
+    "playbackCodecPruning": true,
     "rasterSize": [
       1890,
       1417

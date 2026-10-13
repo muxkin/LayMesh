@@ -18,7 +18,6 @@ The native executable and WebAssembly module contain the following locked Rust d
 | bindgen | 0.72.1 | BSD-3-Clause |
 | bit-set | 0.8.0 | Apache-2.0 OR MIT |
 | bit-vec | 0.8.0 | Apache-2.0 OR MIT |
-| bitflags | 1.3.2 | MIT/Apache-2.0 |
 | bitflags | 2.13.2 | MIT OR Apache-2.0 |
 | block-buffer | 0.10.4 | MIT OR Apache-2.0 |
 | block-buffer | 0.12.1 | MIT OR Apache-2.0 |
@@ -90,7 +89,6 @@ The native executable and WebAssembly module contain the following locked Rust d
 | getrandom | 0.2.17 | MIT OR Apache-2.0 |
 | getrandom | 0.3.4 | MIT OR Apache-2.0 |
 | getrandom | 0.4.3 | MIT OR Apache-2.0 |
-| gif | 0.13.3 | MIT OR Apache-2.0 |
 | gif | 0.14.2 | MIT OR Apache-2.0 |
 | glob | 0.3.4 | MIT OR Apache-2.0 |
 | half | 2.7.1 | MIT OR Apache-2.0 |
@@ -174,7 +172,6 @@ The native executable and WebAssembly module contain the following locked Rust d
 | pico-args | 0.5.0 | MIT |
 | pin-project-lite | 0.2.17 | Apache-2.0 OR MIT |
 | pkg-config | 0.3.34 | MIT OR Apache-2.0 |
-| png | 0.17.16 | MIT OR Apache-2.0 |
 | png | 0.18.1 | MIT OR Apache-2.0 |
 | polycool | 0.4.0 | MIT OR Apache-2.0 |
 | potential_utf | 0.1.6 | Unicode-3.0 |
@@ -209,8 +206,6 @@ The native executable and WebAssembly module contain the following locked Rust d
 | regex-lite | 0.1.9 | MIT OR Apache-2.0 |
 | regex-syntax | 0.8.11 | MIT OR Apache-2.0 |
 | reqwest | 0.12.28 | MIT OR Apache-2.0 |
-| resvg | 0.45.1 | Apache-2.0 OR MIT |
-| rgb | 0.8.53 | MIT |
 | ring | 0.17.14 | Apache-2.0 AND ISC |
 | roxmltree | 0.20.0 | MIT OR Apache-2.0 |
 | roxmltree | 0.21.1 | MIT OR Apache-2.0 |
@@ -266,7 +261,6 @@ The native executable and WebAssembly module contain the following locked Rust d
 | thiserror-impl | 1.0.69 | MIT OR Apache-2.0 |
 | thiserror-impl | 2.0.21 | MIT OR Apache-2.0 |
 | tiff | 0.11.3 | MIT |
-| tiny-skia | 0.11.4 | BSD-3-Clause |
 | tiny-skia-path | 0.11.4 | BSD-3-Clause |
 | tiny-skia-path | 0.12.0 | BSD-3-Clause |
 | tinystr | 0.8.4 | Unicode-3.0 |
@@ -349,9 +343,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | zlib-rs | 0.6.8 | Zlib |
 | zmij | 1.0.23 | MIT |
 | zopfli | 0.8.3 | Apache-2.0 |
-| zune-core | 0.4.12 | MIT OR Apache-2.0 OR Zlib |
 | zune-core | 0.5.3 | MIT OR Apache-2.0 OR Zlib |
-| zune-jpeg | 0.4.21 | MIT OR Apache-2.0 OR Zlib |
 | zune-jpeg | 0.5.15 | MIT OR Apache-2.0 OR Zlib |
 | Linux static brotlicommon | 1.1.0-2+b7 | See distribution copyright |
 | Linux static brotlidec | 1.1.0-2+b7 | See distribution copyright |
@@ -368,6 +360,17 @@ The native executable and WebAssembly module contain the following locked Rust d
 | open-props CSS | 1.7.23 | MIT |
 | animate CSS | 4.1.1 | MIT |
 | gl-transitions CSS | 1.74.0 | MIT, BSD-2-Clause, BSD-3-Clause |
+| jspdf | 4.2.1 | MIT |
+| svg2pdf | 2.8.1 | MIT |
+| @babel/runtime | 7.28.6 | MIT |
+| fflate | 0.8.1 | See original text |
+| fast-png | 6.4.0 | MIT |
+| iobuffer | 5.4.0 | MIT |
+| pako | 2.1.0 | (MIT AND Zlib) |
+| cssesc | 3.0.0 | See original text |
+| svgpath | 2.5.0 | See original text |
+| specificity | 0.4.1 | See original text |
+| font-family-papandreou | 0.2.0-patch1 | See original text |
 | @headless-tree/core | 1.7.0 | MIT |
 | jquery | 3.7.1 | MIT |
 | jquery-contextmenu | 2.10.2 | MIT |

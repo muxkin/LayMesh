@@ -48,10 +48,14 @@ class WebExports(unittest.TestCase):
                 self.assertTrue(all('file' not in f for f in manifest['fonts']))
                 self.assertIn('/project/label.lay', manifest['project']['files'])
                 self.assertNotIn('"kind":"glyphs"', archive.read(manifest['pages'][0]['file']).decode())
-                snapshot = json.loads(archive.read(manifest['pages'][0]['file']))['svg']
-                self.assertNotIn('data:font', snapshot)
-                self.assertNotIn('<text ', snapshot)
-                self.assertIn('<path ', snapshot)
+                page = json.loads(archive.read(manifest['pages'][0]['file']))
+                self.assertNotIn('svg', page)  # assemble vector output only on demand
+                self.assertNotIn('data:font', json.dumps(page))
+                def paths(node):
+                    kind = node['kind']
+                    return ([kind['path']] if kind['kind'] == 'path' else
+                            [p for child in kind.get('children', []) for p in paths(child)])
+                self.assertTrue(any(paths(node) for node in page['list']['nodes']))
             previous = output.read_bytes()
             with self.assertRaises(LayMeshBridgeError):
                 render_source('page=canvas(size=(60mm,30mm))', base_dir=root, output=output, html_image_quality=101)

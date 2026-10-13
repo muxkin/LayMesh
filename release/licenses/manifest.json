@@ -221,22 +221,6 @@
   },
   {
     "name": "bitflags",
-    "version": "1.3.2",
-    "license": "MIT/Apache-2.0",
-    "repository": "https://github.com/bitflags/bitflags",
-    "texts": [
-      {
-        "file": "bitflags-1.3.2-LICENSE-APACHE",
-        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
-      },
-      {
-        "file": "bitflags-1.3.2-LICENSE-MIT",
-        "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
-      }
-    ]
-  },
-  {
-    "name": "bitflags",
     "version": "2.13.2",
     "license": "MIT OR Apache-2.0",
     "repository": "https://github.com/bitflags/bitflags",
@@ -1306,22 +1290,6 @@
       {
         "file": "getrandom-0.4.3-LICENSE-MIT",
         "sha256": "523a42c25d245dde9c015f882cec7f4555aad883382a6cf19b4b7d9b2cd5419b"
-      }
-    ]
-  },
-  {
-    "name": "gif",
-    "version": "0.13.3",
-    "license": "MIT OR Apache-2.0",
-    "repository": "https://github.com/image-rs/image-gif",
-    "texts": [
-      {
-        "file": "gif-0.13.3-LICENSE-APACHE",
-        "sha256": "769f80b5bcb42ed0af4e4d2fd74e1ac9bf843cb80c5a29219d1ef3544428a6bb"
-      },
-      {
-        "file": "gif-0.13.3-LICENSE-MIT",
-        "sha256": "77257f3d2181236b1aee78920238062ae64efe13c5d858b2db126e79c9e1b14f"
       }
     ]
   },
@@ -2544,22 +2512,6 @@
   },
   {
     "name": "png",
-    "version": "0.17.16",
-    "license": "MIT OR Apache-2.0",
-    "repository": "https://github.com/image-rs/image-png",
-    "texts": [
-      {
-        "file": "png-0.17.16-LICENSE-APACHE",
-        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
-      },
-      {
-        "file": "png-0.17.16-LICENSE-MIT",
-        "sha256": "eaf40297c75da471f7cda1f3458e8d91b4b2ec866e609527a13acfa93b638652"
-      }
-    ]
-  },
-  {
-    "name": "png",
     "version": "0.18.1",
     "license": "MIT OR Apache-2.0",
     "repository": "https://github.com/image-rs/image-png",
@@ -3072,34 +3024,6 @@
       {
         "file": "reqwest-0.12.28-LICENSE-MIT",
         "sha256": "47d4e1803702728e03d30f8a848ae2249ba274bbd9f8443e803f7924d83cd371"
-      }
-    ]
-  },
-  {
-    "name": "resvg",
-    "version": "0.45.1",
-    "license": "Apache-2.0 OR MIT",
-    "repository": "https://github.com/linebender/resvg",
-    "texts": [
-      {
-        "file": "resvg-0.45.1-LICENSE-APACHE",
-        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
-      },
-      {
-        "file": "resvg-0.45.1-LICENSE-MIT",
-        "sha256": "f5d934dc281b44e0003ee461ac740b18b6629a454decd872c774d34e4ee0b21d"
-      }
-    ]
-  },
-  {
-    "name": "rgb",
-    "version": "0.8.53",
-    "license": "MIT",
-    "repository": "https://github.com/kornelski/rust-rgb",
-    "texts": [
-      {
-        "file": "rgb-0.8.53-LICENSE",
-        "sha256": "457b464bc0fba8a3d67d2458569104f5611869f0c1563a1a12d9c51a0bca9261"
       }
     ]
   },
@@ -3942,18 +3866,6 @@
       {
         "file": "tiff-0.11.3-LICENSE",
         "sha256": "20c097d0de27e2adc179140a3d542091951a030699c7e1c78655f2a2d08d4e3e"
-      }
-    ]
-  },
-  {
-    "name": "tiny-skia",
-    "version": "0.11.4",
-    "license": "BSD-3-Clause",
-    "repository": "https://github.com/RazrFalcon/tiny-skia",
-    "texts": [
-      {
-        "file": "tiny-skia-0.11.4-LICENSE",
-        "sha256": "6d41e05f1d54fe726997cb0334ec539f1dff50600b1d5d90462ec2b392770ced"
       }
     ]
   },
@@ -5207,24 +5119,6 @@
   },
   {
     "name": "zune-core",
-    "version": "0.4.12",
-    "license": "MIT OR Apache-2.0 OR Zlib",
-    "repository": null,
-    "texts": [
-      {
-        "file": "zune-core-0.4.12-LICENSE.md",
-        "sha256": "c6dff146a9f31848ac296faa5a08a4253caf2c384c86f906dc99e7fc0a39cc8c",
-        "source": "https://raw.githubusercontent.com/etemesi254/zune-image/f8fbb123d5ed04441e8324a555bfcda0cb1bd28f/LICENSE.md"
-      },
-      {
-        "file": "zune-core-0.4.12-LICENSE-ZLIB",
-        "sha256": "7fa429541e55b1509909e058f2d21a37467e4958ec713b357f6e0cf9dc4ee352",
-        "source": "https://raw.githubusercontent.com/etemesi254/zune-image/f8fbb123d5ed04441e8324a555bfcda0cb1bd28f/LICENSE-ZLIB"
-      }
-    ]
-  },
-  {
-    "name": "zune-core",
     "version": "0.5.3",
     "license": "MIT OR Apache-2.0 OR Zlib",
     "repository": "https://github.com/etemesi254/zune-image",
@@ -5240,24 +5134,6 @@
       {
         "file": "zune-core-0.5.3-LICENSE-ZLIB",
         "sha256": "d201d14804d3bcd3b944147173175e4abfbd838b7c8069b6bd3452496bf13e6c"
-      }
-    ]
-  },
-  {
-    "name": "zune-jpeg",
-    "version": "0.4.21",
-    "license": "MIT OR Apache-2.0 OR Zlib",
-    "repository": "https://github.com/etemesi254/zune-image/tree/dev/crates/zune-jpeg",
-    "texts": [
-      {
-        "file": "zune-jpeg-0.4.21-LICENSE.md",
-        "sha256": "c6dff146a9f31848ac296faa5a08a4253caf2c384c86f906dc99e7fc0a39cc8c",
-        "source": "https://raw.githubusercontent.com/etemesi254/zune-image/fa2c767a01d7d9373911d0bf63e0588553d67e0e/LICENSE.md"
-      },
-      {
-        "file": "zune-jpeg-0.4.21-LICENSE-ZLIB",
-        "sha256": "7fa429541e55b1509909e058f2d21a37467e4958ec713b357f6e0cf9dc4ee352",
-        "source": "https://raw.githubusercontent.com/etemesi254/zune-image/fa2c767a01d7d9373911d0bf63e0588553d67e0e/LICENSE-ZLIB"
       }
     ]
   },
@@ -5458,6 +5334,138 @@
         "file": "css-gl-transitions-LICENSE.txt",
         "sha256": "c464072d61c35f40c9e826fde36f0e569f6dcd987e8509a1ea8492542db2c930",
         "source": "https://github.com/gl-transitions/gl-transitions/blob/master/LICENSE"
+      }
+    ]
+  },
+  {
+    "name": "jspdf",
+    "version": "4.2.1",
+    "license": "MIT",
+    "repository": "https://registry.npmjs.org/jspdf/-/jspdf-4.2.1.tgz",
+    "texts": [
+      {
+        "file": "pdf-jspdf-LICENSE",
+        "sha256": "dc388ec35ff463288cdde3588a36fd4ed12a45deff053243b37309acc9ef583b"
+      }
+    ]
+  },
+  {
+    "name": "svg2pdf",
+    "version": "2.8.1",
+    "license": "MIT",
+    "repository": "https://registry.npmjs.org/svg2pdf.js/-/svg2pdf.js-2.8.1.tgz",
+    "texts": [
+      {
+        "file": "pdf-svg2pdf-LICENSE",
+        "sha256": "04db7fb792d065c8c9a0e3a7a8255cd36e32b263ca023cbea10daee4a45132b8"
+      }
+    ]
+  },
+  {
+    "name": "@babel/runtime",
+    "version": "7.28.6",
+    "license": "MIT",
+    "repository": "https://registry.npmjs.org/@babel/runtime/-/runtime-7.28.6.tgz",
+    "texts": [
+      {
+        "file": "pdf-babel-runtime-7.28.6-LICENSE",
+        "sha256": "117da2af0d4ce0fe1c8e19b5cff9dcd806adf973d328d27b11d4448c4ff24f76"
+      }
+    ]
+  },
+  {
+    "name": "fflate",
+    "version": "0.8.1",
+    "license": "See original text",
+    "repository": "https://registry.npmjs.org/fflate/-/fflate-0.8.1.tgz",
+    "texts": [
+      {
+        "file": "pdf-fflate-0.8.1-LICENSE",
+        "sha256": "805f6cb28bb8b6d3a0badd83c93bccd9671fa01a3b4b92b7042b0743325ac243"
+      }
+    ]
+  },
+  {
+    "name": "fast-png",
+    "version": "6.4.0",
+    "license": "MIT",
+    "repository": "https://registry.npmjs.org/fast-png/-/fast-png-6.4.0.tgz",
+    "texts": [
+      {
+        "file": "pdf-fast-png-6.4.0-LICENSE",
+        "sha256": "47ec9747cf2c470a505fcb20f3ec2ff2e60ea4febaf2e1e7041a24fc369fac3c"
+      }
+    ]
+  },
+  {
+    "name": "iobuffer",
+    "version": "5.4.0",
+    "license": "MIT",
+    "repository": "https://registry.npmjs.org/iobuffer/-/iobuffer-5.4.0.tgz",
+    "texts": [
+      {
+        "file": "pdf-iobuffer-5.4.0-LICENSE",
+        "sha256": "1c22118fd112e8c394a5ec0598d2e2dfcdc19b3e1055ac3eaccdb2522b777335"
+      }
+    ]
+  },
+  {
+    "name": "pako",
+    "version": "2.1.0",
+    "license": "(MIT AND Zlib)",
+    "repository": "https://registry.npmjs.org/pako/-/pako-2.1.0.tgz",
+    "texts": [
+      {
+        "file": "pdf-pako-2.1.0-LICENSE",
+        "sha256": "a04665b3b2de56c66730c1f720f528175739e4104f79073614aa611da1e85539"
+      }
+    ]
+  },
+  {
+    "name": "cssesc",
+    "version": "3.0.0",
+    "license": "See original text",
+    "repository": "https://registry.npmjs.org/cssesc/-/cssesc-3.0.0.tgz",
+    "texts": [
+      {
+        "file": "pdf-cssesc-3.0.0-LICENSE-MIT.txt",
+        "sha256": "483acb265f182907d1caf6cff9c16c96f31325ed23792832cc5d8b12d5f88c8a"
+      }
+    ]
+  },
+  {
+    "name": "svgpath",
+    "version": "2.5.0",
+    "license": "See original text",
+    "repository": "https://registry.npmjs.org/svgpath/-/svgpath-2.5.0.tgz",
+    "texts": [
+      {
+        "file": "pdf-svgpath-2.5.0-LICENSE",
+        "sha256": "6caa5f5c4e6957535e77e3eb2a4cc8cdf9242040976faaf01dcc8c3934e2ca4f"
+      }
+    ]
+  },
+  {
+    "name": "specificity",
+    "version": "0.4.1",
+    "license": "See original text",
+    "repository": "https://registry.npmjs.org/specificity/-/specificity-0.4.1.tgz",
+    "texts": [
+      {
+        "file": "pdf-specificity-0.4.1-LICENSE",
+        "sha256": "b2aeda654259630ed67b54e9134623c38cfb11d26201730cdc6d311d3c7c78ed"
+      }
+    ]
+  },
+  {
+    "name": "font-family-papandreou",
+    "version": "0.2.0-patch1",
+    "license": "See original text",
+    "repository": "https://registry.npmjs.org/font-family-papandreou/-/font-family-papandreou-0.2.0-patch1.tgz",
+    "texts": [
+      {
+        "file": "pdf-font-family-papandreou-0.2.0-patch1-LICENSE",
+        "sha256": "6358b25be58f3ef5efe9705f17a02b294abe47dc607d92c1cb2d714a7def8d45"
       }
     ]
   },

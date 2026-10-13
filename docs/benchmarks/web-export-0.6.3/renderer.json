@@ -1,0 +1,39 @@
+{
+  "checks": [
+    "3840×2160 buffer; 120 retained paints; transactional failed install; context recovery; software fallback; same-ID image replacement",
+    "Main-thread CanvasKit fallback plays and pauses from preview controls"
+  ],
+  "renderer": {
+    "backend": "Skia WebGL2 (software driver)",
+    "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "width": 3840,
+    "height": 2160,
+    "commands": 7,
+    "contextRecovery": true,
+    "softwareBackend": "Skia CPU",
+    "nestedReveal": true
+  },
+  "mainThread": {
+    "example": "animation-presentation",
+    "entry": "examples/animation/presentation.laydoc",
+    "mode": "source",
+    "hasAnimation": "true",
+    "previewState": "success",
+    "fullFonts": "idle",
+    "liveState": "success",
+    "modified": "false",
+    "readyMs": "505.5",
+    "generation": "1",
+    "painted": "true",
+    "renderBackend": "Skia WebGL2 (software driver)",
+    "transitionName": "",
+    "transitionFrames": "0",
+    "transitionError": "",
+    "renderWidth": "447",
+    "renderHeight": "252",
+    "sampleMs": "0.09999999962747097",
+    "gpuMs": "",
+    "firstFrameMs": "749.3",
+    "playbackFps": "0.0"
+  }
+}

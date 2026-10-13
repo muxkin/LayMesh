@@ -99,6 +99,9 @@ jobs:
           node scripts/test-web-export.cjs "$RUNNER_TEMP/browser-results/web-export"
           node scripts/test-web-static-export.cjs "$RUNNER_TEMP/browser-results/static-export"
           python scripts/check-web-static-export.py "$RUNNER_TEMP/browser-results/static-export"
+          python scripts/check-web-export-budget.py
+          node scripts/test-web-vector-export.cjs "$RUNNER_TEMP/browser-results/vector-export"
+          python scripts/check-web-vector-export.py "$RUNNER_TEMP/browser-results/vector-export"
           node scripts/test-workspace-files.mjs
           node scripts/test-workspace-interactions.cjs "$RUNNER_TEMP/browser-results/workspace-interactions"
           LAYMESH_TEST_HOST=127.0.0.1 node scripts/test-page-transitions.cjs "$RUNNER_TEMP/browser-results/page-transitions"

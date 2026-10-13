@@ -9,5 +9,5 @@ crate-type = ["cdylib", "rlib"]
 laymesh-render = { path = "../laymesh-render", default-features = false, features = ["portable-export"] }
 serde_json.workspace = true
 wasm-bindgen = "0.2"
-svg2pdf = { version = "=0.13.0", default-features = false, features = ["image", "filters"] }
+svg2pdf = { version = "=0.13.0", default-features = false, features = ["image"] }
 pdf-writer = "=0.12.1"

@@ -56,10 +56,12 @@ def build(output,binary=None,target_name=None):
         shutil.copy2(binary,vendor/"bin"/executable)
         if not name.startswith("win-"): (vendor/"bin"/executable).chmod(0o755)
         # Fonts are compiled only into the math renderer. No text font files or runtime tree.
-        licenses=vendor/"licenses";licenses.mkdir();shutil.copy2(ROOT/"LICENSE",licenses/"LayMesh-LICENSE")
+        licenses=vendor/"licenses"
         if not (ROOT/"release/licenses/manifest.json").is_file():
             run([sys.executable,ROOT/"scripts/collect-licenses.py"])
-        shutil.copytree(ROOT/"release/licenses",licenses,dirs_exist_ok=True)
+        from package_licenses import package
+        package(ROOT,licenses)
+        shutil.copy2(ROOT/"LICENSE",licenses/"LayMesh-LICENSE")
         shutil.copy2(ROOT/"release/THIRD_PARTY_NOTICES.md",vendor/"THIRD_PARTY_NOTICES.md")
         manifest={"engine":"rust","version":version,"rust_version":rust_version,"target":name,"rust_target":spec["rust_target"],"wheel_tag":wheel_tag,"glibc_required":glibc_required,"binary_sha256":sha(binary),"cargo_lock_sha256":sha(ROOT/"Cargo.lock"),"bundled_text_fonts":False,"runtime_downloads":False}
         (vendor/"manifest.json").write_text(json.dumps(manifest,indent=2)+"\n")

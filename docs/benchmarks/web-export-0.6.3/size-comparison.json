@@ -1,0 +1,22 @@
+[
+  {
+    "mode": "editable",
+    "beforeBytes": 10678698,
+    "afterBytes": 9242331,
+    "pageDataZipBytes": 60367,
+    "licensesZipBytes": 106512,
+    "fullExporter": true,
+    "transitionCatalogZipBytes": 42102,
+    "rendererZipBytes": 2940749
+  },
+  {
+    "mode": "playback",
+    "beforeBytes": 6395274,
+    "afterBytes": 3958395,
+    "pageDataZipBytes": 60367,
+    "licensesZipBytes": 84506,
+    "fullExporter": false,
+    "transitionCatalogZipBytes": 31,
+    "rendererZipBytes": 2940749
+  }
+]

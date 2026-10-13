@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/laymesh-core", "crates/laymesh-render", "crates/laymesh-cli", "crates/laymesh-language", "crates/laymesh-wasm", "crates/laymesh-playback", "crates/laymesh-web-export"]
+members = ["crates/laymesh-core", "crates/laymesh-render", "crates/laymesh-cli", "crates/laymesh-language", "crates/laymesh-wasm", "crates/laymesh-playback", "crates/laymesh-web-export", "crates/laymesh-tiff-export"]
 
 [patch.crates-io]
 # Keep RaTeX's workspace path dependencies on one source and immutable revision.
@@ -29,3 +29,9 @@ lto = true
 codegen-units = 1
 strip = "symbols"
 panic = "abort"
+
+# Offline codecs run only on export. Favor download size here while the
+# interactive compiler, CanvasKit and native renderer retain their speed profile.
+[profile.web-export]
+inherits = "release"
+opt-level = "s"

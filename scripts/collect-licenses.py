@@ -59,6 +59,14 @@ def main():
  ui=ROOT/'vendor/workspace-ui'
  for name,info in json.loads((ui/'manifest.json').read_text()).items():
   bundled.append((name,info,ui/next(p for p in info['files'] if 'LICENSE' in p)))
+ pdf=ROOT/'vendor/pdf-export'
+ for name,info in json.loads((pdf/'manifest.json').read_text()).items():
+  refs=[]
+  for file,digest in info['files'].items():
+   if 'LICENSE' not in file.upper() and 'COPYING' not in file.upper() and 'NOTICE' not in file.upper():continue
+   data=(pdf/file).read_bytes();assert hashlib.sha256(data).hexdigest()==digest
+   filename='pdf-'+file;(dest/filename).write_bytes(data);refs.append({'file':filename,'sha256':digest})
+  inventory.append({'name':name,'version':info['version'],'license':info['license'],'repository':info['source'],'texts':refs})
  for name,info,source in bundled:
   filename=name.replace('/','-').replace('@','')+'-'+info['version']+'-LICENSE';data=source.read_bytes();(dest/filename).write_bytes(data)
   inventory.append({'name':name,'version':info['version'],'license':info['license'],'repository':info['source'],'texts':[{'file':filename,'sha256':hashlib.sha256(data).hexdigest()}]})

@@ -208,7 +208,7 @@ cp.execFileSync(binary, [
           configurable: true,
         }),
       );
-      // Playback copies retain the codecs and vector snapshots as well.
+      // Playback copies retain the codecs and shared drawing commands as well.
       await page.locator("#export").click();
       const playbackDownload = page.waitForEvent("download");
       await page.locator("#download").click();
@@ -220,7 +220,21 @@ cp.execFileSync(binary, [
           window.__LAYMESH_WEB &&
           document.querySelector("#app").dataset.painted === "true",
       );
-      await save("pdf", "playback.pdf");
+      assert.deepEqual(
+        await page
+          .locator("#export-format option")
+          .evaluateAll((nodes) => nodes.map((n) => n.value)),
+        ["pdf", "svg", "png", "jpg", "tif"],
+      );
+      for (const format of ["pdf", "svg", "png", "jpg", "tif"])
+        await save(format, "playback." + format);
+      // Saving a playback file again must not reintroduce editable codecs.
+      await page.locator("#export").click();
+      const again = page.waitForEvent("download");
+      await page.locator("#download").click();
+      await (
+        await again
+      ).saveAs(out + "/" + engine + "-playback-again.zip.html");
       // Phone-width dialog remains inside the visible content area.
       await page.setViewportSize({ width: 390, height: 844 });
       await page.locator("#export").click();
@@ -232,6 +246,7 @@ cp.execFileSync(binary, [
       results.push({
         engine,
         formats: 15,
+        playbackFormats: 5,
         defaultDPI: 1200,
         defaultTiff: "lzw",
         zeroCompiles: true,
@@ -244,8 +259,11 @@ cp.execFileSync(binary, [
         passed: true,
       });
     } catch (e) {
-      if (page)
-        await page.screenshot({ path: out + "/" + engine + "-failure.png" });
+      console.error(engine, e);
+      if (page && !page.isClosed())
+        await page
+          .screenshot({ path: out + "/" + engine + "-failure.png" })
+          .catch(() => {});
       throw e;
     } finally {
       await browser.close();
