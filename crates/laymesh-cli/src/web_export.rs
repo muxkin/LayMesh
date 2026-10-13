@@ -163,7 +163,7 @@ fn page(
 ) -> Result<Value> {
     let mut list: DisplayList = laymesh_render::to_display_list(scene)?;
     outlines(&mut list.nodes);
-    list.resources.retain(|_, r| r.mime.starts_with("image/"));
+    list.resources.retain(|_, r| r.mime.starts_with("image/") || r.mime.starts_with("video/") || r.mime.starts_with("audio/"));
     for (id, r) in &mut list.resources {
         // Match normalized pixels so orientation, ICC conversion and crops
         // still use their prepared derivative, while ordinary images retain
@@ -495,7 +495,8 @@ pub fn export(
         .extension()
         .and_then(|s| s.to_str())
         .is_some_and(|s| s.eq_ignore_ascii_case("zip"));
-    let manifest = json!({"schemaVersion":2,"resourceInfo":resource_info,"embedFonts":options.html_embed_fonts.unwrap_or(false),"fontRequirements":font_meta,"requestedFonts":requested_fonts.into_values().collect::<Vec<_>>(),"name":name,"editable":editable,"container":if standard{"zip"}else{"universal"},"pages":pages,"resources":resources,"fonts":font_meta,"project":project,"imageCompression":options.html_image_compression.as_deref().unwrap_or("auto"),"imageQuality":options.html_image_quality.unwrap_or(85.),"laymeshVersion":env!("CARGO_PKG_VERSION")});
+    let has_media=files.iter().any(|(k,v)|k.starts_with("pages/")&&serde_json::from_slice::<Value>(v).ok().is_some_and(|p|p["list"]["media"].is_object()));
+    let manifest = json!({"schemaVersion":if has_media{3}else{2},"capabilities":if has_media{json!(["media-v1"])}else{json!([])},"resourceInfo":resource_info,"embedFonts":options.html_embed_fonts.unwrap_or(false),"fontRequirements":font_meta,"requestedFonts":requested_fonts.into_values().collect::<Vec<_>>(),"name":name,"editable":editable,"container":if standard{"zip"}else{"universal"},"pages":pages,"resources":resources,"fonts":font_meta,"project":project,"imageCompression":options.html_image_compression.as_deref().unwrap_or("auto"),"imageQuality":options.html_image_quality.unwrap_or(85.),"laymeshVersion":env!("CARGO_PKG_VERSION")});
     files.insert("manifest.json".into(), serde_json::to_vec(&manifest)?);
     files.insert("index.html".into(),br#"<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LayMesh</title><div id="app">Preparing LayMesh...</div><script type="module">import {webBoot} from './runtime/web-archive.mjs';try{const manifest=await(await fetch('manifest.json')).json();const response=await(await fetch('entries.json')).json();const files={};await Promise.all(response.map(async p=>{const r=await fetch(p);if(!r.ok)throw Error('Missing entry: '+p);files[p]=new Uint8Array(await r.arrayBuffer());}));await webBoot(files);}catch(e){document.getElementById('app').textContent=location.protocol==='file:'?'Open this folder through a static HTTP server, or use the Universal .zip.html file.':String(e);}</script>"#.to_vec());
     files.insert("README.txt".into(),b"LayMesh portable web presentation\nOpen the Universal .zip.html file directly in a desktop browser.\nFor the extracted standard ZIP, serve this directory over HTTP and open index.html.\nEditing and playback run locally. No CDN or remote compilation.\n".to_vec());

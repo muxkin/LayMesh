@@ -317,6 +317,8 @@ pub fn resolve(file: &str, relative: &str) -> String {
 pub struct Host {
     pub files: BTreeMap<String, Vec<u8>>,
     pub native: bool,
+    pub media_ffmpeg: Option<String>,
+    pub media_ffmpeg_resolver:Option<Rc<dyn Fn()->Result<String>>>,
     /// Optional preview resource journal, shared by cloned hosts. Failed reads
     /// are included so creating a missing resource can refresh the preview.
     pub dependencies: Option<Rc<RefCell<BTreeSet<String>>>>,
@@ -351,6 +353,8 @@ pub struct FontAsset {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Scene {
+    #[serde(default, skip_serializing_if="crate::media::Media::is_empty")]
+    pub media: crate::media::Media,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_transition: Option<crate::page_transition::PageTransition>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

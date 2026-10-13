@@ -126,6 +126,7 @@ fn very_wide_translucent_images_have_no_internal_edges() {
         .write_to(&mut bytes, image::ImageFormat::Png)
         .unwrap();
     let list = DisplayList {
+        media: Default::default(),
         page_transition: None,
         animation: None,
         schema_version: 1,

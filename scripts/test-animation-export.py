@@ -34,6 +34,8 @@ with tempfile.TemporaryDirectory(prefix='laymesh-animation-export-') as temp:
  assert proc.returncode!=0 and b'cancel' in stderr.lower(),(stdout,stderr)
  assert target.read_bytes()==b'original destination' and not list(d.glob('.laymesh-animation-*'))
  # An unavailable encoder must also preserve the destination.
- env={**os.environ,'PATH':str(d/'empty')};r=subprocess.run([binary,'animate',str(d/'0.lay'),'-o',str(target)],env=env,capture_output=True)
- assert r.returncode!=0 and target.read_bytes()==b'original destination' and not list(d.glob('.laymesh-animation-*'))
+ # The manager also searches recorded and standard locations, independently of PATH.
+ missing=d/'missing-encoder.json';missing.write_text(json.dumps({'export':{'ffmpeg':{'directory':str(d/'isolated-ffmpeg'),'search_system':False}}}))
+ r=subprocess.run([binary,'animate',str(d/'0.lay'),'-o',str(target),'--config',str(missing)],capture_output=True)
+ assert r.returncode!=0 and b'E_FFMPEG_MISSING' in r.stderr and target.read_bytes()==b'original destination' and not list(d.glob('.laymesh-animation-*'))
  print('97 effects: MP4/GIF decode, metadata, snapshot, cancellation and failure cleanup passed')

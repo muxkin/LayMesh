@@ -92,7 +92,7 @@ export class SkiaRenderer {
    if(k.stroke){const s=k.stroke,p=v.stroke=this.paint({kind:'solid',rgba:s.rgba});p.setStyle(ck.PaintStyle.Stroke);p.setStrokeWidth(s.width);p.setStrokeCap(s.cap==='round'?ck.StrokeCap.Round:s.cap==='square'?ck.StrokeCap.Square:ck.StrokeCap.Butt);p.setStrokeJoin(s.join==='round'?ck.StrokeJoin.Round:s.join==='bevel'?ck.StrokeJoin.Bevel:ck.StrokeJoin.Miter);p.setStrokeMiter(s.miter);if(s.dash.length){const effect=ck.PathEffect.MakeDash(s.dash,s.offset);p.setPathEffect(effect);effect?.delete();}const pad=s.width*s.miter;v.bounds=[v.bounds[0]-pad,v.bounds[1]-pad,v.bounds[2]+pad,v.bounds[3]+pad];}
   }else if(k.kind==='glyphs'){
    v.paths=k.outlines.map(p=>this.path(p));v.fill=this.paint({kind:'solid',rgba:k.color});v.bounds=v.paths.reduce((b,p)=>union(b,p.getBounds()),null)||v.bounds;
-  }else if(k.kind==='image')v.bounds=rect(k.rect);
+  }else if(k.kind==='image'){v.bounds=rect(k.rect);v.dynamicChildren=!!node.hint?.mediaId;}
   else if(k.kind==='group'){
    v.dynamicChildren=k.children.some(n=>this.animatedNames.has(n.name)||this.prepare(n).dynamicChildren);
    v.bounds=k.children.reduce((b,n)=>{const p=this.prepare(n);return union(b,transformed(p.bounds,p.matrix));},null)||v.bounds;
@@ -116,6 +116,14 @@ export class SkiaRenderer {
   this.owner=parent;return v;
  }
  bind(n){const p=this.prepare(n),k=n.kind;if(k.kind==='group'){k.children.forEach(n=>p.dependencies.add(this.bind(n)));if(k.mask)p.dependencies.add(this.bind(k.mask.node));}if(k.kind==='path'&&k.fill.kind==='pattern')k.fill.nodes.forEach(n=>p.dependencies.add(this.bind(n)));return p;}
+ setMediaFrames(frames=[]){
+  for(const {resource,bitmap}of frames){try{
+   if(!this.list?.resources[resource])continue;
+   let image;if(this.gr&&this.surface)image=this.surface.makeImageFromTextureSource(bitmap);
+   else {const c=new OffscreenCanvas(bitmap.width,bitmap.height),ctx=c.getContext('2d');ctx.drawImage(bitmap,0,0);image=this.ck.MakeImage({width:bitmap.width,height:bitmap.height,alphaType:this.ck.AlphaType.Unpremul,colorType:this.ck.ColorType.RGBA_8888,colorSpace:this.ck.ColorSpace.SRGB},ctx.getImageData(0,0,bitmap.width,bitmap.height).data,bitmap.width*4);}
+   if(!image)throw Error('Video frame upload failed');this.images.get(resource)?.delete();this.images.set(resource,image);
+  }finally{bitmap.close();}}
+ }
  async install(list,readResource,generation,cacheMB=256,navigation){
   if(navigation!==undefined)this.transitions.navigate(list,navigation);
   if(list.schemaVersion!==1)throw Error('Unsupported Skia display list version');

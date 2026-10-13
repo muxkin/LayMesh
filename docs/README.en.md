@@ -30,7 +30,7 @@ Look up APIs, understand implementation, maintain documentation, and review hist
 
 [Rebuild the gallery and high-resolution media](../site/README.en.md)
 
-[Style manual](topics/lcss.en.md) · [Animation manual](topics/animation.en.md) · [Video tutorial](https://www.bilibili.com/video/BV1gpHn6eE4V)
+[Style manual](topics/lcss.en.md) · [Animation manual](topics/animation.en.md) · [Video and audio experiment](topics/media.en.md) · [Video tutorial](https://www.bilibili.com/video/BV1gpHn6eE4V)
 
 Current source, published packages and historical verification are identified separately. Check the installed version and its release notes.
 

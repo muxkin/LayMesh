@@ -128,6 +128,7 @@
           ],
           "pages": [
             "animation",
+            "media",
             "animation-start",
             "animation-timing",
             "animation-keyframes",
@@ -949,6 +950,14 @@
         "第三方 CSS 与共享主题",
         "Third-party CSS and shared themes"
       ]
+    },
+    {
+      "key": "media",
+      "title": [
+        "视频与音频试验",
+        "Video and audio experiment"
+      ],
+      "example": "examples/media/first.lay"
     }
   ]
 }

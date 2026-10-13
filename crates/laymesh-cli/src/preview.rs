@@ -44,7 +44,7 @@ pub fn serve() -> io::Result<()> {
         }
     });
     sender
-        .send(json!({"type":"ready","protocol":1,"capabilities":["web-export-v1","animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","defaults"]}))
+        .send(json!({"type":"ready","protocol":1,"capabilities":["media-v1","web-export-v1","animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","defaults"]}))
         .unwrap();
     for line in io::stdin().lock().lines() {
         let request: Value = match serde_json::from_str(&line?) {
@@ -113,6 +113,7 @@ pub fn serve() -> io::Result<()> {
             laymesh_render::raster::set_image_cache_budget(settings.cache_mb);
             let mut host = Host {
                 native: true,
+                media_ffmpeg:super::ffmpeg::status(&defaults,Path::new(file),"mp4")?.pointer("/found/path").and_then(Value::as_str).map(str::to_owned),
                 dependencies: Some(dependencies.clone()),
                 ..Host::default()
             };

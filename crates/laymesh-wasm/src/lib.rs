@@ -86,7 +86,7 @@ impl DrawJob {
                 )
             })
             .collect();
-        serde_json::to_string(&json!({"schemaVersion":list.schema_version,"width":list.width,"height":list.height,"resources":resources,"animation":list.animation,"pageTransition":list.page_transition})).map_err(js_error)
+        serde_json::to_string(&json!({"schemaVersion":list.schema_version,"width":list.width,"height":list.height,"resources":resources,"media":list.media,"animation":list.animation,"pageTransition":list.page_transition})).map_err(js_error)
     }
     /// Updates are accepted only after the client validates their baseline ID.
     pub fn update_display_list(&mut self, json: &str) -> Result<(), JsValue> {

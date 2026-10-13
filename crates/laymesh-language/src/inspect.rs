@@ -153,6 +153,11 @@ pub fn inspect_scene(scene: &Scene) -> J {
         transition.assets.clear();
         result["pageTransition"] = json!(transition);
     }
+    if !scene.media.is_empty(){
+        let mut media=scene.media.clone();for a in media.assets.values_mut(){a.data=Default::default();a.poster=Default::default();a.preview_audio=Default::default();}
+        result["media"]=json!(media);
+        result["mediaDuration"]=json!(laymesh_core::media::duration(&scene.media,scene.animation.as_ref(),false,false).ok());
+    }
     if let Some(animation) = &scene.animation {
         result["animation"] = json!({"duration":animation.normal.duration,"steps":animation.normal.steps.iter().enumerate().map(|(i,s)|json!({"number":i+1,"name":s.name,"trigger":s.trigger,"start":s.start,"duration":s.duration,"hold":s.hold,"animations":s.clips.iter().map(|c|json!({"name":c.name,"target":c.target,"delay":c.delay,"duration":c.duration,"properties":c.tracks.iter().map(|t|&t.property).collect::<Vec<_>>(),"compatibility":if c.tracks.iter().any(|t|t.property.starts_with("-laymesh-")){"laymesh-extension"}else{"css-animation-subset"}})).collect::<Vec<_>>()})).collect::<Vec<_>>(),"printDuration":animation.print.duration,"reducedDuration":animation.reduced.duration,"reducedSteps":animation.reduced.steps.iter().enumerate().map(|(i,s)|json!({"number":i+1,"name":s.name,"trigger":s.trigger,"start":s.start,"duration":s.duration,"hold":s.hold})).collect::<Vec<_>>()});
     }

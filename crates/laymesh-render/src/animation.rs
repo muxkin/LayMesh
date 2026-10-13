@@ -23,6 +23,9 @@ impl AnimationRenderer {
             scene: crate::retained::RetainedScene::new(base),
         })
     }
+    pub fn set_media_frame(&mut self, resource:&str, width:u32, height:u32, rgba:&[u8])->Result<()> {
+        self.drawing.set_media_frame(resource,width,height,rgba)
+    }
     pub fn base(&self) -> &DisplayList {
         self.scene.base()
     }

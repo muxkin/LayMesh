@@ -52,6 +52,7 @@ Notebook 先运行 %load_ext laymesh.ipython，再使用 %laymesh figure.lay 或
 | 折线、散点、误差、统计、热图、极坐标 | [第一张数据图](docs/topics/first-plot.zh-CN.md) · [科研绘图](docs/sections/plotting.zh-CN.md) |
 | 主题、样式库、字体、渐变和阴影 | [样式与动画库：导入、逐项案例、第三方 CSS](docs/topics/style-libraries.zh-CN.md) · [样式完整手册](docs/topics/lcss.zh-CN.md) · [样式图库](docs/gallery/styles.zh-CN.md) |
 | 97 个动画、关键帧、步骤与放映 | [动画完整手册](docs/topics/animation.zh-CN.md) · [效果目录](docs/topics/animation-catalog.zh-CN.md) · [综合案例](docs/topics/style-animation-examples.zh-CN.md) |
+| 视频、页面音轨和跨页背景音乐（试验） | [视频与音频](docs/topics/media.zh-CN.md) · [可运行示例](examples/media/README.md) |
 | 编排独立页面和导出整本 PDF | [多页文档](docs/topics/documents.zh-CN.md) |
 | 文字、公式、艺术字与效果 | [字体](docs/topics/fonts.zh-CN.md) · [公式](docs/topics/formulas.zh-CN.md) · [艺术字](docs/topics/art-effects.zh-CN.md) |
 | SVG/PDF、图片、可编辑 PPTX、MP4/GIF | [静态导出](docs/topics/export.zh-CN.md) · [动画导出](docs/topics/animation-export.zh-CN.md) |

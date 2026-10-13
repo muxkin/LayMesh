@@ -10,7 +10,7 @@
     "version": 3,
     "engine": "rust-skia-ratex"
   },
-  "engine": "10afd8c90d8c2842311bee15bfb4cd3d6f2eef9a932ae896a85bc780d8a18ba4",
+  "engine": "1d16f472c15a48fa7b1868faf5d32879991e0ffe577539152d6763d36638ac0b",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -5422,6 +5422,115 @@
         }
       ]
     },
+    "examples/media/click.lay": {
+      "fingerprint": "463d8f4fc61962df25be78f6ba57a91a9c7b32144ef790dca697b1d8a537dd11",
+      "dependencies": [
+        "examples/media/click.lay",
+        "examples/media/demo.mp4"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-click-960.webp",
+          "width": 960,
+          "height": 576,
+          "sha256": "bbded24b671dfd2877fa06074f73875941b87a3c9622d0a1f750225498f656f4"
+        },
+        {
+          "file": "site/media/media-click-1920.webp",
+          "width": 1920,
+          "height": 1152,
+          "sha256": "74b26236ac4989902c57cbc049cbd9cec8342660ba0f460ed95b5e7d6b76f5ee"
+        },
+        {
+          "file": "site/media/media-click-3840.webp",
+          "width": 3840,
+          "height": 2304,
+          "sha256": "e3b4b7d3502782b2970292fe4b6589ac03fc2bb5f871f5ae90da24ebff66beaa"
+        }
+      ]
+    },
+    "examples/media/first.lay": {
+      "fingerprint": "ce8f1821d1be5c2d207f169e0c6231b4d52fa718c9ee3515b786ab10eed60144",
+      "dependencies": [
+        "examples/media/demo.mp4",
+        "examples/media/first.lay",
+        "examples/media/music.wav"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-first-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "2524aecb15bf4cec15ae34d0c5ff5c175724a293071d581637f96b7ea7e3a091"
+        },
+        {
+          "file": "site/media/media-first-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "ef1955a02921a519e535cb415860fe021a56442afabcf72f22255e8fd32997f5"
+        },
+        {
+          "file": "site/media/media-first-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "646f2020abc63f2c1ffb895a61c202f1864e1395a50ad39e8912fe2ae894f95b"
+        }
+      ]
+    },
+    "examples/media/second.lay": {
+      "fingerprint": "36a2cf59131e10686fda2af1dbd2250dde3529efeec137e96ac29daea353b176",
+      "dependencies": [
+        "examples/media/second.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-second-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "258aaf7e338b6acb2ade679799d109b63382ba40c1162041eda20551e8e2688b"
+        },
+        {
+          "file": "site/media/media-second-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "e6fbe19101150e38af356d8e5f74c78c84efd713daee58c1913c2187fc4e084b"
+        },
+        {
+          "file": "site/media/media-second-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "101e8530c5e48d6252fe2ef9e452d516a75111d195d6494877d05d6134b7178a"
+        }
+      ]
+    },
+    "examples/media/step.lay": {
+      "fingerprint": "c0a77d4e68f586edc57e6bbf84651b188116fa5102353a9693d382e0a0ee0604",
+      "dependencies": [
+        "examples/media/demo.mp4",
+        "examples/media/music.wav",
+        "examples/media/step.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-step-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "5374a8c4ebfc6a3314756f6ecaf9132079fc890aea704e05cf52bc627cf44753"
+        },
+        {
+          "file": "site/media/media-step-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "62de83d94af44e354bad0bd1564045d5225e50dfc8b598802e76dddae1056aa5"
+        },
+        {
+          "file": "site/media/media-step-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "7dd3eb1b9875126f72115547bdc679908d67e647f60ef69a0079f6e9b33a56d9"
+        }
+      ]
+    },
     "examples/outlines.lay": {
       "fingerprint": "3a843845dfa91f5a0f88f000fde042750d648cc43b60d7db58e9262bd2f1dbc3",
       "dependencies": [
@@ -5944,6 +6053,36 @@
           "width": 3840,
           "height": 2496,
           "sha256": "9d55eb8bf9b6cfdcb005e91a071a27afbd65629404d40483db1a9478943ea8de"
+        }
+      ]
+    },
+    "examples/media/deck.laydoc": {
+      "fingerprint": "63e21f1f584fb4a540b818fd7111a456daed3720b104413adff0959650c2f261",
+      "dependencies": [
+        "examples/media/deck.laydoc",
+        "examples/media/demo.mp4",
+        "examples/media/first.lay",
+        "examples/media/music.wav",
+        "examples/media/second.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-deck-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "2524aecb15bf4cec15ae34d0c5ff5c175724a293071d581637f96b7ea7e3a091"
+        },
+        {
+          "file": "site/media/media-deck-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "ef1955a02921a519e535cb415860fe021a56442afabcf72f22255e8fd32997f5"
+        },
+        {
+          "file": "site/media/media-deck-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "646f2020abc63f2c1ffb895a61c202f1864e1395a50ad39e8912fe2ae894f95b"
         }
       ]
     }

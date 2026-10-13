@@ -4154,6 +4154,179 @@ s4.animate(title, class="animate__animated animate__pulse", duration=600ms)
 
 [Concepts and common errors](animation.en.md#animate) · [Composition source](../../examples/animation/presentation.lay)
 
+## video
+
+Define local video material, place with add, and bind playback using canvas.play or step.play.
+
+Returns: material
+
+Positional parameters: `src`.
+
+Required: `src`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `src` | string | Local resource path relative to the defining file | — |
+| `size` | (length \| auto, length \| auto) / canvas unit | Physical (width,height); auto preserves aspect or natural layout | — |
+| `class` | string | Space-separated LCSS class names | "" |
+| `background` | paint | Background paint for the object region, separate from text or lines | none |
+| `padding` | length \| length[] / canvas unit | Inner spacing; one value or top, right, bottom, left | 0 |
+| `border_radius` | length / canvas unit | Physical corner radius of the box | 0 |
+| `border_color` | color | Closed-outline color; none disables the border | none |
+| `border_width` | length / pt | Closed-outline width; unitless values are pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | Border line pattern, independent of fill<br>`none`: Do not draw this item<br>`solid`: Continuous solid stroke<br>`dashed`: Dashed stroke; explicit dash values override the pattern<br>`dotted`: Dotted stroke<br>`dash_dot`: Dash-dot stroke<br>`double`: Double compound stroke<br>`triple`: Triple compound stroke | solid |
+| `border_dash` | length[] / pt | Alternating border segments and gaps, in pairs | — |
+| `border_dash_offset` | length / pt | Border dash phase; unitless values are pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | Outline dash endpoint shape<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
+| `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
+| `border_opacity` | value | Independent border opacity, 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `poster` | string | Optional poster image path | — |
+
+### Minimal complete example
+
+```lay
+p=canvas(size=(100mm,65mm),background="#f4f5f7")
+v=p.add(video(src="demo.mp4"),size=(80mm,45mm),offset=(10mm,5mm))
+p.add(text("Video + audio",font_size=4mm),offset=(10mm,55mm))
+p.play(v)
+p.play(audio(src="music.wav"),loop=true,volume=0.2)
+s=p.step(duration=3s,hold=0s,start="after-previous")
+```
+
+[Concepts and common errors](media.en.md#video) · [Composition source](../../examples/media/first.lay)
+
+## audio
+
+Define local audio for canvas.play, step.play or document.play.
+
+Returns: audio material
+
+Positional parameters: `src`.
+
+Required: `src`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `src` | string | Local resource path relative to the defining file | — |
+
+### Minimal complete example
+
+```lay
+p=canvas(size=(100mm,65mm),background="#f4f5f7")
+v=p.add(video(src="demo.mp4"),size=(80mm,45mm),offset=(10mm,5mm))
+p.add(text("Video + audio",font_size=4mm),offset=(10mm,55mm))
+p.play(v)
+p.play(audio(src="music.wav"),loop=true,volume=0.2)
+s=p.step(duration=3s,hold=0s,start="after-previous")
+```
+
+[Concepts and common errors](media.en.md#audio) · [Composition source](../../examples/media/first.lay)
+
+## canvas.play
+
+Bind page, step or document playback using an independent media clock.
+
+Returns: none
+
+Positional parameters: `target`.
+
+Required: `target`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `target` | instance \| audio | Placed video instance or audio material | — |
+| `trigger` | "auto" \| "click" | Start automatically with the page/step, or independently on a video click.<br>`auto`: Start with the page, step or document<br>`click`: Toggle the video independently by clicking | — |
+| `delay` | time / s/ms | Delay after the start condition is met, in s/ms. | — |
+| `trim_start` | time / s/ms | Absolute source time at the start of the clip, in s/ms. | — |
+| `trim_end` | time / s/ms | Absolute source time at the end of the clip, in s/ms. | — |
+| `loop` | bool | Loop the trimmed source interval. | — |
+| `volume` | number | Playback volume from 0 to 1; defaults to 1. | — |
+| `muted` | bool | Mute the track while retaining video frames. | — |
+| `export_start` | time / s/ms | Explicit page-local MP4 start time for click-triggered video, in s/ms. | — |
+
+### Minimal complete example
+
+```lay
+p=canvas(size=(100mm,65mm),background="#f4f5f7")
+v=p.add(video(src="demo.mp4"),size=(80mm,45mm),offset=(10mm,5mm))
+p.add(text("Video + audio",font_size=4mm),offset=(10mm,55mm))
+p.play(v)
+p.play(audio(src="music.wav"),loop=true,volume=0.2)
+s=p.step(duration=3s,hold=0s,start="after-previous")
+```
+
+[Concepts and common errors](media.en.md#play) · [Composition source](../../examples/media/first.lay)
+
+## step.play
+
+Bind page, step or document playback using an independent media clock.
+
+Returns: none
+
+Positional parameters: `target`.
+
+Required: `target`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `target` | instance \| audio | Placed video instance or audio material | — |
+| `trigger` | "auto" \| "click" | Start automatically with the page/step, or independently on a video click.<br>`auto`: Start with the page, step or document<br>`click`: Toggle the video independently by clicking | — |
+| `delay` | time / s/ms | Delay after the start condition is met, in s/ms. | — |
+| `trim_start` | time / s/ms | Absolute source time at the start of the clip, in s/ms. | — |
+| `trim_end` | time / s/ms | Absolute source time at the end of the clip, in s/ms. | — |
+| `loop` | bool | Loop the trimmed source interval. | — |
+| `volume` | number | Playback volume from 0 to 1; defaults to 1. | — |
+| `muted` | bool | Mute the track while retaining video frames. | — |
+| `export_start` | time / s/ms | Explicit page-local MP4 start time for click-triggered video, in s/ms. | — |
+
+### Minimal complete example
+
+```lay
+p = canvas(size=(100mm,65mm),background="#f4f5f7")
+v = p.add(video(src="demo.mp4"),size=(80mm,45mm),offset=(10mm,5mm))
+p.add(text("Step starts video + sound",font_size=4mm),offset=(10mm,55mm))
+s = p.step(duration=3s,hold=0s)
+s.play(v,delay=250ms,trim_start=500ms,trim_end=2500ms)
+s.play(audio(src="music.wav"),delay=250ms,volume=0.2)
+```
+
+[Concepts and common errors](media.en.md#play) · [Composition source](../../examples/media/step.lay)
+
+## document.play
+
+Bind page, step or document playback using an independent media clock.
+
+Returns: none
+
+Positional parameters: `target`.
+
+Required: `target`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `target` | audio | Audio material that continues across pages | — |
+| `trigger` | "auto" | Start automatically with the page/step, or independently on a video click.<br>`auto`: Start with the page, step or document | — |
+| `delay` | time / s/ms | Delay after the start condition is met, in s/ms. | — |
+| `trim_start` | time / s/ms | Absolute source time at the start of the clip, in s/ms. | — |
+| `trim_end` | time / s/ms | Absolute source time at the end of the clip, in s/ms. | — |
+| `loop` | bool | Loop the trimmed source interval. | — |
+| `volume` | number | Playback volume from 0 to 1; defaults to 1. | — |
+| `muted` | bool | Mute the track while retaining video frames. | — |
+| `export_start` | time / s/ms | Explicit page-local MP4 start time for click-triggered video, in s/ms. | — |
+
+### Minimal complete example
+
+```lay
+d=document(name="Media experiment")
+d.play(audio(src="music.wav"),loop=true,volume=0.15)
+d.add(page(src="first.lay"))
+d.add(page(src="second.lay"))
+```
+
+[Concepts and common errors](media.en.md#play) · [Composition source](../../examples/media/deck.laydoc)
+
 ## css-properties
 
 CSS property support is shared by the compiler, completion, hover and color editing. Unsupported CSS is recovered with one warning per file. Draft shadow longhands follow the rules in [LCSS](lcss.en.md#shadow-overrides).

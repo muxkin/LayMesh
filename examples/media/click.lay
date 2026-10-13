@@ -1,0 +1,4 @@
+p=canvas(size=(100,60))
+v=p.add(video(src="demo.mp4"),size=(80,45),offset=(10,5))
+s=p.step(duration=3s,hold=0s)
+p.play(v,trigger="click",export_start=500ms,trim_start=500ms,trim_end=2s)

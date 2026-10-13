@@ -10,6 +10,7 @@ pub const MAX_PAGES: usize = 10_000;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PageSpec {
+    #[serde(skip)] pub background_media: std::rc::Rc<crate::media::Media>,
     pub id: String,
     pub name: String,
     pub src: String,
@@ -143,6 +144,8 @@ fn transition_spec(value: &V, file: &str, loc: Loc) -> Result<TransitionSpec> {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DocumentPlan {
+    #[serde(default,skip_serializing_if="crate::media::Media::is_empty")]
+    pub media: crate::media::Media,
     pub schema_version: u32,
     pub name: String,
     pub pages: Vec<PageSpec>,
@@ -207,6 +210,7 @@ pub fn compile_page(page: &PageSpec, host: Host) -> Result<Scene> {
     let source = read_page(page, &host)?;
     let mut engine = Engine::new(host);
     engine.page_transition_override = page.transition.clone();
+    engine.media=page.background_media.as_ref().clone();
     engine.compile(&source, &page.src)
 }
 pub fn compile_preview_page(page: &PageSpec, host: Host) -> Result<Scene> {
@@ -245,6 +249,7 @@ pub fn plan_source(source: &str, file: &str, host: Host) -> Result<DocumentPlan>
             let page = v.object().unwrap();
             let page = page.borrow();
             Ok(PageSpec {
+                background_media:std::rc::Rc::new(engine.media.clone()),
                 id: string(&page.args, "id", ""),
                 name: string(&page.args, "name", ""),
                 src: string(&page.args, "__src", ""),
@@ -261,6 +266,7 @@ pub fn plan_source(source: &str, file: &str, host: Host) -> Result<DocumentPlan>
         })
         .collect::<Result<Vec<_>>>()?;
     Ok(DocumentPlan {
+        media: engine.media.clone(),
         schema_version: DOCUMENT_VERSION,
         name: string(&doc.args, "name", "Untitled"),
         pages,

@@ -859,6 +859,7 @@ mod tests {
     use super::*;
     fn empty() -> Scene {
         Scene {
+            media: Default::default(),
             page_transition: None,
             animation: None,
             schema_version: 8,

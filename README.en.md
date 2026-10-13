@@ -52,6 +52,7 @@ In Notebook, load %load_ext laymesh.ipython, then use %laymesh figure.lay or %%l
 | Lines, scatter, errors, statistics, heatmaps and polar plots | [First plot](docs/topics/first-plot.en.md) · [Scientific plotting](docs/sections/plotting.en.md) |
 | Themes, libraries, typography, gradients and shadows | [Style and animation libraries](docs/topics/style-libraries.en.md) · [Style manual](docs/topics/lcss.en.md) · [Style gallery](docs/gallery/styles.en.md) |
 | 97 effects, keyframes, timing and presentation | [Animation manual](docs/topics/animation.en.md) · [Effect catalog](docs/topics/animation-catalog.en.md) · [Complete projects](docs/topics/style-animation-examples.en.md) |
+| Video, page audio and continuous background music (experimental) | [Video and audio](docs/topics/media.en.md) · [Runnable examples](examples/media/README.md) |
 | Sequence pages and export a complete PDF | [Documents](docs/topics/documents.en.md) |
 | Text, formulas and artistic effects | [Fonts](docs/topics/fonts.en.md) · [Formulas](docs/topics/formulas.en.md) · [Artistic text](docs/topics/art-effects.en.md) |
 | SVG/PDF, raster, editable PPTX and MP4/GIF | [Static exports](docs/topics/export.en.md) · [Animation exports](docs/topics/animation-export.en.md) |

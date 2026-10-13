@@ -10,6 +10,8 @@ pub const DISPLAY_LIST_VERSION: u32 = 1;
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DisplayList {
+    #[serde(default,skip_serializing_if="laymesh_core::media::Media::is_empty")]
+    pub media: laymesh_core::media::Media,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_transition: Option<laymesh_core::page_transition::PageTransition>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -548,7 +550,7 @@ impl Builder<'_> {
         let mut result = if mime == "image/svg+xml" {
             super::svg_import::import(&data, self.scene, &mut self.resources)?
         } else {
-            let resource = if let Some(key) = cached_pixels {
+            let mut resource = if let Some(key) = cached_pixels {
                 let id = format!("pixels-{key}");
                 self.resources
                     .entry(id.clone())
@@ -562,11 +564,17 @@ impl Builder<'_> {
             } else {
                 self.resource(mime, data, None)
             };
-            DrawNode::new(DrawKind::Image {
+            if n["mediaId"].is_string() {
+                let alias=format!("media-frame-{}",laymesh_core::asset_cache::digest(format!("{}/{resource}",jstr(n,"id","")).as_bytes()));
+                let mut original=self.resources[&resource].clone();if original.data.is_empty(){if let Some(key)=cached_pixels{original.data=laymesh_core::asset_cache::png(key)?.as_ref().clone();}}self.resources.insert(alias.clone(),original);resource=alias;
+            }
+            let mut image=DrawNode::new(DrawKind::Image {
                 resource,
                 rect: Rect::new(0., 0., iw, ih),
                 nearest: n["interpolation"] == "nearest",
-            })
+            });
+            if n["mediaId"].is_string(){image.hint=json!({"mediaId":n["mediaId"],"mediaCrop":n["mediaCrop"]});}
+            image
         };
         result.transform = tr * result.transform;
         if fit == "cover" || c.is_object() {
@@ -857,6 +865,7 @@ impl Builder<'_> {
             json!({"kind":n["kind"],"radius":n["radius"]})
         };
         result.hint["logicalKind"] = n["kind"].clone();
+        if n["mediaId"].is_string(){result.hint["mediaId"]=n["mediaId"].clone();result.hint["mediaCrop"]=n["mediaCrop"].clone();result.hint["mediaBounds"]=if let DrawKind::Image{rect,..}=&result.kind{json!([rect.x0,rect.y0,rect.x1,rect.y1])}else{json!([0.,0.,jnum(n,"width",0.),jnum(n,"height",0.)])};}
         if self.scene.animation.is_some() {
             result.hint["animationLayout"] =
                 json!(laymesh_core::geometry::node_transform(n).as_coeffs());
@@ -1013,7 +1022,14 @@ fn build(scene: &Scene, preview: bool) -> Result<DisplayList> {
             transition.textures.insert(name, id);
         }
     }
+    let mut media=scene.media.clone();
+    for (id,a) in &mut media.assets {
+        b.resources.insert(id.clone(),Resource{mime:a.mime.clone(),data:std::mem::take(&mut a.data).as_ref().clone(),font_index:None,family:None});
+        if !a.preview_audio.is_empty(){let bytes=std::mem::take(&mut a.preview_audio).as_ref().clone();let key=b.resource("audio/mpeg",bytes,None);a.audio_resource=Some(key);}
+        a.poster=Default::default();
+    }
     Ok(DisplayList {
+        media,
         page_transition,
         animation: scene.animation.clone(),
         schema_version: DISPLAY_LIST_VERSION,

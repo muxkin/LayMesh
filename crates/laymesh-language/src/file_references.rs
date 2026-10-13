@@ -154,7 +154,7 @@ impl Scan<'_> {
                             .unwrap()
                             .iter()
                             .any(|a| a["name"] == parts[0]);
-                    if builtin && matches!(name.as_deref(), Some("src" | "stylesheet" | "textures"))
+                    if builtin && matches!(name.as_deref(), Some("src" | "poster" | "stylesheet" | "textures"))
                     {
                         self.path(v, &mut BTreeSet::new());
                     } else if builtin && name.as_deref() == Some("font_family") {

@@ -66,7 +66,7 @@ self.onmessage = ({ data }) => {
             const list = JSON.parse(draw.display_list()),
               resources = Object.fromEntries(
                 Object.keys(list.resources)
-                  .filter((id) => list.resources[id].mime.startsWith("image/"))
+                  .filter((id) => /^(image|video|audio)\//.test(list.resources[id].mime))
                   .map((id) => [id, draw.resource_bytes(id)]),
               );
             const inspected = JSON.parse(job.inspection());
@@ -74,7 +74,7 @@ self.onmessage = ({ data }) => {
               requestedFonts.set(JSON.stringify(r), r);
             warnings.push(...(inspected.warnings || []));
             for (const [id, r] of Object.entries(list.resources))
-              if (!r.mime.startsWith("image/")) {
+              if (r.mime.startsWith("font/")) {
                 for (const face of JSON.parse(
                   describe_font(draw.resource_bytes(id)),
                 ))

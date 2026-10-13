@@ -1,0 +1,55 @@
+# 视频与音频（试验版）
+
+视频像图片一样用 `add` 放置，音频没有版面几何。`play` 绑定播放规则；只定义或放置素材不会自动开始播放。
+
+## video
+
+```lay
+p = canvas(size=(100mm,60mm))
+v = p.add(video(src="demo.mp4"),size=(80mm,45mm),offset=(10mm,5mm))
+p.play(v)
+```
+
+`p.play(v)` 在页面播放开始时启动；`s.play(v)` 在步骤 `s` 开始时启动；`p.play(v,trigger="click")` 点击视频启动，再点击暂停或继续。点击视频不同时推进步骤。步骤绑定的点击视频在所属步骤开始后可用。
+
+## audio
+
+```lay
+s = p.step(duration=3s,hold=0s)
+s.play(audio(src="narration.mp3"),delay=200ms,volume=0.8)
+```
+
+## play
+
+`.laydoc` 的背景音乐跨页连续播放；页内视频、配音或音效离开页面就停止。
+
+```lay
+d = document(name="演示")
+d.play(audio(src="music.wav"),loop=true,volume=0.2)
+d.add(page(src="first.lay"))
+d.add(page(src="second.lay"))
+```
+
+`video` 接受 `src` 和可选的 `poster`，沿用图片的尺寸、fit、crop 和外观参数。`audio` 接受 `src`。所有路径相对于素材定义文件；每次 `add` 得到独立视频实例。
+
+`play` 接受 `delay`、`trim_start`、`trim_end`、`loop`、`volume`、`muted`。时间使用 `s`／`ms`，音量为 0–1；默认不延迟、不循环、不静音，使用原音量和整个源文件。裁剪时间使用源文件的绝对时间。每个视频实例只能绑定一种启动规则。
+
+等待下一步时，已启动的媒体继续播放。暂停、菜单及后台状态统一暂停；继续播放或恢复后再运行。普通预览首次打开保持完整静态排版。播放结束保留视频末帧；离开页面后重新进入，页内媒体重置。背景音乐不会随翻页重置。
+
+## 导出
+
+MP4 包含视频画面、视频原声、页面音轨和背景音乐。时间定位 PNG 使用相应视频帧。PDF、SVG、静态图片与 PPTX 使用封面或片段首帧；PPTX 暂不嵌入可播放媒体。动画 GIF 可以包含视频画面，没有声音。
+
+点击视频需要单独的导出开始时间：
+
+```lay
+p.play(v,trigger="click",export_start=2s,trim_start=500ms,trim_end=3s)
+```
+
+`export_start` 为视频实际开始播放的页面时间，不再叠加 `delay`。未指定时，MP4 保留封面并提示 `W_MEDIA_EXPORT`。
+
+有限媒体可以自动确定页面时长，或延长已有步骤的导出窗口。循环媒体需要已有步骤或其他有限媒体提供正的页面时长；背景音乐不延长文档。导出仍只选择格式和路径，其余编码参数沿用设置。
+
+离线 HTML／ZIP 随作品携带媒体、封面和兼容音轨。浏览器阻止播放时显示“点击开启声音”。首版保证 H.264 MP4、MP3 和 WAV；原生宿主还可为 M4A 准备兼容音轨，其他容器明确诊断。视频准备使用共用 FFmpeg 管理器，可先运行 `laymesh ffmpeg install`。
+
+可运行示例位于 `examples/media`。这些文件使用合成测试画面及测试音。

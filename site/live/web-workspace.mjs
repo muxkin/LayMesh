@@ -308,7 +308,11 @@ export async function createWorkspace({
       copy(
         fontFile.test(entry.path)
           ? 'text("文字",font_family=' + JSON.stringify(entry.path) + ")"
-          : imageFile.test(entry.path)
+          : /\.mp4$/i.test(entry.path)
+            ? "video(src="+JSON.stringify(entry.path)+")"
+            : /\.(mp3|wav|m4a)$/i.test(entry.path)
+            ? "audio(src="+JSON.stringify(entry.path)+")"
+            : imageFile.test(entry.path)
             ? "image(src=" + JSON.stringify(entry.path) + ")"
             : JSON.stringify(entry.path),
       ),
@@ -320,6 +324,14 @@ export async function createWorkspace({
       a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 3000);
     });
+    if (/\.(mp4|m4a|mp3|wav)$/i.test(entry.path)) {
+      const video=/\.mp4$/i.test(entry.path),media=node(video?'video':'audio','resource-media');
+      media.controls=true;media.preload='metadata';media.playsInline=true;
+      Object.assign(media.style,{maxWidth:'100%',maxHeight:'70vh'});
+      const mime={mp4:'video/mp4',m4a:'audio/mp4',mp3:'audio/mpeg',wav:'audio/wav'}[entry.path.split('.').at(-1).toLowerCase()];
+      const url=URL.createObjectURL(new Blob([entry.data],{type:mime}));media.src=url;
+      viewer.append(media);urls.set(entry.path,url);return;
+    }
     if (!imageFile.test(entry.path)) {
       const note = node(
         "div",

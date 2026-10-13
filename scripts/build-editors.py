@@ -31,6 +31,7 @@ def build(binary=None,extension_dir=None):
  shutil.copy2(ROOT/'site/live/color-panel.mjs',extension/'dist/color-panel.mjs');shutil.copy2(ROOT/'site/live/color-math.mjs',extension/'dist/color-math.mjs');shutil.copy2(source/'src/color-webview.mjs',extension/'dist/color-webview.mjs')
  shutil.copy2(ROOT/'site/live/playback-stats.mjs',extension/'dist/playback-stats.mjs')
  shutil.copy2(ROOT/'site/live/renderer-resources.mjs',extension/'dist/renderer-resources.mjs')
+ shutil.copy2(ROOT/'site/live/media-runtime.mjs',extension/'dist/media-runtime.mjs')
  shutil.copy2(ROOT/'site/live/animation-player.mjs',extension/'dist/animation-player.mjs')
  shutil.copy2(ROOT/'site/live/preview-player.mjs',extension/'dist/preview-player.mjs')
  shutil.copy2(ROOT/'site/live/preview-geometry.mjs',extension/'dist/preview-geometry.mjs')

@@ -1,3 +1,4 @@
+import {MediaController} from './media-runtime.mjs';
 import {drawPreviewRuler} from './preview-geometry.mjs';
 import {PresentationSession} from './presentation-session.mjs';
 import {Presentation} from './presentation.mjs';
@@ -21,7 +22,7 @@ openPage.type=exportDocument.type='button';openPage.dataset.action='open-page';e
 pageSelect.onchange=()=>{view.mode='fit';view.pan={x:0,y:0};syncPages();bridge.postMessage({type:'select-page',pageId:pageSelect.value});};
 openPage.onclick=()=>bridge.postMessage({type:'open-page'});
 exportDocument.onclick=()=>bridge.postMessage({type:'export-document'});
-const playbackStats=new PlaybackStats();let wasRunning=false;
+const playbackStats=new PlaybackStats();let wasRunning=false,media;
 const details=el('details','render-details',root),summary=el('summary','',details,'Skia'),metrics=el('output','',details);details.style.cssText='font-size:11px;padding:0 8px';
 const player=new PreviewPlayer(root,()=>{if(player?.running)playbackStats.refresh(performance.now());wasRunning=!!player?.running;schedule();},{locale:()=>locale,page:direction=>{const n=pageSelect.selectedIndex+direction;if(n<0||n>=pageSelect.options.length)return false;pageSelect.selectedIndex=n;pageSelect.onchange();return true;}});
 const motionMenu=el('details','motion-menu',toolbar);el('summary','',motionMenu,'播放设置');motionMenu.append(player.bar);
@@ -30,11 +31,11 @@ function selectPage(delta){const index=pageSelect.selectedIndex+delta;if(index<0
 previousPage.onclick=()=>selectPage(-1);nextPage.onclick=()=>selectPage(1);
 function syncPages(){pageTools.hidden=pageSelect.hidden;previousPage.disabled=pageSelect.selectedIndex<=0;nextPage.disabled=pageSelect.selectedIndex>=pageSelect.options.length-1;}
 const presentationMenu=el('details','presentation-choice',toolbar);el('summary','',presentationMenu,'放映 ▾');
-let previewResume=false;
+let previewMediaResume=false,previewResume=false;
 let deckResolve,deckReject,deckStore,deckReceive=Promise.resolve(),deckProgress,deckRevision,deckSession,deckRequest=0,deckRestart;
-const presentation=new Presentation({parent:root,base:new URL('./',import.meta.url),blobWorker:true,fullscreen:false,onEnter:()=>{previewResume=player.running;if(previewResume)player.action('play');},provider:({signal,onProgress})=>new Promise((resolve,reject)=>{
+const presentation=new Presentation({parent:root,base:new URL('./',import.meta.url),blobWorker:true,fullscreen:false,compatibleAudio:true,onEnter:()=>{previewMediaResume=media.enabled&&!media.paused;media.pause();previewResume=player.running;if(previewResume)player.action('play');},provider:({signal,onProgress})=>new Promise((resolve,reject)=>{
  deckRevision=null;const requestId=++deckRequest;deckStore=new PresentationStore();const store=deckStore;deckSession=new PresentationSession(store,{onProgress,request:(id,retry)=>bridge.postMessage({type:'deck-priority',revision:deckRevision,pageId:id,retry}),stop:()=>bridge.postMessage({type:'deck-cancel',requestId})});deckSession.preparation={};deckResolve=resolve;deckReject=reject;deckProgress=onProgress;deckReceive=Promise.resolve();deckSession.firstReady.then(resolve,reject);signal.addEventListener('abort',()=>store.dispose(),{once:true});bridge.postMessage({type:'deck-prepare',requestId});
-}),onExit:()=>{bridge.postMessage({type:'deck-release'});if(previewResume)player.start();}});
+}),onExit:()=>{if(previewMediaResume)media.resume();bridge.postMessage({type:'deck-release'});if(previewResume)player.start();}});
 const presentationPopover=el('div','toolbar-popover',presentationMenu);const presentHere=el('button','',presentationPopover);presentHere.type='button';presentHere.onclick=()=>presentation.button.click();presentation.button.addEventListener('click',()=>{presentationMenu.open=false;bridge.postMessage({type:'deck-pin'});});
 const browserPresent=el('button','',presentationPopover,'在浏览器全屏放映');browserPresent.onclick=async()=>{presentationMenu.open=false;try{await presentation.prepare();bridge.postMessage({type:'deck-browser'});}catch(e){diagnostic={message:e.message};showDiagnostic();}};
 window.laymeshPresentation=presentation;
@@ -88,15 +89,15 @@ const zoomMenu=el('details','zoom-menu',toolbar),zoomSummary=el('summary','',zoo
 const presentGroup=el('div','present-group',toolbar);presentGroup.append(presentation.button,presentationMenu);
 const playbackButtons=el('div','playback-buttons',footer);playbackButtons.setAttribute('role','group');for(const id of ['previous','play','next'])playbackButtons.append(player.buttons[id]);
 function syncPlaybackButtons(){
- playbackButtons.hidden=!player.metadata?.steps?.length;
- for(const [id,icon,zh,en]of [['previous','previous','上一步','Previous step'],['play',player.running?'pause':'play',player.running?'暂停':'开始',player.running?'Pause':'Play'],['next','next','下一步','Next step']]){const b=player.buttons[id];iconLabel(b,icon);b.title=text(zh,en);b.setAttribute('aria-label',b.title);}
+ playbackButtons.hidden=!player.metadata?.steps?.length&&!media?.tracks.length;
+ for(const [id,icon,zh,en]of [['previous','previous','上一步','Previous step'],['play',player.running||media?.running?'pause':'play',player.running||media?.running?'暂停':'开始',player.running||media?.running?'Pause':'Play'],['next','next','下一步','Next step']]){const b=player.buttons[id];iconLabel(b,icon);b.title=text(zh,en);b.setAttribute('aria-label',b.title);}
  playbackButtons.setAttribute('aria-label',text('动画播放控制','Animation playback controls'));
 }
 const originalSync=player.sync.bind(player);player.sync=(...args)=>{originalSync(...args);syncPlaybackButtons();};
 toolbar.replaceChildren(buttons.refresh,buttons.fit,zoomMenu,pageTools,presentGroup,buttons.export,more);footer.replaceChildren(playbackButtons,diagnosticMenu,status,readout,details);
 viewport.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey||e.repeat||!player.metadata)return;const action={ArrowRight:'next',ArrowDown:'next',ArrowLeft:'previous',ArrowUp:'previous',Enter:'next',s:'play',S:'play',Escape:'static'}[e.key];if(action){e.preventDefault();player.action(action);}});
 
-for(const menu of [more,zoomMenu,presentationMenu,diagnosticMenu,details])menu.addEventListener('toggle',()=>{if(menu.open)for(const other of [more,zoomMenu,presentationMenu,diagnosticMenu,details])if(other!==menu)other.open=false;});
+for(const menu of [more,zoomMenu,presentationMenu,diagnosticMenu,details])menu.addEventListener('toggle',()=>{if(menu.open){menu.mediaWasRunning=media.enabled&&!media.paused;media.pause();}else if(menu.mediaWasRunning){media.resume();menu.mediaWasRunning=false;}if(menu.open)for(const other of [more,zoomMenu,presentationMenu,diagnosticMenu,details])if(other!==menu)other.open=false;});
 document.addEventListener('pointerdown',e=>{for(const menu of [more,zoomMenu,presentationMenu,diagnosticMenu,details])if(menu.open&&!menu.contains(e.target))menu.open=false;});
 function persist(){bridge.setState({mode:view.mode,scale:view.scale,pan:view.pan,rulers:view.rulers});}
 function containsPath(shape,p){
@@ -160,6 +161,20 @@ player.motion.addEventListener('change',cancelTransition);
 new ResizeObserver(()=>{cancelTransition();schedule();}).observe(viewport);
 
 let renderSequence=0,frameTimings={};
+media=new MediaController({parent:root,compatibleAudio:true,onFrame:()=>{drawKey='';presented=null;syncPlaybackButtons();schedule();},onError:e=>{diagnostic={code:'E_MEDIA',message:String(e)};showDiagnostic();}});
+window.__LAYMESH_PREVIEW_MEDIA=media;
+let mediaLast=performance.now(),mediaRaf;
+function tickMedia(now){const elapsed=(now-mediaLast)/1000;mediaLast=now;media.tick(elapsed,player.clock);mediaRaf=requestAnimationFrame(tickMedia);}mediaRaf=requestAnimationFrame(tickMedia);
+const mediaAction=player.action.bind(player);player.action=id=>{
+ if(id==='static'){media.seek(0);media.stop();}
+ else if(id==='play'&&(media.running||player.running)){media.pause();player.clock.running=false;player.refresh();return;}
+ else if(id==='play'){if(player.time===null||player.clock.time>=player.clock.duration)media.seek(0);media.resume();}
+ else if(id==='next')media.begin();
+ mediaAction(id);
+ if(id==='replay')media.resume();
+};
+const mediaSeek=player.seek.bind(player);player.seek=(time,...args)=>{if(time!==null)media.seek(time);return mediaSeek(time,...args);};
+viewport.addEventListener('click',e=>{if(drag||e.button!==0||!page)return;const box=viewport.getBoundingClientRect(),r=rect();if(media.click((e.clientX-box.left-r.left)/view.scale,(e.clientY-box.top-r.top)/view.scale,media.states)){e.preventDefault();e.stopImmediatePropagation();}},true);
 async function installFrame(data){
  const sequence=++renderSequence;
  if(data.protocol!==3||(!data.displayList&&!data.displayListCompressed&&!data.displayListUpdate))throw Error('Expected drawing protocol 3');
@@ -171,6 +186,7 @@ async function installFrame(data){
  rasterResourceIds=new Set(installed.resourceIds);
  installed.resourcesMs+=resourceLoadMs;
  if(sequence!==renderSequence)return;
+ if(installed.mediaList){await media.install(installed.mediaList,async id=>{const resource=data.resources.find(r=>r.id===id);if(!resource)throw Error("Missing media resource");const response=await fetch(resource.uri);if(!response.ok)throw Error("Media loading failed");return new Uint8Array(await response.arrayBuffer());});}else{await media.install({nodes:[],media:{assets:{},cues:[]}},()=>{});}
  if(!directCanvas){const {initializeSkia,SkiaRenderer}=await import('./skia-renderer.mjs');if(!mainSkia){const meta=await(await fetch(new URL('skia/manifest.json',import.meta.url))).json();mainSkia=new SkiaRenderer(await initializeSkia(new URL('skia/'+meta.wasm,import.meta.url).href),image,{onContextChange:ready=>{if(ready){drawKey='';presented=null;schedule();}}});}await mainSkia.install(installed.scene,id=>installed.sceneResources[id],data.generation,data.previewSettings?.cache_mb??256,{...data.document,reduced:player.reduced});}
  drawReady=true;drawJobId=data.displayListId||data.displayListCompressed?.id||String(data.generation);if(!installed.reused)drawKey='';wasmMemoryBytes=installed.wasmMemoryBytes;
  drawGeneration=data.generation;
@@ -194,13 +210,13 @@ function paint(r,force=false){
  const left=Math.max(0,r.left),top=Math.max(0,r.top),right=Math.min(viewport.clientWidth,r.left+r.width),bottom=Math.min(viewport.clientHeight,r.top+r.height);
  if(right<=left||bottom<=top){image.hidden=true;return;}image.hidden=false;
  const visible=[(left-r.left)/view.scale,(top-r.top)/view.scale,(right-r.left)/view.scale,(bottom-r.top)/view.scale],dpr=devicePixelRatio||1;
- if(presented?.time===player.time&&presented?.reduced===player.reduced&&presented?.content===drawJobId&&presented.scale===view.scale&&presented.dpr===dpr&&visible[0]>=presented.crop[0]-1e-9&&visible[1]>=presented.crop[1]-1e-9&&visible[2]<=presented.crop[2]+1e-9&&visible[3]<=presented.crop[3]+1e-9){
+ if(!media.frames.size&&!media.running&&presented?.time===player.time&&presented?.reduced===player.reduced&&presented?.content===drawJobId&&presented.scale===view.scale&&presented.dpr===dpr&&visible[0]>=presented.crop[0]-1e-9&&visible[1]>=presented.crop[1]-1e-9&&visible[2]<=presented.crop[2]+1e-9&&visible[3]<=presented.crop[3]+1e-9){
   pendingPaint=null;clearTimeout(paintTimer);paintTimer=0;drawKey=presented.key;root.dataset.painted='true';if(force)reportPaint(0);return;
  }
  const pad=96/view.scale,crop=[Math.max(0,visible[0]-pad),Math.max(0,visible[1]-pad),Math.min(page.width,visible[2]+pad),Math.min(page.height,visible[3]+pad)];
  const width=Math.max(1,Math.ceil((crop[2]-crop[0])*view.scale*dpr)),height=Math.max(1,Math.ceil((crop[3]-crop[1])*view.scale*dpr));
  const key=JSON.stringify([drawJobId,crop,width,height,player.time,player.reduced]);if(key===drawKey)return;drawKey=key;root.dataset.painted='false';
- pendingPaint={running:player.running,time:player.time,reduced:player.reduced,type:'paint',generation:drawGeneration,crop,width,height,content:drawJobId,scale:view.scale,dpr,key};
+ pendingPaint={running:player.running||media.running,time:player.time,reduced:player.reduced,type:'paint',generation:drawGeneration,crop,width,height,content:drawJobId,scale:view.scale,dpr,key};
  clearTimeout(paintTimer);paintTimer=0;
  // Translate the retained Canvas immediately. Changing zoom temporarily
  // scales its pixels; the worker restores exact DPR pixels after motion settles.
@@ -208,9 +224,10 @@ function paint(r,force=false){
 }
 async function flushPaint(){if(paintInFlight||!pendingPaint||!rasterWorker)return;
  const request=pendingPaint;pendingPaint=null;paintInFlight=true;if(request.running)playbackStats.submit(performance.now());
- try{const data=await workerCall(request);
+ const mediaFrames=media.takeFrames();
+ try{const data=await workerCall(directCanvas?{...request,mediaFrames}:request,directCanvas?mediaFrames.map(f=>f.bitmap):[]);media.states=data.mediaStates||data.states||{};
   if(data.type==='painted'&&data.generation===drawGeneration&&request.content===drawJobId&&(request.key===drawKey||pendingPaint)){
-   if(!directCanvas){const metrics=mainSkia.render(request.crop,data.width,data.height,data.states,data.generation,!!request.running);if(metrics.skipped)return;Object.assign(metrics,await mainSkia.transitions.play(player.reduced));Object.assign(data,metrics);}if(player.resumeAfterTransition){player.resumeAfterTransition=false;player.start();}root.dataset.renderBackend=data.backend;root.dataset.transitionName=data.transitionName||'';root.dataset.transitionFrames=String(data.transitionFrames||0);root.dataset.transitionError=data.transitionError||'';root.dataset.renderWidth=String(data.width);root.dataset.renderHeight=String(data.height);root.dataset.sampleMs=String(data.sampleMs);
+   if(!directCanvas){mainSkia.setMediaFrames(mediaFrames);const metrics=mainSkia.render(request.crop,data.width,data.height,data.states,data.generation,!!request.running);if(metrics.skipped)return;Object.assign(metrics,await mainSkia.transitions.play(player.reduced));Object.assign(data,metrics);}if(player.resumeAfterTransition){player.resumeAfterTransition=false;player.start();}root.dataset.renderBackend=data.backend;root.dataset.transitionName=data.transitionName||'';root.dataset.transitionFrames=String(data.transitionFrames||0);root.dataset.transitionError=data.transitionError||'';root.dataset.renderWidth=String(data.width);root.dataset.renderHeight=String(data.height);root.dataset.sampleMs=String(data.sampleMs);
    if(request.time===null&&request.crop[0]===0&&request.crop[1]===0&&request.crop[2]===page.width&&request.crop[3]===page.height){const s=Math.min(768/page.width,2048/page.height,Math.sqrt(500000/(page.width*page.height)));overview.width=Math.max(1,Math.floor(page.width*s));overview.height=Math.max(1,Math.floor(page.height*s));overview.getContext('2d').drawImage(image,0,0,overview.width,overview.height);overviewContent=request.content;}
    if(request.running)requestAnimationFrame(now=>{playbackStats.record(`${request.generation}:${request.time}`,now);});
    summary.textContent=text('详情','Details');summary.title=`${data.backend} · ${data.width}×${data.height}`;
@@ -253,5 +270,5 @@ window.addEventListener('message',({data})=>{
   else{diagnostic={code:'E_PREVIEW_PROTOCOL',message:'Expected drawing protocol 3'};showDiagnostic();showStatus('error');}
  }
 });
-window.addEventListener('pagehide',()=>{presentation.dispose();renderSequence++;clearTimeout(paintTimer);pendingPaint=null;stopWorker(Error('Preview closed'));});
+window.addEventListener('pagehide',()=>{media.dispose();cancelAnimationFrame(mediaRaf);presentation.dispose();renderSequence++;clearTimeout(paintTimer);pendingPaint=null;stopWorker(Error('Preview closed'));});
 labels();bridge.postMessage({type:'ready'});

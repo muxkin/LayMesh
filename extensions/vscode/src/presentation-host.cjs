@@ -2,7 +2,7 @@ const fs=require('fs'),path=require('path'),os=require('os'),http=require('http'
 class NativePresentation {
  constructor({worker,createWorker,canPrepare=()=>true,concurrency,dist,uri,notify,onBrowserClose=()=>{}}){
   Object.assign(this,{worker,createWorker,canPrepare,dist,uri,onBrowserClose});this.workers=[worker];this.limit=createWorker?Math.max(1,Math.min(concurrency??4,Math.max(1,(os.availableParallelism?.()||os.cpus().length)-2),Math.max(1,Math.floor(os.freemem()/536870912)))):1;
-  this.revision=crypto.randomBytes(12).toString('hex');this.notify=data=>notify({...data,revision:this.revision});this.pages=[];this.resources=new Map();this.dependencies=new Set();this.pending=new Map();this.acks=new Map();this.cancelled=false;this.directory=path.join(worker.resourceDir,'presentation');fs.mkdirSync(this.directory,{recursive:true});this.delivery=Promise.resolve();
+  this.revision=crypto.randomBytes(12).toString('hex');this.notify=data=>notify({...data,revision:this.revision});this.pages=[];this.resources=new Map();this.resourceMimes=new Map();this.dependencies=new Set();this.pending=new Map();this.acks=new Map();this.cancelled=false;this.directory=path.join(worker.resourceDir,'presentation');fs.mkdirSync(this.directory,{recursive:true});this.delivery=Promise.resolve();
  }
  ack(id){const key=id??this.acks.keys().next().value;this.acks.get(key)?.();this.acks.delete(key);}
  priority(id,retry=false){const item=this.jobs?.find(j=>j.specs.some(p=>p.id===id));if(!item)return;if(retry&&item.status==='error'){item.status='pending';for(const p of item.specs){p.status='pending';delete p.error;}}item.priority=performance.now()+1;this.pump();}
@@ -13,7 +13,7 @@ class NativePresentation {
  record(file){if(file in this.overlays)return;let stat;try{stat=fs.statSync(file);}catch{}const value=stat?`${stat.ctimeMs}:${stat.mtimeMs}:${stat.size}`:'missing';if(stat?.ctimeMs>this.startedAt||this.signatures.has(file)&&this.signatures.get(file)!==value)throw Error(`Source changed while preparing: ${file}. Retry to use the latest document.`);this.signatures.set(file,value);}
  async accept(frame,worker,specs){
   for(const d of frame.dependencies||[]){if(d===this.config)continue;this.dependencies.add(d);this.record(d);}
-  for(const r of frame.resources||[]){if(!/^[-a-z0-9]+$/.test(r.id)||path.dirname(path.resolve(r.path))!==worker.resourceDir)throw Error('Invalid presentation resource');this.resources.set(r.id,r.path);}
+  for(const r of frame.resources||[]){if(!/^[-a-z0-9]+$/.test(r.id)||path.dirname(path.resolve(r.path))!==worker.resourceDir)throw Error('Invalid presentation resource');this.resources.set(r.id,r.path);this.resourceMimes.set(r.id,r.mime);}
   const list=frame.displayList||JSON.parse(zlib.gunzipSync(Buffer.from(frame.displayListCompressed.data,'base64')).toString('utf8'));
   for(const selected of specs){await(this.delivery=this.delivery.catch(()=>{}).then(async()=>{
    if(this.cancelled)throw Error('Presentation preparation cancelled');await this.idle();
@@ -54,7 +54,16 @@ class NativePresentation {
    let file;if(/^pages\/\d+\.json$/.test(route)){const p=this.pages[Number(route.slice(6,-5))];if(!p){res.writeHead(404).end();return;}if(p.status!=='ready'){this.priority(p.id,url.searchParams.get('retry')==='1');res.setHeader('Content-Type','application/json');res.writeHead(p.status==='error'?422:202).end(JSON.stringify({error:p.error}));return;}const page=JSON.parse(fs.readFileSync(p.file));page.resourceUrls=Object.fromEntries(Object.keys(page.list.resources).map(id=>[id,prefix+'resources/'+id]));res.setHeader('Content-Type','application/json');res.end(JSON.stringify(page));return;}
    if(route.startsWith('resources/'))file=this.resources.get(route.slice(10));
    else if(route.startsWith('assets/')){const relative=route.slice(7);if(!/^[a-zA-Z0-9_./-]+$/.test(relative)||relative.split('/').includes('..')){res.writeHead(404).end();return;}file=path.join(this.dist,relative);if(!/\.(mjs|js|css|wasm|json)$/.test(file))file=null;}
-   if(!file||!fs.existsSync(file)){res.writeHead(404).end();return;}const ext=path.extname(file),mime={'.mjs':'text/javascript','.js':'text/javascript','.css':'text/css','.wasm':'application/wasm','.json':'application/json'};res.setHeader('Content-Type',mime[ext]||'application/octet-stream');if(/\bgzip\b/.test(req.headers['accept-encoding']||'')&&fs.existsSync(file+'.gz')){file+='.gz';res.setHeader('Content-Encoding','gzip');res.setHeader('Vary','Accept-Encoding');}fs.createReadStream(file).on('error',()=>res.destroy()).pipe(res);
+   if(!file||!fs.existsSync(file)){res.writeHead(404).end();return;}const ext=path.extname(file),mime={'.mjs':'text/javascript','.js':'text/javascript','.css':'text/css','.wasm':'application/wasm','.json':'application/json'};const resourceMime=route.startsWith('resources/')?this.resourceMimes.get(route.slice(10)):null;
+   res.setHeader('Content-Type',resourceMime||mime[ext]||'application/octet-stream');
+   if(resourceMime&&/^(video|audio)\//.test(resourceMime)){
+    const size=fs.statSync(file).size;res.setHeader('Accept-Ranges','bytes');let start=0,end=size-1;
+    if(req.headers.range){const m=/^bytes=(\d*)-(\d*)$/.exec(req.headers.range);if(!m||(!m[1]&&!m[2])){res.writeHead(416,{'Content-Range':`bytes */${size}`}).end();return;}
+     if(!m[1]){start=Math.max(0,size-Number(m[2]));}else{start=Number(m[1]);if(m[2])end=Math.min(end,Number(m[2]));}
+     if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start<0||start>=size||end<start){res.writeHead(416,{'Content-Range':`bytes */${size}`}).end();return;}
+     res.statusCode=206;res.setHeader('Content-Range',`bytes ${start}-${end}/${size}`);
+    }res.setHeader('Content-Length',Math.max(0,end-start+1));if(req.method==='HEAD'||size===0){res.end();return;}fs.createReadStream(file,{start,end}).on('error',()=>res.destroy()).pipe(res);return;
+   }if(/\bgzip\b/.test(req.headers['accept-encoding']||'')&&fs.existsSync(file+'.gz')){file+='.gz';res.setHeader('Content-Encoding','gzip');res.setHeader('Vary','Accept-Encoding');}fs.createReadStream(file).on('error',()=>res.destroy()).pipe(res);
   }catch{res.writeHead(500).end('Presentation resource unavailable');}});
   await new Promise((resolve,reject)=>{this.server.once('error',reject);this.server.listen(0,host,resolve);});this.url=`http://${host}:${this.server.address().port}${prefix}`;return this.url;
  }

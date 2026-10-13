@@ -13,7 +13,7 @@ function compactReplay(previous,frame){
  const update=structuredClone(previous?.displayListUpdate?.update||frame.displayListUpdate.update);
  if(previous){
   const incoming=frame.displayListUpdate.update;
-  update.animation=structuredClone(incoming.animation);update.width=incoming.width;update.height=incoming.height;update.schemaVersion=incoming.schemaVersion;
+  update.media=structuredClone(incoming.media);update.animation=structuredClone(incoming.animation);update.width=incoming.width;update.height=incoming.height;update.schemaVersion=incoming.schemaVersion;
   if(incoming.resources)update.resources=structuredClone(incoming.resources);
   if(incoming.roots){update.roots=structuredClone(incoming.roots);update.nodes=[];}
   const prefix=(a,b)=>a.length<=b.length&&a.every((v,i)=>v===b[i]);
@@ -243,7 +243,7 @@ function activatePreview(context,binary,output){
   const panel=vscode.window.createWebviewPanel('laymeshPreview',`LayMesh · ${path.basename(file)}`,{viewColumn:vscode.ViewColumn.Beside,preserveFocus:true},{enableScripts:true,localResourceRoots:[vscode.Uri.joinPath(context.extensionUri,'dist'),vscode.Uri.file(worker.resourceDir)]});
   const state={uri,file,panel,generation:0,dirty:true,dependencies:new Set(),watchers:[],disposed:false,resources:new Map(),history:[],historyBytes:0};panels.set(file,state);
   const asset=name=>panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri,'dist',name));
-  panel.webview.html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} blob: data:; font-src ${panel.webview.cspSource} data:; script-src ${panel.webview.cspSource} 'wasm-unsafe-eval'; connect-src ${panel.webview.cspSource} blob:; worker-src blob:; style-src ${panel.webview.cspSource} 'unsafe-inline';"><link rel="stylesheet" href="${asset('preview.css')}"><link rel="stylesheet" href="${asset('presentation.css')}"></head><body><script type="module" src="${asset('preview-webview.mjs')}"></script></body></html>`;
+  panel.webview.html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} blob: data:; font-src ${panel.webview.cspSource} data:; media-src ${panel.webview.cspSource} blob:; script-src ${panel.webview.cspSource} 'wasm-unsafe-eval'; connect-src ${panel.webview.cspSource} blob:; worker-src blob:; style-src ${panel.webview.cspSource} 'unsafe-inline';"><link rel="stylesheet" href="${asset('preview.css')}"><link rel="stylesheet" href="${asset('presentation.css')}"></head><body><script type="module" src="${asset('preview-webview.mjs')}"></script></body></html>`;
   panel.webview.onDidReceiveMessage(async message=>{
    if(message?.type==='ready'){state.displayListId=undefined;post(state,{type:'initial',locale:locale(),showRulers:config().get('showRulers',true)});
     if(state.history.length&&state.lastSuccess)post(state,{...state.lastSuccess,displayListReplay:state.history});
