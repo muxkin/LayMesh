@@ -6,8 +6,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def build(binary=None,extension_dir=None):
  if binary is None:
-  import build_web_export
-  build_web_export.build()
+  subprocess.run([sys.executable,ROOT/'scripts/build-web-export.py'],cwd=ROOT,check=True)
   subprocess.run(['cargo','build','--release','--locked','-p','laymesh-cli'],cwd=ROOT,check=True)
   binary=ROOT/'target/release'/('laymesh.exe' if sys.platform=='win32' else 'laymesh')
  if not binary.is_file():raise RuntimeError(f'Missing Rust binary: {binary}')

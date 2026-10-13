@@ -42,7 +42,17 @@ const run = (args) =>
   assert(m.fontRequirements.length);
   assert(m.fonts.every((f) => !f.file));
   assert(!m.embedFonts);
-  assert(exports.editable.bytes < exports.embedded.bytes * 0.5);
+  // Font sizes vary across machines, and runtime codecs are shared by both
+  // packages. Verify the actual embedding contract instead of a size ratio.
+  const embeddedFiles = unpack(path.join(out, "embedded.zip.html")),
+    embedded = JSON.parse(new TextDecoder().decode(embeddedFiles["manifest.json"]));
+  assert(embedded.embedFonts);
+  assert(embedded.fonts.length);
+  for (const font of embedded.fonts) {
+    assert(font.file && embeddedFiles[font.file]?.length, "Requested font bytes must be bundled");
+    assert(!defaultFiles[font.file], "Default export must omit system font bytes");
+  }
+  assert(exports.editable.bytes < exports.embedded.bytes);
   const results = [];
   for (const name of ["chromium", "firefox", "webkit"]) {
     const browser = await engines[name].launch({

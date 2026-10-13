@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Build the portable web-export runtime before shipping native binaries. No npm."""
-import argparse,hashlib,json,re,subprocess,zipfile
+import argparse,hashlib,json,re,subprocess,sys,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def build(output=None,skip_wasm=False):
- subprocess.run(['python3',str(ROOT/'scripts/vendor-workspace-ui.py')],cwd=ROOT,check=True)
+ subprocess.run([sys.executable,str(ROOT/'scripts/vendor-workspace-ui.py')],cwd=ROOT,check=True)
  for folder in ['fflate','canvaskit','gl-transitions','headless-tree']:
   vendor=ROOT/'vendor'/folder;meta=json.loads((vendor/'manifest.json').read_text())
   for name,digest in meta['files'].items():assert hashlib.sha256((vendor/name).read_bytes()).hexdigest()==digest,f'Modified vendored asset: {folder}/{name}'
@@ -58,8 +58,13 @@ def build(output=None,skip_wasm=False):
  entries['runtime-files.json']=json.dumps({'playback':closure(False),'editable':closure(True)}).encode()
  temporary=output.with_suffix('.zip.tmp')
  with zipfile.ZipFile(temporary,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
-  for name,data in sorted(entries.items()):z.writestr(name,data)
- temporary.replace(output)
+  for name,data in sorted(entries.items()):
+   info=zipfile.ZipInfo(name,date_time=(1980,1,1,0,0,0));info.create_system=3;info.external_attr=0o100644<<16
+   z.writestr(info,data,compress_type=zipfile.ZIP_DEFLATED,compresslevel=9)
+ # Repeated wheel/editor builds must not rebuild the native binary merely
+ # because ZIP timestamps changed. Preserve the runtime's mtime when identical.
+ if output.exists() and output.read_bytes()==temporary.read_bytes():temporary.unlink()
+ else:temporary.replace(output)
  print(json.dumps({'runtime':str(output),'compressed_MiB':round(output.stat().st_size/1048576,3),'playback_WASM_bytes':len(entries['runtime/wasm/laymesh.wasm']),'compiler_WASM_bytes':len(entries['runtime/compiler/laymesh.wasm'])}))
  return output
 if __name__=='__main__':

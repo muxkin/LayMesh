@@ -21,8 +21,7 @@ def build(output,binary=None,target_name=None):
     name=target_name or target();spec=CONFIG["targets"][name]
     executable="laymesh.exe" if name.startswith("win-") else "laymesh"
     if binary is None:
-        import build_web_export
-        build_web_export.build()
+        run([sys.executable,ROOT/'scripts/build-web-export.py'])
         run(["cargo","build","--release","--locked","-p","laymesh-cli"])
         binary=ROOT/"target/release"/executable
     binary=binary.resolve()
