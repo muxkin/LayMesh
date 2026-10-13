@@ -4,6 +4,7 @@ const assert = require("node:assert/strict"),
   os = require("node:os"),
   path = require("node:path"),
   vm = require("node:vm");
+const { pathToFileURL } = require("node:url");
 const root = path.resolve(__dirname, ".."),
   binary = path.resolve(
     process.argv[2] ||
@@ -138,7 +139,7 @@ vm.runInNewContext(
       assert.equal(result.exported, destination.fsPath.replace(/\\/g, "/"));
       assert(fs.statSync(destination.fsPath).size > 1000);
       const archive = await import(
-        path.join(root, "site/live/web-archive.mjs")
+        pathToFileURL(path.join(root, "site/live/web-archive.mjs")).href
       );
       const entries = archive.webUnzip(
         archive.webPayload(fs.readFileSync(destination.fsPath)),
