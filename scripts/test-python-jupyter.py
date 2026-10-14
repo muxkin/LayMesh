@@ -153,6 +153,29 @@ with PILImage.open("default.tif") as image:
     assert image.size == (120, 60)
     assert image.tag_v2[259] == 5
 
+# Presentation notes remain literal/private in the actual kernel, while draw
+# warnings remain nonblocking. Compare real pixels, not just MIME keys.
+import warnings
+static_page = 'p=canvas(size=(40mm,25mm),background="#fff")\na=p.add(line(length=25mm,line_width=1mm,end_head=head(size=(4mm,3mm))),offset=(5mm,8mm))\nb=p.add(rect(size=(8mm,6mm),fill="#ff0000",border_color="none"),offset=(5mm,15mm))\n'
+notes = chr(34)*3 + 'Private notes 中文 {{not_a_binding}}' + chr(34)*3 + '\n'
+draw = 's=p.step(hold=1s)\ns.animate(a,name="draw",duration=1s,fill="both")\ns.animate(b,name="draw",duration=1s,fill="both")\n'
+with capture_output() as plain_preview:
+    get_ipython().run_cell_magic("laymesh", "", static_page)
+with warnings.catch_warnings(record=True) as diagnostics:
+    warnings.simplefilter("always")
+    with capture_output() as animated_preview:
+        get_ipython().run_cell_magic("laymesh", "--warnings show -o presenter.pdf --save-source presenter.lay", notes + static_page + draw)
+assert animated_preview.outputs[-1].data["image/jpeg"] == plain_preview.outputs[-1].data["image/jpeg"]
+assert len([d for d in diagnostics if "W_ANIMATION" in str(d.message)]) == 1
+assert 'Private notes 中文 {{not_a_binding}}' in Path("presenter.lay").read_text()
+assert Path("presenter.pdf").read_bytes().startswith(b"%PDF")
+render_file("presenter.lay", output="presenter.zip", show_warnings=False)
+with zipfile.ZipFile("presenter.zip") as archive:
+    manifest = json.loads(archive.read("manifest.json"))
+    page = json.loads(archive.read(manifest["pages"][0]["file"]))
+    assert page["inspection"]["speakerNotes"] == 'Private notes 中文 {{not_a_binding}}'
+    assert "Private notes" not in json.dumps(page["list"])
+
 # Errors are actionable and leave the kernel/next magic usable; no SVG fallback.
 for invalid, message in [('page=unknown()', None), ('page=canvas(size=(10mm,10mm))\nvalue={{np.mean(x)}}', "Python 表达式")]:
     try:
@@ -175,7 +198,8 @@ kernel_evidence = dict(engine_version=version,
     standalone_replay=True, relative_modules_and_alpha=True, config_dpi=True,
     default_dpi_1200_and_tiff_lzw=True, errors_recover=True, svg_api_compatible=True,
     jpeg_exact_native_match=True, compact_result_display=True, document_jpeg_magic=True,
-    document_full_pdf_and_selected_png=True, installed_offline=installed_check)
+    document_full_pdf_and_selected_png=True, presentation_notes_private=True,
+    draw_warning_nonblocking=True, installed_offline=installed_check)
 print(json.dumps(kernel_evidence))
 """
 
@@ -183,7 +207,7 @@ print(json.dumps(kernel_evidence))
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--installed", action="store_true")
-    parser.add_argument("--binary", type=Path, default=ROOT / "target/release/laymesh")
+    parser.add_argument("--binary", type=Path, default=ROOT / "target/release" / ("laymesh.exe" if os.name == "nt" else "laymesh"))
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     import nbformat

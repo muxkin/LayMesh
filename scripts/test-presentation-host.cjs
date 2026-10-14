@@ -9,6 +9,11 @@ const {NativePresentation}=require('../extensions/vscode/src/presentation-host.c
  const out=process.argv[2]||'/tmp/laymesh-presentation/served';await new Promise((resolve,reject)=>{const child=spawn(process.execPath,[path.join(root,'scripts/test-presentation-served.cjs'),url,out],{stdio:'inherit',env:process.env});child.once('error',reject);child.once('exit',code=>code===0?resolve():reject(Error('Served presentation browser test failed')));});
  assert.equal(count,2);
  }finally{deck.dispose();fs.rmSync(temp,{recursive:true,force:true});}
+ // A broken first page must not block preparing the selected second page.
+ const selectedRoot=fs.mkdtempSync(path.join(os.tmpdir(),'laymesh-selected-test-')),selectedFile=path.join(selectedRoot,'deck.laydoc'),selectedSource='d=document()\nd.add(page(src="bad.lay",id="bad"))\nd.add(page(src="good.lay",id="good"))';
+ fs.writeFileSync(selectedFile,selectedSource);fs.writeFileSync(path.join(selectedRoot,'bad.lay'),'broken = !');fs.writeFileSync(path.join(selectedRoot,'good.lay'),'p=canvas(size=(32,24))');
+ const selectedWorker=new PreviewWorker(path.join(root,'target/release/laymesh'),{append(){},appendLine(){}},selectedRoot),selectedDeck=new NativePresentation({worker:selectedWorker,dist:path.join(root,'extensions/vscode/dist'),uri:f=>f,notify:m=>{if(m.type==='deck-page')queueMicrotask(()=>selectedDeck.ack());}});
+ try{await selectedDeck.prepare(selectedFile,selectedSource,{}, {},'good');assert.equal(selectedDeck.pages[1].status,'ready');assert.equal(selectedDeck.pages[0].status,'error');assert.equal(JSON.parse(fs.readFileSync(selectedDeck.pages[1].file)).list.width,32);}finally{selectedDeck.dispose();fs.rmSync(selectedRoot,{recursive:true,force:true});}
  const cancelled=new NativePresentation({worker:{resourceDir:fs.mkdtempSync(path.join(os.tmpdir(),'laymesh-cancel-')),enqueue(){},dispose(){fs.rmSync(this.resourceDir,{recursive:true,force:true});}},dist:root,uri:f=>f,notify(){}});const pending=cancelled.prepare('cancel.lay','p=canvas()',{},{});cancelled.dispose();await assert.rejects(pending,/cancelled/);
  console.log('Native prepare once, duplicate source reuse, scoped Tailscale service and cleanup passed.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,3 +1,5 @@
+import {PresenterView,startPresentation} from "./presenter.mjs";
+import {PagePreviewRenderer,PageThumbnails} from "./page-previews.mjs";
 import { installExportDialog } from "./web-export-dialog.mjs";
 import { selectWebLicenses } from "./web-licenses.mjs";
 import { selectPageTransitions } from "./web-transition-package.mjs";
@@ -87,6 +89,7 @@ export async function mountWebPlayer({
     clock = new PresentationClock(),
     reduced = matchMedia("(prefers-reduced-motion: reduce)");
   Object.assign(metrics, transportMetrics);
+  let thumbnails,sidebarResize;
   let pages = manifest.pages.map((p) => ({ ...p, ...json(p.file) })),
     index = 0,
     runtime,
@@ -409,6 +412,7 @@ export async function mountWebPlayer({
     );
   }
   function sync() {
+    thumbnails?.select(index);
     if (closed || !el("play")) return;
     iconLabel(el("play"), clock.running ? "pause" : "play");
     el("play").setAttribute("aria-label", clock.running ? "暂停" : "播放");
@@ -468,6 +472,7 @@ export async function mountWebPlayer({
         priority: true,
         ...size(),
       });
+      if (installed.warnings?.length) status(installed.warnings.map(w=>w.message).join("\n"));
       if (current !== serial) return;
       index = n;
       clock.install(p.inspection?.animation, reduced.matches);
@@ -705,6 +710,7 @@ export async function mountWebPlayer({
   const presentation = new Presentation({
     base: new URL("./", location.href),
     runtimeAdapter: presentationAdapter,
+    getStartPageId: () => pages[index]?.id,
     provider: async () => {
       const snapshot = pages.slice();
       return {
@@ -762,10 +768,23 @@ export async function mountWebPlayer({
         .catch(fail);
     },
   });
+  const rendererRuntime=async()=>({wasmBytes:bytes("runtime/wasm/laymesh.wasm").slice().buffer,skiaBytes:bytes("runtime/skia/canvaskit.wasm").slice().buffer});
+  const presenter=new PresenterView(presentation,{runtime:rendererRuntime,title:()=>manifest.name||document.title,css:async()=>decoder.decode(bytes("runtime/presentation.css"))});
+  el("presenter").onclick=()=>{el("preview-more").open=false;presentation.invalidate();startPresentation(presentation,{mode:"presenter"});};
+  el("from-start").onclick=()=>{el("preview-more").open=false;presentation.open({fullscreen:false,startPageId:null});};
+  el("from-start-full").onclick=()=>{el("preview-more").open=false;presentation.open({fullscreen:true,startPageId:null});};
+  if(!manifest.editable){
+    const main=root.querySelector('main'),pane=document.createElement('aside'),splitter=document.createElement('div');pane.className='playback-pages';pane.innerHTML='<h2>页面预览</h2>';splitter.className='playback-page-splitter';splitter.tabIndex=0;splitter.setAttribute('role','separator');splitter.setAttribute('aria-label','调整页面预览宽度');splitter.setAttribute('aria-orientation','vertical');main.prepend(pane,splitter);
+    let dragging=false,width=220;const setWidth=value=>{const limit=Math.min(480,Math.max(160,main.clientWidth-326));width=Math.max(160,Math.min(limit,value));splitter.setAttribute('aria-valuemax',limit);pane.style.flexBasis=width+'px';pane.style.width=width+'px';splitter.setAttribute('aria-valuenow',width);};splitter.setAttribute('aria-valuemin','160');splitter.setAttribute('aria-valuemax','480');setWidth(width);sidebarResize=new ResizeObserver(()=>setWidth(width));sidebarResize.observe(main);
+    splitter.onpointerdown=e=>{dragging=true;splitter.setPointerCapture(e.pointerId);};splitter.onpointermove=e=>{if(dragging)setWidth(e.clientX-main.getBoundingClientRect().left);};splitter.onpointerup=splitter.onpointercancel=()=>{dragging=false;thumbnails?.pump();};splitter.onkeydown=e=>{if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();setWidth(width+(e.key==='ArrowRight'?20:-20));}};
+    const toggle=show=>{pane.hidden=splitter.hidden=!show;el('page-sidebar').setAttribute('aria-pressed',String(show));};toggle(!matchMedia('(max-width:700px)').matches);el('page-sidebar').onclick=()=>toggle(pane.hidden);
+    thumbnails=new PageThumbnails({parent:pane,pages,renderer:new PagePreviewRenderer({runtime:rendererRuntime,page:async i=>({...pages[i],resources:resources(pages[i])})}),onSelect:i=>go(i).catch(fail),paused:()=>clock.running||presentation.opened||presenter.opened||dragging});
+  }else el('page-sidebar').hidden=true;
   el("full").onclick = () => {
     presentation.invalidate();
-    presentation.open({ fullscreen: true });
+    startPresentation(presentation);
   };
+  el("slides-only").onclick=()=>{el("preview-more").open=false;presentation.invalidate();startPresentation(presentation,{mode:"slides"});};
   el("windowed").onclick = () => {
     el("preview-more").open = false;
     presentation.invalidate();
@@ -773,7 +792,7 @@ export async function mountWebPlayer({
   };
   const key = (e) => {
     if (
-      presentation.opened ||
+      presentation.opened || presenter.opened ||
       e.target.closest(".edit-pane,.workspace-tree,input,select,button,dialog")
     )
       return;
@@ -1352,6 +1371,7 @@ export async function mountWebPlayer({
     get pages() {
       return pages;
     },
+    presenter,
     get clock() {
       return clock;
     },
@@ -1388,6 +1408,9 @@ export async function mountWebPlayer({
         p.reject(Error("Page closed"));
       }
       document.removeEventListener("keydown", key);
+      presenter.close();
+      thumbnails?.dispose();
+      sidebarResize?.disconnect();
       presentation.dispose();
       workspace?.dispose();
       playbackMenus?.dispose();

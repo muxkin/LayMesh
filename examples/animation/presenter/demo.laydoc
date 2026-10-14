@@ -1,0 +1,3 @@
+doc=document(name="演讲者视图示例", transition=transition(name="fade",duration=500ms))
+doc.add(page(src="welcome.lay",id="welcome",name="欢迎",transition="none"))
+doc.add(page(src="draw.lay",id="draw",name="箭头绘制与讲稿"))

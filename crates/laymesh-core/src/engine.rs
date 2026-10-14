@@ -27,6 +27,7 @@ pub fn compile_preview_source(source: &str, file: &str, host: Host) -> Result<Sc
     crate::geometry_cache::interactive(|| compile_source(source, file, host))
 }
 pub struct Engine {
+    speaker_notes: Option<String>,
     pub host: Host,
     pub warnings: Vec<Diagnostic>,
     pub(crate) css_warnings: RefCell<BTreeMap<(String, usize, String), Diagnostic>>,
@@ -114,6 +115,7 @@ impl Engine {
             }
         }
         Self {
+            speaker_notes: None,
             host,
             warnings: vec![],
             css_warnings: RefCell::new(BTreeMap::new()),
@@ -210,6 +212,11 @@ impl Engine {
         self.file = file.into();
         self.css_entry_file = Some(file.into());
         let stmts = parser::parse(source, file)?;
+        let notes: Vec<_> = stmts.iter().filter_map(|s| match &s.kind {
+            StmtKind::Note(text) => Some(crate::parser::normalize_note(text)),
+            _ => None,
+        }).filter(|s| !s.is_empty()).collect();
+        self.speaker_notes = (!notes.is_empty()).then(|| notes.join("\n\n"));
         let scope = Environment::root();
         if !matches!(self.run(&stmts, &scope)?, Flow::Normal) {
             return Err(self.error(
@@ -239,6 +246,7 @@ impl Engine {
         }
         let canvas_style = self.styled("canvas", &c.args, &Args::new())?;
         Ok(Scene {
+            speaker_notes: self.speaker_notes.clone(),
             page_transition: if let Some(spec)=&self.page_transition_override {spec.compile(Some(&self.host))?} else {crate::page_transition::compile(&canvas_style, &self.file, c.loc)?},
             animation: self.compile_animation(&c.nodes)?,
             schema_version: 8,
@@ -399,7 +407,7 @@ impl Engine {
                     }
                 }
             }
-            StmtKind::Function(..) => {}
+            StmtKind::Function(..) | StmtKind::Note(_) => {}
             StmtKind::Break => return Ok(Flow::Break),
             StmtKind::Continue => return Ok(Flow::Continue),
             StmtKind::Import(ns, path) => {

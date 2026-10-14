@@ -352,6 +352,8 @@ pub struct FontAsset {
 #[serde(rename_all = "camelCase")]
 pub struct Scene {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub speaker_notes: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_transition: Option<crate::page_transition::PageTransition>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub animation: Option<crate::animation::Animation>,

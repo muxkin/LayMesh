@@ -1,0 +1,30 @@
+{
+  "browser": "151.0.7922.34",
+  "environment": "Chromium headless virtual displays; not physical monitor validation",
+  "results": [
+    {
+      "mode": "single",
+      "passed": true
+    },
+    {
+      "mode": "extended",
+      "passed": true,
+      "placement": {
+        "fullscreen": true,
+        "selected": "Projector",
+        "current": ""
+      },
+      "explicitScreenSelection": true,
+      "sessionSelectionRemembered": true,
+      "screenDisconnect": true
+    },
+    {
+      "mode": "denied",
+      "passed": true
+    },
+    {
+      "mode": "unsupported",
+      "passed": true
+    }
+  ]
+}

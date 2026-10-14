@@ -148,6 +148,9 @@ pub fn inspect_scene(scene: &Scene) -> J {
         }
     }
     let mut result = json!({"schema_version":scene.schema_version,"units":"mm","page":{"width":scene.width,"height":scene.height,"unit":scene.canvas_unit,"layout_dpi":scene.layout_dpi},"plots":plots,"warnings":scene.warnings});
+    if let Some(notes) = &scene.speaker_notes {
+        result["speakerNotes"] = json!(notes);
+    }
     if let Some(transition) = &scene.page_transition {
         let mut transition = transition.clone();
         transition.assets.clear();

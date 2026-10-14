@@ -1,6 +1,7 @@
 //! Deterministic CSS animation effects, scheduled by Lay presentation steps.
 //! Times are seconds and geometry is millimetres; CSS pixels use canvas layout_dpi.
 pub mod css;
+pub mod draw;
 pub mod matrix;
 pub mod values;
 use crate::{Diagnostic, Loc, Result, engine::Engine, model::*};
@@ -722,6 +723,10 @@ impl Engine {
             let mut tracks = vec![];
             let mut important = BTreeMap::new();
             for (property, mut frames) in per_property {
+                if property == "-laymesh-draw" && !draw::eligible(node) {
+                    diagnostics.push(Diagnostic::new("W_ANIMATION", format!("{id}: ignored draw animation: requires a nonzero path with visible stroke and no fill; use reveal or opacity for this object"), &spec.file, spec.loc));
+                    continue;
+                }
                 let base = match props.get(&property) {
                     Some(d) => parse_value(&property, &d.value, size, ctx).map_err(fail)?,
                     None => base_value(&property, base_opacity, origin),

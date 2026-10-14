@@ -47,3 +47,5 @@
 VS Code 浏览器入口使用绑定 Tailscale 地址的临时会话服务，关闭会话后释放；仅需本机预览可选内嵌放映。字体、GPU、缓存与性能测量属于[播放实现与验证](animation-internals.zh-CN.md)，不需要在正常使用中配置。
 
 [页间转场](page-transitions.zh-CN.md)提供翻页等 125 种效果，可通过 LCSS 为每页配置。
+
+网页与离线版支持从当前页放映、页面缩略图及双窗口控制台，详见[演讲者视图与页面备注](presenter.zh-CN.md)。

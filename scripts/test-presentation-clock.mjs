@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {PresentationClock} from '../site/live/presentation-clock.mjs';
 const timeline={duration:5,steps:[{start:0,duration:1,hold:1},{start:2,duration:2,hold:1}],reducedDuration:2,reducedSteps:[{start:0,duration:.1},{start:1,duration:.1}]};
-const c=new PresentationClock();c.install(timeline);assert.equal(c.time,0);assert.equal(c.running,false);
+const c=new PresentationClock();assert.equal(c.duration,0);assert.equal(c.time.toFixed(1),'0.0');assert.equal(c.duration.toFixed(1),'0.0');assert.equal(c.status().animationStatus,'static');assert(Number.isFinite(c.status().holdRemaining));c.install(timeline);assert.equal(c.time,0);assert.equal(c.running,false);
 c.advance();c.tick(.4);assert.equal(c.active,0);assert.equal(c.time,.4);c.advance();assert.equal(c.time,1);assert.equal(c.running,false);assert.equal(c.completed,1);
 c.advance();assert.equal(c.active,1);c.tick(9);assert.equal(c.time,4);assert.equal(c.completed,2);assert.equal(c.advance(),1);
 c.previous();assert.equal(c.time,2);assert.equal(c.completed,1);c.previous();assert.equal(c.time,0);assert.equal(c.previous(),-1);
@@ -14,3 +14,12 @@ const linked={duration:5,steps:[{start:0,duration:1,hold:.5,trigger:'after-previ
 c.mode='manual';c.install(linked);assert.equal(c.running,true);c.tick(1.2);assert.equal(c.running,true);assert.equal(c.completed,1);c.tick(.4);assert.equal(c.active,1);c.tick(9);assert.equal(c.time,2.5);assert.equal(c.running,false);c.advance();assert.equal(c.active,2);c.tick(1);assert.equal(c.running,false);
 c.install(linked,false,true);assert.equal(c.running,false);c.install(linked);c.tick(.4);c.advance();assert.equal(c.running,false);assert.equal(c.time,1);c.previous();assert.equal(c.time,0);assert.equal(c.running,false);
 console.log('Linked steps: entry trigger, automatic continuation, hold, next click, skip and rewind passed.');
+// Natural completion must reach 100%, without seeking past a trailing hold.
+const actual={duration:7,steps:[{name:'one',start:0,duration:.9,hold:.4,trigger:'after-previous'},{name:'two',start:1.3,duration:1.8,hold:.7,trigger:'after-previous'},{name:'three',start:3.8,duration:2.2,hold:1,trigger:'after-previous'}],reducedDuration:2,reducedSteps:[{start:0,duration:.1,hold:.9,trigger:'after-previous'},{start:1,duration:.1,hold:.9,trigger:'after-previous'}]};
+c.mode='manual';c.install(actual);for(let i=0;i<1000&&c.running;i++)c.tick(.016);
+assert.equal(c.time,6);assert.equal(c.status().animationProgress,1);assert.equal(c.status().animationStatus,'complete');assert.equal(c.duration,7);
+c.install(actual);c.mode='auto';c.running=true;c.tick(6);assert.equal(c.status().animationProgress,1);assert.equal(c.status().animationStatus,'holding');assert.equal(c.status().holdRemaining,1);c.toggle();assert.equal(c.status().animationStatus,'paused');assert.equal(c.status().animationProgress,1);assert.equal(c.tick(.5),0);assert.equal(c.status().holdRemaining,1);c.toggle();assert.equal(c.status().animationStatus,'holding');assert.equal(c.tick(.9),0);assert.equal(c.tick(.2),1);
+c.mode='manual';c.install(actual,true);for(let i=0;i<1000&&c.running;i++)c.tick(.016);assert.equal(c.status().animationProgress,1);assert.equal(c.status().animationStatus,'complete');assert.equal(c.time,1.1);
+c.install(null);assert.equal(c.status().animationProgress,1);assert.equal(c.status().animationStatus,'static');
+c.install(timeline);assert.equal(c.status().animationStatus,'waiting');c.advance();c.tick(.5);c.toggle();assert.equal(c.status().animationStatus,'paused');assert(c.status().animationProgress<1);c.advance();assert.equal(c.status().animationStatus,'waiting');
+console.log('Completion progress: natural final hold, automatic hold, reduced motion, static and click waiting passed.');

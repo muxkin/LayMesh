@@ -20,7 +20,7 @@ def measure(path):
   playback=modes['playback']
   assert not any('exporter-full/' in name or name.endswith('web-full-export-worker.mjs') for name in playback)
   assert all(name in modes['editable'] for name in playback),'Editable must support saving a self-contained playback copy'
-  names=[n for n in playback if any(x in n for x in ('/exporter/','/vendor/pdf-export/','/web-export-dialog.mjs','/web-static-export-worker.mjs','/web-pdf-export.mjs','/web-jpeg-export.mjs','/web-vector-export.mjs','/web-image-density.mjs','/web-player.mjs','/web-player.css','/web-licenses.mjs','/web-transition-package.mjs','/runtime-files.json'))]
+  names=[n for n in playback if any(x in n for x in ('/presenter','/page-previews.mjs','/page-thumbnails.mjs','/presentation-entry.mjs','/presentation.css','/exporter/','/vendor/pdf-export/','/web-export-dialog.mjs','/web-static-export-worker.mjs','/web-pdf-export.mjs','/web-jpeg-export.mjs','/web-vector-export.mjs','/web-image-density.mjs','/web-player.mjs','/web-player.css','/web-licenses.mjs','/web-transition-package.mjs','/runtime-files.json'))]
   data={name:z.read(name) for name in names}
   licenses=select(json.loads(z.read('licenses/manifest.json')),False)
   base={**licenses,'packages':[p for p in licenses['packages'] if not p['playbackExportOnly']]}

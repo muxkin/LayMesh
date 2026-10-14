@@ -1,0 +1,28 @@
+{
+  "url": "https://github.com/muxkin/LayMesh/actions/runs/38541667122",
+  "headSha": "05e16763935574d067781e8880221b3864fe9145",
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "name": "browser",
+      "conclusion": "success",
+      "url": "https://github.com/muxkin/LayMesh/actions/runs/38541667122/job/115777658163"
+    },
+    {
+      "name": "native (ubuntu-24.04)",
+      "conclusion": "success",
+      "url": "https://github.com/muxkin/LayMesh/actions/runs/38541667122/job/115777658510"
+    },
+    {
+      "name": "native (macos-14)",
+      "conclusion": "success",
+      "url": "https://github.com/muxkin/LayMesh/actions/runs/38541667122/job/115777658803"
+    },
+    {
+      "name": "native (windows-2022)",
+      "conclusion": "success",
+      "url": "https://github.com/muxkin/LayMesh/actions/runs/38541667122/job/115777658895"
+    }
+  ]
+}

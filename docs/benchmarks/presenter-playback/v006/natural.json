@@ -1,0 +1,70 @@
+[
+  {
+    "browser": "chromium",
+    "pages": [
+      {
+        "id": "cover",
+        "time": 0,
+        "duration": 6,
+        "animationProgress": 1,
+        "animationStatus": "complete",
+        "holdRemaining": 0,
+        "stepCount": 1,
+        "stepName": "系列封面"
+      },
+      {
+        "id": "seed",
+        "time": 5.7,
+        "duration": 6.7,
+        "animationProgress": 1,
+        "animationStatus": "complete",
+        "holdRemaining": 0,
+        "stepCount": 3,
+        "stepName": "新的可能"
+      },
+      {
+        "id": "anchors",
+        "time": 4,
+        "duration": 6,
+        "animationProgress": 1,
+        "animationStatus": "complete",
+        "holdRemaining": 0,
+        "stepCount": 3,
+        "stepName": "观察布局"
+      },
+      {
+        "id": "presentation",
+        "time": 4,
+        "duration": 5,
+        "animationProgress": 1,
+        "animationStatus": "complete",
+        "holdRemaining": 0,
+        "stepCount": 2,
+        "stepName": "看见作品的层次"
+      },
+      {
+        "id": "offline",
+        "time": 5.700000000000001,
+        "duration": 6.700000000000001,
+        "animationProgress": 1,
+        "animationStatus": "complete",
+        "holdRemaining": 0,
+        "stepCount": 3,
+        "stepName": "完整保留作品"
+      },
+      {
+        "id": "editable",
+        "time": 6,
+        "duration": 7,
+        "animationProgress": 1,
+        "animationStatus": "complete",
+        "holdRemaining": 0,
+        "stepCount": 3,
+        "stepName": "仍是一份真实项目"
+      }
+    ],
+    "pixelMeanAbsoluteError": 0.4614800347222222,
+    "reduced": true,
+    "errors": []
+  }
+]

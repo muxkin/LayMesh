@@ -1,0 +1,62 @@
+{
+  "browser": "151.0.7922.34",
+  "hiddenMirror": true,
+  "visibility": "document visibility event emulated",
+  "diagnosticPersists": true,
+  "composedTransitionFrames": 45,
+  "rapidNavigation": true,
+  "contextLossRecovery": true,
+  "memory": [
+    {
+      "skia": 134217728,
+      "wasm": 11534336
+    },
+    {
+      "skia": 134217728,
+      "wasm": 12648448
+    },
+    {
+      "skia": 134217728,
+      "wasm": 12648448
+    },
+    {
+      "skia": 134217728,
+      "wasm": 12648448
+    },
+    {
+      "skia": 134217728,
+      "wasm": 12648448
+    },
+    {
+      "skia": 134217728,
+      "wasm": 12648448
+    },
+    {
+      "skia": 134217728,
+      "wasm": 12648448
+    },
+    {
+      "skia": 134217728,
+      "wasm": 12648448
+    },
+    {
+      "skia": 134217728,
+      "wasm": 12648448
+    },
+    {
+      "skia": 134217728,
+      "wasm": 12648448
+    },
+    {
+      "skia": 134217728,
+      "wasm": 12648448
+    },
+    {
+      "skia": 134217728,
+      "wasm": 12648448
+    }
+  ],
+  "autoHoldRemaining": 0.7693999999970043,
+  "resourcesReleased": true,
+  "errors": []
+}

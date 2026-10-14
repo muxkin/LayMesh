@@ -1,3 +1,12 @@
+# 0.6.4
+
+- Start presentations from the current preview page; keep ordinary fullscreen as the default and restore the preview on exit.
+- Add an optional presenter console in the external browser, with speaker notes, bitmap mirroring, timers, thumbnails and playback controls. Windows and displays are arranged manually.
+- Read page speaker notes from independent top-level triple-quoted strings in `.lay` files.
+- Preserve arrow centerlines for draw animations, restore the exact static end frame and warn without blocking on inapplicable draw effects.
+- Show 100% animation progress when the final step finishes, keeping automatic page holds separate.
+- Add a resizable thumbnail sidebar to playback exports and reduce portable playback overhead while retaining full editable exports.
+
 # 0.6.3
 
 - Add editable/playback offline HTML and ZIP export with bundled runtime and browser image/document exports.

@@ -42,5 +42,7 @@ export function syncControls(v){
  const menuPause=t(running?'暂停':'继续',running?'Pause':'Resume');v.menuPause.replaceChildren(uiIcon(running?'pause':'play'));el('span',v.menuPause,menuPause);el('kbd',v.menuPause,'S');v.menuPause.setAttribute('aria-label',menuPause);
  v.pageCounter.textContent=`${v.index+1} / ${v.deck.pages.length}`;v.endNotice.hidden=!v.ended;v.mode.setAttribute('aria-checked',String(v.clock.mode==='auto'));v.speedValue.textContent=v.clock.speed+'×';
  v.pages.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',String(Number(b.dataset.pageIndex)===v.index)));v.menuPanels.speed.querySelectorAll('[data-speed]').forEach(b=>b.setAttribute('aria-checked',String(Number(b.dataset.speed)===v.clock.speed)));
- v.label.textContent=`${v.clock.time.toFixed(1)} / ${v.clock.duration.toFixed(1)} s`;v.scrub.max=v.clock.duration;v.scrub.value=v.clock.time;
+ const available=v.ready&&!v.switching;
+ v.label.textContent=available?`${v.clock.time.toFixed(1)} / ${v.clock.duration.toFixed(1)} s`:t('正在准备…','Preparing…');v.scrub.disabled=!available;v.scrub.max=v.clock.duration;v.scrub.value=v.clock.time;
+ for(const button of [v.buttons.pause,v.menuPause,v.mode])button.disabled=!available;
 }

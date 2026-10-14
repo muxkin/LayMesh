@@ -1,0 +1,51 @@
+{
+  "chrome": {
+    "screen": [
+      1672,
+      941
+    ],
+    "buffer": [
+      1672,
+      941
+    ],
+    "bar": {
+      "x": 660,
+      "y": 873,
+      "width": 352,
+      "height": 44,
+      "top": 873,
+      "right": 1012,
+      "bottom": 917,
+      "left": 660
+    },
+    "canvas": {
+      "x": 0,
+      "y": 0,
+      "width": 1672,
+      "height": 941,
+      "top": 0,
+      "right": 1672,
+      "bottom": 941,
+      "left": 0
+    },
+    "visibleLabels": "1 / 2"
+  },
+  "contextRestored": true,
+  "errors": [],
+  "hardwareAcceptance": false,
+  "checks": [
+    "full source visible without summary UI",
+    "single Present entry and dropdown Windowed option",
+    "windowed presentation without a fullscreen request",
+    "fullscreen entry and Escape/browser exit return directly to preview",
+    "fullscreen resize preserves paused timeline",
+    "windowed presentation works above the expanded workspace",
+    "actual fullscreen and original resolution",
+    "toolbar overlays canvas, no reserved strip",
+    "default hiding, pointer isolation and Tab recovery",
+    "menus, timeline, auto mode, page list and white screen",
+    "fixed version, preparation error and retry",
+    "main-thread CanvasKit and context restore",
+    "narrow bounded menu"
+  ]
+}

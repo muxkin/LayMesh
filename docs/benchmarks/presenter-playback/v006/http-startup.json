@@ -1,0 +1,59 @@
+{
+  "browser": "151.0.7922.34",
+  "platform": "linux",
+  "displayEnvironment": "CDP virtual screens; no physical monitor placement claim",
+  "results": [
+    {
+      "mode": "single",
+      "passed": true,
+      "calls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [],
+        "fullscreen": [
+          {
+            "active": true,
+            "screen": false
+          }
+        ]
+      },
+      "ordinaryFullscreen": true,
+      "currentPage": true
+    },
+    {
+      "mode": "manual",
+      "passed": true,
+      "calls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [
+          "popup,width=1280,height=800"
+        ],
+        "fullscreen": [
+          {
+            "active": true,
+            "screen": false
+          }
+        ]
+      },
+      "consoleCalls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [],
+        "fullscreen": []
+      },
+      "manualFullscreen": true,
+      "currentPage": true,
+      "exitRestoresPreview": true
+    }
+  ]
+}

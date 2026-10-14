@@ -31,3 +31,5 @@ button{font:inherit;color:inherit;background:var(--vscode-button-secondaryBackgr
 .motion-menu .animation-controls{padding:6px 0!important;gap:7px!important}.motion-menu>summary{padding:6px 9px}.motion-menu .animation-controls>button{white-space:nowrap}
 @media(max-width:560px){.toolbar{gap:4px;padding:4px}.toolbar>[data-action=refresh]>span{display:none}.page-tools{flex:1;max-width:150px;min-width:55px}.toolbar .zoom-menu>summary{padding:4px}.toolbar .page-select{max-width:none}.toolbar>[data-action=export]>span{display:none}}
 @media(max-width:340px){.toolbar{gap:2px}.page-tools>button{width:19px;padding:2px}.toolbar [data-action=present]>span{display:none}.page-tools{min-width:40px}.preview-footer .coordinates{display:none}.preview-footer .status{flex:1}}
+/* Keep the primary presentation entry usable in very narrow editor splits. */
+@media(max-width:280px){.toolbar>.zoom-menu,.toolbar>.motion-menu,.toolbar>[data-action=export]{display:none}.toolbar>.page-tools{flex:1;min-width:28px}.toolbar .page-tools>button{display:none}.toolbar .page-select{min-width:26px}.toolbar>.present-group{margin-left:auto}.toolbar>.zoom{display:none}}

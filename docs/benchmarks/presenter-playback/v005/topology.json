@@ -1,0 +1,47 @@
+{
+  "browser": "151.0.7922.34",
+  "platform": "linux",
+  "results": [
+    {
+      "mode": "delayed",
+      "flowPassed": true,
+      "placementStatus": "unverified",
+      "placementVerified": false,
+      "placementEnvironment": "CDP virtual screens; physical Windows/Edge not verified",
+      "state": {
+        "target": "Projector",
+        "operatorPrimary": true,
+        "placement": {
+          "audience": {
+            "requested": "1280/0/1920/1080",
+            "actual": "0/0/800/600",
+            "verified": false
+          },
+          "console": {
+            "requested": "0/0/800/600",
+            "actual": "0/0/800/600",
+            "verified": true
+          }
+        },
+        "notice": "观众画面尚未确认在 Projector · 副屏 全屏，请在观众窗口重试。",
+        "calls": [
+          {
+            "active": true,
+            "screen": "Projector"
+          }
+        ]
+      },
+      "switchResult": {
+        "ok": false,
+        "reason": "timeout",
+        "message": "浏览器未确认全屏结果，请重试"
+      },
+      "localGestureRecovery": true,
+      "remoteConfirmation": true,
+      "swap": true,
+      "disconnect": true,
+      "extensionLost": true,
+      "extensionLossPreservesProgress": true
+    }
+  ]
+}

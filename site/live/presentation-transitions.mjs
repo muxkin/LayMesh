@@ -108,7 +108,7 @@ export class PageTransitions {
       const canvas=output.getCanvas();
       const present=(image)=>{
         const c=surface.getCanvas(),scale=Math.min(displayWidth/image.width(),displayHeight/image.height()),w=image.width()*scale,h=image.height()*scale;
-        c.clear(ck.TRANSPARENT);c.drawImageRect(image,[0,0,image.width(),image.height()],[(displayWidth-w)/2,(displayHeight-h)/2,(displayWidth+w)/2,(displayHeight+h)/2],null);surface.flush();
+        c.clear(ck.TRANSPARENT);c.drawImageRect(image,[0,0,image.width(),image.height()],[(displayWidth-w)/2,(displayHeight-h)/2,(displayWidth+w)/2,(displayHeight+h)/2],null);surface.flush();s.onPresent?.();
       };
       const draw=(p)=>{
         if(rasterSurface&&(p<=0||p>=1)){present(p<=0?(reverse?to:from):(reverse?from:to));return;}
@@ -116,7 +116,7 @@ export class PageTransitions {
         // Guarantee exact endpoint frames, including transparent artwork.
         const shader=p<=0?a:p>=1?b:effect.makeShaderWithChildren(uniforms,children);
         if(!shader)throw Error('Transition shader creation failed');
-        try {canvas.clear(ck.TRANSPARENT);paint.setShader(shader);canvas.drawPaint(paint);output.flush();
+        try {canvas.clear(ck.TRANSPARENT);paint.setShader(shader);canvas.drawPaint(paint);output.flush();if(!rasterSurface)s.onPresent?.();
           if(rasterSurface){const frame=output.makeImageSnapshot();try{present(frame);}finally{frame.delete();}}}
         finally {if(shader!==a&&shader!==b)shader.delete();}
       };

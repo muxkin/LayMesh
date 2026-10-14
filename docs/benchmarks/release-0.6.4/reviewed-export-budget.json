@@ -1,0 +1,32 @@
+{
+  "runtime": "release/verification/0.6.4/reviewed-runtime-budget.zip",
+  "playbackExporterAndShellZipBytes": 258987,
+  "incrementalLicenseZipBytes": 1976,
+  "conservativeIncrementBytes": 260963,
+  "budgetBytes": 307200,
+  "files": [
+    "runtime/exporter/laymesh.wasm",
+    "runtime/exporter/laymesh_wasm.js",
+    "runtime/page-previews.mjs",
+    "runtime/page-thumbnails.mjs",
+    "runtime/presentation.css",
+    "runtime/presenter-console.mjs",
+    "runtime/presenter-mirror.mjs",
+    "runtime/presenter.mjs",
+    "runtime/vendor/pdf-export/index.js",
+    "runtime/web-export-dialog.mjs",
+    "runtime/web-image-density.mjs",
+    "runtime/web-jpeg-export.mjs",
+    "runtime/web-licenses.mjs",
+    "runtime/web-pdf-export.mjs",
+    "runtime/web-player.css",
+    "runtime/web-player.mjs",
+    "runtime/web-static-export-worker.mjs",
+    "runtime/web-transition-package.mjs",
+    "runtime/web-vector-export.mjs",
+    "runtime/runtime-files.json"
+  ],
+  "artifact": "04_LCSS_\u79bb\u7ebf\u64ad\u653e_v007.zip.html",
+  "artifactSha256": "50e63253364fee3817e71c39b8710a75eec94a90dda6cab2b8350c632f1c1565",
+  "basis": "Runtime modules and licenses extracted from the reviewed Linux wheel export; identical runtime file selection to the build budget."
+}

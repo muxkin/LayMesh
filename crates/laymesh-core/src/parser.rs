@@ -2,6 +2,19 @@
 use crate::{Diagnostic, Loc, Result};
 use serde::{Deserialize, Serialize};
 
+/// Dedent note blocks without flattening paragraphs or intentional indentation.
+pub fn normalize_note(text: &str) -> String {
+    let text = text.replace("\r\n", "\n");
+    let lines: Vec<_> = text.lines().collect();
+    let first = lines.iter().position(|l| !l.trim().is_empty()).unwrap_or(lines.len());
+    let last = lines.iter().rposition(|l| !l.trim().is_empty()).map_or(first, |i| i + 1);
+    let lines = &lines[first..last];
+    let indent = lines.iter().filter(|l| !l.trim().is_empty())
+        .map(|l| l.chars().take_while(|c| matches!(c, ' ' | '\t')).count()).min().unwrap_or(0);
+    lines.iter().map(|l| l.chars().skip(indent).collect::<String>().trim_end().to_string())
+        .collect::<Vec<_>>().join("\n")
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Expr {
     pub kind: ExprKind,
@@ -32,6 +45,8 @@ pub enum StmtKind {
     Bind(String, Expr, bool),
     SetIndex(Expr, Expr),
     Expr(Expr),
+    /// A standalone, non-interpolated triple-quoted speaker note.
+    Note(String),
     Style(String),
     Import(Vec<(String, String)>, String),
     Function(String, Vec<(String, Option<Expr>)>, Vec<Stmt>, bool),
@@ -513,12 +528,18 @@ impl<'a> Parser<'a> {
                 StmtKind::Bind(n, self.expr(0)?, exported)
             }
             _ => {
+                let token = self.ts[self.i].clone();
                 let e = self.expr(0)?;
                 if self.eat("=") {
                     if exported || !matches!(e.kind, ExprKind::Index(..)) {
                         return Err(self.err("Assignment needs a dictionary index"));
                     }
                     StmtKind::SetIndex(e, self.expr(0)?)
+                } else if (token.text.starts_with("\"\"\"") || token.text.starts_with("'''"))
+                    && matches!(&e.kind, ExprKind::String(_, _, false))
+                {
+                    let ExprKind::String(text, _, _) = e.kind else { unreachable!() };
+                    StmtKind::Note(text)
                 } else {
                     StmtKind::Expr(e)
                 }

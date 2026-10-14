@@ -1,0 +1,578 @@
+[
+  {
+    "browser": "chromium",
+    "version": "151.0.7922.34",
+    "pages": [
+      {
+        "id": "cover",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 12527954
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 12527954
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 12527954
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 12527954
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 12527954
+          }
+        ]
+      },
+      {
+        "id": "seed",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 19428744
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 19428744
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 19428744
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 19428744
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 19428744
+          }
+        ]
+      },
+      {
+        "id": "anchors",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 16276662
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 16276662
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 16276662
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 16276662
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 16276662
+          }
+        ]
+      },
+      {
+        "id": "presentation",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 18725116
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 18725116
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 18725116
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 18725116
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 18725116
+          }
+        ]
+      },
+      {
+        "id": "offline",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 19989420
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 19989420
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 19989420
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 19989420
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 19989420
+          }
+        ]
+      },
+      {
+        "id": "editable",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 21720746
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 21720746
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 21720746
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 21720746
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia WebGL2 (software driver)",
+            "bytes": 21720746
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "browser": "firefox",
+    "version": "153.0",
+    "pages": [
+      {
+        "id": "cover",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 1222234
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 1222234
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 1222234
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 1222234
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 1222234
+          }
+        ]
+      },
+      {
+        "id": "seed",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 1612676
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 1612676
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 1612676
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 1612676
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 1612676
+          }
+        ]
+      },
+      {
+        "id": "anchors",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 1558814
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 1558814
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 1558814
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 1558814
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 1558814
+          }
+        ]
+      },
+      {
+        "id": "presentation",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 1453872
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 1453872
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 1453872
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 1453872
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 1453872
+          }
+        ]
+      },
+      {
+        "id": "offline",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 1677220
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 1677220
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 1677220
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 1677220
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 1677220
+          }
+        ]
+      },
+      {
+        "id": "editable",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 2013202
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 2013202
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 2013202
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 2013202
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 2013202
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "browser": "webkit",
+    "version": "26.5",
+    "pages": [
+      {
+        "id": "cover",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 1222234
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 1222234
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 1222234
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 1222234
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 1222234
+          }
+        ]
+      },
+      {
+        "id": "seed",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 1612676
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 1612676
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 1612676
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 1612676
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 1612676
+          }
+        ]
+      },
+      {
+        "id": "anchors",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 1558814
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 1558814
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 1558814
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 1558814
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 1558814
+          }
+        ]
+      },
+      {
+        "id": "presentation",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 1453872
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 1453872
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 1453872
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 1453872
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 1453872
+          }
+        ]
+      },
+      {
+        "id": "offline",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 1677220
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 1677220
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 1677220
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 1677220
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 1677220
+          }
+        ]
+      },
+      {
+        "id": "editable",
+        "notes": true,
+        "frames": [
+          {
+            "fraction": 0,
+            "backend": "Skia CPU",
+            "bytes": 2013202
+          },
+          {
+            "fraction": 0.2,
+            "backend": "Skia CPU",
+            "bytes": 2013202
+          },
+          {
+            "fraction": 0.5,
+            "backend": "Skia CPU",
+            "bytes": 2013202
+          },
+          {
+            "fraction": 0.8,
+            "backend": "Skia CPU",
+            "bytes": 2013202
+          },
+          {
+            "fraction": 1,
+            "backend": "Skia CPU",
+            "bytes": 2013202
+          }
+        ]
+      }
+    ]
+  }
+]

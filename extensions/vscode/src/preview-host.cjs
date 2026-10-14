@@ -254,14 +254,14 @@ function activatePreview(context,binary,output){
     state.deck?.dispose();const createWorker=()=>{const w=new PreviewWorker(binary,output,worker.resourceDir);w.background=true;return w;},compiler=createWorker();
     const deck=state.deck=new NativePresentation({worker:compiler,createWorker,canPrepare:()=>!worker.active&&!worker.queue.size&&![...panels.values()].some(p=>p.panel.visible&&(p.dirty||p.pending)),dist:path.join(context.extensionUri.fsPath,'dist'),uri:file=>state.panel.webview.asWebviewUri(vscode.Uri.file(file)).toString(),notify:data=>{if(state.deck===deck)post(state,{...data,requestId:message.requestId});},onBrowserClose:()=>{state.deckBrowserPinned=false;if(state.deck===deck&&!state.deckPinned){deck.dispose();state.deck=null;state.deckStale=false;post(state,{type:'deck-invalidated'});}}});
     deck.clientRequest=message.requestId;const doc=await vscode.workspace.openTextDocument(state.uri),overlays={};for(const doc of vscode.workspace.textDocuments)if(doc.uri.scheme==='file'&&doc.isDirty)overlays[keyOf(doc.uri)]=doc.getText();
-    deck.prepare(file,doc.getText(),overlays,editorDefaults(state.uri)).then(()=>{if(state.deck===deck)watch(state,[],false,true);},e=>{if(state.deck===deck)post(state,{type:'deck-error',error:e.message});});
+    deck.prepare(file,doc.getText(),overlays,editorDefaults(state.uri),message.startPageId).then(()=>{if(state.deck===deck)watch(state,[],false,true);},e=>{if(state.deck===deck)post(state,{type:'deck-error',error:e.message});});
    }
    else if(message?.type==='deck-ack'&&state.deck?.revision===message.revision){state.deck.ack(message.pageId);}
    else if(message?.type==='deck-priority'&&state.deck?.revision===message.revision){state.deck.priority(message.pageId,message.retry);}
    else if(message?.type==='deck-cancel'&&(!message.requestId||state.deck?.clientRequest===message.requestId)&&(!message.revision||state.deck?.revision===message.revision)){state.deck?.dispose();state.deck=null;}
    else if(message?.type==='deck-pin'){state.deckPinned=true;}
    else if(message?.type==='deck-release'){state.deckPinned=false;if(state.deckStale&&!state.deckBrowserPinned){state.deckStale=false;state.deck?.dispose();state.deck=null;post(state,{type:'deck-invalidated'});}}
-   else if(message?.type==='deck-browser'){try{const url=await state.deck.browser();state.deckBrowserPinned=true;await vscode.env.openExternal(vscode.Uri.parse(url));}catch(e){post(state,{type:'deck-browser-error',error:e.message});}}
+   else if(message?.type==='deck-browser'){try{const url=new URL(await state.deck.browser());if(message.startPageId)url.searchParams.set("page",message.startPageId);if(message.presenter)url.searchParams.set("presenter","1");state.deckBrowserPinned=true;await vscode.env.openExternal(vscode.Uri.parse(url.href));}catch(e){post(state,{type:'deck-browser-error',error:e.message});}}
    else if(message?.type==='painted'&&message.generation===state.generation){state.displayListId=message.displayListId;}
    else if(message?.type==='request-full'){state.displayListId=undefined;invalidate(state,true);}
    else if(message?.type==='refresh')invalidate(state,true);

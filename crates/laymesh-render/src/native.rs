@@ -89,6 +89,7 @@ mod tests {
             export_dpi: 300.,
             nodes: vec![],
             warnings: vec![],
+            speaker_notes: None,
             fonts: Default::default(),
             font_requests: Default::default(),
         }
@@ -188,6 +189,7 @@ mod extraction_tests {
         formula["x"] = json!(2.);
         formula["y"] = json!(10.);
         let scene = Scene {
+            speaker_notes: None,
             page_transition: None,
             animation: None,
             schema_version: 8,

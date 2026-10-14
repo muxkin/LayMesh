@@ -26,6 +26,8 @@ def validate_runtime(output):
  assert stored['wasm_sha256']==hashlib.sha256((output/'wasm'/json.loads((output/'wasm/manifest.json').read_text())['wasm']).read_bytes()).hexdigest(),'Browser WASM fingerprint mismatch'
 def build(output,skip_wasm=False):
  output.mkdir(parents=True,exist_ok=True)
+ for name in ['presentation-screens','presenter-audience']:
+  for suffix in ['.js','.mjs']:(output/(name+suffix)).unlink(missing_ok=True)
  skia_assets.stage(output)
  shutil.copy2(ROOT/'site/live/presentation.css',output/'presentation.css')
  if output==ROOT/'site/dist/site/live':

@@ -2,6 +2,8 @@
 
 本记录对应 2026-10-13 的 Linux 本地发行检查。跨平台安装包结果以同一提交的 GitHub Actions 为准；本地通过不代替远程发布完成。
 
+后续的播放修复、演讲者视图与新体积检查见[2026-10-14 v004 验证记录](presenter-mirror.zh-CN.md)。本页保留原导出优化的基线结果。
+
 ## 静态文件导出
 
 在 Chromium、Firefox、WebKit 中从 `file://` 打开离线作品，拦截所有 HTTP 请求，可编辑版逐项下载并检查 15 种格式：PDF、SVG、PPTX、PNG、JPEG、TIFF、WebP、BMP、静态 GIF、ICO、PAM、PPM、PGM、PBM、TGA。放映版裁剪为 PDF、SVG、PNG、JPEG、TIFF，并验证从可编辑版另存、再次保存后都不携带完整编码器。三种浏览器全部通过，没有网络请求、页面异常或额外编译。

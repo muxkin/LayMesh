@@ -2,7 +2,7 @@ import {PresentationStore} from './presentation-store.mjs';
 import {PresentationSession} from './presentation-session.mjs';
 // First-page compilation has priority over pool startup. Subsequent workers
 // compile independent resolved sources; one artifact per worker is in flight.
-export function webPresentationProvider(editor,base,{concurrency}={}){return async({signal,onProgress})=>{
+export function webPresentationProvider(editor,base,{concurrency}={}){return async({signal,onProgress,startPageId,plannedOnly})=>{
  const store=new PresentationStore(),workers=[],files={...editor.files},entry=editor.entry;
  const limit=Math.max(1,Math.min(4,Math.floor(concurrency??Math.max(1,(navigator.hardwareConcurrency||2)-2)),navigator.deviceMemory&&navigator.deviceMemory<=4?2:4));
  let queue=[],planned=false,storage=Promise.resolve(),expanded=false;
@@ -20,7 +20,7 @@ export function webPresentationProvider(editor,base,{concurrency}={}){return asy
     if(planner)w.postMessage({type:'prepare-deck',files,entry,planOnly:true});else dispatch(w);
    }else if(data.type==='deck-plan'&&!planned){
     planned=true;timings.planMs=performance.now()-session.started;session.plan(data.pages);const seen=new Map();
-    data.pages.forEach((page,index)=>{const key=page.src+"|"+JSON.stringify(page.transition||null);if(page.src&&seen.has(key))seen.get(key).aliases.push(page);else{const item={page,index,aliases:[],status:'pending'};queue.push(item);if(page.src)seen.set(key,item);}});dispatch(w);
+    data.pages.forEach((page,index)=>{const key=page.src+"|"+JSON.stringify(page.transition||null);if(page.src&&seen.has(key))seen.get(key).aliases.push(page);else{const item={page,index,aliases:[],status:'pending',priority:page.id===startPageId?1:0};queue.push(item);if(page.src)seen.set(key,item);}});dispatch(w);
    }else if(data.type==='deck-page'){
     const item=w.item;await(storage=storage.catch(()=>{}).then(async()=>{if(session.closed)return;const before=performance.now();await store.add(data.page);session.ready(store.pages.find(p=>p.id===data.page.id));for(const alias of item.aliases){await store.alias(alias.id,alias.name,item.page.id);session.ready(store.pages.find(p=>p.id===alias.id));}timings.storageMs+=performance.now()-before;}));
     if(session.closed)return;timings.pages.push(data.timings);item.status='ready';w.item=null;
@@ -32,5 +32,5 @@ export function webPresentationProvider(editor,base,{concurrency}={}){return asy
   }catch(e){fatal(e);}};w.postMessage({type:'init',base:base.href,compilerOnly:true});
  };
  if(signal.aborted)abort();else spawn(true);
- try{return await session.firstReady;}catch(error){await store.dispose();throw error;}
+ try{return await (plannedOnly?session.planReady:session.firstReady);}catch(error){await store.dispose();throw error;}
 };}

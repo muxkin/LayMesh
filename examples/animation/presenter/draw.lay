@@ -1,0 +1,11 @@
+"""点击下一步，展示箭头沿曲线前进。"""
+p=canvas(size=(160mm,90mm),background="#faf9f4")
+p.add(text("让讲稿留在自己面前",font_family="Noto Sans CJK SC",font_size=22pt),offset=(12mm,12mm))
+a=p.add(line(length=110mm,line_width=1mm,end_head=head(size=(8mm,6mm)),line_color="#009caf"),offset=(20mm,52mm))
+s=p.step(name="箭头跟随绘制前端")
+s.animate(a,name="draw",duration=2s,easing="ease-in-out",fill="both")
+'''
+第二段备注按源码顺序合并。
+
+用 S 暂停动画；演讲计时仍会继续。
+'''

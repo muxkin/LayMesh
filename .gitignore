@@ -5,6 +5,9 @@ packages/*/dist/
 coverage/
 *.pdf
 *.png
+!docs/benchmarks/presenter-playback/presenter.png
+!docs/benchmarks/presenter-playback/v004/presenter.png
+!docs/benchmarks/presenter-playback/v005/recovery.png
 !extensions/vscode/icon.png
 *.svg
 !site/logo.svg

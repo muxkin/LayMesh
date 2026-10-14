@@ -1,0 +1,31 @@
+{
+  "files": [
+    {
+      "version": "v003",
+      "file": "video/04-LCSS与动画/exports/v003/04_LCSS_离线播放_v003.zip.html",
+      "bytes": 4173462,
+      "sha256": "473f6a4540c6b8dc01c63244ece488a3c261712ab15b9098fa5684d4da1f2b50"
+    },
+    {
+      "version": "v004",
+      "file": "video/04-LCSS与动画/exports/v004/04_LCSS_离线播放_v004.zip.html",
+      "bytes": 4179040,
+      "sha256": "8f1c8b042a47d173e0efdb1a58e131267384d1cabecedcd8ca27dd8289e7f5c7"
+    },
+    {
+      "version": "v005",
+      "file": "video/04-LCSS与动画/exports/v005/04_LCSS_离线播放_v005.zip.html",
+      "bytes": 4183177,
+      "sha256": "8ca9da4bc9d5e97a228b47993b5036d8010767a01cd734c3fab423d8697b329c"
+    },
+    {
+      "version": "v006",
+      "file": "video/04-LCSS与动画/exports/v006/04_LCSS_离线播放_v006.zip.html",
+      "bytes": 4179561,
+      "sha256": "99333a3a6851b5ba8b598837a4884502f136b359b8565d81ff10846efe7335a3"
+    }
+  ],
+  "v002Bytes": 3957287,
+  "v006MinusV005Bytes": -3616,
+  "v006MinusV002Bytes": 222274
+}

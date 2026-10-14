@@ -43,8 +43,8 @@ export function projectedDensity(m,b){
 }
 
 export class SkiaRenderer {
- constructor(ck,canvas,{cacheMB=256,software=false,preserveDrawingBuffer=false,onContextChange=()=>{}}={}) {
-  this.ck=ck;this.canvas=canvas;this.transitions=new PageTransitions(this);this.budget=cacheMB*1048576;this.images=new Map();this.imageBytes=new Map();this.commandCache=new Map();this.prepared=new WeakMap();this.owned=[];this.animatedNames=new Set();this.pictureBytes=0;this.generation=0;this.frameCount=0;
+ constructor(ck,canvas,{cacheMB=256,software=false,preserveDrawingBuffer=false,onPresent=()=>{},onContextChange=()=>{}}={}) {
+  this.ck=ck;this.canvas=canvas;this.onPresent=onPresent;this.transitions=new PageTransitions(this);this.budget=cacheMB*1048576;this.images=new Map();this.imageBytes=new Map();this.commandCache=new Map();this.prepared=new WeakMap();this.owned=[];this.animatedNames=new Set();this.pictureBytes=0;this.generation=0;this.frameCount=0;
   this.nextCommandId=0;this.staticTextures=new Map();this.staticTextureBytes=0;this.sceneRuns=[];
   this.layerTextures=new Map();this.layerTextureBytes=0;
   this.context=software?0:ck.GetWebGLContext(canvas,{majorVersion:2,alpha:1,antialias:1,preserveDrawingBuffer:Number(preserveDrawingBuffer)});
@@ -333,7 +333,7 @@ export class SkiaRenderer {
   c.restore();this.surface.flush();}finally{c.restoreToCount(saved);if(query){gl.endQuery(timer.TIME_ELAPSED_EXT);this.queries.push(query);}
   // Geometry extensions own temporary commands for this frame only.
   while(this.owned.length>count)this.owned.pop().delete();
-  this.transient=false;this.cacheLayers=false;}if(gl){const fence=gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE,0);if(fence)this.fences.push(fence);gl.flush();}this.frameCount++;return {backend:this.backend,device:this.device,rasterMs:performance.now()-start,gpuMs:this.gpuMs,gpuSamples,cacheBytes:this.gr?.getResourceCacheUsageBytes()||0,staticTextureBytes:this.staticTextureBytes,staticCacheHits:this.cacheHits,staticCacheBuilds:this.cacheBuilds,layerTextureBytes:this.layerTextureBytes,layerCacheHits:this.layerHits,layerCacheBuilds:this.layerBuilds,layerCacheBudgetMisses:this.layerBudgetMisses,layerCacheAllocationFailures:this.layerAllocationFailures,frameCount:this.frameCount};
+  this.transient=false;this.cacheLayers=false;}if(gl){const fence=gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE,0);if(fence)this.fences.push(fence);gl.flush();}this.frameCount++;this.onPresent();return {backend:this.backend,device:this.device,rasterMs:performance.now()-start,gpuMs:this.gpuMs,gpuSamples,cacheBytes:this.gr?.getResourceCacheUsageBytes()||0,staticTextureBytes:this.staticTextureBytes,staticCacheHits:this.cacheHits,staticCacheBuilds:this.cacheBuilds,layerTextureBytes:this.layerTextureBytes,layerCacheHits:this.layerHits,layerCacheBuilds:this.layerBuilds,layerCacheBudgetMisses:this.layerBudgetMisses,layerCacheAllocationFailures:this.layerAllocationFailures,frameCount:this.frameCount};
  }
  // Explicit readback for static export and test oracles; playback never calls it.
  readPixels(){const image=this.surface.makeImageSnapshot();try{return image.readPixels(0,0,{width:this.canvas.width,height:this.canvas.height,colorType:this.ck.ColorType.RGBA_8888,alphaType:this.ck.AlphaType.Unpremul,colorSpace:this.ck.ColorSpace.SRGB});}finally{image.delete();}}

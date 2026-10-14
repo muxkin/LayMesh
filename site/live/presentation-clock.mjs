@@ -1,6 +1,9 @@
 // Pure presentation state; no timers, DOM, compiler, or renderer dependencies.
 export class PresentationClock {
- constructor(){this.mode='manual';this.speed=1;this.running=false;this.time=0;this.completed=0;this.active=-1;this.steps=[];}
+ constructor(){this.mode='manual';this.speed=1;this.running=false;this.time=0;this.duration=0;this.staticPage=true;this.completed=0;this.active=-1;this.steps=[];}
+ // The final hold belongs to automatic navigation, not animation completion.
+ status(){const end=this.steps.reduce((end,s)=>Math.max(end,s.start+s.duration),0),complete=!this.steps.length||this.time>=end||this.completed>=this.steps.length,holdRemaining=this.mode==='auto'&&complete?Math.max(0,this.duration-this.time):0;
+  return {animationProgress:complete?1:Math.max(0,Math.min(1,this.time/(end||1))),animationStatus:this.staticPage?'static':holdRemaining>0?(this.running?'holding':'paused'):complete?'complete':this.running?'playing':this.active>=0?'paused':'waiting',holdRemaining,stepCount:this.steps.length,stepName:this.steps[Math.max(0,this.active>=0?this.active:this.completed-1)]?.name||''};}
  install(animation,reduced=false,end=false){this.steps=animation?(reduced?animation.reducedSteps:animation.steps):[];this.duration=animation?(reduced?animation.reducedDuration:animation.duration):1;this.time=end?this.duration:0;this.completed=end?this.steps.length:0;this.active=-1;this.running=false;this.staticPage=!this.steps.length;if(!end&&this.steps[0]?.trigger==='after-previous'){this.active=0;this.running=true;}}
  advance(){if(this.staticPage)return 1;if(this.active>=0){this.time=this.steps[this.active].start+this.steps[this.active].duration;this.completed=this.active+1;this.active=-1;this.running=false;return 0;}if(this.completed>=this.steps.length)return 1;this.active=this.completed;this.time=this.steps[this.active].start;this.running=true;return 0;}
  previous(){this.running=false;if(this.active>=0){this.completed=this.active;this.active=-1;}else if(this.completed>0)this.completed--;else return -1;this.time=this.steps[this.completed]?.start??0;return 0;}
