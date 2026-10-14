@@ -114,7 +114,8 @@ const run = (args) =>
       );
       assert.equal(
         await page.evaluate(() => window.__LAYMESH_WEB.presentation.index),
-        0,
+        Number(saved.index),
+        "Fullscreen presentation starts from the saved preview page",
       );
       assert(await page.locator(".presentation-canvas").isVisible());
       if (i === 0) {
