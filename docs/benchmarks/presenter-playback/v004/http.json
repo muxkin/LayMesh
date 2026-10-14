@@ -1,0 +1,29 @@
+[
+  {
+    "browser": "chromium",
+    "url": "http://100.64.0.6:8774/preview/04-lcss-v004.zip.html",
+    "title": "LayMesh 04 / 一个小伏笔 · 0.6.3",
+    "insecureContext": true,
+    "autoSingleWindow": true,
+    "manualPresenter": true,
+    "errors": []
+  },
+  {
+    "browser": "firefox",
+    "url": "http://100.64.0.6:8774/preview/04-lcss-v004.zip.html",
+    "title": "LayMesh 04 / 一个小伏笔 · 0.6.3",
+    "insecureContext": true,
+    "autoSingleWindow": true,
+    "manualPresenter": true,
+    "errors": []
+  },
+  {
+    "browser": "webkit",
+    "url": "http://100.64.0.6:8774/preview/04-lcss-v004.zip.html",
+    "title": "LayMesh 04 / 一个小伏笔 · 0.6.3",
+    "insecureContext": true,
+    "autoSingleWindow": true,
+    "manualPresenter": true,
+    "errors": []
+  }
+]

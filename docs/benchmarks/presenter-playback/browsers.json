@@ -1,0 +1,47 @@
+[
+  {
+    "browser": "chromium",
+    "passed": true,
+    "offline": true,
+    "currentPage": true,
+    "notes": true,
+    "controls": true,
+    "reconnect": true,
+    "popupBlocked": true,
+    "viewports": [
+      "1672x941",
+      "1366x768",
+      "600x900"
+    ]
+  },
+  {
+    "browser": "firefox",
+    "passed": true,
+    "offline": true,
+    "currentPage": true,
+    "notes": true,
+    "controls": true,
+    "reconnect": true,
+    "popupBlocked": true,
+    "viewports": [
+      "1672x941",
+      "1366x768",
+      "600x900"
+    ]
+  },
+  {
+    "browser": "webkit",
+    "passed": true,
+    "offline": true,
+    "currentPage": true,
+    "notes": true,
+    "controls": true,
+    "reconnect": true,
+    "popupBlocked": true,
+    "viewports": [
+      "1672x941",
+      "1366x768",
+      "600x900"
+    ]
+  }
+]

@@ -227,7 +227,13 @@ function namedFont(style) {
       await page
         .locator(".font-options:not([hidden])")
         .evaluate((n) => (n.scrollTop = n.scrollHeight));
-      await page.waitForTimeout(30);
+      // Virtual rows update on the browser's next rendering opportunity, which
+      // can exceed 30 ms on the software-rendered CI runner.
+      await page.waitForFunction(() => {
+        const options = document.querySelectorAll('.font-options:not([hidden]) [role="option"]');
+        return Number(options[0]?.getAttribute('aria-posinset')) > 180 &&
+          options[options.length - 1]?.getAttribute('aria-posinset') === '203';
+      });
       assert(
         Number(
           await page

@@ -10,7 +10,7 @@
     "version": 3,
     "engine": "rust-skia-ratex"
   },
-  "engine": "10afd8c90d8c2842311bee15bfb4cd3d6f2eef9a932ae896a85bc780d8a18ba4",
+  "engine": "ccb99ee7997c82ef22df7e0b0a798c6fc82b56a908cd13e7232c969d4ac6d5eb",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -2006,6 +2006,58 @@
           "width": 3840,
           "height": 2160,
           "sha256": "e13e8a9e5d2e3180879c5d53f5a629ce6e7d08de1576a2c77b14a51f46425c8f"
+        }
+      ]
+    },
+    "examples/animation/presenter/draw.lay": {
+      "fingerprint": "7dd00fb2753e0061fa556ce8cff8b69c121d4e0dc34b18417eaab8d107641ac6",
+      "dependencies": [
+        "examples/animation/presenter/draw.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-presenter-draw-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "1bdde7e97980716eb24256b0684fb5cabb975cd1ee98560749815ad7280510e5"
+        },
+        {
+          "file": "site/media/animation-presenter-draw-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "0863ab7e9027aa156da2f3b4f077d147cbfacf73449d93d4c17e399acdab6abb"
+        },
+        {
+          "file": "site/media/animation-presenter-draw-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "6cb9082168171867fe463c409ca38744b700793b9f0c8a121d8daa2ed4d6fa3d"
+        }
+      ]
+    },
+    "examples/animation/presenter/welcome.lay": {
+      "fingerprint": "0ebc53b1f03521fe967fbaab78ffda89ce204dcbf7a816bc6b000816ca475b55",
+      "dependencies": [
+        "examples/animation/presenter/welcome.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-presenter-welcome-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "746e24581cba0fac48222465d01acd1a0c40bfcbd31e8c000dea4130fc2443fb"
+        },
+        {
+          "file": "site/media/animation-presenter-welcome-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "7d51d4a287e1dca4641406d67b48a15e43d9311df0ef6b9f6c171b4e7bd8df3b"
+        },
+        {
+          "file": "site/media/animation-presenter-welcome-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "600256c8a0772d3ffbb19c9027df2b9b8d79d7dd61a8a0721240e080be65d16a"
         }
       ]
     },
@@ -5857,6 +5909,34 @@
         }
       ]
     },
+    "examples/animation/presenter/demo.laydoc": {
+      "fingerprint": "7c852c33efb0c3ccfc10470033d6d355cdf16cf64cabab4a1fc5f987343a9319",
+      "dependencies": [
+        "examples/animation/presenter/demo.laydoc",
+        "examples/animation/presenter/draw.lay",
+        "examples/animation/presenter/welcome.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/animation-presenter-demo-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "746e24581cba0fac48222465d01acd1a0c40bfcbd31e8c000dea4130fc2443fb"
+        },
+        {
+          "file": "site/media/animation-presenter-demo-1920.webp",
+          "width": 1920,
+          "height": 1080,
+          "sha256": "7d51d4a287e1dca4641406d67b48a15e43d9311df0ef6b9f6c171b4e7bd8df3b"
+        },
+        {
+          "file": "site/media/animation-presenter-demo-3840.webp",
+          "width": 3840,
+          "height": 2160,
+          "sha256": "600256c8a0772d3ffbb19c9027df2b9b8d79d7dd61a8a0721240e080be65d16a"
+        }
+      ]
+    },
     "examples/animation/transitions/demo.laydoc": {
       "fingerprint": "64d92a8118fdc6be4c081bf6284cd87f8120a5dd905e6a062d116c6b9f89de7d",
       "dependencies": [
@@ -5944,6 +6024,60 @@
           "width": 3840,
           "height": 2496,
           "sha256": "9d55eb8bf9b6cfdcb005e91a071a27afbd65629404d40483db1a9478943ea8de"
+        }
+      ]
+    },
+    "docs/benchmarks/presenter-playback/presenter.png": {
+      "fingerprint": "555c4fb8bb430c3826f8371779dee6ce8197d8e708cbfd70083eafd88eec6ee4",
+      "dependencies": [
+        "docs/benchmarks/presenter-playback/presenter.png"
+      ],
+      "variants": [
+        {
+          "file": "site/media/docs-benchmarks-presenter-playback-presenter-960.webp",
+          "width": 960,
+          "height": 540,
+          "sha256": "e15583830785cbe259b798fa9daa2220c6948736b118dc816c5ee0400ba350d1"
+        },
+        {
+          "file": "site/media/docs-benchmarks-presenter-playback-presenter-1672.webp",
+          "width": 1672,
+          "height": 941,
+          "sha256": "13551b0fccebac64e67ff510cd170dc684348330679d86491294ea8708b1f107"
+        }
+      ]
+    },
+    "docs/benchmarks/presenter-playback/v004/presenter.png": {
+      "fingerprint": "49fc937fd4da47dd6dd8d212efa042ef5247d8ac70ea8570ae1eb9523964a757",
+      "dependencies": [
+        "docs/benchmarks/presenter-playback/v004/presenter.png"
+      ],
+      "variants": [
+        {
+          "file": "site/media/docs-benchmarks-presenter-playback-v004-presenter-960.webp",
+          "width": 960,
+          "height": 600,
+          "sha256": "9ccf1f81f0a69768ee4d33bfb20aab44715b66db73112a00572c5a043ccf98ae"
+        },
+        {
+          "file": "site/media/docs-benchmarks-presenter-playback-v004-presenter-1280.webp",
+          "width": 1280,
+          "height": 800,
+          "sha256": "48874ceb81141404d534f193fcdadf01d92f09a2bdcc19f6bbc9b8b99fe1e494"
+        }
+      ]
+    },
+    "docs/benchmarks/presenter-playback/v005/recovery.png": {
+      "fingerprint": "b15432ccaf9ac025e3e88dd4786f9c8fa34d35f93365c9820061abbcaf400ce3",
+      "dependencies": [
+        "docs/benchmarks/presenter-playback/v005/recovery.png"
+      ],
+      "variants": [
+        {
+          "file": "site/media/docs-benchmarks-presenter-playback-v005-recovery-800.webp",
+          "width": 800,
+          "height": 600,
+          "sha256": "10bf668eb7ba7bd6d4fb8c0ddf5e79123e4dd31c99be4de36afc0d16e3055b5a"
         }
       ]
     }

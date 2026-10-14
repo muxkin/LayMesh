@@ -1,0 +1,23 @@
+{
+  "baseline": {
+    "name": "04_LCSS_离线播放_v002.zip.html",
+    "bytes": 3957287,
+    "sha256": "35bd4187b535b9817ec0207b6faf5b189ca68d0b3852629ffaffb9f7d2835318"
+  },
+  "updated": {
+    "name": "04_LCSS_离线播放_v003.zip.html",
+    "bytes": 4173462,
+    "sha256": "473f6a4540c6b8dc01c63244ece488a3c261712ab15b9098fa5684d4da1f2b50"
+  },
+  "deltaBytes": 216175,
+  "deltaKiB": 211.1083984375,
+  "export": {
+    "bytes": 4173462,
+    "containerOverheadBytes": 127580,
+    "editable": false,
+    "pages": 6,
+    "prepareMs": 2755.563959,
+    "uncompressedBytes": 11997573,
+    "zipBytes": 4045882
+  }
+}

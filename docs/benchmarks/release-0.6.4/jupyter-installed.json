@@ -1,0 +1,127 @@
+{
+  "mode": "installed-wheel",
+  "python": "3.13.11",
+  "engine_sha256": "278f45cc99d62f7c6114504d9f6d96dbe8ed7dd5e49532e7b0fc2fbf69414c4c",
+  "source_sha256": {
+    "scripts/test-python-jupyter.py": "f9c20132b8991cb4e80ad906cf57e3d628b8be690a3f1824d30174c124e0c85c",
+    "examples/jupyter-integration.ipynb": "716ae6d021a688d7a9719fef3567ebd7a9767aa1d977d345267a151c9ddeb812",
+    "python/laymesh/__init__.py": "faa0a90287453f3d7ea73e5def6c49d86647642eb96a38adc42d50e7c8301403",
+    "python/laymesh/__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+    "python/laymesh/_runtime.py": "fb38c8d7d194b12052a52cdeff30817a9d052e439173c230811c0be03b38a41b",
+    "python/laymesh/_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+    "python/laymesh/animation.py": "4e45b87178c60c8b7d120051d90372ffc8d117b3bcbc8426595073c21a858492",
+    "python/laymesh/bridge.py": "455bd36db82b05f567c3fcdbed2307d2950654077ee3f22b1fa56777afc5d535",
+    "python/laymesh/ipython.py": "ab78071ade23cc9d3fc7f4813c875aaaef22bcc190f90dcb94dccc7346042230"
+  },
+  "repeats": [
+    {
+      "run": 1,
+      "code_cells": 10,
+      "elapsed_ms": 826.6917660075705,
+      "previews": [
+        {
+          "pixels": [
+            1209,
+            756
+          ],
+          "css": {
+            "width": 604,
+            "height": 378
+          },
+          "sha256": "992d902853113c9ea12f7e208e382215ab00d42a03b4162ec0124169aa90d34a"
+        },
+        {
+          "pixels": [
+            756,
+            529
+          ],
+          "css": {
+            "width": 378,
+            "height": 264
+          },
+          "sha256": "6807570fca5fa907b32d930326cb85017043259876cc4d16a2b8dd69fa2a2f0b"
+        },
+        {
+          "pixels": [
+            1209,
+            756
+          ],
+          "css": {
+            "width": 604,
+            "height": 378
+          },
+          "sha256": "992d902853113c9ea12f7e208e382215ab00d42a03b4162ec0124169aa90d34a"
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "code_cells": 10,
+      "elapsed_ms": 381.73166499473155,
+      "previews": [
+        {
+          "pixels": [
+            1209,
+            756
+          ],
+          "css": {
+            "width": 604,
+            "height": 378
+          },
+          "sha256": "992d902853113c9ea12f7e208e382215ab00d42a03b4162ec0124169aa90d34a"
+        },
+        {
+          "pixels": [
+            756,
+            529
+          ],
+          "css": {
+            "width": 378,
+            "height": 264
+          },
+          "sha256": "6807570fca5fa907b32d930326cb85017043259876cc4d16a2b8dd69fa2a2f0b"
+        },
+        {
+          "pixels": [
+            1209,
+            756
+          ],
+          "css": {
+            "width": 604,
+            "height": 378
+          },
+          "sha256": "992d902853113c9ea12f7e208e382215ab00d42a03b4162ec0124169aa90d34a"
+        }
+      ]
+    }
+  ],
+  "kernel_checks": {
+    "engine_version": "laymesh 0.6.4",
+    "engine_sha256": "278f45cc99d62f7c6114504d9f6d96dbe8ed7dd5e49532e7b0fc2fbf69414c4c",
+    "python_package_sha256": {
+      "__init__.py": "faa0a90287453f3d7ea73e5def6c49d86647642eb96a38adc42d50e7c8301403",
+      "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",
+      "_runtime.py": "fb38c8d7d194b12052a52cdeff30817a9d052e439173c230811c0be03b38a41b",
+      "_svg.py": "3f31121e410c104702afa43b26e4f5c532273cbd4419a4527dc761da227efb02",
+      "animation.py": "4e45b87178c60c8b7d120051d90372ffc8d117b3bcbc8426595073c21a858492",
+      "bridge.py": "455bd36db82b05f567c3fcdbed2307d2950654077ee3f22b1fa56777afc5d535",
+      "ipython.py": "ab78071ade23cc9d3fc7f4813c875aaaef22bcc190f90dcb94dccc7346042230"
+    },
+    "data_updates": true,
+    "figure_updates": true,
+    "unchanged_figure_asset_reused": true,
+    "standalone_replay": true,
+    "relative_modules_and_alpha": true,
+    "config_dpi": true,
+    "default_dpi_1200_and_tiff_lzw": true,
+    "errors_recover": true,
+    "svg_api_compatible": true,
+    "jpeg_exact_native_match": true,
+    "compact_result_display": true,
+    "document_jpeg_magic": true,
+    "document_full_pdf_and_selected_png": true,
+    "presentation_notes_private": true,
+    "draw_warning_nonblocking": true,
+    "installed_offline": true
+  }
+}

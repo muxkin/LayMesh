@@ -1,0 +1,8 @@
+"""
+    先介绍演示主题，再切换到第二页。
+
+    这段讲稿只显示在演讲者视图中。
+"""
+p=canvas(size=(160mm,90mm),background="#faf9f4")
+p.add(text("从当前页，开始演讲",font_family="Noto Sans CJK SC",font_size=24pt),offset=(12mm,16mm))
+p.add(text("多屏自动分屏；控制台显示讲稿和下一页。",font_family="Noto Sans CJK SC",font_size=12pt),offset=(12mm,38mm))

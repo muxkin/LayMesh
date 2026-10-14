@@ -23,16 +23,16 @@ class NativePresentation {
    this.notify({type:'deck-progress',completed:this.pages.filter(p=>p.status==='ready').length,total:this.pages.length});
   }));}
  }
- async prepare(file,source,overlays,defaults){
+ async prepare(file,source,overlays,defaults,startPageId){
   this.entry=file;this.entrySource=source;
   this.started=performance.now();this.startedAt=Date.now();this.overlays={...overlays,[file]:source};this.defaults=defaults;this.signatures=new Map();
-  const first=await this.compile(this.worker,file,source,{});if(this.cancelled)throw Error('Presentation preparation cancelled');
+  let first;try{first=await this.compile(this.worker,file,source,startPageId?{page_id:startPageId}:{});}catch(error){if(startPageId&&/Selected page ID no longer exists/.test(error.message))first=await this.compile(this.worker,file,source,{});else throw error;}if(this.cancelled)throw Error('Presentation preparation cancelled');
   this.settings=first.previewSettings||{};this.config=path.join(this.directory,'defaults.json');fs.writeFileSync(this.config,JSON.stringify({preview:this.settings}));this.budget=(this.settings.cache_mb??256)*1048576;
   this.pages=(first.document?.pages||[{id:'page',name:path.basename(file),src:file}]).map((p,index)=>({...p,index,status:'pending'}));
   for(const p of this.pages)if(!(p.src in this.overlays)){this.record(p.src);this.overlays[p.src]=fs.readFileSync(p.src,'utf8');}
   this.notify({type:'deck-plan',pages:this.pages.map(({id,name,src})=>({id,name,src})),budget:this.budget});
   const seen=new Map();this.jobs=[];for(const p of this.pages){const key=p.src+"|"+JSON.stringify(p.transition||null);if(seen.has(key))seen.get(key).specs.push(p);else{const job={specs:[p],status:'pending'};seen.set(key,job);this.jobs.push(job);}}
-  await this.accept(first,this.worker,this.jobs[0].specs);this.jobs[0].status='ready';this.ready=true;this.firstPageMs=performance.now()-this.started;
+  const firstJob=this.jobs.find(j=>j.specs.some(p=>p.id===first.document?.pageId))||this.jobs[0];await this.accept(first,this.worker,firstJob.specs);firstJob.status='ready';this.ready=true;this.firstPageMs=performance.now()-this.started;
   for(let i=1;i<Math.min(this.limit,this.jobs.length-1);i++)this.workers.push(this.createWorker());
   this.preparation={workers:this.workers.length,firstPageMs:this.firstPageMs};
   await new Promise((resolve,reject)=>{this.finish=resolve;this.rejectFinished=reject;this.pump();});return this;
@@ -44,7 +44,7 @@ class NativePresentation {
   }
   if(this.jobs.every(j=>j.status==='ready'||j.status==='error')){this.prepareMs=performance.now()-this.started;this.preparation.interrupted=this.interrupted||0;this.notify({type:'deck-ready',prepareMs:this.prepareMs,preparation:this.preparation,budget:this.budget});this.finish?.();this.finish=null;for(const worker of this.workers)worker.stop?.();}
  }
- async browser(){if(!this.ready)throw Error('Presentation is not prepared');if(this.url)return this.url;
+ async browser(){if(!this.pages.length)throw Error('Presentation is not prepared');if(this.url)return this.url;
   const addresses=Object.values(os.networkInterfaces()).flat().filter(Boolean).map(n=>n.address);const host=addresses.find(a=>/^100\.(\d+)\./.test(a)&&Number(a.split('.')[1])>=64&&Number(a.split('.')[1])<=127);if(!host)throw Error('Tailscale IPv4 address is unavailable');
   const token=crypto.randomBytes(24).toString('hex'),prefix='/'+token+'/';
   this.server=http.createServer((req,res)=>{try{const url=new URL(req.url,'http://localhost');if(!url.pathname.startsWith(prefix)){res.writeHead(404).end();return;}const route=url.pathname.slice(prefix.length);res.setHeader('Cache-Control','no-store');

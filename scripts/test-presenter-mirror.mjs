@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {PresenterMirror} from '../site/live/presenter-mirror.mjs';
+const captured=[],sent=[],errors=[];let resolveImage;
+globalThis.createImageBitmap=(canvas,...args)=>{captured.push(args);return new Promise(resolve=>resolveImage=resolve);};
+const mirror=new PresenterMirror({canvas:()=>({width:1920,height:1080}),send:(data)=>sent.push(data),onError:error=>errors.push(error)});
+mirror.present({pageId:'a',serial:1,time:0,running:false});
+mirror.present({pageId:'a',serial:1,time:1,running:false});assert.equal(captured.length,1,'Only one copy may be in flight');
+resolveImage({close(){}});await new Promise(r=>setTimeout(r,0));assert.equal(sent.length,1);mirror.acknowledge(999);assert.equal(captured.length,1);mirror.acknowledge(1);assert.equal(captured.length,2);
+let closed=false;mirror.dispose();resolveImage({close(){closed=true;}});await new Promise(r=>setTimeout(r,0));assert(closed);assert.equal(sent.length,1);assert.deepEqual(errors,[]);
+const hidden=new PresenterMirror({canvas:()=>({width:100,height:50}),send:()=>{}});hidden.configure({visible:false});hidden.present({running:false});assert.equal(captured.length,2);hidden.dispose();
+console.log('Presenter mirror: bounded queue, final-frame coalescing, stale acknowledgement, hidden and disposal passed.');

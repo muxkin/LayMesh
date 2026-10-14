@@ -84,6 +84,17 @@ jobs:
           python -m pip install "$(python -c "from pathlib import Path; print(next(Path('release/dist').glob('*.whl')))")"
       - run: python scripts/smoke-python-wheel.py --examples examples
       - run: python -m unittest discover -s python/tests -v
+      - name: Exercise the installed wheel in a real Jupyter kernel twice
+        run: |
+          python -m pip install -r release/jupyter-requirements.txt
+          python scripts/test-python-jupyter.py --installed --output release/verification/jupyter
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jupyter-${{ matrix.target }}
+          path: release/verification/jupyter
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Build and audit Windows, Linux and macOS VS Code packages
         shell: bash
         run: |

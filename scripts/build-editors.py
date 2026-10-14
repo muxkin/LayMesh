@@ -31,12 +31,17 @@ def build(binary=None,extension_dir=None):
  shutil.copy2(ROOT/'site/live/color-panel.mjs',extension/'dist/color-panel.mjs');shutil.copy2(ROOT/'site/live/color-math.mjs',extension/'dist/color-math.mjs');shutil.copy2(source/'src/color-webview.mjs',extension/'dist/color-webview.mjs')
  shutil.copy2(ROOT/'site/live/playback-stats.mjs',extension/'dist/playback-stats.mjs')
  shutil.copy2(ROOT/'site/live/renderer-resources.mjs',extension/'dist/renderer-resources.mjs')
+ shutil.copy2(ROOT/'site/live/page-previews.mjs',extension/'dist/page-previews.mjs')
+ shutil.copy2(ROOT/'site/live/page-thumbnails.mjs',extension/'dist/page-thumbnails.mjs')
  shutil.copy2(ROOT/'site/live/animation-player.mjs',extension/'dist/animation-player.mjs')
  shutil.copy2(ROOT/'site/live/preview-player.mjs',extension/'dist/preview-player.mjs')
  shutil.copy2(ROOT/'site/live/preview-geometry.mjs',extension/'dist/preview-geometry.mjs')
  for name in ['preview-host.cjs','presentation-host.cjs','preview-math.mjs','preview-webview.mjs','preview.css']:shutil.copy2(source/'src'/name,extension/'dist'/name)
- for presentation_source in (ROOT/'site/live').glob('presentation*'):
+ for presentation_source in (ROOT/'site/live').glob('present*'):
   if presentation_source.is_file():shutil.copy2(presentation_source,extension/'dist'/presentation_source.name)
+ # Retired automatic display policy must not linger in a reused staging tree.
+ for name in ['presentation-screens.mjs','presenter-audience.mjs']:
+  (extension/'dist'/name).unlink(missing_ok=True)
  subprocess.run(['cargo','build','--release','--locked','--target','wasm32-unknown-unknown','-p','laymesh-wasm','--no-default-features'],cwd=ROOT,check=True)
  subprocess.run(['wasm-bindgen','--target','web','--out-dir',str(extension/'dist/wasm'),str(ROOT/'target/wasm32-unknown-unknown/release/laymesh_wasm.wasm')],check=True)
  skia_assets.stage_rust(extension/'dist/wasm')

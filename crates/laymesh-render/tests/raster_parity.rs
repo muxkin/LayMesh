@@ -91,6 +91,7 @@ fn scene(nodes: Vec<Json>) -> Scene {
         export_dpi: 144.,
         nodes,
         warnings: vec![],
+            speaker_notes: None,
         fonts: Default::default(),
         font_requests: Default::default(),
     }

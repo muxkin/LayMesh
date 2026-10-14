@@ -871,6 +871,30 @@ impl Builder<'_> {
                 }
             }
         }
+        if n["kind"] == "path" && laymesh_core::animation::draw::eligible(n)
+            && self.scene.animation.as_ref().is_some_and(|a| {
+                fn targets(nodes: &[Json], id: &str, child: &str) -> bool {
+                    nodes.iter().any(|n| (n["id"] == id && contains(n, child)) ||
+                        n["children"].as_array().is_some_and(|cs| targets(cs, id, child)))
+                }
+                fn contains(n: &Json, id: &str) -> bool {
+                    n["id"] == id || n["children"].as_array().is_some_and(|cs| cs.iter().any(|c| contains(c,id)))
+                }
+                [&a.normal, &a.reduced, &a.print, &a.print_reduced].iter().any(|t|
+                    t.steps.iter().flat_map(|s| &s.clips).any(|c|
+                        c.tracks.iter().any(|t| t.property == "-laymesh-draw") && targets(&self.scene.nodes, &c.target, &result.name)))
+            }) {
+            let sx = if jnum(n,"intrinsicWidth",0.) > 0. { w/jnum(n,"intrinsicWidth",w) } else {1.};
+            let sy = if jnum(n,"intrinsicHeight",0.) > 0. { h/jnum(n,"intrinsicHeight",h) } else {1.};
+            let tr = transform * Affine::scale_non_uniform(sx, sy);
+            if tr.determinant().abs() > 1e-30 {
+                let path = laymesh_core::geometry::resolved_path(n, tr);
+                let container = if n["endpointRecipe"].is_object() { transform } else { tr };
+                result.hint["drawGeometry"] = json!({"d":path.to_svg(),
+                    "transform":tr.as_coeffs(), "container":container.as_coeffs(),
+                    "strokeStyle":n["strokeStyle"], "endpointRecipe":n["endpointRecipe"]});
+            }
+        }
         result.effects = n["effects"]
             .as_array()
             .into_iter()

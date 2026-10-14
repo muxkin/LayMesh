@@ -1,0 +1,1 @@
+{"file": "laymesh-0.6.4-linux-x64.vsix", "publisher": "Hyacine", "version": "0.6.4", "target": "linux-x64", "prerelease": false, "marketplace_checks": true, "bytes": 27091302, "installed_bytes": 55433781, "native_binary": "extension/bin/laymesh", "client_modules": ["vscode", "child_process", "path"], "bundled_text_fonts": false}

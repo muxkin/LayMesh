@@ -1,0 +1,205 @@
+{
+  "browser": "146.0.3856.84",
+  "platform": "linux",
+  "displayEnvironment": "CDP virtual screens; no physical monitor placement claim",
+  "results": [
+    {
+      "mode": "unready",
+      "state": {
+        "duration": 0,
+        "label": "正在准备…",
+        "disabled": true
+      },
+      "passed": true
+    },
+    {
+      "mode": "single",
+      "passed": true,
+      "calls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [],
+        "fullscreen": [
+          {
+            "active": true,
+            "screen": false
+          }
+        ]
+      },
+      "ordinaryFullscreen": true,
+      "currentPage": true
+    },
+    {
+      "mode": "extended",
+      "passed": true,
+      "calls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [],
+        "fullscreen": [
+          {
+            "active": true,
+            "screen": false
+          }
+        ]
+      },
+      "ordinaryFullscreen": true,
+      "currentPage": true
+    },
+    {
+      "mode": "mirrored",
+      "passed": true,
+      "calls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [],
+        "fullscreen": [
+          {
+            "active": true,
+            "screen": false
+          }
+        ]
+      },
+      "ordinaryFullscreen": true,
+      "currentPage": true
+    },
+    {
+      "mode": "unsupported",
+      "passed": true,
+      "calls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [],
+        "fullscreen": [
+          {
+            "active": true,
+            "screen": false
+          }
+        ]
+      },
+      "ordinaryFullscreen": true,
+      "currentPage": true
+    },
+    {
+      "mode": "denied",
+      "passed": true,
+      "calls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [],
+        "fullscreen": [
+          {
+            "active": true,
+            "screen": false
+          }
+        ]
+      },
+      "ordinaryFullscreen": true,
+      "currentPage": true
+    },
+    {
+      "mode": "manual",
+      "passed": true,
+      "calls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [
+          "popup,width=1280,height=800"
+        ],
+        "fullscreen": [
+          {
+            "active": true,
+            "screen": false
+          }
+        ]
+      },
+      "consoleCalls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [],
+        "fullscreen": []
+      },
+      "manualFullscreen": true,
+      "currentPage": true,
+      "exitRestoresPreview": true
+    },
+    {
+      "mode": "popup-blocked",
+      "passed": true,
+      "calls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [
+          "popup,width=1280,height=800",
+          "popup,width=1280,height=800"
+        ],
+        "fullscreen": [
+          {
+            "active": true,
+            "screen": false
+          }
+        ]
+      },
+      "consoleCalls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [],
+        "fullscreen": []
+      },
+      "manualFullscreen": true,
+      "currentPage": true,
+      "exitRestoresPreview": true
+    },
+    {
+      "mode": "fullscreen-denied",
+      "passed": true,
+      "calls": {
+        "details": 0,
+        "extended": 0,
+        "permission": 0,
+        "move": 0,
+        "resize": 0,
+        "popups": [],
+        "fullscreen": [
+          {
+            "active": true,
+            "screen": false
+          },
+          {
+            "active": true,
+            "screen": false
+          }
+        ]
+      },
+      "ordinaryFullscreen": true,
+      "currentPage": true
+    }
+  ]
+}

@@ -870,6 +870,7 @@ mod tests {
             export_dpi: 300.,
             nodes: vec![],
             warnings: vec![],
+            speaker_notes: None,
             fonts: Default::default(),
             font_requests: Default::default(),
         }

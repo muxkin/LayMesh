@@ -1,0 +1,59 @@
+[
+  {
+    "browser": "chromium",
+    "version": "151.0.7922.34",
+    "passed": true,
+    "offline": true,
+    "currentPage": true,
+    "notes": true,
+    "controls": true,
+    "reconnect": true,
+    "bitmapMirror": true,
+    "noConsoleRenderer": true,
+    "naturalCompletion": true,
+    "popupBlocked": true,
+    "viewports": [
+      "1672x941",
+      "1366x768",
+      "600x900"
+    ]
+  },
+  {
+    "browser": "firefox",
+    "version": "153.0",
+    "passed": true,
+    "offline": true,
+    "currentPage": true,
+    "notes": true,
+    "controls": true,
+    "reconnect": true,
+    "bitmapMirror": true,
+    "noConsoleRenderer": true,
+    "naturalCompletion": true,
+    "popupBlocked": true,
+    "viewports": [
+      "1672x941",
+      "1366x768",
+      "600x900"
+    ]
+  },
+  {
+    "browser": "webkit",
+    "version": "26.5",
+    "passed": true,
+    "offline": true,
+    "currentPage": true,
+    "notes": true,
+    "controls": true,
+    "reconnect": true,
+    "bitmapMirror": true,
+    "noConsoleRenderer": true,
+    "naturalCompletion": true,
+    "popupBlocked": true,
+    "viewports": [
+      "1672x941",
+      "1366x768",
+      "600x900"
+    ]
+  }
+]

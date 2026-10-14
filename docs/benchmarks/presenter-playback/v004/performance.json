@@ -1,0 +1,84 @@
+{
+  "viewport": "1280x800",
+  "page": "editable / actual six-page artwork",
+  "environment": "Linux Chromium headless, SwiftShader software GPU; CPU includes all CDP-reported browser processes; PSS sums their Linux smaps_rollup proportional resident memory",
+  "results": [
+    {
+      "mode": "slides",
+      "elapsedMs": 6026,
+      "cpuSeconds": 50.09,
+      "memoryBefore": {
+        "pssBytes": 1057974272,
+        "processes": 4
+      },
+      "memoryAfter": {
+        "pssBytes": 1096934400,
+        "processes": 4
+      },
+      "cpuCoreEquivalent": 8.312313308994359,
+      "audienceSamples": 245,
+      "audienceRequestP95Ms": 33.29999999701977,
+      "sampleP95Ms": 0.5,
+      "drawP95Ms": 1.4000000059604645,
+      "additionalConsoleSceneDraws": 0,
+      "consoleDrawWallMs": 0,
+      "mirror": null,
+      "skiaMemoryBytes": 134217728,
+      "wasmMemoryBytes": 3211264,
+      "backend": "Skia WebGL2 (software driver)"
+    },
+    {
+      "mode": "previous-presenter",
+      "elapsedMs": 6075,
+      "cpuSeconds": 39.47,
+      "memoryBefore": {
+        "pssBytes": 1059420160,
+        "processes": 4
+      },
+      "memoryAfter": {
+        "pssBytes": 1122312192,
+        "processes": 4
+      },
+      "cpuCoreEquivalent": 6.497119341563786,
+      "audienceSamples": 200,
+      "audienceRequestP95Ms": 2.1000000089406967,
+      "sampleP95Ms": 0.6000000089406967,
+      "drawP95Ms": 1.5,
+      "additionalConsoleSceneDraws": 78,
+      "consoleDrawWallMs": 1566.8000000566244,
+      "mirror": null,
+      "skiaMemoryBytes": 134217728,
+      "wasmMemoryBytes": 3211264,
+      "backend": "Skia WebGL2 (software driver)"
+    },
+    {
+      "mode": "bitmap-presenter",
+      "elapsedMs": 6030,
+      "cpuSeconds": 52.07,
+      "memoryBefore": {
+        "pssBytes": 1060570112,
+        "processes": 4
+      },
+      "memoryAfter": {
+        "pssBytes": 1112204288,
+        "processes": 4
+      },
+      "cpuCoreEquivalent": 8.635157545605306,
+      "audienceSamples": 257,
+      "audienceRequestP95Ms": 28.399999991059303,
+      "sampleP95Ms": 0.7000000029802322,
+      "drawP95Ms": 27.600000008940697,
+      "additionalConsoleSceneDraws": 0,
+      "consoleDrawWallMs": 0,
+      "mirror": {
+        "frames": 51,
+        "maxInFlight": 1,
+        "copyMs": 976.4000000059605,
+        "fpsLimit": 10
+      },
+      "skiaMemoryBytes": 134217728,
+      "wasmMemoryBytes": 9437184,
+      "backend": "Skia WebGL2 (software driver)"
+    }
+  ]
+}

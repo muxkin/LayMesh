@@ -1,0 +1,29 @@
+{
+  "runtime": "/home/keqing/source/LayMesh/target/web-export/runtime.zip",
+  "playbackExporterAndShellZipBytes": 258982,
+  "incrementalLicenseZipBytes": 1993,
+  "conservativeIncrementBytes": 260975,
+  "budgetBytes": 307200,
+  "files": [
+    "runtime/exporter/laymesh.wasm",
+    "runtime/exporter/laymesh_wasm.js",
+    "runtime/page-previews.mjs",
+    "runtime/page-thumbnails.mjs",
+    "runtime/presentation.css",
+    "runtime/presenter-console.mjs",
+    "runtime/presenter-mirror.mjs",
+    "runtime/presenter.mjs",
+    "runtime/vendor/pdf-export/index.js",
+    "runtime/web-export-dialog.mjs",
+    "runtime/web-image-density.mjs",
+    "runtime/web-jpeg-export.mjs",
+    "runtime/web-licenses.mjs",
+    "runtime/web-pdf-export.mjs",
+    "runtime/web-player.css",
+    "runtime/web-player.mjs",
+    "runtime/web-static-export-worker.mjs",
+    "runtime/web-transition-package.mjs",
+    "runtime/web-vector-export.mjs",
+    "runtime/runtime-files.json"
+  ]
+}
