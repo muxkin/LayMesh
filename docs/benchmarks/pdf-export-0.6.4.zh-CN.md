@@ -61,3 +61,11 @@ python scripts/check-web-export-budget.py
 修复后的[五平台构建与审计](https://github.com/muxkin/LayMesh/actions/runs/38559302420) 已通过，构建源码 `f37f735e14dd3e06478f9aa7ef1538fe3482e968`。下载后十个包校验值均匹配，wheel／VSIX／真实 Jupyter 的引擎哈希逐平台一致，Python 3.10／3.14 十组兼容任务全部通过。[候选包审计](release-0.6.4/pdf-export/candidate-packages.json)。核心检查为 630 项 Rust 测试通过、1 项手动基准忽略，891 项契约断言均已映射。
 
 随后浏览器 CI 暴露既有演讲者测试的时序问题：两秒动画结束后，测试仍尝试点击已禁用的“继续动画”。测试夹具改为八秒，并明确断言暂停状态和暂停期间时间不变，再验证自然播放完成；没有修改作品或产品的动画时长。修订后三浏览器本地通过。[控制测试](release-0.6.4/pdf-export/presenter-controls.json)。
+
+最终[完整验收](https://github.com/muxkin/LayMesh/actions/runs/38562499997) 已通过：Windows／Linux／macOS 原生检查及三浏览器均成功。Windows 首次因 Poppler 下载 HTTP 504，仅安装了三项工具中的一项，随后 PDF 文本提取检查失败；补跑确认三项工具全部安装，PDF 文字／公式语义与 67 项 Python 测试通过，未放宽测试。测试源码 `4017d6e` 与发布合并提交 `bad67c1` 的完整 Git 文件树相同。[CI 与补跑记录](release-0.6.4/pdf-export/acceptance-ci.json)。
+
+正式 `v0.6.4` 标签的[独立验收](https://github.com/muxkin/LayMesh/actions/runs/38570104489) 随后也全部通过，包含 Windows／Linux／macOS 与三浏览器；[文档站构建和部署](https://github.com/muxkin/LayMesh/actions/runs/38570103848) 成功。
+
+正式标签[发布构建](https://github.com/muxkin/LayMesh/actions/runs/38570104493) 的五平台 wheel／stable VSIX、安装后的真实 Jupyter 双轮验证，以及 Python 3.10／3.14 十组兼容任务均通过。下载后的十个包再次核对 SHA-256，wheel／VSIX／Jupyter 引擎逐平台一致。[正式包审计](release-0.6.4/pdf-export/tag-packages.json)。
+
+截至 2026-10-14 21:56（北京时间），发布构建的 `review` 已通过，`publish` 正等待既有 `pypi` 人工审批；PyPI 0.6.4 和 GitHub Release 尚未公开发布。审批通过后由现有工作流继续发布，Marketplace 保持手动上传。[发布状态快照](release-0.6.4/pdf-export/publication-state.json)。本次新压缩包名为 `LayMesh-0.6.4-release-pdf-fix.zip` 与 `LayMesh-0.6.4-Marketplace-VSIX-pdf-fix.zip`，不覆盖旧包。

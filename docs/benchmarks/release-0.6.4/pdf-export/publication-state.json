@@ -1,0 +1,14 @@
+{
+  "version": "0.6.4",
+  "checkedAt": "2026-10-14T13:56:56.788911+00:00",
+  "tag": "v0.6.4",
+  "sourceSha": "bad67c103f8aaad2d630c969951197fc335145f8",
+  "workflow": "https://github.com/muxkin/LayMesh/actions/runs/38570104493",
+  "review": "success",
+  "publish": "waiting_for_human_approval",
+  "requiredEnvironment": "pypi",
+  "pypiPublished": false,
+  "githubReleasePublished": false,
+  "marketplace": "manual_upload_only",
+  "note": "No approval was submitted by the agent; publication remains behind the existing human gate requested by the user."
+}

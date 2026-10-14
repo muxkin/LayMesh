@@ -1,0 +1,154 @@
+{
+  "version": "0.6.4",
+  "build": {
+    "sha": "bad67c103f8aaad2d630c969951197fc335145f8",
+    "url": "https://github.com/muxkin/LayMesh/actions/runs/38570104493",
+    "review": "success"
+  },
+  "platforms": [
+    {
+      "target": "darwin-arm64",
+      "wheel": "laymesh-0.6.4-py3-none-macosx_14_0_arm64.whl",
+      "bytes": 17802275,
+      "sha256": "a65f2090b7b734f9d5ed1bb616aa45a94794700cd8814efc95eb8a6c39b08325",
+      "engineSha256": "8c3dc9f2411dc76058be431923531284d25f7450c2e33358c12386abecb565e9",
+      "python": "3.13.15",
+      "jupyterRepeats": 2,
+      "jupyterBehaviorChecks": 16,
+      "jupyterPassed": true
+    },
+    {
+      "target": "darwin-x64",
+      "wheel": "laymesh-0.6.4-py3-none-macosx_14_0_x86_64.whl",
+      "bytes": 18633101,
+      "sha256": "476f42eef6806c242655ba78dd38670cb31251414979b99347376169bb80eef9",
+      "engineSha256": "652d14e23a304c9384588726cc7981fe2e67d874486a5f1168e584abb7f22888",
+      "python": "3.13.15",
+      "jupyterRepeats": 2,
+      "jupyterBehaviorChecks": 16,
+      "jupyterPassed": true
+    },
+    {
+      "target": "linux-arm64",
+      "wheel": "laymesh-0.6.4-py3-none-manylinux_2_39_aarch64.whl",
+      "bytes": 19256208,
+      "sha256": "d2517c1fdd0964fd51a38da2915b44e5aed60c6a3c64f3231b97712f8f67f764",
+      "engineSha256": "39863e78bc751fd10f2a95107e4d250c9df7c6ea4e9b18b6c4eb8e8acf86e0ea",
+      "python": "3.13.16",
+      "jupyterRepeats": 2,
+      "jupyterBehaviorChecks": 16,
+      "jupyterPassed": true
+    },
+    {
+      "target": "linux-x64",
+      "wheel": "laymesh-0.6.4-py3-none-manylinux_2_39_x86_64.whl",
+      "bytes": 19995908,
+      "sha256": "2182bcedef10a6305b18da624b2386fd980910c68e91e87def43505f8151984b",
+      "engineSha256": "947468e428aaf5456ccb7de30debc68edfb90f2dfb93ebd5d3121af589689ba9",
+      "python": "3.13.16",
+      "jupyterRepeats": 2,
+      "jupyterBehaviorChecks": 16,
+      "jupyterPassed": true
+    },
+    {
+      "target": "win-x64",
+      "wheel": "laymesh-0.6.4-py3-none-win_amd64.whl",
+      "bytes": 18863084,
+      "sha256": "7b5f3ecaa8f312ff89ad47129d480a9af3a2aaefa54f628cd153244487bdeee3",
+      "engineSha256": "c1d427e3cb9db2fe5de0fbedf18ebf3ce473a2083615980883b053edeaadfa62",
+      "python": "3.13.16",
+      "jupyterRepeats": 2,
+      "jupyterBehaviorChecks": 16,
+      "jupyterPassed": true
+    }
+  ],
+  "editorAudit": {
+    "version": "0.6.4",
+    "packages": [
+      {
+        "target": "darwin-arm64",
+        "file": "laymesh-0.6.4-darwin-arm64.vsix",
+        "vsix_sha256": "de8b74fd7f292ae99d53e2c14a8016a8f33f50551095430ecfc0f0ba5dacee92",
+        "binary_sha256": "8c3dc9f2411dc76058be431923531284d25f7450c2e33358c12386abecb565e9"
+      },
+      {
+        "target": "darwin-x64",
+        "file": "laymesh-0.6.4-darwin-x64.vsix",
+        "vsix_sha256": "5e0ad5ed55e9b6b2a137ee5a7ce6019ebdfc2bb41dfda16c8a7af4e37d1f516e",
+        "binary_sha256": "652d14e23a304c9384588726cc7981fe2e67d874486a5f1168e584abb7f22888"
+      },
+      {
+        "target": "linux-arm64",
+        "file": "laymesh-0.6.4-linux-arm64.vsix",
+        "vsix_sha256": "93afe0580e8e43085f958fe2b40dc3f47e3fee9e7556c7b86f700f201a3e0f75",
+        "binary_sha256": "39863e78bc751fd10f2a95107e4d250c9df7c6ea4e9b18b6c4eb8e8acf86e0ea"
+      },
+      {
+        "target": "linux-x64",
+        "file": "laymesh-0.6.4-linux-x64.vsix",
+        "vsix_sha256": "bf9007db155aef895afb1f6ff0f9dad040737b1c40cd6d0efed7cfd5ec2de307",
+        "binary_sha256": "947468e428aaf5456ccb7de30debc68edfb90f2dfb93ebd5d3121af589689ba9"
+      },
+      {
+        "target": "win32-x64",
+        "file": "laymesh-0.6.4-win32-x64.vsix",
+        "vsix_sha256": "558cda9dd5fd5cb465405947da20746aab33b5d960e2b5aaee742c9e98087389",
+        "binary_sha256": "c1d427e3cb9db2fe5de0fbedf18ebf3ce473a2083615980883b053edeaadfa62"
+      }
+    ]
+  },
+  "compatibility": [
+    {
+      "name": "python-compatibility (3.14, ubuntu-24.04, linux-x64)",
+      "conclusion": "success"
+    },
+    {
+      "name": "python-compatibility (3.10, windows-2022, win-x64)",
+      "conclusion": "success"
+    },
+    {
+      "name": "python-compatibility (3.14, macos-14, darwin-arm64)",
+      "conclusion": "success"
+    },
+    {
+      "name": "python-compatibility (3.10, ubuntu-24.04-arm, linux-arm64)",
+      "conclusion": "success"
+    },
+    {
+      "name": "python-compatibility (3.14, macos-15-intel, darwin-x64)",
+      "conclusion": "success"
+    },
+    {
+      "name": "python-compatibility (3.10, macos-15-intel, darwin-x64)",
+      "conclusion": "success"
+    },
+    {
+      "name": "python-compatibility (3.10, ubuntu-24.04, linux-x64)",
+      "conclusion": "success"
+    },
+    {
+      "name": "python-compatibility (3.14, windows-2022, win-x64)",
+      "conclusion": "success"
+    },
+    {
+      "name": "python-compatibility (3.14, ubuntu-24.04-arm, linux-arm64)",
+      "conclusion": "success"
+    },
+    {
+      "name": "python-compatibility (3.10, macos-14, darwin-arm64)",
+      "conclusion": "success"
+    }
+  ],
+  "checksums": {
+    "laymesh-0.6.4-py3-none-macosx_14_0_arm64.whl": "a65f2090b7b734f9d5ed1bb616aa45a94794700cd8814efc95eb8a6c39b08325",
+    "laymesh-0.6.4-py3-none-macosx_14_0_x86_64.whl": "476f42eef6806c242655ba78dd38670cb31251414979b99347376169bb80eef9",
+    "laymesh-0.6.4-py3-none-manylinux_2_39_aarch64.whl": "d2517c1fdd0964fd51a38da2915b44e5aed60c6a3c64f3231b97712f8f67f764",
+    "laymesh-0.6.4-py3-none-manylinux_2_39_x86_64.whl": "2182bcedef10a6305b18da624b2386fd980910c68e91e87def43505f8151984b",
+    "laymesh-0.6.4-py3-none-win_amd64.whl": "7b5f3ecaa8f312ff89ad47129d480a9af3a2aaefa54f628cd153244487bdeee3",
+    "laymesh-0.6.4-darwin-arm64.vsix": "de8b74fd7f292ae99d53e2c14a8016a8f33f50551095430ecfc0f0ba5dacee92",
+    "laymesh-0.6.4-darwin-x64.vsix": "5e0ad5ed55e9b6b2a137ee5a7ce6019ebdfc2bb41dfda16c8a7af4e37d1f516e",
+    "laymesh-0.6.4-linux-arm64.vsix": "93afe0580e8e43085f958fe2b40dc3f47e3fee9e7556c7b86f700f201a3e0f75",
+    "laymesh-0.6.4-linux-x64.vsix": "bf9007db155aef895afb1f6ff0f9dad040737b1c40cd6d0efed7cfd5ec2de307",
+    "laymesh-0.6.4-win32-x64.vsix": "558cda9dd5fd5cb465405947da20746aab33b5d960e2b5aaee742c9e98087389"
+  }
+}
