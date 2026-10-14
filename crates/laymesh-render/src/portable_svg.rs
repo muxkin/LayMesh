@@ -10,6 +10,45 @@ use std::collections::BTreeMap;
 
 type Raster<'a> = &'a mut dyn FnMut(&DrawNode, Rect, u32, u32, Option<bool>) -> Result<Vec<u8>>;
 
+fn max_scale(t: Affine) -> f64 {
+    let [a, b, c, d, _, _] = t.as_coeffs();
+    let sum = a * a + b * b + c * c + d * d;
+    let det = a * d - b * c;
+    ((sum + (sum * sum - 4. * det * det).max(0.).sqrt()) / 2.).sqrt()
+}
+
+// Matches the renderer's filter input support. Nested filters need the sum
+// of parent and descendant halos, transformed into the parent's coordinates.
+fn effect_halo(n: &DrawNode) -> f64 {
+    let own = n
+        .effects
+        .iter()
+        .map(|e| 4. * e.blur + e.spread.abs() + e.offset[0].abs().max(e.offset[1].abs()))
+        .fold(0., f64::max);
+    let child = if let DrawKind::Group { children, mask, .. } = &n.kind {
+        children
+            .iter()
+            .chain(mask.iter().map(|m| m.node.as_ref()))
+            .map(|c| max_scale(c.transform) * effect_halo(c))
+            .fold(0., f64::max)
+    } else if let DrawKind::Path {
+        fill: Paint::Pattern {
+            nodes, transform, ..
+        },
+        ..
+    } = &n.kind
+    {
+        max_scale(*transform)
+            * nodes
+                .iter()
+                .map(|c| max_scale(c.transform) * effect_halo(c))
+                .fold(0., f64::max)
+    } else {
+        0.
+    };
+    own + child
+}
+
 fn matrix(t: Affine) -> String {
     format!(
         "matrix({})",
@@ -171,15 +210,23 @@ impl Writer<'_> {
         ))
     }
     fn layer(&mut self, node: &DrawNode, transform: Affine, inner: Option<bool>) -> Result<String> {
+        if let Some(inner) = inner {
+            if node.effects.len() > 1 {
+                let mut body = String::new();
+                for effect in node.effects.iter().filter(|e| e.inner == inner) {
+                    let mut single = node.clone();
+                    single.effects = vec![effect.clone()];
+                    body += &self.layer(&single, transform, Some(inner))?;
+                }
+                return Ok(body);
+            }
+        }
         let mut local = node.clone();
         local.transform = Affine::IDENTITY;
         local.opacity = 1.;
         // The largest singular value ensures the requested physical DPI even
         // under skew, rotation and nonuniform scale.
-        let [a, b, c, d, _, _] = transform.as_coeffs();
-        let sum = a * a + b * b + c * c + d * d;
-        let det = a * d - b * c;
-        let scale = ((sum + (sum * sum - 4. * det * det).max(0.).sqrt()) / 2.).sqrt();
+        let scale = max_scale(transform);
         if scale <= 0. {
             return Ok(String::new());
         }
@@ -196,8 +243,27 @@ impl Writer<'_> {
         }
         let (w, h) =
             crate::raster_dimensions(b.width() * scale, b.height() * scale, self.dpi, "png")?;
-        let data = self.raster.as_mut().unwrap()(&local, b, w, h, inner)?;
-        Ok(image_at(&href("image/png", &data), b))
+        let halo = (effect_halo(&local) * density).ceil() as u32 + 2;
+        let edge = 4096u32.saturating_sub(halo.saturating_mul(2));
+        if edge < 64 {
+            return Err(error("Filter halo exceeds the 64 MiB export tile budget"));
+        }
+        let mut body = String::new();
+        for y in (0..h).step_by(edge as usize) {
+            for x in (0..w).step_by(edge as usize) {
+                let tw = (w - x).min(edge);
+                let th = (h - y).min(edge);
+                let tile = Rect::new(
+                    b.x0 + x as f64 / density,
+                    b.y0 + y as f64 / density,
+                    b.x0 + (x + tw) as f64 / density,
+                    b.y0 + (y + th) as f64 / density,
+                );
+                let data = self.raster.as_mut().unwrap()(&local, tile, tw, th, inner)?;
+                body += &image_at(&href("image/png", &data), tile);
+            }
+        }
+        Ok(body)
     }
     fn node(&mut self, n: &DrawNode, parent: Affine) -> Result<String> {
         if n.opacity <= 0. {

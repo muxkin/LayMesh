@@ -43,7 +43,8 @@ export function projectedDensity(m,b){
 }
 
 export class SkiaRenderer {
- constructor(ck,canvas,{cacheMB=256,software=false,preserveDrawingBuffer=false,onPresent=()=>{},onContextChange=()=>{}}={}) {
+ constructor(ck,canvas,{cacheMB=256,software=false,rasterOnly=false,preserveDrawingBuffer=false,onPresent=()=>{},onContextChange=()=>{}}={}) {
+  this.rasterOnly=rasterOnly;
   this.ck=ck;this.canvas=canvas;this.onPresent=onPresent;this.transitions=new PageTransitions(this);this.budget=cacheMB*1048576;this.images=new Map();this.imageBytes=new Map();this.commandCache=new Map();this.prepared=new WeakMap();this.owned=[];this.animatedNames=new Set();this.pictureBytes=0;this.generation=0;this.frameCount=0;
   this.nextCommandId=0;this.staticTextures=new Map();this.staticTextureBytes=0;this.sceneRuns=[];
   this.layerTextures=new Map();this.layerTextureBytes=0;
@@ -317,7 +318,7 @@ export class SkiaRenderer {
   if(allowSkip&&!preparing&&this.fences.length>=2)return {skipped:true,reason:'gpu-busy',backend:this.backend,rasterMs:0};
   if(!this.surface||this.canvas.width!==width||this.canvas.height!==height){
    this.clearStaticTextures();this.clearLayerTextures();this.surface?.dispose();this.canvas.width=width;this.canvas.height=height;
-   this.surface=this.gr?ck.MakeOnScreenGLSurface(this.gr,width,height,ck.ColorSpace.SRGB):ck.MakeSWCanvasSurface(this.canvas);
+   this.surface=this.gr?ck.MakeOnScreenGLSurface(this.gr,width,height,ck.ColorSpace.SRGB):this.rasterOnly?ck.MakeSurface(width,height):ck.MakeSWCanvasSurface(this.canvas);
    if(!this.surface)throw Error('Skia surface allocation failed');
   }
   const gl=this.gl,timer=this.timer;

@@ -2,8 +2,15 @@ import init, { encode_tiff } from "./exporter/laymesh_wasm.js";
 import { initializeSkia, SkiaRenderer } from "./skia-renderer.mjs";
 import { vectorSVG, imageDataURL } from "./web-vector-export.mjs";
 import { imageDensity } from "./web-image-density.mjs";
+import { exportDensity, rasterExportTiles } from "./web-export-raster.mjs";
+import { preparePDFTile } from "./web-pdf-resources.mjs";
 let exportSkia;
+let pendingPDF, sequence=0;
+const sendPDF = (message, transfer=[]) => new Promise(resolve => {
+  const seq=++sequence; pendingPDF={seq,resolve}; self.postMessage({...message,seq},transfer);
+});
 self.onmessage = async ({ data }) => {
+  if(data.type === "pdfAck"){if(pendingPDF?.seq===data.seq){const {resolve}=pendingPDF;pendingPDF=null;resolve(data.page ?? data.resourceId ?? data.pdfMs);}return;}
   let renderer;
   try {
     const dpi = data.options.dpi ?? 1200;
@@ -25,9 +32,11 @@ self.onmessage = async ({ data }) => {
     exportSkia ||= await initializeSkia(data.skia);
     const ck = exportSkia,
       output = [],
-      warnings = [];
+      warnings = [],
+      metrics={renderMs:0,readbackMs:0,encodeMs:0,pdfMs:0,tiles:0,peakTileRGBABytes:0,resourceBytes:0};
     renderer = new SkiaRenderer(ck, new OffscreenCanvas(1, 1), {
       software: true,
+      rasterOnly: true,
       cacheMB: 32,
     });
     const encode = async (pixels, w, h, format = "png") => {
@@ -81,15 +90,20 @@ self.onmessage = async ({ data }) => {
       if (!pixels) throw Error("无法读取导出画面，请减小 DPI 后重试");
       return pixels;
     };
+    const layerCache=new Map();
     for (let i = 0; i < data.pages.length; i++) {
       self.postMessage({
-        progress: `正在导出 ${i + 1} / ${data.pages.length} 页…`,
+        progress: `正在处理效果 ${i + 1} / ${data.pages.length} 页…`,
       });
-      const page = data.pages[i],
+      const page = data.pages[i].list ? data.pages[i] : await sendPDF({requestPage:i}),
         list = page.list;
+      // A resource identifier in an older file need not be a content hash.
+      // PDF streams still deduplicate by bytes after rendering these pages.
+      if(Object.keys(page.resources).length)layerCache.clear();
       let bytes, rasterWidth, rasterHeight;
       if (["pdf", "svg"].includes(data.format)) {
         await renderer.install(list, (id) => page.resources[id], 0, 32);
+        const warningStart=warnings.length;
         const svg = await vectorSVG(list, {
           pdf: data.format === "pdf",
           warnings,
@@ -106,37 +120,50 @@ self.onmessage = async ({ data }) => {
             return imageDataURL(png);
           },
           raster: async (node, t, effectsOnly) => {
-            const [a, b, c, d] = t,
-              sum = a * a + b * b + c * c + d * d,
-              det = a * d - b * c;
-            const scale = Math.sqrt(
-              (sum + Math.sqrt(Math.max(0, sum * sum - 4 * det * det))) / 2,
-            );
-            if (!Number.isFinite(scale)) throw Error("无效导出变换");
-            if (scale <= 0) return null;
-            const density = (dpi / 25.4) * scale,
-              raw = renderer.prepare(node).bounds;
-            const view = raw.map(
-              (v, i) =>
-                (i < 2 ? Math.floor(v * density) : Math.ceil(v * density)) /
-                density,
-            );
-            if (view[2] <= view[0] || view[3] <= view[1]) return null;
-            const [w, h] = dimensions(
-              (view[2] - view[0]) * scale,
-              (view[3] - view[1]) * scale,
-            );
-            const pixels = await raster(
-              { ...list, nodes: [node], animation: null, pageTransition: null },
-              page.resources,
-              view,
-              w,
-              h,
-              effectsOnly,
-            );
-            return { rect: view, bytes: await encode(pixels, w, h) };
+            if(data.format === "pdf") {
+              const density=exportDensity(t,dpi);
+              const key=JSON.stringify([node,density,effectsOnly],(k,v)=>k==="name"?undefined:v);
+              if(layerCache.has(key))return layerCache.get(key);
+              const variants=effectsOnly===null?[node]:node.effects.filter(e=>e.inner===effectsOnly).map(e=>({...node,effects:[e]}));
+              const fragments=[];
+              for(const variant of variants) {
+                const tiles=[],color=effectsOnly===null?null:variant.effects[0].rgba;
+                await rasterExportTiles({renderer,list,resources:page.resources,node:variant,density,effectsOnly,
+                consume:async tile=>{
+                  metrics.tiles++;metrics.peakTileRGBABytes=Math.max(metrics.peakTileRGBABytes,tile.surfaceBytes);
+                  metrics.renderMs+=tile.renderMs;metrics.readbackMs+=tile.readbackMs;
+                  const begin=performance.now(),resource=preparePDFTile(tile,color);
+                  metrics.encodeMs+=performance.now()-begin;
+                  if(!resource)return;
+                  const [x0,y0,x1,y1]=resource.crop, r=tile.rect;
+                  const rect=[r[0]+x0/density,r[1]+y0/density,r[0]+x1/density,r[1]+y1/density];
+                  metrics.resourceBytes+=resource.data.length+resource.alpha.length;
+                  const resourceId=await sendPDF({pdfResource:resource},[resource.data.buffer,resource.alpha.buffer]);
+                  tiles.push({id:resourceId,rect});
+                }
+              });
+                if(tiles.length) {
+                  const rect=[Math.min(...tiles.map(t=>t.rect[0])),Math.min(...tiles.map(t=>t.rect[1])),Math.max(...tiles.map(t=>t.rect[2])),Math.max(...tiles.map(t=>t.rect[3]))];
+                  const id=await sendPDF({pdfLayer:{tiles,color,rect}});
+                  fragments.push(`<image x="${rect[0]}" y="${rect[1]}" width="${rect[2]-rect[0]}" height="${rect[3]-rect[1]}" preserveAspectRatio="none" data-laymesh-image="laymesh-pdf:${id}"/>`);
+                }
+              }
+              const markup=fragments.join("");
+              // Retain only compact references to resources already in the PDF.
+              if(layerCache.size<128)layerCache.set(key,markup);
+              return markup;
+            }
+            const density=exportDensity(t,dpi), scale=density*25.4/dpi;
+            if(density<=0)return null;
+            const raw=renderer.prepare(node).bounds;
+            const view=raw.map((v,i)=>(i<2?Math.floor(v*density):Math.ceil(v*density))/density);
+            if(view[2]<=view[0]||view[3]<=view[1])return null;
+            const [w,h]=dimensions((view[2]-view[0])*scale,(view[3]-view[1])*scale);
+            const pixels=await raster({...list,nodes:[node],animation:null,pageTransition:null},page.resources,view,w,h,effectsOnly);
+            return {rect:view,bytes:await encode(pixels,w,h)};
           },
         });
+        for(let w=warningStart;w<warnings.length;w++)warnings[w].message=`第 ${page.number} 页：${warnings[w].message}`;
         bytes = new TextEncoder().encode(svg);
       } else {
         const [w, h] = dimensions(list.width, list.height);
@@ -180,6 +207,11 @@ self.onmessage = async ({ data }) => {
           );
         else throw Error(`浏览器不支持此导出格式：${data.format}`);
       }
+      if(data.format === "pdf") {
+        metrics.pdfMs+=await sendPDF({pdfPage:{bytes,page:page.number,width:list.width,height:list.height}},[bytes.buffer]);
+        data.pages[i]=null;
+        continue;
+      }
       output.push({
         bytes,
         page: page.number,
@@ -192,7 +224,9 @@ self.onmessage = async ({ data }) => {
     self.postMessage(
       {
         output,
-        warnings: [...new Map(warnings.map((w) => [w.code, w])).values()],
+        metrics,
+        warnings: [...new Map(warnings.map((w) => [w.message, w])).values()],
+        pdfStreamed: data.format === "pdf",
       },
       output.map((o) => o.bytes.buffer),
     );

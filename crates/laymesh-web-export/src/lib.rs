@@ -64,6 +64,7 @@ pub struct VectorJob {
     dpi: f64,
     pdf: bool,
     requests: Vec<Value>,
+    raster_nodes: Vec<Value>,
     images: Vec<Vec<u8>>,
 }
 #[wasm_bindgen]
@@ -74,11 +75,15 @@ impl VectorJob {
         let dpi = options.dpi.unwrap_or(1200.);
         let list = hydrated_list(raw_list)?;
         let mut requests = Vec::new();
+        let mut raster_nodes = Vec::new();
+        let mut node_ids = BTreeMap::new();
         if pdf {
             laymesh_render::portable_svg::render(&list,dpi,Some(&mut |node,rect,width,height,effects_only| {
-                let mut request=list.clone();request.nodes=vec![node.clone()];request.animation=None;request.page_transition=None;
-                for r in request.resources.values_mut(){r.data.clear();}
-                requests.push(json!({"list":request,"rect":[rect.x0,rect.y0,rect.x1,rect.y1],"width":width,"height":height,"effectsOnly":effects_only}));
+                let key = serde_json::to_string(node).unwrap();
+                let index = *node_ids.entry(key).or_insert_with(|| {
+                    let index=raster_nodes.len();raster_nodes.push(json!(node));index
+                });
+                requests.push(json!({"node":index,"rect":[rect.x0,rect.y0,rect.x1,rect.y1],"width":width,"height":height,"effectsOnly":effects_only}));
                 Ok(Vec::new())
             })).map_err(err)?;
         }
@@ -88,10 +93,41 @@ impl VectorJob {
             pdf,
             images: vec![Vec::new(); requests.len()],
             requests,
+            raster_nodes,
         })
     }
+    pub fn request_count(&self) -> usize {
+        self.requests.len()
+    }
+    pub fn request(&self, index: usize) -> Result<String, JsValue> {
+        let mut r = self
+            .requests
+            .get(index)
+            .cloned()
+            .ok_or_else(|| err("Invalid vector effect index"))?;
+        let node_index = r["node"].as_u64().unwrap() as usize;
+        r.as_object_mut().unwrap().remove("node");
+        let resources: BTreeMap<_, _> = self
+            .list
+            .resources
+            .iter()
+            .map(|(id, r)| {
+                (
+                    id,
+                    json!({"mime":r.mime,"data":[],"fontIndex":r.font_index,"family":r.family}),
+                )
+            })
+            .collect();
+        let list = json!({"schemaVersion":self.list.schema_version,"width":self.list.width,
+            "height":self.list.height,"nodes":[self.raster_nodes[node_index]],"resources":resources});
+        r["list"] = list;
+        Ok(r.to_string())
+    }
     pub fn requests(&self) -> String {
-        serde_json::to_string(&self.requests).unwrap()
+        let requests: Vec<Value> = (0..self.requests.len())
+            .map(|i| serde_json::from_str(&self.request(i).unwrap()).unwrap())
+            .collect();
+        serde_json::to_string(&requests).unwrap()
     }
     pub fn set_image(&mut self, index: usize, bytes: &[u8]) -> Result<(), JsValue> {
         *self
@@ -118,32 +154,42 @@ impl VectorJob {
         .map_err(err)
     }
 }
+/// Incremental full PDF converter. Each SVG tree is dropped after adding its
+/// compressed PDF objects, rather than retaining and parsing a whole deck.
 #[wasm_bindgen]
-pub fn export_pdf(pages: &str, raw: &str) -> Result<Vec<u8>, JsValue> {
-    let options = options(raw, "pdf")?;
-    let pages: Vec<Value> = serde_json::from_str(pages).map_err(err)?;
-    if pages.is_empty() {
-        return Err(err("PDF has no pages"));
+pub struct PdfJob {
+    pdf: Option<Pdf>,
+    alloc: Ref,
+    root: Ref,
+    ids: Vec<Ref>,
+    dpi: f64,
+}
+#[wasm_bindgen]
+impl PdfJob {
+    #[wasm_bindgen(constructor)]
+    pub fn new(raw: &str) -> Result<PdfJob, JsValue> {
+        let options = options(raw, "pdf")?;
+        let mut pdf = Pdf::new();
+        let mut alloc = Ref::new(1);
+        let catalog = alloc.bump();
+        let root = alloc.bump();
+        pdf.catalog(catalog).pages(root);
+        Ok(Self {
+            pdf: Some(pdf),
+            alloc,
+            root,
+            ids: Vec::new(),
+            dpi: options.dpi.unwrap_or(1200.),
+        })
     }
-    let mut pdf = Pdf::new();
-    let mut alloc = Ref::new(1);
-    let catalog = alloc.bump();
-    let root = alloc.bump();
-    pdf.catalog(catalog).pages(root);
-    let mut ids = Vec::new();
-    for page in pages {
-        let svg = page["svg"]
-            .as_str()
-            .ok_or_else(|| err("Missing assembled vector page"))?;
+    pub fn add_page(&mut self, svg: &str, width: f64, height: f64) -> Result<(), JsValue> {
+        let pdf = self
+            .pdf
+            .as_mut()
+            .ok_or_else(|| err("PDF already finished"))?;
         if svg.contains("<filter") {
             return Err(err("PDF effects must be prepared by the shared renderer"));
         }
-        let width = page["width"]
-            .as_f64()
-            .ok_or_else(|| err("Missing page width"))?;
-        let height = page["height"]
-            .as_f64()
-            .ok_or_else(|| err("Missing page height"))?;
         if ![width, height].iter().all(|v| v.is_finite() && *v > 0.) {
             return Err(err("Invalid PDF page dimensions"));
         }
@@ -153,35 +199,62 @@ pub fn export_pdf(pages: &str, raw: &str) -> Result<Vec<u8>, JsValue> {
             &tree,
             svg2pdf::ConversionOptions {
                 embed_text: false,
-                raster_scale: (options.dpi.unwrap_or(1200.) / 96.) as f32,
+                raster_scale: (self.dpi / 96.) as f32,
                 ..Default::default()
             },
         )
         .map_err(err)?;
         let mut map = HashMap::new();
+        let alloc = &mut self.alloc;
         let chunk = chunk.renumber(|old| *map.entry(old).or_insert_with(|| alloc.bump()));
         let form = map[&form];
         let id = alloc.bump();
         let content_id = alloc.bump();
-        ids.push(id);
+        self.ids.push(id);
         let (w, h) = ((width * 72. / 25.4) as f32, (height * 72. / 25.4) as f32);
-        let mut p = pdf.page(id);
-        p.parent(root)
+        let mut page = pdf.page(id);
+        page.parent(self.root)
             .media_box(Rect::new(0., 0., w, h))
             .contents(content_id);
-        p.resources().x_objects().pair(Name(b"Page"), form);
-        p.finish();
+        page.resources().x_objects().pair(Name(b"Page"), form);
+        page.finish();
         let mut content = Content::new();
         content
             .transform([w, 0., 0., h, 0., 0.])
             .x_object(Name(b"Page"));
         pdf.stream(content_id, &content.finish());
         pdf.extend(&chunk);
+        Ok(())
     }
-    pdf.pages(root)
-        .kids(ids.iter().copied())
-        .count(ids.len() as i32);
-    Ok(pdf.finish())
+    pub fn finish(&mut self) -> Result<Vec<u8>, JsValue> {
+        if self.ids.is_empty() {
+            return Err(err("PDF has no pages"));
+        }
+        let mut pdf = self.pdf.take().ok_or_else(|| err("PDF already finished"))?;
+        pdf.pages(self.root)
+            .kids(self.ids.iter().copied())
+            .count(self.ids.len() as i32);
+        Ok(pdf.finish())
+    }
+}
+#[wasm_bindgen]
+pub fn export_pdf(pages: &str, raw: &str) -> Result<Vec<u8>, JsValue> {
+    let pages: Vec<Value> = serde_json::from_str(pages).map_err(err)?;
+    let mut job = PdfJob::new(raw)?;
+    for page in pages {
+        job.add_page(
+            page["svg"]
+                .as_str()
+                .ok_or_else(|| err("Missing assembled vector page"))?,
+            page["width"]
+                .as_f64()
+                .ok_or_else(|| err("Missing page width"))?,
+            page["height"]
+                .as_f64()
+                .ok_or_else(|| err("Missing page height"))?,
+        )?;
+    }
+    PdfJob::finish(&mut job)
 }
 #[wasm_bindgen]
 pub struct PptxJob {

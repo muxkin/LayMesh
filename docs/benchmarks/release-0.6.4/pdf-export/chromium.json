@@ -1,0 +1,80 @@
+[
+  {
+    "engine": "chromium",
+    "browser": "151.0.7922.34",
+    "dpi": 1200,
+    "cancelMs": 37,
+    "runs": [
+      {
+        "elapsedMs": 44184,
+        "bytes": 2490246,
+        "before": {
+          "rssMiB": 1319.48046875,
+          "cpuSeconds": 5.99
+        },
+        "after": {
+          "rssMiB": 1205.1953125,
+          "cpuSeconds": 52.15
+        },
+        "peakMiB": 1708.94140625,
+        "addedPeakMiB": 389.4609375,
+        "metrics": {
+          "renderMs": 38739.90000003576,
+          "readbackMs": 425.899999961257,
+          "encodeMs": 4301.300000056624,
+          "pdfMs": 80.49999997019768,
+          "tiles": 69,
+          "peakTileRGBABytes": 67108864,
+          "resourceBytes": 2543809
+        }
+      },
+      {
+        "elapsedMs": 44031,
+        "bytes": 2490246,
+        "before": {
+          "rssMiB": 1205.73046875,
+          "cpuSeconds": 52.239999999999995
+        },
+        "after": {
+          "rssMiB": 1229.03125,
+          "cpuSeconds": 98.14000000000001
+        },
+        "peakMiB": 1633.7890625,
+        "addedPeakMiB": 428.05859375,
+        "metrics": {
+          "renderMs": 38601.19999995828,
+          "readbackMs": 429.69999998807907,
+          "encodeMs": 4307.200000032783,
+          "pdfMs": 67.50000001490116,
+          "tiles": 69,
+          "peakTileRGBABytes": 67108864,
+          "resourceBytes": 2543809
+        }
+      },
+      {
+        "elapsedMs": 44274,
+        "bytes": 2490246,
+        "before": {
+          "rssMiB": 1230.05859375,
+          "cpuSeconds": 98.25
+        },
+        "after": {
+          "rssMiB": 1212.62109375,
+          "cpuSeconds": 144.41
+        },
+        "peakMiB": 1632.60546875,
+        "addedPeakMiB": 402.546875,
+        "metrics": {
+          "renderMs": 38812.9999999851,
+          "readbackMs": 438.1000000089407,
+          "encodeMs": 4333.399999991059,
+          "pdfMs": 61.70000001788139,
+          "tiles": 69,
+          "peakTileRGBABytes": 67108864,
+          "resourceBytes": 2543809
+        }
+      }
+    ],
+    "errors": []
+  }
+]

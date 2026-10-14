@@ -1,0 +1,12 @@
+{
+  "input": "04_LCSS_离线播放_v007.zip.html",
+  "inputSha256": "50e63253364fee3817e71c39b8710a75eec94a90dda6cab2b8350c632f1c1565",
+  "output": "04_LCSS_离线播放_v008.zip.html",
+  "outputSha256": "dcd6339c8a146696fd806274bcbc1d55b3e312898f37904e25d6de87ca78d176",
+  "bytes": 4334528,
+  "runtimeSha256": "c7d6487eb982eca807374529e350fc89849d26382b1a06867c2219ea6a8278e9",
+  "nativeEngineSha256": "1f3a6ffaf3167d9ae76a609a35c317b5b950dc1957e853b562b08639aef26e26",
+  "sixRetainedPagesUnchanged": true,
+  "runtimeModulesMatchBuild": true,
+  "downloadedThroughPlaybackUI": true
+}

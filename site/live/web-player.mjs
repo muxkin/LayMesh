@@ -306,6 +306,7 @@ export async function mountWebPlayer({
     const parts =
       renderer || exporter
         ? [
+            ...(exporter ? ["fflate.mjs", "web-archive.mjs", "web-export-raster.mjs"] : []),
             "skia/canvaskit.mjs",
             "presentation-transitions-data.mjs",
             "presentation-transitions.mjs",
@@ -314,7 +315,7 @@ export async function mountWebPlayer({
             "presentation-renderer.mjs",
             ...(exporter && !manifest.editable
               ? [
-                  "web-archive.mjs",
+                  "web-pdf-resources.mjs",
                   "web-image-density.mjs",
                   "web-vector-export.mjs",
                 ]

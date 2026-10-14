@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import { unzlibSync } from '../vendor/fflate/fflate.mjs';
+import { preparePDFTile } from '../site/live/web-pdf-resources.mjs';
+import { vectorSVG } from '../site/live/web-vector-export.mjs';
+import { exportDensity, exportHaloMM } from '../site/live/web-export-raster.mjs';
+
+const pixels=new Uint8Array(5*4*4);
+pixels.set([20,40,60,128],(1*5+2)*4);
+pixels.set([80,100,120,255],(2*5+3)*4);
+const rgba=preparePDFTile({pixels,width:5,height:4},null);
+assert.deepEqual(rgba.crop,[2,1,4,3]);
+assert.deepEqual([...unzlibSync(rgba.alpha)],[128,0,0,255]);
+assert.deepEqual([...unzlibSync(rgba.data)],[20,40,60,0,0,0,0,0,0,80,100,120]);
+const alpha=Uint8Array.from({length:20},(_,i)=>pixels[i*4+3]);
+const shadow=preparePDFTile({pixels:alpha,alphaOnly:true,width:5,height:4},[.2,.4,.6,.5]);
+assert.deepEqual(shadow.crop,rgba.crop);
+assert.deepEqual(unzlibSync(shadow.alpha),unzlibSync(rgba.alpha));
+assert.deepEqual([...unzlibSync(shadow.data)],[51,102,153]);
+assert.equal(preparePDFTile({pixels:new Uint8Array(16),width:2,height:2},null),null);
+
+const transform=[1,0,0,1,0,0];
+const node={name:'ordinary-opacity',transform,opacity:.4,effects:[],kind:{kind:'path',path:[{MoveTo:[0,0]},{LineTo:[2,0]},{LineTo:[2,2]},'ClosePath'],fill:{kind:'solid',rgba:[1,0,0,1]},stroke:null,even_odd:false}};
+const warnings=[];
+const svg=await vectorSVG({width:10,height:10,nodes:[node],resources:{}},{pdf:true,warnings,raster:()=>assert.fail('Ordinary opacity must remain vector')});
+assert(svg.includes('<path '));assert(svg.includes('opacity="0.4"'));assert.deepEqual(warnings,[]);
+assert.equal(exportDensity([2,0,0,3,100,100],254),30);
+const child={...node,transform:[2,0,0,2,0,0],effects:[{blur:1,spread:0,offset:[0,0]}]};
+assert.equal(exportHaloMM({...node,effects:[{blur:1,spread:0,offset:[0,0]}],kind:{kind:'group',children:[child]}}),12);
+assert.equal(exportHaloMM({...node,kind:{...node.kind,fill:{kind:'pattern',transform:[3,0,0,3,0,0],nodes:[child]}}}),24);
+console.log('PDF alpha streams, transparent cropping, transformed density and vector opacity passed');

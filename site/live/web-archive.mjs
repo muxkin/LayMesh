@@ -6,7 +6,9 @@ import {
   gzipSync,
   gunzipSync,
   deflateSync,
+  zlibSync,
 } from "../../vendor/fflate/fflate.mjs";
+export function deflatePDFBytes(bytes) { return zlibSync(bytes, { level: 1 }); }
 const webCp1252 = [
   8364, 129, 8218, 402, 8222, 8230, 8224, 8225, 710, 8240, 352, 8249, 338, 141,
   381, 143, 144, 8216, 8217, 8220, 8221, 8226, 8211, 8212, 732, 8482, 353, 8250,

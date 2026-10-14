@@ -101,6 +101,7 @@ jobs:
           node scripts/test-web-export.cjs "$RUNNER_TEMP/browser-results/web-export"
           node scripts/test-web-static-export.cjs "$RUNNER_TEMP/browser-results/static-export"
           python scripts/check-web-static-export.py "$RUNNER_TEMP/browser-results/static-export"
+          node scripts/test-web-pdf-resources.mjs
           python scripts/check-web-export-budget.py
           node scripts/test-presenter.cjs "$RUNNER_TEMP/browser-results/presenter"
           node scripts/test-presenter-startup.cjs "$RUNNER_TEMP/browser-results/presenter/notes.zip.html" "$RUNNER_TEMP/browser-results/presenter/startup.json"

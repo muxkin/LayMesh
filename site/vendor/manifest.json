@@ -128,7 +128,7 @@
   "pdf-export": {
     "version": "jspdf-4.2.1_svg2pdf-2.8.1",
     "entry": "pdf-export/index.js",
-    "sha256": "a93f38b251aeca72ab64b61d917ae017d8bf91af305c07b4fdb3c0b515dd8c16",
+    "sha256": "dbb591b41e9e2481568c2575eab2a226bd46c930a1cd43eb97c7746e2fbff1cb",
     "license": "pdf-export/LICENSE"
   }
 }

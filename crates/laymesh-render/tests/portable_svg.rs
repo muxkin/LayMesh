@@ -122,6 +122,55 @@ fn enormous_effects_fail_before_requesting_any_pixels() {
     );
     assert!(result.is_err());
 }
+
+#[test]
+fn large_pdf_effects_are_independent_bounded_tiles_at_1200_dpi() {
+    let mut node = path();
+    if let DrawKind::Path { path, .. } = &mut node.kind {
+        *path = Rect::new(0., 0., 190., 130.).to_path(0.01);
+    }
+    for blur in [0.5, 2.] {
+        node.effects.push(Effect {
+            inner: false,
+            blur,
+            spread: 0.,
+            offset: [0., 1.],
+            rgba: [0., 0., 0., 0.2],
+            source_path: None,
+            knockout: false,
+        });
+    }
+    let mut pixels = [0u64; 2];
+    let mut calls = 0;
+    let svg = portable_svg::render(
+        &list(vec![node]),
+        1200.,
+        Some(&mut |node, rect, w, h, inner| {
+            assert_eq!(
+                node.effects.len(),
+                1,
+                "Effects must not inflate each other's bounds"
+            );
+            assert_eq!(inner, Some(false));
+            let e = &node.effects[0];
+            let density = 1200. / 25.4;
+            let halo = ((4. * e.blur + 1.) * density).ceil() as u64 + 2;
+            assert!((w as u64 + 2 * halo) * (h as u64 + 2 * halo) * 4 <= 64 * 1024 * 1024);
+            assert!((w as f64 / rect.width() - density).abs() < 1e-6);
+            assert!((h as f64 / rect.height() - density).abs() < 1e-6);
+            pixels[usize::from(e.blur > 1.)] += w as u64 * h as u64;
+            calls += 1;
+            Ok(png())
+        }),
+    )
+    .unwrap();
+    assert!(calls > 2);
+    assert!(
+        pixels[1] > pixels[0],
+        "Blur radius must define each effect's own bounds"
+    );
+    assert_eq!(svg.matches("<path ").count(), 1);
+}
 #[test]
 fn masks_clips_and_gradient_spread_survive_serialization() {
     let mut n = path();

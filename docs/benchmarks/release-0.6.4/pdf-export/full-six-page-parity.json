@@ -1,0 +1,26 @@
+[
+  {
+    "page": 1,
+    "meanRGBErrorOf255": 0.033699074074074076
+  },
+  {
+    "page": 2,
+    "meanRGBErrorOf255": 0.0
+  },
+  {
+    "page": 3,
+    "meanRGBErrorOf255": 0.010152777777777778
+  },
+  {
+    "page": 4,
+    "meanRGBErrorOf255": 0.006496990740740741
+  },
+  {
+    "page": 5,
+    "meanRGBErrorOf255": 0.013165277777777777
+  },
+  {
+    "page": 6,
+    "meanRGBErrorOf255": 0.009175925925925926
+  }
+]

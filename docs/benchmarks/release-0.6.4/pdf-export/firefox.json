@@ -1,0 +1,28 @@
+[
+  {
+    "engine": "firefox",
+    "browser": "153.0",
+    "dpi": 1200,
+    "cancelMs": 63,
+    "runs": [
+      {
+        "elapsedMs": 320100,
+        "bytes": 2490246,
+        "before": null,
+        "after": null,
+        "peakMiB": null,
+        "addedPeakMiB": null,
+        "metrics": {
+          "renderMs": 311799,
+          "readbackMs": 2247,
+          "encodeMs": 4875,
+          "pdfMs": 143,
+          "tiles": 69,
+          "peakTileRGBABytes": 67108864,
+          "resourceBytes": 2543809
+        }
+      }
+    ],
+    "errors": []
+  }
+]

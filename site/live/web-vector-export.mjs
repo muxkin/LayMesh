@@ -81,7 +81,7 @@ export async function vectorSVG(
   const layer = async (n, t, effectsOnly = null) => {
     const local = { ...n, transform: ident, opacity: 1 };
     const result = await raster(local, t, effectsOnly);
-    return result ? at(imageDataURL(result.bytes), result.rect) : "";
+    return typeof result === "string" ? result : result ? at(imageDataURL(result.bytes), result.rect) : "";
   };
   const node = async (n, parent) => {
     if (n.opacity <= 0) return "";
@@ -90,18 +90,18 @@ export async function vectorSVG(
     // svg2pdf.js cannot represent SVG masks, isolated opacity groups, gradient
     // spread, or varying stop alpha correctly. Only those local objects fall
     // back to CanvasKit, at the requested physical DPI; surrounding ink stays vector.
-    const complex =
-      pdf &&
-      (n.opacity < 1 ||
-        (k.kind === "group" && k.mask) ||
-        (k.kind === "path" &&
-          ["linear", "radial"].includes(k.fill.kind) &&
-          (k.fill.spread !== "pad" ||
-            k.fill.stops.some((s) => s.rgba[3] !== 1))));
+    const reasons=[];
+    if(n.opacity < 1 && (k.kind === "group" || n.effects.length || (k.kind === "path" && k.stroke && k.fill.kind !== "none")))reasons.push("隔离透明组合");
+    if(k.kind === "group" && k.mask)reasons.push("蒙版");
+    if(k.kind === "path" && ["linear", "radial"].includes(k.fill.kind)) {
+      if(k.fill.spread !== "pad")reasons.push("重复或镜像渐变");
+      if(k.fill.stops.some(s=>s.rgba[3]!==1))reasons.push("透明度渐变");
+    }
+    const complex=pdf && reasons.length;
     if (complex) {
       warnings.push({
         code: "W_PDF_RASTER",
-        message: "PDF 中的复杂蒙版或透明混合使用局部高分辨率图片。",
+        message: `对象 ${n.name || "未命名"}：${reasons.join("、")}使用局部高分辨率图片，其余内容保留矢量。`,
       });
       return `<g transform="${matrix(n.transform)}" opacity="${n.opacity}">${await layer(n, t)}</g>`;
     }

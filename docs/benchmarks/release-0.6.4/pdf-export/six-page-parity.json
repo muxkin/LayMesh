@@ -1,0 +1,44 @@
+[
+  {
+    "page": 1,
+    "meanRGBErrorOf255": 0.10542499999999999,
+    "vectorPaths": 99,
+    "oldReaderMs": 2188.3509409963153,
+    "newReaderMs": 368.11161700461525
+  },
+  {
+    "page": 2,
+    "meanRGBErrorOf255": 0.009409259259259258,
+    "vectorPaths": 54,
+    "oldReaderMs": 141.69683901127428,
+    "newReaderMs": 29.24162799899932
+  },
+  {
+    "page": 3,
+    "meanRGBErrorOf255": 0.05011736111111111,
+    "vectorPaths": 117,
+    "oldReaderMs": 551.9265310140327,
+    "newReaderMs": 67.2893229930196
+  },
+  {
+    "page": 4,
+    "meanRGBErrorOf255": 0.0267037037037037,
+    "vectorPaths": 81,
+    "oldReaderMs": 1028.505212001619,
+    "newReaderMs": 138.34726500499528
+  },
+  {
+    "page": 5,
+    "meanRGBErrorOf255": 0.06202962962962963,
+    "vectorPaths": 95,
+    "oldReaderMs": 1338.3225639990997,
+    "newReaderMs": 137.46352998714428
+  },
+  {
+    "page": 6,
+    "meanRGBErrorOf255": 0.040677546296296295,
+    "vectorPaths": 120,
+    "oldReaderMs": 487.6841770019382,
+    "newReaderMs": 65.94686600146815
+  }
+]

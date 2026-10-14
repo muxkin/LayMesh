@@ -1,0 +1,23 @@
+{
+  "source": "v007",
+  "browser": "Chromium 151.0.7922.34",
+  "platform": "Linux x64 headless, software export",
+  "dpi": 1200,
+  "pages": 6,
+  "pageMm": [
+    320,
+    180
+  ],
+  "elapsedMs": 111014,
+  "baselineRssMiB": 1283.08203125,
+  "peakRssMiB": 3449.2890625,
+  "addedPeakMiB": 2166.20703125,
+  "pdfBytes": 2322875,
+  "largestImage": [
+    10564,
+    8155
+  ],
+  "firstPageRenderMs": 4676.14,
+  "rasterAndSVGMs": 52000,
+  "mainPDFMs": 59000
+}

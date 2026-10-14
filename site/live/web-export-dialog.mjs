@@ -1,5 +1,5 @@
 import { exportBrowserJPEG } from "./web-jpeg-export.mjs";
-import { exportVectorPDF } from "./web-pdf-export.mjs";
+import { createPDFExport } from "./web-pdf-export.mjs";
 const formats = [
   ["pdf", "PDF 文档"],
   ["svg", "SVG 矢量图"],
@@ -186,7 +186,7 @@ export function installExportDialog({
     controls.forEach((c) => (c.disabled = true));
     el("export-cancel").hidden = false;
     el("export-progress").textContent = "正在准备…";
-    let rejectWork;
+    let rejectWork, pdfWriter;
     const originalCancel = cancel;
     cancel = () => {
       originalCancel();
@@ -209,23 +209,43 @@ export function installExportDialog({
       const selection = pages()
         .map((p, i) => ({ ...p, number: i + 1 }))
         .filter((_, i) => el("export-scope").value === "all" || i === index());
+      if(format === "pdf" && !manifest.editable)pdfWriter=createPDFExport({
+        cancelled:()=>aborted,
+        progress:message=>{el("export-progress").textContent=message;}
+      });
       const result = await new Promise((resolve, reject) => {
         rejectWork = reject;
-        worker = makeWorker();
-        worker.onerror = (e) => reject(Error(e.message));
-        worker.onmessage = ({ data }) => {
+        const jobWorker = makeWorker();
+        worker = jobWorker;
+        jobWorker.onerror = (e) => reject(Error(e.message));
+        jobWorker.onmessage = async ({ data }) => {
+          try {
+            if(data.requestPage!==undefined) {
+              if(aborted)return;
+              const p=selection[data.requestPage];
+              if(!p)throw Error("无效导出页面请求");
+              jobWorker.postMessage({type:"pdfAck",seq:data.seq,page:{number:p.number,list:p.list,resources:resources(p)}});
+              return;
+            }
+            if(data.pdfResource || data.pdfLayer || data.pdfPage) {
+              if(aborted)return;
+              let resourceId,pdfMs;
+              const begin=performance.now();
+              if(data.pdfResource)resourceId=pdfWriter.resource(data.pdfResource);
+              else if(data.pdfLayer)resourceId=pdfWriter.layer(data.pdfLayer);
+              else {await pdfWriter.page(data.pdfPage);pdfMs=performance.now()-begin;}
+              if(!aborted)jobWorker.postMessage({type:"pdfAck",seq:data.seq,resourceId,pdfMs});
+              return;
+            }
           if (data.progress) el("export-progress").textContent = data.progress;
           else if (data.error) reject(Error(data.error));
           else resolve(data);
+          } catch(error){jobWorker.terminate();reject(error);}
         };
-        worker.postMessage({
+        jobWorker.postMessage({
           format,
           options: options(format),
-          pages: selection.map((p) => ({
-            number: p.number,
-            list: p.list,
-            resources: resources(p),
-          })),
+          pages: selection.map(p=>({number:p.number})),
           wasm: bytes(
             manifest.editable
               ? "runtime/exporter-full/laymesh.wasm"
@@ -244,12 +264,7 @@ export function installExportDialog({
       if (format === "pdf" && !manifest.editable) {
         result.output = [
           {
-            bytes: await exportVectorPDF(result.output, {
-              cancelled: () => aborted,
-              progress: (message) => {
-                el("export-progress").textContent = message;
-              },
-            }),
+            bytes: pdfWriter.finish(),
           },
         ];
       }
@@ -301,6 +316,7 @@ export function installExportDialog({
       }
     } finally {
       worker?.terminate();
+      pdfWriter?.dispose();
       worker = null;
       cancel = null;
       rejectWork = null;

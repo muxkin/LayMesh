@@ -1,0 +1,28 @@
+[
+  {
+    "engine": "webkit",
+    "browser": "26.5",
+    "dpi": 1200,
+    "cancelMs": 44,
+    "runs": [
+      {
+        "elapsedMs": 45240,
+        "bytes": 2490246,
+        "before": null,
+        "after": null,
+        "peakMiB": null,
+        "addedPeakMiB": null,
+        "metrics": {
+          "renderMs": 39659,
+          "readbackMs": 486,
+          "encodeMs": 4308,
+          "pdfMs": 83,
+          "tiles": 69,
+          "peakTileRGBABytes": 67108864,
+          "resourceBytes": 2543809
+        }
+      }
+    ],
+    "errors": []
+  }
+]

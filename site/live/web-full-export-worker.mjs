@@ -1,22 +1,30 @@
 import init, {
   dimensions,
   encode_pixels,
-  export_pdf,
   clear_resources,
   register_resource,
   PptxJob,
   VectorJob,
+  PdfJob,
 } from "./exporter-full/laymesh_wasm.js";
 import { initializeSkia, SkiaRenderer } from "./skia-renderer.mjs";
+import { exportHaloMM, exportTilePixels } from "./web-export-raster.mjs";
 let exportSkia;
+let pendingPage,sequence=0;
+const getPage=index=>new Promise(resolve=>{
+  const seq=++sequence;pendingPage={seq,resolve};self.postMessage({requestPage:index,seq});
+});
 self.onmessage = async ({ data }) => {
-  let renderer;
+  if(data.type === "pdfAck") {
+    if(pendingPage?.seq===data.seq){const {resolve}=pendingPage;pendingPage=null;resolve(data.page);}return;
+  }
+  let renderer, pdfJob;
   try {
     await init({ module_or_path: data.wasm });
     const options = JSON.stringify(data.options),
       output = [],
       warnings = [];
-    const vectorPages = [];
+    if(data.format === "pdf")pdfJob=new PdfJob(options);
     const raster = async (
       list,
       resources,
@@ -31,9 +39,17 @@ self.onmessage = async ({ data }) => {
       // A dedicated software surface avoids screen-size/GPU texture limits.
       renderer ||= new SkiaRenderer(exportSkia, new OffscreenCanvas(1, 1), {
         software: true,
+        rasterOnly: true,
         cacheMB: 32,
       });
       await renderer.install(list, (id) => resources[id], 0, 32);
+      let halo=0;
+      if(data.format === "pdf") {
+        const density=Math.max(width/(view[2]-view[0]),height/(view[3]-view[1]));
+        halo=Math.ceil(exportHaloMM(list.nodes[0])*density)+2;
+        if((width+2*halo)*(height+2*halo)>exportTilePixels)throw Error("模糊范围超过 64 MiB 分块缓冲预算");
+        // Skia expands filter input beyond the output clip; do not blur an extra output halo.
+      }
       renderer.render(
         view,
         width,
@@ -46,7 +62,9 @@ self.onmessage = async ({ data }) => {
         false,
         effectsOnly,
       );
-      const pixels = renderer.readPixels();
+      const snapshot=renderer.surface.makeImageSnapshot();
+      let pixels;
+      try{pixels=snapshot.readPixels(0,0,{width,height,colorType:exportSkia.ColorType.RGBA_8888,alphaType:exportSkia.AlphaType.Unpremul,colorSpace:exportSkia.ColorSpace.SRGB});}finally{snapshot.delete();}
       if (!pixels) throw Error("无法读取导出画面，请减小 DPI 后重试");
       return pixels;
     };
@@ -54,7 +72,7 @@ self.onmessage = async ({ data }) => {
       self.postMessage({
         progress: `正在导出 ${i + 1} / ${data.pages.length} 页…`,
       });
-      const page = data.pages[i];
+      const page = data.pages[i].list ? data.pages[i] : await getPage(i);
       let bytes;
       if (["pptx", "pdf", "svg"].includes(data.format)) {
         clear_resources();
@@ -69,9 +87,11 @@ self.onmessage = async ({ data }) => {
                 data.format === "pdf",
               );
         try {
-          const requests = JSON.parse(job.requests());
-          for (let j = 0; j < requests.length; j++) {
-            const r = requests[j],
+          const pptx=data.format === "pptx";
+          const requests=pptx?JSON.parse(job.requests()):null;
+          const count=pptx?requests.length:job.request_count();
+          for (let j = 0; j < count; j++) {
+            const r = pptx?requests[j]:JSON.parse(job.request(j)),
               pixels = await raster(
                 r.list,
                 page.resources,
@@ -92,12 +112,10 @@ self.onmessage = async ({ data }) => {
             );
           }
           const result = job.finish();
-          if (data.format === "pdf")
-            vectorPages.push({
-              svg: result,
-              width: page.list.width,
-              height: page.list.height,
-            });
+          if (data.format === "pdf") {
+            self.postMessage({progress:`正在写入 PDF 第 ${page.number} 页…`});
+            pdfJob.add_page(result,page.list.width,page.list.height);
+          }
           else if (data.format === "svg")
             bytes = new TextEncoder().encode(result);
           else {
@@ -125,9 +143,10 @@ self.onmessage = async ({ data }) => {
         bytes = encode_pixels(w, h, pixels, data.format, options);
       }
       if (bytes) output.push({ bytes, page: page.number });
+      data.pages[i]=null;
     }
     if (data.format === "pdf")
-      output.push({ bytes: export_pdf(JSON.stringify(vectorPages), options) });
+      output.push({ bytes: pdfJob.finish() });
     self.postMessage(
       { output, warnings },
       output.map((o) => o.bytes.buffer),
@@ -136,5 +155,6 @@ self.onmessage = async ({ data }) => {
     self.postMessage({ error: String(e) });
   } finally {
     renderer?.dispose();
+    pdfJob?.free();
   }
 };
