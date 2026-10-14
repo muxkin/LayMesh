@@ -30,6 +30,10 @@ const root=path.resolve(__dirname,'..'),out=path.resolve(process.argv[2]||'/tmp/
       await page.emulateMedia({reducedMotion:'reduce'});await page.waitForFunction(()=>matchMedia('(prefers-reduced-motion: reduce)').matches);m=await select(1);assert.ok(!m.transitionFrames,'Reduced motion renders no intermediate effect frames '+JSON.stringify(m));await page.emulateMedia({reducedMotion:'no-preference'});
       console.log(engine+' preview checks passed');
       await page.evaluate(async()=>{const p=__LAYMESH_WEB.presentation;p.fullscreen=false;await p.open();});await page.waitForFunction(()=>__LAYMESH_WEB.presentation.ready);
+      assert.equal(await page.evaluate(()=>__LAYMESH_WEB.presentation.index),1,'Presentation starts at the current preview page');
+      assert.ok(!await page.evaluate(()=>__LAYMESH_WEB.presentation.metrics.lastFrame.transitionName),'Initial current page has no transition');
+      await page.evaluate(async()=>{await __LAYMESH_WEB.presentation.go(0);});
+      assert.equal(await page.evaluate(()=>__LAYMESH_WEB.presentation.metrics.lastFrame.transitionName),'InvertedPageCurl','Backward crosses the current page boundary');
       await page.evaluate(async()=>{await __LAYMESH_WEB.presentation.go(1);});
       const presentation=await page.evaluate(()=>structuredClone(__LAYMESH_WEB.presentation.metrics.lastFrame));assert.equal(presentation.transitionName,'InvertedPageCurl');assert.ok(presentation.transitionFrames>1,JSON.stringify(presentation));assert.ok(!presentation.transitionError);
       await page.evaluate(async()=>{const p=__LAYMESH_WEB.presentation;await Promise.all([p.go(2),p.go(3),p.go(0)]);});assert.equal(await page.evaluate(()=>__LAYMESH_WEB.presentation.index),0);
