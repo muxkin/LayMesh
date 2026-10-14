@@ -19,6 +19,8 @@
 
 证据：[修复前](release-0.6.4/pdf-export/baseline.json)、[三次导出及分阶段计时](release-0.6.4/pdf-export/chromium.json)。渲染约 38.6–38.8 s，透明度读取约 0.43 s，压缩约 4.3 s，各页主线程 PDF 转换合计约 0.06–0.08 s；总时间另含 Worker 初始化、消息和最终写入。旧流程约 52 s 用于效果／SVG，约 59 s 用于 PDF 图片转换。
 
+另在特效完成后注入损坏的 SVG 页面：界面显示解析错误、释放 Worker 和临时页面，随后在同一界面重新导出成功，恢复文件仍包含 54 条矢量绘制记录。[失败恢复](release-0.6.4/pdf-export/failure-cleanup.json)。
+
 ## 画面与结构
 
 - 每个阴影独立计算边界，按变换后的物理密度分块。64 MiB RGBA 预算包含滤镜输入重叠区；Skia 自行扩展滤镜输入，不重复渲染输出周围的一圈模糊。
@@ -53,3 +55,9 @@ python scripts/check-web-export-budget.py
 ```
 
 0.6.4 修复后的正式包以本轮重新构建、审计的产物为准。之前五平台审计记录属于 PDF 修复前候选包；发布继续使用既有 PyPI 审批门禁，Marketplace 手动上传。
+
+首轮 CI 在样式库目录的旧引擎指纹检查处失败，未进入浏览器测试；随后重新生成 3,316 个目录条目并验证 1,168 个可用示例。目录内容不变，仅更新引擎来源指纹，完整文档站重建／检查通过。修订后的 CI Linux wheel 与 v008 比较了 49 个运行时模块：执行代码一致，两处 WASM 差异仅为编译诊断中的工作目录路径。[运行时核对](release-0.6.4/pdf-export/v008-ci-runtime.json)。
+
+修复后的[五平台构建与审计](https://github.com/muxkin/LayMesh/actions/runs/38559302420) 已通过，构建源码 `f37f735e14dd3e06478f9aa7ef1538fe3482e968`。下载后十个包校验值均匹配，wheel／VSIX／真实 Jupyter 的引擎哈希逐平台一致，Python 3.10／3.14 十组兼容任务全部通过。[候选包审计](release-0.6.4/pdf-export/candidate-packages.json)。核心检查为 630 项 Rust 测试通过、1 项手动基准忽略，891 项契约断言均已映射。
+
+随后浏览器 CI 暴露既有演讲者测试的时序问题：两秒动画结束后，测试仍尝试点击已禁用的“继续动画”。测试夹具改为八秒，并明确断言暂停状态和暂停期间时间不变，再验证自然播放完成；没有修改作品或产品的动画时长。修订后三浏览器本地通过。[控制测试](release-0.6.4/pdf-export/presenter-controls.json)。
