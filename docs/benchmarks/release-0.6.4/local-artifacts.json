@@ -1,17 +1,17 @@
 [
   {
     "file": "04_LCSS_离线播放_v007.zip.html",
-    "bytes": 4179609,
-    "sha256": "c069bbce1b47f1156694dbabd2613a3706fd3102e3113fe62cd3c79a23b0ead2"
+    "bytes": 4179611,
+    "sha256": "8e178e7bbc02b80b4156f57661e303c26d57fbdab09cf12c210c97b1d5d9c9c4"
   },
   {
     "file": "laymesh-0.6.4-linux-x64.vsix",
-    "bytes": 27091302,
-    "sha256": "046ff68423d03e1332d85b9aca253912fb865ea212cc7d3d6f2e7660e491bc94"
+    "bytes": 27091308,
+    "sha256": "c2e2d9009bf1fc79a74998551f92239990dc1bf627bd3ac56f6447be35354cd6"
   },
   {
     "file": "laymesh-0.6.4-py3-none-manylinux_2_39_x86_64.whl",
-    "bytes": 19978582,
-    "sha256": "a3509b1e10f0e1f20254fa1861bb2c523586d85e3577578c13da143ff53899f3"
+    "bytes": 19978580,
+    "sha256": "de5bd640c5340b5953e37d16a4f0faf4cc0ce065b84579fb085b09ca87a042a4"
   }
 ]

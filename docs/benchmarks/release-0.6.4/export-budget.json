@@ -1,8 +1,8 @@
 {
   "runtime": "/home/keqing/source/LayMesh/target/web-export/runtime.zip",
-  "playbackExporterAndShellZipBytes": 258982,
+  "playbackExporterAndShellZipBytes": 258990,
   "incrementalLicenseZipBytes": 1993,
-  "conservativeIncrementBytes": 260975,
+  "conservativeIncrementBytes": 260983,
   "budgetBytes": 307200,
   "files": [
     "runtime/exporter/laymesh.wasm",

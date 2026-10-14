@@ -82,6 +82,7 @@ jobs:
           node scripts/test-presentation-wheel.mjs
           node scripts/test-presentation-session.mjs
           node scripts/test-presenter-mirror.mjs
+          node --experimental-vm-modules scripts/test-page-previews.mjs
           node scripts/test-presentation-native-scheduling.cjs
           node scripts/test-preview-player.mjs
       - name: CSS animation and real presentation browser regressions

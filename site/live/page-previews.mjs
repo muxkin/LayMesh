@@ -6,7 +6,7 @@ import {createPresentationRuntime} from './presentation-worker.mjs';
 export class PagePreviewRenderer {
  constructor({canvas=document.createElement('canvas'),runtime,page,skiaInstance}){Object.assign(this,{canvas,runtime,page,skiaInstance});this.serial=0;this.queue=Promise.resolve();this.resident=new Set();}
  draw(index,width,time=null,reduced=false){
-  const work=async()=>{if(this.closed)return;if(!this.run){const runtime=await this.runtime();const skia=this.skiaInstance||(sharedSkia??=initializeSkia(runtime.skiaBytes||runtime.skiaURL).catch(error=>{sharedSkia=null;throw error;}));this.run=createPresentationRuntime({...runtime,skiaInstance:await skia,canvas:this.canvas,software:true,budget:32*1048576});}const run=await this.run;if(this.closed)return;
+  const work=async()=>{if(this.closed)return;if(!this.run){const runtime=await this.runtime();const skia=this.skiaInstance||(sharedSkia??=initializeSkia(runtime.skiaBytes||runtime.skiaURL).catch(error=>{sharedSkia=null;throw error;}));this.run=createPresentationRuntime({...runtime,skiaInstance:await skia,canvas:this.canvas,software:true,budget:32*1048576}).catch(error=>{this.run=null;throw error;});}const run=await this.run;if(this.closed)return;
    const page=await this.page(index);if(this.closed)return;const height=Math.max(1,Math.round(width*page.list.height/page.list.width));
    if(!this.resident.has(page.id)){const result=await run({type:'load',page,installOnly:true,width,height});this.resident=new Set(result.resident);}
    await run({type:'activate',serial:++this.serial,pageId:page.id,width,height,time,reduced});return this.canvas;
