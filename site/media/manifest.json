@@ -5449,6 +5449,33 @@
         }
       ]
     },
+    "examples/media/controls.lay": {
+      "fingerprint": "6799f071b95d4bc58f4cac5d350a9e1f5c00fb5b80ab20113e13a190eb0e9519",
+      "dependencies": [
+        "examples/media/controls.lay",
+        "examples/media/controls.mp4"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-controls-960.webp",
+          "width": 960,
+          "height": 732,
+          "sha256": "c1713b27af878070b84e1854609fa005d4d38561327cc739f8fd01c11f923dbe"
+        },
+        {
+          "file": "site/media/media-controls-1920.webp",
+          "width": 1920,
+          "height": 1464,
+          "sha256": "afa2363d5967b915e3a13eb2aa4f43f912592502f2844e051924d5ca02d44ab5"
+        },
+        {
+          "file": "site/media/media-controls-3840.webp",
+          "width": 3840,
+          "height": 2928,
+          "sha256": "08a98c3a45ccfa750d4bba75ec33090c6152642b113368612b80dc47df82d2ee"
+        }
+      ]
+    },
     "examples/media/first.lay": {
       "fingerprint": "ce8f1821d1be5c2d207f169e0c6231b4d52fa718c9ee3515b786ab10eed60144",
       "dependencies": [
@@ -5474,6 +5501,33 @@
           "width": 3840,
           "height": 2496,
           "sha256": "646f2020abc63f2c1ffb895a61c202f1864e1395a50ad39e8912fe2ae894f95b"
+        }
+      ]
+    },
+    "examples/media/manual.lay": {
+      "fingerprint": "29fa157170f707c3c1238530049a86fd2647fa32ca6a7695c47286c889b93e6f",
+      "dependencies": [
+        "examples/media/controls.mp4",
+        "examples/media/manual.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-manual-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "2e0110501de5eba28d8531497d73986bdc3201cba6c1ed303fcdb4ad8fe75744"
+        },
+        {
+          "file": "site/media/media-manual-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "760b550610271b2e91066bbfba918f6edc2dc846abbd4cfbf38ea38b0dbcc08b"
+        },
+        {
+          "file": "site/media/media-manual-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "015943c213806cd9933d378ab96d024141168b8d6da5d540ba038b2a1c14aef2"
         }
       ]
     },
@@ -6053,6 +6107,36 @@
           "width": 3840,
           "height": 2496,
           "sha256": "9d55eb8bf9b6cfdcb005e91a071a27afbd65629404d40483db1a9478943ea8de"
+        }
+      ]
+    },
+    "examples/media/controls.laydoc": {
+      "fingerprint": "88c594995537b3f5008560fbeeb673c062eb87fafb910e4b97047eb063cb7b16",
+      "dependencies": [
+        "examples/media/controls.lay",
+        "examples/media/controls.laydoc",
+        "examples/media/controls.mp4",
+        "examples/media/music.wav",
+        "examples/media/second.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-controls-960.webp",
+          "width": 960,
+          "height": 732,
+          "sha256": "c1713b27af878070b84e1854609fa005d4d38561327cc739f8fd01c11f923dbe"
+        },
+        {
+          "file": "site/media/media-controls-1920.webp",
+          "width": 1920,
+          "height": 1464,
+          "sha256": "afa2363d5967b915e3a13eb2aa4f43f912592502f2844e051924d5ca02d44ab5"
+        },
+        {
+          "file": "site/media/media-controls-3840.webp",
+          "width": 3840,
+          "height": 2928,
+          "sha256": "08a98c3a45ccfa750d4bba75ec33090c6152642b113368612b80dc47df82d2ee"
         }
       ]
     },

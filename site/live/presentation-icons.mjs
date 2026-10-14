@@ -3,6 +3,8 @@ const paths={
  image:'M2 2h12v12H2Zm0 9 4-4 3 3 2-2 3 3M10 5h.01',font:'M3 13 8 3l5 10M5 9h6',folder:'M1.5 4V2h5l2 2h6v10h-13Z',fit:'M2 5V2h3M11 2h3v3M2 11v3h3M11 14h3v-3M5 5h6v6H5Z',add:'M8 3v10M3 8h10',
  previous:'M10 3 5 8l5 5',next:'m6 3 5 5-5 5',down:'m4 6 4 4 4-4',
  play:'m5 2.5 8 5.5-8 5.5Z',pause:'M5 3v10M11 3v10',close:'m3.5 3.5 9 9m0-9-9 9',
+ volume:'M2 6h3l4-3v10l-4-3H2ZM11 5a4 4 0 0 1 0 6M13 3a7 7 0 0 1 0 10',
+ 'volume-off':'M2 6h3l4-3v10l-4-3H2Zm9 0 4 4m0-4-4 4',
  more:'M3 8h.01M8 8h.01M13 8h.01',replay:'M3 6a5.5 5.5 0 1 1-.3 4M3 2v4h4',
  page:'M4 1.5h5l3 3v10H4Zm5 0v3h3M6 8h4M6 11h4',
  black:'M2 3h12v9H2ZM5 14h6M8 12v2',white:'M3 2h10v12H3Z',

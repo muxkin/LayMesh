@@ -1,0 +1,3 @@
+p = canvas(size=(100mm,65mm),background="#eef1f5")
+v = p.add(video(src="controls.mp4"),size=(80mm,45mm),offset=(10mm,8mm))
+p.add(text("Manual video: no play binding",font_size=3mm),offset=(10mm,57mm))

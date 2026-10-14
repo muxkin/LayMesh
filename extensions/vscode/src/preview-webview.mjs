@@ -31,11 +31,11 @@ function selectPage(delta){const index=pageSelect.selectedIndex+delta;if(index<0
 previousPage.onclick=()=>selectPage(-1);nextPage.onclick=()=>selectPage(1);
 function syncPages(){pageTools.hidden=pageSelect.hidden;previousPage.disabled=pageSelect.selectedIndex<=0;nextPage.disabled=pageSelect.selectedIndex>=pageSelect.options.length-1;}
 const presentationMenu=el('details','presentation-choice',toolbar);el('summary','',presentationMenu,'放映 ▾');
-let previewMediaResume=false,previewResume=false;
+let previewMediaSnapshot,previewResume=false;
 let deckResolve,deckReject,deckStore,deckReceive=Promise.resolve(),deckProgress,deckRevision,deckSession,deckRequest=0,deckRestart;
-const presentation=new Presentation({parent:root,base:new URL('./',import.meta.url),blobWorker:true,fullscreen:false,compatibleAudio:true,onEnter:()=>{previewMediaResume=media.enabled&&!media.paused;media.pause();previewResume=player.running;if(previewResume)player.action('play');},provider:({signal,onProgress})=>new Promise((resolve,reject)=>{
+const presentation=new Presentation({parent:root,base:new URL('./',import.meta.url),blobWorker:true,fullscreen:false,compatibleAudio:true,onEnter:()=>{previewMediaSnapshot=[...root.querySelectorAll('details')].find(menu=>menu.open&&menu.mediaSnapshot)?.mediaSnapshot||media.snapshot();media.pause({lock:true});previewResume=player.running;if(previewResume)player.action('play');},provider:({signal,onProgress})=>new Promise((resolve,reject)=>{
  deckRevision=null;const requestId=++deckRequest;deckStore=new PresentationStore();const store=deckStore;deckSession=new PresentationSession(store,{onProgress,request:(id,retry)=>bridge.postMessage({type:'deck-priority',revision:deckRevision,pageId:id,retry}),stop:()=>bridge.postMessage({type:'deck-cancel',requestId})});deckSession.preparation={};deckResolve=resolve;deckReject=reject;deckProgress=onProgress;deckReceive=Promise.resolve();deckSession.firstReady.then(resolve,reject);signal.addEventListener('abort',()=>store.dispose(),{once:true});bridge.postMessage({type:'deck-prepare',requestId});
-}),onExit:()=>{if(previewMediaResume)media.resume();bridge.postMessage({type:'deck-release'});if(previewResume)player.start();}});
+}),onExit:()=>{if(!document.hidden)media.restore(previewMediaSnapshot);bridge.postMessage({type:'deck-release'});if(previewResume)player.start();}});
 const presentationPopover=el('div','toolbar-popover',presentationMenu);const presentHere=el('button','',presentationPopover);presentHere.type='button';presentHere.onclick=()=>presentation.button.click();presentation.button.addEventListener('click',()=>{presentationMenu.open=false;bridge.postMessage({type:'deck-pin'});});
 const browserPresent=el('button','',presentationPopover,'在浏览器全屏放映');browserPresent.onclick=async()=>{presentationMenu.open=false;try{await presentation.prepare();bridge.postMessage({type:'deck-browser'});}catch(e){diagnostic={message:e.message};showDiagnostic();}};
 window.laymeshPresentation=presentation;
@@ -95,9 +95,9 @@ function syncPlaybackButtons(){
 }
 const originalSync=player.sync.bind(player);player.sync=(...args)=>{originalSync(...args);syncPlaybackButtons();};
 toolbar.replaceChildren(buttons.refresh,buttons.fit,zoomMenu,pageTools,presentGroup,buttons.export,more);footer.replaceChildren(playbackButtons,diagnosticMenu,status,readout,details);
-viewport.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey||e.repeat||!player.metadata)return;const action={ArrowRight:'next',ArrowDown:'next',ArrowLeft:'previous',ArrowUp:'previous',Enter:'next',s:'play',S:'play',Escape:'static'}[e.key];if(action){e.preventDefault();player.action(action);}});
+viewport.addEventListener('keydown',e=>{if(e.target.closest('.media-controls')||e.ctrlKey||e.metaKey||e.altKey||e.repeat||!player.metadata)return;const action={ArrowRight:'next',ArrowDown:'next',ArrowLeft:'previous',ArrowUp:'previous',Enter:'next',s:'play',S:'play',Escape:'static'}[e.key];if(action){e.preventDefault();player.action(action);}});
 
-for(const menu of [more,zoomMenu,presentationMenu,diagnosticMenu,details])menu.addEventListener('toggle',()=>{if(menu.open){menu.mediaWasRunning=media.enabled&&!media.paused;media.pause();}else if(menu.mediaWasRunning){media.resume();menu.mediaWasRunning=false;}if(menu.open)for(const other of [more,zoomMenu,presentationMenu,diagnosticMenu,details])if(other!==menu)other.open=false;});
+for(const menu of [more,zoomMenu,presentationMenu,diagnosticMenu,details])menu.addEventListener('toggle',()=>{if(menu.open){for(const other of [more,zoomMenu,presentationMenu,diagnosticMenu,details])if(other!==menu&&other.open){other.open=false;media.restore(other.mediaSnapshot);other.mediaSnapshot=null;}menu.mediaSnapshot=media.suspend();}else{if(!presentation.opened&&!document.hidden)media.restore(menu.mediaSnapshot);menu.mediaSnapshot=null;}});
 document.addEventListener('pointerdown',e=>{for(const menu of [more,zoomMenu,presentationMenu,diagnosticMenu,details])if(menu.open&&!menu.contains(e.target))menu.open=false;});
 function persist(){bridge.setState({mode:view.mode,scale:view.scale,pan:view.pan,rulers:view.rulers});}
 function containsPath(shape,p){
@@ -161,20 +161,22 @@ player.motion.addEventListener('change',cancelTransition);
 new ResizeObserver(()=>{cancelTransition();schedule();}).observe(viewport);
 
 let renderSequence=0,frameTimings={};
-media=new MediaController({parent:root,compatibleAudio:true,onFrame:()=>{drawKey='';presented=null;syncPlaybackButtons();schedule();},onError:e=>{diagnostic={code:'E_MEDIA',message:String(e)};showDiagnostic();}});
+media=new MediaController({parent:root,compatibleAudio:true,onFrame:()=>{drawKey='';syncPlaybackButtons();schedule();},onState:()=>syncPlaybackButtons(),getViewport:()=>{
+ if(!page)return null;const parent=root.getBoundingClientRect(),box=viewport.getBoundingClientRect(),r=rect();return {visible:!presentation.opened&&!document.hidden,matrix:[view.scale,0,box.left+r.left-parent.left,0,view.scale,box.top+r.top-parent.top,0,0,1],clip:[box.left-parent.left,box.top-parent.top,box.right-parent.left,box.bottom-parent.top]};
+},onError:e=>{diagnostic={code:'E_MEDIA',message:String(e)};showDiagnostic();}});
 window.__LAYMESH_PREVIEW_MEDIA=media;
 let mediaLast=performance.now(),mediaRaf;
 function tickMedia(now){const elapsed=(now-mediaLast)/1000;mediaLast=now;media.tick(elapsed,player.clock);mediaRaf=requestAnimationFrame(tickMedia);}mediaRaf=requestAnimationFrame(tickMedia);
 const mediaAction=player.action.bind(player);player.action=id=>{
  if(id==='static'){media.seek(0);media.stop();}
  else if(id==='play'&&(media.running||player.running)){media.pause();player.clock.running=false;player.refresh();return;}
- else if(id==='play'){if(player.time===null||player.clock.time>=player.clock.duration)media.seek(0);media.resume();}
+ else if(id==='play'){if(player.time!==null&&player.clock.time>=player.clock.duration)media.seek(0,0,{preserveManual:true,preserveDocument:true});media.resume();}
  else if(id==='next')media.begin();
  mediaAction(id);
  if(id==='replay')media.resume();
 };
 const mediaSeek=player.seek.bind(player);player.seek=(time,...args)=>{if(time!==null)media.seek(time);return mediaSeek(time,...args);};
-viewport.addEventListener('click',e=>{if(drag||e.button!==0||!page)return;const box=viewport.getBoundingClientRect(),r=rect();if(media.click((e.clientX-box.left-r.left)/view.scale,(e.clientY-box.top-r.top)/view.scale,media.states)){e.preventDefault();e.stopImmediatePropagation();}},true);
+viewport.addEventListener('click',e=>{if(e.target.closest('.media-controls')||drag||e.button!==0||!page)return;const box=viewport.getBoundingClientRect(),r=rect();if(media.click((e.clientX-box.left-r.left)/view.scale,(e.clientY-box.top-r.top)/view.scale,media.states)){e.preventDefault();e.stopImmediatePropagation();}},true);
 async function installFrame(data){
  const sequence=++renderSequence;
  if(data.protocol!==3||(!data.displayList&&!data.displayListCompressed&&!data.displayListUpdate))throw Error('Expected drawing protocol 3');
@@ -226,7 +228,7 @@ async function flushPaint(){if(paintInFlight||!pendingPaint||!rasterWorker)retur
  const request=pendingPaint;pendingPaint=null;paintInFlight=true;if(request.running)playbackStats.submit(performance.now());
  const mediaFrames=media.takeFrames();
  try{const data=await workerCall(directCanvas?{...request,mediaFrames}:request,directCanvas?mediaFrames.map(f=>f.bitmap):[]);media.states=data.mediaStates||data.states||{};
-  if(data.type==='painted'&&data.generation===drawGeneration&&request.content===drawJobId&&(request.key===drawKey||pendingPaint)){
+  if(data.type==='painted'&&data.generation===drawGeneration&&request.content===drawJobId){
    if(!directCanvas){mainSkia.setMediaFrames(mediaFrames);const metrics=mainSkia.render(request.crop,data.width,data.height,data.states,data.generation,!!request.running);if(metrics.skipped)return;Object.assign(metrics,await mainSkia.transitions.play(player.reduced));Object.assign(data,metrics);}if(player.resumeAfterTransition){player.resumeAfterTransition=false;player.start();}root.dataset.renderBackend=data.backend;root.dataset.transitionName=data.transitionName||'';root.dataset.transitionFrames=String(data.transitionFrames||0);root.dataset.transitionError=data.transitionError||'';root.dataset.renderWidth=String(data.width);root.dataset.renderHeight=String(data.height);root.dataset.sampleMs=String(data.sampleMs);
    if(request.time===null&&request.crop[0]===0&&request.crop[1]===0&&request.crop[2]===page.width&&request.crop[3]===page.height){const s=Math.min(768/page.width,2048/page.height,Math.sqrt(500000/(page.width*page.height)));overview.width=Math.max(1,Math.floor(page.width*s));overview.height=Math.max(1,Math.floor(page.height*s));overview.getContext('2d').drawImage(image,0,0,overview.width,overview.height);overviewContent=request.content;}
    if(request.running)requestAnimationFrame(now=>{playbackStats.record(`${request.generation}:${request.time}`,now);});

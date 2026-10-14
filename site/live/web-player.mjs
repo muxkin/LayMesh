@@ -105,7 +105,10 @@ export async function mountWebPlayer({
     closed = false,
     last = performance.now(),
     raf;
-  const media = new MediaController({parent:stage,onFrame:()=>{paint();sync();},onError:error=>fail(error)});
+  const media = new MediaController({parent:stage,onFrame:()=>{paint();sync();},onState:()=>sync(),onError:error=>fail(error),getViewport:()=>{
+    if(!preview.page||!preview.origin)return null;const parent=stage.getBoundingClientRect(),box=preview.scroll.getBoundingClientRect(),r=preview.rect(),s=view.pixelsPerMM;
+    return {visible:!presentation.opened&&!busy&&!dirty&&!document.hidden,matrix:[s,0,box.left+r.left-parent.left,0,s,box.top+r.top-parent.top,0,0,1],clip:[box.left-parent.left,box.top-parent.top,box.right-parent.left,box.bottom-parent.top]};
+  }});
   const view = { mode: "fit", scale: 1, pan: [0, 0], rulers: true };
   const preview = new WebViewport(
     stage,
@@ -472,10 +475,11 @@ export async function mountWebPlayer({
       });
       if (current !== serial) return;
       index = n;
-      await media.install(p.list,id=>resources(p)[id]);
+      const keepMedia=preserve&&media.list===p.list;
+      if(!keepMedia)await media.install(p.list,id=>resources(p)[id]);
       clock.install(p.inspection?.animation, reduced.matches);
       if(viewStatic)clock.running=false;
-      if (preserve) {clock.seek(time);media.seek(time);}
+      if (preserve) {clock.seek(time);if(!keepMedia)media.seek(time);}
       if(!viewStatic)media.begin();
       const drawSize = size();
       const frame = await call({
@@ -613,8 +617,10 @@ export async function mountWebPlayer({
   }
   el("play").onclick = () => {
     if(media.running){media.pause();clock.running=false;sync();return;}
-    media.resume();
+    const restart=clock.time>=clock.duration;
     if(viewStatic||clock.time>=clock.duration){clock.install(pages[index].inspection?.animation,reduced.matches);clock.running=false;}
+    if(restart)media.seek(0,0,{preserveManual:true,preserveDocument:true});
+    media.resume();
     viewStatic = false;
     if (clock.staticPage && !media.tracks.length) {
       if (index + 1 < pages.length) go(index + 1).catch(fail);
@@ -658,12 +664,13 @@ export async function mountWebPlayer({
     sync();
   };
   stage.addEventListener('click',e=>{
+    if(e.target.closest('.media-controls'))return;
     if(!media.list)return;const box=preview.canvas?.getBoundingClientRect?.()||stage.querySelector('canvas')?.getBoundingClientRect();if(!box)return;
     const request=preview.request();if(!request)return;const v=request.viewport;
     const x=v[0]+(e.clientX-box.left)/box.width*(v[2]-v[0]),y=v[1]+(e.clientY-box.top)/box.height*(v[3]-v[1]);
     if(media.click(x,y,media.states)){e.preventDefault();e.stopImmediatePropagation();}
   },true);
-  document.addEventListener("visibilitychange",()=>{if(document.hidden){clock.running=false;media.pause();sync();}});
+  document.addEventListener("visibilitychange",()=>{if(document.hidden){clock.running=false;media.pause({lock:true});sync();}});
   let previewSnapshot;
   const presentationAdapter = async (p, generation) => {
     const init = {
@@ -749,10 +756,9 @@ export async function mountWebPlayer({
         time: clock.time,
         active: clock.active,
         completed: clock.completed,
-        mediaRunning:media.enabled&&!media.paused,
+        mediaSnapshot:media.suspend(),
         running: clock.running,
       };
-      media.pause();
       clearTimeout(resizeTimer);
       clock.running = false;
       sync();
@@ -779,7 +785,7 @@ export async function mountWebPlayer({
             completed: snapshot.completed,
             running: snapshot.running && !dirty && !document.hidden,
           });
-          if(snapshot.mediaRunning&&!document.hidden)media.resume();
+          if(!document.hidden)media.restore(snapshot.mediaSnapshot);
           last = performance.now();
           sync();
           paint(viewStatic);
@@ -921,7 +927,7 @@ export async function mountWebPlayer({
         id: p.id + "@" + generation,
         list: outlineList(p.list),
       }));
-      if(pages.some(p=>p.list.media?.cues?.length)){manifest.schemaVersion=3;manifest.capabilities=["media-v1"];}
+      if(pages.some(p=>Object.keys(p.list.media?.assets||{}).length)){manifest.schemaVersion=3;manifest.capabilities=["media-v1"];}
       pageOptions();
       dirty = false;
       await go(Math.min(index, pages.length - 1));
