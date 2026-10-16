@@ -1,0 +1,20 @@
+[
+  {
+    "scene": "03-patterns-256",
+    "plainMs": 118.2999999821186,
+    "firstMs": 22.5,
+    "warmMs": 0.800000011920929,
+    "textureBytes": 43722880,
+    "hits": 2,
+    "builds": 0,
+    "maxDelta": 1,
+    "meanDelta": 0.00018364800347222223,
+    "channelsOver8": 0,
+    "lifecycle": [
+      "partial edit invalidation",
+      "viewport rebuild",
+      "unchanged texture retention",
+      "context loss and restoration"
+    ]
+  }
+]

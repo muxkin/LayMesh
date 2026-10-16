@@ -1,0 +1,14 @@
+{
+  "completedSuites": 73,
+  "passedTests": 641,
+  "failedTests": 0,
+  "packages": [
+    "laymesh-core",
+    "laymesh-language",
+    "laymesh-render",
+    "laymesh-wasm"
+  ],
+  "compileSessionTests": 26,
+  "ignoredTests": 1,
+  "ignoredReason": "manual exhaustive-versus-BVH microbenchmark"
+}

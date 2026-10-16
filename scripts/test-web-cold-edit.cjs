@@ -1,0 +1,17 @@
+// Regression for the recorded first-edit color-picker race; no compilation
+// warmup. Verify final drawing color and preservation of the other five pages.
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{pathToFileURL}=require('node:url');
+const pw=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+(async()=>{const out=path.resolve(process.argv[3]);fs.mkdirSync(out,{recursive:true});const results=[];
+ for(const engine of (process.env.LAYMESH_TEST_ENGINES||'chromium,firefox,webkit').split(',')){
+  const browser=await pw[engine].launch({headless:true});try{const page=await browser.newPage({viewport:{width:1600,height:1000}}),errors=[],network=[];page.setDefaultTimeout(240000);page.on('pageerror',e=>errors.push(e.message));await page.route(/^https?:\/\//,r=>{network.push(r.request().url());return r.abort();});
+   await page.goto(pathToFileURL(path.resolve(process.argv[2])).href);await page.waitForFunction(()=>window.__LAYMESH_WEB?.editor&&document.querySelector('#app').dataset.painted==='true');
+   await page.evaluate(async()=>{const w=__LAYMESH_WEB,c=w.previewCompiler;window.__cold={initial:c.records.map(r=>({key:r.key,value:r.value})),targets:[],errors:[]};const compile=c.compile,error=c.error;c.compile=s=>{__cold.targets.push(s.targetPageId);return compile(s);};c.error=(e,...a)=>{__cold.errors.push(e.message);error(e,...a);};await w.workspace.open('/project/pages/01-cover.lay');const v=w.editor.views.get('/project/pages/01-cover.lay').view,original=v.state.doc.toString();window.__cold.modify=color=>{const source=original.replace(/shadow\(color=(?:teal|"#095c68")/,'shadow(color="'+color+'"');if(source===original)throw Error('Color fixture did not change');v.dispatch({changes:{from:0,to:v.state.doc.length,insert:source}});};__cold.modify('#ff0000');});
+   for(let i=0;i<20;i++){await page.waitForTimeout(90);await page.evaluate(color=>__cold.modify(color),'#'+(0xb4c300+i).toString(16));}
+   const result=await page.evaluate(async()=>{const w=__LAYMESH_WEB;await w.previewCompiler.ensure();let matches=0;const walk=n=>{for(const e of n.effects||[])if(e.rgba?.slice(0,3).every((c,i)=>Math.abs(c-[180,195,19][i]/255)<1e-8))matches++;if(n.kind.kind==='group')n.kind.children.forEach(walk);};w.pages[0].list.nodes.forEach(walk);return {targets:__cold.targets,errors:__cold.errors,matches,unchanged:w.previewCompiler.records.slice(1).every((r,i)=>r.value===__cold.initial[i+1].value),state:document.querySelector('#app').dataset.documentState,pages:w.previewCompiler.records.map(r=>({key:r.key,valid:r.valid}))};});
+   fs.writeFileSync(path.join(out,engine+'-result.json'),JSON.stringify(result,null,2));assert.deepEqual(result.errors,[]);assert.deepEqual(errors,[]);assert.deepEqual(network,[]);assert(result.matches>0,'The final selected color must reach the displayed drawing');assert.equal(result.state,'ready');assert(result.unchanged,'Local edit must preserve other pages');assert(result.targets.length>0&&result.targets.every(p=>p==='cover'),'Cold first edit must only compile the cover');
+   await page.screenshot({path:path.join(out,engine+'.png')});results.push({engine,version:browser.version(),...result});console.log(engine+' cold rapid color edits passed');
+  }finally{await browser.close();}
+ }
+ fs.writeFileSync(path.join(out,'verification.json'),JSON.stringify(results,null,2)+'\n');
+})().catch(e=>{console.error(e);process.exitCode=1;});

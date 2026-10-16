@@ -292,7 +292,7 @@ fn embedding_restricted_fonts_never_reach_any_export() {
         let mut old = compile_source("page=canvas(size=(30mm,20mm))\npage.add(text(\"A中文\",font_family=[\"/restricted.ttf\"],font_size=4mm))", "/source.lay", host).unwrap();
         assert!(!old.fonts.is_empty());
         for font in old.fonts.values_mut() {
-            font.data = bytes.clone();
+            font.data = bytes.clone().into();
         }
         assert!(
             !excludes_body_font(&render_svg(&old).unwrap()),

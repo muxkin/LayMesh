@@ -1,0 +1,41 @@
+{
+  "artifacts": {
+    "04_LCSS_离线可编辑_v005_语义增量预览.zip.html": {
+      "path": "video/04-LCSS与动画/exports/semantic-preview-v002/04_LCSS_离线可编辑_v005_语义增量预览.zip.html",
+      "bytes": 43455354,
+      "sha256": "2a13ed41f6fb65e2144b2f4f6bb04c55c08299ecc193d57a8390828803709520"
+    },
+    "laymesh-0.6.4-semantic-preview-linux-x64.vsix": {
+      "path": "video/04-LCSS与动画/exports/semantic-preview-v002/laymesh-0.6.4-semantic-preview-linux-x64.vsix",
+      "bytes": 28005015,
+      "sha256": "9d20a0f7e7dcbda75eaaa0557ef9cf320bec2fa85b6554a27eb0982186ab6985"
+    }
+  },
+  "runtimeRefresh": {
+    "input": "/home/keqing/.codex/attachments/ae7cca4f-57dd-459c-8f5a-206718103dd7/04_LCSS_离线可编辑_v005.zip.html",
+    "output": "/tmp/laymesh-semantic-incremental/window-final.zip.html",
+    "originalSha256": "a8aa68ddc58741ad8cb977569e6f0072f62c892825428ec330881e23bb4745bd",
+    "outputSha256": "2a13ed41f6fb65e2144b2f4f6bb04c55c08299ecc193d57a8390828803709520",
+    "runtimeSha256": "68a1732abb282dd9271f4f1361c8c97f5e21725b9fdd0790ece90e2b05586a68",
+    "preservedEntries": 31,
+    "bytes": 43455354
+  },
+  "nativeSha256": "12fdaf49835b754f385ba9ab98831d47e03b9fad20b3c75452695a0c9953464b",
+  "published": false,
+  "installedIntoUserProfile": false,
+  "validationStatus": "checks-passed; performance-target-partially-met",
+  "performance": {
+    "samples": 2800,
+    "passedLocalCases": 4,
+    "totalLocalCases": 32,
+    "fullPropertyMinimalIncrementality": false
+  },
+  "sourceFormattingAfterBenchmark": "Rustfmt only; all-target check passed; delivered runtime bytes unchanged",
+  "verification": {
+    "rustTestsPassed": 641,
+    "animationPairs": 54,
+    "editedPixelPairs": 54,
+    "allAttemptReuseCases": 18,
+    "docsMediaSources": 231
+  }
+}

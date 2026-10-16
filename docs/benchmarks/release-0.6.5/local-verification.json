@@ -1,0 +1,193 @@
+{
+  "version": "0.6.5",
+  "scope": "Local Linux x64, Python 3.13; remote platform matrix pending",
+  "rust_tests": 674,
+  "capacity_release_tests": 1,
+  "ignored": "one pre-existing manual geometry benchmark; capacity test runs separately optimized",
+  "python_tests_source": 67,
+  "python_tests_installed": 67,
+  "migration_tests": 32,
+  "legacy_assertion_sites": 891,
+  "javascript_suites": 19,
+  "native_example_entries": 255,
+  "pptx_examples": 10,
+  "jupyter": "source and installed wheel, repeated execution",
+  "browsers": [
+    "Chromium",
+    "Firefox",
+    "WebKit"
+  ],
+  "local_artifacts": [
+    {
+      "name": "04_LCSS_离线可编辑_0.6.5.zip.html",
+      "bytes": 43585691,
+      "sha256": "e17b3202fe85ff09c18b0df9ebc25801d83673e4cf503ccbfb2cb49a6abbc828"
+    },
+    {
+      "name": "laymesh-0.6.5-linux-x64.vsix",
+      "bytes": 28266580,
+      "sha256": "ebf0c122561bb72079bff9eb44f1e1ddbfd1206a1c0330b553c074d9dbfca3cb"
+    },
+    {
+      "name": "laymesh-0.6.5-py3-none-manylinux_2_39_x86_64.whl",
+      "bytes": 20807490,
+      "sha256": "43da9a95c122c8d58c3de7202ab6a1bdb6a5e0022c88a9a796bb492e96646449"
+    }
+  ],
+  "final_html": [
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "targets": [
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover"
+      ],
+      "errors": [],
+      "matches": 1,
+      "unchanged": true,
+      "state": "ready",
+      "pages": [
+        {
+          "key": "cover",
+          "valid": true
+        },
+        {
+          "key": "seed",
+          "valid": true
+        },
+        {
+          "key": "anchors",
+          "valid": true
+        },
+        {
+          "key": "motion",
+          "valid": true
+        },
+        {
+          "key": "offline",
+          "valid": true
+        },
+        {
+          "key": "editable",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "targets": [
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover"
+      ],
+      "errors": [],
+      "matches": 1,
+      "unchanged": true,
+      "state": "ready",
+      "pages": [
+        {
+          "key": "cover",
+          "valid": true
+        },
+        {
+          "key": "seed",
+          "valid": true
+        },
+        {
+          "key": "anchors",
+          "valid": true
+        },
+        {
+          "key": "motion",
+          "valid": true
+        },
+        {
+          "key": "offline",
+          "valid": true
+        },
+        {
+          "key": "editable",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "targets": [
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover"
+      ],
+      "errors": [],
+      "matches": 1,
+      "unchanged": true,
+      "state": "ready",
+      "pages": [
+        {
+          "key": "cover",
+          "valid": true
+        },
+        {
+          "key": "seed",
+          "valid": true
+        },
+        {
+          "key": "anchors",
+          "valid": true
+        },
+        {
+          "key": "motion",
+          "valid": true
+        },
+        {
+          "key": "offline",
+          "valid": true
+        },
+        {
+          "key": "editable",
+          "valid": true
+        }
+      ]
+    }
+  ],
+  "thumbnail_lifetime": "100 pages; 67,781,280 decoded bytes; revisit reuses URL; pagehide releases all URLs",
+  "runtime_source_commit": "e13137d07c18fae8f1bb1cb15197559f4f78f704",
+  "local_artifact_directory": "release/dist/0.6.5-local-final"
+}

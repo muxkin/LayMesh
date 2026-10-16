@@ -148,7 +148,7 @@ pub fn build(
         scale: a
             .get("color_scale")
             .and_then(V::object)
-            .map(|o| o.borrow().args.clone()),
+            .map(|o| (*o.borrow().args).clone()),
         args: a.clone(),
         primitives: vec![],
         statistics: Json::Null,

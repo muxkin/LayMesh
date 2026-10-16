@@ -1,0 +1,2200 @@
+{
+  "summary": {
+    "samples": 50,
+    "elapsedMs": {
+      "median": 822.4000000059605,
+      "p95": 8136.799999982119
+    },
+    "withoutTransitionMs": {
+      "median": 161.1000000089407,
+      "p95": 7247.299999982119
+    },
+    "prepareMs": {
+      "median": 0,
+      "p95": 7160.199999988079
+    },
+    "planMs": {
+      "median": 0,
+      "p95": 7158.0999999940395
+    },
+    "transitionMs": {
+      "median": 659.8500000089407,
+      "p95": 887.3000000119209
+    }
+  },
+  "rows": [
+    {
+      "iteration": 1,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 921.5,
+      "calls": [
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 213.90000000596046,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 7,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 2370784,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 7,
+            "planMs": 21.30000001192093,
+            "transformProbes": 128,
+            "complete": true,
+            "prepareMs": 123.90000000596046
+          }
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 689.8000000119209,
+          "result": "done",
+          "transitionMs": 662,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 907.7000000178814
+      },
+      "prepareMs": 123.90000000596046,
+      "planMs": 21.30000001192093,
+      "transitionMs": 662,
+      "withoutTransitionMs": 259.5
+    },
+    {
+      "iteration": 2,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 1166.699999988079,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 233.40000000596046,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 2.5,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 10971664,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 4,
+            "layerTextureBytes": 5416300,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 10,
+            "planMs": 80.69999998807907,
+            "transformProbes": 1092,
+            "complete": true,
+            "prepareMs": 84.40000000596046
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 909.6000000238419,
+          "result": "done",
+          "transitionMs": 882.7999999821186,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1149.5999999940395
+      },
+      "prepareMs": 84.40000000596046,
+      "planMs": 80.69999998807907,
+      "transitionMs": 882.7999999821186,
+      "withoutTransitionMs": 283.90000000596046
+    },
+    {
+      "iteration": 3,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 832.5,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 130.5,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 5.5,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 7150900,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 3,
+            "layerTextureBytes": 5753328,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 13,
+            "planMs": 3.300000011920929,
+            "transformProbes": 124,
+            "complete": true,
+            "prepareMs": 79.69999998807907
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 676.2999999821186,
+          "result": "done",
+          "transitionMs": 654.5,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 815.5999999940395
+      },
+      "prepareMs": 79.69999998807907,
+      "planMs": 3.300000011920929,
+      "transitionMs": 654.5,
+      "withoutTransitionMs": 178
+    },
+    {
+      "iteration": 4,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 7099.600000023842,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 6327.600000023842,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 11.5,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 5891304,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 16,
+            "planMs": 6172.300000011921,
+            "transformProbes": 92,
+            "complete": true,
+            "prepareMs": 6187.5999999940395
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 753.2999999821186,
+          "result": "done",
+          "transitionMs": 652.4000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 7086.200000017881
+      },
+      "prepareMs": 6187.5999999940395,
+      "planMs": 6172.300000011921,
+      "transitionMs": 652.4000000059605,
+      "withoutTransitionMs": 6447.200000017881
+    },
+    {
+      "iteration": 5,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 709.3999999761581,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 0.29999998211860657,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 676.9000000059605,
+          "result": "done",
+          "transitionMs": 656.5999999940395,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 691.9000000059605
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 656.5999999940395,
+      "withoutTransitionMs": 52.79999998211861
+    },
+    {
+      "iteration": 6,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 817.2000000178814,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 0.20000001788139343,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 687.2999999821186,
+          "result": "done",
+          "transitionMs": 662.9000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 693.7000000178814
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 662.9000000059605,
+      "withoutTransitionMs": 154.30000001192093
+    },
+    {
+      "iteration": 7,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 6824.9000000059605,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 0.30000001192092896,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 910.1999999880791,
+          "result": "done",
+          "transitionMs": 887.6999999880791,
+          "backend": "Skia WebGL2 (software driver)"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 5907.200000017881,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 1.199999988079071,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 9747056,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 6300192,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 25,
+            "planMs": 5848,
+            "transformProbes": 146,
+            "complete": true,
+            "prepareMs": 5850.4000000059605
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 916.7000000178814
+      },
+      "prepareMs": 5850.4000000059605,
+      "planMs": 5848,
+      "transitionMs": 887.6999999880791,
+      "withoutTransitionMs": 5937.200000017881
+    },
+    {
+      "iteration": 8,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 804.8999999761581,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 0.10000002384185791,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 716.1999999880791,
+          "result": "done",
+          "transitionMs": 655.2000000178814,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 720.4000000059605
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 655.2000000178814,
+      "withoutTransitionMs": 149.69999995827675
+    },
+    {
+      "iteration": 9,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 700.5,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 0.4000000059604645,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 678.3999999761581,
+          "result": "done",
+          "transitionMs": 657.7999999821186,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 682.2000000178814
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 657.7999999821186,
+      "withoutTransitionMs": 42.70000001788139
+    },
+    {
+      "iteration": 10,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 737.5,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 718.9000000059605,
+          "result": "done",
+          "transitionMs": 659.8000000119209,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 723.1999999880791
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 659.8000000119209,
+      "withoutTransitionMs": 77.69999998807907
+    },
+    {
+      "iteration": 11,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 697.6999999880791,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 671.9000000059605,
+          "result": "done",
+          "transitionMs": 653.1000000238419,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 680.5999999940395
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 653.1000000238419,
+      "withoutTransitionMs": 44.59999996423721
+    },
+    {
+      "iteration": 12,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 1133.300000011921,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 220.40000000596046,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 1.5999999940395355,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 10971664,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 4,
+            "layerTextureBytes": 5416300,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 36,
+            "planMs": 78.19999998807907,
+            "transformProbes": 1092,
+            "complete": true,
+            "prepareMs": 81
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 881.0999999940395,
+          "result": "done",
+          "transitionMs": 862,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1116.0999999940395
+      },
+      "prepareMs": 81,
+      "planMs": 78.19999998807907,
+      "transitionMs": 862,
+      "withoutTransitionMs": 271.30000001192093
+    },
+    {
+      "iteration": 13,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 837.5,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 122.09999999403954,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 1.2999999821186066,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 7150900,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 3,
+            "layerTextureBytes": 5753328,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 39,
+            "planMs": 6.5999999940395355,
+            "transformProbes": 124,
+            "complete": true,
+            "prepareMs": 68.90000000596046
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 681.3999999761581,
+          "result": "done",
+          "transitionMs": 661.4000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 820.6000000238419
+      },
+      "prepareMs": 68.90000000596046,
+      "planMs": 6.5999999940395355,
+      "transitionMs": 661.4000000059605,
+      "withoutTransitionMs": 176.09999999403954
+    },
+    {
+      "iteration": 14,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 7256.399999976158,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 6476.0999999940395,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 6.4000000059604645,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 5891304,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 42,
+            "planMs": 6327.399999976158,
+            "transformProbes": 92,
+            "complete": true,
+            "prepareMs": 6337.600000023842
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 754.5,
+          "result": "done",
+          "transitionMs": 650.9000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 7239.0999999940395
+      },
+      "prepareMs": 6337.600000023842,
+      "planMs": 6327.399999976158,
+      "transitionMs": 650.9000000059605,
+      "withoutTransitionMs": 6605.499999970198
+    },
+    {
+      "iteration": 15,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 704.1999999880791,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 0.19999998807907104,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 674.4000000059605,
+          "result": "done",
+          "transitionMs": 655.1999999880791,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 686.6999999880791
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 655.1999999880791,
+      "withoutTransitionMs": 49
+    },
+    {
+      "iteration": 16,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 802.0999999940395,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 0.30000001192092896,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 675.5999999940395,
+          "result": "done",
+          "transitionMs": 655.9000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 682.3999999761581
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 655.9000000059605,
+      "withoutTransitionMs": 146.19999998807907
+    },
+    {
+      "iteration": 17,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 8136.799999982119,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 0.5,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 909.2000000178814,
+          "result": "done",
+          "transitionMs": 889.5,
+          "backend": "Skia WebGL2 (software driver)"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 7219.699999988079,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 1,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 9747056,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 6300192,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 51,
+            "planMs": 7158.0999999940395,
+            "transformProbes": 146,
+            "complete": true,
+            "prepareMs": 7160.199999988079
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 915.5999999940395
+      },
+      "prepareMs": 7160.199999988079,
+      "planMs": 7158.0999999940395,
+      "transitionMs": 889.5,
+      "withoutTransitionMs": 7247.299999982119
+    },
+    {
+      "iteration": 18,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 824.2000000178814,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 0.30000001192092896,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 725,
+          "result": "done",
+          "transitionMs": 656.5,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 732.4000000059605
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 656.5,
+      "withoutTransitionMs": 167.7000000178814
+    },
+    {
+      "iteration": 19,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 716.5,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 0.10000002384185791,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 684.5999999940395,
+          "result": "done",
+          "transitionMs": 663.4000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 699.0999999940395
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 663.4000000059605,
+      "withoutTransitionMs": 53.099999994039536
+    },
+    {
+      "iteration": 20,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 750.0999999940395,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 723.8000000119209,
+          "result": "done",
+          "transitionMs": 653.0999999940395,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 733.0999999940395
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 653.0999999940395,
+      "withoutTransitionMs": 97
+    },
+    {
+      "iteration": 21,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 705,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 677.8000000119209,
+          "result": "done",
+          "transitionMs": 659.3000000119209,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 687.8000000119209
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 659.3000000119209,
+      "withoutTransitionMs": 45.69999998807907
+    },
+    {
+      "iteration": 22,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 1126.800000011921,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 217,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 1.2999999821186066,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 10971664,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 4,
+            "layerTextureBytes": 5416300,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 62,
+            "planMs": 73,
+            "transformProbes": 1092,
+            "complete": true,
+            "prepareMs": 75.7000000178814
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 876.5,
+          "result": "done",
+          "transitionMs": 857.0999999940395,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1109.9000000059605
+      },
+      "prepareMs": 75.7000000178814,
+      "planMs": 73,
+      "transitionMs": 857.0999999940395,
+      "withoutTransitionMs": 269.7000000178814
+    },
+    {
+      "iteration": 23,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 833.3000000119209,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 124.09999999403954,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 1.0999999940395355,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 7150900,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 3,
+            "layerTextureBytes": 5753328,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 65,
+            "planMs": 7.4000000059604645,
+            "transformProbes": 124,
+            "complete": true,
+            "prepareMs": 64.40000000596046
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 679.4000000059605,
+          "result": "done",
+          "transitionMs": 659.9000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 816.2000000178814
+      },
+      "prepareMs": 64.40000000596046,
+      "planMs": 7.4000000059604645,
+      "transitionMs": 659.9000000059605,
+      "withoutTransitionMs": 173.40000000596046
+    },
+    {
+      "iteration": 24,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 7549.700000017881,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 6775.299999982119,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 4.5,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 5891304,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 68,
+            "planMs": 6634.0999999940395,
+            "transformProbes": 92,
+            "complete": true,
+            "prepareMs": 6641.4000000059605
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 754.3000000119209,
+          "result": "done",
+          "transitionMs": 650.9000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 7534.4000000059605
+      },
+      "prepareMs": 6641.4000000059605,
+      "planMs": 6634.0999999940395,
+      "transitionMs": 650.9000000059605,
+      "withoutTransitionMs": 6898.800000011921
+    },
+    {
+      "iteration": 25,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 716.6999999880791,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 0.20000001788139343,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 682.9000000059605,
+          "result": "done",
+          "transitionMs": 663.3999999761581,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 699.3999999761581
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 663.3999999761581,
+      "withoutTransitionMs": 53.30000001192093
+    },
+    {
+      "iteration": 26,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 820,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 0.19999998807907104,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 688.3000000119209,
+          "result": "done",
+          "transitionMs": 664.9000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 699.0999999940395
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 664.9000000059605,
+      "withoutTransitionMs": 155.09999999403954
+    },
+    {
+      "iteration": 27,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 7903.600000023842,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 0.20000001788139343,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 876.8999999761581,
+          "result": "done",
+          "transitionMs": 855.5999999940395,
+          "backend": "Skia WebGL2 (software driver)"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 7020.700000017881,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 0.9000000059604645,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 9747056,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 6300192,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 77,
+            "planMs": 6957.5999999940395,
+            "transformProbes": 146,
+            "complete": true,
+            "prepareMs": 6959.5
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 881.3000000119209
+      },
+      "prepareMs": 6959.5,
+      "planMs": 6957.5999999940395,
+      "transitionMs": 855.5999999940395,
+      "withoutTransitionMs": 7048.000000029802
+    },
+    {
+      "iteration": 28,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 824.0999999940395,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 0.3999999761581421,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 720.2000000178814,
+          "result": "done",
+          "transitionMs": 652.9000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 733.0999999940395
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 652.9000000059605,
+      "withoutTransitionMs": 171.19999998807907
+    },
+    {
+      "iteration": 29,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 708.1999999880791,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 0.30000001192092896,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 687.4000000059605,
+          "result": "done",
+          "transitionMs": 666.8999999761581,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 691.8000000119209
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 666.8999999761581,
+      "withoutTransitionMs": 41.30000001192093
+    },
+    {
+      "iteration": 30,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 766.5,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 737.0999999940395,
+          "result": "done",
+          "transitionMs": 663.3999999761581,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 749.4000000059605
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 663.3999999761581,
+      "withoutTransitionMs": 103.10000002384186
+    },
+    {
+      "iteration": 31,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 717,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 690.1999999880791,
+          "result": "done",
+          "transitionMs": 664.7999999821186,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 700.2000000178814
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 664.7999999821186,
+      "withoutTransitionMs": 52.20000001788139
+    },
+    {
+      "iteration": 32,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 1150.2000000178814,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 220.60000002384186,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 1.2999999821186066,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 10971664,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 4,
+            "layerTextureBytes": 5416300,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 88,
+            "planMs": 75.5,
+            "transformProbes": 1092,
+            "complete": true,
+            "prepareMs": 78
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 907.5,
+          "result": "done",
+          "transitionMs": 887.3000000119209,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1133
+      },
+      "prepareMs": 78,
+      "planMs": 75.5,
+      "transitionMs": 887.3000000119209,
+      "withoutTransitionMs": 262.90000000596046
+    },
+    {
+      "iteration": 33,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 833.4000000059605,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 135.5,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 1.199999988079071,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 7150900,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 3,
+            "layerTextureBytes": 5753328,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 91,
+            "planMs": 3.7000000178813934,
+            "transformProbes": 124,
+            "complete": true,
+            "prepareMs": 72.2000000178814
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 670.8000000119209,
+          "result": "done",
+          "transitionMs": 651,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 816.3000000119209
+      },
+      "prepareMs": 72.2000000178814,
+      "planMs": 3.7000000178813934,
+      "transitionMs": 651,
+      "withoutTransitionMs": 182.40000000596046
+    },
+    {
+      "iteration": 34,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 7739.799999982119,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 6941,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 4.300000011920929,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 5891304,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 94,
+            "planMs": 6797.399999976158,
+            "transformProbes": 92,
+            "complete": true,
+            "prepareMs": 6804.299999982119
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 775.2999999821186,
+          "result": "done",
+          "transitionMs": 670.0999999940395,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 7722.399999976158
+      },
+      "prepareMs": 6804.299999982119,
+      "planMs": 6797.399999976158,
+      "transitionMs": 670.0999999940395,
+      "withoutTransitionMs": 7069.699999988079
+    },
+    {
+      "iteration": 35,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 702.5,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 0.19999998807907104,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 677.6000000238419,
+          "result": "done",
+          "transitionMs": 658.4000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 684.0999999940395
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 658.4000000059605,
+      "withoutTransitionMs": 44.099999994039536
+    },
+    {
+      "iteration": 36,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 804.6999999880791,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 0.5,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 676.4000000059605,
+          "result": "done",
+          "transitionMs": 655.5999999940395,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 682.5
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 655.5999999940395,
+      "withoutTransitionMs": 149.09999999403954
+    },
+    {
+      "iteration": 37,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 8301,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 0.09999999403953552,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 903.3000000119209,
+          "result": "done",
+          "transitionMs": 883.4000000059605,
+          "backend": "Skia WebGL2 (software driver)"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 7381,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 0.9000000059604645,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 9747056,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 6300192,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 103,
+            "planMs": 7317,
+            "transformProbes": 146,
+            "complete": true,
+            "prepareMs": 7319
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 917.4000000059605
+      },
+      "prepareMs": 7319,
+      "planMs": 7317,
+      "transitionMs": 883.4000000059605,
+      "withoutTransitionMs": 7417.5999999940395
+    },
+    {
+      "iteration": 38,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 839.6999999880791,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 0.20000001788139343,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 737.7999999821186,
+          "result": "done",
+          "transitionMs": 662.5,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 747.5999999940395
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 662.5,
+      "withoutTransitionMs": 177.19999998807907
+    },
+    {
+      "iteration": 39,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 700.0999999940395,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 0.5,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 672.5,
+          "result": "done",
+          "transitionMs": 651.5,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 682.5
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 651.5,
+      "withoutTransitionMs": 48.599999994039536
+    },
+    {
+      "iteration": 40,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 750.3000000119209,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 731.5,
+          "result": "done",
+          "transitionMs": 659,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 735.5999999940395
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 659,
+      "withoutTransitionMs": 91.30000001192093
+    },
+    {
+      "iteration": 41,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 701.8000000119209,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 676.7000000178814,
+          "result": "done",
+          "transitionMs": 657,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 684.8000000119209
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 657,
+      "withoutTransitionMs": 44.80000001192093
+    },
+    {
+      "iteration": 42,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 1149.5,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 225.09999999403954,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 1.199999988079071,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 10971664,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 4,
+            "layerTextureBytes": 5416300,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 114,
+            "planMs": 72.90000000596046,
+            "transformProbes": 1092,
+            "complete": true,
+            "prepareMs": 75.19999998807907
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 892.8000000119209,
+          "result": "done",
+          "transitionMs": 873.5,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1132.7000000178814
+      },
+      "prepareMs": 75.19999998807907,
+      "planMs": 72.90000000596046,
+      "transitionMs": 873.5,
+      "withoutTransitionMs": 276
+    },
+    {
+      "iteration": 43,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 825.9000000059605,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 127.30000001192093,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 1.0999999940395355,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 7150900,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 3,
+            "layerTextureBytes": 5753328,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 117,
+            "planMs": 5.199999988079071,
+            "transformProbes": 124,
+            "complete": true,
+            "prepareMs": 65.2000000178814
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 679.7999999821186,
+          "result": "done",
+          "transitionMs": 659.6999999880791,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 811.8000000119209
+      },
+      "prepareMs": 65.2000000178814,
+      "planMs": 5.199999988079071,
+      "transitionMs": 659.6999999880791,
+      "withoutTransitionMs": 166.2000000178814
+    },
+    {
+      "iteration": 44,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 7757.5,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 6964.4000000059605,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 4.200000017881393,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 5891304,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 120,
+            "planMs": 6820.699999988079,
+            "transformProbes": 92,
+            "complete": true,
+            "prepareMs": 6827.4000000059605
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 770.5,
+          "result": "done",
+          "transitionMs": 664.3000000119209,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 7740.200000017881
+      },
+      "prepareMs": 6827.4000000059605,
+      "planMs": 6820.699999988079,
+      "transitionMs": 664.3000000119209,
+      "withoutTransitionMs": 7093.199999988079
+    },
+    {
+      "iteration": 45,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 694.5999999940395,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 0.19999998807907104,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 671.9000000059605,
+          "result": "done",
+          "transitionMs": 652.5,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 676.5999999940395
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 652.5,
+      "withoutTransitionMs": 42.099999994039536
+    },
+    {
+      "iteration": 46,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 820.7000000178814,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 0.29999998211860657,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 684.3000000119209,
+          "result": "done",
+          "transitionMs": 664.7000000178814,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 695.5
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 664.7000000178814,
+      "withoutTransitionMs": 156
+    },
+    {
+      "iteration": 47,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 8541.200000017881,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 0.5,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 880,
+          "result": "done",
+          "transitionMs": 858.6999999880791,
+          "backend": "Skia WebGL2 (software driver)"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 7655.199999988079,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2 (software driver)",
+            "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "rasterMs": 1,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 9747056,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 6300192,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 129,
+            "planMs": 7592.0999999940395,
+            "transformProbes": 146,
+            "complete": true,
+            "prepareMs": 7594.199999988079
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 884.0999999940395
+      },
+      "prepareMs": 7594.199999988079,
+      "planMs": 7592.0999999940395,
+      "transitionMs": 858.6999999880791,
+      "withoutTransitionMs": 7682.500000029802
+    },
+    {
+      "iteration": 48,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 829.4000000059605,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 0.19999998807907104,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 725.1999999880791,
+          "result": "done",
+          "transitionMs": 654.0999999940395,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 732.6999999880791
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 654.0999999940395,
+      "withoutTransitionMs": 175.30000001192093
+    },
+    {
+      "iteration": 49,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 716.3999999761581,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 0.4000000059604645,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 685.5999999940395,
+          "result": "done",
+          "transitionMs": 662.5,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 699.4000000059605
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 662.5,
+      "withoutTransitionMs": 53.89999997615814
+    },
+    {
+      "iteration": 50,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 751.5,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 730.2999999821186,
+          "result": "done",
+          "transitionMs": 651.7000000178814,
+          "backend": "Skia WebGL2 (software driver)"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 735.1999999880791
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 651.7000000178814,
+      "withoutTransitionMs": 99.7999999821186
+    }
+  ],
+  "coldResources": [
+    {
+      "page": "cover",
+      "backend": "Skia WebGL2 (software driver)",
+      "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "rasterMs": 106.5,
+      "gpuSamples": [],
+      "cacheBytes": 0,
+      "staticTextureBytes": 5867392,
+      "staticCacheHits": 0,
+      "staticCacheBuilds": 2,
+      "layerTextureBytes": 4566132,
+      "layerCacheHits": 0,
+      "layerCacheBuilds": 1,
+      "layerCacheBudgetMisses": 0,
+      "layerCacheAllocationFailures": 0,
+      "frameCount": 1,
+      "planMs": 14.199999988079071,
+      "transformProbes": 36,
+      "complete": true,
+      "prepareMs": 485.7999999821186
+    }
+  ],
+  "animation": [
+    {
+      "page": "cover",
+      "time": 0,
+      "sha256": "72d38c2f054d20b265b684602210d2ef35d081556fb0e201093c23dee275d33b"
+    },
+    {
+      "page": "cover",
+      "time": 1,
+      "sha256": "1e1226e83f05721e7b6cdbfc3d804123d0e81876dcb1c431b17b32539976d465"
+    },
+    {
+      "page": "cover",
+      "time": 3,
+      "sha256": "a949a8cf0979622617669bb04291f004934834d9af5d28d36a7d0d9e2e5eb75b"
+    },
+    {
+      "page": "seed",
+      "time": 0,
+      "sha256": "80a382b8a3d5b428bd57cb72a5207d3d8c71619e1a4e45f9f7355c69c26571f6"
+    },
+    {
+      "page": "seed",
+      "time": 1,
+      "sha256": "7462b26cf38ef68971d50600e4eb09aaa49c5f5cf5c2c79e8b87fb76b6512a4d"
+    },
+    {
+      "page": "seed",
+      "time": 3,
+      "sha256": "34a72de3c3463a385f310f2fa4e8fad3147c0c54c65ceb978fbbf0956e4cfd32"
+    },
+    {
+      "page": "anchors",
+      "time": 0,
+      "sha256": "f1874a0b25aa63b59dc2e2118ca02b2bd9457c0a18f9d42168e07cf39a8603ce"
+    },
+    {
+      "page": "anchors",
+      "time": 1,
+      "sha256": "766235af390c850e859a16616a656902e18cc35ae0c6841593209d4885835624"
+    },
+    {
+      "page": "anchors",
+      "time": 3,
+      "sha256": "97e7d26f5aae4be53ab54dd999ea630fc1d0b33049f59d76fa48cd0e0f59bcea"
+    },
+    {
+      "page": "motion",
+      "time": 0,
+      "sha256": "188cbb6070da0ff68a781cba15734d2ae5fdec4130e6a5783ae814d350e1e472"
+    },
+    {
+      "page": "motion",
+      "time": 1,
+      "sha256": "9eaa62d45b9edee90c7646863c3498f9941d94dc17d7a3c69368fdada30345ae"
+    },
+    {
+      "page": "motion",
+      "time": 3,
+      "sha256": "4e8e5e2724686aa7238d03f1363605b5620e5abc4effed963845a4326405d385"
+    },
+    {
+      "page": "offline",
+      "time": 0,
+      "sha256": "6e19869875ad511de2a58e6708246901afa0c37fc4ee9bb0af1a5d85a17a0e54"
+    },
+    {
+      "page": "offline",
+      "time": 1,
+      "sha256": "527d50ddb3055366047e6fd2ed0e656efac1ea736d31b014051b94031df984d6"
+    },
+    {
+      "page": "offline",
+      "time": 3,
+      "sha256": "91fe1ea7a10bc1be4b43a597668c104beac677c492cba2e73487ca569920a4c5"
+    },
+    {
+      "page": "editable",
+      "time": 0,
+      "sha256": "912213780787b1ae2a0fe8ba765a3d860c3ffc94da6155333f1ee4461123ca23"
+    },
+    {
+      "page": "editable",
+      "time": 1,
+      "sha256": "f6f970e429456e4f1b8c6330b8182079115f5d8fc16e6447ce92d05e16e20e90"
+    },
+    {
+      "page": "editable",
+      "time": 3,
+      "sha256": "c7faccc4f69cd86cfcd25bdb0622b065971dc38347366b56cd431761a8690097"
+    }
+  ],
+  "backend": "Skia WebGL2 (software driver)",
+  "dimensions": {
+    "width": 1600,
+    "height": 1000
+  },
+  "definition": "Keydown through ordinary handler to renderer confirmation and next browser rendering step; includes authored page transition, four extra protected keys per switch; one initial navigation excluded. No source edits or compilation during navigation.",
+  "engine": "chromium",
+  "version": "151.0.7922.34",
+  "kind": "before",
+  "errors": [],
+  "networkRequests": [],
+  "htmlSha256": "58e7715204c3a540d164f267d89bab12abb073d43afe31f2087c55747823159c"
+}

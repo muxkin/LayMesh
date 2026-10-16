@@ -1,0 +1,18 @@
+{
+  "video/04-LCSS与动画/exports/animation-preview-v008/04_LCSS_离线可编辑_v005_并行动画优化_v008.zip.html": {
+    "bytes": 43500257,
+    "sha256": "b07f7e26046fa01d44804866be2d5410015bc6ad1313bae2e6600df46500b06d"
+  },
+  "video/04-LCSS与动画/exports/animation-preview-v008/laymesh-0.6.4-parallel-animation-v008-linux-x64.vsix": {
+    "bytes": 28130987,
+    "sha256": "e5f2c86ff4d841d999da78c8208a7fc2e0b22bd63e45802efd95003da3f303f3"
+  },
+  "target/animation-v008-extension/bin/laymesh": {
+    "bytes": 34630032,
+    "sha256": "6a17b05ffe37244669b3f87be9f994a623fc5471d042dfa184e1fbbd9ee158c4"
+  },
+  "target/web-export/runtime.zip": {
+    "bytes": 9466147,
+    "sha256": "891ae2a9420c4a1f98cbc71e5f983db9c5ad680c20d5cb9746b9151521f49064"
+  }
+}

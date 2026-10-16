@@ -1,5 +1,4 @@
 pub mod animation;
-pub mod page_transition;
 pub mod arrows;
 mod art;
 pub mod asset_cache;
@@ -21,13 +20,17 @@ mod geometry_recipe;
 pub mod migration;
 pub mod model;
 mod opentype_math;
+pub mod page_transition;
 pub mod parser;
 pub mod plot;
 mod query_path;
+pub mod session;
 pub mod style;
 pub mod text;
 mod unit_diagnostics;
 mod validation;
+#[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
+mod wasm_allocator;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, Default, Serialize, Deserialize, PartialEq)]

@@ -2,7 +2,7 @@
 use super::*;
 fn args(v: Json) -> Args {
     if let V::Map(a) = V::from_json(&v) {
-        a
+        (*a).clone()
     } else {
         panic!("args")
     }
@@ -503,13 +503,18 @@ fn missing_color_invalidates_line_rows_and_ticks_retain_exact_endpoints() {
     a.insert(
         "color_scale".into(),
         V::Object(Rc::new(RefCell::new(Object {
+            syntax_site: 0,
+            cache_identity: 0,
+            placed_key: None,
+            origin_revision: 0,
+            origin_dependencies: Default::default(),
             kind: "color_scale".into(),
-            args: args(json!({"vmin":0,"vmax":1})),
+            args: args(json!({"vmin":0,"vmax":1})).into(),
             file: String::new(),
             loc: Loc::default(),
             id: 0,
             nodes: vec![],
-            layers: vec![],
+            layers: Default::default(),
             sealed: false,
             width: 0.,
             height: 0.,
@@ -590,13 +595,18 @@ fn layer_contracts_reject_previously_observed_step_baseline_and_missing_row_muta
     a.insert(
         "color_scale".into(),
         V::Object(Rc::new(RefCell::new(Object {
+            syntax_site: 0,
+            cache_identity: 0,
+            placed_key: None,
+            origin_revision: 0,
+            origin_dependencies: Default::default(),
             kind: "color_scale".into(),
-            args: args(json!({"vmin":0,"vmax":1})),
+            args: args(json!({"vmin":0,"vmax":1})).into(),
             file: String::new(),
             loc: Loc::default(),
             id: 0,
             nodes: vec![],
-            layers: vec![],
+            layers: Default::default(),
             sealed: false,
             width: 0.,
             height: 0.,

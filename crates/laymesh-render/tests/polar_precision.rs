@@ -10,7 +10,7 @@ p=plot(size=(40,40),plot_area=box(offset=(10,10),size=(20,20)),projection="polar
 p.line(theta=[0,90],r=[1,1])
 page.add(p)"#, "/polar-svg.lay",Host::default()).unwrap();
     scene.nodes = vec![
-        json!({"kind":"group","id":"scaled","width":4000.,"height":8000.,"contentWidth":40.,"contentHeight":40.,"children":scene.nodes}),
+        json!({"kind":"group","id":"scaled","width":4000.,"height":8000.,"contentWidth":40.,"contentHeight":40.,"children":scene.nodes}).into(),
     ];
     let refined = render_svg(&scene).unwrap();
     fn strip(n: &mut Value) {
@@ -26,7 +26,7 @@ page.add(p)"#, "/polar-svg.lay",Host::default()).unwrap();
         }
     }
     for n in &mut scene.nodes {
-        strip(n);
+        strip(std::sync::Arc::make_mut(n));
     }
     let coarse = render_svg(&scene).unwrap();
     let vertices = |svg: &str| {

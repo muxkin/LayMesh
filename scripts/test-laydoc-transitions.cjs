@@ -26,8 +26,8 @@ fs.mkdirSync(out, { recursive: true });
     file = path.join(fixture, "d.laydoc");
   fs.writeFileSync(file, source);
   fs.writeFileSync(path.join(fixture, "a.lay"), pageSource);
-  let deck,
-    count = 0;
+  let deck;
+  const requests = [], messages = [];
   const workers = [],
     create = () => {
       const w = new PreviewWorker(root + "/target/release/laymesh", {
@@ -35,7 +35,7 @@ fs.mkdirSync(out, { recursive: true });
         }),
         enqueue = w.enqueue.bind(w);
       w.enqueue = (job) => {
-        count++;
+        requests.push({type: job.request.type || "page", page: job.request.page});
         enqueue(job);
       };
       workers.push(w);
@@ -46,14 +46,26 @@ fs.mkdirSync(out, { recursive: true });
     deck = new NativePresentation({
       worker: create(),
       createWorker: create,
-      concurrency: 3,
       dist: root + "/extensions/vscode/dist",
       uri: (f) => f,
       notify: (m) => {
-        if (m.type === "deck-page") queueMicrotask(() => deck.ack(m.page.id));
+        messages.push(m.type);
+        if (["deck-page", "deck-page-reuse"].includes(m.type))
+          queueMicrotask(() => deck.ack(m.page.id));
       },
     });
-    await deck.prepare(file, source, {}, {});
+    let timer;
+    try {
+      await Promise.race([
+        deck.prepare(file, source, {}, {}),
+        new Promise((_, reject) => {
+          timer = setTimeout(() => reject(Error("Native transition preparation stalled: " +
+            JSON.stringify({requests, messages, pages: deck.pages}))), 30000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
     assert(
       deck.pages.every((p) => p.status === "ready"),
       JSON.stringify(deck.pages),
@@ -63,8 +75,11 @@ fs.mkdirSync(out, { recursive: true });
         JSON.parse(fs.readFileSync(p.file)).list.pageTransition?.name || null,
     );
     assert.deepEqual(names, expected);
-    assert.equal(count, 3);
-    results.native = { names, compiled: count, passed: true };
+    assert.equal(requests.filter(r => r.type === "plan").length, 1);
+    assert.equal(requests.filter(r => r.type === "page").length, 3);
+    assert.equal(messages.filter(type => type === "deck-page").length, 3);
+    assert.equal(messages.filter(type => type === "deck-page-reuse").length, 1);
+    results.native = { names, compiled: 3, requests, messages, passed: true };
   } finally {
     deck?.dispose();
     fs.rmSync(fixture, { recursive: true, force: true });
@@ -91,7 +106,7 @@ fs.mkdirSync(out, { recursive: true });
           const deck = await webPresentationProvider(
             editor,
             new URL("/site/live/", location),
-            { concurrency: 3 },
+            {},
           )({ signal: new AbortController().signal, onProgress() {} });
           try {
             await deck.complete;

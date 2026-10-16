@@ -33,7 +33,7 @@ export function exportHaloMM(node) {
 export async function rasterExportTiles({ renderer, list, resources, node, density, effectsOnly = null, consume }) {
   if (density <= 0) return;
   const localList = { ...list, nodes: [node], animation: null, pageTransition: null };
-  await renderer.install(localList, id => resources[id], 0, 32);
+  await renderer.install(localList, id => resources[id], 0);
   const raw = renderer.prepare(node).bounds;
   const bounds = raw.map((v, i) => i < 2 ? Math.floor(v*density) : Math.ceil(v*density));
   const width = bounds[2]-bounds[0], height = bounds[3]-bounds[1];

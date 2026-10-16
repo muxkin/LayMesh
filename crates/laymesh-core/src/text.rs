@@ -9,7 +9,16 @@ mod formula_text;
 pub(crate) use formula_text::missing_path;
 pub(crate) use formula_text::{TextFonts, TextStyle, literal_text, shape_text};
 
+struct RetainedText {
+    node: Json,
+    palette: Vec<String>,
+    assets: BTreeMap<String, FontAsset>,
+    requests: BTreeMap<(String, u16, bool), Json>,
+    bytes: usize,
+}
 pub struct FontSystem {
+    layouts: BTreeMap<String, RetainedText>,
+    pub(crate) layout_bytes: usize,
     // Math is exported as outlines, so these faces must not be added to the
     // ordinary text assets embedded by SVG/PDF exporters.
     math_assets: BTreeMap<String, std::sync::Arc<FontAsset>>,
@@ -27,6 +36,7 @@ pub struct FontSystem {
     face_names: BTreeMap<String, String>,
     host: Host,
     bindings: BTreeMap<String, String>,
+    native_versions: BTreeMap<String, Option<(u64, Option<std::time::SystemTime>)>>,
 }
 fn warn(w: &mut Vec<Diagnostic>, s: impl Into<String>, file: &str, loc: Loc) {
     let s = s.into();
@@ -130,6 +140,8 @@ impl FontSystem {
                 .clone();
         }
         Self {
+            layouts: BTreeMap::new(),
+            layout_bytes: 0,
             math_assets: BTreeMap::new(),
             outline_assets: BTreeMap::new(),
             glyph_paths: BTreeMap::new(),
@@ -148,19 +160,51 @@ impl FontSystem {
                 ..Host::default()
             },
             bindings: BTreeMap::new(),
+            native_versions: BTreeMap::new(),
         }
     }
     /// Add user-provided font bytes (including TTC/OTC collections), without accessing the filesystem.
+    pub(crate) fn retain_layouts(
+        &mut self,
+        live: &std::collections::HashSet<crate::session::lifetime::Key>,
+    ) {
+        self.layouts
+            .retain(|key, _| live.contains(&crate::session::lifetime::Key::Text(key.clone())));
+        self.layout_bytes = self.layouts.values().map(|v| v.bytes).sum();
+    }
     pub fn register_font(&mut self, name: &str, data: Vec<u8>) {
+        self.register_shared_font(name, std::sync::Arc::new(data));
+    }
+    pub(crate) fn register_shared_font(&mut self, name: &str, data: std::sync::Arc<Vec<u8>>) {
+        if self.host.native && self.host.bytes(name).is_none() {
+            self.native_versions
+                .insert(name.into(), Self::native_version(name));
+        }
+        self.layouts.clear();
+        self.layout_bytes = 0;
         self.math_assets.clear();
         self.glyph_paths.clear();
         self.choices.clear();
         self.name_index = None;
         self.fallback_candidates.clear();
-        let ids = self
-            .db
-            .load_font_source(fontdb::Source::Binary(std::sync::Arc::new(data)));
+        let ids = self.db.load_font_source(fontdb::Source::Binary(data));
         self.paths.insert(name.into(), ids.to_vec());
+    }
+    fn native_version(path: &str) -> Option<(u64, Option<std::time::SystemTime>)> {
+        std::fs::metadata(path)
+            .ok()
+            .map(|m| (m.len(), m.modified().ok()))
+    }
+    pub(crate) fn native_inputs_changed(&self) -> bool {
+        self.native_versions
+            .iter()
+            .any(|(path, version)| Self::native_version(path) != *version)
+    }
+    pub(crate) fn begin_evaluation(&mut self, host: &Host) {
+        self.outline_assets.append(&mut self.assets);
+        self.requests.clear();
+        self.choices.clear();
+        self.bind_host(host);
     }
     pub(crate) fn math_face(
         &mut self,
@@ -252,7 +296,7 @@ impl FontSystem {
             self.math_assets.insert(
                 cache_key.clone(),
                 std::sync::Arc::new(FontAsset {
-                    data,
+                    data: data.into(),
                     index: 0,
                     family,
                 }),
@@ -279,15 +323,23 @@ impl FontSystem {
             (None, None) => true,
             _ => false,
         };
-        if self.host.native == host.native && same_journal && self.host.files == host.files {
+        if self.host.native == host.native
+            && same_journal
+            && self.host.files == host.files
+            && self.host.shared_files == host.shared_files
+        {
             return;
         }
         self.host = host.clone();
+        let previous_bindings = self.bindings.clone();
         self.bindings = host
-            .files
-            .get("/@laymesh/font-bindings.json")
+            .bytes("/@laymesh/font-bindings.json")
             .and_then(|b| serde_json::from_slice(b).ok())
             .unwrap_or_default();
+        if previous_bindings != self.bindings {
+            self.layouts.clear();
+            self.layout_bytes = 0;
+        }
         self.choices.clear();
     }
     pub(crate) fn load_bound_requested(
@@ -320,12 +372,19 @@ impl FontSystem {
         }
         let part = name.split('#').next().unwrap_or(name);
         let path = resolve(file, part);
+        if let Some(dependencies) = &self.host.dependencies {
+            dependencies.borrow_mut().insert(path.clone());
+        }
         if self.paths.contains_key(&path) {
             return;
         }
         match self.host.read(&path, file, loc) {
             Ok(data) => self.register_font(&path, data),
             Err(_) => {
+                if self.host.native {
+                    self.native_versions
+                        .insert(path.clone(), Self::native_version(&path));
+                }
                 self.paths.insert(path, vec![]);
                 warn(w, format!("字体 {name} 不可用"), file, loc);
             }
@@ -371,7 +430,7 @@ impl FontSystem {
         assets.insert(
             key.clone(),
             FontAsset {
-                data,
+                data: data.into(),
                 index: 0,
                 family: face
                     .families
@@ -1236,7 +1295,163 @@ fn expanded_parts(spec: &Json, file: &str, loc: Loc) -> Result<Vec<Json>> {
     }
     Ok(out)
 }
+// Color roles retain the original run boundaries. If two colors merge or
+// split, the role pattern changes and shaping is recomputed, preserving the
+// language's existing kerning and line-break semantics.
 pub fn layout_text(
+    spec: &Json,
+    frame: Option<f64>,
+    fonts: &mut FontSystem,
+    w: &mut Vec<Diagnostic>,
+    file: &str,
+    loc: Loc,
+) -> Result<Json> {
+    if crate::session::active().is_none() || spec["kind"] == "formula" {
+        return layout_text_uncached(spec, frame, fonts, w, file, loc);
+    }
+    let mut parts = expanded_parts(spec, file, loc)?;
+    if parts.iter().any(|p| p["kind"] == "formula") {
+        return layout_text_uncached(spec, frame, fonts, w, file, loc);
+    }
+    let mut palette = vec!["#000000".to_owned()];
+    fn normalize(v: &mut Json, palette: &mut Vec<String>) {
+        match v {
+            Json::Object(m) => {
+                for key in [
+                    "loc",
+                    "__font_loc",
+                    "__call_origin",
+                    "__arg_locations",
+                    "__placement_origin",
+                    "__style_parent",
+                    "__style_variables",
+                ] {
+                    m.remove(key);
+                }
+                for (key, v) in m.iter_mut() {
+                    if (key == "color" || key.ends_with("_color")) && v.is_string() {
+                        let color = v.as_str().unwrap();
+                        let index = palette.iter().position(|c| c == color).unwrap_or_else(|| {
+                            palette.push(color.into());
+                            palette.len() - 1
+                        });
+                        *v = json!(["color-role", index]);
+                    } else {
+                        normalize(v, palette);
+                    }
+                }
+            }
+            Json::Array(a) => {
+                for v in a {
+                    normalize(v, palette);
+                }
+            }
+            _ => {}
+        }
+    }
+    for part in &mut parts {
+        normalize(part, &mut palette);
+    }
+    let key = json!([
+        parts,
+        frame,
+        spec["font_size"],
+        spec["line_height"],
+        spec["align"],
+        file
+    ])
+    .to_string();
+    if let Some(state) = crate::session::active() {
+        state
+            .borrow_mut()
+            .lifetime
+            .touch(crate::session::lifetime::Key::Text(key.clone()));
+    }
+    if let Some(cached) = fonts.layouts.get(&key) {
+        let mut node = cached.node.clone();
+        fn recolor(node: &mut Json, old: &[String], new: &[String]) {
+            match node {
+                Json::Object(m) => {
+                    for (key, v) in m {
+                        if matches!(key.as_str(), "color" | "fill" | "strokeColor")
+                            || key.ends_with("_color")
+                        {
+                            if let Some(index) =
+                                v.as_str().and_then(|s| old.iter().position(|c| c == s))
+                            {
+                                *v = json!(new[index]);
+                            } else {
+                                recolor(v, old, new);
+                            }
+                        } else {
+                            recolor(v, old, new);
+                        }
+                    }
+                }
+                Json::Array(a) => {
+                    for v in a {
+                        recolor(v, old, new);
+                    }
+                }
+                _ => {}
+            }
+        }
+        recolor(&mut node, &cached.palette, &palette);
+        fonts.assets.extend(cached.assets.clone());
+        fonts.requests.extend(cached.requests.clone());
+        if let Some(state) = crate::session::active() {
+            state.borrow_mut().metrics.reused_text_layouts += 1;
+        }
+        return Ok(node);
+    }
+    let warnings = w.len();
+    let previous = std::mem::take(&mut fonts.requests);
+    let result = layout_text_uncached(spec, frame, fonts, w, file, loc);
+    let requested = fonts.requests.clone();
+    fonts.requests.extend(previous);
+    if let Some(state) = crate::session::active() {
+        state.borrow_mut().metrics.rebuilt_text_layouts += 1;
+    }
+    if let Ok(node) = &result {
+        if w.len() == warnings && !w.iter().any(|d| d.code == "W_FONT") {
+            let bytes = key.len() + node.to_string().len() * 3 + 1024;
+            {
+                let mut keys = BTreeSet::new();
+                fn collect(n: &Json, keys: &mut BTreeSet<String>) {
+                    if let Some(k) = n["fontFamily"].as_str() {
+                        keys.insert(k.into());
+                    }
+                    if let Some(r) = n["runs"].as_array() {
+                        for n in r {
+                            collect(n, keys);
+                        }
+                    }
+                }
+                collect(node, &mut keys);
+                let assets = keys
+                    .into_iter()
+                    .filter_map(|k| fonts.assets.get(&k).cloned().map(|v| (k, v)))
+                    .collect();
+                if let Some(old) = fonts.layouts.remove(&key) {
+                    fonts.layout_bytes -= old.bytes;
+                }
+                fonts.layouts.insert(
+                    key,
+                    RetainedText {
+                        node: node.clone(),
+                        palette,
+                        assets,
+                        requests: requested,
+                        bytes,
+                    },
+                );
+                fonts.layout_bytes += bytes;
+            }
+        }
+    }
+    result
+}
+fn layout_text_uncached(
     spec: &Json,
     frame: Option<f64>,
     fonts: &mut FontSystem,

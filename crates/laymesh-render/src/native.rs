@@ -136,7 +136,8 @@ mod tests {
                 "x",
                 Loc::default(),
             )
-            .unwrap(),
+            .unwrap()
+            .into(),
         );
         scene.nodes.push(
             laymesh_core::text::formula(
@@ -146,7 +147,8 @@ mod tests {
                 "x",
                 Loc::default(),
             )
-            .unwrap(),
+            .unwrap()
+            .into(),
         );
         assert!(fonts.assets.is_empty());
         assert!(render_svg(&scene).unwrap().len() > 100);
@@ -199,7 +201,7 @@ mod extraction_tests {
             layout_dpi: 96.,
             canvas_unit: "mm".into(),
             export_dpi: 96.,
-            nodes: vec![text, formula],
+            nodes: vec![text.into(), formula.into()],
             fonts: fs.assets,
             font_requests: Default::default(),
             warnings,

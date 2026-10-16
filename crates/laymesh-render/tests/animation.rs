@@ -112,33 +112,70 @@ fn parent_reveal_keeps_child_animation_ids_and_sibling_opacity() {
 fn draw_endpoints_follow_front_and_finish_exactly() {
     for shape in ["triangle", "open", "stealth", "dot", "diamond", "bar"] {
         for stroke in ["solid", "dashed"] {
-            let source=format!("p=canvas(size=(80,40),background=\"none\")\na=p.add(line(length=50mm,line_width=1mm,line_style=\"{stroke}\",start_head=head(shape=\"{shape}\",size=(5mm,4mm)),end_head=head(shape=\"{shape}\",size=(5mm,4mm))),offset=(10,20))\ns=p.step()\ns.animate(a,name=\"draw\",duration=1s,easing=\"linear\",fill=\"both\")");
-            let scene=compile_source(&source,"/draw.lay",Host::default()).unwrap();
-            let list=to_display_list(&scene).unwrap();
-            let rect=Rect::new(0.,0.,80.,40.);
-            let full=raster::render_region(&list,rect,320,160).unwrap();
-            let mut renderer=AnimationRenderer::new(list).unwrap();
-            let start=renderer.render(rect,320,160,Some(0.),false).unwrap();
-            assert!(start.rgba.chunks_exact(4).all(|p|p[3]==0),"{shape}");
-            let mid=renderer.render(rect,320,160,Some(0.5),false).unwrap();
-            let right=mid.rgba.chunks_exact(4).enumerate().filter(|(_,p)|p[3]>100).map(|(i,_)|i%320).max().unwrap();
-            assert!((125..155).contains(&right),"{shape}: front={right}");
-            assert_eq!(full.rgba,renderer.render(rect,320,160,Some(1.),false).unwrap().rgba,"{shape}");
+            let source = format!(
+                "p=canvas(size=(80,40),background=\"none\")\na=p.add(line(length=50mm,line_width=1mm,line_style=\"{stroke}\",start_head=head(shape=\"{shape}\",size=(5mm,4mm)),end_head=head(shape=\"{shape}\",size=(5mm,4mm))),offset=(10,20))\ns=p.step()\ns.animate(a,name=\"draw\",duration=1s,easing=\"linear\",fill=\"both\")"
+            );
+            let scene = compile_source(&source, "/draw.lay", Host::default()).unwrap();
+            let list = to_display_list(&scene).unwrap();
+            let rect = Rect::new(0., 0., 80., 40.);
+            let full = raster::render_region(&list, rect, 320, 160).unwrap();
+            let mut renderer = AnimationRenderer::new(list).unwrap();
+            let start = renderer.render(rect, 320, 160, Some(0.), false).unwrap();
+            assert!(start.rgba.chunks_exact(4).all(|p| p[3] == 0), "{shape}");
+            let mid = renderer.render(rect, 320, 160, Some(0.5), false).unwrap();
+            let right = mid
+                .rgba
+                .chunks_exact(4)
+                .enumerate()
+                .filter(|(_, p)| p[3] > 100)
+                .map(|(i, _)| i % 320)
+                .max()
+                .unwrap();
+            assert!((125..155).contains(&right), "{shape}: front={right}");
+            assert_eq!(
+                full.rgba,
+                renderer
+                    .render(rect, 320, 160, Some(1.), false)
+                    .unwrap()
+                    .rgba,
+                "{shape}"
+            );
         }
     }
 }
 #[test]
 fn unsuitable_draw_warns_once_without_changing_timing_or_other_tracks() {
-    for shape in ["rect(size=(10,10),fill=\"#ff0000\")","line(length=0mm,angle=0deg)","line(length=30mm,line_width=0mm)","line(length=30mm,line_color=\"none\")"] {
-        let src=format!("style {{@keyframes mixed {{from{{-laymesh-draw:0;opacity:0}}to{{-laymesh-draw:1;opacity:1}}}}}}\np=canvas(size=(80,40))\na=p.add({shape})\ns=p.step(hold=1s)\ns.animate(a,name=\"mixed\",duration=2s,delay=0.5s,fill=\"both\")\ns.animate(a,name=\"reveal\",duration=1s,start=\"after-previous\")");
-        let scene=compile_source(&src,"/warn.lay",Host::default()).unwrap();
-        assert_eq!(scene.warnings.iter().filter(|w|w.code=="W_ANIMATION").count(),1,"{shape}");
-        let timeline=&scene.animation.as_ref().unwrap().normal;
-        assert_eq!(timeline.steps[0].duration,3.5);
-        assert_eq!(timeline.steps[0].clips[1].delay,2.5);
-        assert!(timeline.steps[0].clips[0].tracks.iter().any(|t|t.property=="opacity"));
-        let mut r=AnimationRenderer::new(to_display_list(&scene).unwrap()).unwrap();
-        r.render(Rect::new(0.,0.,80.,40.),160,80,Some(0.5),false).unwrap();
+    for shape in [
+        "rect(size=(10,10),fill=\"#ff0000\")",
+        "line(length=0mm,angle=0deg)",
+        "line(length=30mm,line_width=0mm)",
+        "line(length=30mm,line_color=\"none\")",
+    ] {
+        let src = format!(
+            "style {{@keyframes mixed {{from{{-laymesh-draw:0;opacity:0}}to{{-laymesh-draw:1;opacity:1}}}}}}\np=canvas(size=(80,40))\na=p.add({shape})\ns=p.step(hold=1s)\ns.animate(a,name=\"mixed\",duration=2s,delay=0.5s,fill=\"both\")\ns.animate(a,name=\"reveal\",duration=1s,start=\"after-previous\")"
+        );
+        let scene = compile_source(&src, "/warn.lay", Host::default()).unwrap();
+        assert_eq!(
+            scene
+                .warnings
+                .iter()
+                .filter(|w| w.code == "W_ANIMATION")
+                .count(),
+            1,
+            "{shape}"
+        );
+        let timeline = &scene.animation.as_ref().unwrap().normal;
+        assert_eq!(timeline.steps[0].duration, 3.5);
+        assert_eq!(timeline.steps[0].clips[1].delay, 2.5);
+        assert!(
+            timeline.steps[0].clips[0]
+                .tracks
+                .iter()
+                .any(|t| t.property == "opacity")
+        );
+        let mut r = AnimationRenderer::new(to_display_list(&scene).unwrap()).unwrap();
+        r.render(Rect::new(0., 0., 80., 40.), 160, 80, Some(0.5), false)
+            .unwrap();
     }
 }
 
@@ -150,13 +187,21 @@ fn draw_closed_compound_and_nested_transforms_restore_static() {
         "path(commands=[move_to(0,10),cubic_to(c1x=10,c1y=0,c2x=25,c2y=20,x=40,y=10)],fill=\"none\",border_color=\"#000\",end_head=head(size=(6mm,4mm)))",
         "path(commands=[move_to(0,0),line_to(40,0),move_to(0,20),line_to(40,20)],fill=\"none\",border_color=\"#000\",start_head=head(size=(6mm,4mm)),end_head=head(size=(6mm,4mm)))",
     ] {
-        let source=format!("p=canvas(size=(100,60),background=\"none\")\ng=group()\na=g.add({object})\nb=p.add(g,offset=(15,15),size=(65,30),rotation=15deg)\ns=p.step()\ns.animate(b,name=\"draw\",duration=1s,fill=\"both\",easing=\"linear\")");
-        let scene=compile_source(&source,"/nested-draw.lay",Host::default()).unwrap();
-        let list=to_display_list(&scene).unwrap();
-        let rect=Rect::new(0.,0.,100.,60.);
-        let full=raster::render_region(&list,rect,400,240).unwrap();
-        let mut r=AnimationRenderer::new(list).unwrap();
-        for time in [0.,0.25,0.5,0.75] { r.render(rect,400,240,Some(time),false).unwrap(); }
-        assert_eq!(full.rgba,r.render(rect,400,240,Some(1.),false).unwrap().rgba,"{object}");
+        let source = format!(
+            "p=canvas(size=(100,60),background=\"none\")\ng=group()\na=g.add({object})\nb=p.add(g,offset=(15,15),size=(65,30),rotation=15deg)\ns=p.step()\ns.animate(b,name=\"draw\",duration=1s,fill=\"both\",easing=\"linear\")"
+        );
+        let scene = compile_source(&source, "/nested-draw.lay", Host::default()).unwrap();
+        let list = to_display_list(&scene).unwrap();
+        let rect = Rect::new(0., 0., 100., 60.);
+        let full = raster::render_region(&list, rect, 400, 240).unwrap();
+        let mut r = AnimationRenderer::new(list).unwrap();
+        for time in [0., 0.25, 0.5, 0.75] {
+            r.render(rect, 400, 240, Some(time), false).unwrap();
+        }
+        assert_eq!(
+            full.rgba,
+            r.render(rect, 400, 240, Some(1.), false).unwrap().rgba,
+            "{object}"
+        );
     }
 }

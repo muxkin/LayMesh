@@ -1,0 +1,2 @@
+function tile() { return rect(size=(12mm,9mm),fill="#0088aa",class="accent") }
+export tile=tile

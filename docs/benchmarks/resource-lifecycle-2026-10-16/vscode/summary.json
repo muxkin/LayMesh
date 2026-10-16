@@ -1,0 +1,82 @@
+[
+  {
+    "host": "VS Code",
+    "page": "02-seed",
+    "kind": "color",
+    "samples": 50,
+    "median_ms": 150.5,
+    "p95_ms": 212,
+    "definition": "source edit submission to the correct preview painted, including configured debounce",
+    "targetPassed": false
+  },
+  {
+    "host": "VS Code",
+    "page": "02-seed",
+    "kind": "position",
+    "samples": 50,
+    "median_ms": 144,
+    "p95_ms": 202,
+    "definition": "source edit submission to the correct preview painted, including configured debounce",
+    "targetPassed": false
+  },
+  {
+    "host": "VS Code",
+    "page": "02-seed",
+    "kind": "text",
+    "samples": 50,
+    "median_ms": 172.5,
+    "p95_ms": 210,
+    "definition": "source edit submission to the correct preview painted, including configured debounce",
+    "targetPassed": false
+  },
+  {
+    "host": "VS Code",
+    "page": "02-seed",
+    "kind": "size",
+    "samples": 50,
+    "median_ms": 149.5,
+    "p95_ms": 209,
+    "definition": "source edit submission to the correct preview painted, including configured debounce",
+    "targetPassed": false
+  },
+  {
+    "host": "VS Code",
+    "page": "06-editable",
+    "kind": "color",
+    "samples": 50,
+    "median_ms": 170.5,
+    "p95_ms": 183,
+    "definition": "source edit submission to the correct preview painted, including configured debounce",
+    "targetPassed": false
+  },
+  {
+    "host": "VS Code",
+    "page": "06-editable",
+    "kind": "position",
+    "samples": 50,
+    "median_ms": 199.5,
+    "p95_ms": 215,
+    "definition": "source edit submission to the correct preview painted, including configured debounce",
+    "targetPassed": false
+  },
+  {
+    "host": "VS Code",
+    "page": "06-editable",
+    "kind": "text",
+    "samples": 50,
+    "median_ms": 177.5,
+    "p95_ms": 187,
+    "definition": "source edit submission to the correct preview painted, including configured debounce",
+    "targetPassed": false
+  },
+  {
+    "host": "VS Code",
+    "page": "06-editable",
+    "kind": "size",
+    "samples": 50,
+    "median_ms": 199,
+    "p95_ms": 208,
+    "definition": "source edit submission to the correct preview painted, including configured debounce",
+    "targetPassed": false
+  }
+]

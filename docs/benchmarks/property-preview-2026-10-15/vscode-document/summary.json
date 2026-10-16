@@ -1,0 +1,82 @@
+[
+  {
+    "kind": "lcss-heading",
+    "samples": 50,
+    "directoryReceivedMs": {
+      "median": 78,
+      "p95": 89
+    },
+    "currentMs": {
+      "median": 161,
+      "p95": 176
+    },
+    "documentMs": {
+      "median": 2579,
+      "p95": 2632
+    }
+  },
+  {
+    "kind": "lcss-curves",
+    "samples": 50,
+    "directoryReceivedMs": {
+      "median": 224,
+      "p95": 232
+    },
+    "currentMs": {
+      "median": 368,
+      "p95": 384
+    },
+    "documentMs": {
+      "median": 2603,
+      "p95": 2972
+    }
+  },
+  {
+    "kind": "laydoc-name",
+    "samples": 50,
+    "directoryReceivedMs": {
+      "median": 78,
+      "p95": 82
+    },
+    "currentMs": {
+      "median": 163,
+      "p95": 171
+    },
+    "documentMs": {
+      "median": 172.5,
+      "p95": 182
+    }
+  },
+  {
+    "kind": "laydoc-reorder",
+    "samples": 50,
+    "directoryReceivedMs": {
+      "median": 79,
+      "p95": 82
+    },
+    "currentMs": {
+      "median": 165.5,
+      "p95": 172
+    },
+    "documentMs": {
+      "median": 174.5,
+      "p95": 183
+    }
+  },
+  {
+    "kind": "laydoc-add-remove",
+    "samples": 100,
+    "directoryReceivedMs": {
+      "median": 78,
+      "p95": 82
+    },
+    "currentMs": {
+      "median": 163.5,
+      "p95": 172
+    },
+    "documentMs": {
+      "median": 173,
+      "p95": 185
+    }
+  }
+]

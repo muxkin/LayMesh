@@ -39,7 +39,7 @@ const docs = [
   commands = new Map(),
   dialogs = [],
   errors = [],
-  context = { subscriptions: [] },
+  context = { subscriptions: [], extensionUri: uri(path.join(root, "extensions/vscode")) },
   disposable = () => ({ dispose() {} });
 let choiceIndex = 0,
   destination;
@@ -48,6 +48,7 @@ const vscode = {
   Uri: { file: uri },
   ProgressLocation: { Notification: 1 },
   commands: {
+    getCommands: async () => [],
     registerCommand: (n, f) => {
       commands.set(n, f);
       return disposable();
@@ -70,6 +71,7 @@ const vscode = {
     onDidChangeConfiguration: disposable,
   },
   window: {
+    onDidChangeActiveTextEditor: disposable,
     activeTextEditor: { document: docs[0] },
     showQuickPick: async (choices) => {
       dialogs.push("format");

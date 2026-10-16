@@ -37,7 +37,6 @@ self.onmessage = async ({ data }) => {
     renderer = new SkiaRenderer(ck, new OffscreenCanvas(1, 1), {
       software: true,
       rasterOnly: true,
-      cacheMB: 32,
     });
     const encode = async (pixels, w, h, format = "png") => {
       const image = ck.MakeImage(
@@ -73,7 +72,7 @@ self.onmessage = async ({ data }) => {
     ) => {
       if (width * height > 100000000)
         throw Error("导出超过 100,000,000 像素；请减小 DPI");
-      await renderer.install(list, (id) => resources[id], 0, 32);
+      await renderer.install(list, (id) => resources[id], 0);
       renderer.render(
         view,
         width,
@@ -102,7 +101,7 @@ self.onmessage = async ({ data }) => {
       if(Object.keys(page.resources).length)layerCache.clear();
       let bytes, rasterWidth, rasterHeight;
       if (["pdf", "svg"].includes(data.format)) {
-        await renderer.install(list, (id) => page.resources[id], 0, 32);
+        await renderer.install(list, (id) => page.resources[id], 0);
         const warningStart=warnings.length;
         const svg = await vectorSVG(list, {
           pdf: data.format === "pdf",
@@ -150,7 +149,7 @@ self.onmessage = async ({ data }) => {
               }
               const markup=fragments.join("");
               // Retain only compact references to resources already in the PDF.
-              if(layerCache.size<128)layerCache.set(key,markup);
+              layerCache.set(key,markup);
               return markup;
             }
             const density=exportDensity(t,dpi), scale=density*25.4/dpi;

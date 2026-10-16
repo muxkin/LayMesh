@@ -236,7 +236,10 @@ fn curved_centered_heads_keep_a_full_width_connection() {
     );
     let n = &s.nodes[0];
     let mut raw = n.clone();
-    raw.as_object_mut().unwrap().remove("endpointRecipe");
+    std::sync::Arc::make_mut(&mut raw)
+        .as_object_mut()
+        .unwrap()
+        .remove("endpointRecipe");
     let mut expected = laymesh_core::geometry::visible(&raw);
     let p = BezPath::from_svg(n["d"].as_str().unwrap()).unwrap();
     let tr = laymesh_core::geometry::node_transform(n);

@@ -1,0 +1,179 @@
+[
+  {
+    "phase": "extension",
+    "started": 1792061067.4160042,
+    "command": [
+      "python3",
+      "scripts/build-editors.py",
+      "--binary",
+      "/home/keqing/source/LayMesh/target/release/laymesh",
+      "--extension-dir",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/extension"
+    ],
+    "returncode": 0,
+    "seconds": 2.1326048374176025
+  },
+  {
+    "phase": "fixture",
+    "started": 1792061069.5488327,
+    "command": [
+      "node",
+      "scripts/prepare-semantic-preview-fixture.mjs",
+      "/home/keqing/.codex/attachments/ae7cca4f-57dd-459c-8f5a-206718103dd7/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005.zip.html",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/fixture"
+    ],
+    "returncode": 0,
+    "seconds": 2.7013635635375977
+  },
+  {
+    "phase": "native-protocol",
+    "started": 1792061072.2504416,
+    "command": [
+      "python3",
+      "scripts/test-preview-semantic-session.py",
+      "--binary",
+      "/home/keqing/source/LayMesh/target/release/laymesh",
+      "--output",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/native-protocol.json"
+    ],
+    "returncode": 0,
+    "seconds": 0.7260386943817139
+  },
+  {
+    "phase": "browser-functional",
+    "started": 1792061072.9767466,
+    "command": [
+      "node",
+      "scripts/test-web-incremental-preview.cjs",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/functional"
+    ],
+    "returncode": 0,
+    "seconds": 69.96001935005188
+  },
+  {
+    "phase": "browser-edited-oracle",
+    "started": 1792061142.9370549,
+    "command": [
+      "node",
+      "scripts/test-web-semantic-edit-oracle.cjs",
+      "/tmp/laymesh-semantic-incremental/window-final.zip.html",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/edit-oracle"
+    ],
+    "returncode": 0,
+    "seconds": 1208.2582507133484
+  },
+  {
+    "phase": "browser-roundtrip",
+    "started": 1792062351.195508,
+    "command": [
+      "node",
+      "scripts/test-web-semantic-roundtrip.cjs",
+      "/home/keqing/.codex/attachments/ae7cca4f-57dd-459c-8f5a-206718103dd7/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005.zip.html",
+      "/tmp/laymesh-semantic-incremental/window-final.zip.html",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/roundtrip"
+    ],
+    "returncode": 0,
+    "seconds": 182.6106436252594
+  },
+  {
+    "phase": "vscode-functional",
+    "started": 1792062533.8064318,
+    "command": [
+      "python3",
+      "scripts/test-vscode-preview.py",
+      "--output",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/vscode-functional",
+      "--extension-dir",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/extension"
+    ],
+    "returncode": 0,
+    "seconds": 18.61306095123291
+  },
+  {
+    "phase": "docs-media",
+    "started": 1792062552.4198012,
+    "command": [
+      "python3",
+      "scripts/build-docs-media.py",
+      "--binary",
+      "/home/keqing/source/LayMesh/target/release/laymesh"
+    ],
+    "returncode": 0,
+    "seconds": 746.618878364563
+  },
+  {
+    "phase": "docs-check",
+    "started": 1792063299.03901,
+    "command": [
+      "python3",
+      "scripts/build-docs-media.py",
+      "--check",
+      "--binary",
+      "/home/keqing/source/LayMesh/target/release/laymesh"
+    ],
+    "returncode": 0,
+    "seconds": 0.37941503524780273
+  },
+  {
+    "phase": "browser-performance",
+    "started": 1792063299.4186795,
+    "command": [
+      "node",
+      "scripts/test-web-semantic-performance.cjs",
+      "/tmp/laymesh-semantic-incremental/window-final.zip.html",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/browser",
+      "50"
+    ],
+    "returncode": 0,
+    "seconds": 412.65073704719543
+  },
+  {
+    "phase": "browser-document-performance",
+    "started": 1792063712.0697348,
+    "command": [
+      "node",
+      "scripts/test-web-document-performance.cjs",
+      "/tmp/laymesh-semantic-incremental/window-final.zip.html",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/browser-document",
+      "50"
+    ],
+    "returncode": 0,
+    "seconds": 6172.048346042633
+  },
+  {
+    "phase": "vscode-performance",
+    "started": 1792069884.1184182,
+    "command": [
+      "python3",
+      "scripts/test-vscode-semantic-performance.py",
+      "--fixture",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/fixture",
+      "--output",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/vscode",
+      "--binary",
+      "/home/keqing/source/LayMesh/target/release/laymesh",
+      "--extension-dir",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/extension"
+    ],
+    "returncode": 0,
+    "seconds": 193.27978467941284
+  },
+  {
+    "phase": "vscode-document-performance",
+    "started": 1792070077.3985162,
+    "command": [
+      "python3",
+      "scripts/test-vscode-document-performance.py",
+      "--fixture",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/fixture",
+      "--output",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/vscode-document",
+      "--binary",
+      "/home/keqing/source/LayMesh/target/release/laymesh",
+      "--extension-dir",
+      "/home/keqing/source/LayMesh/target/semantic-preview-validation/20261015-window/extension"
+    ],
+    "returncode": 0,
+    "seconds": 1644.6249248981476
+  }
+]

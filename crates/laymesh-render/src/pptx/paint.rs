@@ -70,7 +70,7 @@ impl Writer<'_> {
             .resources
             .get(id)
             .ok_or_else(|| error("PPTX 缺少图片资源"))?;
-        let mut bytes = resource.data.clone();
+        let mut bytes = resource.data.as_ref().clone();
         let im = image::load_from_memory(&bytes).map_err(|e| error(e.to_string()))?;
         let extension = if resource.mime == "image/jpeg" {
             "jpeg"

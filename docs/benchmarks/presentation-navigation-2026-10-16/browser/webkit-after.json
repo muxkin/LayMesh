@@ -1,0 +1,2460 @@
+{
+  "summary": {
+    "samples": 50,
+    "elapsedMs": {
+      "median": 868,
+      "p95": 1159
+    },
+    "withoutTransitionMs": {
+      "median": 160.5,
+      "p95": 362
+    },
+    "prepareMs": {
+      "median": 30.5,
+      "p95": 71
+    },
+    "planMs": {
+      "median": 2,
+      "p95": 25
+    },
+    "transitionMs": {
+      "median": 661,
+      "p95": 860
+    }
+  },
+  "rows": [
+    {
+      "iteration": 1,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 881,
+      "calls": [
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 153,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 57,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 2370784,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 7,
+            "planMs": 4,
+            "transformProbes": 128,
+            "complete": true,
+            "prepareMs": 63
+          }
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 696,
+          "result": "done",
+          "transitionMs": 656,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 865
+      },
+      "prepareMs": 63,
+      "planMs": 4,
+      "transitionMs": 656,
+      "withoutTransitionMs": 225
+    },
+    {
+      "iteration": 2,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 1209,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 267,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 42,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 10971664,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 4,
+            "layerTextureBytes": 5416300,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 10,
+            "planMs": 28,
+            "transformProbes": 1092,
+            "complete": true,
+            "prepareMs": 71
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 910,
+          "result": "done",
+          "transitionMs": 858,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1193
+      },
+      "prepareMs": 71,
+      "planMs": 28,
+      "transitionMs": 858,
+      "withoutTransitionMs": 351
+    },
+    {
+      "iteration": 3,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 840,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 99,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 35,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 7150900,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 3,
+            "layerTextureBytes": 5753328,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 13,
+            "planMs": 3,
+            "transformProbes": 124,
+            "complete": true,
+            "prepareMs": 39
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 708,
+          "result": "done",
+          "transitionMs": 664,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 822
+      },
+      "prepareMs": 39,
+      "planMs": 3,
+      "transitionMs": 664,
+      "withoutTransitionMs": 176
+    },
+    {
+      "iteration": 4,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 1062,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 224,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 65,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 5891304,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 16,
+            "planMs": 2,
+            "transformProbes": 92,
+            "complete": true,
+            "prepareMs": 71
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 806,
+          "result": "done",
+          "transitionMs": 658,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1045
+      },
+      "prepareMs": 71,
+      "planMs": 2,
+      "transitionMs": 658,
+      "withoutTransitionMs": 404
+    },
+    {
+      "iteration": 5,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 724,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 690,
+          "result": "done",
+          "transitionMs": 650,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 706
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 650,
+      "withoutTransitionMs": 74
+    },
+    {
+      "iteration": 6,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 869,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 690,
+          "result": "done",
+          "transitionMs": 654,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 145,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 36,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 2370784,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 22,
+            "planMs": 3,
+            "transformProbes": 128,
+            "complete": true,
+            "prepareMs": 40
+          }
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 707
+      },
+      "prepareMs": 40,
+      "planMs": 3,
+      "transitionMs": 654,
+      "withoutTransitionMs": 215
+    },
+    {
+      "iteration": 7,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 1019,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 902,
+          "result": "done",
+          "transitionMs": 859,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 89,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 31,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 9747056,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 6300192,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 25,
+            "planMs": 2,
+            "transformProbes": 146,
+            "complete": true,
+            "prepareMs": 34
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 918
+      },
+      "prepareMs": 34,
+      "planMs": 2,
+      "transitionMs": 859,
+      "withoutTransitionMs": 160
+    },
+    {
+      "iteration": 8,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 872,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 724,
+          "result": "done",
+          "transitionMs": 651,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "cover",
+          "ms": 123,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 55,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 5867392,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 4566132,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 1,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 28,
+            "planMs": 1,
+            "transformProbes": 36,
+            "complete": true,
+            "prepareMs": 57
+          }
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 741
+      },
+      "prepareMs": 57,
+      "planMs": 1,
+      "transitionMs": 651,
+      "withoutTransitionMs": 221
+    },
+    {
+      "iteration": 9,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 755,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 722,
+          "result": "done",
+          "transitionMs": 665,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 737
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 665,
+      "withoutTransitionMs": 90
+    },
+    {
+      "iteration": 10,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 767,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 734,
+          "result": "done",
+          "transitionMs": 661,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 751
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 661,
+      "withoutTransitionMs": 106
+    },
+    {
+      "iteration": 11,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 720,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 685,
+          "result": "done",
+          "transitionMs": 656,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 702
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 656,
+      "withoutTransitionMs": 64
+    },
+    {
+      "iteration": 12,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 1160,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 238,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 42,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 10971664,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 4,
+            "layerTextureBytes": 5416300,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 36,
+            "planMs": 25,
+            "transformProbes": 1092,
+            "complete": true,
+            "prepareMs": 70
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 888,
+          "result": "done",
+          "transitionMs": 852,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1144
+      },
+      "prepareMs": 70,
+      "planMs": 25,
+      "transitionMs": 852,
+      "withoutTransitionMs": 308
+    },
+    {
+      "iteration": 13,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 821,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 96,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 34,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 7150900,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 3,
+            "layerTextureBytes": 5753328,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 39,
+            "planMs": 3,
+            "transformProbes": 124,
+            "complete": true,
+            "prepareMs": 38
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 692,
+          "result": "done",
+          "transitionMs": 658,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 804
+      },
+      "prepareMs": 38,
+      "planMs": 3,
+      "transitionMs": 658,
+      "withoutTransitionMs": 163
+    },
+    {
+      "iteration": 14,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 1016,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 202,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 46,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 5891304,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 42,
+            "planMs": 1,
+            "transformProbes": 92,
+            "complete": true,
+            "prepareMs": 51
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 781,
+          "result": "done",
+          "transitionMs": 660,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1000
+      },
+      "prepareMs": 51,
+      "planMs": 1,
+      "transitionMs": 660,
+      "withoutTransitionMs": 356
+    },
+    {
+      "iteration": 15,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 739,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 705,
+          "result": "done",
+          "transitionMs": 665,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 722
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 665,
+      "withoutTransitionMs": 74
+    },
+    {
+      "iteration": 16,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 868,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 690,
+          "result": "done",
+          "transitionMs": 653,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 150,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 43,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 2370784,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 48,
+            "planMs": 4,
+            "transformProbes": 128,
+            "complete": true,
+            "prepareMs": 48
+          }
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 706
+      },
+      "prepareMs": 48,
+      "planMs": 4,
+      "transitionMs": 653,
+      "withoutTransitionMs": 215
+    },
+    {
+      "iteration": 17,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 1015,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 902,
+          "result": "done",
+          "transitionMs": 859,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 95,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 22,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 9747056,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 6300192,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 51,
+            "planMs": 3,
+            "transformProbes": 146,
+            "complete": true,
+            "prepareMs": 26
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 917
+      },
+      "prepareMs": 26,
+      "planMs": 3,
+      "transitionMs": 859,
+      "withoutTransitionMs": 156
+    },
+    {
+      "iteration": 18,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 936,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 742,
+          "result": "done",
+          "transitionMs": 663,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "cover",
+          "ms": 162,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 69,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 5867392,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 4566132,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 1,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 54,
+            "planMs": 2,
+            "transformProbes": 36,
+            "complete": true,
+            "prepareMs": 75
+          }
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 757
+      },
+      "prepareMs": 75,
+      "planMs": 2,
+      "transitionMs": 663,
+      "withoutTransitionMs": 273
+    },
+    {
+      "iteration": 19,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 758,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 724,
+          "result": "done",
+          "transitionMs": 664,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 740
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 664,
+      "withoutTransitionMs": 94
+    },
+    {
+      "iteration": 20,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 778,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 745,
+          "result": "done",
+          "transitionMs": 663,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 762
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 663,
+      "withoutTransitionMs": 115
+    },
+    {
+      "iteration": 21,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 721,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 687,
+          "result": "done",
+          "transitionMs": 661,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 704
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 661,
+      "withoutTransitionMs": 60
+    },
+    {
+      "iteration": 22,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 1143,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 212,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 30,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 10971664,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 4,
+            "layerTextureBytes": 5416300,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 62,
+            "planMs": 23,
+            "transformProbes": 1092,
+            "complete": true,
+            "prepareMs": 54
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 900,
+          "result": "done",
+          "transitionMs": 860,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1127
+      },
+      "prepareMs": 54,
+      "planMs": 23,
+      "transitionMs": 860,
+      "withoutTransitionMs": 283
+    },
+    {
+      "iteration": 23,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 821,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 92,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 27,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 7150900,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 3,
+            "layerTextureBytes": 5753328,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 65,
+            "planMs": 2,
+            "transformProbes": 124,
+            "complete": true,
+            "prepareMs": 31
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 696,
+          "result": "done",
+          "transitionMs": 660,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 805
+      },
+      "prepareMs": 31,
+      "planMs": 2,
+      "transitionMs": 660,
+      "withoutTransitionMs": 161
+    },
+    {
+      "iteration": 24,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 1014,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 190,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 45,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 5891304,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 68,
+            "planMs": 2,
+            "transformProbes": 92,
+            "complete": true,
+            "prepareMs": 51
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 793,
+          "result": "done",
+          "transitionMs": 658,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 997
+      },
+      "prepareMs": 51,
+      "planMs": 2,
+      "transitionMs": 658,
+      "withoutTransitionMs": 356
+    },
+    {
+      "iteration": 25,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 721,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 686,
+          "result": "done",
+          "transitionMs": 650,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 703
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 650,
+      "withoutTransitionMs": 71
+    },
+    {
+      "iteration": 26,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 871,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 691,
+          "result": "done",
+          "transitionMs": 655,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 150,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 38,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 2370784,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 74,
+            "planMs": 4,
+            "transformProbes": 128,
+            "complete": true,
+            "prepareMs": 43
+          }
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 708
+      },
+      "prepareMs": 43,
+      "planMs": 4,
+      "transitionMs": 655,
+      "withoutTransitionMs": 216
+    },
+    {
+      "iteration": 27,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 1014,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 900,
+          "result": "done",
+          "transitionMs": 857,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 94,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 22,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 9747056,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 6300192,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 77,
+            "planMs": 3,
+            "transformProbes": 146,
+            "complete": true,
+            "prepareMs": 26
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 917
+      },
+      "prepareMs": 26,
+      "planMs": 3,
+      "transitionMs": 857,
+      "withoutTransitionMs": 157
+    },
+    {
+      "iteration": 28,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 900,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 739,
+          "result": "done",
+          "transitionMs": 650,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "cover",
+          "ms": 141,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 51,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 5867392,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 4566132,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 1,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 80,
+            "planMs": 1,
+            "transformProbes": 36,
+            "complete": true,
+            "prepareMs": 53
+          }
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 755
+      },
+      "prepareMs": 53,
+      "planMs": 1,
+      "transitionMs": 650,
+      "withoutTransitionMs": 250
+    },
+    {
+      "iteration": 29,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 738,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 704,
+          "result": "done",
+          "transitionMs": 650,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 720
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 650,
+      "withoutTransitionMs": 88
+    },
+    {
+      "iteration": 30,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 782,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 749,
+          "result": "done",
+          "transitionMs": 664,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 766
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 664,
+      "withoutTransitionMs": 118
+    },
+    {
+      "iteration": 31,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 715,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 682,
+          "result": "done",
+          "transitionMs": 654,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 699
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 654,
+      "withoutTransitionMs": 61
+    },
+    {
+      "iteration": 32,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 1157,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 222,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 37,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 10971664,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 4,
+            "layerTextureBytes": 5416300,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 88,
+            "planMs": 25,
+            "transformProbes": 1092,
+            "complete": true,
+            "prepareMs": 64
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 900,
+          "result": "done",
+          "transitionMs": 862,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1139
+      },
+      "prepareMs": 64,
+      "planMs": 25,
+      "transitionMs": 862,
+      "withoutTransitionMs": 295
+    },
+    {
+      "iteration": 33,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 820,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 89,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 26,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 7150900,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 3,
+            "layerTextureBytes": 5753328,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 91,
+            "planMs": 3,
+            "transformProbes": 124,
+            "complete": true,
+            "prepareMs": 30
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 698,
+          "result": "done",
+          "transitionMs": 662,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 804
+      },
+      "prepareMs": 30,
+      "planMs": 3,
+      "transitionMs": 662,
+      "withoutTransitionMs": 158
+    },
+    {
+      "iteration": 34,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 1045,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 220,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 54,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 5891304,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 94,
+            "planMs": 2,
+            "transformProbes": 92,
+            "complete": true,
+            "prepareMs": 60
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 794,
+          "result": "done",
+          "transitionMs": 653,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1029
+      },
+      "prepareMs": 60,
+      "planMs": 2,
+      "transitionMs": 653,
+      "withoutTransitionMs": 392
+    },
+    {
+      "iteration": 35,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 723,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 2,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 689,
+          "result": "done",
+          "transitionMs": 652,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 704
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 652,
+      "withoutTransitionMs": 71
+    },
+    {
+      "iteration": 36,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 868,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 692,
+          "result": "done",
+          "transitionMs": 655,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 152,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 37,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 2370784,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 100,
+            "planMs": 4,
+            "transformProbes": 128,
+            "complete": true,
+            "prepareMs": 42
+          }
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 706
+      },
+      "prepareMs": 42,
+      "planMs": 4,
+      "transitionMs": 655,
+      "withoutTransitionMs": 213
+    },
+    {
+      "iteration": 37,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 1016,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 902,
+          "result": "done",
+          "transitionMs": 859,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 90,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 23,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 9747056,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 6300192,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 103,
+            "planMs": 3,
+            "transformProbes": 146,
+            "complete": true,
+            "prepareMs": 27
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 918
+      },
+      "prepareMs": 27,
+      "planMs": 3,
+      "transitionMs": 859,
+      "withoutTransitionMs": 157
+    },
+    {
+      "iteration": 38,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 934,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 755,
+          "result": "done",
+          "transitionMs": 665,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "cover",
+          "ms": 152,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 61,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 5867392,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 4566132,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 1,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 106,
+            "planMs": 1,
+            "transformProbes": 36,
+            "complete": true,
+            "prepareMs": 63
+          }
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 771
+      },
+      "prepareMs": 63,
+      "planMs": 1,
+      "transitionMs": 665,
+      "withoutTransitionMs": 269
+    },
+    {
+      "iteration": 39,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 754,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 723,
+          "result": "done",
+          "transitionMs": 663,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 738
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 663,
+      "withoutTransitionMs": 91
+    },
+    {
+      "iteration": 40,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 785,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 752,
+          "result": "done",
+          "transitionMs": 665,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 769
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 665,
+      "withoutTransitionMs": 120
+    },
+    {
+      "iteration": 41,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 721,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 688,
+          "result": "done",
+          "transitionMs": 660,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 705
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 660,
+      "withoutTransitionMs": 61
+    },
+    {
+      "iteration": 42,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 1159,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 230,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 36,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 10971664,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 4,
+            "layerTextureBytes": 5416300,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 114,
+            "planMs": 21,
+            "transformProbes": 1092,
+            "complete": true,
+            "prepareMs": 57
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 898,
+          "result": "done",
+          "transitionMs": 860,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 1143
+      },
+      "prepareMs": 57,
+      "planMs": 21,
+      "transitionMs": 860,
+      "withoutTransitionMs": 299
+    },
+    {
+      "iteration": 43,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 823,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 93,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 25,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 7150900,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 3,
+            "layerTextureBytes": 5753328,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 117,
+            "planMs": 2,
+            "transformProbes": 124,
+            "complete": true,
+            "prepareMs": 28
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 698,
+          "result": "done",
+          "transitionMs": 664,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 807
+      },
+      "prepareMs": 28,
+      "planMs": 2,
+      "transitionMs": 664,
+      "withoutTransitionMs": 159
+    },
+    {
+      "iteration": 44,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 1016,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 183,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 40,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 5891304,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 4,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 120,
+            "planMs": 2,
+            "transformProbes": 92,
+            "complete": true,
+            "prepareMs": 44
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 797,
+          "result": "done",
+          "transitionMs": 654,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 997
+      },
+      "prepareMs": 44,
+      "planMs": 2,
+      "transitionMs": 654,
+      "withoutTransitionMs": 362
+    },
+    {
+      "iteration": 45,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 731,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 697,
+          "result": "done",
+          "transitionMs": 661,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 714
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 661,
+      "withoutTransitionMs": 70
+    },
+    {
+      "iteration": 46,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 872,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 689,
+          "result": "done",
+          "transitionMs": 652,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 160,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 46,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 6256084,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 2370784,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 126,
+            "planMs": 3,
+            "transformProbes": 128,
+            "complete": true,
+            "prepareMs": 50
+          }
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 706
+      },
+      "prepareMs": 50,
+      "planMs": 3,
+      "transitionMs": 652,
+      "withoutTransitionMs": 220
+    },
+    {
+      "iteration": 47,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 1030,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 899,
+          "result": "done",
+          "transitionMs": 855,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 98,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 23,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 9747056,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 6300192,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 3,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 129,
+            "planMs": 3,
+            "transformProbes": 146,
+            "complete": true,
+            "prepareMs": 27
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 916
+      },
+      "prepareMs": 27,
+      "planMs": 3,
+      "transitionMs": 855,
+      "withoutTransitionMs": 175
+    },
+    {
+      "iteration": 48,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 934,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 755,
+          "result": "done",
+          "transitionMs": 663,
+          "backend": "Skia WebGL2"
+        },
+        {
+          "type": "load",
+          "page": "cover",
+          "ms": 156,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia WebGL2",
+            "device": "Apple GPU",
+            "rasterMs": 65,
+            "gpuSamples": [],
+            "cacheBytes": 0,
+            "staticTextureBytes": 5867392,
+            "staticCacheHits": 0,
+            "staticCacheBuilds": 2,
+            "layerTextureBytes": 4566132,
+            "layerCacheHits": 0,
+            "layerCacheBuilds": 1,
+            "layerCacheBudgetMisses": 0,
+            "layerCacheAllocationFailures": 0,
+            "frameCount": 132,
+            "planMs": 1,
+            "transformProbes": 36,
+            "complete": true,
+            "prepareMs": 75
+          }
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 771
+      },
+      "prepareMs": 75,
+      "planMs": 1,
+      "transitionMs": 663,
+      "withoutTransitionMs": 271
+    },
+    {
+      "iteration": 49,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 740,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 706,
+          "result": "done",
+          "transitionMs": 652,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 723
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 652,
+      "withoutTransitionMs": 88
+    },
+    {
+      "iteration": 50,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 767,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 734,
+          "result": "done",
+          "transitionMs": 653,
+          "backend": "Skia WebGL2"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 751
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 653,
+      "withoutTransitionMs": 114
+    }
+  ],
+  "coldResources": [
+    {
+      "page": "cover",
+      "backend": "Skia WebGL2",
+      "device": "Apple GPU",
+      "rasterMs": 216,
+      "gpuSamples": [],
+      "cacheBytes": 0,
+      "staticTextureBytes": 5867392,
+      "staticCacheHits": 0,
+      "staticCacheBuilds": 2,
+      "layerTextureBytes": 4566132,
+      "layerCacheHits": 0,
+      "layerCacheBuilds": 1,
+      "layerCacheBudgetMisses": 0,
+      "layerCacheAllocationFailures": 0,
+      "frameCount": 1,
+      "planMs": 4,
+      "transformProbes": 36,
+      "complete": true,
+      "prepareMs": 252
+    }
+  ],
+  "animation": [
+    {
+      "page": "cover",
+      "time": 0,
+      "sha256": "7c02f1c4b6c1ec23ba01365e4b45f2a2a54242dc684bf05b9665a9e0919abd00"
+    },
+    {
+      "page": "cover",
+      "time": 1,
+      "sha256": "f0b10b7f32a9ec5b95f9086548cb98b26f3f02553a5305e7210890da17eaa7b2"
+    },
+    {
+      "page": "cover",
+      "time": 3,
+      "sha256": "6b4fb0ac8132ed084416e12f0f18cee81a395e9fd892a75a4fd773174ccb21ad"
+    },
+    {
+      "page": "seed",
+      "time": 0,
+      "sha256": "cd0cd4da73baa8644f163af014644dd18d39d57f0c5dc81e1e84650ba786820f"
+    },
+    {
+      "page": "seed",
+      "time": 1,
+      "sha256": "9b6c3b7336f49e552f9d4389df4eb6ec74f338a37feb7914a2018d30054a5927"
+    },
+    {
+      "page": "seed",
+      "time": 3,
+      "sha256": "935a6072d6ff4327b58b91c42a0ea94b693fabc760e146c910ac64101b903f6e"
+    },
+    {
+      "page": "anchors",
+      "time": 0,
+      "sha256": "d0338bfae55da544b6033bf6b7eba3a5878d093c8edc4a7a6205052d3744b8dc"
+    },
+    {
+      "page": "anchors",
+      "time": 1,
+      "sha256": "3797ed1dff6e5a9fc325137ceb5ed9523d7727f06bfa6c2e164073b2ad556260"
+    },
+    {
+      "page": "anchors",
+      "time": 3,
+      "sha256": "c98c1269bc229bab49a52a5b7abd0c5be1a5ccb238bd5505b6017a5006357fdc"
+    },
+    {
+      "page": "motion",
+      "time": 0,
+      "sha256": "714810ee17235126bea37ab0d240e0bcbb781b280c68849e195974412ae28fb5"
+    },
+    {
+      "page": "motion",
+      "time": 1,
+      "sha256": "0434023aa03390e4af516ce4ceff7dc04fa68ced926b34160ff4ea79f7c3ff53"
+    },
+    {
+      "page": "motion",
+      "time": 3,
+      "sha256": "358e37920a9872eda06f20d8a1880375dadb77cfdb9223bc6e60ad513253c55f"
+    },
+    {
+      "page": "offline",
+      "time": 0,
+      "sha256": "f148109646224bea50409989626005c5acbafdf95b78f675d9754201859e6dc5"
+    },
+    {
+      "page": "offline",
+      "time": 1,
+      "sha256": "5f61f643beba04ce527d65edbc03fa40cc452661eb755d54f00790a4f6f86533"
+    },
+    {
+      "page": "offline",
+      "time": 3,
+      "sha256": "fd9311de069d4d18603df988b2c9546e78e4a63b64ef0c94ca1982f00833057a"
+    },
+    {
+      "page": "editable",
+      "time": 0,
+      "sha256": "d99b8c63c88c53f47ad8d37af8713b6f09348a00dd9c41933db0443b3bd92692"
+    },
+    {
+      "page": "editable",
+      "time": 1,
+      "sha256": "ac71e146b7de685b2a2a662708d6896bf84de3a09f95951d9cd7cf065b449ed0"
+    },
+    {
+      "page": "editable",
+      "time": 3,
+      "sha256": "306e40070f1dd4acfffd6fd3ba2880269a23a66c21a2451426278ce048b28d46"
+    }
+  ],
+  "backend": "Skia WebGL2",
+  "dimensions": {
+    "width": 1600,
+    "height": 1000
+  },
+  "definition": "Keydown through ordinary handler to renderer confirmation and next browser rendering step; includes authored page transition, four extra protected keys per switch; one initial navigation excluded. No source edits or compilation during navigation.",
+  "engine": "webkit",
+  "version": "26.5",
+  "kind": "after",
+  "errors": [],
+  "networkRequests": [],
+  "htmlSha256": "459e6a9b3d03666af60c3f25683ea439e3069f9a12ce9a055ff2af13ef355a73"
+}

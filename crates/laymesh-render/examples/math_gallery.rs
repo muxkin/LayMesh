@@ -159,7 +159,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 layout_dpi: 96.,
                                 canvas_unit: "mm".into(),
                                 export_dpi: 1200.,
-                                nodes: vec![node],
+                                nodes: vec![node.into()],
                                 warnings: vec![],
                                 font_requests: Default::default(),
                                 fonts: fonts
@@ -187,9 +187,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                             for (id, resource) in &mut list.resources {
                                 let path = output.join("resources").join(id);
                                 if !path.exists() {
-                                    fs::write(path, &resource.data)?;
+                                    fs::write(path, resource.data.as_slice())?;
                                 }
-                                resource.data.clear();
+                                resource.data = Default::default();
                             }
                             let drawing = format!("draw/{index}-{font}-{policy}-{style}.json");
                             fs::write(output.join(&drawing), serde_json::to_vec(&list)?)?;

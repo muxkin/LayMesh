@@ -1,0 +1,338 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "version": 1,
+      "elapsedMs": 26.850866997847334,
+      "responseBytes": 31594,
+      "metrics": {
+        "cacheBytes": 930702,
+        "evaluatedBuiltinCalls": {
+          "canvas": 1,
+          "cubic_to": 8,
+          "g.add": 8,
+          "group": 8,
+          "move_to": 8,
+          "p.add": 8,
+          "path": 8,
+          "range": 1
+        },
+        "evaluatedExpressions": 67,
+        "fontCatalogBuilds": 1,
+        "geometryCacheBytes": 13952,
+        "materializedNodes": 16,
+        "nodeCacheBytes": 396616,
+        "parsedBytes": 184,
+        "parsedFiles": 1,
+        "phaseMicros": {},
+        "queryCacheBytes": 520134,
+        "queryResourceBytes": 0,
+        "rebuiltGeometry": 8,
+        "reusedConstructions": 0,
+        "reusedExpressions": 0,
+        "reusedFiles": 0,
+        "reusedGeometry": 0,
+        "reusedNodes": 0,
+        "reusedStatements": 0
+      }
+    },
+    {
+      "version": 2,
+      "elapsedMs": 1.0275959793943912,
+      "responseBytes": 1359,
+      "metrics": {
+        "cacheBytes": 930702,
+        "evaluatedBuiltinCalls": {
+          "canvas": 1,
+          "p.add": 8
+        },
+        "evaluatedExpressions": 1,
+        "fontCatalogBuilds": 0,
+        "geometryCacheBytes": 13952,
+        "materializedNodes": 0,
+        "nodeCacheBytes": 396616,
+        "parsedBytes": 0,
+        "parsedFiles": 0,
+        "phaseMicros": {},
+        "queryCacheBytes": 520134,
+        "queryResourceBytes": 0,
+        "rebuiltGeometry": 0,
+        "reusedConstructions": 8,
+        "reusedExpressions": 18,
+        "reusedFiles": 1,
+        "reusedGeometry": 0,
+        "reusedNodes": 8,
+        "reusedStatements": 0
+      }
+    },
+    {
+      "version": 3,
+      "elapsedMs": 1.0225959995295852,
+      "responseBytes": 5304,
+      "metrics": {
+        "cacheBytes": 1063998,
+        "evaluatedBuiltinCalls": {
+          "canvas": 1,
+          "cubic_to": 1,
+          "g.add": 1,
+          "group": 1,
+          "move_to": 1,
+          "p.add": 9,
+          "path": 1,
+          "range": 1
+        },
+        "evaluatedExpressions": 10,
+        "fontCatalogBuilds": 0,
+        "geometryCacheBytes": 15696,
+        "materializedNodes": 2,
+        "nodeCacheBytes": 446197,
+        "parsedBytes": 161,
+        "parsedFiles": 1,
+        "phaseMicros": {},
+        "queryCacheBytes": 602105,
+        "queryResourceBytes": 0,
+        "rebuiltGeometry": 1,
+        "reusedConstructions": 8,
+        "reusedExpressions": 17,
+        "reusedFiles": 0,
+        "reusedGeometry": 0,
+        "reusedNodes": 8,
+        "reusedStatements": 1
+      }
+    },
+    {
+      "version": 4,
+      "elapsedMs": 3.7884199991822243,
+      "responseBytes": 2269,
+      "metrics": {
+        "cacheBytes": 1506622,
+        "evaluatedBuiltinCalls": {
+          "canvas": 1,
+          "g.add": 8,
+          "p.add": 8,
+          "path": 8,
+          "range": 1
+        },
+        "evaluatedExpressions": 18,
+        "fontCatalogBuilds": 0,
+        "geometryCacheBytes": 15696,
+        "materializedNodes": 16,
+        "nodeCacheBytes": 842821,
+        "parsedBytes": 184,
+        "parsedFiles": 1,
+        "phaseMicros": {},
+        "queryCacheBytes": 648105,
+        "queryResourceBytes": 0,
+        "rebuiltGeometry": 0,
+        "reusedConstructions": 8,
+        "reusedExpressions": 25,
+        "reusedFiles": 0,
+        "reusedGeometry": 8,
+        "reusedNodes": 0,
+        "reusedStatements": 0
+      }
+    },
+    {
+      "version": 6,
+      "elapsedMs": 2.6588269975036383,
+      "responseBytes": 2187,
+      "metrics": {
+        "cacheBytes": 1820945,
+        "evaluatedBuiltinCalls": {
+          "canvas": 1,
+          "g.add": 8,
+          "p.add": 8,
+          "path": 8
+        },
+        "evaluatedExpressions": 17,
+        "fontCatalogBuilds": 0,
+        "geometryCacheBytes": 15696,
+        "materializedNodes": 8,
+        "nodeCacheBytes": 1112069,
+        "parsedBytes": 184,
+        "parsedFiles": 1,
+        "phaseMicros": {},
+        "queryCacheBytes": 693180,
+        "queryResourceBytes": 0,
+        "rebuiltGeometry": 0,
+        "reusedConstructions": 8,
+        "reusedExpressions": 26,
+        "reusedFiles": 0,
+        "reusedGeometry": 0,
+        "reusedNodes": 8,
+        "reusedStatements": 0
+      }
+    }
+  ],
+  "scopeCases": [
+    {
+      "change": "initial",
+      "elapsedMs": 70.80611900892109,
+      "metrics": {
+        "cacheBytes": 18417966,
+        "evaluatedBuiltinCalls": {
+          "canvas": 1,
+          "cubic_to": 128,
+          "ellipse": 32,
+          "g.add": 160,
+          "group": 160,
+          "move_to": 128,
+          "p.add": 160,
+          "path": 128,
+          "range": 2
+        },
+        "evaluatedExpressions": 1380,
+        "fontCatalogBuilds": 0,
+        "geometryCacheBytes": 249317,
+        "materializedNodes": 320,
+        "nodeCacheBytes": 8103194,
+        "parsedBytes": 299,
+        "parsedFiles": 1,
+        "phaseMicros": {},
+        "queryCacheBytes": 10065455,
+        "queryResourceBytes": 0,
+        "rebuiltGeometry": 152,
+        "reusedConstructions": 0,
+        "reusedExpressions": 0,
+        "reusedFiles": 0,
+        "reusedGeometry": 8,
+        "reusedNodes": 0,
+        "reusedStatements": 0
+      },
+      "responseBytes": 553676
+    },
+    {
+      "change": "warm",
+      "elapsedMs": 6.813757005147636,
+      "metrics": {
+        "cacheBytes": 18417966,
+        "evaluatedBuiltinCalls": {
+          "canvas": 1,
+          "p.add": 160
+        },
+        "evaluatedExpressions": 1,
+        "fontCatalogBuilds": 0,
+        "geometryCacheBytes": 249317,
+        "materializedNodes": 0,
+        "nodeCacheBytes": 8103194,
+        "parsedBytes": 0,
+        "parsedFiles": 0,
+        "phaseMicros": {},
+        "queryCacheBytes": 10065455,
+        "queryResourceBytes": 0,
+        "rebuiltGeometry": 0,
+        "reusedConstructions": 160,
+        "reusedExpressions": 323,
+        "reusedFiles": 1,
+        "reusedGeometry": 0,
+        "reusedNodes": 160,
+        "reusedStatements": 0
+      },
+      "responseBytes": 1378
+    },
+    {
+      "change": "formula",
+      "elapsedMs": 73.3402050100267,
+      "metrics": {
+        "cacheBytes": 27163113,
+        "evaluatedBuiltinCalls": {
+          "canvas": 1,
+          "cubic_to": 128,
+          "g.add": 160,
+          "group": 32,
+          "p.add": 160,
+          "path": 128
+        },
+        "evaluatedExpressions": 705,
+        "fontCatalogBuilds": 0,
+        "geometryCacheBytes": 473573,
+        "materializedNodes": 288,
+        "nodeCacheBytes": 14948560,
+        "parsedBytes": 196,
+        "parsedFiles": 1,
+        "phaseMicros": {},
+        "queryCacheBytes": 11740980,
+        "queryResourceBytes": 0,
+        "rebuiltGeometry": 128,
+        "reusedConstructions": 128,
+        "reusedExpressions": 451,
+        "reusedFiles": 0,
+        "reusedGeometry": 0,
+        "reusedNodes": 32,
+        "reusedStatements": 2
+      },
+      "responseBytes": 385367
+    },
+    {
+      "change": "loop_growth",
+      "elapsedMs": 11.138934991322458,
+      "metrics": {
+        "cacheBytes": 27813750,
+        "evaluatedBuiltinCalls": {
+          "canvas": 1,
+          "cubic_to": 1,
+          "g.add": 1,
+          "group": 1,
+          "move_to": 1,
+          "p.add": 161,
+          "path": 1,
+          "range": 1
+        },
+        "evaluatedExpressions": 11,
+        "fontCatalogBuilds": 0,
+        "geometryCacheBytes": 475325,
+        "materializedNodes": 34,
+        "nodeCacheBytes": 15499226,
+        "parsedBytes": 174,
+        "parsedFiles": 1,
+        "phaseMicros": {},
+        "queryCacheBytes": 11839199,
+        "queryResourceBytes": 0,
+        "rebuiltGeometry": 1,
+        "reusedConstructions": 160,
+        "reusedExpressions": 322,
+        "reusedFiles": 0,
+        "reusedGeometry": 0,
+        "reusedNodes": 128,
+        "reusedStatements": 2
+      },
+      "responseBytes": 8402
+    },
+    {
+      "change": "undo",
+      "elapsedMs": 66.60718499915674,
+      "metrics": {
+        "cacheBytes": 34203134,
+        "evaluatedBuiltinCalls": {
+          "canvas": 1,
+          "cubic_to": 128,
+          "g.add": 160,
+          "group": 32,
+          "p.add": 160,
+          "path": 128,
+          "range": 1
+        },
+        "evaluatedExpressions": 706,
+        "fontCatalogBuilds": 0,
+        "geometryCacheBytes": 475325,
+        "materializedNodes": 160,
+        "nodeCacheBytes": 20309816,
+        "parsedBytes": 299,
+        "parsedFiles": 1,
+        "phaseMicros": {},
+        "queryCacheBytes": 13417993,
+        "queryResourceBytes": 0,
+        "rebuiltGeometry": 0,
+        "reusedConstructions": 128,
+        "reusedExpressions": 450,
+        "reusedFiles": 0,
+        "reusedGeometry": 0,
+        "reusedNodes": 160,
+        "reusedStatements": 0
+      },
+      "responseBytes": 387817
+    }
+  ],
+  "scopeTimingDefinition": "One native request through response, excluding the separate uncached oracle; single samples, not latency percentiles",
+  "cancelAndRecovery": true
+}

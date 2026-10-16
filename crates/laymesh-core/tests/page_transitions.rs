@@ -85,7 +85,9 @@ fn texture_urls_are_relative_to_stylesheet() {
 
 #[test]
 fn unavailable_texture_preserves_lazy_resource_request() {
-    let error = compile("-laymesh-transition:luma; -laymesh-transition-texture-luma:url('missing.png')").unwrap_err();
+    let error =
+        compile("-laymesh-transition:luma; -laymesh-transition-texture-luma:url('missing.png')")
+            .unwrap_err();
     assert_eq!(error.code, "E_ASSET");
     assert!(error.message.contains("missing.png"));
 }

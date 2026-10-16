@@ -1,0 +1,23 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),Module=require('node:module');
+const load=Module._load;Module._load=function(id,...args){return id==='vscode'?{}:load.call(this,id,...args);};
+const {PreviewWorker}=require('../extensions/vscode/src/preview-host.cjs');Module._load=load;
+const {NativePresentation,NativePresentationCache}=require('../extensions/vscode/src/presentation-host.cjs');
+(async()=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'laymesh-deck-incremental-')),file=path.join(root,'deck.laydoc'),a=path.join(root,'a.lay'),b=path.join(root,'b.lay'),css=path.join(root,'theme.lcss');
+ const original='d=document(name="First")\nd.add(page(src="a.lay",id="a"))\nd.add(page(src="b.lay",id="b"))';fs.writeFileSync(a,'p=canvas(size=(30,20),stylesheet="theme.lcss")\np.add(rect(size=(10,10),class="box"))');fs.writeFileSync(b,'p=canvas(size=(20,30))\np.add(rect(size=(5,5),fill="#112233"))');fs.writeFileSync(css,'.box {fill:#445566}');fs.writeFileSync(file,original);
+ const requests=[],workers=[],known=new Set(),cache=new NativePresentationCache(()=>{const w=new PreviewWorker(path.resolve(process.env.LAYMESH_TEST_BINARY||'target/release/laymesh'),{append(){},appendLine(){}},root);const enqueue=w.enqueue.bind(w);w.enqueue=job=>{requests.push({type:job.request.type||'page',page:job.request.page});enqueue(job);};workers.push(w);return w;});let deck;
+ async function run(source,overlays={}){deck?.dispose();const messages=[];deck=new NativePresentation({worker:cache.worker(),createWorker:()=>cache.worker(cache.workers.length),cache,knownPages:[...known],dist:root,uri:f=>f,notify:m=>{messages.push(m);if(m.type==='deck-page'||m.type==='deck-page-reuse'){known.add(m.artifactId);queueMicrotask(()=>deck.ack(m.page.id));}}});await deck.prepare(file,source,overlays,{});assert(deck.pages.every(p=>p.status==='ready'),JSON.stringify(messages));return messages;}
+ try{await run(original);assert.equal(deck.preparation.compiledPages,2);const processes=workers.map(w=>w.process);assert(processes.every(Boolean));
+ let at=requests.length,m=await run(original.replace('First','Renamed'));assert.equal(requests.length-at,1,'A directory name edit should only plan');assert.equal(deck.preparation.reusedPages,2);assert.equal(m.filter(x=>x.type==='deck-page').length,0,'Unchanged pages must not be serialized/transferred again');assert.equal(m.filter(x=>x.type==='deck-page-reuse').length,2);
+ assert(workers.every((w,i)=>w.process===processes[i]),'Completed preparation must retain compiler processes');
+ m=await run(original,{[a]:fs.readFileSync(a,'utf8').replace('10,10','12,10')});assert.equal(deck.preparation.compiledPages,1);assert.equal(deck.preparation.reusedPages,1);assert.equal(m.filter(x=>x.type==='deck-page').length,1);
+ m=await run(original,{[css]:'.box {fill:#00ff00}'});assert.equal(deck.preparation.compiledPages,1);assert.equal(deck.preparation.reusedPages,1);
+ const reordered=original.split('\n');[reordered[1],reordered[2]]=[reordered[2],reordered[1]];await run(reordered.join('\n'),{[css]:'.box {fill:#00ff00}'});assert.equal(deck.preparation.compiledPages,0);assert.deepEqual(deck.pages.map(p=>p.id),['b','a']);
+ await run(original+'\nd.add(page(src="a.lay",id="alias"))',{[css]:'.box {fill:#00ff00}'});assert.equal(deck.preparation.compiledPages,0);assert.equal(deck.preparation.reusedPages,3);
+ // The first pool worker can be idle while the only invalid page belongs
+ // to a later worker. Its affinity must not stop dispatching the whole pool.
+ let timer;try{await Promise.race([run(original+'\nd.add(page(src="a.lay",id="alias"))',{[css]:'.box {fill:#00ff00}',[b]:'p=canvas(size=(21,30))\np.add(rect(size=(5,5),fill="#112233"))'}),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Later worker affinity stalled preparation')),10000);})]);}finally{clearTimeout(timer);}
+ assert.equal(deck.preparation.compiledPages,1);assert.equal(deck.preparation.reusedPages,2);assert.equal(JSON.parse(fs.readFileSync(deck.pages[1].file)).list.width,21);
+ await run('d=document()\nd.add(page(src="a.lay",id="a"))',{[css]:'.box {fill:#00ff00}'});assert.equal(cache.pages.size,1);assert.equal(cache.workers.length,1,'Deleted pages release their idle compilation workers');
+ console.log('Incremental presentation: retained processes, actual page reads, local/shared edits, rename/reorder/alias and zero unchanged page transfer passed');
+ }finally{deck?.dispose();cache.dispose();assert(workers.every(w=>!w.process));fs.rmSync(root,{recursive:true,force:true});}
+})().catch(e=>{console.error(e);process.exitCode=1;});

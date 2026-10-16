@@ -1,0 +1,1434 @@
+[
+  {
+    "host": "chromium",
+    "version": "before",
+    "source": "keyboard-before/chromium.json",
+    "artifactSha256": "a0d981bb39223eb9069bf06a810910c426ddebb5d2c838b430a31d4efb2c1b9e",
+    "wasmSha256": null,
+    "backend": "Skia WebGL2 (software driver)",
+    "dimensions": {
+      "width": 1600,
+      "height": 1000
+    },
+    "transitionRasterSize": [
+      1600,
+      1000
+    ],
+    "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "usesWorker": true,
+    "usesMain": false,
+    "rendererFallback": null,
+    "openMs": 3189.800000011921,
+    "trustedInputs": 937,
+    "inputsWhileSwitching": 673,
+    "residentPagesAtEnd": 3,
+    "frameCacheHits": 0,
+    "preparedTargetPassed": null,
+    "destinations": [
+      {
+        "page": 2,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 320.29999999701977,
+          "p95": 329.5
+        },
+        "transitionMs": {
+          "median": 679.7000000029802,
+          "p95": 693.7000000178814
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 3,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 389.25000001490116,
+          "p95": 407.90000000596046
+        },
+        "transitionMs": {
+          "median": 678.9500000029802,
+          "p95": 698.4000000059605
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 4,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 434.75000001490116,
+          "p95": 489.10000002384186
+        },
+        "transitionMs": {
+          "median": 908.6499999910593,
+          "p95": 924.8000000119209
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 5,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 231.54999999701977,
+          "p95": 243.30000001192093
+        },
+        "transitionMs": {
+          "median": 675.9000000059605,
+          "p95": 693.9000000059605
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 6,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 431.3499999791384,
+          "p95": 438.40000000596046
+        },
+        "transitionMs": {
+          "median": 686.0500000119209,
+          "p95": 691.7000000178814
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      }
+    ],
+    "queueMeasured": false,
+    "summary": {
+      "all": {
+        "samples": 50,
+        "firstVisibleMs": {
+          "median": 389.25000001490116,
+          "p95": 456.39999997615814
+        },
+        "completedMs": {
+          "median": 1005.3499999940395,
+          "p95": 1242.0999999940395
+        },
+        "transitionMs": {
+          "median": 685.6500000059605,
+          "p95": 922.7999999821186
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      "firstTraversal": {
+        "samples": 5,
+        "firstVisibleMs": {
+          "median": 407.90000000596046,
+          "p95": 489.10000002384186
+        },
+        "completedMs": {
+          "median": 1008.4000000059605,
+          "p95": 1239.800000011921
+        },
+        "transitionMs": {
+          "median": 678.5999999940395,
+          "p95": 907
+        },
+        "activationQueueMs": {
+          "median": 0,
+          "p95": 0
+        }
+      },
+      "repeat": {
+        "samples": 45,
+        "firstVisibleMs": {
+          "median": 387.30000001192093,
+          "p95": 440.80000001192093
+        },
+        "completedMs": {
+          "median": 1002.2999999821186,
+          "p95": 1242.0999999940395
+        },
+        "transitionMs": {
+          "median": 685.6999999880791,
+          "p95": 922.7999999821186
+        },
+        "activationQueueMs": {
+          "median": 0,
+          "p95": 0
+        }
+      },
+      "prepared": {
+        "samples": 0
+      }
+    }
+  },
+  {
+    "host": "chromium",
+    "version": "after",
+    "source": "keyboard-after/chromium.json",
+    "artifactSha256": "0c7972debcf3b397f077f31e7dcef5a6172fe61cd5308fdcdfb118176941d46e",
+    "wasmSha256": null,
+    "backend": "Skia WebGL2 (software driver)",
+    "dimensions": {
+      "width": 1600,
+      "height": 1000
+    },
+    "transitionRasterSize": [
+      1600,
+      1000
+    ],
+    "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "usesWorker": true,
+    "usesMain": false,
+    "rendererFallback": null,
+    "openMs": 3005.2999999821186,
+    "trustedInputs": 793,
+    "inputsWhileSwitching": 529,
+    "residentPagesAtEnd": 6,
+    "frameCacheHits": 50,
+    "preparedTargetPassed": false,
+    "destinations": [
+      {
+        "page": 2,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 154.65000000596046,
+          "p95": 192.2000000178814
+        },
+        "transitionMs": {
+          "median": 687.7499999850988,
+          "p95": 694.2999999821186
+        },
+        "activationQueueMs": {
+          "median": 94.4501953125,
+          "p95": 128.300048828125
+        }
+      },
+      {
+        "page": 3,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 111.0,
+          "p95": 120.19999998807907
+        },
+        "transitionMs": {
+          "median": 682.5,
+          "p95": 696.5999999940395
+        },
+        "activationQueueMs": {
+          "median": 47.10009765625,
+          "p95": 63.800048828125
+        }
+      },
+      {
+        "page": 4,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 131.20000000298023,
+          "p95": 310.80000001192093
+        },
+        "transitionMs": {
+          "median": 890.6000000089407,
+          "p95": 917.1999999880791
+        },
+        "activationQueueMs": {
+          "median": 37.900146484375,
+          "p95": 96.000244140625
+        }
+      },
+      {
+        "page": 5,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 64.34999999403954,
+          "p95": 86.80000001192093
+        },
+        "transitionMs": {
+          "median": 690.2000000178814,
+          "p95": 693.3000000119209
+        },
+        "activationQueueMs": {
+          "median": 0.2001953125,
+          "p95": 33.000244140625
+        }
+      },
+      {
+        "page": 6,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 83.90000000596046,
+          "p95": 109
+        },
+        "transitionMs": {
+          "median": 680.3999999910593,
+          "p95": 693.3000000119209
+        },
+        "activationQueueMs": {
+          "median": 11.2003173828125,
+          "p95": 61.199951171875
+        }
+      }
+    ],
+    "queueMeasured": true,
+    "summary": {
+      "all": {
+        "samples": 50,
+        "firstVisibleMs": {
+          "median": 111.75,
+          "p95": 191.10000002384186
+        },
+        "completedMs": {
+          "median": 762.2500000149012,
+          "p95": 991.5
+        },
+        "transitionMs": {
+          "median": 689.2000000029802,
+          "p95": 896.6000000238419
+        },
+        "activationQueueMs": {
+          "median": 34.9501953125,
+          "p95": 117.7001953125
+        }
+      },
+      "firstTraversal": {
+        "samples": 5,
+        "firstVisibleMs": {
+          "median": 109,
+          "p95": 310.80000001192093
+        },
+        "completedMs": {
+          "median": 776.6999999880791,
+          "p95": 1011.8000000119209
+        },
+        "transitionMs": {
+          "median": 689.5,
+          "p95": 875.9000000059605
+        },
+        "activationQueueMs": {
+          "median": 18.7001953125,
+          "p95": 96.000244140625
+        }
+      },
+      "repeat": {
+        "samples": 45,
+        "firstVisibleMs": {
+          "median": 114.5,
+          "p95": 180.90000000596046
+        },
+        "completedMs": {
+          "median": 754.9000000059605,
+          "p95": 967.4000000059605
+        },
+        "transitionMs": {
+          "median": 688.7999999821186,
+          "p95": 896.6000000238419
+        },
+        "activationQueueMs": {
+          "median": 36.2001953125,
+          "p95": 117.7001953125
+        }
+      },
+      "prepared": {
+        "samples": 48,
+        "firstVisibleMs": {
+          "median": 111.75,
+          "p95": 191.10000002384186
+        },
+        "completedMs": {
+          "median": 762.2500000149012,
+          "p95": 991.5
+        },
+        "transitionMs": {
+          "median": 688.9999999850988,
+          "p95": 896.6000000238419
+        },
+        "activationQueueMs": {
+          "median": 36.4501953125,
+          "p95": 117.7001953125
+        }
+      }
+    }
+  },
+  {
+    "host": "firefox",
+    "version": "before",
+    "source": "keyboard-before/firefox.json",
+    "artifactSha256": "a0d981bb39223eb9069bf06a810910c426ddebb5d2c838b430a31d4efb2c1b9e",
+    "wasmSha256": null,
+    "backend": "Skia CPU",
+    "dimensions": {
+      "width": 1600,
+      "height": 1000
+    },
+    "transitionRasterSize": [
+      128,
+      80
+    ],
+    "device": "",
+    "usesWorker": true,
+    "usesMain": false,
+    "rendererFallback": null,
+    "openMs": 6530,
+    "trustedInputs": 2368,
+    "inputsWhileSwitching": 2104,
+    "residentPagesAtEnd": 3,
+    "frameCacheHits": 0,
+    "preparedTargetPassed": null,
+    "destinations": [
+      {
+        "page": 2,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 2445.5,
+          "p95": 2494
+        },
+        "transitionMs": {
+          "median": 1596.5,
+          "p95": 1612
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 3,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 1261.0,
+          "p95": 1305
+        },
+        "transitionMs": {
+          "median": 1604.0,
+          "p95": 1624
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 4,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 1657.5,
+          "p95": 1721
+        },
+        "transitionMs": {
+          "median": 1730.0,
+          "p95": 1743
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 5,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 1061.5,
+          "p95": 1427
+        },
+        "transitionMs": {
+          "median": 1587.5,
+          "p95": 1596
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 6,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 1875.5,
+          "p95": 1933
+        },
+        "transitionMs": {
+          "median": 1608.5,
+          "p95": 1635
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      }
+    ],
+    "queueMeasured": false,
+    "summary": {
+      "all": {
+        "samples": 50,
+        "firstVisibleMs": {
+          "median": 1657.5,
+          "p95": 2462
+        },
+        "completedMs": {
+          "median": 2898.5,
+          "p95": 3644
+        },
+        "transitionMs": {
+          "median": 1603.0,
+          "p95": 1738
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      "firstTraversal": {
+        "samples": 5,
+        "firstVisibleMs": {
+          "median": 1715,
+          "p95": 2392
+        },
+        "completedMs": {
+          "median": 2965,
+          "p95": 3574
+        },
+        "transitionMs": {
+          "median": 1600,
+          "p95": 1740
+        },
+        "activationQueueMs": {
+          "median": 0,
+          "p95": 0
+        }
+      },
+      "repeat": {
+        "samples": 45,
+        "firstVisibleMs": {
+          "median": 1656,
+          "p95": 2462
+        },
+        "completedMs": {
+          "median": 2891,
+          "p95": 3644
+        },
+        "transitionMs": {
+          "median": 1604,
+          "p95": 1734
+        },
+        "activationQueueMs": {
+          "median": 0,
+          "p95": 0
+        }
+      },
+      "prepared": {
+        "samples": 0
+      }
+    }
+  },
+  {
+    "host": "firefox",
+    "version": "after",
+    "source": "keyboard-after/firefox.json",
+    "artifactSha256": "0c7972debcf3b397f077f31e7dcef5a6172fe61cd5308fdcdfb118176941d46e",
+    "wasmSha256": null,
+    "backend": "Skia CPU",
+    "dimensions": {
+      "width": 1600,
+      "height": 1000
+    },
+    "transitionRasterSize": [
+      1600,
+      1000
+    ],
+    "device": "",
+    "usesWorker": true,
+    "usesMain": false,
+    "rendererFallback": null,
+    "openMs": 6731,
+    "trustedInputs": 5057,
+    "inputsWhileSwitching": 4793,
+    "residentPagesAtEnd": 6,
+    "frameCacheHits": 50,
+    "preparedTargetPassed": false,
+    "destinations": [
+      {
+        "page": 2,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 4444.0,
+          "p95": 4761
+        },
+        "transitionMs": {
+          "median": 3196.5,
+          "p95": 3565
+        },
+        "activationQueueMs": {
+          "median": 1267.5,
+          "p95": 1315
+        }
+      },
+      {
+        "page": 3,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 4534.5,
+          "p95": 4752
+        },
+        "transitionMs": {
+          "median": 4532.5,
+          "p95": 4612
+        },
+        "activationQueueMs": {
+          "median": 62.5,
+          "p95": 232
+        }
+      },
+      {
+        "page": 4,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 13642.5,
+          "p95": 17087
+        },
+        "transitionMs": {
+          "median": 13362.0,
+          "p95": 16987
+        },
+        "activationQueueMs": {
+          "median": 330.0,
+          "p95": 360
+        }
+      },
+      {
+        "page": 5,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 3522.5,
+          "p95": 3574
+        },
+        "transitionMs": {
+          "median": 3529.0,
+          "p95": 3556
+        },
+        "activationQueueMs": {
+          "median": 41.0,
+          "p95": 70
+        }
+      },
+      {
+        "page": 6,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 4887.0,
+          "p95": 4976
+        },
+        "transitionMs": {
+          "median": 4537.5,
+          "p95": 4594
+        },
+        "activationQueueMs": {
+          "median": 400.5,
+          "p95": 439
+        }
+      }
+    ],
+    "queueMeasured": true,
+    "summary": {
+      "all": {
+        "samples": 50,
+        "firstVisibleMs": {
+          "median": 4583.0,
+          "p95": 13740
+        },
+        "completedMs": {
+          "median": 5371.5,
+          "p95": 14525
+        },
+        "transitionMs": {
+          "median": 4252.0,
+          "p95": 13416
+        },
+        "activationQueueMs": {
+          "median": 313.0,
+          "p95": 1301
+        }
+      },
+      "firstTraversal": {
+        "samples": 5,
+        "firstVisibleMs": {
+          "median": 4668,
+          "p95": 14288
+        },
+        "completedMs": {
+          "median": 5469,
+          "p95": 15088
+        },
+        "transitionMs": {
+          "median": 4224,
+          "p95": 13531
+        },
+        "activationQueueMs": {
+          "median": 0,
+          "p95": 111
+        }
+      },
+      "repeat": {
+        "samples": 45,
+        "firstVisibleMs": {
+          "median": 4580,
+          "p95": 13700
+        },
+        "completedMs": {
+          "median": 5362,
+          "p95": 14467
+        },
+        "transitionMs": {
+          "median": 4460,
+          "p95": 13392
+        },
+        "activationQueueMs": {
+          "median": 331,
+          "p95": 1301
+        }
+      },
+      "prepared": {
+        "samples": 46,
+        "firstVisibleMs": {
+          "median": 4573.0,
+          "p95": 13700
+        },
+        "completedMs": {
+          "median": 5360.0,
+          "p95": 14467
+        },
+        "transitionMs": {
+          "median": 4352.5,
+          "p95": 13392
+        },
+        "activationQueueMs": {
+          "median": 330.0,
+          "p95": 1301
+        }
+      }
+    }
+  },
+  {
+    "host": "webkit",
+    "version": "before",
+    "source": "keyboard-before/webkit.json",
+    "artifactSha256": "a0d981bb39223eb9069bf06a810910c426ddebb5d2c838b430a31d4efb2c1b9e",
+    "wasmSha256": null,
+    "backend": "Skia CPU",
+    "dimensions": {
+      "width": 1600,
+      "height": 1000
+    },
+    "transitionRasterSize": [
+      128,
+      80
+    ],
+    "device": "",
+    "usesWorker": true,
+    "usesMain": false,
+    "rendererFallback": null,
+    "openMs": 4603,
+    "trustedInputs": 1037,
+    "inputsWhileSwitching": 773,
+    "residentPagesAtEnd": 3,
+    "frameCacheHits": 0,
+    "preparedTargetPassed": null,
+    "destinations": [
+      {
+        "page": 2,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 374.0,
+          "p95": 451
+        },
+        "transitionMs": {
+          "median": 837.5,
+          "p95": 849
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 3,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 318.5,
+          "p95": 349
+        },
+        "transitionMs": {
+          "median": 788.0,
+          "p95": 849
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 4,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 410.5,
+          "p95": 418
+        },
+        "transitionMs": {
+          "median": 1007.5,
+          "p95": 1028
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 5,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 235.0,
+          "p95": 254
+        },
+        "transitionMs": {
+          "median": 840.0,
+          "p95": 848
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 6,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 458.0,
+          "p95": 477
+        },
+        "transitionMs": {
+          "median": 785.0,
+          "p95": 850
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      }
+    ],
+    "queueMeasured": false,
+    "summary": {
+      "all": {
+        "samples": 50,
+        "firstVisibleMs": {
+          "median": 369.5,
+          "p95": 465
+        },
+        "completedMs": {
+          "median": 1117.5,
+          "p95": 1339
+        },
+        "transitionMs": {
+          "median": 835.5,
+          "p95": 1012
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      "firstTraversal": {
+        "samples": 5,
+        "firstVisibleMs": {
+          "median": 325,
+          "p95": 448
+        },
+        "completedMs": {
+          "median": 1098,
+          "p95": 1351
+        },
+        "transitionMs": {
+          "median": 838,
+          "p95": 1015
+        },
+        "activationQueueMs": {
+          "median": 0,
+          "p95": 0
+        }
+      },
+      "repeat": {
+        "samples": 45,
+        "firstVisibleMs": {
+          "median": 390,
+          "p95": 465
+        },
+        "completedMs": {
+          "median": 1137,
+          "p95": 1335
+        },
+        "transitionMs": {
+          "median": 835,
+          "p95": 1010
+        },
+        "activationQueueMs": {
+          "median": 0,
+          "p95": 0
+        }
+      },
+      "prepared": {
+        "samples": 0
+      }
+    }
+  },
+  {
+    "host": "webkit",
+    "version": "after",
+    "source": "keyboard-after/webkit.json",
+    "artifactSha256": "0c7972debcf3b397f077f31e7dcef5a6172fe61cd5308fdcdfb118176941d46e",
+    "wasmSha256": null,
+    "backend": "Skia CPU",
+    "dimensions": {
+      "width": 1600,
+      "height": 1000
+    },
+    "transitionRasterSize": [
+      1600,
+      1000
+    ],
+    "device": "",
+    "usesWorker": true,
+    "usesMain": false,
+    "rendererFallback": null,
+    "openMs": 4704,
+    "trustedInputs": 1420,
+    "inputsWhileSwitching": 1156,
+    "residentPagesAtEnd": 6,
+    "frameCacheHits": 50,
+    "preparedTargetPassed": false,
+    "destinations": [
+      {
+        "page": 2,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 561.0,
+          "p95": 758
+        },
+        "transitionMs": {
+          "median": 873.5,
+          "p95": 941
+        },
+        "activationQueueMs": {
+          "median": 48.0,
+          "p95": 203
+        }
+      },
+      {
+        "page": 3,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 758.5,
+          "p95": 784
+        },
+        "transitionMs": {
+          "median": 1330.0,
+          "p95": 1353
+        },
+        "activationQueueMs": {
+          "median": 28.0,
+          "p95": 41
+        }
+      },
+      {
+        "page": 4,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 3150.5,
+          "p95": 3250
+        },
+        "transitionMs": {
+          "median": 3076.0,
+          "p95": 3196
+        },
+        "activationQueueMs": {
+          "median": 66.5,
+          "p95": 93
+        }
+      },
+      {
+        "page": 5,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 505.5,
+          "p95": 632
+        },
+        "transitionMs": {
+          "median": 860.5,
+          "p95": 874
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 139
+        }
+      },
+      {
+        "page": 6,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 791.0,
+          "p95": 807
+        },
+        "transitionMs": {
+          "median": 1327.5,
+          "p95": 1352
+        },
+        "activationQueueMs": {
+          "median": 65.5,
+          "p95": 72
+        }
+      }
+    ],
+    "queueMeasured": true,
+    "summary": {
+      "all": {
+        "samples": 50,
+        "firstVisibleMs": {
+          "median": 753.0,
+          "p95": 3169
+        },
+        "completedMs": {
+          "median": 1483.5,
+          "p95": 3308
+        },
+        "transitionMs": {
+          "median": 1324.0,
+          "p95": 3114
+        },
+        "activationQueueMs": {
+          "median": 36.5,
+          "p95": 201
+        }
+      },
+      "firstTraversal": {
+        "samples": 5,
+        "firstVisibleMs": {
+          "median": 758,
+          "p95": 3169
+        },
+        "completedMs": {
+          "median": 1480,
+          "p95": 3299
+        },
+        "transitionMs": {
+          "median": 1323,
+          "p95": 3114
+        },
+        "activationQueueMs": {
+          "median": 18,
+          "p95": 158
+        }
+      },
+      "repeat": {
+        "samples": 45,
+        "firstVisibleMs": {
+          "median": 751,
+          "p95": 3163
+        },
+        "completedMs": {
+          "median": 1493,
+          "p95": 3308
+        },
+        "transitionMs": {
+          "median": 1325,
+          "p95": 3078
+        },
+        "activationQueueMs": {
+          "median": 38,
+          "p95": 201
+        }
+      },
+      "prepared": {
+        "samples": 50,
+        "firstVisibleMs": {
+          "median": 753.0,
+          "p95": 3169
+        },
+        "completedMs": {
+          "median": 1483.5,
+          "p95": 3308
+        },
+        "transitionMs": {
+          "median": 1324.0,
+          "p95": 3114
+        },
+        "activationQueueMs": {
+          "median": 36.5,
+          "p95": 201
+        }
+      }
+    }
+  },
+  {
+    "host": "vscode",
+    "version": "before",
+    "source": "native-keyboard/before.json",
+    "artifactSha256": "698e4d7ff95e1f3b8e4e705ed7758b341c66fb68d2780585f323821c40bfa07e",
+    "wasmSha256": "cf03f2275e21621bc1b1fa32b8d88e488270a0add1670e0b818aa354352056b4",
+    "backend": "Skia WebGL2 (software driver)",
+    "dimensions": {
+      "width": 1392,
+      "height": 1816
+    },
+    "transitionRasterSize": [
+      1392,
+      1816
+    ],
+    "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "usesWorker": true,
+    "usesMain": false,
+    "rendererFallback": null,
+    "openMs": 2034.5,
+    "trustedInputs": 989,
+    "inputsWhileSwitching": 725,
+    "residentPagesAtEnd": 2,
+    "frameCacheHits": 0,
+    "preparedTargetPassed": null,
+    "destinations": [
+      {
+        "page": 2,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 378.84999999403954,
+          "p95": 563.5
+        },
+        "transitionMs": {
+          "median": 686.9500000029802,
+          "p95": 712.5
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 3,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 406.84999999403954,
+          "p95": 474.80000001192093
+        },
+        "transitionMs": {
+          "median": 693.8499999940395,
+          "p95": 701.4000000059605
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 4,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 490.40000000596046,
+          "p95": 591.5
+        },
+        "transitionMs": {
+          "median": 906.2999999970198,
+          "p95": 926.5
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 5,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 325.09999999403954,
+          "p95": 332
+        },
+        "transitionMs": {
+          "median": 686.4000000059605,
+          "p95": 704.6999999880791
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      {
+        "page": 6,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 461.0999999791384,
+          "p95": 482.10000002384186
+        },
+        "transitionMs": {
+          "median": 686.3999999910593,
+          "p95": 702.5999999940395
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      }
+    ],
+    "queueMeasured": false,
+    "summary": {
+      "all": {
+        "samples": 50,
+        "firstVisibleMs": {
+          "median": 412.84999999403954,
+          "p95": 515.7000000178814
+        },
+        "completedMs": {
+          "median": 1032.3499999940395,
+          "p95": 1303.7999999821186
+        },
+        "transitionMs": {
+          "median": 693.1500000059605,
+          "p95": 916.5
+        },
+        "activationQueueMs": {
+          "median": 0.0,
+          "p95": 0
+        }
+      },
+      "firstTraversal": {
+        "samples": 5,
+        "firstVisibleMs": {
+          "median": 474.80000001192093,
+          "p95": 591.5
+        },
+        "completedMs": {
+          "median": 1075.300000011921,
+          "p95": 1358.3999999761581
+        },
+        "transitionMs": {
+          "median": 693.3000000119209,
+          "p95": 916.7000000178814
+        },
+        "activationQueueMs": {
+          "median": 0,
+          "p95": 0
+        }
+      },
+      "repeat": {
+        "samples": 45,
+        "firstVisibleMs": {
+          "median": 403.09999999403954,
+          "p95": 491.59999999403954
+        },
+        "completedMs": {
+          "median": 1027.9000000059605,
+          "p95": 1299.300000011921
+        },
+        "transitionMs": {
+          "median": 692.3000000119209,
+          "p95": 915.2999999821186
+        },
+        "activationQueueMs": {
+          "median": 0,
+          "p95": 0
+        }
+      },
+      "prepared": {
+        "samples": 0
+      }
+    }
+  },
+  {
+    "host": "vscode",
+    "version": "after",
+    "source": "native-keyboard/after.json",
+    "artifactSha256": "a07a4497bf4a48cc5d4a5509bf18fad3724b4db1b772046d8066b43f6cf4762f",
+    "wasmSha256": "7c5f9e9c457dc4562e3a96b91d13cef498a795b98cef3fe465c67fbfacaca307",
+    "backend": "Skia WebGL2 (software driver)",
+    "dimensions": {
+      "width": 1392,
+      "height": 1816
+    },
+    "transitionRasterSize": [
+      1392,
+      1816
+    ],
+    "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "usesWorker": true,
+    "usesMain": false,
+    "rendererFallback": null,
+    "openMs": 1861.0999999940395,
+    "trustedInputs": 818,
+    "inputsWhileSwitching": 554,
+    "residentPagesAtEnd": 6,
+    "frameCacheHits": 50,
+    "preparedTargetPassed": false,
+    "destinations": [
+      {
+        "page": 2,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 183.5499999821186,
+          "p95": 199.69999998807907
+        },
+        "transitionMs": {
+          "median": 694.6499999910593,
+          "p95": 703.5
+        },
+        "activationQueueMs": {
+          "median": 97.1002197265625,
+          "p95": 115.900146484375
+        }
+      },
+      {
+        "page": 3,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 133.75000001490116,
+          "p95": 364.60000002384186
+        },
+        "transitionMs": {
+          "median": 691.7999999970198,
+          "p95": 706.9000000059605
+        },
+        "activationQueueMs": {
+          "median": 38.4501953125,
+          "p95": 67.100341796875
+        }
+      },
+      {
+        "page": 4,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 147.45000000298023,
+          "p95": 594.5
+        },
+        "transitionMs": {
+          "median": 914.3999999910593,
+          "p95": 926
+        },
+        "activationQueueMs": {
+          "median": 47.7001953125,
+          "p95": 88.500244140625
+        }
+      },
+      {
+        "page": 5,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 112.44999998807907,
+          "p95": 160.5
+        },
+        "transitionMs": {
+          "median": 688.9500000178814,
+          "p95": 696.2999999821186
+        },
+        "activationQueueMs": {
+          "median": 7.4501953125,
+          "p95": 46.60009765625
+        }
+      },
+      {
+        "page": 6,
+        "samples": 10,
+        "firstVisibleMs": {
+          "median": 105.75,
+          "p95": 500.7000000178814
+        },
+        "transitionMs": {
+          "median": 701.5999999940395,
+          "p95": 709.9000000059605
+        },
+        "activationQueueMs": {
+          "median": 18.2501220703125,
+          "p95": 58.10009765625
+        }
+      }
+    ],
+    "queueMeasured": true,
+    "summary": {
+      "all": {
+        "samples": 50,
+        "firstVisibleMs": {
+          "median": 140.70000000298023,
+          "p95": 364.60000002384186
+        },
+        "completedMs": {
+          "median": 771.0500000119209,
+          "p95": 1030.7000000178814
+        },
+        "transitionMs": {
+          "median": 696.2999999970198,
+          "p95": 921.0999999940395
+        },
+        "activationQueueMs": {
+          "median": 34.1002197265625,
+          "p95": 103.60009765625
+        }
+      },
+      "firstTraversal": {
+        "samples": 5,
+        "firstVisibleMs": {
+          "median": 364.60000002384186,
+          "p95": 594.5
+        },
+        "completedMs": {
+          "median": 999,
+          "p95": 1342.5
+        },
+        "transitionMs": {
+          "median": 698.5,
+          "p95": 913.2999999821186
+        },
+        "activationQueueMs": {
+          "median": 0.2001953125,
+          "p95": 73.000244140625
+        }
+      },
+      "repeat": {
+        "samples": 45,
+        "firstVisibleMs": {
+          "median": 124.80000001192093,
+          "p95": 196.30000001192093
+        },
+        "completedMs": {
+          "median": 759.5,
+          "p95": 999.5
+        },
+        "transitionMs": {
+          "median": 696.2999999821186,
+          "p95": 921.0999999940395
+        },
+        "activationQueueMs": {
+          "median": 38.900146484375,
+          "p95": 103.60009765625
+        }
+      },
+      "prepared": {
+        "samples": 46,
+        "firstVisibleMs": {
+          "median": 125.6000000089407,
+          "p95": 196.30000001192093
+        },
+        "completedMs": {
+          "median": 763.7000000029802,
+          "p95": 999.5
+        },
+        "transitionMs": {
+          "median": 696.1499999910593,
+          "p95": 921.0999999940395
+        },
+        "activationQueueMs": {
+          "median": 42.3001708984375,
+          "p95": 103.60009765625
+        }
+      }
+    }
+  }
+]

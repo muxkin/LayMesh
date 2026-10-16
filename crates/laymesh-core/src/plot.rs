@@ -101,7 +101,7 @@ fn object_args(a: &Args, k: &str) -> Args {
         .and_then(V::object)
         .map(|o| {
             let o = o.borrow();
-            let mut args = o.args.clone();
+            let mut args = (*o.args).clone();
             fn resolve_font(v: &V, file: &str) -> V {
                 match v {
                     V::Text(s, raw)
@@ -2221,7 +2221,7 @@ mod tests {
     }
     fn a(j: Json) -> Args {
         match V::from_json(&j) {
-            V::Map(a) => a,
+            V::Map(a) => (*a).clone(),
             _ => panic!("args"),
         }
     }

@@ -1,0 +1,4 @@
+d=document(name="Incremental preview")
+d.add(page(src="a.lay",id="a",transition=transition(name="fade",duration=300ms)))
+d.add(page(src="b.lay",id="b",transition=transition(name="fade",duration=300ms)))
+d.add(page(src="c.lay",id="c",transition=transition(name="fade",duration=300ms)))

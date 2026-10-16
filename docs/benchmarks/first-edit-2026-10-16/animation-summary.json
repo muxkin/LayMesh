@@ -1,0 +1,3464 @@
+{
+  "playback-edit-v009/chromium.json": {
+    "backend": "Skia WebGL2 (software driver)",
+    "dimensions": {
+      "width": 1920,
+      "height": 920
+    },
+    "usesWorker": true,
+    "initialRendererToVisibleMs": 1795.0999999642372,
+    "overlappingBackgroundRequests": 21,
+    "rows": [
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 1,
+        "frames": 86,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 26.69999998807907,
+        "layerBuilds": 1,
+        "backgroundRequestsDuringPlayback": 19,
+        "intervalMs": {
+          "samples": 86,
+          "median": 20.900000035762787,
+          "p95": 51.10000002384186,
+          "max": 103.39999997615814
+        },
+        "requestMs": {
+          "samples": 86,
+          "median": 20.80000001192093,
+          "p95": 50.69999998807907,
+          "max": 103.29999995231628
+        },
+        "sampleMs": {
+          "samples": 86,
+          "median": 0.09999996423721313,
+          "p95": 0.19999998807907104,
+          "max": 0.20000004768371582
+        },
+        "rasterMs": {
+          "samples": 86,
+          "median": 1.0,
+          "p95": 1.7999999523162842,
+          "max": 37.59999996423721
+        },
+        "queueWaitMs": {
+          "samples": 86,
+          "median": 19.050048828125,
+          "p95": 26.699951171875,
+          "max": 74.099853515625
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 2,
+        "frames": 228,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 39.89999997615814,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 3,
+        "intervalMs": {
+          "samples": 228,
+          "median": 25.650000005960464,
+          "p95": 31.100000023841858,
+          "max": 63.5
+        },
+        "requestMs": {
+          "samples": 228,
+          "median": 25.55000001192093,
+          "p95": 30.5,
+          "max": 63.39999997615814
+        },
+        "sampleMs": {
+          "samples": 228,
+          "median": 0.10000002384185791,
+          "p95": 0.30000001192092896,
+          "max": 0.6000000238418579
+        },
+        "rasterMs": {
+          "samples": 228,
+          "median": 4.899999976158142,
+          "p95": 6.5,
+          "max": 9
+        },
+        "queueWaitMs": {
+          "samples": 228,
+          "median": 20.7498779296875,
+          "p95": 24.69970703125,
+          "max": 61
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 3,
+        "frames": 33,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 51.10000002384186,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 33,
+          "median": 78.19999998807907,
+          "p95": 95.30000001192093,
+          "max": 117.0
+        },
+        "requestMs": {
+          "samples": 33,
+          "median": 78.0,
+          "p95": 95.19999998807907,
+          "max": 116.90000003576279
+        },
+        "sampleMs": {
+          "samples": 33,
+          "median": 0.30000001192092896,
+          "p95": 0.9000000357627869,
+          "max": 1.100000023841858
+        },
+        "rasterMs": {
+          "samples": 33,
+          "median": 2.300000011920929,
+          "p95": 5.599999964237213,
+          "max": 16.100000023841858
+        },
+        "queueWaitMs": {
+          "samples": 33,
+          "median": 74.5,
+          "p95": 92.5,
+          "max": 113.599853515625
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 4,
+        "frames": 188,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 36.30000001192093,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 188,
+          "median": 25.899999976158142,
+          "p95": 29.80000001192093,
+          "max": 37.5
+        },
+        "requestMs": {
+          "samples": 188,
+          "median": 25.69999998807907,
+          "p95": 28.899999976158142,
+          "max": 34.19999998807907
+        },
+        "sampleMs": {
+          "samples": 188,
+          "median": 0.19999998807907104,
+          "p95": 0.3999999761581421,
+          "max": 0.5
+        },
+        "rasterMs": {
+          "samples": 188,
+          "median": 4.5,
+          "p95": 5.5,
+          "max": 7
+        },
+        "queueWaitMs": {
+          "samples": 188,
+          "median": 20.7998046875,
+          "p95": 23.7998046875,
+          "max": 25.39990234375
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 5,
+        "frames": 104,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.59999996423721,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 104,
+          "median": 20.149999976158142,
+          "p95": 52,
+          "max": 54.09999996423721
+        },
+        "requestMs": {
+          "samples": 104,
+          "median": 19.849999994039536,
+          "p95": 51.89999997615814,
+          "max": 54
+        },
+        "sampleMs": {
+          "samples": 104,
+          "median": 0.19999998807907104,
+          "p95": 0.30000001192092896,
+          "max": 0.40000003576278687
+        },
+        "rasterMs": {
+          "samples": 104,
+          "median": 1.899999976158142,
+          "p95": 4.899999976158142,
+          "max": 5.699999988079071
+        },
+        "queueWaitMs": {
+          "samples": 104,
+          "median": 17.6497802734375,
+          "p95": 47.599853515625,
+          "max": 49.39990234375
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 6,
+        "frames": 47,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.60000002384186,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 47,
+          "median": 63.40000003576279,
+          "p95": 74.5,
+          "max": 116.69999998807907
+        },
+        "requestMs": {
+          "samples": 47,
+          "median": 63.30000001192093,
+          "p95": 72.39999997615814,
+          "max": 114.5
+        },
+        "sampleMs": {
+          "samples": 47,
+          "median": 0.09999996423721313,
+          "p95": 0.19999998807907104,
+          "max": 0.20000004768371582
+        },
+        "rasterMs": {
+          "samples": 47,
+          "median": 2.300000011920929,
+          "p95": 5.699999988079071,
+          "max": 6.400000035762787
+        },
+        "queueWaitMs": {
+          "samples": 47,
+          "median": 59.89990234375,
+          "p95": 69.599853515625,
+          "max": 107.89990234375
+        }
+      },
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 7,
+        "frames": 116,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.09999996423721,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 1,
+        "intervalMs": {
+          "samples": 116,
+          "median": 17.100000023841858,
+          "p95": 20.599999964237213,
+          "max": 35.09999996423721
+        },
+        "requestMs": {
+          "samples": 116,
+          "median": 9.150000005960464,
+          "p95": 20.0,
+          "max": 23.100000023841858
+        },
+        "sampleMs": {
+          "samples": 116,
+          "median": 0.09999996423721313,
+          "p95": 0.19999998807907104,
+          "max": 0.20000004768371582
+        },
+        "rasterMs": {
+          "samples": 116,
+          "median": 0.800000011920929,
+          "p95": 1.199999988079071,
+          "max": 1.300000011920929
+        },
+        "queueWaitMs": {
+          "samples": 116,
+          "median": 7.89990234375,
+          "p95": 18.89990234375,
+          "max": 21.60009765625
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 8,
+        "frames": 249,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.69999998807907,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 249,
+          "median": 24.30000001192093,
+          "p95": 28.399999976158142,
+          "max": 35.69999998807907
+        },
+        "requestMs": {
+          "samples": 249,
+          "median": 24.0,
+          "p95": 28.0,
+          "max": 35.60000002384186
+        },
+        "sampleMs": {
+          "samples": 249,
+          "median": 0.10000002384185791,
+          "p95": 0.30000001192092896,
+          "max": 0.3999999761581421
+        },
+        "rasterMs": {
+          "samples": 249,
+          "median": 4.399999976158142,
+          "p95": 5.399999976158142,
+          "max": 7.100000023841858
+        },
+        "queueWaitMs": {
+          "samples": 249,
+          "median": 19.7998046875,
+          "p95": 22.699951171875,
+          "max": 30.999755859375
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 9,
+        "frames": 34,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 36.40000003576279,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 34,
+          "median": 76.55000001192093,
+          "p95": 84.09999996423721,
+          "max": 138.5
+        },
+        "requestMs": {
+          "samples": 34,
+          "median": 76.40000000596046,
+          "p95": 84.0,
+          "max": 126.59999996423721
+        },
+        "sampleMs": {
+          "samples": 34,
+          "median": 0.25,
+          "p95": 0.699999988079071,
+          "max": 0.7000000476837158
+        },
+        "rasterMs": {
+          "samples": 34,
+          "median": 2.300000011920929,
+          "p95": 2.699999988079071,
+          "max": 2.800000011920929
+        },
+        "queueWaitMs": {
+          "samples": 34,
+          "median": 73.5498046875,
+          "p95": 80.999755859375,
+          "max": 123.599853515625
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 10,
+        "frames": 188,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 36.19999998807907,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 188,
+          "median": 25.750000029802322,
+          "p95": 28.900000035762787,
+          "max": 36.19999998807907
+        },
+        "requestMs": {
+          "samples": 188,
+          "median": 25.600000023841858,
+          "p95": 28.69999998807907,
+          "max": 30.600000023841858
+        },
+        "sampleMs": {
+          "samples": 188,
+          "median": 0.19999998807907104,
+          "p95": 0.30000001192092896,
+          "max": 0.40000003576278687
+        },
+        "rasterMs": {
+          "samples": 188,
+          "median": 4.549999982118607,
+          "p95": 6.199999988079071,
+          "max": 7.800000011920929
+        },
+        "queueWaitMs": {
+          "samples": 188,
+          "median": 20.999755859375,
+          "p95": 23.699951171875,
+          "max": 25.7998046875
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 11,
+        "frames": 105,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 36.299999952316284,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 105,
+          "median": 20.30000001192093,
+          "p95": 52.80000001192093,
+          "max": 79.60000002384186
+        },
+        "requestMs": {
+          "samples": 105,
+          "median": 20.0,
+          "p95": 52.80000001192093,
+          "max": 68.80000001192093
+        },
+        "sampleMs": {
+          "samples": 105,
+          "median": 0.10000002384185791,
+          "p95": 0.30000001192092896,
+          "max": 0.3999999761581421
+        },
+        "rasterMs": {
+          "samples": 105,
+          "median": 1.899999976158142,
+          "p95": 5.199999988079071,
+          "max": 5.5
+        },
+        "queueWaitMs": {
+          "samples": 105,
+          "median": 17.7998046875,
+          "p95": 48.599853515625,
+          "max": 63.399658203125
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 12,
+        "frames": 47,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.5,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 47,
+          "median": 63.200000047683716,
+          "p95": 104.5,
+          "max": 132.5
+        },
+        "requestMs": {
+          "samples": 47,
+          "median": 62.5,
+          "p95": 96.20000004768372,
+          "max": 121.30000001192093
+        },
+        "sampleMs": {
+          "samples": 47,
+          "median": 0.09999996423721313,
+          "p95": 0.19999998807907104,
+          "max": 0.19999998807907104
+        },
+        "rasterMs": {
+          "samples": 47,
+          "median": 2.299999952316284,
+          "p95": 5.300000011920929,
+          "max": 6.699999988079071
+        },
+        "queueWaitMs": {
+          "samples": 47,
+          "median": 59.39990234375,
+          "p95": 94,
+          "max": 118.2998046875
+        }
+      }
+    ],
+    "initialEdit": {
+      "version": 1,
+      "startPageVisibleMs": 1913.5999999642372,
+      "documentCompleteMs": 4196.0,
+      "successfulAnimationFramesBeforeDocumentComplete": 96
+    }
+  },
+  "playback-edit-v009/firefox.json": {
+    "backend": "Skia CPU",
+    "dimensions": {
+      "width": 1920,
+      "height": 920
+    },
+    "usesWorker": true,
+    "initialRendererToVisibleMs": 4694,
+    "overlappingBackgroundRequests": 14,
+    "rows": [
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 1,
+        "frames": 2,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 1734,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 8,
+        "intervalMs": {
+          "samples": 2,
+          "median": 1696.0,
+          "p95": 1734,
+          "max": 1734
+        },
+        "requestMs": {
+          "samples": 2,
+          "median": 1680.0,
+          "p95": 1702,
+          "max": 1702
+        },
+        "sampleMs": {
+          "samples": 2,
+          "median": 0.0,
+          "p95": 0,
+          "max": 0
+        },
+        "rasterMs": {
+          "samples": 2,
+          "median": 1674.5,
+          "p95": 1700,
+          "max": 1700
+        },
+        "queueWaitMs": {
+          "samples": 2,
+          "median": 4.5,
+          "p95": 8,
+          "max": 8
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 2,
+        "frames": 38,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 167,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 7,
+        "intervalMs": {
+          "samples": 38,
+          "median": 171.5,
+          "p95": 179,
+          "max": 181
+        },
+        "requestMs": {
+          "samples": 38,
+          "median": 171.5,
+          "p95": 179,
+          "max": 181
+        },
+        "sampleMs": {
+          "samples": 38,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 38,
+          "median": 171.0,
+          "p95": 179,
+          "max": 179
+        },
+        "queueWaitMs": {
+          "samples": 38,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 3,
+        "frames": 5,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 772,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 5,
+          "median": 652,
+          "p95": 772,
+          "max": 772
+        },
+        "requestMs": {
+          "samples": 5,
+          "median": 652,
+          "p95": 743,
+          "max": 743
+        },
+        "sampleMs": {
+          "samples": 5,
+          "median": 1,
+          "p95": 2,
+          "max": 2
+        },
+        "rasterMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 742,
+          "max": 742
+        },
+        "queueWaitMs": {
+          "samples": 5,
+          "median": 0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 4,
+        "frames": 76,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 80,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 76,
+          "median": 67.0,
+          "p95": 111,
+          "max": 113
+        },
+        "requestMs": {
+          "samples": 76,
+          "median": 67.0,
+          "p95": 111,
+          "max": 112
+        },
+        "sampleMs": {
+          "samples": 76,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 76,
+          "median": 65.5,
+          "p95": 110,
+          "max": 111
+        },
+        "queueWaitMs": {
+          "samples": 76,
+          "median": 0.0,
+          "p95": 1,
+          "max": 7
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 5,
+        "frames": 13,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 169,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 13,
+          "median": 152,
+          "p95": 640,
+          "max": 640
+        },
+        "requestMs": {
+          "samples": 13,
+          "median": 152,
+          "p95": 640,
+          "max": 640
+        },
+        "sampleMs": {
+          "samples": 13,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 13,
+          "median": 150,
+          "p95": 640,
+          "max": 640
+        },
+        "queueWaitMs": {
+          "samples": 13,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 6,
+        "frames": 5,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 791,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 5,
+          "median": 647,
+          "p95": 791,
+          "max": 791
+        },
+        "requestMs": {
+          "samples": 5,
+          "median": 646,
+          "p95": 761,
+          "max": 761
+        },
+        "sampleMs": {
+          "samples": 5,
+          "median": 1,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 5,
+          "median": 646,
+          "p95": 759,
+          "max": 759
+        },
+        "queueWaitMs": {
+          "samples": 5,
+          "median": 1,
+          "p95": 1,
+          "max": 1
+        }
+      },
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 7,
+        "frames": 2,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 1579,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 2,
+          "median": 1572.5,
+          "p95": 1579,
+          "max": 1579
+        },
+        "requestMs": {
+          "samples": 2,
+          "median": 1561.0,
+          "p95": 1566,
+          "max": 1566
+        },
+        "sampleMs": {
+          "samples": 2,
+          "median": 0.0,
+          "p95": 0,
+          "max": 0
+        },
+        "rasterMs": {
+          "samples": 2,
+          "median": 1559.5,
+          "p95": 1565,
+          "max": 1565
+        },
+        "queueWaitMs": {
+          "samples": 2,
+          "median": 1.0,
+          "p95": 1,
+          "max": 1
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 8,
+        "frames": 40,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 160,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 40,
+          "median": 167.5,
+          "p95": 178,
+          "max": 191
+        },
+        "requestMs": {
+          "samples": 40,
+          "median": 167.0,
+          "p95": 178,
+          "max": 191
+        },
+        "sampleMs": {
+          "samples": 40,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 40,
+          "median": 166.0,
+          "p95": 177,
+          "max": 190
+        },
+        "queueWaitMs": {
+          "samples": 40,
+          "median": 0.0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 9,
+        "frames": 5,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 763,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 5,
+          "median": 654,
+          "p95": 763,
+          "max": 763
+        },
+        "requestMs": {
+          "samples": 5,
+          "median": 653,
+          "p95": 740,
+          "max": 740
+        },
+        "sampleMs": {
+          "samples": 5,
+          "median": 1,
+          "p95": 2,
+          "max": 2
+        },
+        "rasterMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 738,
+          "max": 738
+        },
+        "queueWaitMs": {
+          "samples": 5,
+          "median": 0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 10,
+        "frames": 76,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 84,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 76,
+          "median": 67.0,
+          "p95": 110,
+          "max": 112
+        },
+        "requestMs": {
+          "samples": 76,
+          "median": 66.5,
+          "p95": 110,
+          "max": 110
+        },
+        "sampleMs": {
+          "samples": 76,
+          "median": 0.0,
+          "p95": 1,
+          "max": 2
+        },
+        "rasterMs": {
+          "samples": 76,
+          "median": 65.0,
+          "p95": 109,
+          "max": 110
+        },
+        "queueWaitMs": {
+          "samples": 76,
+          "median": 0.0,
+          "p95": 0,
+          "max": 7
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 11,
+        "frames": 14,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 177,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 14,
+          "median": 149.0,
+          "p95": 643,
+          "max": 643
+        },
+        "requestMs": {
+          "samples": 14,
+          "median": 149.0,
+          "p95": 643,
+          "max": 643
+        },
+        "sampleMs": {
+          "samples": 14,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 14,
+          "median": 148.0,
+          "p95": 642,
+          "max": 642
+        },
+        "queueWaitMs": {
+          "samples": 14,
+          "median": 0.0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 12,
+        "frames": 5,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 783,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 5,
+          "median": 643,
+          "p95": 783,
+          "max": 783
+        },
+        "requestMs": {
+          "samples": 5,
+          "median": 643,
+          "p95": 763,
+          "max": 763
+        },
+        "sampleMs": {
+          "samples": 5,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 5,
+          "median": 642,
+          "p95": 760,
+          "max": 760
+        },
+        "queueWaitMs": {
+          "samples": 5,
+          "median": 1,
+          "p95": 2,
+          "max": 2
+        }
+      }
+    ],
+    "initialEdit": {
+      "version": 1,
+      "startPageVisibleMs": 4858,
+      "documentCompleteMs": 12022,
+      "successfulAnimationFramesBeforeDocumentComplete": 2
+    }
+  },
+  "playback-edit-v009/webkit.json": {
+    "backend": "Skia CPU",
+    "dimensions": {
+      "width": 1920,
+      "height": 920
+    },
+    "usesWorker": true,
+    "initialRendererToVisibleMs": 1316,
+    "overlappingBackgroundRequests": 22,
+    "rows": [
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 1,
+        "frames": 8,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 320,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 20,
+        "intervalMs": {
+          "samples": 8,
+          "median": 258.0,
+          "p95": 320,
+          "max": 320
+        },
+        "requestMs": {
+          "samples": 8,
+          "median": 258.0,
+          "p95": 300,
+          "max": 300
+        },
+        "sampleMs": {
+          "samples": 8,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 8,
+          "median": 255.0,
+          "p95": 298,
+          "max": 298
+        },
+        "queueWaitMs": {
+          "samples": 8,
+          "median": 2.0,
+          "p95": 5,
+          "max": 5
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 2,
+        "frames": 182,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 49,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 3,
+        "intervalMs": {
+          "samples": 182,
+          "median": 35.0,
+          "p95": 38,
+          "max": 49
+        },
+        "requestMs": {
+          "samples": 182,
+          "median": 35.0,
+          "p95": 38,
+          "max": 42
+        },
+        "sampleMs": {
+          "samples": 182,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 182,
+          "median": 32.5,
+          "p95": 35,
+          "max": 38
+        },
+        "queueWaitMs": {
+          "samples": 182,
+          "median": 2.0,
+          "p95": 3,
+          "max": 5
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 3,
+        "frames": 22,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 167,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 22,
+          "median": 120.5,
+          "p95": 137,
+          "max": 167
+        },
+        "requestMs": {
+          "samples": 22,
+          "median": 120.5,
+          "p95": 137,
+          "max": 137
+        },
+        "sampleMs": {
+          "samples": 22,
+          "median": 1.0,
+          "p95": 1,
+          "max": 2
+        },
+        "rasterMs": {
+          "samples": 22,
+          "median": 117.0,
+          "p95": 134,
+          "max": 135
+        },
+        "queueWaitMs": {
+          "samples": 22,
+          "median": 2.0,
+          "p95": 3,
+          "max": 3
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 4,
+        "frames": 251,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 39,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 251,
+          "median": 17,
+          "p95": 26,
+          "max": 39
+        },
+        "requestMs": {
+          "samples": 251,
+          "median": 17,
+          "p95": 26,
+          "max": 29
+        },
+        "sampleMs": {
+          "samples": 251,
+          "median": 0,
+          "p95": 1,
+          "max": 3
+        },
+        "rasterMs": {
+          "samples": 251,
+          "median": 15,
+          "p95": 23,
+          "max": 25
+        },
+        "queueWaitMs": {
+          "samples": 251,
+          "median": 2,
+          "p95": 3,
+          "max": 7
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 5,
+        "frames": 61,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 48,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 61,
+          "median": 31,
+          "p95": 120,
+          "max": 121
+        },
+        "requestMs": {
+          "samples": 61,
+          "median": 31,
+          "p95": 120,
+          "max": 121
+        },
+        "sampleMs": {
+          "samples": 61,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 61,
+          "median": 29,
+          "p95": 116,
+          "max": 119
+        },
+        "queueWaitMs": {
+          "samples": 61,
+          "median": 3,
+          "p95": 3,
+          "max": 5
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 6,
+        "frames": 25,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 163,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 25,
+          "median": 118,
+          "p95": 144,
+          "max": 163
+        },
+        "requestMs": {
+          "samples": 25,
+          "median": 118,
+          "p95": 144,
+          "max": 144
+        },
+        "sampleMs": {
+          "samples": 25,
+          "median": 0,
+          "p95": 0,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 25,
+          "median": 117,
+          "p95": 142,
+          "max": 142
+        },
+        "queueWaitMs": {
+          "samples": 25,
+          "median": 2,
+          "p95": 5,
+          "max": 5
+        }
+      },
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 7,
+        "frames": 9,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 261,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 9,
+          "median": 231,
+          "p95": 261,
+          "max": 261
+        },
+        "requestMs": {
+          "samples": 9,
+          "median": 231,
+          "p95": 233,
+          "max": 233
+        },
+        "sampleMs": {
+          "samples": 9,
+          "median": 0,
+          "p95": 0,
+          "max": 0
+        },
+        "rasterMs": {
+          "samples": 9,
+          "median": 228,
+          "p95": 232,
+          "max": 232
+        },
+        "queueWaitMs": {
+          "samples": 9,
+          "median": 1,
+          "p95": 2,
+          "max": 2
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 8,
+        "frames": 182,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 46,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 182,
+          "median": 35.0,
+          "p95": 39,
+          "max": 57
+        },
+        "requestMs": {
+          "samples": 182,
+          "median": 35.0,
+          "p95": 39,
+          "max": 57
+        },
+        "sampleMs": {
+          "samples": 182,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 182,
+          "median": 33.0,
+          "p95": 36,
+          "max": 39
+        },
+        "queueWaitMs": {
+          "samples": 182,
+          "median": 2.0,
+          "p95": 4,
+          "max": 4
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 9,
+        "frames": 22,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 158,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 22,
+          "median": 121.0,
+          "p95": 138,
+          "max": 158
+        },
+        "requestMs": {
+          "samples": 22,
+          "median": 121.0,
+          "p95": 137,
+          "max": 137
+        },
+        "sampleMs": {
+          "samples": 22,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 22,
+          "median": 117.5,
+          "p95": 134,
+          "max": 135
+        },
+        "queueWaitMs": {
+          "samples": 22,
+          "median": 2.0,
+          "p95": 3,
+          "max": 3
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 10,
+        "frames": 250,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 42,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 250,
+          "median": 18.0,
+          "p95": 26,
+          "max": 42
+        },
+        "requestMs": {
+          "samples": 250,
+          "median": 17.0,
+          "p95": 26,
+          "max": 29
+        },
+        "sampleMs": {
+          "samples": 250,
+          "median": 0.0,
+          "p95": 1,
+          "max": 2
+        },
+        "rasterMs": {
+          "samples": 250,
+          "median": 15.0,
+          "p95": 23,
+          "max": 25
+        },
+        "queueWaitMs": {
+          "samples": 250,
+          "median": 2.0,
+          "p95": 3,
+          "max": 6
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 11,
+        "frames": 59,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 51,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 59,
+          "median": 32,
+          "p95": 119,
+          "max": 120
+        },
+        "requestMs": {
+          "samples": 59,
+          "median": 32,
+          "p95": 119,
+          "max": 120
+        },
+        "sampleMs": {
+          "samples": 59,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 59,
+          "median": 29,
+          "p95": 117,
+          "max": 118
+        },
+        "queueWaitMs": {
+          "samples": 59,
+          "median": 2,
+          "p95": 3,
+          "max": 3
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 12,
+        "frames": 24,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 167,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 24,
+          "median": 119.5,
+          "p95": 142,
+          "max": 167
+        },
+        "requestMs": {
+          "samples": 24,
+          "median": 119.0,
+          "p95": 141,
+          "max": 142
+        },
+        "sampleMs": {
+          "samples": 24,
+          "median": 0.0,
+          "p95": 0,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 24,
+          "median": 117.0,
+          "p95": 139,
+          "max": 140
+        },
+        "queueWaitMs": {
+          "samples": 24,
+          "median": 2.0,
+          "p95": 3,
+          "max": 3
+        }
+      }
+    ],
+    "initialEdit": {
+      "version": 1,
+      "startPageVisibleMs": 1506,
+      "documentCompleteMs": 3824,
+      "successfulAnimationFramesBeforeDocumentComplete": 8
+    }
+  },
+  "playback-v009/chromium.json": {
+    "backend": "Skia WebGL2 (software driver)",
+    "dimensions": {
+      "width": 1920,
+      "height": 920
+    },
+    "usesWorker": true,
+    "initialRendererToVisibleMs": 891.4000000357628,
+    "overlappingBackgroundRequests": 21,
+    "rows": [
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 1,
+        "frames": 95,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.69999998807907,
+        "layerBuilds": 1,
+        "backgroundRequestsDuringPlayback": 19,
+        "intervalMs": {
+          "samples": 95,
+          "median": 19.599999964237213,
+          "p95": 35.69999998807907,
+          "max": 77.20000004768372
+        },
+        "requestMs": {
+          "samples": 95,
+          "median": 19.5,
+          "p95": 25.80000001192093,
+          "max": 77.10000002384186
+        },
+        "sampleMs": {
+          "samples": 95,
+          "median": 0.09999996423721313,
+          "p95": 0.19999998807907104,
+          "max": 0.19999998807907104
+        },
+        "rasterMs": {
+          "samples": 95,
+          "median": 1,
+          "p95": 1.600000023841858,
+          "max": 32.30000001192093
+        },
+        "queueWaitMs": {
+          "samples": 95,
+          "median": 17.7998046875,
+          "p95": 23.300048828125,
+          "max": 75.5
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 2,
+        "frames": 231,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 25.400000035762787,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 3,
+        "intervalMs": {
+          "samples": 231,
+          "median": 25.30000001192093,
+          "p95": 31.30000001192093,
+          "max": 68.5
+        },
+        "requestMs": {
+          "samples": 231,
+          "median": 25.100000023841858,
+          "p95": 31.200000047683716,
+          "max": 68.5
+        },
+        "sampleMs": {
+          "samples": 231,
+          "median": 0.10000002384185791,
+          "p95": 0.30000001192092896,
+          "max": 0.6000000238418579
+        },
+        "rasterMs": {
+          "samples": 231,
+          "median": 4.699999988079071,
+          "p95": 6.300000011920929,
+          "max": 9
+        },
+        "queueWaitMs": {
+          "samples": 231,
+          "median": 20.499755859375,
+          "p95": 24.5,
+          "max": 62.7998046875
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 3,
+        "frames": 33,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 47.69999998807907,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 33,
+          "median": 78.69999998807907,
+          "p95": 121.30000001192093,
+          "max": 145.5
+        },
+        "requestMs": {
+          "samples": 33,
+          "median": 78.60000002384186,
+          "p95": 121,
+          "max": 137.70000004768372
+        },
+        "sampleMs": {
+          "samples": 33,
+          "median": 0.30000001192092896,
+          "p95": 0.6000000238418579,
+          "max": 1.5
+        },
+        "rasterMs": {
+          "samples": 33,
+          "median": 2.400000035762787,
+          "p95": 4,
+          "max": 15.599999964237213
+        },
+        "queueWaitMs": {
+          "samples": 33,
+          "median": 75.599853515625,
+          "p95": 118.199951171875,
+          "max": 135.19970703125
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 4,
+        "frames": 186,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 36.0,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 186,
+          "median": 26.0,
+          "p95": 29.19999998807907,
+          "max": 36.0
+        },
+        "requestMs": {
+          "samples": 186,
+          "median": 25.899999976158142,
+          "p95": 29.0,
+          "max": 30.69999998807907
+        },
+        "sampleMs": {
+          "samples": 186,
+          "median": 0.19999998807907104,
+          "p95": 0.3999999761581421,
+          "max": 0.5
+        },
+        "rasterMs": {
+          "samples": 186,
+          "median": 4.5,
+          "p95": 6.100000023841858,
+          "max": 7.399999976158142
+        },
+        "queueWaitMs": {
+          "samples": 186,
+          "median": 21.099853515625,
+          "p95": 23.7998046875,
+          "max": 28.099853515625
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 5,
+        "frames": 102,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 18.899999976158142,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 102,
+          "median": 19.950000017881393,
+          "p95": 57.09999996423721,
+          "max": 59.10000002384186
+        },
+        "requestMs": {
+          "samples": 102,
+          "median": 19.700000017881393,
+          "p95": 57.0,
+          "max": 59.0
+        },
+        "sampleMs": {
+          "samples": 102,
+          "median": 0.10000002384185791,
+          "p95": 0.30000001192092896,
+          "max": 0.30000001192092896
+        },
+        "rasterMs": {
+          "samples": 102,
+          "median": 1.800000011920929,
+          "p95": 5.300000011920929,
+          "max": 6.699999988079071
+        },
+        "queueWaitMs": {
+          "samples": 102,
+          "median": 17.39990234375,
+          "p95": 51.7998046875,
+          "max": 56.199951171875
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 6,
+        "frames": 38,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.80000001192093,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 38,
+          "median": 80.7999999821186,
+          "p95": 107.59999996423721,
+          "max": 143.0999999642372
+        },
+        "requestMs": {
+          "samples": 38,
+          "median": 80.64999997615814,
+          "p95": 107.5,
+          "max": 130.69999998807907
+        },
+        "sampleMs": {
+          "samples": 38,
+          "median": 0.10000002384185791,
+          "p95": 0.20000004768371582,
+          "max": 0.20000004768371582
+        },
+        "rasterMs": {
+          "samples": 38,
+          "median": 2.4000000059604645,
+          "p95": 3.400000035762787,
+          "max": 4.100000023841858
+        },
+        "queueWaitMs": {
+          "samples": 38,
+          "median": 77.7999267578125,
+          "p95": 103.7998046875,
+          "max": 127.800048828125
+        }
+      },
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 7,
+        "frames": 94,
+        "skipped": 1,
+        "firstDynamicIntervalMs": 34.40000003576279,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 1,
+        "intervalMs": {
+          "samples": 94,
+          "median": 18.899999976158142,
+          "p95": 34.40000003576279,
+          "max": 116.60000002384186
+        },
+        "requestMs": {
+          "samples": 94,
+          "median": 18.599999994039536,
+          "p95": 33.40000003576279,
+          "max": 115.0
+        },
+        "sampleMs": {
+          "samples": 94,
+          "median": 0.09999996423721313,
+          "p95": 0.19999998807907104,
+          "max": 0.20000004768371582
+        },
+        "rasterMs": {
+          "samples": 94,
+          "median": 0.7500000298023224,
+          "p95": 2.099999964237213,
+          "max": 11.199999988079071
+        },
+        "queueWaitMs": {
+          "samples": 94,
+          "median": 17.4498291015625,
+          "p95": 31.89990234375,
+          "max": 101.800048828125
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 8,
+        "frames": 251,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.89999997615814,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 251,
+          "median": 24.100000023841858,
+          "p95": 28.5,
+          "max": 35.89999997615814
+        },
+        "requestMs": {
+          "samples": 251,
+          "median": 23.900000035762787,
+          "p95": 27.600000023841858,
+          "max": 33.40000003576279
+        },
+        "sampleMs": {
+          "samples": 251,
+          "median": 0.10000002384185791,
+          "p95": 0.20000004768371582,
+          "max": 0.40000003576278687
+        },
+        "rasterMs": {
+          "samples": 251,
+          "median": 4.199999988079071,
+          "p95": 5.100000023841858,
+          "max": 7.5
+        },
+        "queueWaitMs": {
+          "samples": 251,
+          "median": 19.599853515625,
+          "p95": 23.099853515625,
+          "max": 28.7998046875
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 9,
+        "frames": 34,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.39999997615814,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 34,
+          "median": 77.0,
+          "p95": 139.60000002384186,
+          "max": 152.5
+        },
+        "requestMs": {
+          "samples": 34,
+          "median": 76.9500000178814,
+          "p95": 139.5,
+          "max": 141.19999998807907
+        },
+        "sampleMs": {
+          "samples": 34,
+          "median": 0.2500000298023224,
+          "p95": 0.5,
+          "max": 0.6000000238418579
+        },
+        "rasterMs": {
+          "samples": 34,
+          "median": 2.2000000178813934,
+          "p95": 2.899999976158142,
+          "max": 5.100000023841858
+        },
+        "queueWaitMs": {
+          "samples": 34,
+          "median": 74.249755859375,
+          "p95": 136.89990234375,
+          "max": 138.2998046875
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 10,
+        "frames": 186,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.90000003576279,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 186,
+          "median": 26.0,
+          "p95": 29.69999998807907,
+          "max": 36.5
+        },
+        "requestMs": {
+          "samples": 186,
+          "median": 25.899999976158142,
+          "p95": 29.30000001192093,
+          "max": 36.39999997615814
+        },
+        "sampleMs": {
+          "samples": 186,
+          "median": 0.19999998807907104,
+          "p95": 0.3999999761581421,
+          "max": 0.5
+        },
+        "rasterMs": {
+          "samples": 186,
+          "median": 4.699999988079071,
+          "p95": 5.900000035762787,
+          "max": 7.199999988079071
+        },
+        "queueWaitMs": {
+          "samples": 186,
+          "median": 21.1497802734375,
+          "p95": 23.7998046875,
+          "max": 28.2998046875
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 11,
+        "frames": 104,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.10000002384186,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 104,
+          "median": 20.25,
+          "p95": 52.69999998807907,
+          "max": 84.69999998807907
+        },
+        "requestMs": {
+          "samples": 104,
+          "median": 20.0,
+          "p95": 52.69999998807907,
+          "max": 73.59999996423721
+        },
+        "sampleMs": {
+          "samples": 104,
+          "median": 0.10000002384185791,
+          "p95": 0.30000001192092896,
+          "max": 0.40000003576278687
+        },
+        "rasterMs": {
+          "samples": 104,
+          "median": 1.800000011920929,
+          "p95": 5,
+          "max": 5.200000047683716
+        },
+        "queueWaitMs": {
+          "samples": 104,
+          "median": 17.89990234375,
+          "p95": 48.19970703125,
+          "max": 71.099853515625
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 12,
+        "frames": 46,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 34.200000047683716,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 46,
+          "median": 63.400000005960464,
+          "p95": 75.69999998807907,
+          "max": 107.80000001192093
+        },
+        "requestMs": {
+          "samples": 46,
+          "median": 63.19999998807907,
+          "p95": 75.59999996423721,
+          "max": 99.10000002384186
+        },
+        "sampleMs": {
+          "samples": 46,
+          "median": 0.09999996423721313,
+          "p95": 0.20000004768371582,
+          "max": 0.20000004768371582
+        },
+        "rasterMs": {
+          "samples": 46,
+          "median": 2.300000011920929,
+          "p95": 2.899999976158142,
+          "max": 5.100000023841858
+        },
+        "queueWaitMs": {
+          "samples": 46,
+          "median": 60.2498779296875,
+          "p95": 72.2998046875,
+          "max": 97.19970703125
+        }
+      }
+    ]
+  },
+  "playback-v009/firefox.json": {
+    "backend": "Skia CPU",
+    "dimensions": {
+      "width": 1920,
+      "height": 920
+    },
+    "usesWorker": true,
+    "initialRendererToVisibleMs": 2338,
+    "overlappingBackgroundRequests": 19,
+    "rows": [
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 1,
+        "frames": 2,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 1662,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 17,
+        "intervalMs": {
+          "samples": 2,
+          "median": 1647.5,
+          "p95": 1662,
+          "max": 1662
+        },
+        "requestMs": {
+          "samples": 2,
+          "median": 1632.0,
+          "p95": 1632,
+          "max": 1632
+        },
+        "sampleMs": {
+          "samples": 2,
+          "median": 0.0,
+          "p95": 0,
+          "max": 0
+        },
+        "rasterMs": {
+          "samples": 2,
+          "median": 1631.5,
+          "p95": 1632,
+          "max": 1632
+        },
+        "queueWaitMs": {
+          "samples": 2,
+          "median": 0.0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 2,
+        "frames": 37,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 150,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 3,
+        "intervalMs": {
+          "samples": 37,
+          "median": 174,
+          "p95": 188,
+          "max": 194
+        },
+        "requestMs": {
+          "samples": 37,
+          "median": 174,
+          "p95": 188,
+          "max": 193
+        },
+        "sampleMs": {
+          "samples": 37,
+          "median": 0,
+          "p95": 1,
+          "max": 2
+        },
+        "rasterMs": {
+          "samples": 37,
+          "median": 173,
+          "p95": 187,
+          "max": 189
+        },
+        "queueWaitMs": {
+          "samples": 37,
+          "median": 0,
+          "p95": 1,
+          "max": 2
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 3,
+        "frames": 5,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 778,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 778,
+          "max": 778
+        },
+        "requestMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 753,
+          "max": 753
+        },
+        "sampleMs": {
+          "samples": 5,
+          "median": 1,
+          "p95": 2,
+          "max": 2
+        },
+        "rasterMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 751,
+          "max": 751
+        },
+        "queueWaitMs": {
+          "samples": 5,
+          "median": 0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 4,
+        "frames": 80,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 68,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 80,
+          "median": 64.5,
+          "p95": 109,
+          "max": 111
+        },
+        "requestMs": {
+          "samples": 80,
+          "median": 55.0,
+          "p95": 108,
+          "max": 111
+        },
+        "sampleMs": {
+          "samples": 80,
+          "median": 0.0,
+          "p95": 1,
+          "max": 2
+        },
+        "rasterMs": {
+          "samples": 80,
+          "median": 54.5,
+          "p95": 108,
+          "max": 110
+        },
+        "queueWaitMs": {
+          "samples": 80,
+          "median": 0.0,
+          "p95": 0,
+          "max": 1
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 5,
+        "frames": 14,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 167,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 14,
+          "median": 144.0,
+          "p95": 642,
+          "max": 642
+        },
+        "requestMs": {
+          "samples": 14,
+          "median": 144.0,
+          "p95": 642,
+          "max": 642
+        },
+        "sampleMs": {
+          "samples": 14,
+          "median": 0.5,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 14,
+          "median": 143.5,
+          "p95": 641,
+          "max": 641
+        },
+        "queueWaitMs": {
+          "samples": 14,
+          "median": 0.0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 6,
+        "frames": 5,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 802,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 802,
+          "max": 802
+        },
+        "requestMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 770,
+          "max": 770
+        },
+        "sampleMs": {
+          "samples": 5,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 5,
+          "median": 650,
+          "p95": 769,
+          "max": 769
+        },
+        "queueWaitMs": {
+          "samples": 5,
+          "median": 0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 7,
+        "frames": 2,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 1589,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 2,
+          "median": 1576.0,
+          "p95": 1589,
+          "max": 1589
+        },
+        "requestMs": {
+          "samples": 2,
+          "median": 1563.5,
+          "p95": 1564,
+          "max": 1564
+        },
+        "sampleMs": {
+          "samples": 2,
+          "median": 0.5,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 2,
+          "median": 1562.5,
+          "p95": 1563,
+          "max": 1563
+        },
+        "queueWaitMs": {
+          "samples": 2,
+          "median": 0.0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 8,
+        "frames": 40,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 156,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 40,
+          "median": 168.0,
+          "p95": 176,
+          "max": 177
+        },
+        "requestMs": {
+          "samples": 40,
+          "median": 167.5,
+          "p95": 176,
+          "max": 177
+        },
+        "sampleMs": {
+          "samples": 40,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 40,
+          "median": 167.5,
+          "p95": 175,
+          "max": 176
+        },
+        "queueWaitMs": {
+          "samples": 40,
+          "median": 0.0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 9,
+        "frames": 5,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 760,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 760,
+          "max": 760
+        },
+        "requestMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 741,
+          "max": 741
+        },
+        "sampleMs": {
+          "samples": 5,
+          "median": 1,
+          "p95": 2,
+          "max": 2
+        },
+        "rasterMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 740,
+          "max": 740
+        },
+        "queueWaitMs": {
+          "samples": 5,
+          "median": 0,
+          "p95": 0,
+          "max": 0
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 10,
+        "frames": 80,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 64,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 80,
+          "median": 64.5,
+          "p95": 108,
+          "max": 112
+        },
+        "requestMs": {
+          "samples": 80,
+          "median": 55.5,
+          "p95": 108,
+          "max": 112
+        },
+        "sampleMs": {
+          "samples": 80,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 80,
+          "median": 54.5,
+          "p95": 107,
+          "max": 110
+        },
+        "queueWaitMs": {
+          "samples": 80,
+          "median": 0.0,
+          "p95": 0,
+          "max": 3
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 11,
+        "frames": 13,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 164,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 13,
+          "median": 143,
+          "p95": 644,
+          "max": 644
+        },
+        "requestMs": {
+          "samples": 13,
+          "median": 143,
+          "p95": 644,
+          "max": 644
+        },
+        "sampleMs": {
+          "samples": 13,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 13,
+          "median": 142,
+          "p95": 642,
+          "max": 642
+        },
+        "queueWaitMs": {
+          "samples": 13,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 12,
+        "frames": 5,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 782,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 782,
+          "max": 782
+        },
+        "requestMs": {
+          "samples": 5,
+          "median": 651,
+          "p95": 757,
+          "max": 757
+        },
+        "sampleMs": {
+          "samples": 5,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 5,
+          "median": 649,
+          "p95": 754,
+          "max": 754
+        },
+        "queueWaitMs": {
+          "samples": 5,
+          "median": 0,
+          "p95": 0,
+          "max": 0
+        }
+      }
+    ]
+  },
+  "playback-v009/webkit.json": {
+    "backend": "Skia CPU",
+    "dimensions": {
+      "width": 1920,
+      "height": 920
+    },
+    "usesWorker": true,
+    "initialRendererToVisibleMs": 685,
+    "overlappingBackgroundRequests": 22,
+    "rows": [
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 1,
+        "frames": 9,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 271,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 20,
+        "intervalMs": {
+          "samples": 9,
+          "median": 243,
+          "p95": 271,
+          "max": 271
+        },
+        "requestMs": {
+          "samples": 9,
+          "median": 243,
+          "p95": 270,
+          "max": 270
+        },
+        "sampleMs": {
+          "samples": 9,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 9,
+          "median": 241,
+          "p95": 268,
+          "max": 268
+        },
+        "queueWaitMs": {
+          "samples": 9,
+          "median": 2,
+          "p95": 4,
+          "max": 4
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 2,
+        "frames": 210,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 49,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 3,
+        "intervalMs": {
+          "samples": 210,
+          "median": 30.0,
+          "p95": 33,
+          "max": 49
+        },
+        "requestMs": {
+          "samples": 210,
+          "median": 30.0,
+          "p95": 33,
+          "max": 37
+        },
+        "sampleMs": {
+          "samples": 210,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 210,
+          "median": 28.0,
+          "p95": 30,
+          "max": 33
+        },
+        "queueWaitMs": {
+          "samples": 210,
+          "median": 2.0,
+          "p95": 3,
+          "max": 4
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 3,
+        "frames": 25,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 145,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 25,
+          "median": 103,
+          "p95": 121,
+          "max": 145
+        },
+        "requestMs": {
+          "samples": 25,
+          "median": 103,
+          "p95": 118,
+          "max": 121
+        },
+        "sampleMs": {
+          "samples": 25,
+          "median": 1,
+          "p95": 1,
+          "max": 2
+        },
+        "rasterMs": {
+          "samples": 25,
+          "median": 100,
+          "p95": 117,
+          "max": 118
+        },
+        "queueWaitMs": {
+          "samples": 25,
+          "median": 2,
+          "p95": 3,
+          "max": 4
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 4,
+        "frames": 262,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 34,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 262,
+          "median": 17.0,
+          "p95": 24,
+          "max": 34
+        },
+        "requestMs": {
+          "samples": 262,
+          "median": 16.0,
+          "p95": 24,
+          "max": 29
+        },
+        "sampleMs": {
+          "samples": 262,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 262,
+          "median": 14.0,
+          "p95": 22,
+          "max": 24
+        },
+        "queueWaitMs": {
+          "samples": 262,
+          "median": 1.0,
+          "p95": 2,
+          "max": 4
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 5,
+        "frames": 70,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 53,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 70,
+          "median": 27.0,
+          "p95": 102,
+          "max": 104
+        },
+        "requestMs": {
+          "samples": 70,
+          "median": 27.0,
+          "p95": 102,
+          "max": 104
+        },
+        "sampleMs": {
+          "samples": 70,
+          "median": 0.0,
+          "p95": 1,
+          "max": 2
+        },
+        "rasterMs": {
+          "samples": 70,
+          "median": 25.0,
+          "p95": 99,
+          "max": 100
+        },
+        "queueWaitMs": {
+          "samples": 70,
+          "median": 2.0,
+          "p95": 3,
+          "max": 4
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 6,
+        "frames": 29,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 149,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 29,
+          "median": 98,
+          "p95": 123,
+          "max": 149
+        },
+        "requestMs": {
+          "samples": 29,
+          "median": 98,
+          "p95": 121,
+          "max": 123
+        },
+        "sampleMs": {
+          "samples": 29,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 29,
+          "median": 96,
+          "p95": 119,
+          "max": 120
+        },
+        "queueWaitMs": {
+          "samples": 29,
+          "median": 2,
+          "p95": 3,
+          "max": 5
+        }
+      },
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 7,
+        "frames": 9,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 261,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 9,
+          "median": 233,
+          "p95": 261,
+          "max": 261
+        },
+        "requestMs": {
+          "samples": 9,
+          "median": 233,
+          "p95": 237,
+          "max": 237
+        },
+        "sampleMs": {
+          "samples": 9,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 9,
+          "median": 230,
+          "p95": 235,
+          "max": 235
+        },
+        "queueWaitMs": {
+          "samples": 9,
+          "median": 1,
+          "p95": 3,
+          "max": 3
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 8,
+        "frames": 212,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 38,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 212,
+          "median": 30.0,
+          "p95": 33,
+          "max": 38
+        },
+        "requestMs": {
+          "samples": 212,
+          "median": 30.0,
+          "p95": 33,
+          "max": 35
+        },
+        "sampleMs": {
+          "samples": 212,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 212,
+          "median": 28.0,
+          "p95": 31,
+          "max": 33
+        },
+        "queueWaitMs": {
+          "samples": 212,
+          "median": 2.0,
+          "p95": 3,
+          "max": 5
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 9,
+        "frames": 25,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 147,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 25,
+          "median": 102,
+          "p95": 121,
+          "max": 147
+        },
+        "requestMs": {
+          "samples": 25,
+          "median": 101,
+          "p95": 119,
+          "max": 120
+        },
+        "sampleMs": {
+          "samples": 25,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 25,
+          "median": 99,
+          "p95": 117,
+          "max": 118
+        },
+        "queueWaitMs": {
+          "samples": 25,
+          "median": 2,
+          "p95": 3,
+          "max": 3
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 10,
+        "frames": 262,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 32,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 262,
+          "median": 17.0,
+          "p95": 24,
+          "max": 32
+        },
+        "requestMs": {
+          "samples": 262,
+          "median": 16.0,
+          "p95": 24,
+          "max": 28
+        },
+        "sampleMs": {
+          "samples": 262,
+          "median": 0.0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 262,
+          "median": 14.0,
+          "p95": 21,
+          "max": 24
+        },
+        "queueWaitMs": {
+          "samples": 262,
+          "median": 1.0,
+          "p95": 2,
+          "max": 6
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 11,
+        "frames": 71,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 54,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 71,
+          "median": 27,
+          "p95": 104,
+          "max": 106
+        },
+        "requestMs": {
+          "samples": 71,
+          "median": 27,
+          "p95": 104,
+          "max": 106
+        },
+        "sampleMs": {
+          "samples": 71,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 71,
+          "median": 24,
+          "p95": 101,
+          "max": 104
+        },
+        "queueWaitMs": {
+          "samples": 71,
+          "median": 2,
+          "p95": 2,
+          "max": 6
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 12,
+        "frames": 29,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 146,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 29,
+          "median": 99,
+          "p95": 120,
+          "max": 146
+        },
+        "requestMs": {
+          "samples": 29,
+          "median": 99,
+          "p95": 120,
+          "max": 120
+        },
+        "sampleMs": {
+          "samples": 29,
+          "median": 0,
+          "p95": 1,
+          "max": 1
+        },
+        "rasterMs": {
+          "samples": 29,
+          "median": 97,
+          "p95": 118,
+          "max": 119
+        },
+        "queueWaitMs": {
+          "samples": 29,
+          "median": 2,
+          "p95": 4,
+          "max": 4
+        }
+      }
+    ]
+  },
+  "native-animation-v009.json": {
+    "backend": "Skia WebGL2 (software driver)",
+    "dimensions": {
+      "width": 1392,
+      "height": 1816
+    },
+    "usesWorker": true,
+    "initialRendererToVisibleMs": 1535.0,
+    "overlappingBackgroundRequests": 17,
+    "rows": [
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 1,
+        "frames": 57,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 21.099999964237213,
+        "layerBuilds": 1,
+        "backgroundRequestsDuringPlayback": 15,
+        "intervalMs": {
+          "samples": 57,
+          "median": 27.80000001192093,
+          "p95": 95.69999998807907,
+          "max": 116.60000002384186
+        },
+        "requestMs": {
+          "samples": 57,
+          "median": 27.69999998807907,
+          "p95": 95.60000002384186,
+          "max": 115.89999997615814
+        },
+        "sampleMs": {
+          "samples": 57,
+          "median": 0.10000002384185791,
+          "p95": 0.19999998807907104,
+          "max": 0.20000004768371582
+        },
+        "rasterMs": {
+          "samples": 57,
+          "median": 0.699999988079071,
+          "p95": 4.100000023841858,
+          "max": 25.599999964237213
+        },
+        "queueWaitMs": {
+          "samples": 57,
+          "median": 24.69970703125,
+          "p95": 42.199951171875,
+          "max": 86.89990234375
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 2,
+        "frames": 174,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 44.0,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 3,
+        "intervalMs": {
+          "samples": 174,
+          "median": 34.25,
+          "p95": 39.80000001192093,
+          "max": 69.69999998807907
+        },
+        "requestMs": {
+          "samples": 174,
+          "median": 34.09999996423721,
+          "p95": 39.0,
+          "max": 69.60000002384186
+        },
+        "sampleMs": {
+          "samples": 174,
+          "median": 0.09999996423721313,
+          "p95": 0.20000004768371582,
+          "max": 0.30000001192092896
+        },
+        "rasterMs": {
+          "samples": 174,
+          "median": 3.600000023841858,
+          "p95": 4.800000011920929,
+          "max": 10.300000011920929
+        },
+        "queueWaitMs": {
+          "samples": 174,
+          "median": 30.1998291015625,
+          "p95": 34.499755859375,
+          "max": 65.199951171875
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 3,
+        "frames": 29,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 48.10000002384186,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 29,
+          "median": 90.5,
+          "p95": 100.40000003576279,
+          "max": 131.89999997615814
+        },
+        "requestMs": {
+          "samples": 29,
+          "median": 90.40000003576279,
+          "p95": 100.30000001192093,
+          "max": 130.60000002384186
+        },
+        "sampleMs": {
+          "samples": 29,
+          "median": 0.30000001192092896,
+          "p95": 0.5,
+          "max": 1.5999999642372131
+        },
+        "rasterMs": {
+          "samples": 29,
+          "median": 2,
+          "p95": 5.300000011920929,
+          "max": 14.899999976158142
+        },
+        "queueWaitMs": {
+          "samples": 29,
+          "median": 87.800048828125,
+          "p95": 97.5,
+          "max": 128.2998046875
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 4,
+        "frames": 137,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 32.19999998807907,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 137,
+          "median": 35.60000002384186,
+          "p95": 39.30000001192093,
+          "max": 43.19999998807907
+        },
+        "requestMs": {
+          "samples": 137,
+          "median": 35.5,
+          "p95": 39.10000002384186,
+          "max": 43.09999996423721
+        },
+        "sampleMs": {
+          "samples": 137,
+          "median": 0.19999998807907104,
+          "p95": 0.30000001192092896,
+          "max": 0.5
+        },
+        "rasterMs": {
+          "samples": 137,
+          "median": 3.700000047683716,
+          "p95": 4.899999976158142,
+          "max": 6.199999988079071
+        },
+        "queueWaitMs": {
+          "samples": 137,
+          "median": 31.300048828125,
+          "p95": 34.499755859375,
+          "max": 38.89990234375
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 5,
+        "frames": 76,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 34.19999998807907,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 76,
+          "median": 29.700000017881393,
+          "p95": 64.5,
+          "max": 67.0
+        },
+        "requestMs": {
+          "samples": 76,
+          "median": 29.44999998807907,
+          "p95": 64.39999997615814,
+          "max": 66.90000003576279
+        },
+        "sampleMs": {
+          "samples": 76,
+          "median": 0.10000002384185791,
+          "p95": 0.30000001192092896,
+          "max": 0.30000001192092896
+        },
+        "rasterMs": {
+          "samples": 76,
+          "median": 1.100000023841858,
+          "p95": 3.600000023841858,
+          "max": 4.800000011920929
+        },
+        "queueWaitMs": {
+          "samples": 76,
+          "median": 28.1500244140625,
+          "p95": 61.699951171875,
+          "max": 62.5
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 6,
+        "frames": 40,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.19999998807907,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 40,
+          "median": 72.0499999821186,
+          "p95": 88.60000002384186,
+          "max": 89.69999998807907
+        },
+        "requestMs": {
+          "samples": 40,
+          "median": 71.69999998807907,
+          "p95": 88.5,
+          "max": 89.60000002384186
+        },
+        "sampleMs": {
+          "samples": 40,
+          "median": 0.09999996423721313,
+          "p95": 0.19999998807907104,
+          "max": 0.19999998807907104
+        },
+        "rasterMs": {
+          "samples": 40,
+          "median": 1.75,
+          "p95": 4.600000023841858,
+          "max": 4.800000011920929
+        },
+        "queueWaitMs": {
+          "samples": 40,
+          "median": 69.2498779296875,
+          "p95": 86.89990234375,
+          "max": 88
+        }
+      },
+      {
+        "page": "cover",
+        "index": 0,
+        "serial": 7,
+        "frames": 89,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.19999998807907,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 1,
+        "intervalMs": {
+          "samples": 89,
+          "median": 22.30000001192093,
+          "p95": 27.599999964237213,
+          "max": 35.19999998807907
+        },
+        "requestMs": {
+          "samples": 89,
+          "median": 22.0,
+          "p95": 27.299999952316284,
+          "max": 30.900000035762787
+        },
+        "sampleMs": {
+          "samples": 89,
+          "median": 0.09999996423721313,
+          "p95": 0.10000002384185791,
+          "max": 0.19999998807907104
+        },
+        "rasterMs": {
+          "samples": 89,
+          "median": 0.6000000238418579,
+          "p95": 0.800000011920929,
+          "max": 0.8999999761581421
+        },
+        "queueWaitMs": {
+          "samples": 89,
+          "median": 21.19970703125,
+          "p95": 26.599853515625,
+          "max": 29.39990234375
+        }
+      },
+      {
+        "page": "seed",
+        "index": 1,
+        "serial": 8,
+        "frames": 205,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.69999998807907,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 205,
+          "median": 29.69999998807907,
+          "p95": 33.0,
+          "max": 41.39999997615814
+        },
+        "requestMs": {
+          "samples": 205,
+          "median": 29.5,
+          "p95": 32.60000002384186,
+          "max": 39.30000001192093
+        },
+        "sampleMs": {
+          "samples": 205,
+          "median": 0.10000002384185791,
+          "p95": 0.20000004768371582,
+          "max": 0.3999999761581421
+        },
+        "rasterMs": {
+          "samples": 205,
+          "median": 3.300000011920929,
+          "p95": 4.100000023841858,
+          "max": 5.600000023841858
+        },
+        "queueWaitMs": {
+          "samples": 205,
+          "median": 25.89990234375,
+          "p95": 28.69970703125,
+          "max": 37.60009765625
+        }
+      },
+      {
+        "page": "anchors",
+        "index": 2,
+        "serial": 9,
+        "frames": 33,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.89999997615814,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 33,
+          "median": 77.10000002384186,
+          "p95": 95.30000001192093,
+          "max": 117.10000002384186
+        },
+        "requestMs": {
+          "samples": 33,
+          "median": 77.0,
+          "p95": 93.59999996423721,
+          "max": 106.5
+        },
+        "sampleMs": {
+          "samples": 33,
+          "median": 0.30000001192092896,
+          "p95": 0.5,
+          "max": 0.5
+        },
+        "rasterMs": {
+          "samples": 33,
+          "median": 1.7000000476837158,
+          "p95": 2.299999952316284,
+          "max": 2.899999976158142
+        },
+        "queueWaitMs": {
+          "samples": 33,
+          "median": 74.800048828125,
+          "p95": 91.60009765625,
+          "max": 104.2998046875
+        }
+      },
+      {
+        "page": "motion",
+        "index": 3,
+        "serial": 10,
+        "frames": 158,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 35.80000001192093,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 158,
+          "median": 31.099999964237213,
+          "p95": 34.39999997615814,
+          "max": 44.39999997615814
+        },
+        "requestMs": {
+          "samples": 158,
+          "median": 30.900000005960464,
+          "p95": 33.80000001192093,
+          "max": 36.40000003576279
+        },
+        "sampleMs": {
+          "samples": 158,
+          "median": 0.19999998807907104,
+          "p95": 0.30000001192092896,
+          "max": 0.30000001192092896
+        },
+        "rasterMs": {
+          "samples": 158,
+          "median": 3.699999988079071,
+          "p95": 4.699999988079071,
+          "max": 5.899999976158142
+        },
+        "queueWaitMs": {
+          "samples": 158,
+          "median": 26.5499267578125,
+          "p95": 29.999755859375,
+          "max": 31.599853515625
+        }
+      },
+      {
+        "page": "offline",
+        "index": 4,
+        "serial": 11,
+        "frames": 88,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 34.89999997615814,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 88,
+          "median": 25.5,
+          "p95": 53.60000002384186,
+          "max": 81.59999996423721
+        },
+        "requestMs": {
+          "samples": 88,
+          "median": 25.25,
+          "p95": 53.40000003576279,
+          "max": 77.09999996423721
+        },
+        "sampleMs": {
+          "samples": 88,
+          "median": 0.10000002384185791,
+          "p95": 0.20000004768371582,
+          "max": 0.30000001192092896
+        },
+        "rasterMs": {
+          "samples": 88,
+          "median": 1.199999988079071,
+          "p95": 3.799999952316284,
+          "max": 4.600000023841858
+        },
+        "queueWaitMs": {
+          "samples": 88,
+          "median": 23.75,
+          "p95": 50.89990234375,
+          "max": 75.199951171875
+        }
+      },
+      {
+        "page": "editable",
+        "index": 5,
+        "serial": 12,
+        "frames": 45,
+        "skipped": 0,
+        "firstDynamicIntervalMs": 33.80000001192093,
+        "layerBuilds": 0,
+        "backgroundRequestsDuringPlayback": 0,
+        "intervalMs": {
+          "samples": 45,
+          "median": 66.29999995231628,
+          "p95": 75.69999998807907,
+          "max": 77.39999997615814
+        },
+        "requestMs": {
+          "samples": 45,
+          "median": 65.80000001192093,
+          "p95": 75.5,
+          "max": 77.29999995231628
+        },
+        "sampleMs": {
+          "samples": 45,
+          "median": 0.09999996423721313,
+          "p95": 0.10000002384185791,
+          "max": 0.19999998807907104
+        },
+        "rasterMs": {
+          "samples": 45,
+          "median": 1.800000011920929,
+          "p95": 4.199999988079071,
+          "max": 4.200000047683716
+        },
+        "queueWaitMs": {
+          "samples": 45,
+          "median": 62.39990234375,
+          "p95": 73.89990234375,
+          "max": 75.5
+        }
+      }
+    ]
+  }
+}

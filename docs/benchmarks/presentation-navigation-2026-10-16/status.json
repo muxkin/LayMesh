@@ -1,0 +1,14 @@
+[
+  {
+    "stage": "browsers",
+    "exitCode": 0
+  },
+  {
+    "stage": "vscode-before",
+    "exitCode": 0
+  },
+  {
+    "stage": "vscode-after",
+    "exitCode": 0
+  }
+]

@@ -842,6 +842,22 @@
     ]
   },
   {
+    "name": "dlmalloc",
+    "version": "0.2.14",
+    "license": "MIT/Apache-2.0",
+    "repository": "https://github.com/alexcrichton/dlmalloc-rs",
+    "texts": [
+      {
+        "file": "dlmalloc-0.2.14-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "dlmalloc-0.2.14-LICENSE-MIT",
+        "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    ]
+  },
+  {
     "name": "dtoa",
     "version": "1.0.11",
     "license": "MIT OR Apache-2.0",

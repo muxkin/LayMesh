@@ -66,7 +66,7 @@ fn pdf_preserves_exact_16bit_color_and_alpha_samples() {
         )
         .unwrap();
         scene.nodes = vec![
-            json!({"kind":"image","mime":"image/png","rasterKey":asset_cache::insert(image),"width":70.,"height":50.,"intrinsicWidth":7,"intrinsicHeight":5,"fit":"contain","x":0,"y":0}),
+            json!({"kind":"image","mime":"image/png","rasterKey":asset_cache::insert(image),"width":70.,"height":50.,"intrinsicWidth":7,"intrinsicHeight":5,"fit":"contain","x":0,"y":0}).into(),
         ];
         let bytes = render_pdf(&scene).unwrap();
         let doc = Document::load_mem(&bytes).unwrap();

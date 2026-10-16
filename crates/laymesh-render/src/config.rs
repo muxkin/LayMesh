@@ -8,9 +8,8 @@ pub struct PreviewSettings {
     pub jpeg_quality: u8,
     pub webp_quality: u8,
     pub webp_method: u8,
-    pub image_threads: usize,
-    pub cache_mb: usize,
-    pub processing_memory_mb: usize,
+    #[serde(skip)]
+    pub parallelism: usize,
 }
 impl Default for PreviewSettings {
     fn default() -> Self {
@@ -18,9 +17,7 @@ impl Default for PreviewSettings {
             jpeg_quality: 90,
             webp_quality: 90,
             webp_method: 0,
-            image_threads: 0,
-            cache_mb: 256,
-            processing_memory_mb: 128,
+            parallelism: 0,
         }
     }
 }
@@ -29,20 +26,16 @@ impl PreviewSettings {
         if !(1..=100).contains(&self.jpeg_quality)
             || self.webp_quality > 100
             || self.webp_method > 6
-            || self.image_threads > 32
-            || !(1..=65536).contains(&self.cache_mb)
-            || !(1..=65536).contains(&self.processing_memory_mb)
         {
             return Err(error("Invalid preview settings"));
         }
         Ok(())
     }
     pub fn threads(&self) -> usize {
-        if self.image_threads > 0 {
-            self.image_threads
+        if self.parallelism > 0 {
+            self.parallelism
         } else {
-            std::thread::available_parallelism()
-                .map_or(1, |v| v.get().saturating_sub(1).clamp(1, 2))
+            std::thread::available_parallelism().map_or(1, |v| v.get())
         }
     }
 }
@@ -191,6 +184,12 @@ pub fn preview_settings(config: &Json, explicit: &Json) -> Result<PreviewSetting
     }
     if explicit.is_object() {
         merge(&mut value, explicit);
+    }
+    // Legacy tuning fields are accepted at the boundary, then discarded.
+    if let Some(value) = value.as_object_mut() {
+        for key in ["image_threads", "cache_mb", "processing_memory_mb"] {
+            value.remove(key);
+        }
     }
     let settings: PreviewSettings =
         serde_json::from_value(value).map_err(|e| error(e.to_string()))?;

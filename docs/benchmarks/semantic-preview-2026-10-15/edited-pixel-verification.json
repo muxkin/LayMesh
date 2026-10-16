@@ -1,0 +1,816 @@
+{
+  "html": "/tmp/laymesh-semantic-incremental/window-final.zip.html",
+  "htmlSha256": "2a13ed41f6fb65e2144b2f4f6bb04c55c08299ecc193d57a8390828803709520",
+  "results": [
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "01-cover.lay",
+      "kind": "color",
+      "sha256": "af0ecc7aafba2627569aca3ad9a896a312d67d2171e3e66defe6888297560dfa",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "01-cover.lay",
+      "kind": "text",
+      "sha256": "bcbc20cce1834819e685940106fdc2954427256f06d60e848ce3d7867c512c43",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "01-cover.lay",
+      "kind": "size",
+      "sha256": "04f97b82797906f9d653364b346687bed0062036f5510e09c776ca8c1bee23a5",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "02-seed.lay",
+      "kind": "color",
+      "sha256": "c1d4d11b9d2d274a3fa219dee8404741fc17c03050579dfa31de474df3cff75a",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "02-seed.lay",
+      "kind": "text",
+      "sha256": "ab72c3ec6c9745be8c17c892c6af34a03169d600c723890048350dbb5a9ba220",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "02-seed.lay",
+      "kind": "size",
+      "sha256": "aa4c272299182aea4ed8670fb41a140807beceef9e4b7b190213ccca7455e1a9",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "03-anchors.lay",
+      "kind": "color",
+      "sha256": "9a6ed3dd53fbd223fea89a8ca90db11211023d65ad4e0e08762582479d9a7eb4",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "03-anchors.lay",
+      "kind": "text",
+      "sha256": "28db2d6425a5d669fd9d52d6fb53ddabe309cdb01adac71b2177bd15a3b1dc6a",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "03-anchors.lay",
+      "kind": "size",
+      "sha256": "81d66b521d1a581800c64a637236b41fc06b3759848cf403e94264839559073c",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "04-motion.lay",
+      "kind": "color",
+      "sha256": "4ca9167602448f7ef993b8ff89f67c6c97887f1fd4df37ad6b10f6ead42f3dfc",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "04-motion.lay",
+      "kind": "text",
+      "sha256": "dee0f4c2952de4884782aa0f8582cd4e11b86b28c8135ed8b584ebfba5c4106f",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "04-motion.lay",
+      "kind": "size",
+      "sha256": "547d2fc9b435c15eb306f0d9421ad91fde94e4cbec1e591cd2df5228854a993d",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "05-offline.lay",
+      "kind": "color",
+      "sha256": "4c581d089f7e287ab8352a316c0a6e6196bde802963575bfa23e11e5cdd25bb0",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "05-offline.lay",
+      "kind": "text",
+      "sha256": "e89e7b608cee92fdbd8a900ecd8223a28c6bb897eb3a7e1b7d7072c3147a566f",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "05-offline.lay",
+      "kind": "size",
+      "sha256": "d1a62f7e6c5e5310deb27eaec05ba9878f146a7e3ecda971ee6b82373f04d3f9",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 2785,
+        "maxAbsolute": 5.684341886080802e-14
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "06-editable.lay",
+      "kind": "color",
+      "sha256": "fa045c2b50293b23694982bbe6cde124a7245b23bb2ee1a7d9e4268c7962e963",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "06-editable.lay",
+      "kind": "text",
+      "sha256": "f76f735a21b953a6e1a3ea68f6b18c88772bea85df9b960c4144541d88b522b0",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "06-editable.lay",
+      "kind": "size",
+      "sha256": "307df7b66c97c128f45df2a75b247efdf35cbf0a664307dd26f999fdb535cb21",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 3284,
+        "maxAbsolute": 1.1368683772161603e-13
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "01-cover.lay",
+      "kind": "color",
+      "sha256": "cfa5af082b54bd8be54bb317e2af41c308dfc1042c3b61134aa8372629e50f24",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": true,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "01-cover.lay",
+      "kind": "text",
+      "sha256": "5c97abceca179dd4be2e2d46f9ac2ff717eb52584779679de7ddb1748ec0a349",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": true,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "01-cover.lay",
+      "kind": "size",
+      "sha256": "e8c5434b33126b1dccb5b846015563e9f0b46ab68b746d72d553e87b6482ba40",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": true,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "02-seed.lay",
+      "kind": "color",
+      "sha256": "071a4c3aeb01b8ade73d7051cdad2e4b9201fe44412386d72e13ffc4021dde51",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "02-seed.lay",
+      "kind": "text",
+      "sha256": "d71624a77745cc2269e164e8f3472713979dd109b2645ac8568584a714705320",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "02-seed.lay",
+      "kind": "size",
+      "sha256": "c2cfae1965274c03fb7a2cb1d741494e330195a037cb612869ef3ae2f0797f49",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "03-anchors.lay",
+      "kind": "color",
+      "sha256": "1cc456cbc250f28f63ee41a68dff933904a95f7e02b3b09f7939126b25ca07a1",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "03-anchors.lay",
+      "kind": "text",
+      "sha256": "289a83dfb9338122edd590d412fb8402e5943fd9dbd1ca9ada574c46e78204e3",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "03-anchors.lay",
+      "kind": "size",
+      "sha256": "a21c0521cb4d820c27820db2d8617b23f56163f5e10ed1db4645b6212650ab83",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "04-motion.lay",
+      "kind": "color",
+      "sha256": "bb5d5cd84a008af86dc0ee89f22bc92cce84a49a65f361836a31adfdf6c6272e",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "04-motion.lay",
+      "kind": "text",
+      "sha256": "3164b7d36a1773df88864168f7ba2160feb8609ad5d218a19639f5f043893bfc",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "04-motion.lay",
+      "kind": "size",
+      "sha256": "5b357596a5739f699e3399b65ebc0e9d19ba0a8343533ef79b5786d65fb32322",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "05-offline.lay",
+      "kind": "color",
+      "sha256": "58b1963e56615b5c00418ccf56c2830f4265a9b4778e2ab87121b4f21f43d57e",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "05-offline.lay",
+      "kind": "text",
+      "sha256": "4c699c0d67b812d599244c93a492bfb6dcde97a44171081e6b3e6cac9975f61c",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "05-offline.lay",
+      "kind": "size",
+      "sha256": "b14e3ceae092584408e9d02822f26ace30be07dd22e5798dcc4a143d3c760ad7",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 2785,
+        "maxAbsolute": 5.684341886080802e-14
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "06-editable.lay",
+      "kind": "color",
+      "sha256": "2ff9de286d9fc5aa36c6bb25d146c8cba54a83d3c34133504bd70238ae7b3b9c",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "06-editable.lay",
+      "kind": "text",
+      "sha256": "44aa1c969ce02949b8f60c26ef1b3e86a3f90812577822c972e8d6e7940fb16b",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "06-editable.lay",
+      "kind": "size",
+      "sha256": "4ed561022f147f6e9a3b1fedb2b8c7812b249dff8d79a17850fad8a4242f8244",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 3284,
+        "maxAbsolute": 1.1368683772161603e-13
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "01-cover.lay",
+      "kind": "color",
+      "sha256": "11953542c706a76b306993eff00c47927dcd8693cdd6581b62d71101759aed3f",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": true,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "01-cover.lay",
+      "kind": "text",
+      "sha256": "365e4f0d19c48e9f16a33f34daa5969b588ac0b711192534b7757a0d620ff4be",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": true,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "01-cover.lay",
+      "kind": "size",
+      "sha256": "32251b56fcdfc85b5366c17ab288244b673419d333082d23a9d568f311ed0622",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": true,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "02-seed.lay",
+      "kind": "color",
+      "sha256": "fc6fe196b2f26ce5c5dc8ecd03c4df6da89857607a030cfeebe5dd3ce31ed240",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "02-seed.lay",
+      "kind": "text",
+      "sha256": "fc3e9c8693989e0fad9fbfb4f65b7e76a3363a1a99ca5a847d1ed6dafb32d4d5",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "02-seed.lay",
+      "kind": "size",
+      "sha256": "ba4275e9095c91c962db4f83a6fe84735b114cb0f284cc8be5c38198411e6fb0",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "03-anchors.lay",
+      "kind": "color",
+      "sha256": "0ec4ad2e4060cff516840a07491e8ef84b5b158d2ed9df174107194047563fa2",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "03-anchors.lay",
+      "kind": "text",
+      "sha256": "941a854727d82372815dfde5be989ffdbd98d584af5233579ab076d70427291b",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "03-anchors.lay",
+      "kind": "size",
+      "sha256": "1bbab70da3b44eec25bc15df081a4c8109ced6bf4cfa2971d37fa6a7ef17c7c0",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "04-motion.lay",
+      "kind": "color",
+      "sha256": "817213cd2d91acb5a8432382dd9ef983319bba23e542729eedce0ccc7b5bed48",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "04-motion.lay",
+      "kind": "text",
+      "sha256": "a5d9f8e3bb23a02d97ad9430597e9661e8bd7c9a3481884b2c0d56ef9126eb87",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "04-motion.lay",
+      "kind": "size",
+      "sha256": "99c8ce6ec76bebcb7249686994dc6d61163e0889803b155b493b6245d64d2845",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "05-offline.lay",
+      "kind": "color",
+      "sha256": "89e77a4e6091d27b0d87863e4fafc3ee42458877f920c83a27eb25b4f769d169",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "05-offline.lay",
+      "kind": "text",
+      "sha256": "f20b42d01ab2d1c02e699f3be4168d8a8c47ada27addf5bbf572b3c5863d8593",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "05-offline.lay",
+      "kind": "size",
+      "sha256": "913da7a0b15d89c6409adf636b4b0570294a84dfd32a4b8e12da0ad8d9336af7",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 2785,
+        "maxAbsolute": 5.684341886080802e-14
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "06-editable.lay",
+      "kind": "color",
+      "sha256": "79451ae5c61618e946b719f23801a72b81ec3083a65f326f66cb5e6a72b1dc43",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "06-editable.lay",
+      "kind": "text",
+      "sha256": "6d5fdd7204a1dcbf698f9c19a53dafb9c615fa5919a95712ff76e2c799effdd0",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "06-editable.lay",
+      "kind": "size",
+      "sha256": "8f364abe07b092519fd87863b14aa0196efb8d9bee57d7de0a6dbae2f4fcf228",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 3284,
+        "maxAbsolute": 1.1368683772161603e-13
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    }
+  ]
+}

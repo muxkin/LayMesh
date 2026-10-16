@@ -1,0 +1,42 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const rendererFile=new URL('../site/live/skia-renderer.mjs',import.meta.url);
+const rendererSource=fs.readFileSync(rendererFile,'utf8')
+ .replace("import CanvasKitInit from './skia/canvaskit.mjs';",'const CanvasKitInit=undefined;')
+ .replace(/from '(\.\/[^']+)'/g,(_,relative)=>"from '"+new URL(relative,rendererFile).href+"'");
+const rendererURL='data:text/javascript;base64,'+Buffer.from(rendererSource).toString('base64');
+const planSource=fs.readFileSync(new URL('../site/live/presentation-resources.mjs',import.meta.url),'utf8')
+ .replace("'./skia-renderer.mjs'",JSON.stringify(rendererURL));
+const {layerPlan}=await import('data:text/javascript;base64,'+Buffer.from(planSource).toString('base64'));
+const identity=[1,0,0,0,1,0,0,0,1];
+const node={name:'animated',kind:{kind:'group',children:[]}};
+const prepared={uid:1,matrix:identity,bounds:[0,0,10,10],cost:128,picture:{},dynamicChildren:false};
+const timeline={steps:[{start:0,duration:1,clips:[{target:'animated',delay:0,duration:1,tracks:[{property:'transform',frames:[{offset:0},{offset:1}]}]}]}]};
+const skia={list:{width:100,height:100,nodes:[node],animation:{normal:timeline,reduced:timeline}},animatedNames:new Set(['animated']),prepare:()=>prepared};
+let calls=0;
+const plan=await layerPlan(skia,100,100,t=>{calls++;return {'0':{matrix:[1+t,0,0,0,1+t,0,0,0,1]}};});
+assert.equal(plan.layers.length,1);assert.equal(plan.layers[0].density,2);assert.equal(plan.probes,calls);
+skia.animatedNames.clear();calls=0;
+assert.equal((await layerPlan(skia,100,100,()=>{calls++;throw Error('No cacheable animation needs sampling');})).probes,0);assert.equal(calls,0);
+skia.animatedNames.add('animated');let cancelled=false;
+setTimeout(()=>cancelled=true,0);
+const partial=await layerPlan(skia,100,100,()=>{
+ const end=performance.now()+2;while(performance.now()<end){}
+ return {};
+},()=>cancelled);
+assert.equal(partial.cancelled,true);assert(partial.probes<plan.probes,'Planning yields before the whole timeline completes');
+console.log('Transform density, empty-scene fast path and cooperative cancellation passed.');
+const resourceURL='data:text/javascript;base64,'+Buffer.from(planSource).toString('base64');
+const presentationSource=fs.readFileSync(new URL('../site/live/presentation-renderer.mjs',import.meta.url),'utf8')
+ .replace("'./skia-renderer.mjs'",JSON.stringify(rendererURL))
+ .replace("'./presentation-resources.mjs'",JSON.stringify(resourceURL));
+const {PresentationRenderer}=await import('data:text/javascript;base64,'+Buffer.from(presentationSource).toString('base64'));
+const cpu=new PresentationRenderer({}, {}, {software:true});
+const state={list:{width:10,height:10},pictureBytes:0,staticTextureBytes:0,layerTextureBytes:0};
+cpu.pages.set('cpu',{id:'cpu',state,baseBytes:0});
+let records=0;cpu.skia.recordPictures=()=>records++;
+cpu.skia.render=()=>{throw Error('CPU preloading must not rasterize a throwaway page');};
+const preparedCPU=await cpu.prepare('cpu',1600,1000,()=>{throw Error('CPU planning does not need samples');},true);
+assert.equal(preparedCPU.cpuCommandsOnly,true);assert.equal(records,0,'Installed pictures do not need to be recorded again');
+assert.equal(cpu.pages.get('cpu').ready,true);assert.deepEqual(cpu.pages.get('cpu').readySize,[1600,1000]);
+console.log('CPU preparation retains commands without allocating or rasterizing a temporary surface.');

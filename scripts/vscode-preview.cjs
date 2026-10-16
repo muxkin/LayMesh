@@ -3,6 +3,7 @@ const vscode=require('vscode'),fs=require('fs'),path=require('path'),os=require(
 const {pathToFileURL}=require('url');
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 const drawings=new Map();
+let applyDisplayUpdate;
 const observed=message=>{
  let list=message.displayList;
  if(message.displayListCompressed){
@@ -13,12 +14,7 @@ const observed=message=>{
   list=JSON.parse(bytes.toString('utf8'));
  }else if(message.displayListUpdate){
   const {base,update}=message.displayListUpdate;assert(drawings.has(base),'Patch must name an observed CPU baseline');
-  list=structuredClone(drawings.get(base));list.width=update.width;list.height=update.height;
-  if(update.animation==null)delete list.animation;else list.animation=update.animation;
-  assert.equal(list.schemaVersion,update.schemaVersion);
-  if(update.roots)list.nodes=update.roots;
-  if(update.resources)list.resources=update.resources;
-  for(const {path,node} of update.nodes){let nodes=list.nodes;for(const index of path.slice(0,-1)){assert.equal(nodes[index].kind.kind,'group');nodes=nodes[index].kind.children;}assert(path.at(-1)<nodes.length);nodes[path.at(-1)]=node;}
+  list=applyDisplayUpdate(drawings.get(base),update);
  }
  if(!list)return message;
  if(message.displayListId)drawings.set(message.displayListId,list);
@@ -35,6 +31,7 @@ exports.run=async()=>{
  fs.writeFileSync(file,source);fs.writeFileSync(dependency,'export top=3');
  const doc=await vscode.workspace.openTextDocument(file);await vscode.window.showTextDocument(doc);
  const extension=vscode.extensions.getExtension(require('../extensions/vscode/package.json').publisher+'.laymesh-language');
+ ({applyDisplayUpdate}=await import(pathToFileURL(path.join(extension.extensionPath,'dist/display-update.mjs')).href));
  const api=require('module')._load('vscode',{filename:path.join(extension.extensionPath,'dist/client.cjs')});
  let host,panels=0;const create=api.window.createWebviewPanel;
  api.window.createWebviewPanel=(...args)=>{const panel=create(...args);if(args[0]==='laymeshPreview'){
@@ -110,29 +107,40 @@ exports.run=async()=>{
  await host.receive({type:'source'});assert.equal(vscode.window.activeTextEditor.document.uri.toString(),doc.uri.toString());
  count=host.messages.length;await replace(doc,source);await until(()=>host.messages.slice(count).find(m=>m.displayList),'Recovery');
  evidence.checks.push('Inverse-unit error explains the actual expression, jumps to source, and corrected buffer recovers');
+ // Use the workbench's real composition commands and document changes.
+ await vscode.window.showTextDocument(doc,{viewColumn:vscode.ViewColumn.One});
+ await pause(100);count=host.messages.length;
+ await vscode.commands.executeCommand('compositionStart',{});
+ await replace(doc,source+'\n# 中');await pause(120);
+ await replace(doc,source+'\n# 中文输入');await pause(120);
+ assert.equal(host.messages.slice(count).filter(m=>m.type==='result').length,0,'IME intermediate buffers must not be published');
+ await vscode.commands.executeCommand('compositionEnd',{});
+ await until(()=>host.messages.slice(count).find(m=>m.displayList),'IME commit');
+ count=host.messages.length;await replace(doc,source);await until(()=>host.messages.slice(count).find(m=>m.displayList),'IME restoration');
+ evidence.checks.push('VS Code composition boundaries pause provisional buffers and publish the committed version');
  count=host.messages.length;await replace(dependencyDoc,'export top=4');await replace(dependencyDoc,'export top=6');await until(()=>host.messages.slice(count).find(m=>m.displayList),'Latest edit');assert.equal(host.messages.slice(count).filter(m=>m.displayList).length,1);
  evidence.checks.push('Rapid edits coalesce into the latest version');
  // Hold one completed native response while a newer generation finishes first.
- const {PreviewWorker,compactReplay}=require(path.join(extension.extensionPath,'dist/preview-host.cjs'));
+ const {PreviewWorker,retainPreviewFrame}=require(path.join(extension.extensionPath,'dist/preview-host.cjs'));
  // Replay composition must handle child/ancestor replacement, root-count
  // changes and resource replacement without growing with the edit count.
  const leaf=value=>({kind:{kind:'path',value}}),group=children=>({kind:{kind:'group',children}});
  let expected=[group([leaf(0),group([leaf(1),leaf(2)])]),leaf(3)];
  const baseline={displayListId:'baseline',displayList:{schemaVersion:1,width:10,height:10,nodes:structuredClone(expected),resources:{}}};drawings.set('baseline',baseline.displayList);
- let compacted;
+ let compacted=baseline;
  const changes=[{path:[0],node:group([leaf(4),group([leaf(5),leaf(6)])])},{path:[0,1,0],node:leaf(7)},{path:[0,1],node:group([leaf(8),leaf(9)])},{path:[1],node:leaf(10)}];
  for(let i=0;i<24;i++){
   const change=changes[i%changes.length],update={schemaVersion:1,width:10,height:10,nodes:[change],roots:null,resources:i===5?{new:{mime:'image/png',data:[]}}:null};
   const frame={displayListId:'composed-'+i,displayListUpdate:{base:i?'composed-'+(i-1):'baseline',update}};
-  compacted=compactReplay(compacted,frame);const sequential=observed(frame).displayList;
-  assert.deepEqual(observed(compacted).displayList,sequential);assert.equal(compacted.displayListUpdate.base,'baseline');
-  assert(compacted.displayListUpdate.update.nodes.length<=2);
+  compacted=retainPreviewFrame(compacted,frame,applyDisplayUpdate);const sequential=observed(frame).displayList;
+  assert.deepEqual(observed(compacted).displayList,sequential);assert.equal(compacted.displayListUpdate,undefined);
+  assert.equal(compacted.displayList.nodes.length,2);
  }
  const roots={displayListId:'roots',displayListUpdate:{base:compacted.displayListId,update:{schemaVersion:1,width:12,height:10,nodes:[],roots:[group([leaf(11)])],resources:{}}}};
- compacted=compactReplay(compacted,roots);assert.deepEqual(observed(compacted).displayList,observed(roots).displayList);
+ compacted=retainPreviewFrame(compacted,roots,applyDisplayUpdate);assert.deepEqual(observed(compacted).displayList,observed(roots).displayList);
  const child={displayListId:'child',displayListUpdate:{base:'roots',update:{schemaVersion:1,width:12,height:10,nodes:[{path:[0,0],node:leaf(12)}],roots:null,resources:null}}};
- compacted=compactReplay(compacted,child);assert.deepEqual(observed(compacted).displayList,observed(child).displayList);
- evidence.checks.push('24 replay updates compact to one lossless delta; ancestor/descendant, root-count and resource replacement validated');
+ compacted=retainPreviewFrame(compacted,child,applyDisplayUpdate);assert.deepEqual(observed(compacted).displayList,observed(child).displayList);
+ evidence.checks.push('24 replay updates retain one current scene; ancestor/descendant, root-count and resource replacement validated');
  const enqueue=PreviewWorker.prototype.enqueue;let releaseOlder,hold=true;
  PreviewWorker.prototype.enqueue=function(job){if(hold&&job.file===file&&!job.request.presentation_revision){hold=false;const done=job.done;job={...job,done:response=>{releaseOlder=()=>done(response);}};}return enqueue.call(this,job);};
  try{

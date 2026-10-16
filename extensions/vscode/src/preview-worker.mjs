@@ -1,8 +1,9 @@
 import {initializeSkia,SkiaRenderer} from './skia-renderer.mjs';
+import {applyDisplayUpdate} from './display-update.mjs';
 // The packaging script inlines the generated WASM module here: VS Code
 // requires workers loaded from a blob, without external module imports.
 import init,{prepare_display_list,register_render_resource,retain_render_resources} from './wasm/laymesh_wasm.js';
-let skia, rasterInitialized,rasterJob,rasterJobId='',rasterGeneration,rasterMemory,rasterPage,overviewReady=false,rasterChain=Promise.resolve();
+let installedList,skia, rasterInitialized,rasterJob,rasterJobId='',rasterGeneration,rasterMemory,rasterPage,overviewReady=false,rasterChain=Promise.resolve();
 const rasterResources=new Set();
 self.onmessage=({data})=>{
  if(['install','cancel-transition'].includes(data.type))skia?.transitions.cancel();
@@ -16,7 +17,7 @@ self.onmessage=({data})=>{
     const beforeResources=performance.now();
     const versions=data.displayListReplay||[data];
     const resourceBytes=new Map((data.resourceBytes||[]).map(r=>[r.id,r.bytes]));
-    let reused=true,resourcesMs=0;
+    let reused=true,resourcesMs=0,incremental=!!installedList;
     for(const version of versions){
     const resourceStart=performance.now();
     for(const resource of version.resources||[]){if(rasterResources.has(resource.id))continue;
@@ -27,7 +28,7 @@ self.onmessage=({data})=>{
     reused&&=!!same;
     if(version.displayListUpdate&&!same){
      if(!rasterJob||version.displayListUpdate.base!==rasterJobId)throw Error('Drawing update baseline mismatch');
-     rasterJob.update_display_list(JSON.stringify(version.displayListUpdate.update));rasterJobId=id;overviewReady=false;
+     const next=applyDisplayUpdate(installedList,version.displayListUpdate.update);rasterJob.update_display_list(JSON.stringify(version.displayListUpdate.update));installedList=next;rasterJobId=id;overviewReady=false;
     }else if(!same){
      let json;
      if(compressed){
@@ -37,22 +38,22 @@ self.onmessage=({data})=>{
       if(decoded.byteLength!==compressed.uncompressedBytes)throw Error('Drawing command length mismatch');
       json=new TextDecoder('utf-8',{fatal:true}).decode(decoded);
      }else json=JSON.stringify(version.displayList);
-     const next=prepare_display_list(json);rasterJob?.free();rasterJob=next;rasterJobId=id;overviewReady=false;
+     const next=prepare_display_list(json);installedList=JSON.parse(json);incremental=false;rasterJob?.free();rasterJob=next;rasterJobId=id;overviewReady=false;
     }
     }
     const beforeInstall=beforeResources;
-    const budget=data.previewSettings?.cache_mb??256;
     rasterGeneration=data.generation;
     rasterPage=data.page;
     const ids=Object.keys(data.drawingResources||data.displayList.resources);retain_render_resources(JSON.stringify(ids));
     for(const id of rasterResources)if(!ids.includes(id))rasterResources.delete(id);
-    const list=JSON.parse(rasterJob.display_list());if(skia)await skia.install(list,id=>rasterJob.resource_bytes(id),rasterGeneration,budget,data.navigation);
+    const list=installedList;if(skia)await skia.install(list,id=>rasterJob.resource_bytes(id),rasterGeneration,data.navigation,incremental);
     self.postMessage({scene:skia?undefined:list,sceneResources:skia?undefined:Object.fromEntries(Object.entries(list.resources).filter(([,r])=>r.mime.startsWith('image/')).map(([id])=>[id,rasterJob.resource_bytes(id)])),type:'installed',requestId:data.requestId,generation:rasterGeneration,reused,resourceIds:[...rasterResources],wasmMemoryBytes:rasterMemory.buffer.byteLength,initializationWaitMs:beforeResources-beforeReady,resourcesMs,installMs:performance.now()-beforeInstall-resourcesMs});
    }else if(data.type==='paint'){
     if(!rasterJob||data.generation!==rasterGeneration){self.postMessage({type:'paint-skipped',requestId:data.requestId,generation:data.generation});return;}
     const before=performance.now(),states=data.time==null?{}:JSON.parse(rasterJob.frame_state(data.time,!!data.reduced)),sampleMs=performance.now()-before;
     const metrics=skia?.render(data.crop,data.width,data.height,states,rasterGeneration,!!data.running)||{};if(metrics.skipped){self.postMessage({type:'paint-skipped',requestId:data.requestId,generation:rasterGeneration});return;}
     if(skia)Object.assign(metrics,await skia.transitions.play(data.reduced));
+    if(skia&&!data.running)metrics.presentationConfirmed=await skia.completeFrame(data.visible!==false);
     self.postMessage({type:'painted',requestId:data.requestId,generation:rasterGeneration,width:data.width,height:data.height,crop:data.crop,...metrics,sampleMs,states:skia?undefined:states,wasmMemoryBytes:rasterMemory.buffer.byteLength});
    }
   }catch(error){self.postMessage({type:'error',requestId:data.requestId,generation:data.generation,error:String(error)});}

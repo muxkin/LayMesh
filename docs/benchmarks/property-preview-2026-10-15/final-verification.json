@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "totalSamples": 2800,
+  "localEditSamples": 1600,
+  "documentEditSamples": 1200,
+  "allArtifactHashesMatch": true,
+  "allStageReturncodesZero": true,
+  "htmlSha256": "58e7715204c3a540d164f267d89bab12abb073d43afe31f2087c55747823159c",
+  "nativeSha256": "16a94afdab8dcbe8c480d5b3305b35cd5dcafed78d947c0a38b77c889cbb461d",
+  "vsixSha256": "275329a7b6f5d0a6dcb601b1bd5c2d7f297a6e61f36af90f2799bc05cf580d02",
+  "packagedRuntimeFilesMatchTestedStaging": 45,
+  "localPictureComparisons": 54,
+  "sharedStylePictureComparisons": 6,
+  "animationPairs": 54,
+  "nativeMetadataEditsCompileZeroPages": true
+}

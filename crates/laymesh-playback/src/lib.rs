@@ -3,12 +3,16 @@ use serde_json::json;
 use std::{cell::RefCell, collections::BTreeMap};
 use wasm_bindgen::prelude::*;
 thread_local! {
-    static DRAW_RESOURCES: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new());
+    static DRAW_RESOURCES: RefCell<BTreeMap<String, std::sync::Arc<Vec<u8>>>> = RefCell::new(BTreeMap::new());
 }
 
 #[wasm_bindgen]
 pub fn register_render_resource(id: &str, bytes: &[u8]) {
-    DRAW_RESOURCES.with(|resources| resources.borrow_mut().insert(id.into(), bytes.to_vec()));
+    DRAW_RESOURCES.with(|resources| {
+        resources
+            .borrow_mut()
+            .insert(id.into(), std::sync::Arc::new(bytes.to_vec()))
+    });
 }
 #[wasm_bindgen]
 pub fn retain_render_resources(ids: &str) -> Result<(), JsValue> {
@@ -26,16 +30,34 @@ pub struct DrawJob {
 }
 #[wasm_bindgen]
 impl DrawJob {
+    pub fn presentation_state(&self, time: f64, reduced: bool) -> Result<String, JsValue> {
+        serde_json::to_string(
+            &self
+                .scene
+                .sample_presentation(time, reduced)
+                .map_err(js_error)?,
+        )
+        .map_err(js_error)
+    }
     pub fn frame_state(&self, time: f64, reduced: bool) -> Result<String, JsValue> {
         serde_json::to_string(&self.scene.sample(time, reduced, false).map_err(js_error)?)
             .map_err(js_error)
+    }
+    pub fn transform_state(&self, time: f64, reduced: bool) -> Result<String, JsValue> {
+        serde_json::to_string(
+            &self
+                .scene
+                .sample_transforms(time, reduced, false)
+                .map_err(js_error)?,
+        )
+        .map_err(js_error)
     }
     pub fn resource_bytes(&self, id: &str) -> Result<Vec<u8>, JsValue> {
         self.scene
             .base()
             .resources
             .get(id)
-            .map(|r| r.data.clone())
+            .map(|r| r.data.as_ref().clone())
             .ok_or_else(|| js_error("Missing drawing resource"))
     }
     /// Workers already own the drawing; the UI only needs its resource headers.
@@ -80,7 +102,7 @@ impl DrawJob {
     pub fn display_list(&self) -> Result<String, JsValue> {
         let mut list = self.scene.base().clone();
         for resource in list.resources.values_mut() {
-            resource.data.clear();
+            resource.data = Default::default();
         }
         serde_json::to_string(&list).map_err(js_error)
     }

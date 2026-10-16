@@ -1,0 +1,71 @@
+{
+  "input": "/home/keqing/source/LayMesh/video/04-LCSS与动画/exports/animation-preview-v008/04_LCSS_离线可编辑_v005_并行动画优化_v008.zip.html",
+  "output": "/tmp/laymesh-v009-final.html",
+  "originalSha256": "b07f7e26046fa01d44804866be2d5410015bc6ad1313bae2e6600df46500b06d",
+  "outputSha256": "fb5637b5f27ed14802732619ed8b4dcd184587bdc9aa63fb69d2df573fd5ac9a",
+  "runtimeSha256": "132cd2e7fb9785274224c2b3f72dcb4201dae20252065db8ce10a472acab0c47",
+  "preservedEntries": 31,
+  "dependencies": [
+    {
+      "id": "cover",
+      "dependencies": [
+        "/project/storyboard.laydoc",
+        "/project/pages/01-cover.lay",
+        "/project/ribbon.lay",
+        "/project/theme.lcss"
+      ]
+    },
+    {
+      "id": "seed",
+      "dependencies": [
+        "/project/storyboard.laydoc",
+        "/project/pages/02-seed.lay",
+        "/project/ribbon.lay",
+        "/project/system.lay",
+        "/project/theme.lcss"
+      ]
+    },
+    {
+      "id": "anchors",
+      "dependencies": [
+        "/project/storyboard.laydoc",
+        "/project/pages/03-anchors.lay",
+        "/project/ribbon.lay",
+        "/project/system.lay",
+        "/project/theme.lcss"
+      ]
+    },
+    {
+      "id": "motion",
+      "dependencies": [
+        "/project/storyboard.laydoc",
+        "/project/motion.lcss",
+        "/project/pages/04-motion.lay",
+        "/project/ribbon.lay",
+        "/project/system.lay",
+        "/project/theme.lcss"
+      ]
+    },
+    {
+      "id": "offline",
+      "dependencies": [
+        "/project/storyboard.laydoc",
+        "/project/pages/05-offline.lay",
+        "/project/ribbon.lay",
+        "/project/system.lay",
+        "/project/theme.lcss"
+      ]
+    },
+    {
+      "id": "editable",
+      "dependencies": [
+        "/project/storyboard.laydoc",
+        "/project/pages/06-editable.lay",
+        "/project/ribbon.lay",
+        "/project/system.lay",
+        "/project/theme.lcss"
+      ]
+    }
+  ],
+  "bytes": 43585354
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+    "bytes": 43495548,
+    "sha256": "0c7972debcf3b397f077f31e7dcef5a6172fe61cd5308fdcdfb118176941d46e"
+  },
+  {
+    "path": "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/laymesh-0.6.4-lifecycle-preview-linux-x64.vsix",
+    "bytes": 28121356,
+    "sha256": "9045431970065a4400d5055ad6cfb6589afcdbf51839cbf8ce31c844c9e2dc7b"
+  },
+  {
+    "path": "/home/keqing/source/LayMesh/target/lifecycle-v005-extension/bin/laymesh",
+    "bytes": 34625680,
+    "sha256": "a07a4497bf4a48cc5d4a5509bf18fad3724b4db1b772046d8066b43f6cf4762f"
+  },
+  {
+    "path": "/home/keqing/source/LayMesh/target/web-export/runtime.zip",
+    "bytes": 9461561,
+    "sha256": "489d091d6898aebdbe899ddee63acffa538c3719efa3a1d356aaa85f0a5d5dca"
+  }
+]

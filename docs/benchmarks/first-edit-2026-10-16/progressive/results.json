@@ -1,0 +1,1133 @@
+[
+  {
+    "engine": "chromium",
+    "version": "151.0.7922.34",
+    "held": {
+      "ready": true,
+      "complete": false,
+      "statuses": [
+        "ready",
+        "ready",
+        "pending",
+        "pending",
+        "pending",
+        "pending"
+      ],
+      "version": 1
+    },
+    "failed": {
+      "ready": true,
+      "exportRejected": true,
+      "index": 0,
+      "pageError": "error",
+      "overlay": true
+    },
+    "cancelled": {
+      "oldWaitRejected": true,
+      "version": 5,
+      "baseline": "cover@v29ocqjcqs:9",
+      "trace": {
+        "version": 5,
+        "startedAt": 13919.100000023842,
+        "events": [
+          {
+            "type": "invalidated",
+            "at": 13919.5,
+            "pages": [
+              "cover"
+            ]
+          },
+          {
+            "type": "queued",
+            "at": 13920,
+            "page": "cover"
+          },
+          {
+            "id": 23,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "input-start",
+            "at": 13920.199999988079,
+            "wasmMemoryBytes": 859832320,
+            "worker": 1,
+            "workerAt": 1792150211268.8,
+            "page": "cover"
+          },
+          {
+            "id": 23,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-start",
+            "at": 13920.199999988079,
+            "wasmMemoryBytes": 859832320,
+            "attempt": {
+              "phase": "directory",
+              "startedAt": 1792150211268.8,
+              "sliceMs": 200
+            },
+            "worker": 1,
+            "workerAt": 1792150211268.8,
+            "page": "cover"
+          },
+          {
+            "id": 23,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-end",
+            "at": 13940.899999976158,
+            "wasmMemoryBytes": 859832320,
+            "attempt": {
+              "phase": "directory",
+              "startedAt": 1792150211268.8,
+              "sliceMs": 200,
+              "status": "success",
+              "durationMs": 20.099853515625,
+              "computeMs": 20.099853515625,
+              "metrics": {
+                "parsedFiles": 0,
+                "reusedFiles": 4,
+                "parsedBytes": 0,
+                "reusedStatements": 0,
+                "evaluatedExpressions": 17,
+                "reusedExpressions": 35,
+                "reusedConstructions": 2,
+                "materializedNodes": 12,
+                "updatedAppearanceNodes": 0,
+                "reusedTextLayouts": 9,
+                "rebuiltTextLayouts": 0,
+                "reusedNodes": 9,
+                "rebuiltGeometry": 0,
+                "reusedGeometry": 2,
+                "fontCatalogBuilds": 0,
+                "cacheBytes": 240071378,
+                "queryCacheBytes": 138031714,
+                "queryResourceBytes": 0,
+                "nodeCacheBytes": 97702133,
+                "geometryCacheBytes": 4263060,
+                "textLayoutCacheBytes": 74471,
+                "evaluatedBuiltinCalls": {
+                  "canvas": 1,
+                  "doc.add": 6,
+                  "document": 1,
+                  "last.animate": 1,
+                  "page": 6,
+                  "page.add": 13,
+                  "page.step": 3,
+                  "r.animate": 3,
+                  "s.animate": 2,
+                  "shadow": 4,
+                  "source.add": 4,
+                  "transition": 4
+                },
+                "phaseMicros": {}
+              }
+            },
+            "worker": 1,
+            "workerAt": 1792150211289.4,
+            "page": "cover"
+          },
+          {
+            "directory": [
+              "cover",
+              "seed",
+              "anchors",
+              "motion",
+              "offline",
+              "editable"
+            ],
+            "type": "directory",
+            "at": 13940.899999976158,
+            "page": "cover"
+          },
+          {
+            "id": 23,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-start",
+            "at": 13941.199999988079,
+            "wasmMemoryBytes": 859832320,
+            "attempt": {
+              "phase": "evaluate:cover",
+              "startedAt": 1792150211289.5,
+              "sliceMs": 200
+            },
+            "worker": 1,
+            "workerAt": 1792150211289.5,
+            "page": "cover"
+          },
+          {
+            "id": 23,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-end",
+            "at": 13983.800000011921,
+            "wasmMemoryBytes": 859832320,
+            "attempt": {
+              "phase": "evaluate:cover",
+              "startedAt": 1792150211289.5,
+              "sliceMs": 200,
+              "status": "success",
+              "durationMs": 42.10009765625,
+              "computeMs": 42.10009765625,
+              "metrics": {
+                "parsedFiles": 1,
+                "reusedFiles": 1,
+                "parsedBytes": 182,
+                "reusedStatements": 36,
+                "evaluatedExpressions": 1,
+                "reusedExpressions": 74,
+                "reusedConstructions": 2,
+                "materializedNodes": 9,
+                "updatedAppearanceNodes": 0,
+                "reusedTextLayouts": 6,
+                "rebuiltTextLayouts": 0,
+                "reusedNodes": 51,
+                "rebuiltGeometry": 0,
+                "reusedGeometry": 2,
+                "fontCatalogBuilds": 0,
+                "cacheBytes": 240073554,
+                "queryCacheBytes": 138031714,
+                "queryResourceBytes": 0,
+                "nodeCacheBytes": 97704309,
+                "geometryCacheBytes": 4263060,
+                "textLayoutCacheBytes": 74471,
+                "evaluatedBuiltinCalls": {
+                  "canvas": 1,
+                  "page.add": 18,
+                  "page.step": 2,
+                  "plot.add": 21,
+                  "s.animate": 2
+                },
+                "phaseMicros": {}
+              }
+            },
+            "worker": 1,
+            "workerAt": 1792150211331.8,
+            "page": "cover"
+          },
+          {
+            "id": 23,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "drawing-start",
+            "at": 13983.800000011921,
+            "wasmMemoryBytes": 859832320,
+            "page": "cover",
+            "worker": 1,
+            "workerAt": 1792150211331.9
+          },
+          {
+            "id": 23,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "serialization-start",
+            "at": 13983.800000011921,
+            "wasmMemoryBytes": 859832320,
+            "page": "cover",
+            "worker": 1,
+            "workerAt": 1792150211332.4
+          },
+          {
+            "id": 23,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "serialization-end",
+            "at": 13984.5,
+            "wasmMemoryBytes": 859832320,
+            "worker": 1,
+            "workerAt": 1792150211333.1,
+            "page": "cover"
+          },
+          {
+            "diagnostics": {
+              "version": 5,
+              "enqueuedAt": 1792150211268.8,
+              "startedAt": 1792150211268.8,
+              "attempts": [
+                {
+                  "phase": "directory",
+                  "startedAt": 1792150211268.8,
+                  "sliceMs": 200,
+                  "status": "success",
+                  "durationMs": 20.099853515625,
+                  "computeMs": 20.099853515625,
+                  "metrics": {
+                    "parsedFiles": 0,
+                    "reusedFiles": 4,
+                    "parsedBytes": 0,
+                    "reusedStatements": 0,
+                    "evaluatedExpressions": 17,
+                    "reusedExpressions": 35,
+                    "reusedConstructions": 2,
+                    "materializedNodes": 12,
+                    "updatedAppearanceNodes": 0,
+                    "reusedTextLayouts": 9,
+                    "rebuiltTextLayouts": 0,
+                    "reusedNodes": 9,
+                    "rebuiltGeometry": 0,
+                    "reusedGeometry": 2,
+                    "fontCatalogBuilds": 0,
+                    "cacheBytes": 240071378,
+                    "queryCacheBytes": 138031714,
+                    "queryResourceBytes": 0,
+                    "nodeCacheBytes": 97702133,
+                    "geometryCacheBytes": 4263060,
+                    "textLayoutCacheBytes": 74471,
+                    "evaluatedBuiltinCalls": {
+                      "canvas": 1,
+                      "doc.add": 6,
+                      "document": 1,
+                      "last.animate": 1,
+                      "page": 6,
+                      "page.add": 13,
+                      "page.step": 3,
+                      "r.animate": 3,
+                      "s.animate": 2,
+                      "shadow": 4,
+                      "source.add": 4,
+                      "transition": 4
+                    },
+                    "phaseMicros": {}
+                  }
+                },
+                {
+                  "phase": "evaluate:cover",
+                  "startedAt": 1792150211289.5,
+                  "sliceMs": 200,
+                  "status": "success",
+                  "durationMs": 42.10009765625,
+                  "computeMs": 42.10009765625,
+                  "metrics": {
+                    "parsedFiles": 1,
+                    "reusedFiles": 1,
+                    "parsedBytes": 182,
+                    "reusedStatements": 36,
+                    "evaluatedExpressions": 1,
+                    "reusedExpressions": 74,
+                    "reusedConstructions": 2,
+                    "materializedNodes": 9,
+                    "updatedAppearanceNodes": 0,
+                    "reusedTextLayouts": 6,
+                    "rebuiltTextLayouts": 0,
+                    "reusedNodes": 51,
+                    "rebuiltGeometry": 0,
+                    "reusedGeometry": 2,
+                    "fontCatalogBuilds": 0,
+                    "cacheBytes": 240073554,
+                    "queryCacheBytes": 138031714,
+                    "queryResourceBytes": 0,
+                    "nodeCacheBytes": 97704309,
+                    "geometryCacheBytes": 4263060,
+                    "textLayoutCacheBytes": 74471,
+                    "evaluatedBuiltinCalls": {
+                      "canvas": 1,
+                      "page.add": 18,
+                      "page.step": 2,
+                      "plot.add": 21,
+                      "s.animate": 2
+                    },
+                    "phaseMicros": {}
+                  }
+                }
+              ],
+              "pages": [
+                {
+                  "id": "cover",
+                  "evaluateMs": 42.40000003576279,
+                  "drawMs": 0.3999999761581421,
+                  "serializeMs": 0.5
+                }
+              ],
+              "finishedAt": 1792150211333.1,
+              "inputMs": 0,
+              "planMs": 20.600000023841858,
+              "worker": 1,
+              "queuedAt": 13920.100000023842,
+              "initializedAt": 13920.100000023842,
+              "receivedAt": 13984.800000011921,
+              "initMs": 46.19999998807907
+            },
+            "compileMs": 64.30000001192093,
+            "type": "received",
+            "at": 13984.800000011921,
+            "page": "cover"
+          },
+          {
+            "type": "commit-start",
+            "at": 13984.800000011921,
+            "page": "cover"
+          },
+          {
+            "type": "current-visible",
+            "at": 14048.800000011921,
+            "page": "cover"
+          },
+          {
+            "pages": [
+              "cover"
+            ],
+            "type": "committed",
+            "at": 14048.800000011921,
+            "page": "cover"
+          }
+        ],
+        "completedAt": 14048.899999976158
+      }
+    },
+    "errors": []
+  },
+  {
+    "engine": "firefox",
+    "version": "153.0",
+    "held": {
+      "ready": true,
+      "complete": false,
+      "statuses": [
+        "ready",
+        "pending",
+        "pending",
+        "pending",
+        "pending",
+        "pending"
+      ],
+      "version": 1
+    },
+    "failed": {
+      "ready": true,
+      "exportRejected": true,
+      "index": 0,
+      "pageError": "error",
+      "overlay": true
+    },
+    "cancelled": {
+      "oldWaitRejected": true,
+      "version": 5,
+      "baseline": "cover@toje2j7gor:7",
+      "trace": {
+        "version": 5,
+        "startedAt": 26986,
+        "events": [
+          {
+            "type": "invalidated",
+            "at": 26987,
+            "pages": [
+              "cover"
+            ]
+          },
+          {
+            "type": "queued",
+            "at": 26987,
+            "page": "cover"
+          },
+          {
+            "id": 26,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "input-start",
+            "at": 26988,
+            "wasmMemoryBytes": 429916160,
+            "worker": 1,
+            "workerAt": 1792150240195,
+            "page": "cover"
+          },
+          {
+            "id": 26,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-start",
+            "at": 26988,
+            "wasmMemoryBytes": 429916160,
+            "attempt": {
+              "phase": "directory",
+              "startedAt": 1792150240195,
+              "sliceMs": 200
+            },
+            "worker": 1,
+            "workerAt": 1792150240195,
+            "page": "cover"
+          },
+          {
+            "id": 26,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-end",
+            "at": 27014,
+            "wasmMemoryBytes": 429916160,
+            "attempt": {
+              "phase": "directory",
+              "startedAt": 1792150240195,
+              "sliceMs": 200,
+              "status": "success",
+              "durationMs": 26,
+              "computeMs": 26,
+              "metrics": {
+                "parsedFiles": 0,
+                "reusedFiles": 4,
+                "parsedBytes": 0,
+                "reusedStatements": 0,
+                "evaluatedExpressions": 17,
+                "reusedExpressions": 35,
+                "reusedConstructions": 2,
+                "materializedNodes": 12,
+                "updatedAppearanceNodes": 0,
+                "reusedTextLayouts": 9,
+                "rebuiltTextLayouts": 0,
+                "reusedNodes": 9,
+                "rebuiltGeometry": 0,
+                "reusedGeometry": 2,
+                "fontCatalogBuilds": 0,
+                "cacheBytes": 108255887,
+                "queryCacheBytes": 61999262,
+                "queryResourceBytes": 0,
+                "nodeCacheBytes": 44585151,
+                "geometryCacheBytes": 1630246,
+                "textLayoutCacheBytes": 41228,
+                "evaluatedBuiltinCalls": {
+                  "canvas": 1,
+                  "doc.add": 6,
+                  "document": 1,
+                  "last.animate": 1,
+                  "page": 6,
+                  "page.add": 13,
+                  "page.step": 3,
+                  "r.animate": 3,
+                  "s.animate": 2,
+                  "shadow": 4,
+                  "source.add": 4,
+                  "transition": 4
+                },
+                "phaseMicros": {}
+              }
+            },
+            "worker": 1,
+            "workerAt": 1792150240221,
+            "page": "cover"
+          },
+          {
+            "directory": [
+              "cover",
+              "seed",
+              "anchors",
+              "motion",
+              "offline",
+              "editable"
+            ],
+            "type": "directory",
+            "at": 27014,
+            "page": "cover"
+          },
+          {
+            "id": 26,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-start",
+            "at": 27014,
+            "wasmMemoryBytes": 429916160,
+            "attempt": {
+              "phase": "evaluate:cover",
+              "startedAt": 1792150240222,
+              "sliceMs": 200
+            },
+            "worker": 1,
+            "workerAt": 1792150240222,
+            "page": "cover"
+          },
+          {
+            "id": 26,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-end",
+            "at": 27117,
+            "wasmMemoryBytes": 429916160,
+            "attempt": {
+              "phase": "evaluate:cover",
+              "startedAt": 1792150240222,
+              "sliceMs": 200,
+              "status": "success",
+              "durationMs": 101,
+              "computeMs": 101,
+              "metrics": {
+                "parsedFiles": 1,
+                "reusedFiles": 1,
+                "parsedBytes": 182,
+                "reusedStatements": 36,
+                "evaluatedExpressions": 1,
+                "reusedExpressions": 74,
+                "reusedConstructions": 2,
+                "materializedNodes": 9,
+                "updatedAppearanceNodes": 0,
+                "reusedTextLayouts": 6,
+                "rebuiltTextLayouts": 0,
+                "reusedNodes": 51,
+                "rebuiltGeometry": 0,
+                "reusedGeometry": 2,
+                "fontCatalogBuilds": 0,
+                "cacheBytes": 108258063,
+                "queryCacheBytes": 61999262,
+                "queryResourceBytes": 0,
+                "nodeCacheBytes": 44587327,
+                "geometryCacheBytes": 1630246,
+                "textLayoutCacheBytes": 41228,
+                "evaluatedBuiltinCalls": {
+                  "canvas": 1,
+                  "page.add": 18,
+                  "page.step": 2,
+                  "plot.add": 21,
+                  "s.animate": 2
+                },
+                "phaseMicros": {}
+              }
+            },
+            "worker": 1,
+            "workerAt": 1792150240324,
+            "page": "cover"
+          },
+          {
+            "id": 26,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "drawing-start",
+            "at": 27117,
+            "wasmMemoryBytes": 429916160,
+            "page": "cover",
+            "worker": 1,
+            "workerAt": 1792150240324
+          },
+          {
+            "id": 26,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "serialization-start",
+            "at": 27118,
+            "wasmMemoryBytes": 429916160,
+            "page": "cover",
+            "worker": 1,
+            "workerAt": 1792150240325
+          },
+          {
+            "id": 26,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "serialization-end",
+            "at": 27120,
+            "wasmMemoryBytes": 429916160,
+            "worker": 1,
+            "workerAt": 1792150240327,
+            "page": "cover"
+          },
+          {
+            "diagnostics": {
+              "version": 5,
+              "enqueuedAt": 1792150240195,
+              "startedAt": 1792150240195,
+              "attempts": [
+                {
+                  "phase": "directory",
+                  "startedAt": 1792150240195,
+                  "sliceMs": 200,
+                  "status": "success",
+                  "durationMs": 26,
+                  "computeMs": 26,
+                  "metrics": {
+                    "parsedFiles": 0,
+                    "reusedFiles": 4,
+                    "parsedBytes": 0,
+                    "reusedStatements": 0,
+                    "evaluatedExpressions": 17,
+                    "reusedExpressions": 35,
+                    "reusedConstructions": 2,
+                    "materializedNodes": 12,
+                    "updatedAppearanceNodes": 0,
+                    "reusedTextLayouts": 9,
+                    "rebuiltTextLayouts": 0,
+                    "reusedNodes": 9,
+                    "rebuiltGeometry": 0,
+                    "reusedGeometry": 2,
+                    "fontCatalogBuilds": 0,
+                    "cacheBytes": 108255887,
+                    "queryCacheBytes": 61999262,
+                    "queryResourceBytes": 0,
+                    "nodeCacheBytes": 44585151,
+                    "geometryCacheBytes": 1630246,
+                    "textLayoutCacheBytes": 41228,
+                    "evaluatedBuiltinCalls": {
+                      "canvas": 1,
+                      "doc.add": 6,
+                      "document": 1,
+                      "last.animate": 1,
+                      "page": 6,
+                      "page.add": 13,
+                      "page.step": 3,
+                      "r.animate": 3,
+                      "s.animate": 2,
+                      "shadow": 4,
+                      "source.add": 4,
+                      "transition": 4
+                    },
+                    "phaseMicros": {}
+                  }
+                },
+                {
+                  "phase": "evaluate:cover",
+                  "startedAt": 1792150240222,
+                  "sliceMs": 200,
+                  "status": "success",
+                  "durationMs": 101,
+                  "computeMs": 101,
+                  "metrics": {
+                    "parsedFiles": 1,
+                    "reusedFiles": 1,
+                    "parsedBytes": 182,
+                    "reusedStatements": 36,
+                    "evaluatedExpressions": 1,
+                    "reusedExpressions": 74,
+                    "reusedConstructions": 2,
+                    "materializedNodes": 9,
+                    "updatedAppearanceNodes": 0,
+                    "reusedTextLayouts": 6,
+                    "rebuiltTextLayouts": 0,
+                    "reusedNodes": 51,
+                    "rebuiltGeometry": 0,
+                    "reusedGeometry": 2,
+                    "fontCatalogBuilds": 0,
+                    "cacheBytes": 108258063,
+                    "queryCacheBytes": 61999262,
+                    "queryResourceBytes": 0,
+                    "nodeCacheBytes": 44587327,
+                    "geometryCacheBytes": 1630246,
+                    "textLayoutCacheBytes": 41228,
+                    "evaluatedBuiltinCalls": {
+                      "canvas": 1,
+                      "page.add": 18,
+                      "page.step": 2,
+                      "plot.add": 21,
+                      "s.animate": 2
+                    },
+                    "phaseMicros": {}
+                  }
+                }
+              ],
+              "pages": [
+                {
+                  "id": "cover",
+                  "evaluateMs": 102,
+                  "drawMs": 1,
+                  "serializeMs": 1
+                }
+              ],
+              "finishedAt": 1792150240327,
+              "inputMs": 0,
+              "planMs": 26,
+              "worker": 1,
+              "queuedAt": 26988,
+              "initializedAt": 26988,
+              "receivedAt": 27121,
+              "initMs": 146
+            },
+            "compileMs": 132,
+            "type": "received",
+            "at": 27121,
+            "page": "cover"
+          },
+          {
+            "type": "commit-start",
+            "at": 27121,
+            "page": "cover"
+          },
+          {
+            "type": "current-visible",
+            "at": 27318,
+            "page": "cover"
+          },
+          {
+            "pages": [
+              "cover"
+            ],
+            "type": "committed",
+            "at": 27318,
+            "page": "cover"
+          }
+        ],
+        "completedAt": 27318
+      }
+    },
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "version": "26.5",
+    "held": {
+      "ready": true,
+      "complete": false,
+      "statuses": [
+        "ready",
+        "pending",
+        "pending",
+        "pending",
+        "pending",
+        "pending"
+      ],
+      "version": 1
+    },
+    "failed": {
+      "ready": true,
+      "exportRejected": true,
+      "index": 0,
+      "pageError": "error",
+      "overlay": true
+    },
+    "cancelled": {
+      "oldWaitRejected": true,
+      "version": 5,
+      "baseline": "cover@uzlsfj9ddt:7",
+      "trace": {
+        "version": 5,
+        "startedAt": 16125,
+        "events": [
+          {
+            "type": "invalidated",
+            "at": 16129,
+            "pages": [
+              "cover"
+            ]
+          },
+          {
+            "type": "queued",
+            "at": 16129,
+            "page": "cover"
+          },
+          {
+            "id": 25,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "input-start",
+            "at": 16132,
+            "wasmMemoryBytes": 429916160,
+            "worker": 1,
+            "workerAt": 1792150260202,
+            "page": "cover"
+          },
+          {
+            "id": 25,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-start",
+            "at": 16132,
+            "wasmMemoryBytes": 429916160,
+            "attempt": {
+              "phase": "directory",
+              "startedAt": 1792150260202,
+              "sliceMs": 200
+            },
+            "worker": 1,
+            "workerAt": 1792150260202,
+            "page": "cover"
+          },
+          {
+            "id": 25,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-end",
+            "at": 16136,
+            "wasmMemoryBytes": 429916160,
+            "attempt": {
+              "phase": "directory",
+              "startedAt": 1792150260202,
+              "sliceMs": 200,
+              "status": "success",
+              "durationMs": 6,
+              "computeMs": 6,
+              "metrics": {
+                "parsedFiles": 0,
+                "reusedFiles": 4,
+                "parsedBytes": 0,
+                "reusedStatements": 0,
+                "evaluatedExpressions": 17,
+                "reusedExpressions": 35,
+                "reusedConstructions": 2,
+                "materializedNodes": 12,
+                "updatedAppearanceNodes": 0,
+                "reusedTextLayouts": 9,
+                "rebuiltTextLayouts": 0,
+                "reusedNodes": 9,
+                "rebuiltGeometry": 0,
+                "reusedGeometry": 2,
+                "fontCatalogBuilds": 0,
+                "cacheBytes": 108255887,
+                "queryCacheBytes": 61999262,
+                "queryResourceBytes": 0,
+                "nodeCacheBytes": 44585151,
+                "geometryCacheBytes": 1630246,
+                "textLayoutCacheBytes": 41228,
+                "evaluatedBuiltinCalls": {
+                  "canvas": 1,
+                  "doc.add": 6,
+                  "document": 1,
+                  "last.animate": 1,
+                  "page": 6,
+                  "page.add": 13,
+                  "page.step": 3,
+                  "r.animate": 3,
+                  "s.animate": 2,
+                  "shadow": 4,
+                  "source.add": 4,
+                  "transition": 4
+                },
+                "phaseMicros": {}
+              }
+            },
+            "worker": 1,
+            "workerAt": 1792150260208,
+            "page": "cover"
+          },
+          {
+            "directory": [
+              "cover",
+              "seed",
+              "anchors",
+              "motion",
+              "offline",
+              "editable"
+            ],
+            "type": "directory",
+            "at": 16136,
+            "page": "cover"
+          },
+          {
+            "id": 25,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-start",
+            "at": 16137,
+            "wasmMemoryBytes": 429916160,
+            "attempt": {
+              "phase": "evaluate:cover",
+              "startedAt": 1792150260208,
+              "sliceMs": 200
+            },
+            "worker": 1,
+            "workerAt": 1792150260208,
+            "page": "cover"
+          },
+          {
+            "id": 25,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "attempt-end",
+            "at": 16164,
+            "wasmMemoryBytes": 429916160,
+            "attempt": {
+              "phase": "evaluate:cover",
+              "startedAt": 1792150260208,
+              "sliceMs": 200,
+              "status": "success",
+              "durationMs": 27,
+              "computeMs": 27,
+              "metrics": {
+                "parsedFiles": 1,
+                "reusedFiles": 1,
+                "parsedBytes": 182,
+                "reusedStatements": 36,
+                "evaluatedExpressions": 1,
+                "reusedExpressions": 74,
+                "reusedConstructions": 2,
+                "materializedNodes": 9,
+                "updatedAppearanceNodes": 0,
+                "reusedTextLayouts": 6,
+                "rebuiltTextLayouts": 0,
+                "reusedNodes": 51,
+                "rebuiltGeometry": 0,
+                "reusedGeometry": 2,
+                "fontCatalogBuilds": 0,
+                "cacheBytes": 108258063,
+                "queryCacheBytes": 61999262,
+                "queryResourceBytes": 0,
+                "nodeCacheBytes": 44587327,
+                "geometryCacheBytes": 1630246,
+                "textLayoutCacheBytes": 41228,
+                "evaluatedBuiltinCalls": {
+                  "canvas": 1,
+                  "page.add": 18,
+                  "page.step": 2,
+                  "plot.add": 21,
+                  "s.animate": 2
+                },
+                "phaseMicros": {}
+              }
+            },
+            "worker": 1,
+            "workerAt": 1792150260235,
+            "page": "cover"
+          },
+          {
+            "id": 25,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "drawing-start",
+            "at": 16164,
+            "wasmMemoryBytes": 429916160,
+            "page": "cover",
+            "worker": 1,
+            "workerAt": 1792150260235
+          },
+          {
+            "id": 25,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "serialization-start",
+            "at": 16164,
+            "wasmMemoryBytes": 429916160,
+            "page": "cover",
+            "worker": 1,
+            "workerAt": 1792150260236
+          },
+          {
+            "id": 25,
+            "type": "worker-progress",
+            "version": 5,
+            "phase": "serialization-end",
+            "at": 16165,
+            "wasmMemoryBytes": 429916160,
+            "worker": 1,
+            "workerAt": 1792150260237,
+            "page": "cover"
+          },
+          {
+            "diagnostics": {
+              "version": 5,
+              "enqueuedAt": 1792150260202,
+              "startedAt": 1792150260202,
+              "attempts": [
+                {
+                  "phase": "directory",
+                  "startedAt": 1792150260202,
+                  "sliceMs": 200,
+                  "status": "success",
+                  "durationMs": 6,
+                  "computeMs": 6,
+                  "metrics": {
+                    "parsedFiles": 0,
+                    "reusedFiles": 4,
+                    "parsedBytes": 0,
+                    "reusedStatements": 0,
+                    "evaluatedExpressions": 17,
+                    "reusedExpressions": 35,
+                    "reusedConstructions": 2,
+                    "materializedNodes": 12,
+                    "updatedAppearanceNodes": 0,
+                    "reusedTextLayouts": 9,
+                    "rebuiltTextLayouts": 0,
+                    "reusedNodes": 9,
+                    "rebuiltGeometry": 0,
+                    "reusedGeometry": 2,
+                    "fontCatalogBuilds": 0,
+                    "cacheBytes": 108255887,
+                    "queryCacheBytes": 61999262,
+                    "queryResourceBytes": 0,
+                    "nodeCacheBytes": 44585151,
+                    "geometryCacheBytes": 1630246,
+                    "textLayoutCacheBytes": 41228,
+                    "evaluatedBuiltinCalls": {
+                      "canvas": 1,
+                      "doc.add": 6,
+                      "document": 1,
+                      "last.animate": 1,
+                      "page": 6,
+                      "page.add": 13,
+                      "page.step": 3,
+                      "r.animate": 3,
+                      "s.animate": 2,
+                      "shadow": 4,
+                      "source.add": 4,
+                      "transition": 4
+                    },
+                    "phaseMicros": {}
+                  }
+                },
+                {
+                  "phase": "evaluate:cover",
+                  "startedAt": 1792150260208,
+                  "sliceMs": 200,
+                  "status": "success",
+                  "durationMs": 27,
+                  "computeMs": 27,
+                  "metrics": {
+                    "parsedFiles": 1,
+                    "reusedFiles": 1,
+                    "parsedBytes": 182,
+                    "reusedStatements": 36,
+                    "evaluatedExpressions": 1,
+                    "reusedExpressions": 74,
+                    "reusedConstructions": 2,
+                    "materializedNodes": 9,
+                    "updatedAppearanceNodes": 0,
+                    "reusedTextLayouts": 6,
+                    "rebuiltTextLayouts": 0,
+                    "reusedNodes": 51,
+                    "rebuiltGeometry": 0,
+                    "reusedGeometry": 2,
+                    "fontCatalogBuilds": 0,
+                    "cacheBytes": 108258063,
+                    "queryCacheBytes": 61999262,
+                    "queryResourceBytes": 0,
+                    "nodeCacheBytes": 44587327,
+                    "geometryCacheBytes": 1630246,
+                    "textLayoutCacheBytes": 41228,
+                    "evaluatedBuiltinCalls": {
+                      "canvas": 1,
+                      "page.add": 18,
+                      "page.step": 2,
+                      "plot.add": 21,
+                      "s.animate": 2
+                    },
+                    "phaseMicros": {}
+                  }
+                }
+              ],
+              "pages": [
+                {
+                  "id": "cover",
+                  "evaluateMs": 27,
+                  "drawMs": 1,
+                  "serializeMs": 0
+                }
+              ],
+              "finishedAt": 1792150260237,
+              "inputMs": 0,
+              "planMs": 6,
+              "worker": 1,
+              "queuedAt": 16130,
+              "initializedAt": 16130,
+              "receivedAt": 16165,
+              "initMs": 89
+            },
+            "compileMs": 35,
+            "type": "received",
+            "at": 16165,
+            "page": "cover"
+          },
+          {
+            "type": "commit-start",
+            "at": 16165,
+            "page": "cover"
+          },
+          {
+            "type": "current-visible",
+            "at": 16220,
+            "page": "cover"
+          },
+          {
+            "pages": [
+              "cover"
+            ],
+            "type": "committed",
+            "at": 16220,
+            "page": "cover"
+          }
+        ],
+        "completedAt": 16220
+      }
+    },
+    "errors": []
+  }
+]

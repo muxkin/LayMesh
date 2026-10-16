@@ -1,0 +1,9 @@
+{
+  "checkedAddedLines": 12,
+  "files": [
+    "site/live/presentation-renderer.mjs",
+    "site/live/presentation-transitions.mjs",
+    "site/live/skia-renderer.mjs"
+  ],
+  "clippingTestAndCIEntry": true
+}

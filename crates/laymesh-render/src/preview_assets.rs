@@ -6,7 +6,7 @@ use std::{
     collections::HashMap,
     path::{Path, PathBuf},
     sync::{
-        Arc, Condvar, Mutex,
+        Arc, Mutex,
         atomic::{AtomicUsize, Ordering},
     },
 };
@@ -32,15 +32,12 @@ pub fn write_resource(path: &Path, bytes: &[u8]) -> Result<()> {
 }
 fn process_images(tasks: &[ImageTask], settings: &PreviewSettings) -> Result<()> {
     let next = AtomicUsize::new(0);
-    let memory = (Mutex::new(0usize), Condvar::new());
     let failure = Mutex::new(None);
-    let budget = settings.processing_memory_mb * 1024 * 1024;
     // Only owned pixels and encoding settings reach these workers, never compiler Rc/RefCell state.
     std::thread::scope(|scope| {
         for _ in 0..settings.threads().min(tasks.len()) {
             let tasks = &tasks;
             let next = &next;
-            let memory = &memory;
             let failure = &failure;
             scope.spawn(move || {
                 loop {
@@ -48,13 +45,6 @@ fn process_images(tasks: &[ImageTask], settings: &PreviewSettings) -> Result<()>
                     let Some(task) = tasks.get(index) else {
                         break;
                     };
-                    let estimate = task.pixels.as_bytes().len().saturating_mul(3);
-                    let mut used = memory.0.lock().unwrap();
-                    while *used > 0 && used.saturating_add(estimate) > budget {
-                        used = memory.1.wait(used).unwrap();
-                    }
-                    *used = used.saturating_add(estimate);
-                    drop(used);
                     let result = raster_policy::preview_bytes(
                         &task.pixels,
                         settings.jpeg_quality,
@@ -62,10 +52,6 @@ fn process_images(tasks: &[ImageTask], settings: &PreviewSettings) -> Result<()>
                         settings.webp_method,
                     )
                     .and_then(|(_, bytes)| write_resource(&task.path, &bytes));
-                    let mut used = memory.0.lock().unwrap();
-                    *used = used.saturating_sub(estimate);
-                    memory.1.notify_all();
-                    drop(used);
                     if let Err(e) = result {
                         *failure.lock().unwrap() = Some(e);
                     }
@@ -78,12 +64,10 @@ fn process_images(tasks: &[ImageTask], settings: &PreviewSettings) -> Result<()>
     }
     Ok(())
 }
-/// Protocol 3 carries drawing commands, with immutable encoded resources beside them.
-pub fn display_frame(
-    scene: &Scene,
-    directory: &Path,
-    settings: &PreviewSettings,
-) -> Result<(DisplayList, Vec<Json>)> {
+fn remap_node_resources(
+    nodes: &mut [crate::display_list::DrawNode],
+    ids: &HashMap<String, String>,
+) {
     use crate::display_list::{DrawKind, DrawNode, Paint};
     fn paint(p: &mut Paint, ids: &HashMap<String, String>) {
         if let Paint::Pattern { nodes, .. } = p {
@@ -111,13 +95,23 @@ pub fn display_frame(
             }
         }
     }
-    let mut list = crate::display_list::preview_display_list(scene)?;
+    visit(nodes, ids);
+}
+fn externalize_resources(
+    values: &mut std::collections::BTreeMap<String, crate::display_list::Resource>,
+    directory: &Path,
+    settings: &PreviewSettings,
+) -> Result<(Vec<Json>, HashMap<String, String>)> {
     let mut resources = Vec::new();
     let mut ids = HashMap::new();
     let mut tasks = Vec::new();
     let mut registered = std::collections::BTreeMap::new();
-    for (original, mut resource) in std::mem::take(&mut list.resources) {
-        let id = if resource.mime.starts_with("image/") {
+    for (original, mut resource) in std::mem::take(values) {
+        let id = if resource.data.is_empty()
+            && (!original.starts_with("pixels-") || original.contains("-preview-q"))
+        {
+            original
+        } else if resource.mime.starts_with("image/") {
             let id = format!(
                 "{original}-preview-q{}-wq{}-m{}",
                 settings.jpeg_quality, settings.webp_quality, settings.webp_method
@@ -169,12 +163,84 @@ pub fn display_frame(
         };
         let path = directory.join(format!("{id}.resource"));
         resources.push(json!({"id":id,"path":path,"mime":resource.mime,"fontIndex":resource.font_index,"family":resource.family}));
-        resource.data.clear();
+        resource.data = Default::default();
         registered.insert(id, resource);
     }
     process_images(&tasks, settings)?;
-    list.resources = registered;
-    visit(&mut list.nodes, &ids);
+    *values = registered;
+    Ok((resources, ids))
+}
+/// Lower changed scene contributions and externalize only the resulting patch.
+/// Unchanged command trees remain borrowed from the acknowledged baseline.
+pub fn display_update_frame(
+    scene: &Scene,
+    previous_scene: &Scene,
+    previous: &DisplayList,
+    directory: &Path,
+    settings: &PreviewSettings,
+) -> Result<(crate::display_update::DisplayUpdate, Vec<Json>)> {
+    use crate::display_update::ChildSource;
+    let mut update =
+        crate::display_list::preview_display_update_reusing(scene, previous_scene, previous)?;
+    let (resources, ids) = if let Some(values) = &mut update.resources {
+        externalize_resources(values, directory, settings)?
+    } else {
+        (vec![], HashMap::new())
+    };
+    if !ids.is_empty() {
+        if let Some(roots) = &mut update.roots {
+            remap_node_resources(roots, &ids);
+        }
+        for change in &mut update.nodes {
+            remap_node_resources(std::slice::from_mut(&mut change.node), &ids);
+        }
+        for change in &mut update.structure {
+            for child in &mut change.insert {
+                if let ChildSource::New(node) = child {
+                    remap_node_resources(std::slice::from_mut(node), &ids);
+                }
+            }
+        }
+        fn remap(value: &mut Json, ids: &HashMap<String, String>) {
+            match value {
+                Json::String(s) => {
+                    if let Some(id) = ids.get(s) {
+                        *s = id.clone();
+                    }
+                }
+                Json::Array(a) => {
+                    for v in a {
+                        remap(v, ids)
+                    }
+                }
+                Json::Object(o) => {
+                    for v in o.values_mut() {
+                        remap(v, ids)
+                    }
+                }
+                _ => {}
+            }
+        }
+        for property in &mut update.properties {
+            for (key, value) in &mut property.values {
+                if key == "kind.resource" || key == "kind.fill" {
+                    remap(value, &ids);
+                }
+            }
+        }
+    }
+    Ok((update, resources))
+}
+
+/// Protocol 3 carries drawing commands, with immutable encoded resources beside them.
+pub fn display_frame(
+    scene: &Scene,
+    directory: &Path,
+    settings: &PreviewSettings,
+) -> Result<(DisplayList, Vec<Json>)> {
+    let mut list = crate::display_list::preview_display_list(scene)?;
+    let (resources, ids) = externalize_resources(&mut list.resources, directory, settings)?;
+    remap_node_resources(&mut list.nodes, &ids);
     Ok((list, resources))
 }
 
@@ -241,7 +307,13 @@ pub fn frame(
     let mut tasks = HashMap::new();
     let mut scene = scene.clone();
     for node in &mut scene.nodes {
-        visit(node, directory, settings, &mut resources, &mut tasks)?;
+        visit(
+            std::sync::Arc::make_mut(node),
+            directory,
+            settings,
+            &mut resources,
+            &mut tasks,
+        )?;
     }
     if scene.background["mime"].is_string() {
         image(

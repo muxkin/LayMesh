@@ -233,7 +233,7 @@ page.add(p)"#
             }
         }
         let mut bad = p.clone();
-        recolor(&mut bad, wrong);
+        recolor(std::sync::Arc::make_mut(&mut bad), wrong);
         assert!(!axis_colors(&bad, wanted));
     }
 }

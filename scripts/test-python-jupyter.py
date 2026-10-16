@@ -139,8 +139,54 @@ single_page = render_document(book, output="document-second.png", page=2, dpi=96
 with PILImage.open(single_page.output) as image:
     assert image.size == (48, 96)
 
+# Repeated notebook calls must observe external styles and document structure.
+# Use pixels and page dimensions so stale source/resource caches cannot pass.
+theme = layout / "shared.lcss"
+theme.write_text('.chip { background-color: #d12727; border-width: 0; }')
+for name, size in [("wide", "25.4mm,12.7mm"), ("tall", "12.7mm,25.4mm")]:
+    (layout / (name + '.lay')).write_text(
+        'p=canvas(size=(' + size + '),stylesheet="shared.lcss")\n'
+        'p.add(rect(size=(8mm,8mm),class="chip"),offset=(2mm,2mm))')
+styled_book = layout / "changing.laydoc"
+def write_pages(names):
+    styled_book.write_text('d=document()\n' + '\n'.join(
+        'd.add(page(src="' + name + '.lay",id="' + name + '"))' for name in names))
+def styled_preview(page, expected_color, expected_size):
+    result = render_document(styled_book, preview_page=page, show_warnings=False)
+    with PILImage.open(io.BytesIO(result.preview_jpeg)) as picture:
+        assert picture.size == expected_size
+        assert all(abs(a-b) <= 3 for a,b in zip(picture.getpixel((30,30)), expected_color))
+    return result.preview_jpeg
+write_pages(["wide", "tall"])
+red = styled_preview(1, (209,39,39), (192,96))
+theme.write_text('.chip { background-color: #1769c6; border-width: 0; }')
+blue = styled_preview(1, (23,105,198), (192,96))
+assert red != blue
+styled_preview(2, (23,105,198), (96,192))
+write_pages(["tall", "wide"])
+styled_preview(1, (23,105,198), (96,192))
+assert styled_preview(2, (23,105,198), (192,96)) == blue
+write_pages(["wide"])
+try:
+    render_document(styled_book, preview_page=2, show_warnings=False)
+except LayMeshBridgeError:
+    pass
+else:
+    raise AssertionError("Deleted document page remained available")
+write_pages(["wide", "tall"])
+assert styled_preview(1, (23,105,198), (192,96)) == blue
+theme.unlink()
+try:
+    render_document(styled_book, show_warnings=False)
+except LayMeshBridgeError:
+    pass
+else:
+    raise AssertionError("Missing stylesheet used stale content")
+theme.write_text('.chip { background-color: #1769c6; border-width: 0; }')
+assert styled_preview(1, (23,105,198), (192,96)) == blue
+
 # Preview resolution stays independent of the 1200-DPI default and settings.
-Path("export.json").write_text('{"export":{"dpi":72,"png":{"compression":"fast"}}}')
+Path("export.json").write_text('{"export":{"dpi":72,"png":{"compression":"fast"}},"preview":{"cache_mb":1,"processing_memory_mb":1,"image_threads":1}}')
 with capture_output() as configured:
     get_ipython().run_cell_magic("laymesh", "-o configured.png --config export.json", 'page=canvas(size=(25.4mm,12.7mm))')
 with PILImage.open("configured.png") as image:
@@ -199,6 +245,8 @@ kernel_evidence = dict(engine_version=version,
     default_dpi_1200_and_tiff_lzw=True, errors_recover=True, svg_api_compatible=True,
     jpeg_exact_native_match=True, compact_result_display=True, document_jpeg_magic=True,
     document_full_pdf_and_selected_png=True, presentation_notes_private=True,
+    shared_lcss_updates=True, document_reorder_delete_restore=True,
+    missing_stylesheet_recovers=True, legacy_preview_quota_config_accepted=True,
     draw_warning_nonblocking=True, installed_offline=installed_check)
 print(json.dumps(kernel_evidence))
 """

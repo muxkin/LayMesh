@@ -31,7 +31,7 @@ for(const [name,entry]of Object.entries(transitions)){
   const started=realNow(),row={name,variants:0,frames:0,endpoints:true,intermediateChanges:true,error:null};
   try{
     for(const [width,height,transparent,variant]of [[128,72,false,false],[72,128,false,false],[96,96,true,false],[128,72,false,true]]){
-      const surface=ck.MakeSurface(width,height),skia={ck,surface,canvas:{width,height},budget:256*1048576,images:new Map(),imageBytes:new Map()},player=new PageTransitions(skia);
+      const surface=ck.MakeSurface(width,height),skia={ck,surface,canvas:{width,height},images:new Map(),imageBytes:new Map()},player=new PageTransitions(skia);
       const texture=ck.MakeSurface(width,height);artwork(texture,width,height,true,false);const tex=texture.makeImageSnapshot();
       const encoded=tex.encodeToBytes();for(const t of entry.textures||[]){skia.images.set(t,tex);skia.imageBytes.set(t,encoded);}
       const spec={name,durationMs:100,easing:{Bezier:[0,0,1,1]},params:{...entry.defaultParams},textures:Object.fromEntries((entry.textures||[]).map(t=>[t,t]))};

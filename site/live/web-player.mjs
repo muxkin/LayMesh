@@ -1,3 +1,6 @@
+import {WebCompilerPool} from './web-compiler-pool.mjs';
+import {createWebPresentationSession} from './web-presentation-session.mjs';
+import {PresentationWorkers} from './presentation-workers.mjs';
 import {PresenterView,startPresentation} from "./presenter.mjs";
 import {PagePreviewRenderer,PageThumbnails} from "./page-previews.mjs";
 import { installExportDialog } from "./web-export-dialog.mjs";
@@ -10,6 +13,10 @@ import { iconLabel } from "./presentation-icons.mjs";
 import { PresentationClock } from "./presentation-clock.mjs";
 import { sha256 } from "./web-sha256.mjs";
 import { WebViewport } from "./web-viewport.mjs";
+import { PreviewCompiler } from "./web-preview-compiler.mjs";
+import {makePreviewState,restorePreviewState} from "./web-preview-state.mjs";
+import { applyDisplayUpdate } from "./display-update.mjs";
+import { waitForPresentation } from "./playback-stats.mjs";
 const textExtensions = /\.(lay|laydoc|lcss|css|csv|json)$/i;
 export function outlineList(list) {
   const walk = (n) => {
@@ -89,7 +96,7 @@ export async function mountWebPlayer({
     clock = new PresentationClock(),
     reduced = matchMedia("(prefers-reduced-motion: reduce)");
   Object.assign(metrics, transportMetrics);
-  let thumbnails,sidebarResize;
+  let thumbnails,sidebarResize,previewCompiler;
   let pages = manifest.pages.map((p) => ({ ...p, ...json(p.file) })),
     index = 0,
     runtime,
@@ -144,7 +151,7 @@ export async function mountWebPlayer({
     if (!preview.presented && !busy) return;
     const time = viewStatic || clock.staticPage ? null : clock.time;
     if (preview.covered(time, pages[index].id)) {
-      root.dataset.painted = "true";
+      if (!busy && !painting) root.dataset.painted = "true";
       return;
     }
     // CSS updates immediately; only the sharp-density repaint settles briefly.
@@ -307,6 +314,7 @@ export async function mountWebPlayer({
       renderer || exporter
         ? [
             ...(exporter ? ["fflate.mjs", "web-archive.mjs", "web-export-raster.mjs"] : []),
+            "display-update.mjs",
             "skia/canvaskit.mjs",
             "presentation-transitions-data.mjs",
             "presentation-transitions.mjs",
@@ -358,15 +366,32 @@ export async function mountWebPlayer({
       type: "init",
       wasmBytes: bytes("runtime/wasm/laymesh.wasm"),
       skiaBytes: bytes("runtime/skia/canvaskit.wasm"),
-      budget: 256 * 1048576,
       preserveDrawingBuffer: true,
     };
-    if (canvas.transferControlToOffscreen && typeof Worker !== "undefined") {
+    if (typeof OffscreenCanvas !== "undefined" && typeof Worker !== "undefined") {
       worker = makeWorker("presentation-worker.mjs", true);
+      let frameSequence = 0;
       worker.onmessage = ({ data }) => {
+        if (data.type === "frame") {
+          try {
+            if (!closed && data.serial === serial && data.sequence > frameSequence) {
+              frameSequence = data.sequence;
+              const bitmap = data.bitmap;
+              if (canvas.width !== bitmap.width) canvas.width = bitmap.width;
+              if (canvas.height !== bitmap.height) canvas.height = bitmap.height;
+              const context = canvas.getContext("2d");
+              context.clearRect(0, 0, canvas.width, canvas.height);
+              context.drawImage(bitmap, 0, 0);
+            }
+          } finally { data.bitmap.close(); }
+          return;
+        }
         if (data.type === "context") {
           clock.running = false;
-          if (data.ready) go(index, true).catch(fail);
+          if (data.ready) {
+            if (previewCompiler && !previewCompiler.current?.valid) previewCompiler.schedule(0);
+            else go(index, true).catch(fail);
+          }
           return;
         }
         const p = pending.get(data.id);
@@ -384,8 +409,8 @@ export async function mountWebPlayer({
         pending.clear();
       };
       try {
-        const offscreen = canvas.transferControlToOffscreen();
-        await call({ ...init, canvas: offscreen }, [offscreen]);
+        const offscreen = new OffscreenCanvas(1, 1);
+        await call({ ...init, canvas: offscreen, bitmapFrames: true }, [offscreen]);
         return;
       } catch (error) {
         worker.terminate();
@@ -400,8 +425,12 @@ export async function mountWebPlayer({
       moduleURL("runtime/presentation-worker.mjs")
     );
     runtime = await createPresentationRuntime({ ...init, canvas }, (data) => {
+      if (data.type !== "context") return;
       clock.running = false;
-      if (data.ready) go(index, true).catch(fail);
+      if (data.ready) {
+        if (previewCompiler && !previewCompiler.current?.valid) previewCompiler.schedule(0);
+        else go(index, true).catch(fail);
+      }
     });
   }
   function resources(page) {
@@ -422,8 +451,9 @@ export async function mountWebPlayer({
       : clock.running
         ? "正在播放"
         : "动画预览";
-    el("full").disabled = busy || dirty;
-    el("windowed").disabled = busy || dirty;
+    const currentDirty = previewCompiler ? !previewCompiler.currentReady : dirty;
+    el("full").disabled = busy;
+    el("windowed").disabled = busy;
     el("seek").max = String(clock.duration);
     el("seek").value = String(clock.time);
     el("time").textContent = clock.time.toFixed(2) + " s";
@@ -440,10 +470,29 @@ export async function mountWebPlayer({
       "seek",
       "mode",
     ])
-      el(id).disabled = busy || dirty;
+      el(id).disabled = busy || currentDirty;
+    // Page selection stays available while the compiler is busy. Selecting a
+    // pending page changes the next job instead of queueing another document.
+    el("page").disabled = false;
   }
-  async function go(n, preserve = false) {
-    if (closed) return;
+  async function go(n, preserve = false, compiledVersion) {
+    if (closed || (compiledVersion!=null && compiledVersion!==previewCompiler?.version)) return;
+    n = Math.max(0, Math.min(n, pages.length - 1));
+    if (compiledVersion==null && previewCompiler && (!previewCompiler.records[n]?.valid || previewCompiler.pending)) {
+      // Cancel an earlier page activation before waiting for the new target.
+      // Otherwise its late renderer reply can restore the previous index.
+      serial++;
+      if (worker) worker.postMessage({ type: "target", serial });
+      else if (runtime) call({ type: "target", serial }).catch(fail);
+      busy = false;
+      requestedPaint = null;
+      index = n;
+      const key = previewCompiler.records[n]?.key;
+      sync();
+      await previewCompiler.ensure(key);
+      if (closed || previewCompiler.current?.key !== key) return;
+      n = Math.min(index, pages.length - 1);
+    }
     if (!preserve) {
       viewStatic = true;
       view.mode = "fit";
@@ -466,22 +515,25 @@ export async function mountWebPlayer({
     try {
       if (worker) worker.postMessage({ type: "target", serial: current });
       else await call({ type: "target", serial: current });
-      const installed = await call({
-        type: "load",
-        installOnly: true,
-        page: { ...p, resources: resources(p) },
-        priority: true,
-        ...size(),
-      });
+      const partial=p.listUpdate&&previewResidents.has(p.listUpdate.base);
+      const request={type:"load",installOnly:true,page:partial?{id:p.id,listUpdate:p.listUpdate,resources:resources(p)}:{...p,listUpdate:undefined,resources:resources(p)},priority:true,...size()};
+      let installed;
+      try{installed=await call(request);}catch(error){if(!partial)throw error;installed=await call({...request,page:{...p,listUpdate:undefined,resources:resources(p)}});}
+      previewResidents=new Set(installed.resident||[]);
+      await call({type:"retain",pages:pages.map(p=>p.id)});
+      if(installed.patched)metrics.pagePatches=(metrics.pagePatches||0)+1;
       if (installed.warnings?.length) status(installed.warnings.map(w=>w.message).join("\n"));
       if (current !== serial) return;
       index = n;
       clock.install(p.inspection?.animation, reduced.matches);
       if (preserve) clock.seek(time);
-      const drawSize = size();
-      const frame = await call({
+      let drawSize, frame, attempt = 0;
+      do {
+      drawSize = size();
+      frame = await call({
         type: "activate",
-        transition,
+        visible: document.visibilityState === "visible",
+        transition: attempt++ ? null : transition,
         serial: current,
         pageId: p.id,
         time: viewStatic || clock.staticPage ? null : clock.time,
@@ -494,6 +546,12 @@ export async function mountWebPlayer({
         viewStatic || clock.staticPage ? null : clock.time,
         p.id,
       );
+      frame.presentationConfirmed = frame.presentationConfirmed && await waitForPresentation();
+      if (current !== serial) return;
+      // The overview also reads the placeholder canvas. Copy after the owning
+      // window has received its bitmap, rather than caching a transient blank.
+      preview.present(drawSize, viewStatic || clock.staticPage ? null : clock.time, p.id);
+      } while (preview.request(0) && !preview.covered(viewStatic || clock.staticPage ? null : clock.time, p.id));
       metrics.pageInstalls =
         (metrics.pageInstalls || 0) + (installed.installed ? 1 : 0);
       metrics.prepareMs = performance.now() - start;
@@ -504,6 +562,7 @@ export async function mountWebPlayer({
         backend: frame.backend,
         pageId: p.id,
         transitionName: frame.transitionName,
+        presentationConfirmed: frame.presentationConfirmed,
         transitionMs: frame.transitionMs,
         transitionFrames: frame.transitionFrames,
         transitionError: frame.transitionError,
@@ -520,9 +579,10 @@ export async function mountWebPlayer({
     } finally {
       if (current === serial) {
         busy = false;
-        clock.running = !!resume || (!preserve && clock.running);
+        clock.running = !viewStatic && (!!resume || (!preserve && clock.running));
         last = performance.now();
-        sync();
+        if (previewCompiler) compileState(previewCompiler);
+        else sync();
         if (requestedPaint !== null) paint(requestedPaint);
       }
     }
@@ -569,13 +629,19 @@ export async function mountWebPlayer({
           if (current === serial) {
             if (frame.skipped || frame.type === "stale") continue;
             preview.present(drawSize, drawTime, pages[index].id);
-            root.dataset.painted = "true";
+            if (!clock.running) {
+              frame.presentationConfirmed = frame.presentationConfirmed && await waitForPresentation();
+              if (current !== serial) continue;
+              preview.present(drawSize, drawTime, pages[index].id);
+            }
+            root.dataset.painted = String(drawTime !== null || preview.covered(drawTime, pages[index].id));
             metrics.frames++;
             Object.assign(metrics, {
               sampleMs: frame.sampleMs,
               rasterMs: frame.rasterMs,
               width: drawSize.width,
               height: drawSize.height,
+              presentationConfirmed: frame.presentationConfirmed,
             });
           }
         }
@@ -592,7 +658,7 @@ export async function mountWebPlayer({
     if (closed) return;
     const seconds = Math.max(0, (now - last) / 1000);
     last = now;
-    if (clock.running && !busy && !dirty) {
+    if (clock.running && !busy && !(previewCompiler ? !previewCompiler.currentReady : dirty)) {
       if (clock.tick(seconds) && index + 1 < pages.length)
         go(index + 1).catch(fail);
       else paint();
@@ -629,7 +695,9 @@ export async function mountWebPlayer({
   el("replay").onclick = async () => {
     await go(index);
     viewStatic = false;
+    if (!clock.staticPage && !clock.running) clock.toggle();
     paint();
+    sync();
   };
   el("static").onclick = () => {
     viewStatic = true;
@@ -654,10 +722,10 @@ export async function mountWebPlayer({
       type: "init",
       wasmBytes: bytes("runtime/wasm/laymesh.wasm"),
       skiaBytes: bytes("runtime/skia/canvaskit.wasm"),
-      budget: 256 * 1048576,
     };
     const notify = (data) => {
       if (generation !== p.generation) return;
+      if (data.type === "navigation-visible") {p.navigationVisible(data);return;}
       if (data.type === "context") {
         if (data.ready && p.opened)
           p.go(p.index, { time: p.clock.time, preserve: true });
@@ -673,7 +741,7 @@ export async function mountWebPlayer({
     };
     if (p.canvas.transferControlToOffscreen && typeof Worker !== "undefined")
       try {
-        p.worker = makeWorker("presentation-worker.mjs", true);
+        p.worker = new PresentationWorkers(p, () => makeWorker("presentation-worker.mjs", true));
         p.worker.onmessage = ({ data }) => notify(data);
         p.worker.onerror = (e) => {
           for (const c of p.calls.values()) {
@@ -683,8 +751,7 @@ export async function mountWebPlayer({
           p.calls.clear();
           p.fail(Error(e.message));
         };
-        const canvas = p.canvas.transferControlToOffscreen();
-        await p.call({ ...init, canvas }, [canvas]);
+        await p.call(init);
         return;
       } catch (e) {
         p.rendererFallback = e.message;
@@ -711,21 +778,16 @@ export async function mountWebPlayer({
   const presentation = new Presentation({
     base: new URL("./", location.href),
     runtimeAdapter: presentationAdapter,
-    getStartPageId: () => pages[index]?.id,
-    provider: async () => {
-      const snapshot = pages.slice();
-      return {
-        pages: snapshot,
-        budget: 256 * 1048576,
-        prepareMs: 0,
-        store: {
-          async page(id) {
-            const p = snapshot.find((p) => p.id === id);
-            return { ...p, resources: resources(p) };
-          },
-          dispose() {},
-        },
+    getStartPageId: () => pages[index]?.sourceId || pages[index]?.id,
+    provider: async ({startPageId,signal,onProgress} = {}) => {
+      const load=async(p,id,{packed=false}={})=>{
+        if(packed&&p.file)return {id,name:p.name,packedPage:bytes(p.file).slice(),resources:resources(p)};
+        return {...p,id,listUpdate:undefined,resources:resources(p)};
       };
+      if(previewCompiler)return createWebPresentationSession({compiler:previewCompiler,startPageId,signal,load,
+        onProgress(progress){onProgress?.(progress);if(presentation.ready){presentation.preloadAgain=true;presentation.schedulePreload();}}});
+      const snapshot=pages.slice();
+      return {pages:snapshot,prepareMs:0,store:{page:(id,options)=>load(snapshot.find(p=>p.id===id),id,options),dispose(){}}};
     },
     onEnter() {
       previewSnapshot = {
@@ -779,7 +841,7 @@ export async function mountWebPlayer({
     let dragging=false,width=220;const setWidth=value=>{const limit=Math.min(480,Math.max(160,main.clientWidth-326));width=Math.max(160,Math.min(limit,value));splitter.setAttribute('aria-valuemax',limit);pane.style.flexBasis=width+'px';pane.style.width=width+'px';splitter.setAttribute('aria-valuenow',width);};splitter.setAttribute('aria-valuemin','160');splitter.setAttribute('aria-valuemax','480');setWidth(width);sidebarResize=new ResizeObserver(()=>setWidth(width));sidebarResize.observe(main);
     splitter.onpointerdown=e=>{dragging=true;splitter.setPointerCapture(e.pointerId);};splitter.onpointermove=e=>{if(dragging)setWidth(e.clientX-main.getBoundingClientRect().left);};splitter.onpointerup=splitter.onpointercancel=()=>{dragging=false;thumbnails?.pump();};splitter.onkeydown=e=>{if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();setWidth(width+(e.key==='ArrowRight'?20:-20));}};
     const toggle=show=>{pane.hidden=splitter.hidden=!show;el('page-sidebar').setAttribute('aria-pressed',String(show));};toggle(!matchMedia('(max-width:700px)').matches);el('page-sidebar').onclick=()=>toggle(pane.hidden);
-    thumbnails=new PageThumbnails({parent:pane,pages,renderer:new PagePreviewRenderer({runtime:rendererRuntime,page:async i=>({...pages[i],resources:resources(pages[i])})}),onSelect:i=>go(i).catch(fail),paused:()=>clock.running||presentation.opened||presenter.opened||dragging});
+    thumbnails=new PageThumbnails({parent:pane,pages,renderer:new PagePreviewRenderer({runtime:rendererRuntime,page:async i=>({...pages[i],listUpdate:undefined,resources:resources(pages[i])})}),onSelect:i=>go(i).catch(fail),paused:()=>clock.running||presentation.opened||presenter.opened||dragging});
   }else el('page-sidebar').hidden=true;
   el("full").onclick = () => {
     presentation.invalidate();
@@ -816,133 +878,135 @@ export async function mountWebPlayer({
       sync();
     }
   });
-  let workspace,
-    editor,
-    compiler,
-    compilerInit,
-    compileRequest = 0,
-    compilePending = new Map(),
-    compileChain = Promise.resolve();
-  async function compilerCall(data) {
-    if (!compiler) {
-      compiler = makeWorker("web-compiler-worker.mjs");
-      compiler.onmessage = ({ data }) => {
-        const p = compilePending.get(data.id);
-        if (p) {
-          compilePending.delete(data.id);
-          data.error ? p.reject(Error(data.error)) : p.resolve(data);
+  let workspace, editor, compilerPool, compilerModule;
+  let previewResidents=new Set();
+  const previewSession = Math.random().toString(36).slice(2);
+  const compiledPages = new Map();
+  const fontHashes = new WeakMap();
+  function contentHash(data){if(!fontHashes.has(data))fontHashes.set(data,sha256(data));return fontHashes.get(data);}
+  function fontVersion() {
+    return JSON.stringify(workspace.liveFonts.map(f => {
+      const data = f.bytes || (f.file && bytes(f.file));
+      if (data && !fontHashes.has(data)) fontHashes.set(data, sha256(data));
+      return [f.path, data ? fontHashes.get(data) : null];
+    }));
+  }
+  function getCompilerPool() {
+    return compilerPool ||= new WebCompilerPool({
+      create:()=>makeWorker('web-compiler-worker.mjs'),
+      initialize:async()=>({wasm:await (compilerModule ||= WebAssembly.compile(bytes('runtime/compiler/laymesh.wasm'))),
+        fonts:[...new Map((workspace?.liveFonts || manifest.fonts.filter(f=>f.file)).map(f=>[f.path,f])).values()]
+          .map(f=>({path:f.path,bytes:f.bytes || bytes(f.file)}))}),
+      knownPages:()=>Object.fromEntries([...compiledPages].map(([key,p])=>[key,p.listId])),
+      accept(data) {
+        if(data.version!=null && data.version!==previewCompiler?.version)return;
+        for(const page of data.pages || [])if(page.listUpdate){
+          const old=compiledPages.get(page.id);
+          if(old?.listId!==page.listUpdate.base)throw Error('Preview drawing baseline mismatch');
+          page.list=applyDisplayUpdate(old.list,page.listUpdate.update);
+          if(page.resourceDelta)page.resources=Object.fromEntries(Object.entries({...old.resources,...page.resources}).filter(([id])=>page.list.resources[id]));
         }
-      };
-      compiler.onerror = (event) => {
-        for (const p of compilePending.values())
-          p.reject(Error(event.message || "编辑 Worker 失败"));
-        compilePending.clear();
-        compiler.terminate();
-        compiler = null;
-        compilerInit = null;
-      };
-      compilerInit = compilerCall({
-        type: "init",
-        wasm: bytes("runtime/compiler/laymesh.wasm"),
-        fonts: [
-          ...new Map(
-            (workspace?.liveFonts || manifest.fonts.filter((f) => f.file)).map(
-              (f) => [f.path, f],
-            ),
-          ).values(),
-        ].map((f) => ({
-          path: f.path,
-          bytes: f.bytes || bytes(f.file),
-        })),
-      });
-    }
-    if (data.type !== "init") await compilerInit;
-    return new Promise((resolve, reject) => {
-      const id = ++compileRequest;
-      compilePending.set(id, { resolve, reject });
-      compiler.postMessage({ ...data, id });
+      },
     });
+  }
+  function compilerCall(data,onPlan,onProgress) { return getCompilerPool().call(data,onPlan,onProgress); }
+  function compileSnapshot() {
+    const assets = {
+      ...editor.assets,
+      "/@laymesh/font-bindings.json": encoder.encode(
+        JSON.stringify(workspace?.compilerBindings() || {}),
+      ),
+    };
+    return {
+      entry: manifest.project.entry,
+      page: manifest.project.page,
+      fontVersion: fontVersion(),
+      files: Object.fromEntries(Object.entries(editor.files).filter(([p]) => !editor.readonly?.has(p))),
+      assets,
+      assetKeys: Object.fromEntries(Object.entries(assets).map(([p, b]) => [p, contentHash(b)])),
+    };
   }
   async function compile() {
-    if (!editor || editor.composing) return;
-    const generation = editor.seq;
-    dirty = true;
-    clock.running = false;
-    root.dataset.compileState = "preparing";
+    if (!previewCompiler) return;
+    await previewCompiler.ensure();
+    if (dirty) throw Error(root.dataset.error || "修改后的场景尚未准备成功");
+  }
+  function compileState(c) {
+    if (closed) return;
+    const dependencies = c.records.flatMap(r => r.dependencies || []);
+    // Until every page has been examined, workspace transactions must keep the
+    // unexamined source/resource paths in their invalidation set too.
+    if (c.records.some(r => !r.dependencies))
+      dependencies.push(...Object.keys(editor.files), ...Object.keys(editor.assets));
+    manifest.project.dependencies = [...new Set(dependencies)];
+    dirty = !c.complete;
+    root.dataset.documentState = c.complete ? "ready" : c.failure ? "error" : "pending";
+    if (!(root.dataset.compileState === "fonts" && c.failure))
+      root.dataset.compileState = c.currentReady ? "ready" :
+        c.current?.error ? "error" : c.pending ? "pending" : "preparing";
+    if (c.currentReady && !c.failure) {
+      delete root.dataset.error;
+      const warnings = c.complete ? metrics.warnings : c.current?.warnings;
+      status(warnings?.length ? warnings.map(w => w.message).join("；") :
+        c.complete ? "可以播放" : "当前页已更新 · 正在更新其他页面…");
+    }
     sync();
-    status("正在准备修改后的场景…");
-    const task = compileChain.then(async () => {
-      if (generation !== editor.seq) return;
-      await workspace?.assertFonts();
-      metrics.compiles++;
-      root.dataset.compileCount = metrics.compiles;
-      const result = await compilerCall({
-        type: "compile",
-        entry: manifest.project.entry,
-        page: manifest.project.page,
-        files: Object.fromEntries(
-          Object.entries(editor.files).filter(
-            ([p]) => !editor.readonly?.has(p),
-          ),
-        ),
-        assets: {
-          ...editor.assets,
-          "/@laymesh/font-bindings.json": encoder.encode(
-            JSON.stringify(workspace?.compilerBindings() || {}),
-          ),
-        },
+  }
+  async function updateCompiledPages(result, records, version) {
+    if (typeof result.name === "string") {
+      manifest.name = result.name;
+      document.title = result.name || "LayMesh";
+      root.querySelector(".project-name").textContent = result.name || "LayMesh";
+    }
+    const selected = pages[index]?.sourceId || pages[index]?.id;
+    const fallback = pages[index];
+    for (const p of result.pages) {
+      const r = records.find(r => r.key === p.id);
+      r.value = { ...p, sourceId: p.id, id: p.listId || p.id + "@" + previewSession + ":" + version, list: p.list };
+    }
+    pages = records.map(r => r.value ? {...r.value,name:r.name} : {
+      ...fallback, sourceId: r.key, id: "pending:" + r.key, name: r.name,
+    });
+    const selectedIndex = records.findIndex(r => r.key === selected);
+    index = selectedIndex < 0 ? Math.min(index, pages.length - 1) : selectedIndex;
+    pageOptions();
+    const known = records.filter(r => r.dependencies);
+    if (records.every(r => r.valid)) {
+      const faces = new Map(known.flatMap(r => (r.fonts || []).map(f => [f.postscriptName, f])));
+      manifest.fontRequirements = [...faces.values()].map(r => {
+        const f = workspace.liveFonts.find(f => f.postscriptName === r.postscriptName) || r;
+        return { ...r, path: f.path, source: f.source };
       });
-      Object.assign(metrics, {
-        compileMs: result.compileMs,
-        compilerMemoryBytes: result.wasmMemoryBytes,
-      });
-      if (generation !== editor.seq) return;
-      workspace?.checkFontWarnings(result.warnings);
-      if (workspace)
-        manifest.fontRequirements = result.fonts.map((r) => {
-          const f =
-            workspace.liveFonts.find(
-              (f) => f.postscriptName === r.postscriptName,
-            ) || r;
-          return { ...r, path: f.path, source: f.source };
-        });
-      manifest.requestedFonts =
-        result.requestedFonts || manifest.requestedFonts;
-      workspace?.refreshFonts();
-      manifest.project.dependencies = result.dependencies;
-      pages = result.pages.map((p) => ({
-        ...p,
-        id: p.id + "@" + generation,
-        list: outlineList(p.list),
-      }));
-      pageOptions();
-      dirty = false;
-      await go(Math.min(index, pages.length - 1));
-      if (!root.querySelector(".edit-pane").hidden) {
-        viewStatic = true;
-        clock.running = false;
-        sync();
-        await paint(true);
+      manifest.requestedFonts = [...new Map(known.flatMap(r =>
+        (r.requestedFonts || []).map(f => [JSON.stringify(f), f]))).values()];
+      workspace.refreshFonts();
+    }
+    metrics.warnings = records.flatMap(r => r.warnings || []);
+    if (result.pages.some(p => p.id === records[index]?.key)) {
+      viewStatic = true;
+      clock.running = false;
+      // Paint the validated transaction before committing its page records.
+      // Waiting on ensure() here would wait for this very transaction.
+      await go(index, true, version);
+      if (version === previewCompiler.version) {
+        metrics.editToPreviewMs = performance.now() - (editor.changedAt || performance.now());
+        metrics.previewCompileMs = result.compileMs;
+        metrics.previewVersion = version;
+        previewCompiler.event('current-visible',{page:records[index]?.key});
       }
-      root.dataset.compileState = "ready";
-      metrics.warnings = result.warnings || [];
-      if (result.warnings?.length)
-        status(result.warnings.map((w) => w.message).join("；"));
-    });
-    compileChain = task.catch((error) => {
-      if (generation !== editor.seq) return;
-      if (root.dataset.compileState !== "fonts")
-        root.dataset.compileState = "error";
-      fail(error);
-    });
-    await compileChain;
+    } else if (result.unchanged?.includes(records[index]?.key) && metrics.previewVersion !== version) {
+      metrics.editToPreviewMs = performance.now() - (editor.changedAt || performance.now());
+      metrics.previewCompileMs = result.compileMs;
+      metrics.previewVersion = version;
+    }
   }
   function resetCompiler() {
-    compiler?.terminate();
-    for (const p of compilePending.values()) p.reject(Error("字体资源已更新"));
-    compilePending.clear();
-    compiler = null;
-    compilerInit = null;
+    // A workspace transaction also restarts the worker. Its unchanged pages
+    // remain usable; actual font bytes/bindings are compared in the snapshot.
+    presentation.invalidate();
+    previewCompiler?.schedule(0);
+    compilerPool?.dispose();
+    compilerPool=null;
   }
   async function openEditor() {
     const { createWorkspace } = await import(
@@ -950,17 +1014,15 @@ export async function mountWebPlayer({
     );
     const schedule = (immediate = false) => {
       editor.seq++;
-      schedule.changed();
-      clearTimeout(editor.debounce);
-      editor.debounce = setTimeout(
-        () => compile().catch(fail),
-        immediate ? 0 : 250,
-      );
+      schedule.changed(immediate ? 0 : 30);
     };
-    schedule.changed = () => {
+    schedule.changed = (delay = 30) => {
       clock.running = false;
       dirty = true;
+      editor.changedAt = performance.now();
       root.dataset.compileState = "pending";
+      presentation.invalidate();
+      previewCompiler?.schedule(delay);
       sync();
     };
     workspace = await createWorkspace({
@@ -972,7 +1034,7 @@ export async function mountWebPlayer({
       resetCompiler,
       async compileNow() {
         editor.seq++;
-        clearTimeout(editor.debounce);
+        previewCompiler.schedule(0);
         await compile();
         if (dirty)
           throw Error(root.dataset.error || "修改后的场景尚未准备成功");
@@ -991,6 +1053,36 @@ export async function mountWebPlayer({
       previewMenu,
     });
     editor = workspace.editor;
+    previewCompiler = new PreviewCompiler({
+      cancel:version=>compilerPool?.cancel(version),
+      concurrency:()=>navigator.hardwareConcurrency || 1,
+      canRun:key=>!compilerPool || compilerPool.canRun(key,[...previewCompiler.jobs.keys()]),
+      pages,
+      initial: restorePreviewState(manifest,files),
+      snapshot: compileSnapshot,
+      revision: () => editor.seq,
+      active: () => pages[index]?.sourceId || pages[index]?.id,
+      paused: () => editor.composing,
+      async compile(snapshot,onPlan,onProgress) {
+        await workspace.assertFonts();
+        metrics.compiles++;
+        root.dataset.compileCount = metrics.compiles;
+        const { fontVersion, ...request } = snapshot;
+        const result = await compilerCall({ ...request, type: "compile" },onPlan,onProgress);
+        Object.assign(metrics, { compileMs: result.compileMs, compilerMemoryBytes: compilerPool.memoryBytes });
+        return result;
+      },
+      update: updateCompiledPages,
+      commit(result) {
+        compilerPool?.retain(result.directory.map(p=>p.id));
+        for (const page of result.pages) compiledPages.set(page.id, page);
+        for (const key of compiledPages.keys())
+          if (!result.directory.some(p => p.id === key)) compiledPages.delete(key);
+      },
+      validate: result => workspace.checkFontWarnings(result.warnings),
+      state: compileState,
+      error: (error,key)=>{if(key===previewCompiler.current?.key)fail(error);},
+    });
     el("font-guide").hidden = false;
     el("embed-fonts").checked =
       manifest.embedFonts ?? manifest.schemaVersion === 1;
@@ -1189,10 +1281,10 @@ export async function mountWebPlayer({
     status("正在生成下载文件…");
     if (editor) {
       clearTimeout(editor.debounce);
-      await compileChain;
-      if (dirty) await compile();
+      await compile();
       if (dirty) throw Error("源码尚未通过编译，请修正后下载");
     }
+    const exportRevision = editor?.seq;
     if (editable && el("embed-fonts").checked) await workspace?.assertFonts();
     const originals = await sourceImages();
     const out = {},
@@ -1256,13 +1348,13 @@ export async function mountWebPlayer({
       const page = pages[i],
         file = "pages/" + i + ".json",
         clean = {
-          id: page.id,
+          id: page.sourceId || page.id,
           name: page.name,
           list: structuredClone(page.list),
           inspection: page.inspection,
         };
 
-      next.pages.push({ id: page.id, name: page.name, file });
+      next.pages.push({ id: clean.id, name: page.name, file });
       for (const [id, original] of Object.entries(resources(page))) {
         const preparedMime = clean.list.resources[id].mime;
         const source = originals.size
@@ -1308,12 +1400,15 @@ export async function mountWebPlayer({
       out[path] = selectPageTransitions(out[path], pages);
     }
     next.container = zip ? "zip" : "universal";
+    if(editable&&previewCompiler){const state=makePreviewState(next,out,previewCompiler.records);if(state)out["preview-state.json"]=encoder.encode(JSON.stringify(state));}
     out["manifest.json"] = encoder.encode(JSON.stringify(next));
     out["index.html"] = files["index.html"];
     out["README.txt"] = files["README.txt"];
     out["entries.json"] = encoder.encode(
       JSON.stringify([...Object.keys(out), "entries.json"]),
     );
+    if (editor && editor.seq !== exportRevision)
+      throw Error("下载准备期间源码已改变，请重试");
     const packed = archive.zip(out),
       blob = zip
         ? new Blob([packed], { type: "application/zip" })
@@ -1358,8 +1453,7 @@ export async function mountWebPlayer({
       sync();
       if (editor) {
         clearTimeout(editor.debounce);
-        await compileChain;
-        if (dirty) await compile();
+        await compile();
         if (dirty) throw Error("源码尚未通过编译，请修正后导出");
       }
     },
@@ -1385,6 +1479,12 @@ export async function mountWebPlayer({
     get workspace() {
       return workspace;
     },
+    get previewCompiler() { return previewCompiler; },
+    diagnostics() { return {schema:1,userAgent:navigator.userAgent,hardwareConcurrency:navigator.hardwareConcurrency,
+      timeOrigin:performance.timeOrigin,totals:previewCompiler?.totals,firstEdit:previewCompiler?.firstEdit,currentEdit:previewCompiler?.trace,
+      pages:previewCompiler?.records.map(r=>({id:r.key,ready:r.valid,error:r.error?.message,baseline:r.value?.listId || r.value?.id})),
+      compilerWorkers:compilerPool?.clients.size || 0,compilerMemoryBytes:compilerPool?.memoryBytes || 0,
+      preview:{editToPreviewMs:metrics.editToPreviewMs,version:metrics.previewVersion},presentation: {...presentation.metrics}}; },
     get editor() {
       return editor;
     },
@@ -1402,7 +1502,8 @@ export async function mountWebPlayer({
       cancelAnimationFrame(raf);
       clock.running = false;
       worker?.terminate();
-      compiler?.terminate();
+      compilerPool?.dispose();
+      previewCompiler?.dispose();
       runtime?.({ type: "dispose" });
       for (const p of pending.values()) {
         clearTimeout(p.timer);

@@ -1,0 +1,11 @@
+{
+  "input": "/home/keqing/source/LayMesh/video/04-LCSS与动画/exports/lifecycle-preview-v005/04_LCSS_离线可编辑_v005_资源复用优化.zip.html",
+  "output": "/home/keqing/source/LayMesh/video/04-LCSS与动画/exports/animation-preview-v008/04_LCSS_离线可编辑_v005_并行动画优化_v008.zip.html",
+  "originalSha256": "0c7972debcf3b397f077f31e7dcef5a6172fe61cd5308fdcdfb118176941d46e",
+  "outputSha256": "b07f7e26046fa01d44804866be2d5410015bc6ad1313bae2e6600df46500b06d",
+  "runtimeSha256": "891ae2a9420c4a1f98cbc71e5f983db9c5ad680c20d5cb9746b9151521f49064",
+  "preservedEntries": 32,
+  "bytes": 43500257,
+  "generatedContainerSha256": "a86eb305adbe9766f25343bb52e9b4a99868d877fed2995a7bf7604f5c57b8cd",
+  "containerCopiedFromValidatedCandidate": "/tmp/laymesh-animation/retained-buffer.html"
+}

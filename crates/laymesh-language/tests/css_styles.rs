@@ -53,7 +53,11 @@ fn builtin_library_imports_complete_full_paths_and_hover_pinned_versions() {
         s.update(uri, source);
         let completions = s.completions(uri, source.len());
         let options = completions.as_array().unwrap();
-        assert_eq!(options.len(), laymesh_core::style::bundled_stylesheets().len(), "{source}: {completions}");
+        assert_eq!(
+            options.len(),
+            laymesh_core::style::bundled_stylesheets().len(),
+            "{source}: {completions}"
+        );
         for library in laymesh_core::style::bundled_stylesheets() {
             let option = options
                 .iter()

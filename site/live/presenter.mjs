@@ -31,14 +31,17 @@ export class PresenterView {
  constructor(view,{runtime=()=>loadRendererRuntime(view.base),title=()=>document.title,css=()=>fetch(new URL('presentation.css',view.base)).then(r=>r.text())}={}){Object.assign(this,{view,runtime,title,css});view.presenter=this;}
  async open({fullscreen=false,startPageId=this.view.getStartPageId()}={}){
   if(this.opened){this.connect();return;}if(this.view.opened||this.view.closing)return;
-  this.opened=true;this.started=false;this.launching=false;this.beginPromise=null;this.notices=new Map();this.sequence=0;this.lastStateKey=null;this.previewQueue=[];this.session=token();this.lastSent=0;this.elapsed=0;this.timerPaused=false;this.timerAt=null;this.noticeText='';
+  this.opened=true;this.started=false;this.launching=false;this.beginPromise=null;this.lastPresented=null;this.notices=new Map();this.sequence=0;this.lastStateKey=null;this.previewQueue=[];this.session=token();this.lastSent=0;this.elapsed=0;this.timerPaused=false;this.timerAt=null;this.noticeText='';
   const v=this.view;this.saved={adapter:v.runtimeAdapter,audience:v.audience,onState:v.onState};v.audience=true;v.onState=view=>{this.saved?.onState(view);this.sendState();};window.laymeshPresentation=v;
   const adapter=async(view,generation)=>{this.runtimeData??=this.runtime();const data=await this.runtimeData;this.skia??=initializeSkia(data.skiaBytes||data.skiaURL);const ck=await this.skia;if(!this.opened||generation!==view.generation)return;
    this.staticRenderer??=new PagePreviewRenderer({runtime:()=>this.runtimeData,skiaInstance:ck,page:async i=>{await view.deck.wait?.(i);return view.deck.store.page(view.deck.pages[i].id);}});
    // Preserve just the audience output buffer, so a paused/hidden console can
    // request the existing image without another scene render or GPU readPixels.
-   const runtime=await createPresentationRuntime({...data,skiaInstance:ck,canvas:view.canvas,preserveDrawingBuffer:true,budget:view.deck?.budget??128*1048576,onPresent:meta=>{if(this.connected)this.mirror?.present(meta);}},event=>{
-    if(!this.opened||generation!==view.generation)return;this.mirror?.reset();if(event.ready){this.notice('','context');view.resident.clear();view.readyResident?.clear();view.go(view.index,{time:view.clock.time,preserve:true});}else{view.clock.running=false;this.notice('显示资源正在恢复，放映已暂停。','context');view.sync();}
+   const runtime=await createPresentationRuntime({...data,skiaInstance:ck,canvas:view.canvas,preserveDrawingBuffer:true,onPresent:meta=>{if(!this.opened||generation!==view.generation)return;this.lastPresented=meta;this.mirror?.present(meta);}},event=>{
+    if(!this.opened||generation!==view.generation)return;
+    if(event.type==='navigation-visible'){view.navigationVisible(event);return;}
+    if(event.type!=='context')return;
+    this.lastPresented=null;this.mirror?.reset();if(event.ready){this.notice('','context');view.resident.clear();view.readyResident?.clear();view.go(view.index,{time:view.clock.time,preserve:true});}else{view.clock.running=false;this.notice('显示资源正在恢复，放映已暂停。','context');view.sync();}
    });if(!this.opened||generation!==view.generation){await runtime({type:'dispose'});return;}view.mainRuntime=runtime;
   };adapter.stylesheet=this.saved.adapter?.stylesheet;v.runtimeAdapter=adapter;
   await v.open({fullscreen:false,startPageId,deferPreparation:true});if(!this.opened)return;
@@ -108,6 +111,9 @@ export class PresenterView {
    const [deck,bundle,css]=await Promise.all([this.view.prepare(this.view.startPageId),this.bundle??=bundleModules().catch(error=>{this.bundle=null;throw error;}),this.css(),ready]);clearTimeout(this.handshakeTimer);if(!this.opened||generation!==this.connectionGeneration)return;
    const channel=new MessageChannel();this.port=channel.port1;this.port.onmessage=({data})=>{if(this.opened&&generation===this.connectionGeneration)this.receive(data);else data.bitmap?.close();};this.port.start();
    this.mirror=new PresenterMirror({canvas:()=>this.view.canvas,send:(data,transfer)=>this.send(data,transfer),rect:(meta,c)=>{const p=deck.pages.find(p=>p.id===meta.pageId)?.inspection?.page;if(!p?.width||!p?.height)return;const k=Math.min(c.width/p.width,c.height/p.height),w=Math.round(p.width*k),h=Math.round(p.height*k);return [Math.round((c.width-w)/2),Math.round((c.height-h)/2),w,h];},onError:message=>this.notice(message)});
+   // The first audience frame can finish before the console connects. Retain
+   // its metadata while hidden, then copy the preserved buffer on readiness.
+   this.mirror.configure(this.mirrorOptions);if(this.lastPresented)this.mirror.present(this.lastPresented);
    popup.postMessage({version:2,nonce,bundle,config:{session:this.session,pages:deck.pages.map(p=>({id:p.id,name:p.name,inspection:p.inspection||{}})),title:this.title(),css}},origin,[channel.port2]);
   }catch(error){if(this.opened&&generation===this.connectionGeneration)this.notice(error.message,'connection');}
  }

@@ -14,7 +14,7 @@ try{
   const paint=()=>renderer.render([0,0,160,90],3840,2160);paint();const before=renderer.readPixels(),commands=renderer.owned.length;
   for(let i=0;i<120;i++){paint();await new Promise(requestAnimationFrame);}if(renderer.owned.length!==commands)throw Error('Retained objects grew during playback');
   await renderer.install(structuredClone(list),id=>draw.resource_bytes(id),2);paint();if(renderer.owned.length!==commands)throw Error('Identical content rebuilt commands');
-  await renderer.install(structuredClone(list),id=>draw.resource_bytes(id),3,0);if(renderer.pictureBytes!==0)throw Error('Zero cache budget retained pictures');paint();
+  await renderer.install(structuredClone(list),id=>draw.resource_bytes(id),3);if(renderer.owned.length!==commands)throw Error('Repeated installation lost retained commands');paint();
   const old=renderer.generation;try{await renderer.install({...list,resources:{broken:{mime:'image/png'}}},()=>new Uint8Array([0]),3);throw Error('Bad resource accepted');}catch(e){if(e.message==='Bad resource accepted')throw e;}
   if(renderer.generation!==old)throw Error('Failed install replaced the old generation');paint();const after=renderer.readPixels();if(before.some((v,i)=>v!==after[i]))throw Error('Failed update changed pixels');
   if(renderer.gl){

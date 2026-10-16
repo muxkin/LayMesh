@@ -30,7 +30,7 @@ impl OutlineBuilder for GlyphOutline {
 fn config(v: &V, kind: &str) -> Option<Args> {
     v.object()
         .filter(|o| o.borrow().kind == kind)
-        .map(|o| o.borrow().args.clone())
+        .map(|o| (*o.borrow().args).clone())
 }
 fn angle(a: &Args, k: &str, d: f64) -> f64 {
     match a.get(k).map(V::value) {

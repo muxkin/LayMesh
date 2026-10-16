@@ -1,0 +1,149 @@
+[
+  {
+    "name": "keyboard-before",
+    "command": [
+      "node",
+      "scripts/test-presentation-keyboard.cjs",
+      "/tmp/laymesh-lifecycle/baseline-final.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/keyboard-before"
+    ],
+    "started": 1792124169.2082076,
+    "state": "passed",
+    "seconds": 404.9519627094269
+  },
+  {
+    "name": "keyboard-after",
+    "command": [
+      "node",
+      "scripts/test-presentation-keyboard.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/keyboard-after"
+    ],
+    "started": 1792124574.160401,
+    "state": "passed",
+    "seconds": 642.9119718074799
+  },
+  {
+    "name": "native-keyboard-before",
+    "command": [
+      ".venv/bin/python",
+      "scripts/test-vscode-keyboard.py",
+      "--output",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/native-keyboard/before.json",
+      "--source",
+      "target/property-preview-fixture/storyboard.laydoc",
+      "--binary",
+      "/tmp/laymesh-lifecycle/baseline-extension-complete/bin/laymesh",
+      "--extension-dir",
+      "/tmp/laymesh-lifecycle/baseline-extension-complete"
+    ],
+    "started": 1792125217.0727518,
+    "state": "passed",
+    "seconds": 89.13921666145325
+  },
+  {
+    "name": "native-keyboard-after",
+    "command": [
+      ".venv/bin/python",
+      "scripts/test-vscode-keyboard.py",
+      "--output",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/native-keyboard/after.json",
+      "--source",
+      "target/property-preview-fixture/storyboard.laydoc",
+      "--binary",
+      "/home/keqing/source/LayMesh/target/lifecycle-v005-extension/bin/laymesh",
+      "--extension-dir",
+      "/home/keqing/source/LayMesh/target/lifecycle-v005-extension"
+    ],
+    "started": 1792125306.212245,
+    "state": "passed",
+    "seconds": 74.6436038017273
+  },
+  {
+    "name": "browser-lay",
+    "command": [
+      "node",
+      "scripts/test-web-semantic-performance.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/browser",
+      "50"
+    ],
+    "started": 1792125380.856201,
+    "state": "passed",
+    "seconds": 471.335973739624
+  },
+  {
+    "name": "browser-document",
+    "command": [
+      "node",
+      "scripts/test-web-document-performance.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/browser-document",
+      "50"
+    ],
+    "started": 1792125852.1925313,
+    "state": "passed",
+    "seconds": 957.8600764274597
+  },
+  {
+    "name": "native-lay",
+    "command": [
+      ".venv/bin/python",
+      "scripts/test-vscode-semantic-performance.py",
+      "--fixture",
+      "target/property-preview-fixture",
+      "--output",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/vscode",
+      "--binary",
+      "target/lifecycle-v005-extension/bin/laymesh",
+      "--extension-dir",
+      "target/lifecycle-v005-extension"
+    ],
+    "started": 1792126810.0528734,
+    "state": "passed",
+    "seconds": 203.17120718955994
+  },
+  {
+    "name": "native-document",
+    "command": [
+      ".venv/bin/python",
+      "scripts/test-vscode-document-performance.py",
+      "--fixture",
+      "target/property-preview-fixture",
+      "--output",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/vscode-document",
+      "--binary",
+      "target/lifecycle-v005-extension/bin/laymesh",
+      "--extension-dir",
+      "target/lifecycle-v005-extension"
+    ],
+    "started": 1792127013.2244105,
+    "state": "passed",
+    "seconds": 337.64976239204407
+  },
+  {
+    "name": "navigation-summary",
+    "command": [
+      "python3",
+      "scripts/summarize-resource-lifecycle.py",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16"
+    ],
+    "started": 1792127350.8744888,
+    "state": "passed",
+    "seconds": 0.04185366630554199
+  },
+  {
+    "name": "summary",
+    "command": [
+      "python3",
+      "scripts/summarize-semantic-preview-performance.py",
+      "--input",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16",
+      "--output",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16"
+    ],
+    "started": 1792127350.9166522,
+    "state": "passed",
+    "seconds": 0.10255980491638184
+  }
+]

@@ -48,7 +48,7 @@ fn retained_images_are_embedded_once_and_missing_data_is_an_error() {
         "shared".into(),
         Resource {
             mime: "image/png".into(),
-            data: png(),
+            data: png().into(),
             font_index: None,
             family: None,
         },

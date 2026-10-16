@@ -24,7 +24,7 @@ pub struct DisplayList {
 #[serde(rename_all = "camelCase")]
 pub struct Resource {
     pub mime: String,
-    pub data: Vec<u8>,
+    pub data: std::sync::Arc<Vec<u8>>,
     pub font_index: Option<u32>,
     pub family: Option<String>,
 }
@@ -268,7 +268,13 @@ struct Builder<'a> {
     font_resources: BTreeMap<String, String>,
 }
 impl Builder<'_> {
-    fn resource(&mut self, mime: &str, bytes: Vec<u8>, font: Option<&FontAsset>) -> String {
+    fn resource(
+        &mut self,
+        mime: &str,
+        bytes: impl Into<std::sync::Arc<Vec<u8>>>,
+        font: Option<&FontAsset>,
+    ) -> String {
+        let bytes = bytes.into();
         let id = format!(
             "{}-{}",
             laymesh_core::asset_cache::digest(&bytes),
@@ -554,7 +560,7 @@ impl Builder<'_> {
                     .entry(id.clone())
                     .or_insert_with(|| Resource {
                         mime: mime.into(),
-                        data: Vec::new(),
+                        data: Default::default(),
                         font_index: None,
                         family: None,
                     });
@@ -871,25 +877,59 @@ impl Builder<'_> {
                 }
             }
         }
-        if n["kind"] == "path" && laymesh_core::animation::draw::eligible(n)
+        if n["kind"] == "path"
+            && laymesh_core::animation::draw::eligible(n)
             && self.scene.animation.as_ref().is_some_and(|a| {
-                fn targets(nodes: &[Json], id: &str, child: &str) -> bool {
-                    nodes.iter().any(|n| (n["id"] == id && contains(n, child)) ||
-                        n["children"].as_array().is_some_and(|cs| targets(cs, id, child)))
+                fn targets<'a>(
+                    nodes: impl IntoIterator<Item = &'a Json>,
+                    id: &str,
+                    child: &str,
+                ) -> bool {
+                    nodes.into_iter().any(|n| {
+                        (n["id"] == id && contains(n, child))
+                            || n["children"]
+                                .as_array()
+                                .is_some_and(|cs| targets(cs, id, child))
+                    })
                 }
                 fn contains(n: &Json, id: &str) -> bool {
-                    n["id"] == id || n["children"].as_array().is_some_and(|cs| cs.iter().any(|c| contains(c,id)))
+                    n["id"] == id
+                        || n["children"]
+                            .as_array()
+                            .is_some_and(|cs| cs.iter().any(|c| contains(c, id)))
                 }
-                [&a.normal, &a.reduced, &a.print, &a.print_reduced].iter().any(|t|
-                    t.steps.iter().flat_map(|s| &s.clips).any(|c|
-                        c.tracks.iter().any(|t| t.property == "-laymesh-draw") && targets(&self.scene.nodes, &c.target, &result.name)))
-            }) {
-            let sx = if jnum(n,"intrinsicWidth",0.) > 0. { w/jnum(n,"intrinsicWidth",w) } else {1.};
-            let sy = if jnum(n,"intrinsicHeight",0.) > 0. { h/jnum(n,"intrinsicHeight",h) } else {1.};
+                [&a.normal, &a.reduced, &a.print, &a.print_reduced]
+                    .iter()
+                    .any(|t| {
+                        t.steps.iter().flat_map(|s| &s.clips).any(|c| {
+                            c.tracks.iter().any(|t| t.property == "-laymesh-draw")
+                                && targets(
+                                    self.scene.nodes.iter().map(|n| n.as_ref()),
+                                    &c.target,
+                                    &result.name,
+                                )
+                        })
+                    })
+            })
+        {
+            let sx = if jnum(n, "intrinsicWidth", 0.) > 0. {
+                w / jnum(n, "intrinsicWidth", w)
+            } else {
+                1.
+            };
+            let sy = if jnum(n, "intrinsicHeight", 0.) > 0. {
+                h / jnum(n, "intrinsicHeight", h)
+            } else {
+                1.
+            };
             let tr = transform * Affine::scale_non_uniform(sx, sy);
             if tr.determinant().abs() > 1e-30 {
                 let path = laymesh_core::geometry::resolved_path(n, tr);
-                let container = if n["endpointRecipe"].is_object() { transform } else { tr };
+                let container = if n["endpointRecipe"].is_object() {
+                    transform
+                } else {
+                    tr
+                };
                 result.hint["drawGeometry"] = json!({"d":path.to_svg(),
                     "transform":tr.as_coeffs(), "container":container.as_coeffs(),
                     "strokeStyle":n["strokeStyle"], "endpointRecipe":n["endpointRecipe"]});
@@ -917,6 +957,12 @@ impl Builder<'_> {
                 })
             })
             .collect::<Result<Vec<_>>>()?;
+        if let Some(identity) = n.get("_identity") {
+            if !result.hint.is_object() {
+                result.hint = json!({});
+            }
+            result.hint["_identity"] = identity.clone();
+        }
         Ok(result)
     }
 }
@@ -998,6 +1044,74 @@ pub(crate) fn preview_display_list(scene: &Scene) -> Result<DisplayList> {
     build(scene, true)
 }
 fn build(scene: &Scene, preview: bool) -> Result<DisplayList> {
+    build_reusing(scene, preview, None, false)
+}
+/// Reuse completed lowering for unchanged scene contributions. Font buffers
+/// already in the baseline also retain their resource identity without hashing
+/// the same multi-megabyte font again on each source edit.
+mod reuse;
+pub fn to_display_list_reusing(
+    scene: &Scene,
+    previous_scene: &Scene,
+    previous: &DisplayList,
+    outlined: bool,
+) -> Result<DisplayList> {
+    build_reusing(scene, false, Some((previous_scene, previous)), outlined)
+}
+/// Produce a patch from borrowed retained commands, without copying the
+/// unchanged paths and geometry hints into a temporary whole-page list.
+pub fn display_update_reusing(
+    scene: &Scene,
+    previous_scene: &Scene,
+    previous: &DisplayList,
+    outlined: bool,
+) -> Result<crate::display_update::DisplayUpdate> {
+    let (header, nodes, translations) =
+        lower_reusing(scene, false, Some((previous_scene, previous)), outlined)?;
+    let nodes: Vec<_> = nodes.iter().map(|n| n.as_ref()).collect();
+    let mut update =
+        crate::display_update::DisplayUpdate::between_retained(previous, &header, &nodes);
+    reuse::patch(&mut update, translations, false);
+    Ok(update)
+}
+pub fn preview_display_update_reusing(
+    scene: &Scene,
+    previous_scene: &Scene,
+    previous: &DisplayList,
+) -> Result<crate::display_update::DisplayUpdate> {
+    let (header, nodes, translations) =
+        lower_reusing(scene, true, Some((previous_scene, previous)), false)?;
+    let nodes: Vec<_> = nodes.iter().map(|n| n.as_ref()).collect();
+    let mut update =
+        crate::display_update::DisplayUpdate::between_retained(previous, &header, &nodes);
+    reuse::patch(&mut update, translations, false);
+    Ok(update)
+}
+fn build_reusing(
+    scene: &Scene,
+    preview: bool,
+    previous: Option<(&Scene, &DisplayList)>,
+    outlined: bool,
+) -> Result<DisplayList> {
+    let (mut list, nodes, translations) = lower_reusing(scene, preview, previous, outlined)?;
+    list.nodes = nodes
+        .into_iter()
+        .map(std::borrow::Cow::into_owned)
+        .collect();
+    reuse::snapshot(&mut list, translations)?;
+    Ok(list)
+}
+fn lower_reusing<'a>(
+    scene: &Scene,
+    preview: bool,
+    previous: Option<(&Scene, &'a DisplayList)>,
+    outlined: bool,
+) -> Result<(
+    DisplayList,
+    Vec<std::borrow::Cow<'a, DrawNode>>,
+    Vec<reuse::Translation>,
+)> {
+    use std::borrow::Cow;
     if !scene.width.is_finite()
         || !scene.height.is_finite()
         || scene.width <= 0.
@@ -1011,14 +1125,78 @@ fn build(scene: &Scene, preview: bool) -> Result<DisplayList> {
         resources: BTreeMap::new(),
         font_resources: BTreeMap::new(),
     };
+    if let Some((old_scene, previous)) = previous {
+        b.resources = previous.resources.clone();
+        for (key, font) in &scene.fonts {
+            if let Some((id, _)) = previous.resources.iter().find(|(_, r)| {
+                r.font_index == Some(font.index)
+                    && r.family.as_ref() == Some(&font.family)
+                    && (std::sync::Arc::ptr_eq(&r.data, &font.data)
+                        || (r.data.is_empty()
+                            && old_scene.fonts.get(key) == Some(font)
+                            && old_scene
+                                .fonts
+                                .values()
+                                .filter(|f| f.family == font.family && f.index == font.index)
+                                .count()
+                                == 1))
+            }) {
+                b.font_resources.insert(key.clone(), id.clone());
+            }
+        }
+    }
     let mut nodes = Vec::new();
+    let mut translations = vec![];
     if !scene.background.is_null() && scene.background != "none" {
         let rect = Rect::new(0., 0., scene.width, scene.height);
         let paint = b.paint(&scene.background, rect)?;
-        nodes.push(path_node(rect.to_path(0.001), paint, None, false));
+        nodes.push(Cow::Owned(path_node(
+            rect.to_path(0.001),
+            paint,
+            None,
+            false,
+        )));
+    }
+    let reusable = previous.filter(|(old, _)| reuse::context_matches(old, scene));
+    let mut previous_nodes = BTreeMap::new();
+    if let Some((old, drawing)) = reusable {
+        let background = usize::from(!old.background.is_null() && old.background != "none");
+        for (i, (n, draw)) in old
+            .nodes
+            .iter()
+            .zip(drawing.nodes.iter().skip(background))
+            .enumerate()
+        {
+            let key = n
+                .get("_identity")
+                .or_else(|| n.get("id"))
+                .and_then(Json::as_str);
+            if let Some(key) = key {
+                previous_nodes.insert(key, (n, draw, i + background));
+            }
+        }
     }
     for n in &scene.nodes {
-        nodes.push(b.node(n, Affine::IDENTITY)?);
+        let key = n
+            .get("_identity")
+            .or_else(|| n.get("id"))
+            .and_then(Json::as_str);
+        if let Some((old, draw, index)) = key.and_then(|key| previous_nodes.get(key)) {
+            if std::sync::Arc::ptr_eq(old, n) {
+                nodes.push(Cow::Borrowed(*draw));
+                continue;
+            }
+            if let Some(changes) = reuse::translations(old, n, draw, *index, nodes.len()) {
+                translations.extend(changes);
+                nodes.push(Cow::Borrowed(*draw));
+                continue;
+            }
+        }
+        let mut node = b.node(n, Affine::IDENTITY)?;
+        if outlined {
+            outline_nodes(std::slice::from_mut(&mut node));
+        }
+        nodes.push(Cow::Owned(node));
     }
     let mut page_transition = scene.page_transition.clone();
     if let Some(transition) = &mut page_transition {
@@ -1037,15 +1215,49 @@ fn build(scene: &Scene, preview: bool) -> Result<DisplayList> {
             transition.textures.insert(name, id);
         }
     }
-    Ok(DisplayList {
-        page_transition,
-        animation: scene.animation.clone(),
-        schema_version: DISPLAY_LIST_VERSION,
-        width: scene.width,
-        height: scene.height,
+    if previous.is_some() {
+        fn used(nodes: &[DrawNode], ids: &mut std::collections::BTreeSet<String>) {
+            for n in nodes {
+                match &n.kind {
+                    DrawKind::Group { children, mask, .. } => {
+                        used(children, ids);
+                        if let Some(mask) = mask {
+                            used(std::slice::from_ref(&mask.node), ids);
+                        }
+                    }
+                    DrawKind::Glyphs { resource, .. } | DrawKind::Image { resource, .. } => {
+                        ids.insert(resource.clone());
+                    }
+                    DrawKind::Path {
+                        fill: Paint::Pattern { nodes, .. },
+                        ..
+                    } => used(nodes, ids),
+                    _ => {}
+                }
+            }
+        }
+        let mut ids = b.font_resources.values().cloned().collect();
+        for n in &nodes {
+            used(std::slice::from_ref(n.as_ref()), &mut ids);
+        }
+        if let Some(t) = &page_transition {
+            ids.extend(t.textures.values().cloned());
+        }
+        b.resources.retain(|id, _| ids.contains(id));
+    }
+    Ok((
+        DisplayList {
+            page_transition,
+            animation: scene.animation.clone(),
+            schema_version: DISPLAY_LIST_VERSION,
+            width: scene.width,
+            height: scene.height,
+            nodes: vec![],
+            resources: b.resources,
+        },
         nodes,
-        resources: b.resources,
-    })
+        translations,
+    ))
 }
 
 #[cfg(test)]
@@ -1057,5 +1269,53 @@ mod color_tests {
         assert_eq!(rgba("aliceblue").unwrap(), rgba("#f0f8ff").unwrap());
         assert_eq!(rgba("transparent").unwrap(), [0.; 4]);
         assert!(rgba("not-a-color").is_err());
+    }
+}
+
+pub fn outline_nodes(nodes: &mut [DrawNode]) {
+    for n in nodes {
+        if matches!(&n.kind, DrawKind::Glyphs { .. }) {
+            let mut text = serde_json::to_value(&n.kind).unwrap();
+            for key in ["kind", "resource", "glyphs", "outlines"] {
+                text.as_object_mut().unwrap().remove(key);
+            }
+            if !n.hint.is_object() {
+                n.hint = json!({});
+            }
+            n.hint["exportText"] = text;
+        }
+        match &mut n.kind {
+            DrawKind::Glyphs {
+                outlines, color, ..
+            } => {
+                let children = outlines
+                    .iter()
+                    .map(|path| {
+                        DrawNode::new(DrawKind::Path {
+                            path: path.clone(),
+                            fill: Paint::Solid { rgba: *color },
+                            stroke: None,
+                            even_odd: false,
+                        })
+                    })
+                    .collect();
+                n.kind = DrawKind::Group {
+                    children,
+                    clip: None,
+                    mask: None,
+                };
+            }
+            DrawKind::Group { children, mask, .. } => {
+                outline_nodes(children);
+                if let Some(m) = mask {
+                    outline_nodes(std::slice::from_mut(m.node.as_mut()));
+                }
+            }
+            DrawKind::Path {
+                fill: Paint::Pattern { nodes, .. },
+                ..
+            } => outline_nodes(nodes),
+            _ => {}
+        }
     }
 }

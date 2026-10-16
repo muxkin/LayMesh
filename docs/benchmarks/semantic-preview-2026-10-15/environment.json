@@ -1,0 +1,31 @@
+{
+  "cpu": "AMD Ryzen 7 8745H w/ Radeon 780M Graphics",
+  "logicalCpuCount": 16,
+  "memoryTotalKiB": 21300832,
+  "kernel": "6.12.73+deb13-amd64",
+  "platform": "Linux-6.12.73+deb13-amd64-x86_64-with-glibc2.41",
+  "vscode": [
+    "1.113.0",
+    "cfbea10c5ffb233ea9177d34726e6056e89913dc",
+    "x64"
+  ],
+  "node": "v24.13.1",
+  "rust": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "gitBase": "d82b74bc5f8ec6aab3221ecd70d80e15b3b3583a",
+  "browserViewport": {
+    "width": 1600,
+    "height": 1000
+  },
+  "browserHeadless": true,
+  "browserNetwork": "file://; HTTP(S) requests blocked",
+  "browserRendering": "headless; backend selected automatically; renderer string was not captured per sample",
+  "vscodeViewport": {
+    "width": 1440,
+    "height": 1000,
+    "deviceScaleFactor": 2
+  },
+  "fontDifference": "browser uses attachment bytes; native fixture uses installed named fonts",
+  "chromium": "151.0.7922.34",
+  "firefox": "153.0",
+  "webkit": "26.5"
+}

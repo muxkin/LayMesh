@@ -1,0 +1,714 @@
+[
+  {
+    "name": "v005",
+    "clickAt": 1001,
+    "errors": [],
+    "initial": [
+      {
+        "key": "cover",
+        "dependencies": 4
+      },
+      {
+        "key": "seed",
+        "dependencies": 5
+      },
+      {
+        "key": "anchors",
+        "dependencies": 5
+      },
+      {
+        "key": "motion",
+        "dependencies": 6
+      },
+      {
+        "key": "offline",
+        "dependencies": 5
+      },
+      {
+        "key": "editable",
+        "dependencies": 5
+      }
+    ],
+    "calls": [
+      {
+        "target": "cover",
+        "start": 34.69999998807907,
+        "end": 773.6999999880791,
+        "compileMs": 631.6999999880791,
+        "metrics": [
+          {
+            "parsedFiles": 0,
+            "reusedFiles": 2,
+            "parsedBytes": 0,
+            "reusedStatements": 0,
+            "evaluatedExpressions": 1781,
+            "reusedExpressions": 15,
+            "reusedConstructions": 0,
+            "materializedNodes": 54,
+            "updatedAppearanceNodes": 0,
+            "reusedTextLayouts": 1,
+            "rebuiltTextLayouts": 5,
+            "reusedNodes": 78,
+            "rebuiltGeometry": 44,
+            "reusedGeometry": 2,
+            "fontCatalogBuilds": 0,
+            "cacheBytes": 59652319,
+            "queryCacheBytes": 31113453,
+            "queryResourceBytes": 0,
+            "nodeCacheBytes": 26893678,
+            "geometryCacheBytes": 1625787,
+            "textLayoutCacheBytes": 19401,
+            "evaluatedBuiltinCalls": {
+              "canvas": 1,
+              "cubic_to": 1539,
+              "ellipse": 10,
+              "g.add": 36,
+              "group": 2,
+              "line": 14,
+              "move_to": 33,
+              "page.add": 18,
+              "page.step": 2,
+              "path": 33,
+              "plot.add": 21,
+              "range": 2,
+              "rect": 5,
+              "s.animate": 2,
+              "shadow": 2,
+              "text": 5
+            },
+            "phaseMicros": {},
+            "cooperativeYields": 1,
+            "pipelineMs": {
+              "input": 3.7999999821186066,
+              "plan": 10,
+              "evaluate": 513.8999999761581,
+              "drawing": 51.80000001192093,
+              "metadata": 51.900000005960464
+            }
+          }
+        ]
+      }
+    ],
+    "states": [
+      {
+        "time": 4.0999999940395355,
+        "currentReady": false,
+        "complete": false,
+        "valid": [
+          "cover",
+          "seed",
+          "anchors",
+          "motion",
+          "offline",
+          "editable"
+        ]
+      },
+      {
+        "time": 920.3000000119209,
+        "currentReady": true,
+        "complete": true,
+        "valid": [
+          "cover",
+          "seed",
+          "anchors",
+          "motion",
+          "offline",
+          "editable"
+        ]
+      },
+      {
+        "time": 1058,
+        "currentReady": true,
+        "complete": true,
+        "valid": [
+          "cover",
+          "seed",
+          "anchors",
+          "motion",
+          "offline",
+          "editable"
+        ]
+      }
+    ],
+    "at": 7916.5,
+    "firstCurrentMs": 920.3000000119209,
+    "readyMs": 2024.300000011921,
+    "documentComplete": true,
+    "presentation": {
+      "transitions": [
+        {
+          "page": "cover@0gbofcagvtap:1",
+          "resident": false,
+          "compiledAtInput": true,
+          "firstVisibleMs": null,
+          "completedMs": 584.1999999880791,
+          "firstFrameMs": 584.1999999880791
+        }
+      ],
+      "frames": 0,
+      "firstPageMs": 0.09999999403953552,
+      "prepareMs": 0,
+      "resources": [
+        {
+          "page": "cover@0gbofcagvtap:1",
+          "stage": "entry",
+          "backend": "Skia WebGL2 (software driver)",
+          "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "rasterMs": 92.09999999403954,
+          "gpuSamples": [],
+          "cacheBytes": 0,
+          "staticTextureBytes": 5867392,
+          "staticCacheHits": 0,
+          "staticCacheBuilds": 2,
+          "layerTextureBytes": 0,
+          "layerCacheHits": 0,
+          "layerCacheBuilds": 0,
+          "layerCacheBudgetMisses": 0,
+          "layerCacheAllocationFailures": 0,
+          "frameCount": 1,
+          "sampleMs": 2,
+          "complete": true,
+          "prepareMs": 466.80000001192093
+        }
+      ],
+      "backend": "Skia WebGL2 (software driver)",
+      "lastFrame": {
+        "id": 3,
+        "type": "done",
+        "queueWaitMs": 0.199951171875,
+        "backend": "Skia WebGL2 (software driver)",
+        "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "rasterMs": 0.5,
+        "frameCacheHit": true,
+        "frameCount": 2,
+        "presentationConfirmed": true,
+        "sampleMs": 0,
+        "wasmMemoryBytes": 28508160,
+        "skiaMemoryBytes": 134217728,
+        "preserveDrawingBuffer": false,
+        "residentCacheBytes": 17944434,
+        "resident": [
+          "cover@0gbofcagvtap:1"
+        ]
+      },
+      "firstVisibleMs": 602.9000000059605,
+      "visibleSerial": 1
+    }
+  },
+  {
+    "name": "v008",
+    "clickAt": 986.4000000059605,
+    "errors": [],
+    "initial": [
+      {
+        "key": "cover"
+      },
+      {
+        "key": "seed"
+      },
+      {
+        "key": "anchors"
+      },
+      {
+        "key": "motion"
+      },
+      {
+        "key": "offline"
+      },
+      {
+        "key": "editable"
+      }
+    ],
+    "calls": [
+      {
+        "target": "cover",
+        "start": 35.5,
+        "end": 772.5,
+        "compileMs": 655.5999999940395,
+        "metrics": [
+          {
+            "parsedFiles": 0,
+            "reusedFiles": 2,
+            "parsedBytes": 0,
+            "reusedStatements": 0,
+            "evaluatedExpressions": 1781,
+            "reusedExpressions": 15,
+            "reusedConstructions": 0,
+            "materializedNodes": 54,
+            "updatedAppearanceNodes": 0,
+            "reusedTextLayouts": 1,
+            "rebuiltTextLayouts": 5,
+            "reusedNodes": 78,
+            "rebuiltGeometry": 44,
+            "reusedGeometry": 2,
+            "fontCatalogBuilds": 0,
+            "cacheBytes": 59652319,
+            "queryCacheBytes": 31113453,
+            "queryResourceBytes": 0,
+            "nodeCacheBytes": 26893678,
+            "geometryCacheBytes": 1625787,
+            "textLayoutCacheBytes": 19401,
+            "evaluatedBuiltinCalls": {
+              "canvas": 1,
+              "cubic_to": 1539,
+              "ellipse": 10,
+              "g.add": 36,
+              "group": 2,
+              "line": 14,
+              "move_to": 33,
+              "page.add": 18,
+              "page.step": 2,
+              "path": 33,
+              "plot.add": 21,
+              "range": 2,
+              "rect": 5,
+              "s.animate": 2,
+              "shadow": 2,
+              "text": 5
+            },
+            "phaseMicros": {},
+            "cooperativeYields": 1,
+            "pipelineMs": {
+              "input": 4.9000000059604645,
+              "plan": 11.099999994039536,
+              "evaluate": 533.2000000178814,
+              "drawing": 52,
+              "metadata": 54.19999998807907
+            }
+          }
+        ]
+      },
+      {
+        "target": "seed",
+        "start": 913.6000000238419,
+        "end": 1317.6000000238419,
+        "compileMs": 381.09999999403954,
+        "metrics": [
+          {
+            "parsedFiles": 2,
+            "reusedFiles": 1,
+            "parsedBytes": 3510,
+            "reusedStatements": 0,
+            "evaluatedExpressions": 1717,
+            "reusedExpressions": 0,
+            "reusedConstructions": 0,
+            "materializedNodes": 20,
+            "updatedAppearanceNodes": 0,
+            "reusedTextLayouts": 2,
+            "rebuiltTextLayouts": 7,
+            "reusedNodes": 73,
+            "rebuiltGeometry": 7,
+            "reusedGeometry": 2,
+            "fontCatalogBuilds": 0,
+            "cacheBytes": 108255887,
+            "queryCacheBytes": 61999262,
+            "queryResourceBytes": 0,
+            "nodeCacheBytes": 44585151,
+            "geometryCacheBytes": 1630246,
+            "textLayoutCacheBytes": 41228,
+            "evaluatedBuiltinCalls": {
+              "canvas": 1,
+              "cubic_to": 1536,
+              "ellipse": 5,
+              "g.add": 36,
+              "group": 2,
+              "last.animate": 1,
+              "line": 4,
+              "move_to": 32,
+              "page.add": 13,
+              "page.step": 3,
+              "path": 32,
+              "r.animate": 3,
+              "rect": 2,
+              "ring": 1,
+              "s.animate": 2,
+              "shadow": 4,
+              "source.add": 4,
+              "text": 7
+            },
+            "phaseMicros": {},
+            "cooperativeYields": 0,
+            "pipelineMs": {
+              "input": 0.20000001788139343,
+              "plan": 3,
+              "evaluate": 245,
+              "drawing": 87.80000001192093,
+              "metadata": 44.69999998807907
+            }
+          }
+        ]
+      },
+      {
+        "target": "anchors",
+        "start": 1320.2000000178814,
+        "end": 2472.5,
+        "compileMs": 1112.7999999821186,
+        "metrics": [
+          {
+            "parsedFiles": 0,
+            "reusedFiles": 3,
+            "parsedBytes": 0,
+            "reusedStatements": 0,
+            "evaluatedExpressions": 13,
+            "reusedExpressions": 76,
+            "reusedConstructions": 5,
+            "materializedNodes": 35,
+            "updatedAppearanceNodes": 0,
+            "reusedTextLayouts": 19,
+            "rebuiltTextLayouts": 0,
+            "reusedNodes": 67,
+            "rebuiltGeometry": 0,
+            "reusedGeometry": 9,
+            "fontCatalogBuilds": 0,
+            "cacheBytes": 205350847,
+            "queryCacheBytes": 123709118,
+            "queryResourceBytes": 0,
+            "nodeCacheBytes": 79935658,
+            "geometryCacheBytes": 1644224,
+            "textLayoutCacheBytes": 61847,
+            "evaluatedBuiltinCalls": {
+              "board.add": 3,
+              "canvas": 1,
+              "detail.add": 2,
+              "g.add": 5,
+              "main_group.add": 22,
+              "page.add": 9,
+              "page.step": 3,
+              "s.animate": 2,
+              "shadow": 12,
+              "t.animate": 3
+            },
+            "phaseMicros": {},
+            "cooperativeYields": 2,
+            "pipelineMs": {
+              "input": 0.09999999403953552,
+              "plan": 4.299999982118607,
+              "evaluate": 991.0999999940395,
+              "drawing": 55.79999998211861,
+              "metadata": 61.400000005960464
+            }
+          }
+        ]
+      },
+      {
+        "target": "motion",
+        "start": 2475.300000011921,
+        "end": 3345.9000000059605,
+        "compileMs": 812.5999999940395,
+        "metrics": [
+          {
+            "parsedFiles": 0,
+            "reusedFiles": 3,
+            "parsedBytes": 0,
+            "reusedStatements": 0,
+            "evaluatedExpressions": 2899,
+            "reusedExpressions": 74,
+            "reusedConstructions": 2,
+            "materializedNodes": 19,
+            "updatedAppearanceNodes": 1,
+            "reusedTextLayouts": 9,
+            "rebuiltTextLayouts": 3,
+            "reusedNodes": 150,
+            "rebuiltGeometry": 4,
+            "reusedGeometry": 1,
+            "fontCatalogBuilds": 0,
+            "cacheBytes": 313669047,
+            "queryCacheBytes": 205493377,
+            "queryResourceBytes": 0,
+            "nodeCacheBytes": 106430348,
+            "geometryCacheBytes": 1653985,
+            "textLayoutCacheBytes": 91337,
+            "evaluatedBuiltinCalls": {
+              "canvas": 1,
+              "cubic_to": 2628,
+              "ellipse": 8,
+              "g.add": 69,
+              "group": 1,
+              "line": 2,
+              "move_to": 54,
+              "page.add": 31,
+              "page.step": 1,
+              "path": 55,
+              "rect": 1,
+              "s.animate": 8,
+              "text": 3
+            },
+            "phaseMicros": {},
+            "cooperativeYields": 1,
+            "pipelineMs": {
+              "input": 0,
+              "plan": 8,
+              "evaluate": 594.0999999940395,
+              "drawing": 104.40000000596046,
+              "metadata": 105.90000000596046
+            }
+          }
+        ]
+      },
+      {
+        "target": "offline",
+        "start": 3348.4000000059605,
+        "end": 3705.800000011921,
+        "compileMs": 335.09999999403954,
+        "metrics": [
+          {
+            "parsedFiles": 1,
+            "reusedFiles": 2,
+            "parsedBytes": 2618,
+            "reusedStatements": 0,
+            "evaluatedExpressions": 1751,
+            "reusedExpressions": 0,
+            "reusedConstructions": 0,
+            "materializedNodes": 21,
+            "updatedAppearanceNodes": 0,
+            "reusedTextLayouts": 4,
+            "rebuiltTextLayouts": 7,
+            "reusedNodes": 80,
+            "rebuiltGeometry": 7,
+            "reusedGeometry": 1,
+            "fontCatalogBuilds": 0,
+            "cacheBytes": 362383048,
+            "queryCacheBytes": 236484924,
+            "queryResourceBytes": 0,
+            "nodeCacheBytes": 124123944,
+            "geometryCacheBytes": 1661796,
+            "textLayoutCacheBytes": 112384,
+            "evaluatedBuiltinCalls": {
+              "canvas": 1,
+              "close": 2,
+              "cubic_to": 1536,
+              "ellipse": 8,
+              "file.add": 5,
+              "g.add": 36,
+              "group": 2,
+              "line": 4,
+              "line_to": 6,
+              "move_to": 34,
+              "page.add": 19,
+              "page.step": 3,
+              "path": 34,
+              "rect": 2,
+              "ring": 1,
+              "s.animate": 2,
+              "shadow": 5,
+              "t.animate": 3,
+              "text": 9
+            },
+            "phaseMicros": {},
+            "cooperativeYields": 0,
+            "pipelineMs": {
+              "input": 0,
+              "plan": 10.5,
+              "evaluate": 203.80000001192093,
+              "drawing": 87.2999999821186,
+              "metadata": 33.5
+            }
+          }
+        ]
+      },
+      {
+        "target": "editable",
+        "start": 3708.5,
+        "end": 5105.4000000059605,
+        "compileMs": 1357.9000000059605,
+        "metrics": [
+          {
+            "parsedFiles": 0,
+            "reusedFiles": 3,
+            "parsedBytes": 0,
+            "reusedStatements": 0,
+            "evaluatedExpressions": 23,
+            "reusedExpressions": 47,
+            "reusedConstructions": 2,
+            "materializedNodes": 26,
+            "updatedAppearanceNodes": 0,
+            "reusedTextLayouts": 20,
+            "rebuiltTextLayouts": 1,
+            "reusedNodes": 1553,
+            "rebuiltGeometry": 1,
+            "reusedGeometry": 2,
+            "fontCatalogBuilds": 0,
+            "cacheBytes": 494197622,
+            "queryCacheBytes": 312517376,
+            "queryResourceBytes": 0,
+            "nodeCacheBytes": 177240928,
+            "geometryCacheBytes": 4293691,
+            "textLayoutCacheBytes": 145627,
+            "evaluatedBuiltinCalls": {
+              "canvas": 1,
+              "close": 1,
+              "code.add": 11,
+              "line_to": 6,
+              "move_to": 1,
+              "page.add": 17,
+              "page.step": 3,
+              "path": 1,
+              "rect": 3,
+              "s.animate": 3,
+              "shadow": 4,
+              "t.animate": 3,
+              "text": 1
+            },
+            "phaseMicros": {},
+            "cooperativeYields": 2,
+            "pipelineMs": {
+              "input": 0.09999999403953552,
+              "plan": 9.900000005960464,
+              "evaluate": 1218.300000011921,
+              "drawing": 60.599999994039536,
+              "metadata": 69
+            }
+          }
+        ]
+      }
+    ],
+    "states": [
+      {
+        "time": 5,
+        "currentReady": false,
+        "complete": false,
+        "valid": [
+          "cover",
+          "seed",
+          "anchors",
+          "motion",
+          "offline",
+          "editable"
+        ]
+      },
+      {
+        "time": 911.3000000119209,
+        "currentReady": true,
+        "complete": false,
+        "valid": [
+          "cover"
+        ]
+      },
+      {
+        "time": 1318,
+        "currentReady": true,
+        "complete": false,
+        "valid": [
+          "cover",
+          "seed"
+        ]
+      },
+      {
+        "time": 2472.9000000059605,
+        "currentReady": true,
+        "complete": false,
+        "valid": [
+          "cover",
+          "seed",
+          "anchors"
+        ]
+      },
+      {
+        "time": 3346.2000000178814,
+        "currentReady": true,
+        "complete": false,
+        "valid": [
+          "cover",
+          "seed",
+          "anchors",
+          "motion"
+        ]
+      },
+      {
+        "time": 3706.2000000178814,
+        "currentReady": true,
+        "complete": false,
+        "valid": [
+          "cover",
+          "seed",
+          "anchors",
+          "motion",
+          "offline"
+        ]
+      },
+      {
+        "time": 5107,
+        "currentReady": true,
+        "complete": true,
+        "valid": [
+          "cover",
+          "seed",
+          "anchors",
+          "motion",
+          "offline",
+          "editable"
+        ]
+      }
+    ],
+    "at": 6629.799999982119,
+    "firstCurrentMs": 911.3000000119209,
+    "readyMs": 6062.200000017881,
+    "documentComplete": true,
+    "presentation": {
+      "transitions": [
+        {
+          "page": "cover@mdvkm02jsp:1",
+          "resident": false,
+          "compiledAtInput": true,
+          "firstVisibleMs": 563.2999999821186,
+          "completedMs": 580.1999999880791,
+          "firstFrameMs": 580.1999999880791
+        }
+      ],
+      "frames": 0,
+      "firstPageMs": 4084.0999999940395,
+      "prepareMs": 0,
+      "resources": [
+        {
+          "page": "cover@mdvkm02jsp:1",
+          "stage": "entry",
+          "backend": "Skia WebGL2 (software driver)",
+          "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "rasterMs": 96,
+          "gpuSamples": [],
+          "cacheBytes": 0,
+          "staticTextureBytes": 5867392,
+          "staticCacheHits": 0,
+          "staticCacheBuilds": 2,
+          "layerTextureBytes": 0,
+          "layerCacheHits": 0,
+          "layerCacheBuilds": 0,
+          "layerCacheBudgetMisses": 0,
+          "layerCacheAllocationFailures": 0,
+          "frameCount": 1,
+          "sampleMs": 1.100000023841858,
+          "complete": true,
+          "prepareMs": 467.59999999403954
+        }
+      ],
+      "firstVisibleMs": 563.2999999821186,
+      "visibleSerial": 1,
+      "backend": "Skia WebGL2 (software driver)",
+      "lastFrame": {
+        "id": 3,
+        "type": "done",
+        "queueWaitMs": 0.10009765625,
+        "backend": "Skia WebGL2 (software driver)",
+        "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "rasterMs": 0.4000000059604645,
+        "frameCacheHit": true,
+        "frameCount": 2,
+        "presentationConfirmed": true,
+        "sampleMs": 0,
+        "wasmMemoryBytes": 28508160,
+        "skiaMemoryBytes": 134217728,
+        "preserveDrawingBuffer": true,
+        "residentCacheBytes": 17954922,
+        "resident": [
+          "cover@mdvkm02jsp:1"
+        ],
+        "renderer": 0,
+        "dispatchMs": 0,
+        "readyResident": [],
+        "entryFrames": [
+          "cover@mdvkm02jsp:1/1600/1000/0/false"
+        ]
+      }
+    }
+  }
+]

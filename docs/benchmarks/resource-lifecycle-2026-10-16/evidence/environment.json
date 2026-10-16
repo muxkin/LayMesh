@@ -1,0 +1,14 @@
+{
+  "platform": "Linux-6.12.73+deb13-amd64-x86_64-with-glibc2.41",
+  "machine": "x86_64",
+  "cpus": 16,
+  "availableCpus": 16,
+  "memory": {
+    "MemTotal": "21300832 kB",
+    "SwapTotal": "21809148 kB"
+  },
+  "cpu": "AMD Ryzen 7 8745H w/ Radeon 780M Graphics",
+  "node": "v24.13.1",
+  "rust": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "code": "1.113.0\ncfbea10c5ffb233ea9177d34726e6056e89913dc\nx64"
+}

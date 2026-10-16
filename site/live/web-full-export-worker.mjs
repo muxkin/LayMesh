@@ -40,9 +40,8 @@ self.onmessage = async ({ data }) => {
       renderer ||= new SkiaRenderer(exportSkia, new OffscreenCanvas(1, 1), {
         software: true,
         rasterOnly: true,
-        cacheMB: 32,
       });
-      await renderer.install(list, (id) => resources[id], 0, 32);
+      await renderer.install(list, (id) => resources[id], 0);
       let halo=0;
       if(data.format === "pdf") {
         const density=Math.max(width/(view[2]-view[0]),height/(view[3]-view[1]));

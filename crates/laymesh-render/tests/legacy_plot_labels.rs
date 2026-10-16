@@ -171,8 +171,8 @@ fn decorated_neighboring_panels_anchors_rotations_and_group_scaling_stay_fixed()
         exports(s);
     }
     assert_eq!(
-        a.nodes.iter().map(geometry).collect::<Vec<_>>(),
-        b.nodes.iter().map(geometry).collect::<Vec<_>>()
+        a.nodes.iter().map(|n| geometry(n)).collect::<Vec<_>>(),
+        b.nodes.iter().map(|n| geometry(n)).collect::<Vec<_>>()
     );
 }
 #[test]

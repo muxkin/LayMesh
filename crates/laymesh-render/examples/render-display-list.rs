@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         list.resources
             .get_mut(id)
             .ok_or("Unknown resource ID")?
-            .data = std::fs::read(path)?;
+            .data = std::fs::read(path)?.into();
     }
     let raster = render_rgba(&list, args[3].parse()?)?;
     std::fs::write(&args[2], raster.rgba)?;

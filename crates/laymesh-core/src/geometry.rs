@@ -430,16 +430,28 @@ impl Engine {
             .as_ref()
             .map(|node| node["id"].clone());
         let Some(name) = name else { return };
+        let identity = original
+            .borrow()
+            .node
+            .as_ref()
+            .and_then(|n| n.get("_identity"))
+            .cloned();
         let object = replayed.object().unwrap();
         let mut object = object.borrow_mut();
         let Some(node) = object.node.as_mut() else {
             return;
         };
         let old = node["id"].clone();
-        node["id"] = name.clone();
+        std::sync::Arc::make_mut(node)["id"] = name.clone();
+        if let Some(identity) = &identity {
+            std::sync::Arc::make_mut(node)["_identity"] = identity.clone();
+        }
         for node in &mut container.borrow_mut().nodes {
             if node["id"] == old {
-                node["id"] = name.clone();
+                std::sync::Arc::make_mut(node)["id"] = name.clone();
+                if let Some(identity) = &identity {
+                    std::sync::Arc::make_mut(node)["_identity"] = identity.clone();
+                }
             }
         }
     }
@@ -610,6 +622,9 @@ impl Engine {
     }
 
     pub fn add(&mut self, owner: Rc<RefCell<Object>>, pos: Vec<V>, a: Args, l: Loc) -> Result<V> {
+        crate::session::checkpoint(&self.file, l)?;
+        crate::session::queries::mutate(owner.borrow().id);
+        owner.borrow_mut().cache_identity = 0;
         if owner.borrow().sealed {
             return Err(self.error("E_GROUP", "组合放置后不能修改", l));
         }
@@ -681,7 +696,7 @@ impl Engine {
         let parent = {
             let owner = owner.borrow();
             if owner.args.contains_key("__style_type") {
-                owner.args.clone()
+                (*owner.args).clone()
             } else {
                 let mut args = owner.args.clone();
                 args.insert("__style_file".into(), V::text(&owner.file));
@@ -704,140 +719,187 @@ impl Engine {
             }
         };
         let vector = connection.map(|p| [p[1].x - p[0].x, p[1].y - p[0].y]);
-        let mut n = self
-            .materialize_with_line_vector(def.clone(), &a, &parent, vector)
-            .map_err(|mut error| {
-                if crate::arrows::is_arrow(&def.borrow().kind) {
-                    error.loc = l;
-                }
-                error
-            })?;
-        if !matches!(
-            string(&a, "offset_space", "container").as_str(),
-            "container" | "target"
-        ) {
-            return Err(self.error("E_ARG", "offset_space 须为 container/target", l));
-        }
-        let mut xy = if connection.is_some() {
-            a.get("offset")
-                .map(|v| self.connection_pair(v, l))
-                .transpose()?
-                .unwrap_or([0., 0.])
+        let placed_key = if connection.is_none() && owner.borrow().kind == "canvas" {
+            crate::session::active().and_then(|_| {
+                crate::session::nodes::placement_key(self, &def.borrow(), &a, &parent)
+            })
         } else {
-            pair(&a, "offset", [0., 0.], &self.unit, self.dpi)
+            None
         };
-        let target = if let Some(points) = connection {
-            [points[0].x, points[0].y]
+        let n = if let Some(node) = placed_key
+            .as_deref()
+            .and_then(|key| crate::session::nodes::get_shared(key, self))
+        {
+            crate::session::queries::mutate(def.borrow().id);
+            def.borrow_mut().sealed = true;
+            node
         } else {
-            match a.get("target") {
-                Some(value @ V::Geometry(_)) => {
-                    let point = self.geometry_anchor(value, None, l)?;
-                    if point.owner != owner.borrow().id {
-                        return Err(self.error("E_LAYOUT", "target 必须位于同一画布或组", l));
+            let node_reads = crate::session::nodes::style_reads(placed_key.as_deref());
+            let start_steps = self.steps;
+            let start_serial = self.serial;
+            let warning_count = (self.warnings.len(), self.css_warnings.borrow().len());
+            let mut n = self
+                .materialize_with_line_vector(def.clone(), &a, &parent, vector)
+                .map_err(|mut error| {
+                    if crate::arrows::is_arrow(&def.borrow().kind) {
+                        error.loc = l;
                     }
-                    if string(&a, "offset_space", "container") == "target" {
-                        let t = point.tangent(self, l)?;
-                        xy = [xy[0] * t.x + xy[1] * t.y, xy[0] * t.y - xy[1] * t.x];
-                    }
-                    [point.point.x, point.point.y]
-                }
-                Some(V::Anchor {
-                    owner: target,
-                    x,
-                    y,
-                    ..
-                }) => {
-                    if string(&a, "offset_space", "container") == "target" {
-                        return Err(self.error(
-                            "E_ANCHOR_DIRECTION",
-                            "目标没有路径方向，请使用 target=instance.path...",
-                            l,
-                        ));
-                    }
-                    if *target != owner.borrow().id {
-                        return Err(self.error("E_LAYOUT", "target 必须位于同一画布或组", l));
-                    }
-                    [*x, *y]
-                }
-                None => {
-                    if string(&a, "offset_space", "container") == "target" {
-                        return Err(self.error(
-                            "E_ANCHOR_DIRECTION",
-                            "offset_space=target 需要路径目标",
-                            l,
-                        ));
-                    }
-                    [0., 0.]
-                }
-                _ => return Err(self.error("E_ANCHOR", "target 需要锚点", l)),
+                    error
+                })?;
+            if !matches!(
+                string(&a, "offset_space", "container").as_str(),
+                "container" | "target"
+            ) {
+                return Err(self.error("E_ARG", "offset_space 须为 container/target", l));
             }
-        };
-        if owner.borrow().kind == "group" {
-            let mut record = a.clone();
-            record.insert("__material".into(), V::Object(def.clone()));
-            record.insert("__result_id".into(), V::num((self.serial + 1) as f64));
-            // `target` itself retains the instance and named anchor. Never
-            // infer that relation from coordinates, which may coincide.
-            owner.borrow_mut().layers.push(("__add".into(), record));
-        }
-        let rot = num(&a, "rotation", 0.);
-        n["rotation"] = json!(rot);
-        let opacity = num(&a, "opacity", 1.);
-        if !(0.0..=1.0).contains(&opacity) {
-            return Err(self.error("E_ARG", "opacity 必须在 0–1 之间", l));
-        }
-        n["opacity"] = json!(opacity * jnum(&n, "opacity", 1.));
-        let anc = if connection.is_some() {
-            "start".into()
-        } else {
-            string(&a, "anchor", "top_left")
-        };
-        let p = if let Some(V::Geometry(query)) = a.get("anchor") {
-            if !query.is_self_contained() {
-                return Err(self.error("E_ANCHOR", "anchor 选择器只能引用 self", l));
+            let mut xy = if connection.is_some() {
+                a.get("offset")
+                    .map(|v| self.connection_pair(v, l))
+                    .transpose()?
+                    .unwrap_or([0., 0.])
+            } else {
+                pair(&a, "offset", [0., 0.], &self.unit, self.dpi)
+            };
+            let target = if let Some(points) = connection {
+                [points[0].x, points[0].y]
+            } else {
+                match a.get("target") {
+                    Some(value @ V::Geometry(_)) => {
+                        let point = self.geometry_anchor(value, None, l)?;
+                        if point.owner != owner.borrow().id {
+                            return Err(self.error("E_LAYOUT", "target 必须位于同一画布或组", l));
+                        }
+                        if string(&a, "offset_space", "container") == "target" {
+                            let t = point.tangent(self, l)?;
+                            xy = [xy[0] * t.x + xy[1] * t.y, xy[0] * t.y - xy[1] * t.x];
+                        }
+                        [point.point.x, point.point.y]
+                    }
+                    Some(V::Anchor {
+                        owner: target,
+                        x,
+                        y,
+                        ..
+                    }) => {
+                        if string(&a, "offset_space", "container") == "target" {
+                            return Err(self.error(
+                                "E_ANCHOR_DIRECTION",
+                                "目标没有路径方向，请使用 target=instance.path...",
+                                l,
+                            ));
+                        }
+                        if *target != owner.borrow().id {
+                            return Err(self.error("E_LAYOUT", "target 必须位于同一画布或组", l));
+                        }
+                        [*x, *y]
+                    }
+                    None => {
+                        if string(&a, "offset_space", "container") == "target" {
+                            return Err(self.error(
+                                "E_ANCHOR_DIRECTION",
+                                "offset_space=target 需要路径目标",
+                                l,
+                            ));
+                        }
+                        [0., 0.]
+                    }
+                    _ => return Err(self.error("E_ANCHOR", "target 需要锚点", l)),
+                }
+            };
+            if owner.borrow().kind == "group" {
+                let mut record = a.clone();
+                record.insert("__material".into(), V::Object(def.clone()));
+                record.insert("__result_id".into(), V::num((self.serial + 1) as f64));
+                // `target` itself retains the instance and named anchor. Never
+                // infer that relation from coordinates, which may coincide.
+                owner.borrow_mut().layers.push(("__add".into(), record));
             }
-            let point =
-                self.geometry_anchor(a.get("anchor").unwrap(), Some((&n, owner.borrow().id)), l)?;
-            [point.point.x, point.point.y]
-        } else if matches!(anc.as_str(), "start" | "end") {
-            let q = n["endpoints"][if anc == "start" { 0 } else { 1 }]
-                .as_array()
-                .ok_or_else(|| self.error("E_LAYOUT", "start/end 需要线段或箭头实例", l))?;
-            let q = node_transform(&n) * Point::new(q[0].as_f64().unwrap(), q[1].as_f64().unwrap());
-            [q.x, q.y]
-        } else if let Some(name) = anc.strip_prefix("plot_") {
-            let b = &n["plotBounds"];
-            let f = anchor(name)
-                .filter(|_| !b.is_null())
-                .ok_or_else(|| self.error("E_LAYOUT", "plot 锚点需要原生图表实例", l))?;
-            crate::plot::local_to_parent(
-                &n,
-                [
-                    jnum(b, "x", 0.) + f[0] * jnum(b, "width", 0.),
-                    jnum(b, "y", 0.) + f[1] * jnum(b, "height", 0.),
-                ],
-            )
-        } else {
-            if anchor(&anc).is_none() {
-                return Err(self.error("E_LAYOUT", "未知 anchor", l));
+            let rot = num(&a, "rotation", 0.);
+            n["rotation"] = json!(rot);
+            let opacity = num(&a, "opacity", 1.);
+            if !(0.0..=1.0).contains(&opacity) {
+                return Err(self.error("E_ARG", "opacity 必须在 0–1 之间", l));
             }
-            node_anchor(&n, &anc)
+            n["opacity"] = json!(opacity * jnum(&n, "opacity", 1.));
+            let anc = if connection.is_some() {
+                "start".into()
+            } else {
+                string(&a, "anchor", "top_left")
+            };
+            let p = if let Some(V::Geometry(query)) = a.get("anchor") {
+                if !query.is_self_contained() {
+                    return Err(self.error("E_ANCHOR", "anchor 选择器只能引用 self", l));
+                }
+                let point = self.geometry_anchor(
+                    a.get("anchor").unwrap(),
+                    Some((&n, owner.borrow().id)),
+                    l,
+                )?;
+                [point.point.x, point.point.y]
+            } else if matches!(anc.as_str(), "start" | "end") {
+                let q = n["endpoints"][if anc == "start" { 0 } else { 1 }]
+                    .as_array()
+                    .ok_or_else(|| self.error("E_LAYOUT", "start/end 需要线段或箭头实例", l))?;
+                let q =
+                    node_transform(&n) * Point::new(q[0].as_f64().unwrap(), q[1].as_f64().unwrap());
+                [q.x, q.y]
+            } else if let Some(name) = anc.strip_prefix("plot_") {
+                let b = &n["plotBounds"];
+                let f = anchor(name)
+                    .filter(|_| !b.is_null())
+                    .ok_or_else(|| self.error("E_LAYOUT", "plot 锚点需要原生图表实例", l))?;
+                crate::plot::local_to_parent(
+                    &n,
+                    [
+                        jnum(b, "x", 0.) + f[0] * jnum(b, "width", 0.),
+                        jnum(b, "y", 0.) + f[1] * jnum(b, "height", 0.),
+                    ],
+                )
+            } else {
+                if anchor(&anc).is_none() {
+                    return Err(self.error("E_LAYOUT", "未知 anchor", l));
+                }
+                node_anchor(&n, &anc)
+            };
+            n["x"] = json!(target[0] + xy[0] - p[0]);
+            n["y"] = json!(target[1] + xy[1] - p[1]);
+            if connection.is_some() && (n["x"].as_f64().is_none() || n["y"].as_f64().is_none()) {
+                return Err(self.error("E_LAYOUT", "连接位置需要有限长度", l));
+            }
+            self.serial += 1;
+            n["id"] = json!(format!("instance-{}", self.serial));
+            if let Some(identity) = self.instance_identity() {
+                n["_identity"] = json!(identity);
+            }
+            let n = std::sync::Arc::new(n);
+            let node_reads = node_reads.finish();
+            if let Some(key) = &placed_key {
+                if warning_count == (self.warnings.len(), self.css_warnings.borrow().len()) {
+                    crate::session::nodes::put_shared(
+                        key.clone(),
+                        n.clone(),
+                        self.steps - start_steps,
+                        self.serial - start_serial,
+                        node_reads,
+                        self,
+                    );
+                }
+            }
+            n
         };
-        n["x"] = json!(target[0] + xy[0] - p[0]);
-        n["y"] = json!(target[1] + xy[1] - p[1]);
-        if connection.is_some() && (n["x"].as_f64().is_none() || n["y"].as_f64().is_none()) {
-            return Err(self.error("E_LAYOUT", "连接位置需要有限长度", l));
-        }
-        self.serial += 1;
-        n["id"] = json!(format!("instance-{}", self.serial));
         let mut instance = Object {
+            syntax_site: self.current_site,
+            cache_identity: 0,
+            placed_key: placed_key.map(Into::into),
+            origin_revision: 0,
+            origin_dependencies: Default::default(),
             kind: "instance".into(),
-            args: a.clone(),
+            args: a.clone().into(),
             file: self.file.clone(),
             loc: l,
             id: self.serial,
             nodes: vec![],
-            layers: vec![],
+            layers: Default::default(),
             sealed: true,
             width: jnum(&n, "width", 0.),
             height: jnum(&n, "height", 0.),
@@ -871,7 +933,7 @@ impl Engine {
         parent: &Args,
         vector: Option<[f64; 2]>,
     ) -> Result<Json> {
-        let o = def.borrow().clone();
+        let o = def.borrow();
         let old = std::mem::replace(&mut self.file, o.file.clone());
         let mut explicit = o.args.clone();
         if let Some(class) = placement.get("class") {
@@ -920,14 +982,65 @@ impl Engine {
         if let Some(origin) = placement.get("__call_origin") {
             a.insert("__placement_origin".into(), origin.clone());
         }
-        let result = self.make_node(&o, &a);
+        let key = crate::session::active().and_then(|_| crate::session::nodes::key(self, &o, &a));
+        let seal = matches!(o.kind.as_str(), "group" | "plot");
+        let result = if let Some(node) = key
+            .as_deref()
+            .and_then(|key| crate::session::nodes::materialized(key, self, &o, &a))
+        {
+            drop(o);
+            Ok(node)
+        } else {
+            let node_reads = crate::session::nodes::style_reads(key.as_deref());
+            let owned = Object::clone(&o);
+            drop(o);
+            let warnings = (self.warnings.len(), self.css_warnings.borrow().len());
+            let steps = self.steps;
+            let allocations = self.serial;
+            let result = self.make_node(&owned, &a);
+            let node_reads = node_reads.finish();
+            if let (Some(key), Ok(node)) = (key, &result) {
+                if (self.warnings.len(), self.css_warnings.borrow().len()) == warnings {
+                    crate::session::nodes::put(
+                        key,
+                        node,
+                        self.steps - steps,
+                        self.serial - allocations,
+                        node_reads,
+                        self,
+                    );
+                }
+            }
+            result
+        };
         self.file = old;
-        if matches!(o.kind.as_str(), "group" | "plot") {
+        if seal {
+            crate::session::queries::mutate(def.borrow().id);
             def.borrow_mut().sealed = true;
         }
         result
     }
     fn make_node(&mut self, o: &Object, a: &Args) -> Result<Json> {
+        let _profile = crate::session::profile("make_node");
+        if let Some(state) = crate::session::active() {
+            state.borrow_mut().metrics.materialized_nodes += 1;
+        }
+        if !matches!(
+            o.kind.as_str(),
+            "group"
+                | "rect"
+                | "ellipse"
+                | "line"
+                | "path"
+                | "polyline"
+                | "polygon"
+                | "star"
+                | "ring"
+                | "arc"
+                | "sector"
+        ) {
+            crate::session::queries::effect();
+        }
         let l = o.loc;
         let size = pair(a, "size", [f64::NAN, f64::NAN], &self.unit, self.dpi);
         let mut n = match o.kind.as_str() {
@@ -1132,6 +1245,7 @@ impl Engine {
                     .fold(f64::NEG_INFINITY, f64::max);
                 let (content_width, content_height) = (max_x - min_x, max_y - min_y);
                 for n in &mut children {
+                    let n = std::sync::Arc::make_mut(n);
                     n["x"] = json!(jnum(n, "x", 0.) - min_x);
                     n["y"] = json!(jnum(n, "y", 0.) - min_y);
                 }
@@ -1353,164 +1467,173 @@ impl Engine {
         n
     }
     pub fn shape(&self, o: &Object, a: &Args, size: [f64; 2]) -> Result<Json> {
+        let _profile = crate::session::profile("shape");
         if crate::arrows::is_arrow(&o.kind) {
             return crate::arrows::shape(self, o, a, size);
         }
         let l = o.loc;
         let g = |key: &str, d: f64| length(a, key, d, &self.unit, self.dpi);
-        let mut p = BezPath::new();
-        let mut fixed = None;
-        let mut recipe = Json::Null;
-        match o.kind.as_str() {
-            "rect" | "ellipse" => {
-                let (w, h) = (size[0], size[1]);
-                if !w.is_finite() || !h.is_finite() || w <= 0. || h <= 0. {
-                    return Err(self.error("E_LAYOUT", "size 需要正尺寸", l));
-                }
-                p = if o.kind == "rect" {
-                    self.css_box_path(a, w, h, 0.)
-                } else {
-                    kurbo::Ellipse::new((w / 2., h / 2.), (w / 2., h / 2.), 0.).to_path(0.0001)
-                };
-                fixed = Some((w, h));
-                recipe = json!({"kind":o.kind,"width":w,"height":h,"radius":g("border_radius",0.)});
-                if let Some(fraction) = a
-                    .get("border_radius")
-                    .map(V::json)
-                    .and_then(|v| v["__css_fraction"].as_f64())
-                {
-                    recipe["radiusFraction"] = json!(fraction);
-                }
-            }
-            "line" => {
-                let (dx, dy) = crate::endpoints::line_vector(self, a, l)?;
-                let (w, h) = (dx.abs(), dy.abs());
-                let start = Point::new(if dx < 0. { w } else { 0. }, if dy < 0. { h } else { 0. });
-                let end = Point::new(if dx < 0. { 0. } else { w }, if dy < 0. { 0. } else { h });
-                p.move_to(start);
-                p.line_to(end);
-                fixed = Some((w, h));
-            }
-            "polygon" | "polyline" => {
-                let vs = array(a, "points");
-                if vs.len() < 2 {
-                    return Err(self.error("E_PATH", "至少需要两个点", l));
-                }
-                for (i, v) in vs.iter().enumerate() {
-                    let v = v.list();
-                    if v.len() != 2 {
-                        return Err(self.error("E_PATH", "点需要两个坐标", l));
+        let (mut p, fixed, mut recipe) = crate::session::geometry::memo(self, o, a, size, || {
+            let mut p = BezPath::new();
+            let mut fixed = None;
+            let mut recipe = Json::Null;
+            match o.kind.as_str() {
+                "rect" | "ellipse" => {
+                    let (w, h) = (size[0], size[1]);
+                    if !w.is_finite() || !h.is_finite() || w <= 0. || h <= 0. {
+                        return Err(self.error("E_LAYOUT", "size 需要正尺寸", l));
                     }
-                    let q = (self.len(&v[0], l)?, self.len(&v[1], l)?);
-                    if i == 0 { p.move_to(q) } else { p.line_to(q) }
+                    p = if o.kind == "rect" {
+                        self.css_box_path(a, w, h, 0.)
+                    } else {
+                        kurbo::Ellipse::new((w / 2., h / 2.), (w / 2., h / 2.), 0.).to_path(0.0001)
+                    };
+                    fixed = Some((w, h));
+                    recipe =
+                        json!({"kind":o.kind,"width":w,"height":h,"radius":g("border_radius",0.)});
+                    if let Some(fraction) = a
+                        .get("border_radius")
+                        .map(V::json)
+                        .and_then(|v| v["__css_fraction"].as_f64())
+                    {
+                        recipe["radiusFraction"] = json!(fraction);
+                    }
                 }
-                if o.kind == "polygon" {
+                "line" => {
+                    let (dx, dy) = crate::endpoints::line_vector(self, a, l)?;
+                    let (w, h) = (dx.abs(), dy.abs());
+                    let start =
+                        Point::new(if dx < 0. { w } else { 0. }, if dy < 0. { h } else { 0. });
+                    let end =
+                        Point::new(if dx < 0. { 0. } else { w }, if dy < 0. { 0. } else { h });
+                    p.move_to(start);
+                    p.line_to(end);
+                    fixed = Some((w, h));
+                }
+                "polygon" | "polyline" => {
+                    let vs = array(a, "points");
+                    if vs.len() < 2 {
+                        return Err(self.error("E_PATH", "至少需要两个点", l));
+                    }
+                    for (i, v) in vs.iter().enumerate() {
+                        let v = v.list();
+                        if v.len() != 2 {
+                            return Err(self.error("E_PATH", "点需要两个坐标", l));
+                        }
+                        let q = (self.len(&v[0], l)?, self.len(&v[1], l)?);
+                        if i == 0 { p.move_to(q) } else { p.line_to(q) }
+                    }
+                    if o.kind == "polygon" {
+                        p.close_path();
+                    }
+                }
+                "star" => {
+                    let count = num(a, "points", 5.) as usize;
+                    if !(3..=1000).contains(&count) {
+                        return Err(self.error("E_PATH", "星形顶点数须为 3–1000", l));
+                    }
+                    let (outer, inner) = (g("outer_radius", 10.), g("inner_radius", 5.));
+                    let rot = num(a, "rotation", 0.).to_radians() - std::f64::consts::FRAC_PI_2;
+                    for i in 0..count * 2 {
+                        let r = if i % 2 == 0 { outer } else { inner };
+                        let theta = rot + i as f64 * std::f64::consts::PI / count as f64;
+                        let q = (outer + r * theta.cos(), outer + r * theta.sin());
+                        if i == 0 { p.move_to(q) } else { p.line_to(q) }
+                    }
                     p.close_path();
                 }
-            }
-            "star" => {
-                let count = num(a, "points", 5.) as usize;
-                if !(3..=1000).contains(&count) {
-                    return Err(self.error("E_PATH", "星形顶点数须为 3–1000", l));
-                }
-                let (outer, inner) = (g("outer_radius", 10.), g("inner_radius", 5.));
-                let rot = num(a, "rotation", 0.).to_radians() - std::f64::consts::FRAC_PI_2;
-                for i in 0..count * 2 {
-                    let r = if i % 2 == 0 { outer } else { inner };
-                    let theta = rot + i as f64 * std::f64::consts::PI / count as f64;
-                    let q = (outer + r * theta.cos(), outer + r * theta.sin());
-                    if i == 0 { p.move_to(q) } else { p.line_to(q) }
-                }
-                p.close_path();
-            }
-            "ring" => {
-                let (r, inner) = (g("outer_radius", 10.), g("inner_radius", 5.));
-                if inner < 0. || inner >= r {
-                    return Err(self.error("E_PATH", "圆环半径无效", l));
-                }
-                p = kurbo::Circle::new((r, r), r).to_path(0.0001);
-                p.extend(kurbo::Circle::new((r, r), inner).to_path(0.0001).iter());
-                recipe = json!({"kind":"ring","radius":r,"inner":inner});
-            }
-            "arc" | "sector" => {
-                let r = g("radius", 10.);
-                let start = num(a, "start", 0.).to_radians();
-                let sweep = (num(a, "end", 360.) - num(a, "start", 0.)).to_radians();
-                let arc = kurbo::Arc::new((r, r), (r, r), start, sweep, 0.);
-                recipe = json!({"kind":o.kind,"radius":r,"start":start,"sweep":sweep});
-                p = arc.to_path(0.0001);
-                if o.kind == "sector" {
-                    p.line_to((r, r));
-                    p.close_path();
-                }
-            }
-            "path" => {
-                let cmds = array(a, "commands");
-                let mut commands = vec![];
-                if cmds.len() > 10_000 {
-                    return Err(self.error("E_LIMIT", "路径命令超过上限", l));
-                }
-                for cmd in cmds {
-                    let o = cmd
-                        .object()
-                        .ok_or_else(|| self.error("E_PATH", "无效路径命令", l))?;
-                    let o = o.borrow();
-                    let c = &o.args;
-                    let coord = |k: &str| length(c, k, 0., &self.unit, self.dpi);
-                    let mut command = args_json(c);
-                    command["kind"] = json!(o.kind);
-                    for key in ["x", "y", "cx", "cy", "c1x", "c1y", "c2x", "c2y", "rx", "ry"] {
-                        if c.contains_key(key) {
-                            command[key] = json!(coord(key));
-                        }
+                "ring" => {
+                    let (r, inner) = (g("outer_radius", 10.), g("inner_radius", 5.));
+                    if inner < 0. || inner >= r {
+                        return Err(self.error("E_PATH", "圆环半径无效", l));
                     }
-                    command["rotation"] = json!(num(c, "rotation", 0.).to_radians());
-                    commands.push(command);
-                    match o.kind.as_str() {
-                        "move_to" => p.move_to((coord("x"), coord("y"))),
-                        "line_to" => p.line_to((coord("x"), coord("y"))),
-                        "quad_to" => {
-                            p.quad_to((coord("cx"), coord("cy")), (coord("x"), coord("y")))
-                        }
-                        "cubic_to" => p.curve_to(
-                            (coord("c1x"), coord("c1y")),
-                            (coord("c2x"), coord("c2y")),
-                            (coord("x"), coord("y")),
-                        ),
-                        "close" => p.close_path(),
-                        "arc_to" => {
-                            let s = p
-                                .elements()
-                                .last()
-                                .and_then(|e| match e {
-                                    PathEl::MoveTo(p)
-                                    | PathEl::LineTo(p)
-                                    | PathEl::QuadTo(_, p)
-                                    | PathEl::CurveTo(_, _, p) => Some(*p),
-                                    _ => None,
-                                })
-                                .unwrap_or(Point::ORIGIN);
-                            let arc = kurbo::SvgArc {
-                                from: s,
-                                to: Point::new(coord("x"), coord("y")),
-                                radii: kurbo::Vec2::new(coord("rx"), coord("ry")),
-                                x_rotation: num(c, "rotation", 0.).to_radians(),
-                                large_arc: yes(c, "large_arc", false),
-                                sweep: yes(c, "sweep", false),
-                            };
-                            if let Some(arc) = kurbo::Arc::from_svg_arc(&arc) {
-                                arc.to_cubic_beziers(0.0001, |p1, p2, p3| p.curve_to(p1, p2, p3));
-                            } else {
-                                p.line_to(arc.to);
+                    p = kurbo::Circle::new((r, r), r).to_path(0.0001);
+                    p.extend(kurbo::Circle::new((r, r), inner).to_path(0.0001).iter());
+                    recipe = json!({"kind":"ring","radius":r,"inner":inner});
+                }
+                "arc" | "sector" => {
+                    let r = g("radius", 10.);
+                    let start = num(a, "start", 0.).to_radians();
+                    let sweep = (num(a, "end", 360.) - num(a, "start", 0.)).to_radians();
+                    let arc = kurbo::Arc::new((r, r), (r, r), start, sweep, 0.);
+                    recipe = json!({"kind":o.kind,"radius":r,"start":start,"sweep":sweep});
+                    p = arc.to_path(0.0001);
+                    if o.kind == "sector" {
+                        p.line_to((r, r));
+                        p.close_path();
+                    }
+                }
+                "path" => {
+                    let cmds = array(a, "commands");
+                    let mut commands = vec![];
+                    if cmds.len() > 10_000 {
+                        return Err(self.error("E_LIMIT", "路径命令超过上限", l));
+                    }
+                    for cmd in cmds {
+                        let o = cmd
+                            .object()
+                            .ok_or_else(|| self.error("E_PATH", "无效路径命令", l))?;
+                        let o = o.borrow();
+                        let c = &o.args;
+                        let coord = |k: &str| length(c, k, 0., &self.unit, self.dpi);
+                        let mut command = args_json(c);
+                        command["kind"] = json!(o.kind);
+                        for key in ["x", "y", "cx", "cy", "c1x", "c1y", "c2x", "c2y", "rx", "ry"] {
+                            if c.contains_key(key) {
+                                command[key] = json!(coord(key));
                             }
                         }
-                        _ => return Err(self.error("E_PATH", "无效路径命令", l)),
+                        command["rotation"] = json!(num(c, "rotation", 0.).to_radians());
+                        commands.push(command);
+                        match o.kind.as_str() {
+                            "move_to" => p.move_to((coord("x"), coord("y"))),
+                            "line_to" => p.line_to((coord("x"), coord("y"))),
+                            "quad_to" => {
+                                p.quad_to((coord("cx"), coord("cy")), (coord("x"), coord("y")))
+                            }
+                            "cubic_to" => p.curve_to(
+                                (coord("c1x"), coord("c1y")),
+                                (coord("c2x"), coord("c2y")),
+                                (coord("x"), coord("y")),
+                            ),
+                            "close" => p.close_path(),
+                            "arc_to" => {
+                                let s = p
+                                    .elements()
+                                    .last()
+                                    .and_then(|e| match e {
+                                        PathEl::MoveTo(p)
+                                        | PathEl::LineTo(p)
+                                        | PathEl::QuadTo(_, p)
+                                        | PathEl::CurveTo(_, _, p) => Some(*p),
+                                        _ => None,
+                                    })
+                                    .unwrap_or(Point::ORIGIN);
+                                let arc = kurbo::SvgArc {
+                                    from: s,
+                                    to: Point::new(coord("x"), coord("y")),
+                                    radii: kurbo::Vec2::new(coord("rx"), coord("ry")),
+                                    x_rotation: num(c, "rotation", 0.).to_radians(),
+                                    large_arc: yes(c, "large_arc", false),
+                                    sweep: yes(c, "sweep", false),
+                                };
+                                if let Some(arc) = kurbo::Arc::from_svg_arc(&arc) {
+                                    arc.to_cubic_beziers(0.0001, |p1, p2, p3| {
+                                        p.curve_to(p1, p2, p3)
+                                    });
+                                } else {
+                                    p.line_to(arc.to);
+                                }
+                            }
+                            _ => return Err(self.error("E_PATH", "无效路径命令", l)),
+                        }
                     }
+                    recipe = json!({"kind":"path","commands":commands});
                 }
-                recipe = json!({"kind":"path","commands":commands});
+                _ => return Err(self.error("E_TYPE", format!("{} 不能作为图形放置", o.kind), l)),
             }
-            _ => return Err(self.error("E_TYPE", format!("{} 不能作为图形放置", o.kind), l)),
-        }
+            Ok((p, fixed, recipe))
+        })?;
         let b = crate::geometry_recipe::analytic_bounds(&recipe, &p);
         if fixed.is_none() {
             p = Affine::translate((-b.x0, -b.y0)) * p;
@@ -1617,6 +1740,9 @@ impl Engine {
         mut a: Args,
         l: Loc,
     ) -> Result<V> {
+        crate::session::checkpoint(&self.file, l)?;
+        crate::session::queries::mutate(owner.borrow().id);
+        owner.borrow_mut().cache_identity = 0;
         self.validate_args("fuse", &mut a, &pos, l)?;
         if owner.borrow().sealed {
             return Err(self.error("E_GROUP", "组合放置后不能融合", l));
@@ -1792,7 +1918,10 @@ impl Engine {
         self.serial += 1;
         n["id"] = json!(format!("fused-{}", self.serial));
         owner.borrow_mut().nodes.retain(|n| !ids.contains(&n["id"]));
-        owner.borrow_mut().nodes.push(n.clone());
+        owner
+            .borrow_mut()
+            .nodes
+            .push(std::sync::Arc::new(n.clone()));
         let mut record = a.clone();
         record.insert("__left".into(), V::num(objects[0].borrow().id as f64));
         record.insert("__right".into(), V::num(objects[1].borrow().id as f64));
@@ -1811,7 +1940,7 @@ impl Engine {
         o.parent = owner.borrow().id;
         o.width = bounds.width();
         o.height = bounds.height();
-        o.node = Some(n);
+        o.node = Some(std::sync::Arc::new(n));
         drop(o);
         Ok(v)
     }

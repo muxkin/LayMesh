@@ -76,7 +76,7 @@ fn positive_kerning_cannot_silently_overflow_a_text_frame() {
     // Fault injection: keep the genuinely shaped glyph run, but accept the old
     // nominal-advance frame that is too narrow after positive kerning.
     let mut old = scene.nodes[0].clone();
-    old["width"] = json!(13.8);
+    std::sync::Arc::make_mut(&mut old)["width"] = json!(13.8);
     assert!(
         !fits(&old),
         "the same width check must reject the old accepted frame"

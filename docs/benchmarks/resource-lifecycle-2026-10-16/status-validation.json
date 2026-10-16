@@ -1,0 +1,241 @@
+[
+  {
+    "name": "presentation-navigation",
+    "command": [
+      "node",
+      "scripts/test-presentation-navigation.mjs"
+    ],
+    "started": 1792120511.5981367,
+    "state": "passed",
+    "seconds": 0.02213263511657715
+  },
+  {
+    "name": "presentation-frame-delivery",
+    "command": [
+      "node",
+      "scripts/test-presentation-frame-delivery.mjs"
+    ],
+    "started": 1792120511.620554,
+    "state": "passed",
+    "seconds": 0.028334856033325195
+  },
+  {
+    "name": "presentation-resources",
+    "command": [
+      "node",
+      "scripts/test-presentation-resources.mjs"
+    ],
+    "started": 1792120511.6491401,
+    "state": "passed",
+    "seconds": 0.046709299087524414
+  },
+  {
+    "name": "presentation-clock",
+    "command": [
+      "node",
+      "scripts/test-presentation-clock.mjs"
+    ],
+    "started": 1792120511.6961503,
+    "state": "passed",
+    "seconds": 0.01887226104736328
+  },
+  {
+    "name": "display-update",
+    "command": [
+      "node",
+      "scripts/test-display-update.mjs"
+    ],
+    "started": 1792120511.715328,
+    "state": "passed",
+    "seconds": 0.019855976104736328
+  },
+  {
+    "name": "retained-presentation-store",
+    "command": [
+      "node",
+      "scripts/test-retained-presentation-store.mjs"
+    ],
+    "started": 1792120511.7356012,
+    "state": "passed",
+    "seconds": 0.04786205291748047
+  },
+  {
+    "name": "presentation-lifetime",
+    "command": [
+      "node",
+      "scripts/test-presentation-lifetime.mjs"
+    ],
+    "started": 1792120511.7837722,
+    "state": "passed",
+    "seconds": 0.024989604949951172
+  },
+  {
+    "name": "cache-ownership",
+    "command": [
+      "node",
+      "scripts/test-cache-ownership.mjs"
+    ],
+    "started": 1792120511.8090968,
+    "state": "passed",
+    "seconds": 0.14507269859313965
+  },
+  {
+    "name": "skia-update-recovery",
+    "command": [
+      "node",
+      "scripts/test-skia-update-recovery.mjs"
+    ],
+    "started": 1792120511.954507,
+    "state": "passed",
+    "seconds": 0.026947975158691406
+  },
+  {
+    "name": "native-deck",
+    "command": [
+      "node",
+      "scripts/test-presentation-incremental.cjs"
+    ],
+    "started": 1792120511.9817803,
+    "state": "passed",
+    "seconds": 0.08341097831726074
+  },
+  {
+    "name": "cold",
+    "command": [
+      "node",
+      "scripts/test-web-cold-edit.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/cold"
+    ],
+    "started": 1792120512.0655248,
+    "state": "passed",
+    "seconds": 55.60847616195679
+  },
+  {
+    "name": "reuse",
+    "command": [
+      "node",
+      "scripts/test-web-semantic-reuse.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/reuse"
+    ],
+    "started": 1792120567.6743412,
+    "state": "passed",
+    "seconds": 116.46878170967102
+  },
+  {
+    "name": "style-oracle",
+    "command": [
+      "node",
+      "scripts/test-web-semantic-edit-oracle.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/style-oracle",
+      "styles"
+    ],
+    "started": 1792120684.1435113,
+    "state": "passed",
+    "seconds": 245.25790452957153
+  },
+  {
+    "name": "roundtrip",
+    "command": [
+      "node",
+      "scripts/test-web-semantic-roundtrip.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/navigation-preview-v004/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u653e\u6620\u5207\u9875\u4f18\u5316.zip.html",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/roundtrip"
+    ],
+    "started": 1792120929.4018705,
+    "state": "passed",
+    "seconds": 386.7371542453766
+  },
+  {
+    "name": "vscode-ui",
+    "command": [
+      ".venv/bin/python",
+      "scripts/test-vscode-preview.py",
+      "--extension-dir",
+      "target/lifecycle-v005-extension",
+      "--output",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/vscode-ui",
+      "--block-worker-resource-fetch"
+    ],
+    "started": 1792121316.1392975,
+    "state": "passed",
+    "seconds": 18.987845182418823
+  },
+  {
+    "name": "native-host",
+    "command": [
+      "node",
+      "scripts/test-presentation-host.cjs",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/served"
+    ],
+    "started": 1792121335.1275659,
+    "state": "passed",
+    "seconds": 1.6695599555969238
+  },
+  {
+    "name": "clipping",
+    "command": [
+      "node",
+      "scripts/test-presentation-clipping.cjs",
+      "http://100.64.0.6:18768/",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/clipping.json"
+    ],
+    "started": 1792121336.7975314,
+    "state": "passed",
+    "seconds": 62.40394592285156
+  },
+  {
+    "name": "layer-cache",
+    "command": [
+      "node",
+      "scripts/test-skia-layer-cache.cjs",
+      "http://100.64.0.6:18768/",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/layer-cache.json"
+    ],
+    "started": 1792121399.201887,
+    "state": "passed",
+    "seconds": 26.508989572525024
+  },
+  {
+    "name": "static-cache",
+    "command": [
+      "node",
+      "scripts/test-skia-static-cache.cjs",
+      "http://100.64.0.6:18768/",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/static-cache.json",
+      "--lifecycle-only"
+    ],
+    "started": 1792121536.2076187,
+    "state": "passed",
+    "seconds": 2.1809136867523193,
+    "previousAttempts": [
+      {
+        "name": "static-cache",
+        "command": [
+          "node",
+          "scripts/test-skia-static-cache.cjs",
+          "http://100.64.0.6:18768/",
+          "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/static-cache.json",
+          "--lifecycle-only"
+        ],
+        "started": 1792121425.7113252,
+        "state": "failed",
+        "seconds": 1.813068151473999
+      }
+    ]
+  },
+  {
+    "name": "browser-input-validation",
+    "command": [
+      "node",
+      "scripts/test-web-incremental-preview.cjs",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/incremental-input"
+    ],
+    "started": 1792121906.9744387,
+    "state": "passed",
+    "seconds": 54.22835564613342
+  }
+]

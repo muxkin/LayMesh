@@ -1,0 +1,9 @@
+{
+  "platform": "Linux-6.12.73+deb13-amd64-x86_64-with-glibc2.41",
+  "cpu": "AMD Ryzen 7 8745H w/ Radeon 780M Graphics",
+  "logical_cpu_count": 16,
+  "available_cpu_count": 16,
+  "physical_memory": "21300832 kB",
+  "time_zone": "Asia/Shanghai",
+  "note": "Browser rendering backends and exact viewport dimensions are recorded in each result. Performance suites run sequentially, without concurrent builds or correctness suites."
+}

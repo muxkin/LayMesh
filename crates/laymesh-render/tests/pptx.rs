@@ -212,7 +212,7 @@ fn embedded_image_is_preserved_as_picture() {
         .unwrap()
         .write_image_data(&[255, 0, 0, 128, 0, 255, 0, 255, 0, 0, 255, 0, 0, 0, 0, 255])
         .unwrap();
-    scene.nodes.push(serde_json::json!({"kind":"image","id":"image","x":12.,"y":10.,"width":20.,"height":20.,"rotation":15.,"opacity":0.5,"mime":"image/png","data":base64::engine::general_purpose::STANDARD.encode(&png),"intrinsicWidth":2.,"intrinsicHeight":2.,"fit":"stretch"}));
+    scene.nodes.push(serde_json::json!({"kind":"image","id":"image","x":12.,"y":10.,"width":20.,"height":20.,"rotation":15.,"opacity":0.5,"mime":"image/png","data":base64::engine::general_purpose::STANDARD.encode(&png),"intrinsicWidth":2.,"intrinsicHeight":2.,"fit":"stretch"}).into());
     let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
     assert!(warnings.is_empty(), "{warnings:?}");
     let files = crate::files(&bytes);
@@ -279,13 +279,13 @@ fn clipping_group_alpha_and_effect_overflow_are_not_silently_lost() {
         "contentWidth":15.,"contentHeight":15.,"rotation":23.,
         "clipPath":{"d":"M0 0L15 0L0 15Z"},
         "children":[{"kind":"rect","x":0.,"y":0.,"width":15.,"height":15.,"fill":"#ff0000","stroke":"none"}]
-    }));
+    }).into());
     scene.nodes.push(serde_json::json!({
         "kind":"group", "id":"alpha-group", "x":45.,"y":30.,"width":20.,"height":15.,
         "contentWidth":20.,"contentHeight":15.,"opacity":0.5,
         "children":[{"kind":"rect","x":0.,"y":0.,"width":15.,"height":15.,"fill":"#ff0000","stroke":"none"},
                     {"kind":"rect","x":5.,"y":0.,"width":15.,"height":15.,"fill":"#0000ff","stroke":"none"}]
-    }));
+    }).into());
     let (bytes, warnings) = render_pptx(
         &scene,
         &ExportOptions {
@@ -357,7 +357,7 @@ fn formula_text_glyphs_become_outlines_and_anisotropic_text_falls_back() {
         "page=canvas(size=(100mm,75mm),background=\"none\")\npage.add(text(\"AB\",font_family=\"DejaVu Sans\",font_size=12pt),offset=(3mm,3mm))",
     );
     let run = scene.nodes[0]["runs"][0].clone();
-    scene.nodes.push(serde_json::json!({"kind":"formula","id":"glyph-formula","source":"AB","x":30.,"y":20.,"width":20.,"height":10.,"rotation":17.,"items":[run]}));
+    scene.nodes.push(serde_json::json!({"kind":"formula","id":"glyph-formula","source":"AB","x":30.,"y":20.,"width":20.,"height":10.,"rotation":17.,"items":[run]}).into());
     let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
     assert!(warnings.iter().all(|w| w.code == "W_PPTX_FONT"));
     let data = files(&bytes);
@@ -377,7 +377,7 @@ fn formula_text_glyphs_become_outlines_and_anisotropic_text_falls_back() {
 
     let mut scaled = scene.clone();
     scaled.nodes = vec![
-        serde_json::json!({"kind":"group","id":"stretched-text","x":10.,"y":10.,"width":40.,"height":10.,"contentWidth":20.,"contentHeight":10.,"children":[scene.nodes[0].clone()]}),
+        serde_json::json!({"kind":"group","id":"stretched-text","x":10.,"y":10.,"width":40.,"height":10.,"contentWidth":20.,"contentHeight":10.,"children":[scene.nodes[0].clone()]}).into(),
     ];
     let (bytes, warnings) = render_pptx(
         &scaled,
@@ -499,9 +499,9 @@ fn rounded_image_fill_fit_and_rectangular_crop_keep_original_media() {
     let encoded = base64::engine::general_purpose::STANDARD.encode(&png);
     let mut scene = compile("page=canvas(size=(160mm,100mm),background=\"none\")");
     for (i, fit) in ["cover", "contain", "stretch"].into_iter().enumerate() {
-        scene.nodes.push(serde_json::json!({"kind":"rect","id":fit,"x":10.+i as f64*30.,"y":10.,"width":20.,"height":20.,"radius":3.,"rotation":17.,"opacity":0.5,"fill":{"kind":"image_fill","mime":"image/png","data":encoded,"width":4.,"height":2.,"fit":fit}}));
+        scene.nodes.push(serde_json::json!({"kind":"rect","id":fit,"x":10.+i as f64*30.,"y":10.,"width":20.,"height":20.,"radius":3.,"rotation":17.,"opacity":0.5,"fill":{"kind":"image_fill","mime":"image/png","data":encoded,"width":4.,"height":2.,"fit":fit}}).into());
     }
-    scene.nodes.push(serde_json::json!({"kind":"image","id":"cropped","x":110.,"y":10.,"width":20.,"height":20.,"fit":"cover","crop":{"x":1.,"y":0.,"width":2.,"height":2.},"intrinsicWidth":4.,"intrinsicHeight":2.,"mime":"image/png","data":encoded}));
+    scene.nodes.push(serde_json::json!({"kind":"image","id":"cropped","x":110.,"y":10.,"width":20.,"height":20.,"fit":"cover","crop":{"x":1.,"y":0.,"width":2.,"height":2.},"intrinsicWidth":4.,"intrinsicHeight":2.,"mime":"image/png","data":encoded}).into());
     let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
     assert!(warnings.is_empty(), "{warnings:?}");
     let data = files(&bytes);
@@ -610,8 +610,8 @@ page.add(rect(size=(20mm,15mm),fill=hatch(color="#3782d6"),border_width=0),offse
 fn anisotropic_stroke_keeps_vector_outline_and_mirrored_image_is_native() {
     use base64::Engine;
     let mut scene = compile("page=canvas(size=(160mm,100mm),background=\"none\")");
-    scene.nodes.push(serde_json::json!({"kind":"group","id":"scaled","x":10.,"y":10.,"width":40.,"height":20.,"contentWidth":20.,"contentHeight":20.,"children":[{"kind":"rect","id":"rect","width":20.,"height":20.,"fill":"#ff0000","stroke":"#000000","strokeWidth":1.}]}));
-    scene.nodes.push(serde_json::json!({"kind":"group","id":"mirrored","x":100.,"y":10.,"width":-20.,"height":20.,"contentWidth":20.,"contentHeight":20.,"children":[{"kind":"image","id":"image","width":20.,"height":20.,"fit":"stretch","intrinsicWidth":4.,"intrinsicHeight":2.,"mime":"image/png","data":base64::engine::general_purpose::STANDARD.encode(png_fixture())}]}));
+    scene.nodes.push(serde_json::json!({"kind":"group","id":"scaled","x":10.,"y":10.,"width":40.,"height":20.,"contentWidth":20.,"contentHeight":20.,"children":[{"kind":"rect","id":"rect","width":20.,"height":20.,"fill":"#ff0000","stroke":"#000000","strokeWidth":1.}]}).into());
+    scene.nodes.push(serde_json::json!({"kind":"group","id":"mirrored","x":100.,"y":10.,"width":-20.,"height":20.,"contentWidth":20.,"contentHeight":20.,"children":[{"kind":"image","id":"image","width":20.,"height":20.,"fit":"stretch","intrinsicWidth":4.,"intrinsicHeight":2.,"mime":"image/png","data":base64::engine::general_purpose::STANDARD.encode(png_fixture())}]}).into());
     let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
     assert!(warnings.is_empty(), "{warnings:?}");
     let data = files(&bytes);
@@ -679,7 +679,7 @@ page.add(image(src="photo.jpg"),size=(20mm,20mm),crop=box(offset=(0.5,0),size=(0
 #[test]
 fn group_selection_contains_acute_miter_stroke_ink() {
     let mut scene = compile("page=canvas(size=(160mm,100mm),background=\"none\")");
-    scene.nodes.push(serde_json::json!({"kind":"group","id":"sharp","width":20.,"height":20.,"contentWidth":20.,"contentHeight":20.,"x":30.,"y":30.,"children":[{"kind":"path","id":"acute","d":"M0 20L10 0L11 20","width":11.,"height":20.,"intrinsicWidth":11.,"intrinsicHeight":20.,"fill":"none","strokeStyle":{"color":"#000000","width":2.,"join":"miter","miterLimit":40.}}]}));
+    scene.nodes.push(serde_json::json!({"kind":"group","id":"sharp","width":20.,"height":20.,"contentWidth":20.,"contentHeight":20.,"x":30.,"y":30.,"children":[{"kind":"path","id":"acute","d":"M0 20L10 0L11 20","width":11.,"height":20.,"intrinsicWidth":11.,"intrinsicHeight":20.,"fill":"none","strokeStyle":{"color":"#000000","width":2.,"join":"miter","miterLimit":40.}}]}).into());
     let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
     assert!(warnings.is_empty(), "{warnings:?}");
     let data = files(&bytes);

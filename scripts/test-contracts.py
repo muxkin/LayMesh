@@ -36,6 +36,15 @@ def main():
         status = process.wait()
     if status:
         raise SystemExit(status)
+    # Large-cache capacity checks exercise the same real 16 MiB boundary in an
+    # optimized build. Do not benchmark debug text shaping across thousands of
+    # paragraphs in every ordinary workspace test run.
+    capacity = ['cargo', 'test', '--color', 'never', '--locked', '--release',
+                '-p', 'laymesh-core', '--test', 'cache_lifetime']
+    if args.offline:
+        capacity.append('--offline')
+    with args.log.with_name('cache-capacity-tests.log').open('w') as log:
+        subprocess.run(capacity, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, check=True)
     subprocess.run(['cargo', 'build', '--locked', '-p', 'laymesh-cli'] + (['--offline'] if args.offline else []), cwd=ROOT, check=True)
     python_log = args.log.with_name('python-tests.log')
     env = os.environ.copy()

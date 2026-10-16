@@ -1,0 +1,2076 @@
+{
+  "summary": {
+    "samples": 50,
+    "elapsedMs": {
+      "median": 2533,
+      "p95": 3437
+    },
+    "withoutTransitionMs": {
+      "median": 874,
+      "p95": 1839
+    },
+    "prepareMs": {
+      "median": 0,
+      "p95": 1
+    },
+    "planMs": {
+      "median": 0,
+      "p95": 0
+    },
+    "transitionMs": {
+      "median": 1630.5,
+      "p95": 1758
+    }
+  },
+  "rows": [
+    {
+      "iteration": 1,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 2352,
+      "calls": [
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 276,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 2055,
+          "result": "done",
+          "transitionMs": 1617,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2335
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1617,
+      "withoutTransitionMs": 735
+    },
+    {
+      "iteration": 2,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 2544,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 396,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 2112,
+          "result": "done",
+          "transitionMs": 1681,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2526
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1681,
+      "withoutTransitionMs": 863
+    },
+    {
+      "iteration": 3,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 2159,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 139,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 1997,
+          "result": "done",
+          "transitionMs": 1597,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2142
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1597,
+      "withoutTransitionMs": 562
+    },
+    {
+      "iteration": 4,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 2598,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 329,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 2249,
+          "result": "done",
+          "transitionMs": 1618,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2581
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1618,
+      "withoutTransitionMs": 980
+    },
+    {
+      "iteration": 5,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 2564,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 2544,
+          "result": "done",
+          "transitionMs": 1640,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2547
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1640,
+      "withoutTransitionMs": 924
+    },
+    {
+      "iteration": 6,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 2536,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 2214,
+          "result": "done",
+          "transitionMs": 1702,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 318,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2216
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1702,
+      "withoutTransitionMs": 834
+    },
+    {
+      "iteration": 7,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 3076,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 2905,
+          "result": "done",
+          "transitionMs": 1823,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 157,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2916
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1823,
+      "withoutTransitionMs": 1253
+    },
+    {
+      "iteration": 8,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 2557,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 2341,
+          "result": "done",
+          "transitionMs": 1613,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "cover",
+          "ms": 205,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2349
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1613,
+      "withoutTransitionMs": 944
+    },
+    {
+      "iteration": 9,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 3690,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 3672,
+          "result": "done",
+          "transitionMs": 1705,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 3674
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1705,
+      "withoutTransitionMs": 1985
+    },
+    {
+      "iteration": 10,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 2275,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 2248,
+          "result": "done",
+          "transitionMs": 1684,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2257
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1684,
+      "withoutTransitionMs": 591
+    },
+    {
+      "iteration": 11,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 2215,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 2192,
+          "result": "done",
+          "transitionMs": 1758,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2197
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1758,
+      "withoutTransitionMs": 457
+    },
+    {
+      "iteration": 12,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 2539,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 400,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 2109,
+          "result": "done",
+          "transitionMs": 1672,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2521
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1672,
+      "withoutTransitionMs": 867
+    },
+    {
+      "iteration": 13,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 2159,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 151,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 1
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 1980,
+          "result": "done",
+          "transitionMs": 1578,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2141
+      },
+      "prepareMs": 1,
+      "planMs": 0,
+      "transitionMs": 1578,
+      "withoutTransitionMs": 581
+    },
+    {
+      "iteration": 14,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 2619,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 326,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 1
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 2272,
+          "result": "done",
+          "transitionMs": 1630,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2602
+      },
+      "prepareMs": 1,
+      "planMs": 0,
+      "transitionMs": 1630,
+      "withoutTransitionMs": 989
+    },
+    {
+      "iteration": 15,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 2654,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 2624,
+          "result": "done",
+          "transitionMs": 1693,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2638
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1693,
+      "withoutTransitionMs": 961
+    },
+    {
+      "iteration": 16,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 2503,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 2205,
+          "result": "done",
+          "transitionMs": 1678,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 284,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2215
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1678,
+      "withoutTransitionMs": 825
+    },
+    {
+      "iteration": 17,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 2848,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 2681,
+          "result": "done",
+          "transitionMs": 1658,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 147,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2699
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1658,
+      "withoutTransitionMs": 1190
+    },
+    {
+      "iteration": 18,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 2457,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 2260,
+          "result": "done",
+          "transitionMs": 1586,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "cover",
+          "ms": 193,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2262
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1586,
+      "withoutTransitionMs": 871
+    },
+    {
+      "iteration": 19,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 3460,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 3437,
+          "result": "done",
+          "transitionMs": 1621,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 3442
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1621,
+      "withoutTransitionMs": 1839
+    },
+    {
+      "iteration": 20,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 2174,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 2138,
+          "result": "done",
+          "transitionMs": 1608,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2156
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1608,
+      "withoutTransitionMs": 566
+    },
+    {
+      "iteration": 21,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 2049,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 2016,
+          "result": "done",
+          "transitionMs": 1618,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2032
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1618,
+      "withoutTransitionMs": 431
+    },
+    {
+      "iteration": 22,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 2497,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 379,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 2095,
+          "result": "done",
+          "transitionMs": 1675,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2481
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1675,
+      "withoutTransitionMs": 822
+    },
+    {
+      "iteration": 23,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 2145,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 144,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 1977,
+          "result": "done",
+          "transitionMs": 1576,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2128
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1576,
+      "withoutTransitionMs": 569
+    },
+    {
+      "iteration": 24,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 2619,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 330,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 2258,
+          "result": "done",
+          "transitionMs": 1631,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2601
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1631,
+      "withoutTransitionMs": 988
+    },
+    {
+      "iteration": 25,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 2530,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 2499,
+          "result": "done",
+          "transitionMs": 1615,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2513
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1615,
+      "withoutTransitionMs": 915
+    },
+    {
+      "iteration": 26,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 2399,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 2084,
+          "result": "done",
+          "transitionMs": 1589,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 297,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2099
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1589,
+      "withoutTransitionMs": 810
+    },
+    {
+      "iteration": 27,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 3026,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 2845,
+          "result": "done",
+          "transitionMs": 1835,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 170,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2853
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1835,
+      "withoutTransitionMs": 1191
+    },
+    {
+      "iteration": 28,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 2480,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 2280,
+          "result": "done",
+          "transitionMs": 1603,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "cover",
+          "ms": 197,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2281
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1603,
+      "withoutTransitionMs": 877
+    },
+    {
+      "iteration": 29,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 3425,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 3401,
+          "result": "done",
+          "transitionMs": 1590,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 3407
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1590,
+      "withoutTransitionMs": 1835
+    },
+    {
+      "iteration": 30,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 2270,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 2241,
+          "result": "done",
+          "transitionMs": 1670,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2252
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1670,
+      "withoutTransitionMs": 600
+    },
+    {
+      "iteration": 31,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 2083,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 2061,
+          "result": "done",
+          "transitionMs": 1641,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2063
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1641,
+      "withoutTransitionMs": 442
+    },
+    {
+      "iteration": 32,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 2600,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 379,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 1
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 2198,
+          "result": "done",
+          "transitionMs": 1745,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2583
+      },
+      "prepareMs": 1,
+      "planMs": 0,
+      "transitionMs": 1745,
+      "withoutTransitionMs": 855
+    },
+    {
+      "iteration": 33,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 2286,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 166,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 2091,
+          "result": "done",
+          "transitionMs": 1662,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2269
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1662,
+      "withoutTransitionMs": 624
+    },
+    {
+      "iteration": 34,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 2737,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 365,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 2342,
+          "result": "done",
+          "transitionMs": 1649,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2720
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1649,
+      "withoutTransitionMs": 1088
+    },
+    {
+      "iteration": 35,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 2566,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 2532,
+          "result": "done",
+          "transitionMs": 1638,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2549
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1638,
+      "withoutTransitionMs": 928
+    },
+    {
+      "iteration": 36,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 2481,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 2172,
+          "result": "done",
+          "transitionMs": 1661,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 296,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2182
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1661,
+      "withoutTransitionMs": 820
+    },
+    {
+      "iteration": 37,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 2887,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 2730,
+          "result": "done",
+          "transitionMs": 1720,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 147,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2738
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1720,
+      "withoutTransitionMs": 1167
+    },
+    {
+      "iteration": 38,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 2583,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 2347,
+          "result": "done",
+          "transitionMs": 1656,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "cover",
+          "ms": 220,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2361
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1656,
+      "withoutTransitionMs": 927
+    },
+    {
+      "iteration": 39,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 3437,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 3407,
+          "result": "done",
+          "transitionMs": 1601,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 3420
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1601,
+      "withoutTransitionMs": 1836
+    },
+    {
+      "iteration": 40,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 2147,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 2116,
+          "result": "done",
+          "transitionMs": 1584,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2131
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1584,
+      "withoutTransitionMs": 563
+    },
+    {
+      "iteration": 41,
+      "from": "seed",
+      "to": "anchors",
+      "key": "ArrowRight",
+      "elapsedMs": 2010,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 1981,
+          "result": "done",
+          "transitionMs": 1585,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 1993
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1585,
+      "withoutTransitionMs": 425
+    },
+    {
+      "iteration": 42,
+      "from": "anchors",
+      "to": "motion",
+      "key": "ArrowDown",
+      "elapsedMs": 2574,
+      "calls": [
+        {
+          "type": "load",
+          "page": "motion",
+          "ms": 390,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 2150,
+          "result": "done",
+          "transitionMs": 1690,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2557
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1690,
+      "withoutTransitionMs": 884
+    },
+    {
+      "iteration": 43,
+      "from": "motion",
+      "to": "offline",
+      "key": "ArrowRight",
+      "elapsedMs": 2188,
+      "calls": [
+        {
+          "type": "load",
+          "page": "offline",
+          "ms": 162,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 2005,
+          "result": "done",
+          "transitionMs": 1607,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2171
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1607,
+      "withoutTransitionMs": 581
+    },
+    {
+      "iteration": 44,
+      "from": "offline",
+      "to": "editable",
+      "key": "ArrowDown",
+      "elapsedMs": 2602,
+      "calls": [
+        {
+          "type": "load",
+          "page": "editable",
+          "ms": 342,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        },
+        {
+          "type": "activate",
+          "page": "editable",
+          "ms": 2233,
+          "result": "done",
+          "transitionMs": 1586,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "editable",
+        "resident": false,
+        "compiledAtInput": true,
+        "firstFrameMs": 2586
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1586,
+      "withoutTransitionMs": 1016
+    },
+    {
+      "iteration": 45,
+      "from": "editable",
+      "to": "offline",
+      "key": "ArrowLeft",
+      "elapsedMs": 2527,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "editable",
+          "ms": 2,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "offline",
+          "ms": 2494,
+          "result": "done",
+          "transitionMs": 1604,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "offline",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2510
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1604,
+      "withoutTransitionMs": 923
+    },
+    {
+      "iteration": 46,
+      "from": "offline",
+      "to": "motion",
+      "key": "ArrowUp",
+      "elapsedMs": 2412,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "offline",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "motion",
+          "ms": 2101,
+          "result": "done",
+          "transitionMs": 1596,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "anchors",
+          "ms": 294,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "motion",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2116
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1596,
+      "withoutTransitionMs": 816
+    },
+    {
+      "iteration": 47,
+      "from": "motion",
+      "to": "anchors",
+      "key": "ArrowLeft",
+      "elapsedMs": 2844,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "motion",
+          "ms": 0,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "anchors",
+          "ms": 2678,
+          "result": "done",
+          "transitionMs": 1663,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "seed",
+          "ms": 150,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 0
+          }
+        }
+      ],
+      "transition": {
+        "page": "anchors",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2691
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1663,
+      "withoutTransitionMs": 1181
+    },
+    {
+      "iteration": 48,
+      "from": "anchors",
+      "to": "seed",
+      "key": "ArrowUp",
+      "elapsedMs": 2521,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "anchors",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 2313,
+          "result": "done",
+          "transitionMs": 1619,
+          "backend": "Skia CPU"
+        },
+        {
+          "type": "load",
+          "page": "cover",
+          "ms": 204,
+          "result": "done",
+          "preparation": {
+            "backend": "Skia CPU",
+            "complete": true,
+            "cpuCommandsOnly": true,
+            "planMs": 0,
+            "transformProbes": 0,
+            "prepareMs": 1
+          }
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2315
+      },
+      "prepareMs": 1,
+      "planMs": 0,
+      "transitionMs": 1619,
+      "withoutTransitionMs": 902
+    },
+    {
+      "iteration": 49,
+      "from": "seed",
+      "to": "cover",
+      "key": "ArrowLeft",
+      "elapsedMs": 3424,
+      "calls": [
+        {
+          "type": "paint",
+          "page": "seed",
+          "ms": 1,
+          "result": "stale"
+        },
+        {
+          "type": "activate",
+          "page": "cover",
+          "ms": 3397,
+          "result": "done",
+          "transitionMs": 1582,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "cover",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 3407
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1582,
+      "withoutTransitionMs": 1842
+    },
+    {
+      "iteration": 50,
+      "from": "cover",
+      "to": "seed",
+      "key": "ArrowDown",
+      "elapsedMs": 2141,
+      "calls": [
+        {
+          "type": "activate",
+          "page": "seed",
+          "ms": 2109,
+          "result": "done",
+          "transitionMs": 1582,
+          "backend": "Skia CPU"
+        }
+      ],
+      "transition": {
+        "page": "seed",
+        "resident": true,
+        "compiledAtInput": true,
+        "firstFrameMs": 2123
+      },
+      "prepareMs": 0,
+      "planMs": 0,
+      "transitionMs": 1582,
+      "withoutTransitionMs": 559
+    }
+  ],
+  "coldResources": [
+    {
+      "page": "cover",
+      "backend": "Skia CPU",
+      "complete": true,
+      "cpuCommandsOnly": true,
+      "planMs": 0,
+      "transformProbes": 0,
+      "prepareMs": 0
+    }
+  ],
+  "animation": [
+    {
+      "page": "cover",
+      "time": 0,
+      "sha256": "b938780a6f188a313782a0d9268ec6802ff80a5836e2b65de854f1037e9a7c19"
+    },
+    {
+      "page": "cover",
+      "time": 1,
+      "sha256": "538df3d35da4ff8c527ee04f173627c946a60f10f09bf34e30a66441bcdd67ea"
+    },
+    {
+      "page": "cover",
+      "time": 3,
+      "sha256": "008883181a6a8203c04eb8066a95409ad269707bf6568db27bb8b9a4412cf023"
+    },
+    {
+      "page": "seed",
+      "time": 0,
+      "sha256": "6464aade068f7deb7483a72eade50f2e6821c75f065c0a7d8f69f61231b68de1"
+    },
+    {
+      "page": "seed",
+      "time": 1,
+      "sha256": "ee2a80184da92e73abe026153c6eef77f9f840ec40fc4489f0e3b83150610410"
+    },
+    {
+      "page": "seed",
+      "time": 3,
+      "sha256": "513df1770207c382e1f1d1975d10ec28242e3e4148f51b55d4b9a7a6043650b3"
+    },
+    {
+      "page": "anchors",
+      "time": 0,
+      "sha256": "afba7f7fa2712e1c9db086da85b943c9fc59991f1f6544862e212b8e55372ef7"
+    },
+    {
+      "page": "anchors",
+      "time": 1,
+      "sha256": "f30cf137a05dc2742d88c2dbd9b3a2aa179d0296eb061d76e8a906d55e37e810"
+    },
+    {
+      "page": "anchors",
+      "time": 3,
+      "sha256": "193745d9f018d167ccaed2f2891d990411fdc90c26504fd51842351f4273ae60"
+    },
+    {
+      "page": "motion",
+      "time": 0,
+      "sha256": "97c6b221abb1a629c6675834a6194765e78e8dcd1c84d74d39b0bae98f949e7a"
+    },
+    {
+      "page": "motion",
+      "time": 1,
+      "sha256": "b3f4fa368af965192ba5f0ff66408fc08e5f0b1d38a13150adb6413840149553"
+    },
+    {
+      "page": "motion",
+      "time": 3,
+      "sha256": "1d27d5bf86098a9bc639f5e4d6ee614d654e87b847239a2ceb54e16c025db256"
+    },
+    {
+      "page": "offline",
+      "time": 0,
+      "sha256": "72192c068fc755e62137906b9383321a4b98dff14108bde2154022d85f29217a"
+    },
+    {
+      "page": "offline",
+      "time": 1,
+      "sha256": "51d6f85b8df1aeb2b8a709b7ef6fb31ec7330f34ddf749ec0d221e7a9af53a0a"
+    },
+    {
+      "page": "offline",
+      "time": 3,
+      "sha256": "d97f192d162e82f5dc543a931e65de82bb38291529d1b4a9ce901cdf50f06369"
+    },
+    {
+      "page": "editable",
+      "time": 0,
+      "sha256": "39fa177f4cc08efae6db966dfe5ccbf5e1bb805dd08a093f58c924c833ecce08"
+    },
+    {
+      "page": "editable",
+      "time": 1,
+      "sha256": "5c27932761cea77e1bf804bb60ee8c7028765d2cba3cde7adca45bdcd4696e65"
+    },
+    {
+      "page": "editable",
+      "time": 3,
+      "sha256": "7d73c6fb48b3076ab9025fea604bb7c9f61dd854b52909cd13788b8a6fc1109a"
+    }
+  ],
+  "backend": "Skia CPU",
+  "dimensions": {
+    "width": 1600,
+    "height": 1000
+  },
+  "definition": "Keydown through ordinary handler to renderer confirmation and next browser rendering step; includes authored page transition, four extra protected keys per switch; one initial navigation excluded. No source edits or compilation during navigation.",
+  "engine": "firefox",
+  "version": "153.0",
+  "kind": "after",
+  "errors": [],
+  "networkRequests": [],
+  "htmlSha256": "459e6a9b3d03666af60c3f25683ea439e3069f9a12ce9a055ff2af13ef355a73"
+}

@@ -1,0 +1,156 @@
+[
+  {
+    "step": "progressive",
+    "command": [
+      "node",
+      "scripts/test-web-progressive-playback.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/first-edit-preview-v009/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u9996\u6b21\u7f16\u8f91\u4fee\u590d_v009.zip.html",
+      "/tmp/laymesh-v009-final-acceptance/progressive"
+    ],
+    "startedAt": "2026-10-16T11:29:57.019522+00:00",
+    "exitCode": 0,
+    "finishedAt": "2026-10-16T11:31:01.217257+00:00",
+    "elapsedSeconds": 64.1977128960425
+  },
+  {
+    "step": "cold",
+    "command": [
+      "node",
+      "scripts/test-web-cold-edit.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/first-edit-preview-v009/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u9996\u6b21\u7f16\u8f91\u4fee\u590d_v009.zip.html",
+      "/tmp/laymesh-v009-final-acceptance/cold"
+    ],
+    "startedAt": "2026-10-16T11:31:01.217449+00:00",
+    "exitCode": 0,
+    "finishedAt": "2026-10-16T11:31:51.592997+00:00",
+    "elapsedSeconds": 50.375500180001836
+  },
+  {
+    "step": "roundtrip",
+    "command": [
+      "node",
+      "scripts/test-web-semantic-roundtrip.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/animation-preview-v008/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u5e76\u884c\u52a8\u753b\u4f18\u5316_v008.zip.html",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/first-edit-preview-v009/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u9996\u6b21\u7f16\u8f91\u4fee\u590d_v009.zip.html",
+      "/tmp/laymesh-v009-final-acceptance/roundtrip"
+    ],
+    "startedAt": "2026-10-16T11:31:51.593194+00:00",
+    "exitCode": 0,
+    "finishedAt": "2026-10-16T11:37:46.769525+00:00",
+    "elapsedSeconds": 355.1762517800089
+  },
+  {
+    "step": "first-edit",
+    "command": [
+      "node",
+      "scripts/test-web-first-edit.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/first-edit-preview-v009/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u9996\u6b21\u7f16\u8f91\u4fee\u590d_v009.zip.html",
+      "/tmp/laymesh-v009-final-acceptance/first-edit",
+      "50"
+    ],
+    "startedAt": "2026-10-16T11:37:46.769653+00:00",
+    "exitCode": 0,
+    "finishedAt": "2026-10-16T12:09:26.753430+00:00",
+    "elapsedSeconds": 1899.9837679089978
+  },
+  {
+    "step": "animation",
+    "command": [
+      "node",
+      "scripts/test-presentation-animation.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/first-edit-preview-v009/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u9996\u6b21\u7f16\u8f91\u4fee\u590d_v009.zip.html",
+      "/tmp/laymesh-v009-final-acceptance/playback-v009"
+    ],
+    "startedAt": "2026-10-16T12:09:26.753652+00:00",
+    "exitCode": 0,
+    "finishedAt": "2026-10-16T12:14:29.725971+00:00",
+    "elapsedSeconds": 302.97226051200414
+  },
+  {
+    "step": "native-animation",
+    "command": [
+      "/home/keqing/source/LayMesh/.venv/bin/python",
+      "scripts/test-vscode-keyboard.py",
+      "--extension-dir",
+      "/home/keqing/source/LayMesh/target/first-edit-v009-extension",
+      "--binary",
+      "/home/keqing/source/LayMesh/target/first-edit-v009-extension/bin/laymesh",
+      "--source",
+      "/home/keqing/source/LayMesh/target/property-preview-fixture/storyboard.laydoc",
+      "--animation-rounds",
+      "2",
+      "--output",
+      "/tmp/laymesh-v009-final-acceptance/native-animation-v009.json"
+    ],
+    "startedAt": "2026-10-16T12:14:29.726178+00:00",
+    "exitCode": 0,
+    "finishedAt": "2026-10-16T12:15:37.456991+00:00",
+    "elapsedSeconds": 67.73074434499722
+  },
+  {
+    "step": "native-keyboard",
+    "command": [
+      "/home/keqing/source/LayMesh/.venv/bin/python",
+      "scripts/test-vscode-keyboard.py",
+      "--extension-dir",
+      "/home/keqing/source/LayMesh/target/first-edit-v009-extension",
+      "--binary",
+      "/home/keqing/source/LayMesh/target/first-edit-v009-extension/bin/laymesh",
+      "--source",
+      "/home/keqing/source/LayMesh/target/property-preview-fixture/storyboard.laydoc",
+      "--samples",
+      "50",
+      "--output",
+      "/tmp/laymesh-v009-final-acceptance/native-keyboard-v009.json"
+    ],
+    "startedAt": "2026-10-16T12:15:37.457213+00:00",
+    "exitCode": 0,
+    "finishedAt": "2026-10-16T12:16:50.309820+00:00",
+    "elapsedSeconds": 72.85252796194982
+  },
+  {
+    "step": "animation-edit",
+    "command": [
+      "env",
+      "EDIT_LCSS=1",
+      "node",
+      "scripts/test-presentation-animation.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/first-edit-preview-v009/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u9996\u6b21\u7f16\u8f91\u4fee\u590d_v009.zip.html",
+      "/tmp/laymesh-v009-final-acceptance/playback-edit-v009"
+    ],
+    "startedAt": "2026-10-16T12:17:14.967770+00:00",
+    "exitCode": 1,
+    "finishedAt": "2026-10-16T12:17:21.287328+00:00",
+    "elapsedSeconds": 6.319271104992367
+  },
+  {
+    "step": "animation-edit",
+    "command": [
+      "env",
+      "EDIT_LCSS=1",
+      "node",
+      "scripts/test-presentation-animation.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/first-edit-preview-v009/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u9996\u6b21\u7f16\u8f91\u4fee\u590d_v009.zip.html",
+      "/tmp/laymesh-v009-final-acceptance/playback-edit-v009"
+    ],
+    "startedAt": "2026-10-16T12:19:02.711845+00:00",
+    "exitCode": 0,
+    "finishedAt": "2026-10-16T12:24:09.839062+00:00",
+    "elapsedSeconds": 307.12713898700895
+  },
+  {
+    "step": "ordinary-export",
+    "command": [
+      "node",
+      "scripts/test-web-export-index.mjs",
+      "/home/keqing/source/LayMesh/target/first-edit-v009-extension/bin/laymesh",
+      "/home/keqing/source/LayMesh/target/property-preview-fixture/storyboard.laydoc",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/first-edit-preview-v009/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u9996\u6b21\u7f16\u8f91\u4fee\u590d_v009.zip.html",
+      "/tmp/laymesh-v009-final-acceptance/ordinary-export"
+    ],
+    "startedAt": "2026-10-16T12:24:09.839378+00:00",
+    "exitCode": 0,
+    "finishedAt": "2026-10-16T12:24:36.583468+00:00",
+    "elapsedSeconds": 26.74393608502578
+  }
+]

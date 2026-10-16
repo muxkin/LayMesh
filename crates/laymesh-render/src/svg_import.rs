@@ -225,7 +225,7 @@ pub(crate) fn import(
     let xml = laymesh_core::assets::sanitize_svg(xml, "", Loc::default())?;
     let mut db = usvg::fontdb::Database::new();
     for font in scene.fonts.values() {
-        db.load_font_source(usvg::fontdb::Source::Binary(Arc::new(font.data.clone())));
+        db.load_font_source(usvg::fontdb::Source::Binary(font.data.clone()));
     }
     let options = usvg::Options {
         fontdb: Arc::new(db),

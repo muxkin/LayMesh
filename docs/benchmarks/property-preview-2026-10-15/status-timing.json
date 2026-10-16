@@ -1,0 +1,98 @@
+[
+  {
+    "name": "browser",
+    "command": [
+      "node",
+      "scripts/test-web-semantic-performance.cjs",
+      "video/04-LCSS\u4e0e\u52a8\u753b/exports/property-preview-v003/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u5c5e\u6027\u589e\u91cf\u9884\u89c8.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15/browser",
+      "50"
+    ],
+    "started": 1792086322.5749006,
+    "state": "passed",
+    "seconds": 349.0609641075134,
+    "returncode": 0
+  },
+  {
+    "name": "browser-document",
+    "command": [
+      "node",
+      "scripts/test-web-document-performance.cjs",
+      "video/04-LCSS\u4e0e\u52a8\u753b/exports/property-preview-v003/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u5c5e\u6027\u589e\u91cf\u9884\u89c8.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15/browser-document",
+      "50"
+    ],
+    "started": 1792086671.636197,
+    "state": "passed",
+    "seconds": 3489.440995693207,
+    "returncode": 0
+  },
+  {
+    "name": "vscode",
+    "command": [
+      "/home/keqing/miniconda3/bin/python3",
+      "scripts/test-vscode-semantic-performance.py",
+      "--fixture",
+      "target/property-preview-fixture",
+      "--output",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15/vscode",
+      "--binary",
+      "target/release/laymesh",
+      "--extension-dir",
+      "target/property-preview-v003-extension"
+    ],
+    "started": 1792090161.0845313,
+    "state": "passed",
+    "seconds": 199.15730047225952,
+    "returncode": 0
+  },
+  {
+    "name": "vscode-document",
+    "command": [
+      "/home/keqing/miniconda3/bin/python3",
+      "scripts/test-vscode-document-performance.py",
+      "--fixture",
+      "target/property-preview-fixture",
+      "--output",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15/vscode-document",
+      "--binary",
+      "target/release/laymesh",
+      "--extension-dir",
+      "target/property-preview-v003-extension"
+    ],
+    "started": 1792090360.2421489,
+    "state": "passed",
+    "seconds": 352.5941848754883,
+    "returncode": 0
+  },
+  {
+    "name": "summary",
+    "command": [
+      "/home/keqing/miniconda3/bin/python3",
+      "scripts/summarize-semantic-preview-performance.py",
+      "--input",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15",
+      "--output",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15"
+    ],
+    "started": 1792090712.8366349,
+    "state": "passed",
+    "seconds": 0.09428000450134277,
+    "returncode": 0
+  },
+  {
+    "name": "comparison",
+    "command": [
+      "/home/keqing/miniconda3/bin/python3",
+      "scripts/summarize-property-preview.py",
+      "--baseline",
+      "/home/keqing/source/LayMesh/docs/benchmarks/semantic-preview-2026-10-15",
+      "--input",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15"
+    ],
+    "started": 1792090712.9312537,
+    "state": "passed",
+    "seconds": 0.030861377716064453,
+    "returncode": 0
+  }
+]

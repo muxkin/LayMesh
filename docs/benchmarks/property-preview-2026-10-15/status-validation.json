@@ -1,0 +1,102 @@
+[
+  {
+    "name": "frame-delivery",
+    "command": [
+      "node",
+      "scripts/test-presentation-frame-delivery.mjs"
+    ],
+    "started": 1792083990.8033543,
+    "state": "passed",
+    "seconds": 0.02383136749267578,
+    "returncode": 0
+  },
+  {
+    "name": "cold",
+    "command": [
+      "node",
+      "scripts/test-web-cold-edit.cjs",
+      "video/04-LCSS\u4e0e\u52a8\u753b/exports/property-preview-v003/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u5c5e\u6027\u589e\u91cf\u9884\u89c8.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15/cold"
+    ],
+    "started": 1792083990.8275516,
+    "state": "passed",
+    "seconds": 40.919270753860474,
+    "returncode": 0
+  },
+  {
+    "name": "reuse",
+    "command": [
+      "node",
+      "scripts/test-web-semantic-reuse.cjs",
+      "video/04-LCSS\u4e0e\u52a8\u753b/exports/property-preview-v003/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u5c5e\u6027\u589e\u91cf\u9884\u89c8.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15/reuse"
+    ],
+    "started": 1792084031.7471547,
+    "state": "passed",
+    "seconds": 148.39803624153137,
+    "returncode": 0
+  },
+  {
+    "name": "edit-oracle",
+    "command": [
+      "node",
+      "scripts/test-web-semantic-edit-oracle.cjs",
+      "video/04-LCSS\u4e0e\u52a8\u753b/exports/property-preview-v003/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u5c5e\u6027\u589e\u91cf\u9884\u89c8.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15/edit-oracle"
+    ],
+    "started": 1792084180.1455321,
+    "state": "passed",
+    "seconds": 1477.5510084629059,
+    "returncode": 0
+  },
+  {
+    "name": "style-oracle",
+    "command": [
+      "node",
+      "scripts/test-web-semantic-edit-oracle.cjs",
+      "video/04-LCSS\u4e0e\u52a8\u753b/exports/property-preview-v003/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u5c5e\u6027\u589e\u91cf\u9884\u89c8.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15/style-oracle",
+      "styles"
+    ],
+    "started": 1792085657.6968963,
+    "state": "passed",
+    "seconds": 240.0677056312561,
+    "returncode": 0
+  },
+  {
+    "name": "roundtrip",
+    "command": [
+      "node",
+      "scripts/test-web-semantic-roundtrip.cjs",
+      "video/04-LCSS\u4e0e\u52a8\u753b/exports/semantic-preview-v002/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8bed\u4e49\u589e\u91cf\u9884\u89c8.zip.html",
+      "video/04-LCSS\u4e0e\u52a8\u753b/exports/property-preview-v003/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u5c5e\u6027\u589e\u91cf\u9884\u89c8.zip.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/property-preview-2026-10-15/roundtrip"
+    ],
+    "started": 1792085897.7649813,
+    "state": "passed",
+    "seconds": 424.6429328918457,
+    "returncode": 0
+  },
+  {
+    "name": "native-deck",
+    "command": [
+      "node",
+      "scripts/test-presentation-incremental.cjs"
+    ],
+    "started": 1792086322.408141,
+    "state": "passed",
+    "seconds": 0.09299302101135254,
+    "returncode": 0
+  },
+  {
+    "name": "retained-deck",
+    "command": [
+      "node",
+      "scripts/test-retained-presentation-store.mjs"
+    ],
+    "started": 1792086322.5013316,
+    "state": "passed",
+    "seconds": 0.0499265193939209,
+    "returncode": 0
+  }
+]

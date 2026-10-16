@@ -7,7 +7,6 @@ use serde_json::{Value as Json, json};
 use std::{
     cell::RefCell,
     collections::{BTreeMap, BTreeSet},
-    path::Path,
     rc::Rc,
     sync::LazyLock,
 };
@@ -45,20 +44,34 @@ pub struct Engine {
     pub loading: BTreeSet<String>,
     pub objects: BTreeMap<usize, Rc<RefCell<Object>>>,
     pub styles: Vec<crate::style::StyleRule>,
+    pub(crate) style_cache: RefCell<crate::style::StyleCache>,
     pub animation_sheets: Vec<crate::animation::css::Sheet>,
     pub animation_steps: Vec<crate::animation::StepSpec>,
     pub file: String,
     pub steps: usize,
     pub calls: usize,
     pub serial: usize,
-    unnamed_instances: usize,
-    instance_names: BTreeMap<String, usize>,
+    pub(crate) unnamed_instances: usize,
+    pub(crate) instance_names: BTreeMap<String, usize>,
     // Successful image reads are a snapshot for one preview compilation only.
     preview_images: BTreeMap<String, Json>,
+    session_fonts: Option<Rc<RefCell<crate::session::State>>>,
+    pub(crate) current_site: u64,
+    query_path: Vec<u64>,
+    call_origins: BTreeMap<(String, usize), (V, V)>,
     cyclic_scopes: Vec<std::rc::Weak<RefCell<Environment>>>,
 }
 impl Drop for Engine {
     fn drop(&mut self) {
+        let _profile = crate::session::profile("engine_drop");
+        if let Some(state) = &self.session_fonts {
+            let mut state = state.borrow_mut();
+            state.fonts = Some(std::mem::replace(
+                &mut self.fonts,
+                crate::text::FontSystem::new(false),
+            ));
+            state.fonts_borrowed = false;
+        }
         // User functions close over their defining environment, and layer
         // handles point back to plots. Break these deliberate Rc cycles at
         // compilation end so repeated WASM editor requests remain bounded.
@@ -69,8 +82,8 @@ impl Drop for Engine {
         }
         for object in self.objects.values() {
             let mut o = object.borrow_mut();
-            o.args.clear();
-            o.layers.clear();
+            o.args = Default::default();
+            o.layers = Default::default();
         }
     }
 }
@@ -97,23 +110,7 @@ impl Engine {
     }
 
     pub fn new(host: Host) -> Self {
-        let native = host.native;
-        let mut fonts = crate::text::FontSystem::new(native);
-        fonts.bind_host(&host);
-        for (name, data) in &host.files {
-            if Path::new(name)
-                .extension()
-                .and_then(|s| s.to_str())
-                .is_some_and(|s| {
-                    matches!(
-                        s.to_ascii_lowercase().as_str(),
-                        "ttf" | "otf" | "ttc" | "otc"
-                    )
-                })
-            {
-                fonts.register_font(name, data.clone());
-            }
-        }
+        let (fonts, session_fonts) = crate::session::take_fonts(&host);
         Self {
             speaker_notes: None,
             host,
@@ -133,6 +130,7 @@ impl Engine {
             loading: BTreeSet::new(),
             objects: BTreeMap::new(),
             styles: vec![],
+            style_cache: RefCell::new(crate::style::StyleCache::default()),
             animation_sheets: vec![],
             animation_steps: vec![],
             file: String::new(),
@@ -142,6 +140,10 @@ impl Engine {
             unnamed_instances: 0,
             instance_names: BTreeMap::new(),
             preview_images: BTreeMap::new(),
+            session_fonts,
+            current_site: 0,
+            query_path: vec![],
+            call_origins: BTreeMap::new(),
             cyclic_scopes: vec![],
         }
     }
@@ -149,6 +151,7 @@ impl Engine {
         Diagnostic::new(c, m, &self.file, l)
     }
     pub fn warn(&mut self, c: &str, m: impl Into<String>, l: Loc) {
+        crate::session::queries::effect();
         let d = self.error(c, m, l);
         if !self.warnings.iter().any(|w| {
             w.file == d.file && w.loc == d.loc && w.code == d.code && w.message == d.message
@@ -167,17 +170,37 @@ impl Engine {
             _ => Err(self.error("E_UNIT", "需要有限的无单位数值", l)),
         }
     }
+    pub(crate) fn instance_identity(&self) -> Option<String> {
+        if self.current_site == 0 || crate::session::active().is_none() {
+            return None;
+        }
+        use std::hash::{Hash, Hasher};
+        let mut hash = std::collections::hash_map::DefaultHasher::new();
+        self.query_path.hash(&mut hash);
+        self.current_site.hash(&mut hash);
+        Some(format!("{:016x}", hash.finish()))
+    }
     pub fn object(&mut self, kind: &str, args: Args, loc: Loc) -> V {
+        if kind == "group" {
+            crate::session::queries::construction(self);
+        } else if !crate::session::values::immutable_kind(kind) {
+            crate::session::queries::effect();
+        }
         self.serial += 1;
         {
             let object = Rc::new(RefCell::new(Object {
+                syntax_site: self.current_site,
+                cache_identity: 0,
+                placed_key: None,
+                origin_revision: 0,
+                origin_dependencies: Default::default(),
                 kind: kind.into(),
-                args,
+                args: args.into(),
                 file: self.file.clone(),
                 loc,
                 id: self.serial,
                 nodes: vec![],
-                layers: vec![],
+                layers: Default::default(),
                 sealed: false,
                 width: 0.,
                 height: 0.,
@@ -193,6 +216,7 @@ impl Engine {
         // Refresh the context at entry, reusing an unchanged snapshot.
         self.fonts.bind_host(&self.host);
         self.preview_images.clear();
+        self.style_cache.borrow_mut().clear();
         self.file = file.into();
         self.run_entry(source, file)?;
         let c = self.canvas.clone().ok_or_else(|| {
@@ -209,13 +233,18 @@ impl Engine {
         self.finish_scene(c)
     }
     pub(crate) fn run_entry(&mut self, source: &str, file: &str) -> Result<()> {
+        let _profile = crate::session::profile("run_entry");
         self.file = file.into();
         self.css_entry_file = Some(file.into());
-        let stmts = parser::parse(source, file)?;
-        let notes: Vec<_> = stmts.iter().filter_map(|s| match &s.kind {
-            StmtKind::Note(text) => Some(crate::parser::normalize_note(text)),
-            _ => None,
-        }).filter(|s| !s.is_empty()).collect();
+        let stmts = crate::session::parse(source, file)?;
+        let notes: Vec<_> = stmts
+            .iter()
+            .filter_map(|s| match &s.kind {
+                StmtKind::Note(text) => Some(crate::parser::normalize_note(text)),
+                _ => None,
+            })
+            .filter(|s| !s.is_empty())
+            .collect();
         self.speaker_notes = (!notes.is_empty()).then(|| notes.join("\n\n"));
         let scope = Environment::root();
         if !matches!(self.run(&stmts, &scope)?, Flow::Normal) {
@@ -232,9 +261,10 @@ impl Engine {
         Ok(())
     }
     fn finish_scene(&mut self, c: Rc<RefCell<Object>>) -> Result<Scene> {
+        let _profile = crate::session::profile("finish_scene");
         let c = c.borrow();
         for node in &c.nodes {
-            if let Some(b) = crate::art::decorated_bounds(node) {
+            if let Some(b) = crate::session::nodes::decorated_bounds(node) {
                 if b.x0 < -0.01 || b.y0 < -0.01 || b.x1 > c.width + 0.01 || b.y1 > c.height + 0.01 {
                     self.warn(
                         "W_EFFECT_OVERFLOW",
@@ -245,9 +275,14 @@ impl Engine {
             }
         }
         let canvas_style = self.styled("canvas", &c.args, &Args::new())?;
+        crate::asset_cache::retain_nodes(&c.nodes);
         Ok(Scene {
             speaker_notes: self.speaker_notes.clone(),
-            page_transition: if let Some(spec)=&self.page_transition_override {spec.compile(Some(&self.host))?} else {crate::page_transition::compile(&canvas_style, &self.file, c.loc)?},
+            page_transition: if let Some(spec) = &self.page_transition_override {
+                spec.compile(Some(&self.host))?
+            } else {
+                crate::page_transition::compile(&canvas_style, &self.file, c.loc)?
+            },
             animation: self.compile_animation(&c.nodes)?,
             schema_version: 8,
             width: c.width,
@@ -281,7 +316,7 @@ impl Engine {
         let input = self.host.read(path, &self.file, l)?;
         let source =
             String::from_utf8(input).map_err(|_| self.error("E_IMPORT", "模块不是 UTF-8", l))?;
-        let stmts = parser::parse(&source, path)?;
+        let stmts = crate::session::parse(&source, path)?;
         let scope = Environment::root();
         let old = std::mem::replace(&mut self.file, path.into());
         let result = self.run(&stmts, &scope);
@@ -289,14 +324,14 @@ impl Engine {
         self.loading.remove(path);
         result?;
         let exports = Environment::root();
-        for stmt in stmts {
-            let n = match stmt.kind {
+        for stmt in stmts.iter() {
+            let n = match &stmt.kind {
                 StmtKind::Bind(n, _, true) | StmtKind::Function(n, _, _, true) => Some(n),
                 _ => None,
             };
             if let Some(n) = n {
                 if let Some(v) = Environment::get(&scope, &n) {
-                    exports.borrow_mut().values.insert(n, v);
+                    exports.borrow_mut().values.insert(n.clone(), v);
                 }
             }
         }
@@ -306,11 +341,15 @@ impl Engine {
     fn run(&mut self, stmts: &[Stmt], scope: &Scope) -> Result<Flow> {
         self.declare_functions(stmts, scope);
         for stmt in stmts {
+            crate::session::checkpoint(&self.file, stmt.loc)?;
             self.steps += 1;
             if self.steps > 1_000_000 {
                 return Err(self.error("E_LIMIT", "执行步骤超过 1,000,000", stmt.loc));
             }
-            let flow = self.run_statement(stmt, scope)?;
+            self.query_path.push(stmt.identity);
+            let flow = self.run_statement(stmt, scope);
+            self.query_path.pop();
+            let flow = flow?;
             if !matches!(flow, Flow::Normal) {
                 return Ok(flow);
             }
@@ -345,12 +384,16 @@ impl Engine {
     fn declare_functions(&mut self, stmts: &[Stmt], scope: &Scope) {
         for stmt in stmts {
             if let StmtKind::Function(n, ps, body, _) = &stmt.kind {
+                let (params, body) = crate::session::active()
+                    .and_then(|s| s.borrow().syntax.function(stmt.identity))
+                    .unwrap_or_else(|| (Rc::new(ps.clone()), Rc::new(body.clone())));
                 self.cyclic_scopes.push(Rc::downgrade(scope));
                 scope.borrow_mut().values.insert(
                     n.clone(),
                     V::Function {
-                        params: ps.clone(),
-                        body: body.clone(),
+                        revision: stmt.revision,
+                        params,
+                        body,
                         scope: scope.clone(),
                         file: self.file.clone(),
                     },
@@ -392,25 +435,14 @@ impl Engine {
                 if let Some(instance) = value.object().filter(|o| o.borrow().kind == "instance") {
                     self.unnamed_instances += 1;
                     let name = json!(format!("@{}", self.unnamed_instances));
-                    let mut instance = instance.borrow_mut();
-                    let parent = instance.parent;
-                    if let Some(node) = instance.node.as_mut() {
-                        let old = node["id"].clone();
-                        node["id"] = name.clone();
-                        if let Some(owner) = self.objects.get(&parent) {
-                            for node in &mut owner.borrow_mut().nodes {
-                                if node["id"] == old {
-                                    node["id"] = name.clone();
-                                }
-                            }
-                        }
-                    }
+                    self.rename_instance(&mut instance.borrow_mut(), name);
                 }
             }
             StmtKind::Function(..) | StmtKind::Note(_) => {}
             StmtKind::Break => return Ok(Flow::Break),
             StmtKind::Continue => return Ok(Flow::Continue),
             StmtKind::Import(ns, path) => {
+                crate::session::queries::effect();
                 let path = resolve(&self.file, path);
                 let m = self.module(&path, stmt.loc)?;
                 for (n, a) in ns {
@@ -422,6 +454,7 @@ impl Engine {
                 }
             }
             StmtKind::Style(css) => {
+                crate::session::queries::effect();
                 self.stylesheet_scoped(css, &self.file.clone(), stmt.loc, Some(&self.file.clone()))?
             }
             StmtKind::For(n, seq, body) => {
@@ -430,11 +463,14 @@ impl Engine {
                 if vs.len() > 10_000 {
                     return Err(self.error("E_LIMIT", "循环次数超过 10,000", stmt.loc));
                 }
-                for v in vs {
+                for (iteration, v) in vs.into_iter().enumerate() {
                     let s = Environment::child(scope);
                     let bindings = self.bind_pattern(n, v, stmt.loc)?;
                     s.borrow_mut().values.extend(bindings);
-                    match self.run(body, &s)? {
+                    self.query_path.push(iteration as u64);
+                    let flow = self.run(body, &s);
+                    self.query_path.pop();
+                    match flow? {
                         Flow::Break => break,
                         Flow::Return(v) => return Ok(Flow::Return(v)),
                         _ => {}
@@ -448,7 +484,10 @@ impl Engine {
                     if count > 10_000 {
                         return Err(self.error("E_LIMIT", "循环次数超过 10,000", stmt.loc));
                     }
-                    match self.run(body, &Environment::child(scope))? {
+                    self.query_path.push(count as u64);
+                    let flow = self.run(body, &Environment::child(scope));
+                    self.query_path.pop();
+                    match flow? {
                         Flow::Break => break,
                         Flow::Return(v) => return Ok(Flow::Return(v)),
                         _ => {}
@@ -462,8 +501,7 @@ impl Engine {
     fn bind_value(&mut self, n: &str, v: V, scope: &Scope, l: Loc) -> Result<()> {
         if let Some(o) = v.object() {
             let mut o = o.borrow_mut();
-            let parent = o.parent;
-            if let Some(node) = o.node.as_mut() {
+            if o.node.is_some() {
                 let count = self.instance_names.entry(n.to_string()).or_default();
                 *count += 1;
                 let name = if *count == 1 {
@@ -471,21 +509,52 @@ impl Engine {
                 } else {
                     format!("{n}#{count}")
                 };
-                let old = node["id"].clone();
-                node["id"] = json!(name);
-                if let Some(p) = self.objects.get(&parent) {
-                    for node in &mut p.borrow_mut().nodes {
-                        if node["id"] == old {
-                            node["id"] = json!(name);
-                        }
-                    }
-                }
+                self.rename_instance(&mut o, json!(name));
             }
         }
         if !Environment::set(scope, n.to_string(), v) {
             return Err(self.error("E_BINDING", "导入的名字不可赋值", l));
         }
         Ok(())
+    }
+    fn rename_instance(&self, instance: &mut Object, name: Json) {
+        let Some(mut node) = instance.node.take() else {
+            return;
+        };
+        let old = node["id"].clone();
+        // Release the cache's duplicate handle before assigning a new binding
+        // name. Other snapshots still retain normal copy-on-write protection.
+        let detached = if old != name {
+            instance
+                .placed_key
+                .as_deref()
+                .and_then(|key| crate::session::nodes::detach_for_rename(key, &node))
+        } else {
+            None
+        };
+        if old != name {
+            let mut renamed = false;
+            if let Some(owner) = self.objects.get(&instance.parent) {
+                let mut owner = owner.borrow_mut();
+                if let Some(target) = owner.nodes.iter_mut().rev().find(|n| n["id"] == old) {
+                    // Release the parent's duplicate handle before changing
+                    // only the instance header. Immutable cached snapshots,
+                    // when present, still trigger Arc's copy-on-write.
+                    let previous = std::mem::replace(target, std::sync::Arc::new(Json::Null));
+                    drop(previous);
+                    std::sync::Arc::make_mut(&mut node)["id"] = name.clone();
+                    *target = node.clone();
+                    renamed = true;
+                }
+            }
+            if !renamed {
+                std::sync::Arc::make_mut(&mut node)["id"] = name;
+            }
+        }
+        if let Some(key) = &instance.placed_key {
+            crate::session::nodes::renamed(key, &node, detached);
+        }
+        instance.node = Some(node);
     }
     fn truth(&mut self, e: &Expr, s: &Scope) -> Result<bool> {
         match self.eval(e, s)? {
@@ -494,6 +563,56 @@ impl Engine {
         }
     }
     pub fn eval(&mut self, e: &Expr, s: &Scope) -> Result<V> {
+        crate::session::checkpoint(&self.file, e.loc)?;
+        if e.site == 0 {
+            return self.eval_uncached(e, s);
+        }
+        let old = std::mem::replace(&mut self.current_site, e.site);
+        let result = self.eval_query(e, s);
+        self.current_site = old;
+        result
+    }
+    #[inline(never)]
+    fn eval_query(&mut self, e: &Expr, s: &Scope) -> Result<V> {
+        let session = e.identity != 0 && crate::session::active().is_some();
+        let candidate = session
+            && matches!(
+                &e.kind,
+                ExprKind::Call(..) | ExprKind::List(_) | ExprKind::Dict(_) | ExprKind::Binary(..)
+            );
+        if !candidate {
+            return self.eval_uncached(e, s);
+        }
+        // Container mutations cannot be replayed as pure queries. Preserve
+        // their call path for child identities, while recording child reads
+        // directly in any enclosing construction transaction.
+        if matches!(&e.kind,ExprKind::Call(parts,_) if parts.len()==2&&matches!(parts[1].as_str(),"add"|"fuse"|"animate"|"step"))
+        {
+            self.query_path.push(e.site);
+            let result = self.eval_uncached(e, s);
+            self.query_path.pop();
+            return result;
+        }
+        use std::hash::{Hash, Hasher};
+        let mut hash = std::collections::hash_map::DefaultHasher::new();
+        self.query_path.hash(&mut hash);
+        self.unit.hash(&mut hash);
+        self.dpi.to_bits().hash(&mut hash);
+        self.canvas.is_some().hash(&mut hash);
+        let key = hash.finish();
+        if let Some(value) = crate::session::queries::begin(self, e, s, key) {
+            return Ok(value);
+        }
+        let steps = self.steps;
+        let calls = self.calls;
+        self.query_path.push(e.site);
+        let mut result = self.eval_uncached(e, s);
+        self.query_path.pop();
+        crate::session::queries::end(self, e, key, steps, calls, &mut result);
+        result
+    }
+    #[inline(never)]
+    fn eval_uncached(&mut self, e: &Expr, s: &Scope) -> Result<V> {
         // Debug builds also need to honor the 64-call limit on small native stacks.
         // Drop the larger expression dispatch frame before entering user code.
         match &e.kind {
@@ -646,6 +765,8 @@ impl Engine {
         let mut pos = vec![];
         let mut named = Args::new();
         let mut origins = Args::new();
+        let origin_key = (self.file.clone(), l.offset);
+        let cached_origins = self.call_origins.get(&origin_key).cloned();
         let mut saw_named = false;
         for (n, e) in args {
             let v = self.eval(e, s)?;
@@ -655,10 +776,12 @@ impl Engine {
                 loc.column += prefix;
                 loc.offset += prefix;
             }
-            origins.insert(
-                n.clone().unwrap_or_else(|| format!("_{}", pos.len())),
-                V::from_json(&json!({"file":self.file,"loc":loc})),
-            );
+            if cached_origins.is_none() {
+                origins.insert(
+                    n.clone().unwrap_or_else(|| format!("_{}", pos.len())),
+                    V::from_json(&json!({"file":self.file,"loc":loc})),
+                );
+            }
             if let Some(n) = n {
                 if named.insert(n.clone(), v).is_some() {
                     return Err(self.error("E_ARG", format!("重复参数 {n}"), l));
@@ -671,13 +794,18 @@ impl Engine {
                 pos.push(v);
             }
         }
-        if !origins.is_empty() {
-            named.insert("__arg_locations".into(), V::Map(origins));
+        let (locations, call) = cached_origins.unwrap_or_else(|| {
+            let value = (
+                V::Map(origins.into()),
+                V::from_json(&json!({"file":self.file,"loc":l})),
+            );
+            self.call_origins.insert(origin_key, value.clone());
+            value
+        });
+        if !args.is_empty() {
+            named.insert("__arg_locations".into(), locations);
         }
-        named.insert(
-            "__call_origin".into(),
-            V::from_json(&json!({"file":self.file,"loc":l})),
-        );
+        named.insert("__call_origin".into(), call);
         Ok((pos, named))
     }
     fn binary(&self, op: &str, a: &V, b: &V, l: Loc) -> Result<V> {
@@ -912,6 +1040,7 @@ impl Engine {
     fn call(&mut self, parts: &[String], pos: Vec<V>, a: Args, s: &Scope, l: Loc) -> Result<V> {
         if parts.len() == 1 {
             if let Some(V::Function {
+                revision: _,
                 params,
                 body,
                 scope,
@@ -924,6 +1053,7 @@ impl Engine {
                 let local = self.bind_call_arguments(&params, pos, a, &scope, l)?;
                 let old = std::mem::replace(&mut self.file, file);
                 self.calls += 1;
+                crate::session::queries::call_depth(self.calls);
                 let result = self.run(&body, &local);
                 self.calls -= 1;
                 self.file = old;
@@ -980,6 +1110,14 @@ impl Engine {
         l: Loc,
     ) -> Result<V> {
         let qualified = parts.join(".");
+        if let Some(state) = crate::session::active() {
+            *state
+                .borrow_mut()
+                .metrics
+                .evaluated_builtin_calls
+                .entry(qualified.clone())
+                .or_default() += 1;
+        }
         if let Some(result) = self.document_call(parts, &pos, &a, s, l) {
             return result;
         }
@@ -1009,7 +1147,7 @@ impl Engine {
             {
                 return Err(self.error("E_ARG", "direction 需要非零无单位向量", l));
             }
-            return Ok(V::Map(a));
+            return Ok(V::Map(a.into()));
         }
         if parts.len() > 1 {
             if let Some(receiver @ (V::Dict(_) | V::Cmap(_))) = Environment::get(s, &parts[0]) {
@@ -1470,14 +1608,20 @@ pub fn compile_file(file: &str) -> Result<Scene> {
     let f = p.to_string_lossy();
     let source = std::fs::read_to_string(&p)
         .map_err(|e| Diagnostic::new("E_ASSET", e.to_string(), file, Loc::default()))?;
-    Engine::new(Host {
-        native: true,
-        ..Host::default()
-    })
-    .compile(&source, &f)
+    compile_source(
+        &source,
+        &f,
+        Host {
+            native: true,
+            ..Host::default()
+        },
+    )
 }
 pub fn compile_source(source: &str, file: &str, host: Host) -> Result<Scene> {
-    Engine::new(host).compile(source, file)
+    let mut session = crate::session::CompileSession::uncached(host);
+    let scene = session.evaluate(source, file, None)?;
+    session.dispose();
+    Ok(std::sync::Arc::unwrap_or_clone(scene))
 }
 
 #[cfg(test)]

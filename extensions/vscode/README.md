@@ -92,7 +92,7 @@ Library comments may use `## @lang zh-CN` and `## @lang en` sections. Missing fi
 
 Open a saved `.lay` file and click the preview icon in the editor title, use **LayMesh: Open Preview** (**LayMesh：打开预览** in Chinese), or choose it from the editor context menu. Each entry has its own preview beside the editor; reopening reuses its panel. Preview runs in a separate native process and requires a trusted workspace. Local files in remote extension hosts work in the same way; untitled and virtual files must first be saved to the host filesystem.
 
-Edits refresh after 100 ms, including unsaved imported modules, stylesheets and text data. Changes to loaded local images, fonts and data also refresh the figure. A compilation error retains the last successful figure, marks it stale, and offers a source-location button. Language help continues independently.
+Preview updates are scheduled 30 ms after the last edit by default, including unsaved imported modules, stylesheets and text data. Explicit debounce settings continue to take precedence. Changes to loaded local images, fonts and data also refresh the figure. A compilation error retains the last successful figure, marks it stale, and offers a source-location button. Language help continues independently.
 
 The top and left rulers and canvas X/Y values follow `canvas(unit=...)`: `mm`, `cm`, `in`/`inch`, `pt`, or `px`. Pixels use `layout_dpi`, independently of raster export DPI. The origin is the canvas top left; X increases right and Y increases down. Explicit units mixed in the source do not change the preview's display unit.
 
@@ -102,7 +102,7 @@ Toolbar: **Refresh**, **Fit**, **100%**, zoom out/in, **Rulers**, and **Export**
 
 ```json
 {
-  "laymesh.preview.debounceMs": 100,
+  "laymesh.preview.debounceMs": 30,
   "laymesh.preview.renderTimeoutMs": 30000,
   "laymesh.preview.showRulers": true
 }
@@ -138,7 +138,7 @@ Use **LayMesh: Export Figure** from the editor title/context menu or **Export** 
 
 The native stdio transport also accepts `type: "export"`, an absolute `output` path and an `options` object alongside the existing `file`, `source` and `overlays` fields. A success returns `exported`, `bytes`, `warnings` and `dependencies`; failures return the structured `error`. The export command accepts `(uri, {output, options})` for editor automation. This entry has the same trust checks and option validation as interactive export.
 
-Native preview directly displays full-resolution JPEG 90 images; only nonopaque alpha uses lossy WebP with method 0. It reuses image/font resources across text refreshes and provides configurable parallel encoding and memory budgets. Export defaults to 1200 DPI with independent PDF precision/transparency preservation. [Preview settings](https://muxkin.github.io/LayMesh/en/docs/topics/editors.html) · [Export configuration](https://muxkin.github.io/LayMesh/en/docs/topics/export.html).
+Native preview directly displays full-resolution JPEG 90 images; only nonopaque alpha uses lossy WebP with method 0. It reuses image/font resources across text refreshes and retains the current document’s reusable resources. Image encoding uses the available parallelism without per-cache quotas. Export defaults to 1200 DPI with independent PDF precision/transparency preservation. [Preview settings](https://muxkin.github.io/LayMesh/en/docs/topics/editors.html) · [Export configuration](https://muxkin.github.io/LayMesh/en/docs/topics/export.html).
 
 Use **LayMesh: Set Preview Delay** in the Command Palette to enter any integer from 0 to 5000 ms (default 100). Set 0 to disable debounce. The command saves to the current workspace, or user settings if no workspace is open; changes apply immediately. You can also edit `laymesh.preview.debounceMs` in Settings.
 

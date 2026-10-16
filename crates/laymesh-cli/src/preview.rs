@@ -8,7 +8,11 @@ use std::{
     io::{self, BufRead, Write},
     path::Path,
     rc::Rc,
-    sync::mpsc,
+    sync::{
+        Arc,
+        atomic::{AtomicU64, Ordering},
+        mpsc,
+    },
 };
 pub fn serve() -> io::Result<()> {
     let mut presentation_plan: Option<(
@@ -19,12 +23,40 @@ pub fn serve() -> io::Result<()> {
     let mut compressed_cache: Option<(String, Value)> = None;
     // One bounded baseline. A different panel, restart, or unacknowledged
     // generation receives a full CPU display list instead of an unsafe patch.
-    let mut retained_list: Option<(String, String, laymesh_render::DisplayList, usize)> = None;
+    let mut retained_list: Option<(String, String, laymesh_render::DisplayList)> = None;
+    let mut retained_scene: Option<Arc<laymesh_core::model::Scene>> = None;
     let session = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
         .as_nanos();
     let mut revision = 0u64;
+    let mut compiler = laymesh_core::session::CompileSession::new(true);
+    let latest = Arc::new(AtomicU64::new(0));
+    let (input, requests) = mpsc::channel();
+    let cancellation = latest.clone();
+    std::thread::spawn(move || {
+        let mut sequence = 0u64;
+        for line in io::stdin().lock().lines() {
+            sequence += 1;
+            if let Ok(line) = &line {
+                if let Ok(value) = serde_json::from_str::<Value>(line) {
+                    if value["type"] == "cancel" {
+                        cancellation.store(sequence, Ordering::Relaxed);
+                        continue;
+                    }
+                    if !matches!(
+                        value["type"].as_str(),
+                        Some("export" | "animate" | "defaults")
+                    ) {
+                        cancellation.store(sequence, Ordering::Relaxed);
+                    }
+                }
+            }
+            if input.send((sequence, line)).is_err() {
+                break;
+            }
+        }
+    });
     let (sender, receiver) = mpsc::channel::<Value>();
     let writer = std::thread::spawn(move || {
         let mut stdout = io::stdout().lock();
@@ -44,9 +76,9 @@ pub fn serve() -> io::Result<()> {
         }
     });
     sender
-        .send(json!({"type":"ready","protocol":1,"capabilities":["web-export-v1","animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","defaults"]}))
+        .send(json!({"type":"ready","protocol":1,"capabilities":["web-export-v1","animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","incremental-session-v1","incremental-document-v1","defaults"]}))
         .unwrap();
-    for line in io::stdin().lock().lines() {
+    for (input_revision, line) in requests {
         let request: Value = match serde_json::from_str(&line?) {
             Ok(v) => v,
             Err(e) => {
@@ -55,8 +87,15 @@ pub fn serve() -> io::Result<()> {
             }
         };
         let file = request["file"].as_str().unwrap_or("");
+        let incremental = request["incremental_session"] == "incremental-session-v1"
+            && !matches!(
+                request["type"].as_str(),
+                Some("export" | "animate" | "defaults")
+            );
+        compiler.set_cancellation(latest.clone(), input_revision);
         let dependencies = Rc::new(RefCell::new(BTreeSet::new()));
         let mut document_metadata = None;
+        let mut document_dependencies = BTreeSet::new();
         let result = (|| -> Result<Value, Box<dyn std::error::Error>> {
             if !Path::new(file).is_absolute()
                 || !(file.ends_with(".lay") || file.ends_with(".laydoc"))
@@ -70,20 +109,8 @@ pub fn serve() -> io::Result<()> {
                 &request["editor_workspace"],
             )?;
             dependencies.borrow_mut().extend(paths);
-            let settings = config::preview_settings(&defaults, &request["preview"])?;
-            let budget = settings.cache_mb.saturating_mul(1024 * 1024);
-            if retained_list
-                .as_ref()
-                .is_some_and(|(_, _, _, bytes)| *bytes > budget)
-            {
-                retained_list = None;
-            }
-            if compressed_cache.as_ref().is_some_and(|(_, value)| {
-                value["data"].as_str().unwrap().len()
-                    > settings.cache_mb.saturating_mul(1024 * 1024)
-            }) {
-                compressed_cache = None;
-            }
+            let mut settings = config::preview_settings(&defaults, &request["preview"])?;
+            settings.parallelism = request["parallelism"].as_u64().unwrap_or(0) as usize;
             if request["type"] == "defaults" {
                 let options = config::export_options(
                     &defaults,
@@ -94,9 +121,31 @@ pub fn serve() -> io::Result<()> {
                     json!({"options":options,"previewSettings":settings,"fingerprint":config::fingerprint(&defaults)}),
                 );
             }
-            let source = request["source"]
-                .as_str()
-                .ok_or("Preview requires source text")?;
+            let source_owned;
+            let source = if incremental {
+                if request["reset_session"] == true {
+                    compiler = laymesh_core::session::CompileSession::new(true);
+                    compiler.set_cancellation(latest.clone(), input_revision);
+                }
+                let version = request["sourceVersion"]
+                    .as_u64()
+                    .ok_or("Missing source version")?;
+                let changes: std::collections::BTreeMap<String, Option<String>> =
+                    serde_json::from_value(request["changes"].clone())?;
+                compiler.set_dependencies(Some(dependencies.clone()));
+                compiler.apply_changes(
+                    version,
+                    changes
+                        .into_iter()
+                        .map(|(p, v)| (p, v.map(String::into_bytes))),
+                )?;
+                source_owned = compiler.source(file)?;
+                source_owned.as_str()
+            } else {
+                request["source"]
+                    .as_str()
+                    .ok_or("Preview requires source text")?
+            };
             let protocol = request["protocol"].as_u64().unwrap_or(3);
             if ![1, 2, 3].contains(&protocol) {
                 return Err("Unsupported preview protocol".into());
@@ -109,8 +158,6 @@ pub fn serve() -> io::Result<()> {
                             .as_str()
                             .is_some_and(|p| p.to_ascii_lowercase().ends_with(".pdf"))),
             );
-            laymesh_core::asset_cache::set_budget(settings.cache_mb);
-            laymesh_render::raster::set_image_cache_budget(settings.cache_mb);
             let mut host = Host {
                 native: true,
                 dependencies: Some(dependencies.clone()),
@@ -190,7 +237,9 @@ pub fn serve() -> io::Result<()> {
             let mut drawing_key = file.to_owned();
             let scene = if file.ends_with(".laydoc") {
                 let plan_key = format!("{}\n{}", file, request["presentation_revision"]);
-                let plan = if request["presentation_revision"].is_string() {
+                let plan = if incremental {
+                    compiler.plan(source, file)?
+                } else if request["presentation_revision"].is_string() {
                     if let Some((_, plan, deps)) = presentation_plan
                         .as_ref()
                         .filter(|(key, _, _)| key == &plan_key)
@@ -207,6 +256,12 @@ pub fn serve() -> io::Result<()> {
                     laymesh_core::document::plan_source(source, file, host.clone())?
                 };
                 document_metadata = Some(json!({"name":plan.name,"pages":plan.pages}));
+                document_dependencies = dependencies.borrow().clone();
+                if request["type"] == "plan" {
+                    return Ok(
+                        json!({"protocol":3,"previewSettings":settings,"configFingerprint":config::fingerprint(&defaults)}),
+                    );
+                }
                 let number = if let Some(id) = request["page_id"].as_str() {
                     plan.pages
                         .iter()
@@ -243,9 +298,28 @@ pub fn serve() -> io::Result<()> {
                     }
                 }
                 drawing_key = format!("{file}\n{}", page.id);
-                laymesh_core::document::compile_preview_page(page, host)?
+                dependencies.borrow_mut().clear();
+                if incremental {
+                    compiler.evaluate_file(&page.src, page.transition.clone())?
+                } else {
+                    Arc::new(laymesh_core::document::compile_preview_page(page, host)?)
+                }
             } else {
-                compile_source(source, file, host)?
+                document_dependencies = dependencies.borrow().clone();
+                if request["type"] == "plan" {
+                    document_metadata = Some(
+                        json!({"pages":[{"id":"page","name":Path::new(file).file_name().unwrap_or_default().to_string_lossy(),"src":file}]}),
+                    );
+                    return Ok(
+                        json!({"protocol":3,"previewSettings":settings,"configFingerprint":config::fingerprint(&defaults)}),
+                    );
+                }
+                dependencies.borrow_mut().clear();
+                if incremental {
+                    compiler.evaluate(source, file, None)?
+                } else {
+                    Arc::new(compile_source(source, file, host)?)
+                }
             };
             if request["type"] == "export" {
                 return export_scene(&scene, &request, &defaults);
@@ -261,26 +335,67 @@ pub fn serve() -> io::Result<()> {
                 }
                 std::fs::create_dir_all(directory)?;
                 if protocol == 3 {
+                    if incremental {
+                        drawing_key.push_str(&format!(
+                            "\n{}\n{}",
+                            directory.display(),
+                            serde_json::to_string(&settings)?
+                        ));
+                    }
+                    let updates = request["display_list_updates"] == true;
+                    if incremental
+                        && updates
+                        && let Some((previous_file, base, previous)) = &retained_list
+                        && let Some(previous_scene) = &retained_scene
+                        && previous_file == &drawing_key
+                        && request["known_display_list"].as_str() == Some(base)
+                    {
+                        let (update, mut resources) = preview_assets::display_update_frame(
+                            &scene,
+                            previous_scene,
+                            previous,
+                            directory,
+                            &settings,
+                        )?;
+                        if let Some(known) = request["known_resources"].as_array() {
+                            resources.retain(|item| !known.contains(&item["id"]));
+                        }
+                        revision += 1;
+                        let list_id = format!("{session}-{revision}");
+                        let mut result = json!({"protocol":3,"displayListId":list_id,"displayListUpdate":{"base":base,"update":update},"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)});
+                        let (_, _, mut list) = retained_list.take().unwrap();
+                        update.apply(&mut list)?;
+                        result["drawingResources"] = serde_json::to_value(&list.resources)?;
+                        retained_scene = Some(scene.clone());
+                        retained_list = Some((drawing_key.clone(), list_id, list));
+                        compressed_cache = None;
+                        return Ok(result);
+                    }
                     let (list, mut resources) =
                         preview_assets::display_frame(&scene, directory, &settings)?;
                     if let Some(known) = request["known_resources"].as_array() {
                         resources.retain(|item| !known.contains(&item["id"]));
                     }
-                    let updates = request["display_list_updates"] == true;
+                    if updates {
+                        retained_scene = incremental.then(|| scene.clone());
+                    }
                     revision += 1;
                     let list_id = format!("{session}-{revision}");
                     if updates
-                        && let Some((previous_file, base, previous, bytes)) = &retained_list
+                        && let Some((previous_file, base, previous)) = &retained_list
                         && previous_file == &drawing_key
                         && request["known_display_list"].as_str() == Some(base)
                     {
-                        let update =
-                            laymesh_render::display_update::DisplayUpdate::between(previous, &list);
-                        let retained_bytes =
-                            bytes.saturating_add(serde_json::to_vec(&update)?.len());
+                        let update = if incremental {
+                            laymesh_render::display_update::DisplayUpdate::between_incremental(
+                                previous, &list,
+                            )
+                        } else {
+                            laymesh_render::display_update::DisplayUpdate::between(previous, &list)
+                        };
                         let result = json!({"protocol":3,"displayListId":list_id,"displayListUpdate":{"base":base,"update":update},"drawingResources":list.resources,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)});
-                        retained_list = (retained_bytes <= budget)
-                            .then(|| (drawing_key.clone(), list_id, list, retained_bytes));
+                        retained_list = Some((drawing_key.clone(), list_id, list));
+                        compressed_cache = None;
                         return Ok(result);
                     }
                     if request["compressed_display_list"] == true {
@@ -298,29 +413,20 @@ pub fn serve() -> io::Result<()> {
                             );
                             encoder.write_all(&bytes)?;
                             let value = json!({"id":id,"codec":"gzip","uncompressedBytes":bytes.len(),"data":base64::engine::general_purpose::STANDARD.encode(encoder.finish()?)});
-                            if value["data"].as_str().unwrap().len()
-                                <= settings.cache_mb.saturating_mul(1024 * 1024)
-                            {
-                                compressed_cache = Some((id, value.clone()));
-                            } else {
-                                compressed_cache = None;
-                            }
+                            compressed_cache = Some((id, value.clone()));
                             value
                         };
                         let mut result = json!({"protocol":3,"displayListCompressed":compressed,"drawingResources":list.resources,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)});
                         if updates {
                             result["displayListId"] = json!(list_id);
-                            retained_list = (bytes.len() <= budget)
-                                .then(|| (drawing_key.clone(), list_id, list, bytes.len()));
+                            retained_list = Some((drawing_key.clone(), list_id, list));
                         }
                         return Ok(result);
                     }
                     let mut result = json!({"protocol":3,"displayList":list,"resources":resources,"generation":request["generation"],"previewSettings":settings,"inspection":laymesh_language::inspect::inspect_scene(&scene)});
                     if updates {
-                        let bytes = serde_json::to_vec(&list)?.len();
                         result["displayListId"] = json!(list_id);
-                        retained_list =
-                            (bytes <= budget).then(|| (drawing_key.clone(), list_id, list, bytes));
+                        retained_list = Some((drawing_key.clone(), list_id, list));
                     }
                     return Ok(result);
                 }
@@ -352,10 +458,18 @@ pub fn serve() -> io::Result<()> {
             };
             json!({"error":error})
         });
+        if incremental {
+            result["appliedSourceVersion"] = json!(compiler.revision());
+            result["sourceVersion"] = request["sourceVersion"].clone();
+            result["compileMetrics"] = serde_json::to_value(compiler.metrics()).unwrap();
+        }
         result["id"] = request["id"].clone();
         if let Some(document) = document_metadata {
             result["document"] = document;
         }
+        result["pageDependencies"] = json!(*dependencies.borrow());
+        result["documentDependencies"] = json!(document_dependencies);
+        dependencies.borrow_mut().extend(document_dependencies);
         result["dependencies"] = json!(*dependencies.borrow());
         let _ = sender.send(result);
     }

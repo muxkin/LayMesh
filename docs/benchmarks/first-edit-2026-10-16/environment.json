@@ -1,0 +1,15 @@
+{
+  "startedAt": "2026-10-16T11:29:56.969314+00:00",
+  "platform": "Linux-6.12.73+deb13-amd64-x86_64-with-glibc2.41",
+  "cpuCount": 16,
+  "affinityCount": 16,
+  "html": "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/first-edit-preview-v009/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u9996\u6b21\u7f16\u8f91\u4fee\u590d_v009.zip.html",
+  "htmlSha256": "fb5637b5f27ed14802732619ed8b4dcd184587bdc9aa63fb69d2df573fd5ac9a",
+  "nativeSha256": "52079c2b35b2318131522c39e471ccea7d11a213e904ae4fa4e3ee46b1928f03",
+  "memory": [
+    "MemTotal:       21300832 kB",
+    "MemAvailable:   14983004 kB",
+    "SwapTotal:      21809148 kB",
+    "SwapFree:        9338516 kB"
+  ]
+}

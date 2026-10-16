@@ -1,8 +1,8 @@
 //! Static, non-evaluating language services shared by native LSP and WebAssembly.
 mod bindings;
-mod file_references;
 mod colors;
 mod connections;
+mod file_references;
 mod formatting;
 mod index;
 pub mod inspect;
@@ -2212,6 +2212,8 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
             ExprKind::Method(receiver, name, args) => {
                 walk(receiver, out, names, inferred, source, en);
                 let call = Expr {
+                    identity: 0,
+                    site: 0,
                     loc: e.loc,
                     kind: ExprKind::Call(vec!["self".into(), name.clone()], args.clone()),
                 };

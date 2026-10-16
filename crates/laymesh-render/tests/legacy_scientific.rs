@@ -293,7 +293,7 @@ fn legacy_solid_point_defaults_match_all_three_exports() {
     let mut legacy = current.clone();
     legacy.schema_version = 4;
     for n in &mut legacy.nodes {
-        legacy_points(n);
+        legacy_points(std::sync::Arc::make_mut(n));
     }
     assert_eq!(render_svg(&current).unwrap(), render_svg(&legacy).unwrap());
     assert_eq!(
