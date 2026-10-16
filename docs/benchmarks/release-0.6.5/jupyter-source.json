@@ -1,7 +1,7 @@
 {
   "mode": "source-checkout",
   "python": "3.13.11",
-  "engine_sha256": "eee66d5ab62262b44d9c6756fddcba99ded64fdb99b4118fdb8fac53f305c33e",
+  "engine_sha256": "ad1517a8d382c5543b3fd5e67dce1302dc8b363d9401029e37ec096af17bc8ef",
   "source_sha256": {
     "scripts/test-python-jupyter.py": "4bb8a8e3a02b03475206ff3d757d10cc62a66bf58ffd049503dbb95fc7a815a8",
     "examples/jupyter-integration.ipynb": "716ae6d021a688d7a9719fef3567ebd7a9767aa1d977d345267a151c9ddeb812",
@@ -17,7 +17,7 @@
     {
       "run": 1,
       "code_cells": 10,
-      "elapsed_ms": 1083.4959690109827,
+      "elapsed_ms": 815.0253230123781,
       "previews": [
         {
           "pixels": [
@@ -57,7 +57,7 @@
     {
       "run": 2,
       "code_cells": 10,
-      "elapsed_ms": 415.53521505557,
+      "elapsed_ms": 372.0284500159323,
       "previews": [
         {
           "pixels": [
@@ -97,7 +97,7 @@
   ],
   "kernel_checks": {
     "engine_version": "laymesh 0.6.5",
-    "engine_sha256": "eee66d5ab62262b44d9c6756fddcba99ded64fdb99b4118fdb8fac53f305c33e",
+    "engine_sha256": "ad1517a8d382c5543b3fd5e67dce1302dc8b363d9401029e37ec096af17bc8ef",
     "python_package_sha256": {
       "__init__.py": "faa0a90287453f3d7ea73e5def6c49d86647642eb96a38adc42d50e7c8301403",
       "__main__.py": "cab3ff7ba2d780596d6ebf9961ebc5f933dbdf975d50af917b91dff4c8c4000e",

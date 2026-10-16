@@ -113,7 +113,7 @@
     "engine": "chromium",
     "version": "151.0.7922.34",
     "kind": "optimized",
-    "htmlSha256": "4b29afe6a6ebe3a51701346e75d8842586ca73fc3f9edfb6a99e6bf19b71543a",
+    "htmlSha256": "e17b3202fe85ff09c18b0df9ebc25801d83673e4cf503ccbfb2cb49a6abbc828",
     "listHashes": [
       "17b95ef39d06c88113ee476d7f030abeb73913a4396340deb9f4b8e90d74dc3f",
       "8d26d69a6cf981e7651086230a9ee48ac56ce13bed8dc633a51a47f23714e71f",
@@ -333,7 +333,7 @@
     "engine": "firefox",
     "version": "153.0",
     "kind": "optimized",
-    "htmlSha256": "4b29afe6a6ebe3a51701346e75d8842586ca73fc3f9edfb6a99e6bf19b71543a",
+    "htmlSha256": "e17b3202fe85ff09c18b0df9ebc25801d83673e4cf503ccbfb2cb49a6abbc828",
     "listHashes": [
       "17b95ef39d06c88113ee476d7f030abeb73913a4396340deb9f4b8e90d74dc3f",
       "8d26d69a6cf981e7651086230a9ee48ac56ce13bed8dc633a51a47f23714e71f",
@@ -553,7 +553,7 @@
     "engine": "webkit",
     "version": "26.5",
     "kind": "optimized",
-    "htmlSha256": "4b29afe6a6ebe3a51701346e75d8842586ca73fc3f9edfb6a99e6bf19b71543a",
+    "htmlSha256": "e17b3202fe85ff09c18b0df9ebc25801d83673e4cf503ccbfb2cb49a6abbc828",
     "listHashes": [
       "17b95ef39d06c88113ee476d7f030abeb73913a4396340deb9f4b8e90d74dc3f",
       "8d26d69a6cf981e7651086230a9ee48ac56ce13bed8dc633a51a47f23714e71f",

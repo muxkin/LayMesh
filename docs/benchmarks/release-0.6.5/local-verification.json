@@ -19,21 +19,175 @@
   ],
   "local_artifacts": [
     {
-      "name": "laymesh-0.6.5-py3-none-manylinux_2_39_x86_64.whl",
-      "bytes": 20807255,
-      "sha256": "8cf5372425eaf3ee32437745ae64bbbd3208a459aa92c8cf2d5628966d55f227"
+      "name": "04_LCSS_离线可编辑_0.6.5.zip.html",
+      "bytes": 43585691,
+      "sha256": "e17b3202fe85ff09c18b0df9ebc25801d83673e4cf503ccbfb2cb49a6abbc828"
     },
     {
       "name": "laymesh-0.6.5-linux-x64.vsix",
-      "bytes": 28266206,
-      "sha256": "aca99531ee77653f91384864791d3acf02dca81f75b23ea37c9980f2afb2aa4a"
+      "bytes": 28266580,
+      "sha256": "ebf0c122561bb72079bff9eb44f1e1ddbfd1206a1c0330b553c074d9dbfca3cb"
     },
     {
-      "name": "04_LCSS_离线可编辑_0.6.5.zip.html",
-      "bytes": 43585543,
-      "sha256": "4b29afe6a6ebe3a51701346e75d8842586ca73fc3f9edfb6a99e6bf19b71543a"
+      "name": "laymesh-0.6.5-py3-none-manylinux_2_39_x86_64.whl",
+      "bytes": 20807490,
+      "sha256": "43da9a95c122c8d58c3de7202ab6a1bdb6a5e0022c88a9a796bb492e96646449"
     }
   ],
-  "final_html": "three-browser cold first edit, six-page scenes, 18 animation samples, save/reopen and playback export",
-  "thumbnail_lifetime": "100 pages; 67,781,280 decoded bytes; revisit reuses URL; pagehide releases all URLs"
+  "final_html": [
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "targets": [
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover"
+      ],
+      "errors": [],
+      "matches": 1,
+      "unchanged": true,
+      "state": "ready",
+      "pages": [
+        {
+          "key": "cover",
+          "valid": true
+        },
+        {
+          "key": "seed",
+          "valid": true
+        },
+        {
+          "key": "anchors",
+          "valid": true
+        },
+        {
+          "key": "motion",
+          "valid": true
+        },
+        {
+          "key": "offline",
+          "valid": true
+        },
+        {
+          "key": "editable",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "targets": [
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover"
+      ],
+      "errors": [],
+      "matches": 1,
+      "unchanged": true,
+      "state": "ready",
+      "pages": [
+        {
+          "key": "cover",
+          "valid": true
+        },
+        {
+          "key": "seed",
+          "valid": true
+        },
+        {
+          "key": "anchors",
+          "valid": true
+        },
+        {
+          "key": "motion",
+          "valid": true
+        },
+        {
+          "key": "offline",
+          "valid": true
+        },
+        {
+          "key": "editable",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "targets": [
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover",
+        "cover"
+      ],
+      "errors": [],
+      "matches": 1,
+      "unchanged": true,
+      "state": "ready",
+      "pages": [
+        {
+          "key": "cover",
+          "valid": true
+        },
+        {
+          "key": "seed",
+          "valid": true
+        },
+        {
+          "key": "anchors",
+          "valid": true
+        },
+        {
+          "key": "motion",
+          "valid": true
+        },
+        {
+          "key": "offline",
+          "valid": true
+        },
+        {
+          "key": "editable",
+          "valid": true
+        }
+      ]
+    }
+  ],
+  "thumbnail_lifetime": "100 pages; 67,781,280 decoded bytes; revisit reuses URL; pagehide releases all URLs",
+  "runtime_source_commit": "e13137d07c18fae8f1bb1cb15197559f4f78f704",
+  "local_artifact_directory": "release/dist/0.6.5-local-final"
 }

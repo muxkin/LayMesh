@@ -13,6 +13,8 @@
 - 最终独立 HTML 三浏览器冷启动连续改色均只编译封面；六页场景及每页三个动画采样与 v009 一致，保存重开与播放版导出通过。[冷启动](release-0.6.5/final-html-cold.json)、[场景与往返](release-0.6.5/final-html-roundtrip.json)。
 - 百页缩略图回归保留 67,781,280 字节解码图像，超过原 32 MiB 配额后返回第一页仍复用原 URL，关闭文档后全部释放。旧测试中“必须淘汰至 32 MiB 以下”的断言已改为当前生命周期契约。[缓存证据](release-0.6.5/thumbnail-cache.json)。
 - 发布 CI 的演讲者双窗口回归发现适配层把新增 `navigation-visible` 通知误判为上下文丢失，清空首帧镜像并暂停播放。已按事件类型分别处理，并保留控制台连接前完成的首帧；三浏览器双窗口回归重新通过。[演讲者证据](release-0.6.5/presenter-regression.json)。
+- 完成字体选择与视口操作、CSS/原生输出对照、播放控制、裁切、流式准备和取消回归。32 页学术演示覆盖 97 种 Animate.css 效果及两个原生效果，验证 4K 回访不重新编译、已访问页面持续驻留、关闭放映后释放。[完整浏览器补查](release-0.6.5/browser-completion.json)。
+- 修正旧测试与现有协议的冲突：复用页面也需要确认回执；全局字体绑定按受影响页计数；缓存应验证文档生命周期，不再断言三页或容量上限。[同源转场覆盖](release-0.6.5/laydoc-transitions.json)。
 
 本机平台为 Linux x64、Python 3.13；其他平台和 Python 版本以正式 CI 结果为准。证据：[本机汇总](release-0.6.5/local-verification.json)、[源码 Jupyter](release-0.6.5/jupyter-source.json)、[安装包 Jupyter](release-0.6.5/jupyter-installed.json)、[VS Code](release-0.6.5/vscode-regression.json)、[三浏览器](release-0.6.5/incremental-preview.json)、[断言覆盖](release-0.6.5/assertion-coverage.json)。
 

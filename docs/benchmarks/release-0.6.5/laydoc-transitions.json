@@ -1,0 +1,52 @@
+{
+  "native": {
+    "names": [
+      "cube",
+      "fade",
+      null,
+      "cube"
+    ],
+    "compiled": 3,
+    "requests": [
+      {
+        "type": "plan"
+      },
+      {
+        "type": "page",
+        "page": 1
+      },
+      {
+        "type": "page",
+        "page": 2
+      },
+      {
+        "type": "page",
+        "page": 3
+      }
+    ],
+    "messages": [
+      "deck-plan",
+      "deck-page",
+      "deck-progress",
+      "deck-page-reuse",
+      "deck-progress",
+      "deck-page",
+      "deck-progress",
+      "deck-page",
+      "deck-progress",
+      "deck-ready"
+    ],
+    "passed": true
+  },
+  "web": {
+    "names": [
+      "cube",
+      "fade",
+      null,
+      "cube"
+    ],
+    "compiled": 3,
+    "errors": [],
+    "passed": true
+  }
+}

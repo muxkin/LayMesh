@@ -18,7 +18,7 @@ try{
  const inventory=[];let sampled=0;const effects=new Set();
  for(let i=0;i<32;i++){
   await p.evaluate(async i=>{await show.go(i,{end:true});await show.preload;},i);
-  const entry=await p.evaluate(()=>({id:show.deck.pages[show.index].id,steps:show.clock.steps,resident:show.metrics.lastFrame.resident,backend:show.metrics.backend}));assert(entry.resident.length<=3);inventory.push({id:entry.id,steps:entry.steps.length});
+  const entry=await p.evaluate(()=>({id:show.deck.pages[show.index].id,steps:show.clock.steps,resident:show.metrics.lastFrame.resident,backend:show.metrics.backend}));assert(entry.resident.includes(entry.id));for(const previous of inventory)assert(entry.resident.includes(previous.id),'Unchanged visited page was discarded: '+previous.id);inventory.push({id:entry.id,steps:entry.steps.length,resident:entry.resident});
   if([0,6,10,17,20,24,28,31].includes(i))await p.screenshot({path:path.join(out,`page-${String(i+1).padStart(2,'0')}.png`)});
   for(const step of entry.steps){
    for(const a of step.animations||[])effects.add(a.name);
@@ -34,11 +34,11 @@ try{
  assert.equal(await p.evaluate(()=>qa.compiles),before);assert.equal(await p.evaluate(()=>qa.pixels),0);
  // Real 4K buffer for dense-page revisits; the CSS viewport remains unchanged.
  await p.evaluate(()=>show.dimensions=()=>({width:3840,height:2160}));
- // Random seek/backwards, nonresident revisit, rapid latest-target navigation.
+ // Random seek/backwards, retained-page revisit, rapid latest-target navigation.
  for(const i of [17,2,28,0])await p.evaluate(async i=>{await show.go(i);await show.preload;},i);
  await p.evaluate(async()=>{await Promise.all([show.go(17),show.go(30),show.go(0)]);await show.preload;});assert.equal(await p.evaluate(()=>show.root.dataset.page),'p01');
  const result=await p.evaluate(()=>({metrics:show.metrics,pages:show.deck.pages.length,buffer:[show.canvas.width,show.canvas.height],playbackCompiles:qa.compiles,backgroundPageCompiles:qa.pages,pixelTransfers:qa.pixels}));
  result.compilationRequests=result.playbackCompiles;result.playbackCompiles-=before;assert.deepEqual(result.buffer,[3840,2160]);
- Object.assign(result,{sampledFrames:sampled,effects:[...effects].sort(),inventory,errors,hardwareAcceptance:false,checks:['32 distinct academic pages','97 effects sampled within charts/formulas/groups','real-time auto across static page and 8 effect pages','wheel advance/back and inertia','horizontal wheel isolation','long menu scroll without navigation','random/back/latest navigation','each page compiles once; no playback-triggered recompile or pixel transfer','at most 3 resident pages']});
- await p.keyboard.press('Escape');assert.equal(await p.locator('.presentation').count(),0);assert.deepEqual(errors,[]);fs.writeFileSync(path.join(out,'results.json'),JSON.stringify(result,null,2));console.log('Academic presentation passed.');
+ Object.assign(result,{sampledFrames:sampled,effects:[...effects].sort(),inventory,errors,hardwareAcceptance:false,checks:['32 distinct academic pages','97 effects sampled within charts/formulas/groups','real-time auto across static page and 8 effect pages','wheel advance/back and inertia','horizontal wheel isolation','long menu scroll without navigation','random/back/latest navigation','each page compiles once; no playback-triggered recompile or pixel transfer','all unchanged visited pages remain resident until close']});
+ await p.keyboard.press('Escape');assert.equal(await p.locator('.presentation').count(),0);assert(await p.evaluate(()=>!show.worker&&!show.mainRuntime&&show.resident.size===0),'Closing presentation releases renderers and resident pages');assert.deepEqual(errors,[]);fs.writeFileSync(path.join(out,'results.json'),JSON.stringify(result,null,2));console.log('Academic presentation passed.');
 }catch(error){await p.screenshot({path:path.join(out,'failure.png')});console.error((await p.locator('body').innerText()).slice(-2500));throw error;}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
