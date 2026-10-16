@@ -425,6 +425,7 @@ export async function mountWebPlayer({
       moduleURL("runtime/presentation-worker.mjs")
     );
     runtime = await createPresentationRuntime({ ...init, canvas }, (data) => {
+      if (data.type !== "context") return;
       clock.running = false;
       if (data.ready) {
         if (previewCompiler && !previewCompiler.current?.valid) previewCompiler.schedule(0);

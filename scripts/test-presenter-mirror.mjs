@@ -7,5 +7,5 @@ mirror.present({pageId:'a',serial:1,time:0,running:false});
 mirror.present({pageId:'a',serial:1,time:1,running:false});assert.equal(captured.length,1,'Only one copy may be in flight');
 resolveImage({close(){}});await new Promise(r=>setTimeout(r,0));assert.equal(sent.length,1);mirror.acknowledge(999);assert.equal(captured.length,1);mirror.acknowledge(1);assert.equal(captured.length,2);
 let closed=false;mirror.dispose();resolveImage({close(){closed=true;}});await new Promise(r=>setTimeout(r,0));assert(closed);assert.equal(sent.length,1);assert.deepEqual(errors,[]);
-const hidden=new PresenterMirror({canvas:()=>({width:100,height:50}),send:()=>{}});hidden.configure({visible:false});hidden.present({running:false});assert.equal(captured.length,2);hidden.dispose();
+const hidden=new PresenterMirror({canvas:()=>({width:100,height:50}),send:data=>sent.push(data)});hidden.configure({visible:false});hidden.present({pageId:'first',serial:3,running:false});assert.equal(captured.length,2);hidden.configure({visible:true});assert.equal(captured.length,3,'The first completed frame survives a delayed console connection');resolveImage({close(){}});await new Promise(r=>setTimeout(r,0));assert.equal(sent.at(-1).pageId,'first');hidden.dispose();
 console.log('Presenter mirror: bounded queue, final-frame coalescing, stale acknowledgement, hidden and disposal passed.');
