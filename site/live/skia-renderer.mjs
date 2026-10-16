@@ -1,6 +1,7 @@
 // Shared by the website and the offline VS Code worker. Layout and animation
 // sampling remain in Rust; these retained commands never reshape text.
 import CanvasKitInit from './skia/canvaskit.mjs';
+import {applyDisplayUpdate} from './display-update.mjs';
 import {PageTransitions,decodeSkiaImage} from './presentation-transitions.mjs';
 
 export async function initializeSkia(wasmURL) {
@@ -43,10 +44,10 @@ export function projectedDensity(m,b){
 }
 
 export class SkiaRenderer {
- constructor(ck,canvas,{cacheMB=256,software=false,rasterOnly=false,preserveDrawingBuffer=false,onPresent=()=>{},onContextChange=()=>{}}={}) {
-  this.rasterOnly=rasterOnly;
-  this.ck=ck;this.canvas=canvas;this.onPresent=onPresent;this.transitions=new PageTransitions(this);this.budget=cacheMB*1048576;this.images=new Map();this.imageBytes=new Map();this.commandCache=new Map();this.prepared=new WeakMap();this.owned=[];this.animatedNames=new Set();this.pictureBytes=0;this.generation=0;this.frameCount=0;
-  this.nextCommandId=0;this.staticTextures=new Map();this.staticTextureBytes=0;this.sceneRuns=[];
+ constructor(ck,canvas,{software=false,rasterOnly=false,clipToPage=false,preserveDrawingBuffer=false,onPresent=()=>{},onContextChange=()=>{}}={}) {
+  this.rasterOnly=rasterOnly;this.clipToPage=clipToPage;this.pageBounds=null;
+  this.ck=ck;this.canvas=canvas;this.onPresent=onPresent;this.transitions=new PageTransitions(this);this.images=new Map();this.imageBytes=new Map();this.commandCache=new Map();this.prepared=new WeakMap();this.geometryCache=new WeakMap();this.contentCache=new WeakMap();this.entries=new Set();this.owned=[];this.animatedNames=new Set();this.pictureBytes=0;this.generation=0;this.frameCount=0;
+  this.nextCommandId=0;this.staticTextures=new Map();this.staticTextureBytes=0;this.sceneRuns=[];this.revealContents=new WeakMap();
   this.layerTextures=new Map();this.layerTextureBytes=0;
   this.context=software?0:ck.GetWebGLContext(canvas,{majorVersion:2,alpha:1,antialias:1,preserveDrawingBuffer:Number(preserveDrawingBuffer)});
   this.gr=this.context?ck.MakeWebGLContext(this.context):null;
@@ -56,9 +57,14 @@ export class SkiaRenderer {
  }
  own(value){if(value){this.owned.push(value);this.owner?.objects.push(value);}return value;}
  path(elements,evenOdd=false){
+  if(!this.transient){const old=this.geometryCache.get(elements)?.get(evenOdd);if(old&&!old.dead){this.owner?.dependencies.add(old);return old.path;}}
+  const parent=this.owner,entry=!this.transient?{objects:[],dependencies:new Set()}:null;
+  if(entry){this.owner=entry;this.entries.add(entry);parent?.dependencies.add(entry);}
   const ck=this.ck,p=new ck.PathBuilder();
   for(const el of elements){if(el==='ClosePath'){p.close();continue;}if(el.MoveTo)p.moveTo(...point(el.MoveTo));else if(el.LineTo)p.lineTo(...point(el.LineTo));else if(el.QuadTo)p.quadTo(...el.QuadTo.flatMap(point));else if(el.CurveTo)p.cubicTo(...el.CurveTo.flatMap(point));}
-  p.setFillType(evenOdd?ck.FillType.EvenOdd:ck.FillType.Winding);const path=this.own(p.detach());p.delete();return path;
+  p.setFillType(evenOdd?ck.FillType.EvenOdd:ck.FillType.Winding);const path=this.own(p.detach());p.delete();
+  if(entry){entry.path=path;let values=this.geometryCache.get(elements);if(!values)this.geometryCache.set(elements,values=new Map());values.set(evenOdd,entry);this.owner=parent;}
+  return path;
  }
  color(rgba){return new Float32Array(rgba);}
  paint(spec){
@@ -82,12 +88,15 @@ export class SkiaRenderer {
  prepare(node){
   const frameCache=this.transient?this.transientPrepared:this.prepared;
   const bound=this.prepared.get(node)||(this.transient?frameCache.get(node):null);
-  if(bound){this.owner?.dependencies.add(bound);return bound;}
-  const key=this.transient?null:JSON.stringify(node);
+  if(bound&&!bound.dead){this.owner?.dependencies.add(bound);return bound;}
+  const contentKey=JSON.stringify([node.effects,node.hint?.animationRevealWrapper]);
+  const content=!this.transient&&this.contentCache.get(node.kind)?.get(contentKey);
+  if(content&&!content.dead){const value={...content,uid:++this.nextCommandId,matrix:matrix(node.transform),objects:[],dependencies:new Set([content]),bound:true};this.entries.add(value);frameCache.set(node,value);this.owner?.dependencies.add(value);return value;}
+  const key=this.transient?null:node.kind.kind==='group'?JSON.stringify({...node,kind:{...node.kind,children:node.kind.children.map(n=>this.prepare(n).uid)}}):JSON.stringify(node);
   const cached=key&&this.commandCache.get(key);
-  if(cached){this.owner?.dependencies.add(cached);frameCache.set(node,cached);return cached;}
+  if(cached&&!cached.dead){this.owner?.dependencies.add(cached);frameCache.set(node,cached);return cached;}
   const parent=this.owner,ck=this.ck,k=node.kind,v={uid:++this.nextCommandId,cost:1,matrix:matrix(node.transform),bounds:[0,0,0,0],effects:[],objects:[],dependencies:new Set()};
-  parent?.dependencies.add(v);this.owner=v;frameCache.set(node,v);if(key)this.commandCache.set(key,v);
+  if(!this.transient)this.entries.add(v);parent?.dependencies.add(v);this.owner=v;frameCache.set(node,v);if(key)this.commandCache.set(key,v);
   if(k.kind==='path'){
    v.path=this.path(k.path,k.even_odd);v.imageFill=k.fill.kind==='pattern'&&k.fill.nodes.length===1&&imagePattern(k.fill.nodes[0]);v.fill=v.imageFill?null:this.paint(k.fill);v.bounds=Array.from(v.path.getBounds());
    if(k.stroke){const s=k.stroke,p=v.stroke=this.paint({kind:'solid',rgba:s.rgba});p.setStyle(ck.PaintStyle.Stroke);p.setStrokeWidth(s.width);p.setStrokeCap(s.cap==='round'?ck.StrokeCap.Round:s.cap==='square'?ck.StrokeCap.Square:ck.StrokeCap.Butt);p.setStrokeJoin(s.join==='round'?ck.StrokeJoin.Round:s.join==='bevel'?ck.StrokeJoin.Bevel:ck.StrokeJoin.Miter);p.setStrokeMiter(s.miter);if(s.dash.length){const effect=ck.PathEffect.MakeDash(s.dash,s.offset);p.setPathEffect(effect);effect?.delete();}const pad=s.width*s.miter;v.bounds=[v.bounds[0]-pad,v.bounds[1]-pad,v.bounds[2]+pad,v.bounds[3]+pad];}
@@ -114,16 +123,20 @@ export class SkiaRenderer {
    if(!e.inner){const pad=4*e.blur+Math.abs(e.spread);v.bounds=union(v.bounds,[v.bounds[0]+e.offset[0]-pad,v.bounds[1]+e.offset[1]-pad,v.bounds[2]+e.offset[0]+pad,v.bounds[3]+e.offset[1]+pad]);}
   }
   v.cost+=k.kind==='group'?k.children.reduce((n,child)=>n+this.prepare(child).cost,0):k.kind==='path'?k.path.length:k.kind==='glyphs'?k.outlines.reduce((n,path)=>n+path.length,0):1;
-  this.owner=parent;return v;
+  this.owner=parent;if(!this.transient){let values=this.contentCache.get(node.kind);if(!values)this.contentCache.set(node.kind,values=new Map());values.set(contentKey,v);}return v;
  }
- bind(n){const p=this.prepare(n),k=n.kind;if(k.kind==='group'){k.children.forEach(n=>p.dependencies.add(this.bind(n)));if(k.mask)p.dependencies.add(this.bind(k.mask.node));}if(k.kind==='path'&&k.fill.kind==='pattern')k.fill.nodes.forEach(n=>p.dependencies.add(this.bind(n)));return p;}
- async install(list,readResource,generation,cacheMB=256,navigation){
+ bind(n){const p=this.prepare(n),k=n.kind;if(p.bound)return p;p.bound=true;if(k.kind==='group'){k.children.forEach(n=>p.dependencies.add(this.bind(n)));if(k.mask)p.dependencies.add(this.bind(k.mask.node));}if(k.kind==='path'&&k.fill.kind==='pattern')k.fill.nodes.forEach(n=>p.dependencies.add(this.bind(n)));return p;}
+ async update(update,readResource,generation,navigation){
+  return this.install(applyDisplayUpdate(this.list,update),readResource,generation,navigation,true);
+ }
+ async install(list,readResource,generation,navigation,incremental=false){
   if(navigation!==undefined)this.transitions.navigate(list,navigation);
   if(list.schemaVersion!==1)throw Error('Unsupported Skia display list version');
-  const incoming=new Map(),bytesById=new Map(),old={list:this.list,images:this.images,imageBytes:this.imageBytes,animatedNames:this.animatedNames,generation:this.generation};
-  const ownedBefore=this.owned.length,cacheBefore=new Map(this.commandCache);let resourceChanged=false;
+  const incoming=new Map(),bytesById=new Map(),old={list:this.list,images:this.images,imageBytes:this.imageBytes,animatedNames:this.animatedNames,generation:this.generation,revealContents:this.revealContents};
+  const ownedBefore=this.owned.length,cacheBefore=new Map(this.commandCache),entriesBefore=new Set(this.entries);let resourceChanged=false;
   try{
    for(const [id,meta]of Object.entries(list.resources))if(meta.mime.startsWith('image/')){
+    if(incremental&&list.resources===old.list.resources&&this.images.has(id)){incoming.set(id,this.images.get(id));bytesById.set(id,this.imageBytes.get(id));continue;}
     const bytes=await readResource(id,meta),previous=this.imageBytes.get(id);bytesById.set(id,bytes);
     if(previous&&previous.length===bytes.length&&previous.every((v,i)=>v===bytes[i])){incoming.set(id,this.images.get(id));continue;}
     if(previous)resourceChanged=true;
@@ -132,33 +145,36 @@ export class SkiaRenderer {
    }
    // Commands are keyed by content; unchanged paths, glyphs and pictures survive
    // an edit. Resource replacement invalidates pictures referencing that image.
-   if(resourceChanged){this.commandCache=new Map();this.prepared=new WeakMap();}
+   if(resourceChanged){this.commandCache=new Map();this.prepared=new WeakMap();this.contentCache=new WeakMap();}
    this.images=incoming;this.imageBytes=bytesById;this.list=list;
    const names=new Set(Object.values(list.animation||{}).flatMap(t=>t.steps.flatMap(s=>s.clips.map(c=>c.target))));
-   if([...names].sort().join('\0')!==[...this.animatedNames].sort().join('\0')){this.commandCache=new Map();this.prepared=new WeakMap();}
-   this.animatedNames=names;this.budget=Math.max(0,cacheMB)*1048576;this.updateCacheLimit();
+   if([...names].sort().join('\0')!==[...this.animatedNames].sort().join('\0')){this.commandCache=new Map();this.prepared=new WeakMap();this.contentCache=new WeakMap();}
+   this.animatedNames=names;this.updateCacheLimit();
    const roots=list.nodes.map(n=>this.bind(n));
-   this.recordPictures();
+   const reveals=new Set(Object.values(list.animation||{}).flatMap(t=>t.steps.flatMap(s=>s.clips.filter(c=>c.tracks.some(t=>t.property==='-laymesh-reveal')).map(c=>c.target)))),contents=[];
+   this.revealContents=new WeakMap();
+   const bindReveal=n=>{if(reveals.has(n.name)&&!n.hint?.plotBounds){const inner={...n,name:'',opacity:1,effects:[],transform:[1,0,0,1,0,0],hint:{...n.hint,animationRevealContent:true}};this.revealContents.set(n,inner);contents.push(inner);roots.push(this.bind(inner));}if(n.kind.kind==='group')n.kind.children.forEach(bindReveal);};list.nodes.forEach(bindReveal);
+   this.recordPictures(contents);
    const live=new Set(),keep=p=>{if(live.has(p))return;live.add(p);p.dependencies.forEach(keep);};roots.forEach(keep);
    const objects=new Set([...live].flatMap(p=>p.objects));
    for(const object of this.owned.reverse())if(!objects.has(object))object.delete();
    this.owned=[...objects];this.commandCache=new Map([...this.commandCache].filter(([,p])=>live.has(p)));
    // A caller may retain nodes across installs (local export layers). The old
    // identity map also holds pruned, deleted pictures; rebuild it from live keys.
-   this.prepared=new WeakMap();
+   for(const entry of this.entries)if(!live.has(entry))entry.dead=true;this.entries=live;
    this.pictureBytes=[...live].reduce((n,p)=>n+(p.picture?.approximateBytesUsed()||0),0);this.generation=generation;
-   if(this.pictureBytes>this.budget/4){const removed=new Set();for(const p of live)if(p.picture){removed.add(p.picture);p.objects=p.objects.filter(o=>o!==p.picture);p.picture.delete();p.picture=null;}this.owned=this.owned.filter(o=>!removed.has(o));this.pictureBytes=0;}
    for(const [id,image]of old.images)if(incoming.get(id)!==image)image.delete();this.planScene();
   }catch(error){
    this.owner=null;while(this.owned.length>ownedBefore)this.owned.pop().delete();
-   this.commandCache=cacheBefore;this.prepared=new WeakMap();Object.assign(this,old);this.list?.nodes.forEach(n=>this.bind(n));
+   for(const entry of this.entries)if(!entriesBefore.has(entry))entry.dead=true;this.entries=entriesBefore;this.geometryCache=new WeakMap();
+   this.commandCache=cacheBefore;this.prepared=new WeakMap();this.contentCache=new WeakMap();Object.assign(this,old);this.list?.nodes.forEach(n=>this.bind(n));
    for(const [id,image]of incoming)if(old.images.get(id)!==image)image.delete();throw error;
   }
  }
 
- recordPictures(){
+ recordPictures(contents=[]){
   const recorder=new this.ck.PictureRecorder(),list=this.list;
-  try{const c=recorder.beginRecording([0,0,list.width,list.height]);list.nodes.forEach((n,i)=>this.drawNode(c,n,String(i),{}));recorder.finishRecordingAsPicture().delete();}finally{recorder.delete();}
+  try{const c=recorder.beginRecording([0,0,list.width,list.height]);list.nodes.forEach((n,i)=>this.drawNode(c,n,String(i),{}));contents.forEach(n=>this.drawNode(c,n,'',{}));recorder.finishRecordingAsPicture().delete();}finally{recorder.delete();}
  }
 
  // Consecutive static roots can be composited once without changing their order
@@ -173,24 +189,20 @@ export class SkiaRenderer {
   });
   const live=new Set(this.sceneRuns.filter(r=>r.static).map(r=>r.key));
   for(const [key,entry]of this.staticTextures)if(!live.has(key))this.deleteStaticTexture(key,entry);
-  if(this.staticTextureBytes>this.budget/2)this.clearStaticTextures();
   const commands=new Set([...this.commandCache.values()].map(p=>p.uid));
   for(const [key,entry]of this.layerTextures)if(!commands.has(key))this.deleteLayerTexture(key,entry);
-  if(this.staticTextureBytes+this.layerTextureBytes>this.budget*.75)this.clearLayerTextures();
   this.updateCacheLimit();
  }
  deleteStaticTexture(key,entry){for(const tile of entry.tiles)tile.image.delete();this.staticTextureBytes-=entry.bytes;this.staticTextures.delete(key);this.updateCacheLimit();}
- updateCacheLimit(){this.gr?.setResourceCacheLimitBytes(Math.max(0,this.budget-this.pictureBytes-this.staticTextureBytes-this.layerTextureBytes));}
+ updateCacheLimit(){
+  // Let the driver's reusable working set grow with the actual owned scene.
+  const images=[...this.imageBytes.values()].reduce((n,b)=>n+b.byteLength,0);
+  this.gr?.setResourceCacheLimitBytes(Math.max(this.gr.getResourceCacheUsageBytes?.()||0,this.pictureBytes+this.staticTextureBytes+this.layerTextureBytes+images+this.canvas.width*this.canvas.height*8));
+ }
+
  clearStaticTextures(){for(const [key,entry]of this.staticTextures)this.deleteStaticTexture(key,entry);}
  deleteLayerTexture(key,entry){for(const tile of entry.tiles)tile.image.delete();this.layerTextureBytes-=entry.bytes;this.layerTextures.delete(key);this.updateCacheLimit();}
  clearLayerTextures(){for(const [key,entry]of this.layerTextures)this.deleteLayerTexture(key,entry);}
- reserveLayerBytes(bytes){
-  const limit=this.budget*.75-this.staticTextureBytes;if(bytes>limit)return false;
-  // Keep the preceding frame's working set. Evicting an object that appears
-  // later in the current traversal would cause a rebuild cascade every frame.
-  for(const [key,entry]of this.layerTextures){if(this.layerTextureBytes+bytes<=limit)break;if(entry.used<this.frameCount-1)this.deleteLayerTexture(key,entry);}
-  return this.layerTextureBytes+bytes<=limit;
- }
  drawLayer(c,node,id,p,opacity){
   // Reuse GPU content independently of the current transform and opacity.
   // Projection density controls rebuilding; budget pressure never reduces it.
@@ -209,10 +221,9 @@ export class SkiaRenderer {
    // reallocating every frame of a scale/perspective animation without ever
    // accepting a texture below the current projection's pixel density.
    const density=2**(Math.ceil(Math.log2(required*1.05)*2)/2),b=p.bounds,x0=Math.floor(b[0]*density)-2,y0=Math.floor(b[1]*density)-2,x1=Math.ceil(b[2]*density)+2,y1=Math.ceil(b[3]*density)+2;
-   if(![x0,y0,x1,y1].every(Number.isSafeInteger)||x1<=x0||y1<=y0||(x1-x0)*(y1-y0)>100000000)return false;
+   if(![x0,y0,x1,y1].every(Number.isSafeInteger)||x1<=x0||y1<=y0||!Number.isSafeInteger((x1-x0)*(y1-y0)*4))return false;
    const tiles=[];let bytes=0;for(let y=y0;y<y1;y+=2048)for(let x=x0;x<x1;x+=2048){const w=Math.min(2048,x1-x),h=Math.min(2048,y1-y);tiles.push({x,y,w,h});bytes+=(w+4)*(h+4)*4;}
    if(previous)previous.used=this.frameCount;
-   if(!this.reserveLayerBytes(bytes-(previous?.bytes||0))){this.layerBudgetMisses++;return false;}
    if(previous)this.deleteLayerTexture(p.uid,previous);
    entry={tiles:[],bytes,density,used:this.frameCount};
    try{for(const tile of tiles){const surface=this.surface.makeSurface({width:tile.w+4,height:tile.h+4,colorType:ck.ColorType.RGBA_8888,alphaType:ck.AlphaType.Premul,colorSpace:ck.ColorSpace.SRGB});if(!surface)throw Error('Animated layer allocation failed');
@@ -227,6 +238,18 @@ export class SkiaRenderer {
   // Yield while waiting; no animation is rendered and no pixels are read back.
   if(!this.gl)return;this.surface.flush();const gl=this.gl,fence=gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE,0);if(!fence)throw Error('GPU resource fence unavailable');gl.flush();const start=performance.now();
   try{for(;;){const status=gl.clientWaitSync(fence,0,0);if(status===gl.ALREADY_SIGNALED||status===gl.CONDITION_SATISFIED)break;if(status===gl.WAIT_FAILED||this.lost)throw Error('GPU resource preparation interrupted');if(performance.now()-start>20000)throw Error('GPU resource preparation timed out');await new Promise(resolve=>setTimeout(resolve,0));}}finally{gl.deleteSync(fence);}
+ }
+ async completeFrame(visible=true){
+  await this.completeResources();
+  // flush() submits GPU work. The placeholder canvas is updated only in the
+  // owner's rendering step, after animation callbacks. A following task lets
+  // that step finish before a static edit is acknowledged or copied to an
+  // overview. Animation frames keep their existing nonblocking submission.
+  if(!visible||typeof requestAnimationFrame!=='function')return false;
+  return new Promise(resolve=>{
+   let frame;const timer=setTimeout(()=>{cancelAnimationFrame(frame);resolve(false);},250);
+   frame=requestAnimationFrame(()=>setTimeout(()=>{clearTimeout(timer);resolve(true);},0));
+  });
  }
 
  drawScene(c,viewport,width,height,states,useCache){
@@ -247,9 +270,6 @@ export class SkiaRenderer {
    if(![x0,y0,x1,y1].every(Number.isFinite))return false;if(x1<=x0||y1<=y0)return true;
    const tiles=[];let bytes=0;
    for(let y=y0;y<y1;y+=2048)for(let x=x0;x<x1;x+=2048){const w=Math.min(2048,x1-x),h=Math.min(2048,y1-y);tiles.push({x,y,w,h});bytes+=(w+4)*(h+4)*4;}
-   const limit=Math.min(this.budget/2,this.budget*.75-this.layerTextureBytes);if(bytes>limit)return false;
-   for(const [key,old]of this.staticTextures){if(this.staticTextureBytes+bytes<=limit)break;if(old.used<this.frameCount-1)this.deleteStaticTexture(key,old);}
-   if(this.staticTextureBytes+bytes>limit)return false;
    entry={signature,tiles:[],bytes,used:this.frameCount};
    try{
     for(const tile of tiles){const surface=this.surface.makeSurface({width:tile.w+4,height:tile.h+4,colorType:ck.ColorType.RGBA_8888,alphaType:ck.AlphaType.Premul,colorSpace:ck.ColorSpace.SRGB});if(!surface)throw Error('Static tile allocation failed');
@@ -266,7 +286,7 @@ export class SkiaRenderer {
   c.restore();return true;
  }
 
- clearCommands(){for(const object of this.owned.reverse())object.delete();this.owned=[];this.prepared=new WeakMap();this.commandCache.clear();this.pictureBytes=0;}
+ clearCommands(){for(const entry of this.entries)entry.dead=true;this.entries.clear();this.geometryCache=new WeakMap();this.contentCache=new WeakMap();for(const object of this.owned.reverse())object.delete();this.owned=[];this.prepared=new WeakMap();this.commandCache.clear();this.pictureBytes=0;}
  content(c,node,id,states){
   const ck=this.ck,k=node.kind,p=this.prepare(node);
   if(k.kind==='path'){if(p.imageFill){c.save();c.clipPath(p.path,ck.ClipOp.Intersect,true);c.concat(matrix(k.fill.transform));this.drawNode(c,k.fill.nodes[0],`${id}/image-fill`,states);c.restore();}else if(p.fill)c.drawPath(p.path,p.fill);if(p.stroke)c.drawPath(p.path,p.stroke);}
@@ -277,21 +297,29 @@ export class SkiaRenderer {
   }else if(k.kind==='group'){
    c.save();if(p.clip)c.clipPath(p.clip,ck.ClipOp.Intersect,true);
    if(k.mask)c.saveLayer(undefined,p.dynamicChildren?undefined:p.bounds);
-   if(node.hint?.animationRevealWrapper&&k.children.length===1){const inner=k.children[0];c.save();c.concat(matrix(inner.transform));this.content(c,inner,id,states);c.restore();}else k.children.forEach((n,i)=>this.drawNode(c,n,`${id}/${i}`,states));
+   if(node.hint?.animationRevealWrapper&&k.children.length===1){const inner=k.children[0];if(inner.hint?.animationRevealContent)this.drawNode(c,inner,id,states,true);else{c.save();c.concat(matrix(inner.transform));this.content(c,inner,id,states);c.restore();}}else k.children.forEach((n,i)=>this.drawNode(c,n,`${id}/${i}`,states));
    if(k.mask){const paint=new ck.Paint();paint.setBlendMode(ck.BlendMode.DstIn);if(k.mask.luminance){const filter=ck.ColorFilter.MakeLuma();paint.setColorFilter(filter);filter.delete();}c.saveLayer(paint,p.dynamicChildren?undefined:p.bounds);this.drawNode(c,k.mask.node,`${id}/mask`,{});c.restore();c.restore();paint.delete();}
    c.restore();
   }
  }
- drawNode(c,original,id,states){
-  const state=states[id],node=state?.content||original,opacity=state?.opacity??node.opacity;if(opacity<=0)return;
+ revealNode(node,reveal){
+  const retained=this.revealContents.get(node),base=retained||{...node,name:'',opacity:1,effects:[],hint:{...node.hint,animationRevealContent:true}};
+  const inner={...base,transform:reveal.transform};
+  if(retained)this.transientPrepared.set(inner,{...this.prepare(retained),matrix:matrix(inner.transform)});
+  const [x0,y0,x1,y1]=reveal.clip;
+  return {...node,hint:{...node.hint,animationRevealWrapper:true},kind:{kind:'group',children:[inner],clip:{path:[{MoveTo:{x:x0,y:y0}},{LineTo:{x:x1,y:y0}},{LineTo:{x:x1,y:y1}},{LineTo:{x:x0,y:y1}},'ClosePath'],even_odd:false},mask:null}};
+ }
+ drawNode(c,original,id,states,contentOnly=false){
+  const state=contentOnly?null:states[id];let node=state?.content||original;const opacity=state?.opacity??node.opacity;if(opacity<=0)return;
+  if(state?.reveal)node=this.revealNode(node,state.reveal);
   const p=this.prepare(node),m=state?.matrix||p.matrix;c.save();c.concat(m);
-  if(this.cacheLayers&&this.gr&&state&&!state.content&&!p.dynamicChildren&&p.picture&&node.kind.kind==='group'&&p.cost>=128&&this.drawLayer(c,node,id,p,opacity)){c.restore();return;}
+  if(this.cacheLayers&&this.gr&&(contentOnly||state&&!state.content)&&!p.dynamicChildren&&p.picture&&node.kind.kind==='group'&&p.cost>=128&&this.drawLayer(c,node,id,p,opacity)){c.restore();return;}
   const ck=this.ck,layer=opacity<1||m[6]!==0||m[7]!==0;
   if(layer){const paint=new ck.Paint();paint.setAlphaf(Math.max(0,Math.min(1,opacity)));c.saveLayer(paint,p.dynamicChildren?undefined:p.bounds);paint.delete();}
-  if(!this.transient&&!state?.content&&!p.dynamicChildren&&!p.picture&&this.pictureBytes<this.budget/4){
+  if(!this.transient&&!state?.content&&!p.dynamicChildren&&!p.picture){
    const recorder=new ck.PictureRecorder(),recording=recorder.beginRecording(p.bounds);
    this.localContent(recording,node,id,{});const picture=recorder.finishRecordingAsPicture();recorder.delete();
-   const bytes=picture.approximateBytesUsed();if(this.pictureBytes+bytes<=this.budget/4){p.picture=this.own(picture);p.objects.push(picture);this.pictureBytes+=bytes;}else picture.delete();
+   const bytes=picture.approximateBytesUsed();p.picture=this.own(picture);p.objects.push(picture);this.pictureBytes+=bytes;
   }
   if(p.picture&&!state?.content)c.drawPicture(p.picture);else this.localContent(c,node,id,states);
   if(layer)c.restore();c.restore();
@@ -307,25 +335,33 @@ export class SkiaRenderer {
   this.content(c,node,id,states);
   for(const effect of p.effects)if(effect.inner)this.drawEffect(c,node,id,states,p,effect);
  }
- render(viewport,width,height,states={},generation=this.generation,allowSkip=false,cacheStatic=true,cacheLayers=true,preparing=false,effectsOnly=null){
-  if(generation!==this.generation)return false;
-  if(this.lost)return {backend:'Skia restoring',skipped:true,rasterMs:0};
-  if(!Number.isSafeInteger(width)||!Number.isSafeInteger(height)||width<=0||height<=0||width*height>100000000)throw Error('Invalid Skia viewport');
-  const start=performance.now(),ck=this.ck;
-  // At most two animation draws may be in flight on the GPU. Worker replies
-  // acknowledge CPU submission; they must not allow a queue of stale GPU frames.
-  while(this.fences.length&&this.gl.clientWaitSync(this.fences[0],0,0)!==this.gl.TIMEOUT_EXPIRED)this.gl.deleteSync(this.fences.shift());
-  if(allowSkip&&!preparing&&this.fences.length>=2)return {skipped:true,reason:'gpu-busy',backend:this.backend,rasterMs:0};
+ ensureSurface(width,height){
+  const ck=this.ck;
   if(!this.surface||this.canvas.width!==width||this.canvas.height!==height){
    this.clearStaticTextures();this.clearLayerTextures();this.surface?.dispose();this.canvas.width=width;this.canvas.height=height;
    this.surface=this.gr?ck.MakeOnScreenGLSurface(this.gr,width,height,ck.ColorSpace.SRGB):this.rasterOnly?ck.MakeSurface(width,height):ck.MakeSWCanvasSurface(this.canvas);
    if(!this.surface)throw Error('Skia surface allocation failed');
   }
+ }
+ render(viewport,width,height,states={},generation=this.generation,allowSkip=false,cacheStatic=true,cacheLayers=true,preparing=false,effectsOnly=null){
+  if(generation!==this.generation)return false;
+  if(this.lost)return {backend:'Skia restoring',skipped:true,rasterMs:0};
+  if(!Number.isSafeInteger(width)||!Number.isSafeInteger(height)||width<=0||height<=0||!Number.isSafeInteger(width*height*4))throw Error('Invalid Skia viewport');
+  const start=performance.now(),ck=this.ck;
+  // At most two animation draws may be in flight on the GPU. Worker replies
+  // acknowledge CPU submission; they must not allow a queue of stale GPU frames.
+  while(this.fences.length&&this.gl.clientWaitSync(this.fences[0],0,0)!==this.gl.TIMEOUT_EXPIRED)this.gl.deleteSync(this.fences.shift());
+  if(allowSkip&&!preparing&&this.fences.length>=2)return {skipped:true,reason:'gpu-busy',backend:this.backend,rasterMs:0};
+  this.ensureSurface(width,height);
   const gl=this.gl,timer=this.timer;
   const gpuSamples=[];while(this.queries.length&&gl.getQueryParameter(this.queries[0],gl.QUERY_RESULT_AVAILABLE)){const query=this.queries.shift();if(!gl.getParameter(timer.GPU_DISJOINT_EXT)){this.gpuMs=gl.getQueryParameter(query,gl.QUERY_RESULT)/1e6;gpuSamples.push(this.gpuMs);}gl.deleteQuery(query);}
   const query=timer&&this.queries.length<8?gl.createQuery():null;if(query)gl.beginQuery(timer.TIME_ELAPSED_EXT,query);
   this.cacheLayers=allowSkip&&cacheLayers;this.layerHits=0;this.layerBuilds=0;this.layerBudgetMisses=0;this.layerAllocationFailures=0;this.cacheHits=0;this.cacheBuilds=0;this.transient=true;this.transientPrepared=new WeakMap();const count=this.owned.length,c=this.surface.getCanvas(),saved=c.getSaveCount();try{c.clear(ck.TRANSPARENT);c.save();
   c.scale(width/(viewport[2]-viewport[0]),height/(viewport[3]-viewport[1]));c.translate(-viewport[0],-viewport[1]);
+  // A fitted presentation viewport includes the area around the page. Clip
+  // before subjects, effects and cached layers; their bounds can exceed it.
+  this.pageBounds=this.clipToPage?[-viewport[0]*width/(viewport[2]-viewport[0]),-viewport[1]*height/(viewport[3]-viewport[1]),(this.list.width-viewport[0])*width/(viewport[2]-viewport[0]),(this.list.height-viewport[1])*height/(viewport[3]-viewport[1])]:null;
+  if(this.clipToPage)c.clipRect([0,0,this.list.width,this.list.height],ck.ClipOp.Intersect,false);
   if(effectsOnly===null)this.drawScene(c,viewport,width,height,states,allowSkip&&cacheStatic);
   else { // Static PDF export: only the requested effect layers, never the vector subject.
    const node=this.list.nodes[0],p=this.prepare(node);

@@ -169,10 +169,13 @@ fn page(
         // still use their prepared derivative, while ordinary images retain
         // the original encoding before comparing WebP sizes.
         if let Some((data, mime)) = pixel_key(&r.data).and_then(|key| originals.get(&key)) {
-            r.data = data.clone();
+            r.data = data.clone().into();
             r.mime = mime.clone();
         }
-        let (data, converted) = image(std::mem::take(&mut r.data), options);
+        let (data, converted) = image(
+            std::sync::Arc::unwrap_or_clone(std::mem::take(&mut r.data)),
+            options,
+        );
         if converted {
             r.mime = "image/webp".into();
         }
@@ -320,6 +323,9 @@ pub fn export(
     let mut transitions = BTreeSet::new();
     let mut fonts = BTreeMap::new();
     let mut requested_fonts = BTreeMap::new();
+    let mut page_states = Vec::new();
+    let mut all_dependencies = BTreeSet::new();
+    let mut document_dependencies = BTreeSet::new();
     let mut name = Path::new(file)
         .file_stem()
         .unwrap_or_default()
@@ -337,6 +343,8 @@ pub fn export(
                     .or_insert(f.clone());
             }
         }
+        all_dependencies.extend(journal.borrow().iter().cloned());
+        page_states.push(json!({"id":id,"dependencies":*journal.borrow(),"fonts":scene.fonts.values().flat_map(|font|laymesh_core::text::font_metadata(&font.data)).collect::<Vec<_>>(),"requestedFonts":scene.font_requests,"warnings":scene.warnings}));
         let originals = original_images(&host, &journal.borrow());
         let body = page(
             &scene,
@@ -358,8 +366,10 @@ pub fn export(
     if file.ends_with(".laydoc") {
         let plan = laymesh_core::document::plan_source(source, file, host.clone())?;
         name = plan.name.clone();
+        document_dependencies = journal.borrow().clone();
         for (i, p) in plan.pages.iter().enumerate() {
             if selected.is_none_or(|n| n == i + 1) {
+                journal.borrow_mut().clear();
                 append(
                     laymesh_core::document::compile_page(p, host.clone())?,
                     &p.id,
@@ -400,7 +410,8 @@ pub fn export(
     let mut project = json!(null);
     let mut resource_info = Vec::new();
     if editable {
-        let mut dependencies = journal.borrow().clone();
+        let mut dependencies = all_dependencies;
+        dependencies.extend(document_dependencies.iter().cloned());
         dependencies.insert(file.into());
         let paths: Vec<_> = dependencies
             .iter()
@@ -457,6 +468,18 @@ pub fn export(
             entries.insert(path, storage);
         }
         project = json!({"entry":logical(file),"page":selected,"files":entries});
+        for state in &mut page_states {
+            let reads: BTreeSet<_> = state["dependencies"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .filter_map(Value::as_str)
+                .chain(document_dependencies.iter().map(String::as_str))
+                .chain(std::iter::once(file))
+                .map(logical)
+                .collect();
+            state["dependencies"] = json!(reads);
+        }
         for (id, font) in fonts {
             let mut face = laymesh_core::text::font_metadata(&font.data)
                 .into_iter()
@@ -475,7 +498,7 @@ pub fn export(
             if let Some((path, _)) = project_face {
                 face["file"] = project["files"][path].clone();
             } else if options.html_embed_fonts.unwrap_or(false) {
-                face["file"] = json!(asset(&mut files, font.data));
+                face["file"] = json!(asset(&mut files, font.data.as_ref().clone()));
             }
             font_meta.push(face);
         }
@@ -496,6 +519,28 @@ pub fn export(
         .and_then(|s| s.to_str())
         .is_some_and(|s| s.eq_ignore_ascii_case("zip"));
     let manifest = json!({"schemaVersion":2,"resourceInfo":resource_info,"embedFonts":options.html_embed_fonts.unwrap_or(false),"fontRequirements":font_meta,"requestedFonts":requested_fonts.into_values().collect::<Vec<_>>(),"name":name,"editable":editable,"container":if standard{"zip"}else{"universal"},"pages":pages,"resources":resources,"fonts":font_meta,"project":project,"imageCompression":options.html_image_compression.as_deref().unwrap_or("auto"),"imageQuality":options.html_image_quality.unwrap_or(85.),"laymeshVersion":env!("CARGO_PKG_VERSION")});
+    if editable && font_meta.iter().all(|f| f["file"].is_string()) {
+        let mut inputs = BTreeMap::new();
+        for (p, asset) in project["files"].as_object().unwrap() {
+            inputs.insert(
+                p.clone(),
+                laymesh_core::asset_cache::digest(&files[asset.as_str().unwrap()]),
+            );
+        }
+        for f in &font_meta {
+            inputs.insert(
+                format!("font:{}", f["path"].as_str().unwrap()),
+                laymesh_core::asset_cache::digest(&files[f["file"].as_str().unwrap()]),
+            );
+        }
+        for (state, page) in page_states.iter_mut().zip(&pages) {
+            state["payloadHash"] = json!(laymesh_core::asset_cache::digest(
+                &files[page["file"].as_str().unwrap()]
+            ));
+        }
+        let state = json!({"schema":1,"compilerHash":laymesh_core::asset_cache::digest(&files["runtime/compiler/laymesh.wasm"]),"entry":project["entry"],"page":project["page"],"inputs":inputs,"fonts":font_meta,"bindings":{},"pages":page_states});
+        files.insert("preview-state.json".into(), serde_json::to_vec(&state)?);
+    }
     files.insert("manifest.json".into(), serde_json::to_vec(&manifest)?);
     files.insert("index.html".into(),br#"<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LayMesh</title><div id="app">Preparing LayMesh...</div><script type="module">import {webBoot} from './runtime/web-archive.mjs';try{const manifest=await(await fetch('manifest.json')).json();const response=await(await fetch('entries.json')).json();const files={};await Promise.all(response.map(async p=>{const r=await fetch(p);if(!r.ok)throw Error('Missing entry: '+p);files[p]=new Uint8Array(await r.arrayBuffer());}));await webBoot(files);}catch(e){document.getElementById('app').textContent=location.protocol==='file:'?'Open this folder through a static HTTP server, or use the Universal .zip.html file.':String(e);}</script>"#.to_vec());
     files.insert("README.txt".into(),b"LayMesh portable web presentation\nOpen the Universal .zip.html file directly in a desktop browser.\nFor the extracted standard ZIP, serve this directory over HTTP and open index.html.\nEditing and playback run locally. No CDN or remote compilation.\n".to_vec());

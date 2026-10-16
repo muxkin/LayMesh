@@ -45,3 +45,8 @@ release/dist/
 release/staging/
 release/history/
 release/verification/
+
+# Reproducible benchmark exports stay local; retain measurements and hashes.
+docs/benchmarks/**/*.zip.html
+docs/benchmarks/**/roundtrip/*-lists.json
+docs/benchmarks/**/*.log

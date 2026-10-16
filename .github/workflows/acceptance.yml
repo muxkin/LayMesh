@@ -85,6 +85,8 @@ jobs:
           node --experimental-vm-modules scripts/test-page-previews.mjs
           node scripts/test-presentation-native-scheduling.cjs
           node scripts/test-preview-player.mjs
+          node scripts/test-display-update.mjs
+          node scripts/test-skia-update-recovery.mjs
       - name: CSS animation and real presentation browser regressions
         env:
           PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-tests/node_modules/playwright
@@ -92,6 +94,7 @@ jobs:
           python scripts/build-web-export.py
           cargo build --locked --release -p laymesh-core --example animation_reference
           cargo build --locked --release -p laymesh-cli
+          python scripts/test-preview-semantic-session.py --output "$RUNNER_TEMP/browser-results/native-semantic-session.json"
           # Match the normal browser engine used by the app. Headless Shell
           # 151 drops native wheel scrolling in fullscreen overflow menus.
           export CHROMIUM_PATH="$(node -e 'process.stdout.write(require(process.env.PLAYWRIGHT_MODULE).chromium.executablePath())')"
@@ -110,6 +113,15 @@ jobs:
           node scripts/test-web-vector-export.cjs "$RUNNER_TEMP/browser-results/vector-export"
           python scripts/check-web-vector-export.py "$RUNNER_TEMP/browser-results/vector-export"
           node scripts/test-workspace-files.mjs
+          node scripts/test-web-preview-compiler.mjs
+          node scripts/test-web-preview-state.mjs
+          node scripts/test-web-progressive-compile.mjs
+          node scripts/test-web-compiler-pool.mjs
+          node scripts/test-web-compile-slices.mjs
+          node scripts/test-wasm-allocation.mjs
+          node scripts/test-presentation-incremental.cjs
+          node scripts/test-retained-presentation-store.mjs
+          node scripts/test-web-incremental-preview.cjs "$RUNNER_TEMP/browser-results/incremental-preview"
           node scripts/test-workspace-interactions.cjs "$RUNNER_TEMP/browser-results/workspace-interactions"
           LAYMESH_TEST_HOST=127.0.0.1 node scripts/test-page-transitions.cjs "$RUNNER_TEMP/browser-results/page-transitions"
           node scripts/test-laydoc-transitions.cjs "$RUNNER_TEMP/browser-results/laydoc" http://127.0.0.1:8769/
@@ -120,6 +132,7 @@ jobs:
           node scripts/test-css-library-presentation.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/style-presentation"
           node scripts/test-presentation-controls.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/controls"
           node scripts/test-preview-presentation.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/preview"
+          node scripts/test-presentation-clipping.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/clipping.json"
           node scripts/test-presentation-streaming.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/streaming"
           node scripts/test-academic-presentation.cjs 'http://127.0.0.1:8769/presentation-test.html?deck=academic' "$RUNNER_TEMP/browser-results/academic"
       - uses: actions/upload-artifact@v4

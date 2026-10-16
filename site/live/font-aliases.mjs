@@ -80,3 +80,11 @@ export function fontWeight(f) {
 }
 export const fontItalic = (f) =>
   f.italic ?? /italic|oblique|斜/i.test(f.style || "");
+
+// Automatic aliases are compiler inputs, separate from explicit replacements.
+export function compilerFontBindings(fonts, bindings={}) {
+  const result={};
+  for(const f of fonts)for(const name of [f.family,...(f.names || []).filter(n=>[1,16].includes(n.nameID)).map(n=>n.value)])
+    for(const alias of fontAliases(name))if(alias!==f.family)result[alias]=f.family;
+  return {...result,...bindings};
+}

@@ -1,0 +1,14 @@
+{
+  "artworkEntriesPreserved": 31,
+  "html": {
+    "file": "video/04-LCSS\u4e0e\u52a8\u753b/exports/navigation-preview-v004/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u653e\u6620\u5207\u9875\u4f18\u5316.zip.html",
+    "sha256": "459e6a9b3d03666af60c3f25683ea439e3069f9a12ce9a055ff2af13ef355a73"
+  },
+  "vsix": {
+    "file": "video/04-LCSS\u4e0e\u52a8\u753b/exports/navigation-preview-v004/laymesh-0.6.4-navigation-preview-linux-x64.vsix",
+    "sha256": "dfc52beec4d81e9274e4076aa8d52b52e459d85024411c33394f849d30aeda31"
+  },
+  "nativeSha256": "698e4d7ff95e1f3b8e4e705ed7758b341c66fb68d2780585f323821c40bfa07e",
+  "runtimeSha256": "55b2ae050b86eff85b8732d4c67069efde1b3bd7fa3209d26e82fe574ed61299",
+  "originalSha256": "a8aa68ddc58741ad8cb977569e6f0072f62c892825428ec330881e23bb4745bd"
+}

@@ -1,0 +1,40 @@
+[
+  {
+    "phase": "supplementalPerformanceCommand",
+    "started": 1792071725.1253097,
+    "command": [
+      "node",
+      "scripts/test-web-document-performance.cjs",
+      "/tmp/laymesh-semantic-incremental/window-final.zip.html",
+      "target/semantic-preview-validation/20261015-window/browser-document-add-remove",
+      "50"
+    ],
+    "returncode": 0,
+    "seconds": 172.4765145778656
+  },
+  {
+    "phase": "command",
+    "started": 1792071897.6021557,
+    "command": [
+      "node",
+      "scripts/test-web-semantic-roundtrip.cjs",
+      "/home/keqing/.codex/attachments/ae7cca4f-57dd-459c-8f5a-206718103dd7/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005.zip.html",
+      "/tmp/laymesh-semantic-incremental/window-final.zip.html",
+      "target/semantic-preview-validation/20261015-window/all-pages-roundtrip"
+    ],
+    "returncode": 0,
+    "seconds": 293.91969537734985
+  },
+  {
+    "phase": "reuseCommand",
+    "started": 1792072191.5221221,
+    "command": [
+      "node",
+      "scripts/test-web-semantic-reuse.cjs",
+      "/tmp/laymesh-semantic-incremental/window-final.zip.html",
+      "target/semantic-preview-validation/20261015-window/all-attempt-reuse"
+    ],
+    "returncode": 0,
+    "seconds": 217.1867711544037
+  }
+]

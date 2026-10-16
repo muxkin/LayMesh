@@ -64,7 +64,7 @@ fn transition_spec(value: &V, file: &str, loc: Loc) -> Result<TransitionSpec> {
         ),
         V::Object(o) if o.borrow().kind == "transition" => {
             let o = o.borrow();
-            (o.args.clone(), o.file.clone(), o.loc)
+            ((*o.args).clone(), o.file.clone(), o.loc)
         }
         _ => return Err(fail("transition 需要效果名称或 transition(name=...)")),
     };

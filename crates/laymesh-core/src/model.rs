@@ -9,6 +9,7 @@ use std::{
     collections::{BTreeMap, BTreeSet},
     path::{Component, Path, PathBuf},
     rc::Rc,
+    sync::Arc,
 };
 
 pub const PT: f64 = 25.4 / 72.0;
@@ -16,32 +17,38 @@ pub type Args = BTreeMap<String, V>;
 pub type Scope = Rc<RefCell<Environment>>;
 #[derive(Default, Debug)]
 pub struct Environment {
+    pub(crate) birth: u64,
     pub values: BTreeMap<String, V>,
     pub readonly: Vec<String>,
     pub parent: Option<Scope>,
 }
 impl Environment {
     pub fn root() -> Scope {
-        Rc::new(RefCell::new(Self::default()))
+        Rc::new(RefCell::new(Self {
+            birth: crate::session::queries::birth(),
+            ..Self::default()
+        }))
     }
     pub fn child(parent: &Scope) -> Scope {
         Rc::new(RefCell::new(Self {
+            birth: crate::session::queries::birth(),
             parent: Some(parent.clone()),
             ..Self::default()
         }))
     }
     pub fn get(s: &Scope, key: &str) -> Option<V> {
         let x = s.borrow();
-        x.values
-            .get(key)
-            .cloned()
-            .or_else(|| x.parent.as_ref().and_then(|p| Self::get(p, key)))
+        let value = x.values.get(key).cloned();
+        crate::session::queries::read(s, Some(x.birth), key, value.as_ref());
+        value.or_else(|| x.parent.as_ref().and_then(|p| Self::get(p, key)))
     }
     pub fn set(s: &Scope, key: String, value: V) -> bool {
         if s.borrow().values.contains_key(&key) {
             if s.borrow().readonly.contains(&key) {
                 return false;
             }
+            let before = s.borrow().values.get(&key).cloned();
+            crate::session::queries::write(s, &key, before.as_ref(), &value);
             s.borrow_mut().values.insert(key, value);
             return true;
         }
@@ -51,6 +58,7 @@ impl Environment {
                 return Self::set(&p, key, value);
             }
         }
+        crate::session::queries::write(s, &key, None, &value);
         s.borrow_mut().values.insert(key, value);
         true
     }
@@ -71,14 +79,15 @@ pub enum V {
     /// User dictionaries have insertion order and ordinary value semantics.
     Dict(indexmap::IndexMap<String, V>),
     Cmap(crate::colormap::Colormap),
-    Map(Args),
+    Map(Shared<Args>),
     Object(Rc<RefCell<Object>>),
     Geometry(Rc<crate::geometry_query::Query>),
     /// A measured scalar/vector carries its selector for dependency replay.
     Measured(Rc<crate::geometry_query::Query>, Box<V>),
     Function {
-        params: Vec<(String, Option<Expr>)>,
-        body: Vec<Stmt>,
+        revision: u64,
+        params: Rc<Vec<(String, Option<Expr>)>>,
+        body: Rc<Vec<Stmt>>,
         scope: Scope,
         file: String,
     },
@@ -91,19 +100,69 @@ pub enum V {
         reference: Option<AnchorReference>,
     },
 }
+/// Immutable object payloads are shared across transaction snapshots; a write
+/// detaches only the payload it changes.
+#[derive(Clone, Debug)]
+pub struct Shared<T: Clone>(Rc<T>);
+impl<T: Clone> Shared<T> {
+    pub(crate) fn allocation(&self) -> usize {
+        Rc::as_ptr(&self.0) as usize
+    }
+}
+impl<T: Clone + Default> Default for Shared<T> {
+    fn default() -> Self {
+        Self(Rc::new(T::default()))
+    }
+}
+impl<T: Clone> From<T> for Shared<T> {
+    fn from(value: T) -> Self {
+        Self(Rc::new(value))
+    }
+}
+impl<T: Clone> std::ops::Deref for Shared<T> {
+    type Target = T;
+    fn deref(&self) -> &T {
+        &self.0
+    }
+}
+impl<T: Clone> std::ops::DerefMut for Shared<T> {
+    fn deref_mut(&mut self) -> &mut T {
+        Rc::make_mut(&mut self.0)
+    }
+}
+impl<A, T: Clone + FromIterator<A>> FromIterator<A> for Shared<T> {
+    fn from_iter<I: IntoIterator<Item = A>>(iter: I) -> Self {
+        T::from_iter(iter).into()
+    }
+}
+impl<'a, T: Clone> IntoIterator for &'a Shared<T>
+where
+    &'a T: IntoIterator,
+{
+    type Item = <&'a T as IntoIterator>::Item;
+    type IntoIter = <&'a T as IntoIterator>::IntoIter;
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.as_ref().into_iter()
+    }
+}
 #[derive(Clone, Debug)]
 pub struct Object {
+    pub(crate) syntax_site: u64,
+    pub(crate) cache_identity: u64,
+    pub(crate) placed_key: Option<Arc<str>>,
+    pub(crate) origin_revision: u64,
+    pub(crate) origin_dependencies: Shared<Vec<(u64, u64)>>,
     pub kind: String,
-    pub args: Args,
+    pub args: Shared<Args>,
     pub file: String,
     pub loc: Loc,
     pub id: usize,
-    pub nodes: Vec<Json>,
-    pub layers: Vec<(String, Args)>,
+    pub nodes: Vec<Arc<Json>>,
+    pub layers: Shared<Vec<(String, Args)>>,
     pub sealed: bool,
     pub width: f64,
     pub height: f64,
-    pub node: Option<Json>,
+    pub node: Option<Arc<Json>>,
     pub parent: usize,
 }
 impl V {
@@ -316,35 +375,48 @@ pub fn resolve(file: &str, relative: &str) -> String {
 #[derive(Clone, Default)]
 pub struct Host {
     pub files: BTreeMap<String, Vec<u8>>,
+    /// Immutable inputs owned by a persistent compilation session. The legacy
+    /// byte-vector map remains available to one-shot/native callers.
+    pub shared_files: BTreeMap<String, Arc<Vec<u8>>>,
     pub native: bool,
     /// Optional preview resource journal, shared by cloned hosts. Failed reads
     /// are included so creating a missing resource can refresh the preview.
     pub dependencies: Option<Rc<RefCell<BTreeSet<String>>>>,
 }
 impl Host {
+    pub fn bytes(&self, path: &str) -> Option<&[u8]> {
+        self.files
+            .get(path)
+            .map(Vec::as_slice)
+            .or_else(|| self.shared_files.get(path).map(|b| b.as_slice()))
+    }
     pub fn read(&self, path: &str, file: &str, loc: Loc) -> Result<Vec<u8>> {
         if let Some(css) = crate::style::bundled_stylesheet(path) {
+            crate::session::queries::resource(self, path, Some(css.as_bytes()));
             return Ok(css.as_bytes().to_vec());
         }
         if let Some(dependencies) = &self.dependencies {
             dependencies.borrow_mut().insert(path.to_owned());
         }
-        self.files
+        let value = self
+            .files
             .get(path)
             .cloned()
+            .or_else(|| self.shared_files.get(path).map(|b| b.as_ref().clone()))
             .or_else(|| {
                 if self.native {
                     std::fs::read(path).ok()
                 } else {
                     None
                 }
-            })
-            .ok_or_else(|| Diagnostic::new("E_ASSET", format!("无法读取资源：{path}"), file, loc))
+            });
+        crate::session::queries::resource(self, path, value.as_deref());
+        value.ok_or_else(|| Diagnostic::new("E_ASSET", format!("无法读取资源：{path}"), file, loc))
     }
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FontAsset {
-    pub data: Vec<u8>,
+    pub data: Arc<Vec<u8>>,
     pub index: u32,
     pub family: String,
 }
@@ -365,7 +437,7 @@ pub struct Scene {
     #[serde(default = "default_canvas_unit")]
     pub canvas_unit: String,
     pub export_dpi: f64,
-    pub nodes: Vec<Json>,
+    pub nodes: Vec<Arc<Json>>,
     pub warnings: Vec<Diagnostic>,
     #[serde(default)]
     pub fonts: BTreeMap<String, FontAsset>,

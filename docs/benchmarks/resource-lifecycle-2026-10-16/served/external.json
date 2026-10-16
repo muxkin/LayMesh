@@ -1,0 +1,12 @@
+{
+  "pages": 3,
+  "errors": [],
+  "checks": [
+    "prepared native artifacts",
+    "selected-page fullscreen browser presentation",
+    "navigate without compiler",
+    "presenter and audience from selected page",
+    "audience blackout and clean exit",
+    "no console errors"
+  ]
+}

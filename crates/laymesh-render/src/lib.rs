@@ -813,7 +813,7 @@ fn svg(scene: &Scene, embed_fonts: bool) -> Result<String> {
                 "@font-face{{font-family:'{}';font-weight:{weight};font-style:{};src:url(data:{mime};base64,{})}}",
                 escape(&key),
                 if italic { "italic" } else { "normal" },
-                base64::engine::general_purpose::STANDARD.encode(&font.data)
+                base64::engine::general_purpose::STANDARD.encode(font.data.as_slice())
             );
         }
     }
@@ -838,9 +838,9 @@ mod native;
 #[cfg(feature = "native")]
 mod pdf;
 #[cfg(any(feature = "native", feature = "portable-export"))]
-pub mod pptx;
-#[cfg(any(feature = "native", feature = "portable-export"))]
 pub mod portable_svg;
+#[cfg(any(feature = "native", feature = "portable-export"))]
+pub mod pptx;
 #[cfg(feature = "native")]
 pub mod preview_assets;
 #[cfg(feature = "native")]
@@ -894,7 +894,8 @@ mod tests {
                 "test.lay",
                 Loc::default(),
             )
-            .unwrap(),
+            .unwrap()
+            .into(),
         );
         let svg = render_svg(&scene).unwrap();
         assert!(svg.contains("data-missing-glyph"));

@@ -2,8 +2,9 @@ import {drawPreviewRuler} from './preview-geometry.mjs';
 import {PresentationSession} from './presentation-session.mjs';
 import {Presentation} from './presentation.mjs';
 import {uiIcon,iconLabel} from './presentation-icons.mjs';
-import {PresentationStore} from './presentation-store.mjs';
-import {PlaybackStats} from './playback-stats.mjs';
+import {RetainedPresentationCache} from './presentation-store.mjs';
+const retainedDeck=new RetainedPresentationCache();
+import {PlaybackStats,waitForPresentation} from './playback-stats.mjs';
 import {loadRendererRuntime,loadDrawingResources} from './renderer-resources.mjs';
 import {PreviewPlayer} from './preview-player.mjs';
 import {mmPerUnit,canvasAt,niceStep,preparePlots,plotAt,formatData} from './preview-math.mjs';
@@ -33,7 +34,7 @@ const presentationMenu=el('details','presentation-choice',toolbar);el('summary',
 let previewResume=false;
 let deckResolve,deckReject,deckStore,deckReceive=Promise.resolve(),deckProgress,deckRevision,deckSession,deckRequest=0,deckRestart;
 const presentation=new Presentation({parent:root,base:new URL('./',import.meta.url),blobWorker:true,fullscreen:false,getStartPageId:()=>pageSelect.value,onEnter:()=>{previewResume=player.running;if(previewResume)player.action('play');},provider:({signal,onProgress,startPageId,plannedOnly})=>new Promise((resolve,reject)=>{
- deckRevision=null;const requestId=++deckRequest;deckStore=new PresentationStore();const store=deckStore;deckSession=new PresentationSession(store,{onProgress,request:(id,retry)=>bridge.postMessage({type:'deck-priority',revision:deckRevision,pageId:id,retry}),stop:()=>bridge.postMessage({type:'deck-cancel',requestId})});deckSession.preparation={};deckResolve=resolve;deckReject=reject;deckProgress=onProgress;deckReceive=Promise.resolve();(plannedOnly?deckSession.planReady:deckSession.firstReady).then(resolve,reject);signal.addEventListener('abort',()=>store.dispose(),{once:true});bridge.postMessage({type:'deck-prepare',requestId,startPageId});
+ deckRevision=null;const requestId=++deckRequest;deckStore=retainedDeck.session();const store=deckStore;deckSession=new PresentationSession(store,{onProgress,request:(id,retry)=>bridge.postMessage({type:'deck-priority',revision:deckRevision,pageId:id,retry}),stop:()=>bridge.postMessage({type:'deck-cancel',requestId})});deckSession.preparation={};deckResolve=resolve;deckReject=reject;deckProgress=onProgress;deckReceive=Promise.resolve();(plannedOnly?deckSession.planReady:deckSession.firstReady).then(resolve,reject);signal.addEventListener('abort',()=>store.dispose(),{once:true});bridge.postMessage({type:'deck-prepare',requestId,startPageId,knownPages:retainedDeck.known()});
 }),onExit:()=>{bridge.postMessage({type:'deck-release'});if(previewResume)player.start();}});
 const presentationPopover=el('div','toolbar-popover',presentationMenu);const presentHere=el('button','',presentationPopover);presentHere.type='button';presentHere.onclick=()=>presentation.button.click();presentation.button.addEventListener('click',()=>{presentationMenu.open=false;bridge.postMessage({type:'deck-pin'});});
 const browserPresent=el('button','',presentationPopover,'在浏览器全屏放映');browserPresent.onclick=async()=>{presentationMenu.open=false;try{await presentation.prepare();bridge.postMessage({type:'deck-browser',startPageId:pageSelect.value});}catch(e){diagnostic={message:e.message};showDiagnostic();}};
@@ -173,7 +174,7 @@ async function installFrame(data){
  rasterResourceIds=new Set(installed.resourceIds);
  installed.resourcesMs+=resourceLoadMs;
  if(sequence!==renderSequence)return;
- if(!directCanvas){const {initializeSkia,SkiaRenderer}=await import('./skia-renderer.mjs');if(!mainSkia){const meta=await(await fetch(new URL('skia/manifest.json',import.meta.url))).json();mainSkia=new SkiaRenderer(await initializeSkia(new URL('skia/'+meta.wasm,import.meta.url).href),image,{onContextChange:ready=>{if(ready){drawKey='';presented=null;schedule();}}});}await mainSkia.install(installed.scene,id=>installed.sceneResources[id],data.generation,data.previewSettings?.cache_mb??256,{...data.document,reduced:player.reduced});}
+ if(!directCanvas){const {initializeSkia,SkiaRenderer}=await import('./skia-renderer.mjs');if(!mainSkia){const meta=await(await fetch(new URL('skia/manifest.json',import.meta.url))).json();mainSkia=new SkiaRenderer(await initializeSkia(new URL('skia/'+meta.wasm,import.meta.url).href),image,{onContextChange:ready=>{if(ready){drawKey='';presented=null;schedule();}}});}await mainSkia.install(installed.scene,id=>installed.sceneResources[id],data.generation,{...data.document,reduced:player.reduced});}
  drawReady=true;drawJobId=data.displayListId||data.displayListCompressed?.id||String(data.generation);if(!installed.reused)drawKey='';wasmMemoryBytes=installed.wasmMemoryBytes;
  drawGeneration=data.generation;
  player.resumeAfterTransition=false;const resume=player.resume;player.update(data.inspection.animation);if(resume&&player.metadata){const start=player.restorePage(resume);if(start)player.resumeAfterTransition=true;}
@@ -196,13 +197,13 @@ function paint(r,force=false){
  const left=Math.max(0,r.left),top=Math.max(0,r.top),right=Math.min(viewport.clientWidth,r.left+r.width),bottom=Math.min(viewport.clientHeight,r.top+r.height);
  if(right<=left||bottom<=top){image.hidden=true;return;}image.hidden=false;
  const visible=[(left-r.left)/view.scale,(top-r.top)/view.scale,(right-r.left)/view.scale,(bottom-r.top)/view.scale],dpr=devicePixelRatio||1;
- if(presented?.time===player.time&&presented?.reduced===player.reduced&&presented?.content===drawJobId&&presented.scale===view.scale&&presented.dpr===dpr&&visible[0]>=presented.crop[0]-1e-9&&visible[1]>=presented.crop[1]-1e-9&&visible[2]<=presented.crop[2]+1e-9&&visible[3]<=presented.crop[3]+1e-9){
+ if(presented?.confirmed!==false&&presented?.time===player.time&&presented?.reduced===player.reduced&&presented?.content===drawJobId&&presented.scale===view.scale&&presented.dpr===dpr&&visible[0]>=presented.crop[0]-1e-9&&visible[1]>=presented.crop[1]-1e-9&&visible[2]<=presented.crop[2]+1e-9&&visible[3]<=presented.crop[3]+1e-9){
   pendingPaint=null;clearTimeout(paintTimer);paintTimer=0;drawKey=presented.key;root.dataset.painted='true';if(force)reportPaint(0);return;
  }
  const pad=96/view.scale,crop=[Math.max(0,visible[0]-pad),Math.max(0,visible[1]-pad),Math.min(page.width,visible[2]+pad),Math.min(page.height,visible[3]+pad)];
  const width=Math.max(1,Math.ceil((crop[2]-crop[0])*view.scale*dpr)),height=Math.max(1,Math.ceil((crop[3]-crop[1])*view.scale*dpr));
  const key=JSON.stringify([drawJobId,crop,width,height,player.time,player.reduced]);if(key===drawKey)return;drawKey=key;root.dataset.painted='false';
- pendingPaint={running:player.running,time:player.time,reduced:player.reduced,type:'paint',generation:drawGeneration,crop,width,height,content:drawJobId,scale:view.scale,dpr,key};
+ pendingPaint={running:player.running,visible:document.visibilityState==='visible',time:player.time,reduced:player.reduced,type:'paint',generation:drawGeneration,crop,width,height,content:drawJobId,scale:view.scale,dpr,key};
  clearTimeout(paintTimer);paintTimer=0;
  // Translate the retained Canvas immediately. Changing zoom temporarily
  // scales its pixels; the worker restores exact DPR pixels after motion settles.
@@ -212,12 +213,15 @@ async function flushPaint(){if(paintInFlight||!pendingPaint||!rasterWorker)retur
  const request=pendingPaint;pendingPaint=null;paintInFlight=true;if(request.running)playbackStats.submit(performance.now());
  try{const data=await workerCall(request);
   if(data.type==='painted'&&data.generation===drawGeneration&&request.content===drawJobId&&(request.key===drawKey||pendingPaint)){
-   if(!directCanvas){const metrics=mainSkia.render(request.crop,data.width,data.height,data.states,data.generation,!!request.running);if(metrics.skipped)return;Object.assign(metrics,await mainSkia.transitions.play(player.reduced));Object.assign(data,metrics);}if(player.resumeAfterTransition){player.resumeAfterTransition=false;player.start();}root.dataset.renderBackend=data.backend;root.dataset.transitionName=data.transitionName||'';root.dataset.transitionFrames=String(data.transitionFrames||0);root.dataset.transitionError=data.transitionError||'';root.dataset.renderWidth=String(data.width);root.dataset.renderHeight=String(data.height);root.dataset.sampleMs=String(data.sampleMs);
+   if(!directCanvas){const metrics=mainSkia.render(request.crop,data.width,data.height,data.states,data.generation,!!request.running);if(metrics.skipped)return;Object.assign(metrics,await mainSkia.transitions.play(player.reduced));if(!request.running)metrics.presentationConfirmed=await mainSkia.completeFrame(request.visible);Object.assign(data,metrics);}if(player.resumeAfterTransition){player.resumeAfterTransition=false;player.start();}root.dataset.renderBackend=data.backend;root.dataset.transitionName=data.transitionName||'';root.dataset.transitionFrames=String(data.transitionFrames||0);root.dataset.transitionError=data.transitionError||'';root.dataset.renderWidth=String(data.width);root.dataset.renderHeight=String(data.height);root.dataset.sampleMs=String(data.sampleMs);
+   request.confirmed=false;presented=request;positionPixels();
+   if(!request.running){data.presentationConfirmed=data.presentationConfirmed&&await waitForPresentation(request.visible);if(request.generation!==drawGeneration||request.content!==drawJobId)return;}
+   request.confirmed=true;
    if(request.time===null&&request.crop[0]===0&&request.crop[1]===0&&request.crop[2]===page.width&&request.crop[3]===page.height){const s=Math.min(768/page.width,2048/page.height,Math.sqrt(500000/(page.width*page.height)));overview.width=Math.max(1,Math.floor(page.width*s));overview.height=Math.max(1,Math.floor(page.height*s));overview.getContext('2d').drawImage(image,0,0,overview.width,overview.height);overviewContent=request.content;}
    if(request.running)requestAnimationFrame(now=>{playbackStats.record(`${request.generation}:${request.time}`,now);});
    summary.textContent=text('详情','Details');summary.title=`${data.backend} · ${data.width}×${data.height}`;
    metrics.textContent=`${data.backend} · ${data.width}×${data.height} · ${text('采样','Sample')} ${data.sampleMs.toFixed(2)} ms · ${text('绘制提交','Draw submission')} ${data.rasterMs.toFixed(2)} ms${data.gpuMs==null?'':` · GPU ${data.gpuMs.toFixed(2)} ms`} · ${text('呈现估计','Presentation estimate')} ${playbackStats.fps.toFixed(1)} fps · ${text('提交','Submissions')} ${playbackStats.submissionFps.toFixed(1)} fps · ${text('错过时隙估计','Missed slots estimate')} ${playbackStats.missedPercent.toFixed(1)}%`;
-   presented=request;wasmMemoryBytes=data.wasmMemoryBytes;positionPixels();if(request.key===drawKey)reportPaint(data.rasterMs);
+   presented=request;wasmMemoryBytes=data.wasmMemoryBytes;frameTimings.presentationConfirmed=data.presentationConfirmed;positionPixels();if(request.key===drawKey)reportPaint(data.rasterMs);
   }
  }catch(error){if(request.generation===drawGeneration&&request.key===drawKey){drawKey='';diagnostic={code:'E_PREVIEW_RENDER',message:String(error)};showDiagnostic();showStatus('error');}}
  finally{paintInFlight=false;if(pendingPaint&&!paintTimer)flushPaint();}
@@ -234,12 +238,12 @@ window.addEventListener('message',({data})=>{
   if(data.type==='deck-browser-error'){diagnostic={code:'E_PRESENTATION',message:data.error};showDiagnostic();return;}
   if(data.type==='deck-invalidated'){clearTimeout(deckRestart);presentation.invalidate();if(data.background)deckRestart=setTimeout(()=>{if(root.dataset.state==='success'&&!presentation.opened)presentation.prepare().catch(()=>{});},250);return;}
   if(data.requestId!==undefined&&data.requestId!==deckRequest)return;
-  if(data.type==='deck-plan'){deckRevision=data.revision;deckStore.budget=data.budget;deckSession.budget=data.budget;deckSession.plan(data.pages);return;}
+  if(data.type==='deck-plan'){deckRevision=data.revision;deckSession.plan(data.pages);return;}
   if(deckRevision&&data.revision&&data.revision!==deckRevision)return;
   if(data.type==='deck-progress')return; // Stored artifact readiness is reported by the session.
   if(data.type==='deck-error'){deckSession?.fail(data.pageId,Error(data.error));if(!data.pageId)deckReject?.(Error(data.error));return;}
-  if(data.type==='deck-page'){const store=deckStore,session=deckSession;deckReceive=deckReceive.then(async()=>{if(store!==deckStore||store.closed)return;const page=data.page;page.resources={};for(const [id,url]of Object.entries(page.resourceUrls)){if(store.resources.has(id))continue;const r=await fetch(url);if(!r.ok)throw Error('Presentation resource unavailable');page.resources[id]=new Uint8Array(await r.arrayBuffer());}if(store!==deckStore||store.closed)return;delete page.resourceUrls;await store.add(page);session.ready(store.pages.find(p=>p.id===page.id));bridge.postMessage({type:'deck-ack',revision:data.revision,pageId:page.id});}).catch(e=>{if(store===deckStore&&!store.closed){bridge.postMessage({type:'deck-cancel'});store.dispose();deckReject?.(e);}});}
-  if(data.type==='deck-ready'){const store=deckStore;deckReceive.then(()=>{if(store===deckStore&&!store.closed){deckSession.prepareMs=data.prepareMs;Object.assign(deckSession.preparation,data.preparation);}});}return;
+  if(data.type==='deck-page'||data.type==='deck-page-reuse'){const store=deckStore,session=deckSession;deckReceive=deckReceive.then(async()=>{if(store!==deckStore||store.closed)return;const page=data.page;if(data.type==='deck-page-reuse'){store.bind(page,data.artifactId);session.ready(store.pages.find(p=>p.id===page.id));bridge.postMessage({type:'deck-ack',revision:data.revision,pageId:page.id});return;}page.resources={};for(const [id,url]of Object.entries(page.resourceUrls)){if(store.resources.has(id))continue;const r=await fetch(url);if(!r.ok)throw Error('Presentation resource unavailable');page.resources[id]=new Uint8Array(await r.arrayBuffer());}if(store!==deckStore||store.closed)return;delete page.resourceUrls;await store.add(page,data.artifactId);session.ready(store.pages.find(p=>p.id===page.id));bridge.postMessage({type:'deck-ack',revision:data.revision,pageId:page.id});}).catch(e=>{if(store===deckStore&&!store.closed){bridge.postMessage({type:'deck-cancel'});store.dispose();deckReject?.(e);}});}
+  if(data.type==='deck-ready'){const store=deckStore;deckReceive.then(()=>{if(store===deckStore&&!store.closed){deckSession.prepareMs=data.prepareMs;Object.assign(deckSession.preparation,data.preparation);retainedDeck.prune().catch(console.error);}});}return;
  }
 
  if(data?.type==='initial'){locale=data.locale||'en';if((!initialized&&saved.rulers===undefined)||data.forceRulers)view.rulers=data.showRulers!==false;initialized=true;labels();showDiagnostic();if(root.dataset.state)showStatus(root.dataset.state);schedule();}
@@ -257,3 +261,5 @@ window.addEventListener('message',({data})=>{
 });
 window.addEventListener('pagehide',()=>{presentation.dispose();renderSequence++;clearTimeout(paintTimer);pendingPaint=null;stopWorker(Error('Preview closed'));});
 labels();bridge.postMessage({type:'ready'});
+
+addEventListener("pagehide",()=>retainedDeck.dispose());

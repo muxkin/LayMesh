@@ -132,7 +132,7 @@ self.onmessage=({data})=>{
     const lowerMs=performance.now()-before;
     const result=JSON.parse(job.inspection()),drawingInfo=JSON.parse(next.drawing_info());
     const list=JSON.parse(next.display_list()),read=(id)=>next.resource_bytes(id);
-    try{if(skia)await skia.install(list,read,id,256,{...result.document,reduced:data.reduced});}catch(error){next.free();throw error;}
+    try{if(skia)await skia.install(list,read,id,{...result.document,reduced:data.reduced});}catch(error){next.free();throw error;}
     drawJob?.free();drawJob=next;generation=id;
     if(!skia)self.postMessage({type:'skia-scene',generation,list,navigation:{...result.document,reduced:data.reduced},resources:Object.fromEntries(Object.entries(list.resources).filter(([,r])=>r.mime.startsWith('image/')).map(([id])=>[id,read(id)]))});
     self.postMessage({type:'result',id,generation,protocol:3,...result,drawingInfo,sceneStats:data.stats?sceneStats(list):undefined,resources:Object.entries(drawingInfo.resources).map(([id,meta])=>({id,...meta,resident:true})),metrics:{initialization:initMs,resources:resourcesMs,compile:compileMs,lower:lowerMs,raster:0,total:compileMs+lowerMs}});

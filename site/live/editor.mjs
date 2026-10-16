@@ -85,7 +85,7 @@ class ExampleEditor {
   this.initTimeout=setTimeout(()=>{this.worker?.terminate();this.worker=null;this.error({message:t('引擎或字体加载超时，可点击运行重试。','Engine or fonts timed out. Run again to retry.')});},45000);
   this.worker.onmessage=async({data})=>{
    if(data.type==='context'){this.module.dataset.renderBackend=data.ready?'Skia WebGL2':'Skia restoring';if(data.ready){this.paintKey='';this.presented=null;this.requestPaint();}return;}
-   if(data.type==='skia-scene'){this.mainSkiaReady=(async()=>{const {initializeSkia,SkiaRenderer}=await import('./skia-renderer.mjs');if(!this.mainSkia){const meta=await(await fetch(new URL('skia/manifest.json',base))).json();this.mainSkia=new SkiaRenderer(await initializeSkia(new URL('skia/'+meta.wasm,base).href),this.image,{onContextChange:ready=>{if(ready){this.paintKey='';this.presented=null;this.requestPaint();}}});}await this.mainSkia.install(data.list,id=>data.resources[id],data.generation,256,data.navigation);})();return;}
+   if(data.type==='skia-scene'){this.mainSkiaReady=(async()=>{const {initializeSkia,SkiaRenderer}=await import('./skia-renderer.mjs');if(!this.mainSkia){const meta=await(await fetch(new URL('skia/manifest.json',base))).json();this.mainSkia=new SkiaRenderer(await initializeSkia(new URL('skia/'+meta.wasm,base).href),this.image,{onContextChange:ready=>{if(ready){this.paintKey='';this.presented=null;this.requestPaint();}}});}await this.mainSkia.install(data.list,id=>data.resources[id],data.generation,data.navigation);})();return;}
    if(['paint-error','painted','paint-skipped'].includes(data.type)){
     const request=this.paintInFlight&&data.id===this.paintInFlight.id&&data.generation===this.paintInFlight.generation?this.paintInFlight:null;
     if(request)this.paintInFlight=null;

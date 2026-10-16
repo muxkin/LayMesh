@@ -2,9 +2,9 @@ import {PresentationStore} from './presentation-store.mjs';
 import {PresentationSession} from './presentation-session.mjs';
 // First-page compilation has priority over pool startup. Subsequent workers
 // compile independent resolved sources; one artifact per worker is in flight.
-export function webPresentationProvider(editor,base,{concurrency}={}){return async({signal,onProgress,startPageId,plannedOnly})=>{
+export function webPresentationProvider(editor,base){return async({signal,onProgress,startPageId,plannedOnly})=>{
  const store=new PresentationStore(),workers=[],files={...editor.files},entry=editor.entry;
- const limit=Math.max(1,Math.min(4,Math.floor(concurrency??Math.max(1,(navigator.hardwareConcurrency||2)-2)),navigator.deviceMemory&&navigator.deviceMemory<=4?2:4));
+ const limit=Math.max(1,navigator.hardwareConcurrency||1);
  let queue=[],planned=false,storage=Promise.resolve(),expanded=false;
  const timings={workers:1,pages:[],storageMs:0};
  const session=new PresentationSession(store,{onProgress,stop:()=>{signal.removeEventListener('abort',abort);workers.forEach(w=>w.terminate());},request:(id,retry)=>{const item=queue.find(q=>q.page.id===id||q.aliases.some(p=>p.id===id));if(!item)return;if(retry&&item.status==='error')item.status='pending';item.priority=performance.now()+1;if(workers.every(w=>w.closed))spawn();else for(const w of workers)dispatch(w);}});session.preparation=timings;

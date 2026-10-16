@@ -50,7 +50,7 @@ fn hydrated_list(raw: &str) -> Result<DisplayList, JsValue> {
         let resources = resources.borrow();
         for (id, r) in &mut list.resources {
             if let Some(bytes) = resources.get(id) {
-                r.data = bytes.clone();
+                r.data = bytes.clone().into();
             }
         }
     });
@@ -272,7 +272,7 @@ impl PptxJob {
         let list = hydrated_list(raw_list)?;
         let mut requests = Vec::new();
         laymesh_render::pptx::render_pptx_list(&list, dpi, &mut |list, rect, width, height| {
-            let mut list = list.clone(); for r in list.resources.values_mut() { r.data.clear(); }
+            let mut list = list.clone(); for r in list.resources.values_mut() { r.data=Default::default(); }
             requests.push(json!({"list":list,"rect":[rect.x0,rect.y0,rect.x1,rect.y1],"width":width,"height":height}));
             Ok(Vec::new())
         }).map_err(err)?;

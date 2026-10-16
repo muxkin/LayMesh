@@ -632,6 +632,16 @@ impl Engine {
         Ok((pos, a))
     }
     pub(crate) fn geometry_step(&self, q: &Query, step: Step, l: Loc) -> Result<V> {
+        // Layout anchors and centerline/path queries do not observe paint.
+        // Ink queries do: visibility, opacity and stroke colors can change
+        // the silhouette even while path geometry is identical.
+        if q.steps
+            .iter()
+            .chain(std::iter::once(&step))
+            .any(|s| matches!(s,Step::Member(name) if name=="ink"))
+        {
+            crate::session::queries::observe_style_geometry();
+        }
         let mut q = q.clone();
         q.steps.push(step);
         if q.instance.is_some() {
@@ -715,7 +725,8 @@ impl Engine {
             }
             let n = o
                 .node
-                .clone()
+                .as_deref()
+                .cloned()
                 .unwrap_or_else(|| base("rect", o.width, o.height));
             (n, if o.kind == "canvas" { o.id } else { o.parent })
         } else {

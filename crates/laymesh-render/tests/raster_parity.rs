@@ -89,9 +89,9 @@ fn scene(nodes: Vec<Json>) -> Scene {
         layout_dpi: 96.,
         canvas_unit: "mm".into(),
         export_dpi: 144.,
-        nodes,
+        nodes: nodes.into_iter().map(Into::into).collect(),
         warnings: vec![],
-            speaker_notes: None,
+        speaker_notes: None,
         fonts: Default::default(),
         font_requests: Default::default(),
     }
@@ -140,7 +140,7 @@ fn absolute_point_alpha_checker_rejects_repeated_multiplication() {
     // Fault injection at the shared scene boundary: reproduce the former
     // scalar-by-array multiplication, then exercise both real exporters.
     let mut old = original.clone();
-    old.nodes[0]["pointOpacities"] = json!([0.25, 0.125]);
+    std::sync::Arc::make_mut(&mut old.nodes[0])["pointOpacities"] = json!([0.25, 0.125]);
     for r in all_rasters(&old) {
         assert!(
             !correct_alpha(&r),
@@ -331,10 +331,14 @@ fn normalized_icc_pixels_have_the_same_colors_in_svg_png_and_pdf() {
         .unwrap();
     let mut old = scene.clone();
     use base64::Engine as _;
-    old.nodes[0]["data"] = json!(base64::engine::general_purpose::STANDARD.encode(raw));
+    std::sync::Arc::make_mut(&mut old.nodes[0])["data"] =
+        json!(base64::engine::general_purpose::STANDARD.encode(raw));
     // Replacing the pixels also invalidates the reference to the original
     // normalized pixels; otherwise PDF correctly retains the original image.
-    old.nodes[0].as_object_mut().unwrap().remove("rasterKey");
+    std::sync::Arc::make_mut(&mut old.nodes[0])
+        .as_object_mut()
+        .unwrap()
+        .remove("rasterKey");
     for image in all_rasters(&old) {
         assert!(
             !correct_color(&image),

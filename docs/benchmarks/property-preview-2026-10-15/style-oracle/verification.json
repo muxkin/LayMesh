@@ -1,0 +1,96 @@
+{
+  "html": "/home/keqing/source/LayMesh/video/04-LCSS与动画/exports/property-preview-v003/04_LCSS_离线可编辑_v005_属性增量预览.zip.html",
+  "htmlSha256": "58e7715204c3a540d164f267d89bab12abb073d43afe31f2087c55747823159c",
+  "results": [
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "theme.lcss",
+      "kind": "lcss-heading",
+      "sha256": "e8627b04c01a9a8aa8deeb91f5076cf51102897e7f0b0d4462ddbd4f23d9235a",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "page": "theme.lcss",
+      "kind": "lcss-curves",
+      "sha256": "cdf19abb6b5c3499619a6ef7e029f3ae42972b9d252c38655f1231e9af7aa130",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "theme.lcss",
+      "kind": "lcss-heading",
+      "sha256": "f20113a7c53d88981784a2f1b8e8b7f72b59706e85916c05f3ba5c5fdb663f45",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "page": "theme.lcss",
+      "kind": "lcss-curves",
+      "sha256": "4e1854fb55eebb8f3e0ac1f2b319d3c98b946402e4767815ef438d3af4886ad7",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "theme.lcss",
+      "kind": "lcss-heading",
+      "sha256": "e369228dcfd98c38f78a139f723d4cb10902a8183f0b86fbdb3e6029c2e975ee",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "page": "theme.lcss",
+      "kind": "lcss-curves",
+      "sha256": "e07d178904ad016e2f041c39dfad13791422af863e9488080239f114551ee5ad",
+      "freshCompilerPixelsEqual": true,
+      "drawingCommandsEquivalent": true,
+      "numericDrift": {
+        "count": 0,
+        "maxAbsolute": 0
+      },
+      "unchangedRedraw": false,
+      "presentationConfirmed": true
+    }
+  ]
+}

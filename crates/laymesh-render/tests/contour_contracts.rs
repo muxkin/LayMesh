@@ -82,7 +82,7 @@ fn contour_contracts_reject_missing_geometry_and_changed_opacity() {
     let f = fixtures();
     let c = &f["cases"][0];
     let mut s = build(c);
-    let data = s.nodes[0]["children"]
+    let data = std::sync::Arc::make_mut(&mut s.nodes[0])["children"]
         .as_array_mut()
         .unwrap()
         .iter_mut()
@@ -100,7 +100,7 @@ fn contour_contracts_reject_missing_geometry_and_changed_opacity() {
             mutate(ch)
         }
     }
-    mutate(&mut s.nodes[0]);
+    mutate(std::sync::Arc::make_mut(&mut s.nodes[0]));
     assert_eq!(raster(&s, 254.).pixel(30., 30.), [0; 3]);
     assert_ne!(raster(&s, 254.).pixel(30., 30.), [127; 3]);
 }

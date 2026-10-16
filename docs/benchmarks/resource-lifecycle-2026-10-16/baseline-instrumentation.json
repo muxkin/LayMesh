@@ -1,0 +1,17 @@
+{
+  "method": "Timing hooks only; original baseline preserved; visible frame waits GPU completion then main rendering step",
+  "html": {
+    "path": "/tmp/laymesh-lifecycle/baseline-final.html",
+    "sha256": "a0d981bb39223eb9069bf06a810910c426ddebb5d2c838b430a31d4efb2c1b9e"
+  },
+  "extension": {
+    "modifiedFiles": [
+      "dist/presentation.mjs",
+      "dist/presentation-worker.mjs"
+    ],
+    "nativeSha256": "698e4d7ff95e1f3b8e4e705ed7758b341c66fb68d2780585f323821c40bfa07e",
+    "path": "/tmp/laymesh-lifecycle/baseline-extension-complete"
+  },
+  "script": "scripts/instrument-presentation-baseline.mjs",
+  "correction": "All formal samples restarted after preserving Worker transfer arguments and routing visible-frame notifications in the HTML adapter and native fallback. Native smoke verified usesWorker=true and no fallback."
+}

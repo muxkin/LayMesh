@@ -37,7 +37,7 @@ export class PresenterView {
    this.staticRenderer??=new PagePreviewRenderer({runtime:()=>this.runtimeData,skiaInstance:ck,page:async i=>{await view.deck.wait?.(i);return view.deck.store.page(view.deck.pages[i].id);}});
    // Preserve just the audience output buffer, so a paused/hidden console can
    // request the existing image without another scene render or GPU readPixels.
-   const runtime=await createPresentationRuntime({...data,skiaInstance:ck,canvas:view.canvas,preserveDrawingBuffer:true,budget:view.deck?.budget??128*1048576,onPresent:meta=>{if(this.connected)this.mirror?.present(meta);}},event=>{
+   const runtime=await createPresentationRuntime({...data,skiaInstance:ck,canvas:view.canvas,preserveDrawingBuffer:true,onPresent:meta=>{if(this.connected)this.mirror?.present(meta);}},event=>{
     if(!this.opened||generation!==view.generation)return;this.mirror?.reset();if(event.ready){this.notice('','context');view.resident.clear();view.readyResident?.clear();view.go(view.index,{time:view.clock.time,preserve:true});}else{view.clock.running=false;this.notice('显示资源正在恢复，放映已暂停。','context');view.sync();}
    });if(!this.opened||generation!==view.generation){await runtime({type:'dispose'});return;}view.mainRuntime=runtime;
   };adapter.stylesheet=this.saved.adapter?.stylesheet;v.runtimeAdapter=adapter;

@@ -1,0 +1,29 @@
+{
+  "rust_animation_tests": 7,
+  "rust_transform_planning_tests": 1,
+  "javascript": [
+    "test-presentation-navigation.mjs",
+    "test-presentation-clock.mjs",
+    "test-presentation-frame-delivery.mjs",
+    "test-presentation-resources.mjs"
+  ],
+  "first_and_repeat_4k_animation_cache": "passed",
+  "cold_first_edit": [
+    "chromium",
+    "firefox",
+    "webkit"
+  ],
+  "media_sources_checked": 231,
+  "vsix_audit": "passed",
+  "preserved_artwork_entries": 31,
+  "input_protection": "unchanged",
+  "browser_plugin_blocker": "Node REPL js tool unavailable after discovery; existing Playwright cross-browser workflow used as authorized by the browser coverage requirement",
+  "browser_animation_pixel_pairs": 54,
+  "cpu_preload_raster_elision": "passed",
+  "timing_method_clarification": "Each measured navigation starts with a five-event directional key burst. A backward seek(0) may require an initial step rewind before navigation; only keys after navigation starts are protected. Rows measure bursts, not individual key presses.",
+  "formal_samples": 400,
+  "all_navigation_targets_precompiled": true,
+  "final_artifact_hashes_verified": true,
+  "final_html_sha256": "459e6a9b3d03666af60c3f25683ea439e3069f9a12ce9a055ff2af13ef355a73",
+  "final_native_sha256": "698e4d7ff95e1f3b8e4e705ed7758b341c66fb68d2780585f323821c40bfa07e"
+}

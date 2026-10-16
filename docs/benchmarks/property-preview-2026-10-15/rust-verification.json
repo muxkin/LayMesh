@@ -1,0 +1,17 @@
+{
+  "packages": [
+    "laymesh-core",
+    "laymesh-language",
+    "laymesh-render",
+    "laymesh-wasm"
+  ],
+  "suites": 73,
+  "passed": 645,
+  "failed": 0,
+  "ignored": 1,
+  "sessionTests": 29,
+  "formatChecked": true,
+  "allTargetsChecked": true,
+  "mediaSourcesChecked": 231,
+  "vsixNativeIdentityChecked": true
+}

@@ -8,12 +8,18 @@ use serde_json::{Value as J, json};
 use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
+use std::sync::Arc;
 use wasm_bindgen::prelude::*;
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace=performance,js_name=now)]
+    fn performance_now() -> f64;
+}
 thread_local! {
     static LANGUAGE_SERVICE: RefCell<LanguageService> = RefCell::new(LanguageService::new("en"));
-    static PREVIEW_FONTS: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new());
-    static PREVIEW_ASSETS: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new());
-    static DRAW_RESOURCES: RefCell<BTreeMap<String, Vec<u8>>> = RefCell::new(BTreeMap::new());
+    static PREVIEW_FONTS: RefCell<BTreeMap<String, Arc<Vec<u8>>>> = RefCell::new(BTreeMap::new());
+    static PREVIEW_ASSETS: RefCell<BTreeMap<String, Arc<Vec<u8>>>> = RefCell::new(BTreeMap::new());
+    static DRAW_RESOURCES: RefCell<BTreeMap<String, std::sync::Arc<Vec<u8>>>> = RefCell::new(BTreeMap::new());
     static PREVIEW_DEPENDENCIES: Rc<RefCell<BTreeSet<String>>> = Rc::new(RefCell::new(BTreeSet::new()));
 }
 
@@ -28,7 +34,11 @@ pub fn preview_dependencies() -> String {
 
 #[wasm_bindgen]
 pub fn register_render_resource(id: &str, bytes: &[u8]) {
-    DRAW_RESOURCES.with(|resources| resources.borrow_mut().insert(id.into(), bytes.to_vec()));
+    DRAW_RESOURCES.with(|resources| {
+        resources
+            .borrow_mut()
+            .insert(id.into(), std::sync::Arc::new(bytes.to_vec()))
+    });
 }
 #[wasm_bindgen]
 pub fn retain_render_resources(ids: &str) -> Result<(), JsValue> {
@@ -43,19 +53,38 @@ fn js_error(e: impl std::fmt::Display) -> JsValue {
 #[wasm_bindgen]
 pub struct DrawJob {
     scene: laymesh_render::retained::RetainedScene,
+    source: Option<(Arc<Scene>, bool)>,
 }
 #[wasm_bindgen]
 impl DrawJob {
+    pub fn presentation_state(&self, time: f64, reduced: bool) -> Result<String, JsValue> {
+        serde_json::to_string(
+            &self
+                .scene
+                .sample_presentation(time, reduced)
+                .map_err(js_error)?,
+        )
+        .map_err(js_error)
+    }
     pub fn frame_state(&self, time: f64, reduced: bool) -> Result<String, JsValue> {
         serde_json::to_string(&self.scene.sample(time, reduced, false).map_err(js_error)?)
             .map_err(js_error)
+    }
+    pub fn transform_state(&self, time: f64, reduced: bool) -> Result<String, JsValue> {
+        serde_json::to_string(
+            &self
+                .scene
+                .sample_transforms(time, reduced, false)
+                .map_err(js_error)?,
+        )
+        .map_err(js_error)
     }
     pub fn resource_bytes(&self, id: &str) -> Result<Vec<u8>, JsValue> {
         self.scene
             .base()
             .resources
             .get(id)
-            .map(|r| r.data.clone())
+            .map(|r| r.data.as_ref().clone())
             .ok_or_else(|| js_error("Missing drawing resource"))
     }
     /// Workers already own the drawing; the UI only needs its resource headers.
@@ -95,12 +124,14 @@ impl DrawJob {
         if let Some(resources) = &mut update.resources {
             resolve_resources(resources)?;
         }
-        self.scene.update(update).map_err(js_error)
+        self.scene.update(update).map_err(js_error)?;
+        self.source = None;
+        Ok(())
     }
     pub fn display_list(&self) -> Result<String, JsValue> {
         let mut list = self.scene.base().clone();
         for resource in list.resources.values_mut() {
-            resource.data.clear();
+            resource.data = Default::default();
         }
         serde_json::to_string(&list).map_err(js_error)
     }
@@ -114,6 +145,7 @@ pub fn prepare_display_list(json: &str) -> Result<DrawJob, JsValue> {
     resolve_resources(&mut list.resources)?;
     Ok(DrawJob {
         scene: laymesh_render::retained::RetainedScene::new(list),
+        source: None,
     })
 }
 fn resolve_resources(
@@ -135,7 +167,12 @@ fn resolve_resources(
 
 #[wasm_bindgen]
 pub fn register_preview_asset(path: &str, bytes: &[u8]) {
-    PREVIEW_ASSETS.with(|files| files.borrow_mut().insert(path.into(), bytes.to_vec()));
+    PREVIEW_ASSETS.with(|files| {
+        let mut files = files.borrow_mut();
+        if files.get(path).is_none_or(|old| old.as_slice() != bytes) {
+            files.insert(path.into(), Arc::new(bytes.to_vec()));
+        }
+    });
 }
 #[wasm_bindgen]
 pub fn clear_preview_assets() {
@@ -167,14 +204,14 @@ pub fn register_preview_font(filename: &str, bytes: &[u8]) {
     PREVIEW_FONTS.with(|fonts| {
         fonts
             .borrow_mut()
-            .insert(filename.to_owned(), bytes.to_vec());
+            .insert(filename.to_owned(), Arc::new(bytes.to_vec()));
     });
 }
 /// A scene remains in WASM memory between layout and SVG generation, avoiding
 /// serialization of embedded fonts just to measure the two stages separately.
 #[wasm_bindgen]
 pub struct RenderJob {
-    scene: Scene,
+    scene: Arc<Scene>,
     document: Option<J>,
 }
 /// A document plan is evaluated once per presentation snapshot. Page compilation
@@ -191,12 +228,14 @@ impl PresentationPlan {
     }
     pub fn page(&self, index: usize, files_json: &str) -> Result<RenderJob, JsValue> {
         let mut host = self.host.clone();
-        host.files.extend(render_host(files_json)?.files);
+        let extra = render_host(files_json)?;
+        host.files.extend(extra.files);
+        host.shared_files.extend(extra.shared_files);
         let page = self.plan.page(index + 1).map_err(diagnostic_js_error)?;
         let scene = laymesh_core::document::compile_preview_page(page, host)
             .map_err(diagnostic_js_error)?;
         Ok(RenderJob {
-            scene,
+            scene: Arc::new(scene),
             document: Some(
                 json!({"name":self.plan.name,"pages":self.plan.pages,"pageId":page.id,"pageNumber":index+1}),
             ),
@@ -216,14 +255,70 @@ pub fn prepare_presentation(
 }
 #[wasm_bindgen]
 impl RenderJob {
+    pub fn draw_job_outlined(&self) -> Result<DrawJob, JsValue> {
+        let mut list = laymesh_render::to_display_list(&self.scene).map_err(js_error)?;
+        laymesh_render::display_list::outline_nodes(&mut list.nodes);
+        Ok(DrawJob {
+            scene: laymesh_render::retained::RetainedScene::new(list),
+            source: Some((self.scene.clone(), true)),
+        })
+    }
+    pub fn update_draw_job_incremental(
+        &self,
+        draw: &mut DrawJob,
+        outlined: bool,
+    ) -> Result<String, JsValue> {
+        let mut update = if let Some((previous, _)) =
+            draw.source.as_ref().filter(|(_, mode)| *mode == outlined)
+        {
+            laymesh_render::display_list::display_update_reusing(
+                &self.scene,
+                previous,
+                draw.scene.base(),
+                outlined,
+            )
+            .map_err(js_error)?
+        } else {
+            let mut next = laymesh_render::to_display_list(&self.scene).map_err(js_error)?;
+            if outlined {
+                laymesh_render::display_list::outline_nodes(&mut next.nodes);
+            }
+            laymesh_render::display_update::DisplayUpdate::between_incremental(
+                draw.scene.base(),
+                &next,
+            )
+        };
+        let resources = update.resources.take();
+        let mut value = serde_json::to_value(&update).map_err(js_error)?;
+        if let Some(resources) = &resources {
+            value["resources"] = resources
+                .iter()
+                .map(|(id, r)| {
+                    (
+                        id.clone(),
+                        json!({"mime":r.mime,"data":[],"fontIndex":r.font_index,"family":r.family}),
+                    )
+                })
+                .collect::<serde_json::Map<_, _>>()
+                .into();
+        }
+        update.resources = resources;
+        draw.scene.update(update).map_err(js_error)?;
+        draw.source = Some((self.scene.clone(), outlined));
+        Ok(value.to_string())
+    }
+
     pub fn update_draw_job(&self, draw: &mut DrawJob) -> Result<(), JsValue> {
         let next = laymesh_render::to_display_list(&self.scene).map_err(js_error)?;
         let update =
             laymesh_render::display_update::DisplayUpdate::between(draw.scene.base(), &next);
-        draw.scene.update(update).map_err(js_error)
+        draw.scene.update(update).map_err(js_error)?;
+        draw.source = Some((self.scene.clone(), false));
+        Ok(())
     }
     pub fn draw_job(&self) -> Result<DrawJob, JsValue> {
         Ok(DrawJob {
+            source: Some((self.scene.clone(), false)),
             scene: laymesh_render::retained::RetainedScene::new(
                 laymesh_render::to_display_list(&self.scene).map_err(js_error)?,
             ),
@@ -253,7 +348,7 @@ pub fn prepare_render(
     let host = render_host(files_json)?;
     let scene = compile_preview_source(source, filename, host).map_err(diagnostic_js_error)?;
     Ok(RenderJob {
-        scene,
+        scene: Arc::new(scene),
         document: None,
     })
 }
@@ -292,7 +387,7 @@ pub fn prepare_document_render(
         JsValue::from_str(&error.to_string())
     })?;
     Ok(RenderJob {
-        scene,
+        scene: Arc::new(scene),
         document: Some(document),
     })
 }
@@ -317,11 +412,11 @@ fn render_host(files_json: &str) -> Result<Host, JsValue> {
         }
     }
     PREVIEW_ASSETS.with(|files| {
-        host.files
+        host.shared_files
             .extend(files.borrow().iter().map(|(k, v)| (k.clone(), v.clone())))
     });
     PREVIEW_FONTS.with(|fonts| {
-        host.files.extend(
+        host.shared_files.extend(
             fonts
                 .borrow()
                 .iter()
@@ -366,7 +461,10 @@ mod document_tests {
         assert_eq!(commands.nodes, list.nodes);
         assert!(commands.resources.values().all(|r| r.data.is_empty()));
         for (id, r) in &list.resources {
-            assert_eq!(job.resource_bytes(id).unwrap(), r.data);
+            assert_eq!(
+                job.resource_bytes(id).unwrap().as_slice(),
+                r.data.as_slice()
+            );
         }
     }
 }
@@ -478,4 +576,141 @@ pub fn language_query(
         convert(&mut result, source, &service.documents);
         Ok(result.to_string())
     })
+}
+
+/// Shared semantic compilation kernel, retained for the worker lifetime.
+#[wasm_bindgen]
+pub struct CompileSession {
+    inner: laymesh_core::session::CompileSession,
+    files: Host,
+    plan: Option<laymesh_core::document::DocumentPlan>,
+    entry: String,
+}
+#[wasm_bindgen]
+impl CompileSession {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Self {
+        let mut inner = laymesh_core::session::CompileSession::new(false);
+        inner.set_dependencies(Some(PREVIEW_DEPENDENCIES.with(Rc::clone)));
+        Self {
+            inner,
+            files: Host::default(),
+            plan: None,
+            entry: String::new(),
+        }
+    }
+    pub fn apply_changes(&mut self, revision: f64, changes: &str) -> Result<(), JsValue> {
+        if !revision.is_finite()
+            || revision.fract() != 0.
+            || !(0. ..=9_007_199_254_740_991.).contains(&revision)
+        {
+            return Err(js_error("Invalid source version"));
+        }
+        let changes: BTreeMap<String, Option<String>> =
+            serde_json::from_str(changes).map_err(js_error)?;
+        let mut files = self.files.clone();
+        for (path, value) in changes {
+            match value {
+                Some(value) => {
+                    files
+                        .shared_files
+                        .insert(path, Arc::new(value.into_bytes()));
+                }
+                None => {
+                    files.shared_files.remove(&path);
+                }
+            }
+        }
+        let resources = render_host("{}")?;
+        let mut host = files.clone();
+        host.shared_files.extend(resources.shared_files);
+        host.dependencies = resources.dependencies;
+        self.inner
+            .sync_host(&host, revision as u64)
+            .map_err(diagnostic_js_error)?;
+        self.files = files;
+        self.plan = None;
+        Ok(())
+    }
+    pub fn set_time_slice(&mut self, milliseconds: f64) {
+        self.inner.set_profile_clock(performance_now);
+        self.inner
+            .set_deadline((milliseconds > 0.).then(|| performance_now() + milliseconds));
+    }
+    pub fn set_budget(&mut self, bytes: usize) {
+        self.inner.set_budget(bytes);
+    }
+    pub fn set_profiling(&mut self, enabled: bool) {
+        self.inner.set_profile_clock(performance_now);
+        self.inner.set_profiling(enabled);
+    }
+    pub fn metadata(&mut self, entry: &str) -> Result<String, JsValue> {
+        self.entry = entry.into();
+        self.plan = if entry.ends_with(".laydoc") {
+            let source = self.inner.source(entry).map_err(diagnostic_js_error)?;
+            Some(
+                self.inner
+                    .plan(&source, entry)
+                    .map_err(diagnostic_js_error)?,
+            )
+        } else {
+            None
+        };
+        Ok(if let Some(plan) = &self.plan {
+            json!({"name":plan.name,"pages":plan.pages})
+        } else {
+            json!({"pages":[{"id":"page","name":entry.rsplit('/').next().unwrap_or(entry)}]})
+        }
+        .to_string())
+    }
+    pub fn set_active_page(&mut self, page_id: &str) {
+        let file = self
+            .plan
+            .as_ref()
+            .and_then(|p| p.pages.iter().find(|p| p.id == page_id))
+            .map_or(self.entry.as_str(), |p| p.src.as_str());
+        self.inner.set_focus_file(file);
+    }
+    pub fn evaluate(&mut self, page_id: &str) -> Result<RenderJob, JsValue> {
+        let (file, transition, document) = if let Some(plan) = &self.plan {
+            let index = plan
+                .pages
+                .iter()
+                .position(|p| p.id == page_id)
+                .ok_or_else(|| js_error("Selected page no longer exists"))?;
+            let page = &plan.pages[index];
+            (
+                page.src.clone(),
+                page.transition.clone(),
+                Some(
+                    json!({"name":plan.name,"pages":plan.pages,"pageId":page.id,"pageNumber":index+1}),
+                ),
+            )
+        } else {
+            (self.entry.clone(), None, None)
+        };
+        let scene = self
+            .inner
+            .evaluate_file(&file, transition)
+            .map_err(diagnostic_js_error)?;
+        Ok(RenderJob { scene, document })
+    }
+    pub fn metrics(&self) -> String {
+        serde_json::to_string(&self.inner.metrics()).unwrap()
+    }
+    pub fn snapshot(&self, file: &str) -> Option<RenderJob> {
+        self.inner.snapshot(file).map(|(_, scene)| RenderJob {
+            scene,
+            document: None,
+        })
+    }
+    pub fn dispose(&mut self) {
+        self.inner.dispose();
+        self.files.shared_files.clear();
+        self.plan = None;
+    }
+}
+#[wasm_bindgen]
+pub fn remove_preview_asset(path: &str) {
+    PREVIEW_ASSETS.with(|files| files.borrow_mut().remove(path));
 }

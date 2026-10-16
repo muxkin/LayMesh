@@ -116,10 +116,14 @@ pub(crate) fn annotate(
         }
         if matches!(pure_eval(a, &binary), Some(V::Number(_, ref u)) if u.is_empty()) {
             let bare_divisor = Expr {
+                identity: 0,
+                site: 0,
                 kind: ExprKind::Number(n, String::new()),
                 loc: b.loc,
             };
             let quotient = Expr {
+                identity: 0,
+                site: 0,
                 kind: ExprKind::Binary(
                     "/".into(),
                     Box::new(a.clone()),
@@ -128,10 +132,14 @@ pub(crate) fn annotate(
                 loc: error.loc,
             };
             let generic = Expr {
+                identity: 0,
+                site: 0,
                 kind: ExprKind::Binary(
                     "*".into(),
                     Box::new(quotient),
                     Box::new(Expr {
+                        identity: 0,
+                        site: 0,
                         kind: ExprKind::Number(1., unit.into()),
                         loc: b.loc,
                     }),
@@ -142,6 +150,8 @@ pub(crate) fn annotate(
             let mut suggestions = Vec::new();
             if attach_first(&mut first, unit) {
                 let shorter = Expr {
+                    identity: 0,
+                    site: 0,
                     kind: ExprKind::Binary("/".into(), Box::new(first), Box::new(bare_divisor)),
                     loc: error.loc,
                 };

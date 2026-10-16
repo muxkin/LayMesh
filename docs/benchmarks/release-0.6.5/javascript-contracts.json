@@ -1,0 +1,78 @@
+[
+  {
+    "test": "test-presentation-clock.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-presentation-wheel.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-presentation-session.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-presenter-mirror.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-page-previews.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-presentation-native-scheduling.cjs",
+    "status": 0
+  },
+  {
+    "test": "test-preview-player.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-display-update.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-skia-update-recovery.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-web-preview-compiler.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-web-preview-state.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-web-progressive-compile.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-web-compiler-pool.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-web-compile-slices.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-retained-presentation-store.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-presentation-workers.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-presentation-frame-delivery.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-presentation-lifetime.mjs",
+    "status": 0
+  },
+  {
+    "test": "test-cache-ownership.mjs",
+    "status": 0
+  }
+]

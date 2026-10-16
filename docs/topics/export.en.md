@@ -111,8 +111,7 @@ Precedence, highest first: one-shot API/CLI parameters; explicitly set VS Code f
     "jpeg": {"quality": 90, "background": "#ffffff"},
     "png": {"compression": "fast"}
   },
-  "preview": {"jpeg_quality": 90, "webp_quality": 90, "webp_method": 0,
-              "image_threads": 0, "cache_mb": 256, "processing_memory_mb": 128}
+  "preview": {"jpeg_quality": 90, "webp_quality": 90, "webp_method": 0}
 }
 ```
 

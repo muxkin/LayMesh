@@ -1,0 +1,25 @@
+[
+  {
+    "name": "browser-input-validation",
+    "command": [
+      "node",
+      "scripts/test-web-incremental-preview.cjs",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/incremental-input"
+    ],
+    "started": 1792121906.9744387,
+    "state": "passed",
+    "seconds": 54.22835564613342
+  },
+  {
+    "name": "keyboard-before",
+    "command": [
+      "node",
+      "scripts/test-presentation-keyboard.cjs",
+      "/tmp/laymesh-lifecycle/baseline-gpu-instrumented.html",
+      "/home/keqing/source/LayMesh/docs/benchmarks/resource-lifecycle-2026-10-16/keyboard-before"
+    ],
+    "started": 1792123536.6329162,
+    "state": "failed",
+    "seconds": 110.36474370956421
+  }
+]

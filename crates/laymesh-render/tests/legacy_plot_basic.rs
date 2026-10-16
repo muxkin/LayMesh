@@ -243,7 +243,7 @@ fn basic_unpainted_shapes_and_transparent_legend_do_not_leak_pdf_paths() {
             }
         }
     }
-    remove(&mut expected.nodes[0]);
+    remove(std::sync::Arc::make_mut(&mut expected.nodes[0]));
     let mut path = paths(data(&actual.nodes[0]))[0].clone();
     path["fill"] = json!("none");
     path["strokeStyle"]["color"] = json!("none");
@@ -255,7 +255,9 @@ fn basic_unpainted_shapes_and_transparent_legend_do_not_leak_pdf_paths() {
     ellipse["kind"] = json!("ellipse");
     ellipse["x"] = json!(5.);
     ellipse["y"] = json!(5.);
-    actual.nodes.splice(0..0, [rect, ellipse, path]);
+    actual
+        .nodes
+        .splice(0..0, [rect.into(), ellipse.into(), path.into()]);
     assert_eq!(
         pdf_raster(&actual, 144.).bytes,
         pdf_raster(&expected, 144.).bytes

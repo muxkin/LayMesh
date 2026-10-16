@@ -1,5 +1,6 @@
 import {
   canonicalFont,
+  compilerFontBindings,
   fontFamilyKey,
   fontWeight,
   fontItalic,
@@ -304,19 +305,7 @@ export function createFontManager({
   }
   // Automatic same-family aliases are compiler input, never user replacements.
   function compilerBindings() {
-    const result = {};
-    for (const f of liveFonts) {
-      for (const name of [
-        f.family,
-        ...(f.names || [])
-          .filter((n) => [1, 16].includes(n.nameID))
-          .map((n) => n.value),
-      ]) {
-        for (const alias of fontAliases(name))
-          if (alias !== f.family) result[alias] = f.family;
-      }
-    }
-    return { ...result, ...bindings };
+    return compilerFontBindings(liveFonts, bindings);
   }
   async function applyFonts() {
     if (applying) return;

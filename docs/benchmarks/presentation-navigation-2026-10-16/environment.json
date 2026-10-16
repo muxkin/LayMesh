@@ -1,0 +1,22 @@
+{
+  "system": "Linux",
+  "kernel": "6.12.73+deb13-amd64",
+  "machine": "x86_64",
+  "cpu": "AMD Ryzen 7 8745H w/ Radeon 780M Graphics",
+  "logicalCpuCount": 16,
+  "memory": "21300832 kB",
+  "browserViewport": {
+    "width": 1600,
+    "height": 1000,
+    "deviceScaleFactor": 1
+  },
+  "browserMode": "Headless; offline file://; network requests blocked; actual engine/backend recorded per result.",
+  "vscodeWindow": [
+    1440,
+    1000
+  ],
+  "vscodeDpr": 2,
+  "timingIsolation": "Browser variants and VS Code variants run sequentially after all builds and functional validation; 50 accepted samples each plus one excluded initial navigation.",
+  "date": "2026-10-16",
+  "vscodeVersion": "1.113.0"
+}

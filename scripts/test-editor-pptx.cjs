@@ -8,14 +8,15 @@ const main=uri(path.join(directory,'main.lay')),dependency=uri(path.join(directo
 fs.writeFileSync(main.fsPath,'page=canvas(size=(64mm,36mm))');fs.writeFileSync(dependency.fsPath,'export label="Disk"');
 const docs=[{uri:main,isDirty:true,getText:()=> 'import {label} from "./label.lay"\npage=canvas(size=(64mm,36mm))\npage.add(text(label))'},
  {uri:dependency,isDirty:true,getText:()=> 'export label="Unsaved editor text"'}];
-const commands=new Map(),dialogs=[],errors=[],warnings=[],context={subscriptions:[]};
+const commands=new Map(),dialogs=[],errors=[],warnings=[],context={subscriptions:[],extensionUri:uri(path.join(root,'extensions/vscode'))};
 const disposable=()=>({dispose(){}});
 const vscode={env:{language:'en'},Uri:{file:uri},ProgressLocation:{Notification:1},
- commands:{registerCommand:(name,fn)=>{commands.set(name,fn);return disposable();}},
+ commands:{getCommands:async()=>[],registerCommand:(name,fn)=>{commands.set(name,fn);return disposable();}},
  workspace:{isTrusted:true,textDocuments:docs,openTextDocument:async()=>docs[0],
  getConfiguration:()=>({get:(_key,fallback)=>fallback,inspect:()=>undefined}),
  onDidChangeTextDocument:disposable,onDidSaveTextDocument:disposable,onDidCloseTextDocument:disposable,onDidChangeConfiguration:disposable},
  window:{activeTextEditor:{document:docs[0]},
+ onDidChangeActiveTextEditor:disposable,
  showQuickPick:async choices=>{dialogs.push('format');assert.equal(choices.length,21);assert.equal(choices.filter(c=>c.animated).length,2);const choice=choices.find(c=>c.extension==='pptx');assert.equal(choice.label,'PowerPoint (PPTX)');return choice;},
  showSaveDialog:async options=>{dialogs.push('destination');assert.equal(options.defaultUri.fsPath,path.join(directory,'main.pptx'));assert.deepEqual(Array.from(options.filters['PowerPoint (PPTX)']),['pptx']);return destination;},
  showInputBox:()=>{throw new Error('Export must not ask for encoding options');},

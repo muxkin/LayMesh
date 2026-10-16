@@ -25,7 +25,6 @@ pub(crate) struct EffectTile {
 pub struct PreparedRaster {
     list: DisplayList,
     images: BTreeMap<String, sk::Image>,
-    budget: usize,
 }
 impl PreparedRaster {
     pub fn new(list: DisplayList) -> Result<Self> {
@@ -33,11 +32,7 @@ impl PreparedRaster {
             return Err(error("Unsupported drawing version"));
         }
         let images = Painter::new(&list)?.images;
-        Ok(Self {
-            list,
-            images,
-            budget: 256 * 1024 * 1024,
-        })
+        Ok(Self { list, images })
     }
     pub fn display_list(&self) -> &DisplayList {
         &self.list
@@ -65,10 +60,7 @@ impl PreparedRaster {
         self.list = next;
         Ok(())
     }
-    pub fn set_cache_budget(&mut self, mib: usize) {
-        self.budget = mib.saturating_mul(1024 * 1024);
-        set_image_cache_budget(mib);
-    }
+    pub fn set_cache_budget(&mut self, _mib: usize) {}
     pub fn render_region(&mut self, r: Rect, w: u32, h: u32) -> Result<RasterFrame> {
         self.render_states(r, w, h, &BTreeMap::new())
     }
@@ -113,9 +105,6 @@ impl PreparedRaster {
             w.saturating_add(pad.saturating_mul(2)),
             h.saturating_add(pad.saturating_mul(2)),
         );
-        if sw as u64 * sh as u64 > MAX_PIXELS {
-            return Err(error("Skia filter surface exceeds pixel budget"));
-        }
         let mut surface = surface(sw, sh)?;
         let c = surface.canvas();
         c.translate((pad as f32, pad as f32));
@@ -125,25 +114,19 @@ impl PreparedRaster {
         read_at(&mut surface, w, h, pad)
     }
 }
-pub fn set_image_cache_budget(mib: usize) {
-    let bytes = mib.saturating_mul(1024 * 1024);
-    sk::graphics::set_resource_cache_total_bytes_limit(bytes * 3 / 4);
-    sk::graphics::set_font_cache_limit(bytes / 4);
-}
+pub fn set_image_cache_budget(_mib: usize) {}
 fn validate(r: Rect, w: u32, h: u32) -> Result<()> {
-    if w == 0
-        || h == 0
-        || w as u64 * h as u64 > MAX_PIXELS
-        || !r.is_finite()
-        || r.width() <= 0.
-        || r.height() <= 0.
-    {
-        return Err(error("Invalid viewport or exceeds 100000000 pixels"));
+    if w == 0 || h == 0 || !r.is_finite() || r.width() <= 0. || r.height() <= 0. {
+        return Err(error("Invalid viewport"));
     }
     Ok(())
 }
 fn surface(w: u32, h: u32) -> Result<sk::Surface> {
-    sk::surfaces::raster_n32_premul((w as i32, h as i32))
+    let width =
+        i32::try_from(w).map_err(|_| error("Surface width exceeds Skia's integer range"))?;
+    let height =
+        i32::try_from(h).map_err(|_| error("Surface height exceeds Skia's integer range"))?;
+    sk::surfaces::raster_n32_premul((width, height))
         .ok_or_else(|| error("Skia surface allocation failed"))
 }
 fn read(s: &mut sk::Surface, w: u32, h: u32) -> Result<RasterFrame> {

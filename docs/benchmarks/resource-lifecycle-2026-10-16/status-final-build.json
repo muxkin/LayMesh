@@ -1,0 +1,130 @@
+[
+  {
+    "name": "runtime-current",
+    "command": [
+      "python3",
+      "scripts/build-web-export.py"
+    ],
+    "started": 1792122533.3690743,
+    "state": "passed",
+    "seconds": 30.477227210998535
+  },
+  {
+    "name": "native-current",
+    "command": [
+      "cargo",
+      "build",
+      "--release",
+      "--locked",
+      "-p",
+      "laymesh-cli"
+    ],
+    "started": 1792122563.8465483,
+    "state": "passed",
+    "seconds": 87.38190937042236
+  },
+  {
+    "name": "html-current",
+    "command": [
+      "node",
+      "scripts/refresh-web-runtime.mjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+      "/tmp/laymesh-lifecycle/current-runtime.html"
+    ],
+    "started": 1792122651.2288017,
+    "state": "passed",
+    "seconds": 11.833144426345825
+  },
+  {
+    "name": "preview-state-current",
+    "command": [
+      "node",
+      "scripts/prepare-web-preview-state.mjs",
+      "/tmp/laymesh-lifecycle/current-runtime.html",
+      "/tmp/laymesh-lifecycle/current-with-state.html"
+    ],
+    "started": 1792122769.3084502,
+    "state": "passed",
+    "seconds": 16.497184991836548
+  },
+  {
+    "name": "extension-current",
+    "command": [
+      "python3",
+      "scripts/build-editors.py",
+      "--binary",
+      "target/release/laymesh",
+      "--extension-dir",
+      "/home/keqing/source/LayMesh/target/lifecycle-v005-extension"
+    ],
+    "started": 1792122785.8804157,
+    "state": "passed",
+    "seconds": 2.113748550415039
+  },
+  {
+    "name": "site-current",
+    "command": [
+      "python3",
+      "scripts/build-docs-live.py"
+    ],
+    "started": 1792122787.9943132,
+    "state": "passed",
+    "seconds": 6.432905197143555
+  },
+  {
+    "name": "media-current",
+    "command": [
+      "python3",
+      "scripts/build-docs-media.py",
+      "--binary",
+      "target/release/laymesh",
+      "--jobs",
+      "16"
+    ],
+    "started": 1792122794.4276452,
+    "state": "passed",
+    "seconds": 187.54991388320923
+  },
+  {
+    "name": "media-check-current",
+    "command": [
+      "python3",
+      "scripts/build-docs-media.py",
+      "--check"
+    ],
+    "started": 1792122981.9778757,
+    "state": "passed",
+    "seconds": 0.3835561275482178
+  },
+  {
+    "name": "package-current",
+    "command": [
+      "python3",
+      "scripts/package-editor.py",
+      "--extension-dir",
+      "/home/keqing/source/LayMesh/target/lifecycle-v005-extension",
+      "--target",
+      "linux-x64",
+      "--output",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/laymesh-0.6.4-lifecycle-preview-linux-x64.vsix"
+    ],
+    "started": 1792122982.3617857,
+    "state": "passed",
+    "seconds": 1.8648262023925781
+  },
+  {
+    "name": "audit-current",
+    "command": [
+      "python3",
+      "scripts/check-editor.py",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/laymesh-0.6.4-lifecycle-preview-linux-x64.vsix",
+      "--binary",
+      "target/release/laymesh",
+      "--target",
+      "linux-x64"
+    ],
+    "started": 1792122984.2268708,
+    "state": "passed",
+    "seconds": 0.479642391204834
+  }
+]

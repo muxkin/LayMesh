@@ -1,0 +1,81 @@
+{
+  "html": {
+    "path": "video/04-LCSS与动画/exports/first-edit-preview-v009/04_LCSS_离线可编辑_v005_首次编辑修复_v009.zip.html",
+    "bytes": 43585354,
+    "sha256": "fb5637b5f27ed14802732619ed8b4dcd184587bdc9aa63fb69d2df573fd5ac9a"
+  },
+  "vsix": {
+    "path": "video/04-LCSS与动画/exports/first-edit-preview-v009/laymesh-0.6.4-first-edit-v009-linux-x64.vsix",
+    "bytes": 28269020,
+    "sha256": "853fd6d59cad01b0bcf069e379569f3472fa4ca3141659aac45de0d540838d45"
+  },
+  "runtime": {
+    "path": "target/web-export/runtime.zip",
+    "bytes": 9542610,
+    "sha256": "132cd2e7fb9785274224c2b3f72dcb4201dae20252065db8ce10a472acab0c47"
+  },
+  "native": {
+    "path": "target/first-edit-v009-extension/bin/laymesh",
+    "bytes": 34704048,
+    "sha256": "52079c2b35b2318131522c39e471ccea7d11a213e904ae4fa4e3ee46b1928f03"
+  },
+  "v008": {
+    "path": "video/04-LCSS与动画/exports/animation-preview-v008/04_LCSS_离线可编辑_v005_并行动画优化_v008.zip.html",
+    "bytes": 43500257,
+    "sha256": "b07f7e26046fa01d44804866be2d5410015bc6ad1313bae2e6600df46500b06d"
+  },
+  "v005": {
+    "path": "video/04-LCSS与动画/exports/lifecycle-preview-v005/04_LCSS_离线可编辑_v005_资源复用优化.zip.html",
+    "bytes": 43495548,
+    "sha256": "0c7972debcf3b397f077f31e7dcef5a6172fe61cd5308fdcdfb118176941d46e"
+  },
+  "originalAttachment": {
+    "path": "/home/keqing/.codex/attachments/ae7cca4f-57dd-459c-8f5a-206718103dd7/04_LCSS_离线可编辑_v005.zip.html",
+    "bytes": 42366872,
+    "sha256": "a8aa68ddc58741ad8cb977569e6f0072f62c892825428ec330881e23bb4745bd"
+  },
+  "ordinaryExport": {
+    "engine": "chromium",
+    "version": "151.0.7922.34",
+    "htmlSha256": "4076958dbe69dd8dce322daf44c76450d7de8bee2c6e5372e12c964e14279f97",
+    "restored": 6,
+    "targets": [
+      "cover"
+    ],
+    "unchanged": true,
+    "ready": true,
+    "errors": []
+  },
+  "roundtripGeneratedFiles": [
+    {
+      "name": "webkit-real-playback.zip.html",
+      "bytes": 8154454,
+      "sha256": "dc9473b9eef23efa81399c3c101e25bc4d0bd5388afd30d3b7df32e0f7d9dcb0"
+    },
+    {
+      "name": "webkit-real-saved.zip.html",
+      "bytes": 43467963,
+      "sha256": "7760d27cde8142fb6849c71597ccb107aee4c56cb8e7041646f50e165a3bc00a"
+    },
+    {
+      "name": "firefox-real-playback.zip.html",
+      "bytes": 8154454,
+      "sha256": "a4b385d03b254abc762cd16059d5bf659a2e9ec81b6f49c429723131da3bd48f"
+    },
+    {
+      "name": "firefox-real-saved.zip.html",
+      "bytes": 43467963,
+      "sha256": "56227040464fbd21b3d5cc3bdcc1c01526f63bce721c57744c8d8a7a5f097fb7"
+    },
+    {
+      "name": "chromium-real-playback.zip.html",
+      "bytes": 8154454,
+      "sha256": "b7c1065e8b9ce9229e3a2ec63cae311019d7771ae6b5531a8f09fae2a0243835"
+    },
+    {
+      "name": "chromium-real-saved.zip.html",
+      "bytes": 43467963,
+      "sha256": "2fbdb9f33be1180c02af2360235611f407784b3d2518c945b9dc07d35bbed693"
+    }
+  ]
+}

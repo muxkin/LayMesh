@@ -1,0 +1,50 @@
+[
+  {
+    "name": "runtime-current",
+    "command": [
+      "python3",
+      "scripts/build-web-export.py"
+    ],
+    "started": 1792122533.3690743,
+    "state": "passed",
+    "seconds": 30.477227210998535
+  },
+  {
+    "name": "native-current",
+    "command": [
+      "cargo",
+      "build",
+      "--release",
+      "--locked",
+      "-p",
+      "laymesh-cli"
+    ],
+    "started": 1792122563.8465483,
+    "state": "passed",
+    "seconds": 87.38190937042236
+  },
+  {
+    "name": "html-current",
+    "command": [
+      "node",
+      "scripts/refresh-web-runtime.mjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+      "/tmp/laymesh-lifecycle/current-runtime.html"
+    ],
+    "started": 1792122651.2288017,
+    "state": "passed",
+    "seconds": 11.833144426345825
+  },
+  {
+    "name": "preview-state-current",
+    "command": [
+      "node",
+      "scripts/prepare-web-preview-state.mjs",
+      "/tmp/laymesh-lifecycle/current-runtime.html",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html"
+    ],
+    "started": 1792122663.0621686,
+    "state": "failed",
+    "seconds": 16.728021144866943
+  }
+]

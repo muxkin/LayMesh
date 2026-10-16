@@ -3,7 +3,7 @@ const multiply=(a,b)=>Array.from({length:9},(_,i)=>{const r=Math.floor(i/3)*3,c=
 // These are transform probes, not frames: no drawing, clock, rehearsal or
 // readback. The renderer still checks actual density on every real frame, so
 // an unsampled extremum can rebuild but can never display an undersized layer.
-export function layerPlan(skia,width,height,sample){
+export async function layerPlan(skia,width,height,sample,cancelled=()=>false){
  const scale=Math.min(width/skia.list.width,height/skia.list.height),root=[scale,0,0,0,scale,0,0,0,1],layers=new Map(),unrecorded=new Set();let probes=0;
  const visit=(nodes,states,parent,prefix='')=>nodes.forEach((node,i)=>{
   const id=prefix+i,p=skia.prepare(node),state=states[id],world=multiply(parent,state?.matrix||p.matrix);
@@ -15,6 +15,8 @@ export function layerPlan(skia,width,height,sample){
   if(node.kind.kind==='group'&&p.dynamicChildren)visit(node.kind.children,states,world,id+'/');
  });
  visit(skia.list.nodes,{},root);
+ if(!layers.size&&!unrecorded.size)return {layers:[],probes:0,unrecorded:0};
+ let yielded=performance.now();
  for(const [reduced,timeline]of [[false,skia.list.animation?.normal],[true,skia.list.animation?.reduced]]){
   const times=new Set([0]);
   for(const step of timeline?.steps||[]){
@@ -28,10 +30,12 @@ export function layerPlan(skia,width,height,sample){
     }
    }
   }
-  // Bound planning work even for adversarial timelines; runtime admission and
-  // density checks remain authoritative outside this planning envelope.
-  const ordered=[...times].sort((a,b)=>a-b),stride=Math.max(1,Math.ceil(ordered.length/1024));
-  for(let i=0;i<ordered.length;i+=stride){visit(skia.list.nodes,sample(ordered[i],reduced),root);probes++;}
+  const ordered=[...times].sort((a,b)=>a-b);
+  for(let i=0;i<ordered.length;i++){
+   if(cancelled())return {layers:[],probes,unrecorded:unrecorded.size,cancelled:true};
+   visit(skia.list.nodes,sample(ordered[i],reduced),root);probes++;
+   if(performance.now()-yielded>=8){await new Promise(resolve=>setTimeout(resolve,0));yielded=performance.now();}
+  }
  }
  return {layers:[...layers.values()],probes,unrecorded:unrecorded.size};
 }

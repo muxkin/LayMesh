@@ -1,0 +1,74 @@
+{
+  "status": "passed",
+  "results": [
+    {
+      "engine": "chromium",
+      "checks": [
+        {
+          "retainedTransitionEffects": 12,
+          "entryFrameMatches": true,
+          "backend": "Skia WebGL2 (software driver)",
+          "viewports": 3,
+          "animationPoses": 5,
+          "transitions": 12,
+          "transitionPixelChecks": 112
+        },
+        {
+          "retainedTransitionEffects": 12,
+          "entryFrameMatches": true,
+          "backend": "Skia CPU",
+          "viewports": 3,
+          "animationPoses": 5,
+          "transitions": 12,
+          "transitionPixelChecks": 48
+        }
+      ]
+    },
+    {
+      "engine": "firefox",
+      "checks": [
+        {
+          "retainedTransitionEffects": 12,
+          "entryFrameMatches": true,
+          "backend": "Skia CPU",
+          "viewports": 3,
+          "animationPoses": 5,
+          "transitions": 12,
+          "transitionPixelChecks": 55
+        },
+        {
+          "retainedTransitionEffects": 12,
+          "entryFrameMatches": true,
+          "backend": "Skia CPU",
+          "viewports": 3,
+          "animationPoses": 5,
+          "transitions": 12,
+          "transitionPixelChecks": 53
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "checks": [
+        {
+          "retainedTransitionEffects": 12,
+          "entryFrameMatches": true,
+          "backend": "Skia WebGL2",
+          "viewports": 3,
+          "animationPoses": 5,
+          "transitions": 12,
+          "transitionPixelChecks": 120
+        },
+        {
+          "retainedTransitionEffects": 12,
+          "entryFrameMatches": true,
+          "backend": "Skia CPU",
+          "viewports": 3,
+          "animationPoses": 5,
+          "transitions": 12,
+          "transitionPixelChecks": 49
+        }
+      ]
+    }
+  ]
+}

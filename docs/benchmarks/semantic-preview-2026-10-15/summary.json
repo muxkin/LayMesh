@@ -1,0 +1,758 @@
+{
+  "method": "50 measured edits per operation after warmup; confirmed presentation; sequential runs; median is mean of middle two; P95 is nearest rank",
+  "htmlSha256": "2a13ed41f6fb65e2144b2f4f6bb04c55c08299ecc193d57a8390828803709520",
+  "nativeSha256": "12fdaf49835b754f385ba9ab98831d47e03b9fad20b3c75452695a0c9953464b",
+  "totalSamples": 2800,
+  "localEditSamples": 1600,
+  "documentEditSamples": 1200,
+  "passedLocalCases": 4,
+  "totalLocalCases": 32,
+  "timings": [
+    {
+      "engine": "chromium",
+      "page": "02-seed",
+      "kind": "color",
+      "samples": 50,
+      "medianMs": 111.40000000596046,
+      "p95Ms": 112.90000000596046,
+      "targetPassed": false,
+      "host": "chromium"
+    },
+    {
+      "engine": "chromium",
+      "page": "02-seed",
+      "kind": "position",
+      "samples": 50,
+      "medianMs": 112.09999999403954,
+      "p95Ms": 113.40000000596046,
+      "targetPassed": false,
+      "host": "chromium"
+    },
+    {
+      "engine": "chromium",
+      "page": "02-seed",
+      "kind": "text",
+      "samples": 50,
+      "medianMs": 112.80000001192093,
+      "p95Ms": 113.7000000178814,
+      "targetPassed": false,
+      "host": "chromium"
+    },
+    {
+      "engine": "chromium",
+      "page": "02-seed",
+      "kind": "size",
+      "samples": 50,
+      "medianMs": 112.40000000596046,
+      "p95Ms": 113.40000000596046,
+      "targetPassed": false,
+      "host": "chromium"
+    },
+    {
+      "engine": "chromium",
+      "page": "06-editable",
+      "kind": "color",
+      "samples": 50,
+      "medianMs": 145.45000000298023,
+      "p95Ms": 162.19999998807907,
+      "targetPassed": false,
+      "host": "chromium"
+    },
+    {
+      "engine": "chromium",
+      "page": "06-editable",
+      "kind": "position",
+      "samples": 50,
+      "medianMs": 177.04999999701977,
+      "p95Ms": 178.59999999403954,
+      "targetPassed": false,
+      "host": "chromium"
+    },
+    {
+      "engine": "chromium",
+      "page": "06-editable",
+      "kind": "text",
+      "samples": 50,
+      "medianMs": 159.69999998807907,
+      "p95Ms": 161.90000000596046,
+      "targetPassed": false,
+      "host": "chromium"
+    },
+    {
+      "engine": "chromium",
+      "page": "06-editable",
+      "kind": "size",
+      "samples": 50,
+      "medianMs": 177.0,
+      "p95Ms": 192.69999998807907,
+      "targetPassed": false,
+      "host": "chromium"
+    },
+    {
+      "engine": "firefox",
+      "page": "02-seed",
+      "kind": "color",
+      "samples": 50,
+      "medianMs": 279.0,
+      "p95Ms": 281,
+      "targetPassed": false,
+      "host": "firefox"
+    },
+    {
+      "engine": "firefox",
+      "page": "02-seed",
+      "kind": "position",
+      "samples": 50,
+      "medianMs": 279.0,
+      "p95Ms": 281,
+      "targetPassed": false,
+      "host": "firefox"
+    },
+    {
+      "engine": "firefox",
+      "page": "02-seed",
+      "kind": "text",
+      "samples": 50,
+      "medianMs": 280.0,
+      "p95Ms": 297,
+      "targetPassed": false,
+      "host": "firefox"
+    },
+    {
+      "engine": "firefox",
+      "page": "02-seed",
+      "kind": "size",
+      "samples": 50,
+      "medianMs": 279.0,
+      "p95Ms": 285,
+      "targetPassed": false,
+      "host": "firefox"
+    },
+    {
+      "engine": "firefox",
+      "page": "06-editable",
+      "kind": "color",
+      "samples": 50,
+      "medianMs": 453.5,
+      "p95Ms": 662,
+      "targetPassed": false,
+      "host": "firefox"
+    },
+    {
+      "engine": "firefox",
+      "page": "06-editable",
+      "kind": "position",
+      "samples": 50,
+      "medianMs": 729.0,
+      "p95Ms": 744,
+      "targetPassed": false,
+      "host": "firefox"
+    },
+    {
+      "engine": "firefox",
+      "page": "06-editable",
+      "kind": "text",
+      "samples": 50,
+      "medianMs": 462.0,
+      "p95Ms": 680,
+      "targetPassed": false,
+      "host": "firefox"
+    },
+    {
+      "engine": "firefox",
+      "page": "06-editable",
+      "kind": "size",
+      "samples": 50,
+      "medianMs": 729.0,
+      "p95Ms": 746,
+      "targetPassed": false,
+      "host": "firefox"
+    },
+    {
+      "engine": "webkit",
+      "page": "02-seed",
+      "kind": "color",
+      "samples": 50,
+      "medianMs": 93.0,
+      "p95Ms": 95,
+      "targetPassed": true,
+      "host": "webkit"
+    },
+    {
+      "engine": "webkit",
+      "page": "02-seed",
+      "kind": "position",
+      "samples": 50,
+      "medianMs": 94.0,
+      "p95Ms": 95,
+      "targetPassed": true,
+      "host": "webkit"
+    },
+    {
+      "engine": "webkit",
+      "page": "02-seed",
+      "kind": "text",
+      "samples": 50,
+      "medianMs": 93.0,
+      "p95Ms": 94,
+      "targetPassed": true,
+      "host": "webkit"
+    },
+    {
+      "engine": "webkit",
+      "page": "02-seed",
+      "kind": "size",
+      "samples": 50,
+      "medianMs": 93.0,
+      "p95Ms": 109,
+      "targetPassed": true,
+      "host": "webkit"
+    },
+    {
+      "engine": "webkit",
+      "page": "06-editable",
+      "kind": "color",
+      "samples": 50,
+      "medianMs": 125.0,
+      "p95Ms": 141,
+      "targetPassed": false,
+      "host": "webkit"
+    },
+    {
+      "engine": "webkit",
+      "page": "06-editable",
+      "kind": "position",
+      "samples": 50,
+      "medianMs": 157.0,
+      "p95Ms": 172,
+      "targetPassed": false,
+      "host": "webkit"
+    },
+    {
+      "engine": "webkit",
+      "page": "06-editable",
+      "kind": "text",
+      "samples": 50,
+      "medianMs": 139.0,
+      "p95Ms": 142,
+      "targetPassed": false,
+      "host": "webkit"
+    },
+    {
+      "engine": "webkit",
+      "page": "06-editable",
+      "kind": "size",
+      "samples": 50,
+      "medianMs": 157.0,
+      "p95Ms": 161,
+      "targetPassed": false,
+      "host": "webkit"
+    },
+    {
+      "host": "VS Code",
+      "page": "02-seed",
+      "kind": "color",
+      "samples": 50,
+      "medianMs": 104.0,
+      "p95Ms": 111,
+      "targetPassed": false
+    },
+    {
+      "host": "VS Code",
+      "page": "02-seed",
+      "kind": "position",
+      "samples": 50,
+      "medianMs": 105.0,
+      "p95Ms": 112,
+      "targetPassed": false
+    },
+    {
+      "host": "VS Code",
+      "page": "02-seed",
+      "kind": "text",
+      "samples": 50,
+      "medianMs": 113.5,
+      "p95Ms": 123,
+      "targetPassed": false
+    },
+    {
+      "host": "VS Code",
+      "page": "02-seed",
+      "kind": "size",
+      "samples": 50,
+      "medianMs": 113.0,
+      "p95Ms": 125,
+      "targetPassed": false
+    },
+    {
+      "host": "VS Code",
+      "page": "06-editable",
+      "kind": "color",
+      "samples": 50,
+      "medianMs": 168.5,
+      "p95Ms": 182,
+      "targetPassed": false
+    },
+    {
+      "host": "VS Code",
+      "page": "06-editable",
+      "kind": "position",
+      "samples": 50,
+      "medianMs": 204.5,
+      "p95Ms": 227,
+      "targetPassed": false
+    },
+    {
+      "host": "VS Code",
+      "page": "06-editable",
+      "kind": "text",
+      "samples": 50,
+      "medianMs": 174.0,
+      "p95Ms": 192,
+      "targetPassed": false
+    },
+    {
+      "host": "VS Code",
+      "page": "06-editable",
+      "kind": "size",
+      "samples": 50,
+      "medianMs": 204.5,
+      "p95Ms": 219,
+      "targetPassed": false
+    }
+  ],
+  "documents": [
+    {
+      "host": "chromium",
+      "kind": "lcss-heading",
+      "samples": 50,
+      "directoryMs": {
+        "median": 90.1499999910593,
+        "p95": 96.30000001192093
+      },
+      "currentMs": {
+        "median": 158.1000000089407,
+        "p95": 166.60000002384186
+      },
+      "documentMs": {
+        "median": 8819.40000000596,
+        "p95": 8975.799999982119
+      }
+    },
+    {
+      "host": "chromium",
+      "kind": "lcss-curves",
+      "samples": 50,
+      "directoryMs": {
+        "median": 2412.0999999791384,
+        "p95": 2445.800000011921
+      },
+      "currentMs": {
+        "median": 2526.3499999940395,
+        "p95": 2569.0999999940395
+      },
+      "documentMs": {
+        "median": 11468.5,
+        "p95": 11590.700000017881
+      }
+    },
+    {
+      "host": "chromium",
+      "kind": "laydoc-name",
+      "samples": 50,
+      "directoryMs": {
+        "median": 35.25,
+        "p95": 36.599999994039536
+      },
+      "currentMs": {
+        "median": 33.29999998211861,
+        "p95": 34.599999994039536
+      },
+      "documentMs": {
+        "median": 35.30000001192093,
+        "p95": 36.80000001192093
+      }
+    },
+    {
+      "host": "chromium",
+      "kind": "laydoc-reorder",
+      "samples": 50,
+      "directoryMs": {
+        "median": 35.74999998509884,
+        "p95": 37
+      },
+      "currentMs": {
+        "median": 33.95000000298023,
+        "p95": 35.099999994039536
+      },
+      "documentMs": {
+        "median": 35.8999999910593,
+        "p95": 37.099999994039536
+      }
+    },
+    {
+      "host": "chromium",
+      "kind": "laydoc-add",
+      "samples": 50,
+      "directoryMs": {
+        "median": 34.599999994039536,
+        "p95": 35.70000001788139
+      },
+      "currentMs": {
+        "median": 32.849999994039536,
+        "p95": 33.400000005960464
+      },
+      "documentMs": {
+        "median": 212.5,
+        "p95": 218.90000000596046
+      }
+    },
+    {
+      "host": "chromium",
+      "kind": "laydoc-remove",
+      "samples": 50,
+      "directoryMs": {
+        "median": 47.900000005960464,
+        "p95": 50.099999994039536
+      },
+      "currentMs": {
+        "median": 46.150000005960464,
+        "p95": 48.79999998211861
+      },
+      "documentMs": {
+        "median": 48.0,
+        "p95": 50.30000001192093
+      }
+    },
+    {
+      "host": "firefox",
+      "kind": "lcss-heading",
+      "samples": 50,
+      "directoryMs": {
+        "median": 291.0,
+        "p95": 300
+      },
+      "currentMs": {
+        "median": 471.0,
+        "p95": 486
+      },
+      "documentMs": {
+        "median": 26826.0,
+        "p95": 30620
+      }
+    },
+    {
+      "host": "firefox",
+      "kind": "lcss-curves",
+      "samples": 50,
+      "directoryMs": {
+        "median": 9701.0,
+        "p95": 9784
+      },
+      "currentMs": {
+        "median": 9993.5,
+        "p95": 19878
+      },
+      "documentMs": {
+        "median": 45673.5,
+        "p95": 55170
+      }
+    },
+    {
+      "host": "firefox",
+      "kind": "laydoc-name",
+      "samples": 50,
+      "directoryMs": {
+        "median": 37.0,
+        "p95": 39
+      },
+      "currentMs": {
+        "median": 36.0,
+        "p95": 38
+      },
+      "documentMs": {
+        "median": 37.0,
+        "p95": 39
+      }
+    },
+    {
+      "host": "firefox",
+      "kind": "laydoc-reorder",
+      "samples": 50,
+      "directoryMs": {
+        "median": 39.0,
+        "p95": 42
+      },
+      "currentMs": {
+        "median": 38.0,
+        "p95": 40
+      },
+      "documentMs": {
+        "median": 39.0,
+        "p95": 43
+      }
+    },
+    {
+      "host": "firefox",
+      "kind": "laydoc-add",
+      "samples": 50,
+      "directoryMs": {
+        "median": 37.0,
+        "p95": 40
+      },
+      "currentMs": {
+        "median": 36.0,
+        "p95": 37
+      },
+      "documentMs": {
+        "median": 1114.0,
+        "p95": 1129
+      }
+    },
+    {
+      "host": "firefox",
+      "kind": "laydoc-remove",
+      "samples": 50,
+      "directoryMs": {
+        "median": 65.0,
+        "p95": 68
+      },
+      "currentMs": {
+        "median": 63.0,
+        "p95": 67
+      },
+      "documentMs": {
+        "median": 65.0,
+        "p95": 68
+      }
+    },
+    {
+      "host": "webkit",
+      "kind": "lcss-heading",
+      "samples": 50,
+      "directoryMs": {
+        "median": 92.0,
+        "p95": 110
+      },
+      "currentMs": {
+        "median": 144.0,
+        "p95": 158
+      },
+      "documentMs": {
+        "median": 8654.0,
+        "p95": 8855
+      }
+    },
+    {
+      "host": "webkit",
+      "kind": "lcss-curves",
+      "samples": 50,
+      "directoryMs": {
+        "median": 2419.5,
+        "p95": 2453
+      },
+      "currentMs": {
+        "median": 2520.0,
+        "p95": 2550
+      },
+      "documentMs": {
+        "median": 11478.0,
+        "p95": 11741
+      }
+    },
+    {
+      "host": "webkit",
+      "kind": "laydoc-name",
+      "samples": 50,
+      "directoryMs": {
+        "median": 36.0,
+        "p95": 38
+      },
+      "currentMs": {
+        "median": 34.0,
+        "p95": 35
+      },
+      "documentMs": {
+        "median": 36.0,
+        "p95": 38
+      }
+    },
+    {
+      "host": "webkit",
+      "kind": "laydoc-reorder",
+      "samples": 50,
+      "directoryMs": {
+        "median": 37.0,
+        "p95": 38
+      },
+      "currentMs": {
+        "median": 35.0,
+        "p95": 36
+      },
+      "documentMs": {
+        "median": 37.0,
+        "p95": 38
+      }
+    },
+    {
+      "host": "webkit",
+      "kind": "laydoc-add",
+      "samples": 50,
+      "directoryMs": {
+        "median": 35.0,
+        "p95": 37
+      },
+      "currentMs": {
+        "median": 34.0,
+        "p95": 34
+      },
+      "documentMs": {
+        "median": 266.5,
+        "p95": 276
+      }
+    },
+    {
+      "host": "webkit",
+      "kind": "laydoc-remove",
+      "samples": 50,
+      "directoryMs": {
+        "median": 48.0,
+        "p95": 50
+      },
+      "currentMs": {
+        "median": 46.0,
+        "p95": 48
+      },
+      "documentMs": {
+        "median": 48.0,
+        "p95": 51
+      }
+    },
+    {
+      "host": "VS Code",
+      "kind": "lcss-heading",
+      "samples": 50,
+      "directoryReceivedMs": {
+        "median": 111.0,
+        "p95": 135
+      },
+      "currentMs": {
+        "median": 197.5,
+        "p95": 213
+      },
+      "documentMs": {
+        "median": 4887.5,
+        "p95": 4956
+      }
+    },
+    {
+      "host": "VS Code",
+      "kind": "lcss-curves",
+      "samples": 50,
+      "directoryReceivedMs": {
+        "median": 1722.5,
+        "p95": 1782
+      },
+      "currentMs": {
+        "median": 1865.5,
+        "p95": 1927
+      },
+      "documentMs": {
+        "median": 6554.5,
+        "p95": 6644
+      }
+    },
+    {
+      "host": "VS Code",
+      "kind": "laydoc-name",
+      "samples": 50,
+      "directoryReceivedMs": {
+        "median": 109.0,
+        "p95": 115
+      },
+      "currentMs": {
+        "median": 193.5,
+        "p95": 205
+      },
+      "documentMs": {
+        "median": 4868.0,
+        "p95": 4894
+      }
+    },
+    {
+      "host": "VS Code",
+      "kind": "laydoc-reorder",
+      "samples": 50,
+      "directoryReceivedMs": {
+        "median": 106.0,
+        "p95": 118
+      },
+      "currentMs": {
+        "median": 191.0,
+        "p95": 203
+      },
+      "documentMs": {
+        "median": 4902.5,
+        "p95": 5561
+      }
+    },
+    {
+      "host": "VS Code",
+      "kind": "laydoc-add",
+      "samples": 50,
+      "directoryReceivedMs": {
+        "median": 110.5,
+        "p95": 124
+      },
+      "currentMs": {
+        "median": 195.0,
+        "p95": 210
+      },
+      "documentMs": {
+        "median": 4927.0,
+        "p95": 4980
+      }
+    },
+    {
+      "host": "VS Code",
+      "kind": "laydoc-remove",
+      "samples": 50,
+      "directoryReceivedMs": {
+        "median": 109.5,
+        "p95": 115
+      },
+      "currentMs": {
+        "median": 197.0,
+        "p95": 207
+      },
+      "documentMs": {
+        "median": 4892.0,
+        "p95": 4956
+      }
+    }
+  ],
+  "memory": [
+    {
+      "host": "chromium",
+      "peakWasmRetainedBytes": 744554496,
+      "peakDerivationCacheBytes": 230497265,
+      "last100CapacityConstant": true
+    },
+    {
+      "host": "firefox",
+      "peakWasmRetainedBytes": 744357888,
+      "peakDerivationCacheBytes": 230498929,
+      "last100CapacityConstant": true
+    },
+    {
+      "host": "webkit",
+      "peakWasmRetainedBytes": 744816640,
+      "peakDerivationCacheBytes": 230497265,
+      "last100CapacityConstant": true
+    }
+  ],
+  "documentEndpoints": {
+    "browser": "directory DOM update / current page presentation / all page compilation complete",
+    "VS Code": "directory received by host / current page presentation / deck and resources acknowledged"
+  }
+}

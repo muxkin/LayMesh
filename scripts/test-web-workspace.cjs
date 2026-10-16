@@ -407,6 +407,7 @@ const run = (args) =>
             ] && window.__LAYMESH_WEB.metrics.compiles > 0,
         ),
       );
+      await page.waitForFunction(() => document.querySelector("#app").dataset.documentState === "ready");
       const count = await page.evaluate(
         () => window.__LAYMESH_WEB.metrics.compiles,
       );
@@ -414,12 +415,10 @@ const run = (args) =>
         .locator("#import")
         .setInputFiles(path.join(root, "examples/effects/alpha-ring.png"));
       await page.getByRole("button", { name: "替换", exact: true }).click();
-      await page.waitForFunction(
-        (n) =>
-          window.__LAYMESH_WEB.metrics.compiles > n &&
-          document.querySelector("#app").dataset.compileState === "ready",
-        count,
-      );
+      await page.evaluate(() => __LAYMESH_WEB.workspace.whenIdle());
+      await page.waitForFunction(() => document.querySelector("#app").dataset.documentState === "ready");
+      assert.equal(await page.evaluate(() => __LAYMESH_WEB.metrics.compiles), count,
+        "Replacing an image with identical bytes reuses the compiled pages");
       await page
         .locator('.tree-file[title="/project/presentation.lay"]')
         .click();

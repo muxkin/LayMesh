@@ -44,7 +44,10 @@ pub fn inspect_scene(scene: &Scene) -> J {
                 0.,
             ],
         );
-        let children = n["children"].as_array().cloned().unwrap_or_default();
+        let children = n["children"]
+            .as_array()
+            .map(Vec::as_slice)
+            .unwrap_or_default();
         let mut clips = inherited_clips.to_vec();
         if n["clipPath"].is_object() {
             clips.push(json!({"transform":m,"path":n["clipPath"]}));

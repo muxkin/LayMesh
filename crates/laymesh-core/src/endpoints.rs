@@ -11,8 +11,10 @@ pub struct InkLayer {
 }
 pub fn head_args(v: &V) -> Option<Args> {
     match v {
-        V::Map(m) if m.get("__head").is_some_and(|v| matches!(v, V::Bool(true))) => Some(m.clone()),
-        V::Object(o) if o.borrow().kind == "head" => Some(o.borrow().args.clone()),
+        V::Map(m) if m.get("__head").is_some_and(|v| matches!(v, V::Bool(true))) => {
+            Some((**m).clone())
+        }
+        V::Object(o) if o.borrow().kind == "head" => Some((*o.borrow().args).clone()),
         _ => None,
     }
 }
@@ -64,7 +66,7 @@ pub fn css_head(s: &str, file: &str, l: Loc) -> Result<V> {
                     })?,
                 );
             }
-            return Ok(V::Map(out));
+            return Ok(V::Map(out.into()));
         }
     }
     Err(crate::Diagnostic::new(

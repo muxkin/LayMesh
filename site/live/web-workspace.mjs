@@ -717,7 +717,10 @@ export async function createWorkspace({
     } finally {
       restoring = false;
     }
-    if (compile) editor.schedule(true);
+    // An incomplete dependency graph may not know about a newly added file
+    // yet. Reconcile the latest snapshot after a transaction in that state.
+    if (compile || ["pending", "error"].includes(root.dataset.documentState))
+      editor.schedule(true);
   }
   async function choose(title, message, options, { value } = {}) {
     const d = node("dialog", "workspace-dialog");

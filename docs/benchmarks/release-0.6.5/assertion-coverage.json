@@ -1,0 +1,14 @@
+{
+  "baseline_commit": "78db22d",
+  "baseline_tests": 183,
+  "assertion_call_sites": 891,
+  "mapped_sites": 891,
+  "unmapped_sites": 0,
+  "referenced_tests": 156,
+  "execution_verified": true,
+  "status": "passed",
+  "unmapped_by_file": {},
+  "unmapped": [],
+  "errors": [],
+  "boundary": "Source-qualified assertion mapping and passing test execution; baseline parameter loops remain explicit test responsibilities. Compiler replay is separate."
+}

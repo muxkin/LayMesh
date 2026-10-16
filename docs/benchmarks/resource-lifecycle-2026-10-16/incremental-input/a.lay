@@ -1,0 +1,4 @@
+import { tile } from "shared.lay"
+p=canvas(size=(60mm,40mm),background="#ffffff",stylesheet="theme.lcss")
+p.add(tile(),offset=(8mm,8mm))
+p.add(image(src="pixel.svg"),size=(3mm,3mm),offset=(40mm,30mm))

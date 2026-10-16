@@ -9,13 +9,18 @@ fn node(image: image::DynamicImage) -> serde_json::Value {
     json!({"kind":"image","mime":"image/png","rasterKey":key,"width":25.4,"height":12.7,"intrinsicWidth":width,"intrinsicHeight":height,"fit":"contain","x":0,"y":0})
 }
 fn scene(n: serde_json::Value) -> laymesh_core::model::Scene {
+    // This fixture constructs an image node outside the compiler. Own its
+    // pixels until the synthetic scene has registered its node references.
+    let pixels = n["rasterKey"].as_str().and_then(asset_cache::pixels);
     let mut s = compile_source(
         "page=canvas(size=(25.4mm,12.7mm))",
         "/policy.lay",
         Host::default(),
     )
     .unwrap();
-    s.nodes = vec![n];
+    s.nodes = vec![n.into()];
+    asset_cache::retain_nodes(&s.nodes);
+    drop(pixels);
     s
 }
 fn photo() -> image::DynamicImage {
@@ -50,8 +55,7 @@ fn preview_uses_full_resolution_jpeg_and_only_actual_alpha_uses_webp() {
     let mut s = scene(node(photo()));
     s.nodes.push(s.nodes[0].clone());
     let settings = config::PreviewSettings {
-        processing_memory_mb: 1,
-        image_threads: 2,
+        parallelism: 2,
         ..Default::default()
     };
     let (svg, r) = preview_assets::frame(&s, &dir, &settings).unwrap();
@@ -204,7 +208,7 @@ fn pdf_content_choice_depth_alpha_direct_jpeg_and_downsample() {
     );
     let jpeg = policy::jpeg(&photo(), 77).unwrap();
     asset_cache::register_jpeg(s.nodes[0]["rasterKey"].as_str().unwrap(), &jpeg);
-    s.nodes[0]["sourceJpegHash"] = json!(asset_cache::digest(&jpeg));
+    std::sync::Arc::make_mut(&mut s.nodes[0])["sourceJpegHash"] = json!(asset_cache::digest(&jpeg));
     let optimized = policy::pdf_scene(&s, &forced).unwrap();
     use base64::Engine;
     assert_eq!(
@@ -213,7 +217,7 @@ fn pdf_content_choice_depth_alpha_direct_jpeg_and_downsample() {
             .unwrap(),
         jpeg
     );
-    s.nodes[0]["sourceJpegHash"] = json!("other-source");
+    std::sync::Arc::make_mut(&mut s.nodes[0])["sourceJpegHash"] = json!("other-source");
     assert_ne!(
         base64::engine::general_purpose::STANDARD
             .decode(
@@ -226,7 +230,7 @@ fn pdf_content_choice_depth_alpha_direct_jpeg_and_downsample() {
     );
     let mut grouped = s.clone();
     grouped.nodes = vec![
-        json!({"kind":"group","width":50.8,"height":25.4,"contentWidth":25.4,"contentHeight":12.7,"children":s.nodes}),
+        json!({"kind":"group","width":50.8,"height":25.4,"contentWidth":25.4,"contentHeight":12.7,"children":s.nodes}).into(),
     ];
     let optimized = policy::pdf_scene(
         &grouped,
@@ -285,6 +289,12 @@ fn configuration_precedence_and_changed_defaults() {
         Some(600.)
     );
     assert_eq!(scene(node(photo())).export_dpi, 1200.);
-    assert!(config::preview_settings(&json!({}), &json!({"processing_memory_mb":0})).is_err());
+    assert!(
+        config::preview_settings(
+            &json!({}),
+            &json!({"processing_memory_mb":0,"cache_mb":1,"image_threads":1})
+        )
+        .is_ok()
+    );
     std::fs::remove_dir_all(dir).unwrap();
 }

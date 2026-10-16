@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {applyDisplayUpdate} from '../site/live/display-update.mjs';
+const path={name:'path',opacity:1,transform:[1,0,0,1,0,0],effects:[],hint:null,semantic:null,kind:{kind:'path',path:[{MoveTo:[0,0]},{LineTo:[3,4]}],fill:{kind:'solid',rgba:[1,0,0,1]},stroke:null,even_odd:false}};
+const group={...path,name:'group',kind:{kind:'group',children:[path,{...path,name:'second'}],clip:null,mask:null}};
+const list={schemaVersion:1,width:50,height:50,animation:null,pageTransition:null,nodes:[group,path],resources:{}};
+const update={...list,nodes:[],roots:null,resources:null,properties:[{path:[0],values:{transform:[1,0,0,1,3,4]}},{path:[0,1],values:{'kind.fill':{kind:'solid',rgba:[0,1,0,1]}}}],structure:[{parent:[0],start:0,delete:2,insert:[{existing:1},{new:{...path,name:'third'}},{existing:0}]}]};
+const next=applyDisplayUpdate(list,update);
+assert.deepEqual(next.nodes[0].transform,[1,0,0,1,3,4]);
+assert.deepEqual(next.nodes[0].kind.children.map(n=>n.name),['second','third','path']);
+assert.equal(next.nodes[1],path);assert.equal(next.nodes[0].kind.children[2],path);
+assert.equal(next.nodes[0].kind.children[0].kind.path,path.kind.path);
+assert.equal(list.nodes[0],group);assert.equal(group.kind.children.length,2);
+assert.deepEqual(group.transform,[1,0,0,1,0,0]);
+for(const insert of [[{existing:2}],[{existing:1},{existing:1}]])assert.throws(()=>applyDisplayUpdate(list,{...update,structure:[{...update.structure[0],insert}]}));
+assert.throws(()=>applyDisplayUpdate(list,{...update,properties:[{path:[0],values:{'kind.children':[]}}]}));
+console.log('Display updates preserve geometry identity, child references and immutable baselines.');

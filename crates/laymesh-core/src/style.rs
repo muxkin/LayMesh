@@ -80,7 +80,7 @@ fn matches(selector: &str, kind: &str, args: &Args, parent: &Args) -> bool {
             chain.push(element(&kind, &p));
         }
         current = match p.get("__style_parent") {
-            Some(V::Map(v)) => Some(v.clone()),
+            Some(V::Map(v)) => Some((**v).clone()),
             _ => None,
         };
     }
@@ -391,6 +391,123 @@ fn scalar_value(key: &str, s: &str, file: &str, l: Loc) -> Result<V> {
     }
 }
 
+#[derive(Default)]
+pub(crate) struct StyleCache {
+    values: BTreeMap<String, (Args, f64, Args)>,
+    dependencies: BTreeMap<String, String>,
+}
+impl StyleCache {
+    pub fn clear(&mut self) {
+        self.values.clear();
+        self.dependencies.clear();
+    }
+}
+
+/// A selector query also observes rules that become applicable after an edit.
+/// Matching declaration order is retained; unrelated rules are not inputs.
+#[derive(Clone)]
+pub(crate) struct StyleRead {
+    pub key: String,
+    kind: String,
+    original: Args,
+    parent: Args,
+    part: Option<String>,
+    part_name: Option<String>,
+    file: String,
+    fingerprint: String,
+    explicit: std::collections::BTreeSet<String>,
+    layout: serde_json::Value,
+}
+pub(crate) fn appearance_property(key: &str) -> bool {
+    matches!(
+        key,
+        "fill"
+            | "background"
+            | "color"
+            | "border_color"
+            | "line_color"
+            | "opacity"
+            | "border_opacity"
+            | "line_opacity"
+    )
+}
+impl StyleRead {
+    fn layout_signature(&self, output: &Args) -> serde_json::Value {
+        args_json(
+            &output
+                .iter()
+                .filter(|(key, _)| {
+                    !key.starts_with("__")
+                        && !self.explicit.contains(*key)
+                        && !appearance_property(key)
+                })
+                .map(|(key, value)| (key.clone(), value.clone()))
+                .collect(),
+        )
+    }
+    pub fn paint_only_change(&self, engine: &Engine) -> bool {
+        crate::session::queries::without_recording(|| {
+            engine.styled_part(&self.kind, &self.original, &self.parent, self.part.as_deref(), self.part_name.as_deref())
+                .is_ok_and(|next| !next.values().any(|v|matches!(v,V::Map(a) if a.get("kind").is_some_and(|k|k.as_str()=="imagePaint"))) && self.layout_signature(&next) == self.layout)
+        })
+    }
+    pub fn current(&self, engine: &Engine) -> std::rc::Rc<Self> {
+        let mut read = self.clone();
+        read.fingerprint = self.fingerprint(engine);
+        std::rc::Rc::new(read)
+    }
+    fn fingerprint(&self, engine: &Engine) -> String {
+        if let Some(value) = engine.style_cache.borrow().dependencies.get(&self.key) {
+            return value.clone();
+        }
+        let declarations = engine.matching_style_declarations(
+            &self.kind,
+            &self.original,
+            &self.parent,
+            self.part.as_deref(),
+            self.part_name.as_deref(),
+            &self.file,
+        );
+        let fingerprint = format!(
+            "{:?}",
+            declarations
+                .iter()
+                .map(|(important, priority, specificity, _, _, d)| (
+                    *important,
+                    *priority,
+                    *specificity,
+                    &d.property,
+                    &d.value,
+                    &d.file
+                ))
+                .collect::<Vec<_>>()
+        );
+        let mut cache = engine.style_cache.borrow_mut();
+        {
+            cache
+                .dependencies
+                .insert(self.key.clone(), fingerprint.clone());
+        }
+        fingerprint
+    }
+    pub fn matches(&self, engine: &Engine) -> bool {
+        self.fingerprint == self.fingerprint(engine)
+    }
+    pub fn bytes(&self) -> usize {
+        self.key.len()
+            + self.fingerprint.len()
+            + args_json(&self.original).to_string().len()
+            + args_json(&self.parent).to_string().len()
+            + self.layout.to_string().len()
+            + self
+                .explicit
+                .iter()
+                .map(|key| key.len() + 64)
+                .sum::<usize>()
+            + 512
+    }
+}
+
 impl Engine {
     pub fn stylesheet(&mut self, css: &str, file: &str, origin: Loc) -> Result<()> {
         self.stylesheet_scoped(css, file, origin, None)
@@ -453,6 +570,7 @@ impl Engine {
         }
         self.animation_sheets.push(motion);
         self.styles.extend(parsed);
+        self.style_cache.borrow_mut().clear();
         Ok(())
     }
     fn css_value(&self, key: &str, s: &str, file: &str, l: Loc) -> Result<V> {
@@ -553,31 +671,16 @@ impl Engine {
         scalar_value(key, s, file, l)
     }
 
-    pub fn styled(&self, kind: &str, original: &Args, parent: &Args) -> Result<Args> {
-        self.styled_part(kind, original, parent, None, None)
-    }
-    pub fn styled_part(
-        &self,
+    fn matching_style_declarations<'a>(
+        &'a self,
         kind: &str,
         original: &Args,
         parent: &Args,
         part: Option<&str>,
         part_name: Option<&str>,
-    ) -> Result<Args> {
-        let file = original
-            .get("__style_file")
-            .map(V::as_str)
-            .unwrap_or_else(|| self.file.clone());
-        let mut output: Args = parent
-            .iter()
-            .filter(|(k, _)| INHERITED.contains(&k.as_str()))
-            .map(|(k, v)| (k.clone(), v.clone()))
-            .collect();
-        let mut vars: BTreeMap<String, String> = match parent.get("__style_variables") {
-            Some(V::Map(vars)) => vars.iter().map(|(k, v)| (k.clone(), v.as_str())).collect(),
-            _ => BTreeMap::new(),
-        };
-        let mut ctx = self.css_context(parent);
+        file: &str,
+    ) -> Vec<(bool, bool, usize, usize, usize, &'a StyleDeclaration)> {
+        let ctx = self.css_context(parent);
         let mut declarations = vec![];
         for (order, rule) in self.styles.iter().enumerate() {
             if !crate::css_selectors::scope_applies(
@@ -624,6 +727,109 @@ impl Engine {
                 }
             }
         }
+        declarations
+    }
+    pub fn styled(&self, kind: &str, original: &Args, parent: &Args) -> Result<Args> {
+        self.styled_part(kind, original, parent, None, None)
+    }
+    pub fn styled_part(
+        &self,
+        kind: &str,
+        original: &Args,
+        parent: &Args,
+        part: Option<&str>,
+        part_name: Option<&str>,
+    ) -> Result<Args> {
+        let _profile = crate::session::profile("style");
+        let file = original
+            .get("__style_file")
+            .map(V::as_str)
+            .unwrap_or_else(|| self.file.clone());
+        // Style matching reads class ancestry, inherited/computed properties,
+        // font size and color. Geometry arguments are merged after the cascade
+        // and cannot change its result. Cache this derivation once per context.
+        let selected: Args = ["class", "font_size", "color", "__style_file"]
+            .into_iter()
+            .filter_map(|k| original.get(k).map(|v| (k.into(), v.clone())))
+            .collect();
+        let key = {
+            crate::session::queries::signature(&V::Map(parent.clone().into()))
+                .zip(crate::session::queries::signature(&V::Map(selected.into())))
+                .map(|(parent, selected)| {
+                    json!([
+                        self.styles.len(),
+                        kind,
+                        part,
+                        part_name,
+                        file,
+                        self.css_entry_file,
+                        self.css_viewport,
+                        self.unit,
+                        self.dpi,
+                        parent,
+                        selected
+                    ])
+                    .to_string()
+                })
+        };
+        let observe = |output: &Args| {
+            if crate::session::queries::tracking_styles() {
+                if let Some(key) = &key {
+                    let mut read = StyleRead {
+                        key: key.clone(),
+                        kind: kind.into(),
+                        original: original
+                            .iter()
+                            .filter(|(k, _)| {
+                                matches!(
+                                    k.as_str(),
+                                    "class" | "font_size" | "color" | "__style_file"
+                                )
+                            })
+                            .map(|(k, v)| (k.clone(), v.clone()))
+                            .collect(),
+                        parent: parent.clone(),
+                        part: part.map(str::to_owned),
+                        part_name: part_name.map(str::to_owned),
+                        file: file.clone(),
+                        fingerprint: String::new(),
+                        explicit: original.keys().cloned().collect(),
+                        layout: serde_json::Value::Null,
+                    };
+                    read.fingerprint = read.fingerprint(self);
+                    read.layout = read.layout_signature(output);
+                    crate::session::queries::style(std::rc::Rc::new(read));
+                } else {
+                    crate::session::queries::effect();
+                }
+            }
+        };
+        if let Some(key) = &key {
+            let cached = self.style_cache.borrow().values.get(key).cloned();
+            if let Some((base, root_font, vars)) = cached {
+                let mut output = base;
+                output.extend(original.clone());
+                output.insert("__css_root_font".into(), V::mm(root_font));
+                output.insert("__style_variables".into(), V::Map(vars.into()));
+                output.insert("__style_type".into(), V::text(kind));
+                output.insert("__style_file".into(), V::text(&file));
+                output.insert("__style_parent".into(), V::Map(parent.clone().into()));
+                observe(&output);
+                return Ok(output);
+            }
+        }
+        let mut output: Args = parent
+            .iter()
+            .filter(|(k, _)| INHERITED.contains(&k.as_str()))
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect();
+        let mut vars: BTreeMap<String, String> = match parent.get("__style_variables") {
+            Some(V::Map(vars)) => vars.iter().map(|(k, v)| (k.clone(), v.as_str())).collect(),
+            _ => BTreeMap::new(),
+        };
+        let mut ctx = self.css_context(parent);
+        let mut declarations =
+            self.matching_style_declarations(kind, original, parent, part, part_name, &file);
         declarations.sort_by_key(|(imp, global, spec, order, index, _)| {
             (*imp, *global, *spec, *order, *index)
         });
@@ -712,6 +918,7 @@ impl Engine {
                         expanded.insert(property, long);
                     }
                 }
+                Err(e) if matches!(e.code.as_str(), "E_YIELD" | "E_CANCELLED") => return Err(e),
                 Err(e) => self.css_warning(e),
             }
         }
@@ -743,6 +950,7 @@ impl Engine {
                     ctx.font = value_length(&v, "pt", self.dpi).unwrap_or(ctx.font);
                     output.insert("font_size".into(), v);
                 }
+                Err(e) if matches!(e.code.as_str(), "E_YIELD" | "E_CANCELLED") => return Err(e),
                 Err(e) => self.css_warning(e),
             }
         }
@@ -776,7 +984,13 @@ impl Engine {
                 }
                 // Required transition textures must preserve E_ASSET so the
                 // browser worker can fulfill the compiler's lazy resource request.
-                Err(e) if key.starts_with("_laymesh_transition_texture_") => return Err(e),
+                Err(e)
+                    if matches!(e.code.as_str(), "E_YIELD" | "E_CANCELLED")
+                        || key.starts_with("_laymesh_transition_texture_") =>
+                {
+                    return Err(e);
+                }
+                Err(e) if matches!(e.code.as_str(), "E_YIELD" | "E_CANCELLED") => return Err(e),
                 Err(e) => self.css_warning(e),
             }
         }
@@ -807,6 +1021,15 @@ impl Engine {
                 output.insert("fill".into(), v);
             }
         }
+        if let Some(key) = &key {
+            let variables: Args = vars.iter().map(|(k, v)| (k.clone(), V::text(v))).collect();
+            {
+                let mut cache = self.style_cache.borrow_mut();
+                cache
+                    .values
+                    .insert(key.clone(), (output.clone(), ctx.root_font, variables));
+            }
+        }
         output.extend(original.clone());
         output.insert("__css_root_font".into(), V::mm(ctx.root_font));
         output.insert(
@@ -814,14 +1037,59 @@ impl Engine {
             V::Map(vars.into_iter().map(|(k, v)| (k, V::text(v))).collect()),
         );
         output.insert("__style_type".into(), V::text(kind));
-        output.insert("__style_file".into(), V::text(file));
-        output.insert("__style_parent".into(), V::Map(parent.clone()));
+        output.insert("__style_file".into(), V::text(&file));
+        output.insert("__style_parent".into(), V::Map(parent.clone().into()));
+        observe(&output);
         Ok(output)
     }
 }
 
 impl Engine {
+    /// The cascade reads only these inherited values and class ancestry unless
+    /// an explicit inherit/variable expression can select another property.
+    pub(crate) fn style_parent_inputs(&self, args: &Args) -> Args {
+        let arbitrary = self.styles.iter().any(|r| {
+            r.declarations
+                .iter()
+                .any(|d| d.value.contains("inherit") || d.value.contains("var("))
+        });
+        args.iter()
+            .filter(|(k, _)| {
+                !matches!(
+                    k.as_str(),
+                    "__call_origin" | "__arg_locations" | "__placement_origin"
+                ) && (arbitrary
+                    || INHERITED.contains(&k.as_str())
+                    || matches!(
+                        k.as_str(),
+                        "class"
+                            | "__style_file"
+                            | "__style_type"
+                            | "__css_root_font"
+                            | "__style_parent"
+                            | "__style_variables"
+                    ))
+            })
+            .map(|(k, v)| {
+                (
+                    k.clone(),
+                    if k == "__style_parent" {
+                        if let V::Map(a) = v {
+                            V::Map(self.style_parent_inputs(a).into())
+                        } else {
+                            v.clone()
+                        }
+                    } else {
+                        v.clone()
+                    },
+                )
+            })
+            .collect()
+    }
+}
+impl Engine {
     pub(crate) fn css_warning(&self, mut d: Diagnostic) {
+        crate::session::queries::effect();
         d.code = "W_CSS".into();
         self.css_warnings
             .borrow_mut()
@@ -902,7 +1170,15 @@ impl Engine {
                 "_laymesh_transition_timing_function" => "ease-in-out",
                 _ => s,
             };
-            return Ok(vec![(key.clone(), if matches!(s, "initial" | "revert" | "revert-layer") {initial} else {s}.into())]);
+            return Ok(vec![(
+                key.clone(),
+                if matches!(s, "initial" | "revert" | "revert-layer") {
+                    initial
+                } else {
+                    s
+                }
+                .into(),
+            )]);
         }
         let fail = |m: String| {
             Diagnostic::new(
@@ -1101,18 +1377,32 @@ impl Engine {
         ctx: Context,
         current: &str,
     ) -> Result<V> {
-        if self.page_transition_override.is_some() && crate::page_transition::supported(key) {return Ok(V::Null);}
+        if self.page_transition_override.is_some() && crate::page_transition::supported(key) {
+            return Ok(V::Null);
+        }
         if key.starts_with("_laymesh_transition_texture_") {
-            let path = s.trim().strip_prefix("url(").and_then(|s| s.strip_suffix(')'))
+            let path = s
+                .trim()
+                .strip_prefix("url(")
+                .and_then(|s| s.strip_suffix(')'))
                 .map(|s| s.trim().trim_matches(['\'', '"']))
                 .filter(|s| !s.is_empty() && !s.contains(":") && !s.starts_with("//"))
-                .ok_or_else(|| Diagnostic::new("E_TRANSITION", "Transition texture requires a local image url()", file, loc))?;
+                .ok_or_else(|| {
+                    Diagnostic::new(
+                        "E_TRANSITION",
+                        "Transition texture requires a local image url()",
+                        file,
+                        loc,
+                    )
+                })?;
             let path = resolve(file, path);
             let bytes = self.host.read(&path, file, loc)?;
             let asset = crate::assets::load(&bytes, &path, file, loc)?;
             return Ok(V::from_json(&asset));
         }
-        if crate::page_transition::supported(key) { return Ok(V::text(s)); }
+        if crate::page_transition::supported(key) {
+            return Ok(V::text(s));
+        }
         let fail = |m: String| {
             Diagnostic::new(
                 "W_CSS",

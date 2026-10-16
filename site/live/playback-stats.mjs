@@ -1,6 +1,15 @@
 // Browser refresh callbacks estimate presentation; they cannot prove hardware
 // scan-out. Submission frequency is recorded separately. Hardware acceptance
 // also requires compositor tracing on a real, active 60 Hz display.
+// A worker's rendering step does not prove its placeholder bitmap has reached
+// the owning window. Static previews cross a window rendering step as well.
+export function waitForPresentation(visible=true){
+ if(!visible||document.visibilityState!=='visible')return Promise.resolve(false);
+ return new Promise(resolve=>{
+  let frame;const timer=setTimeout(()=>{cancelAnimationFrame(frame);resolve(false);},250);
+  frame=requestAnimationFrame(()=>{frame=requestAnimationFrame(()=>{clearTimeout(timer);resolve(true);});});
+ });
+}
 export class PlaybackStats {
  constructor(){this.frames=[];this.submissions=[];this.refreshes=[];this.fps=0;this.submissionFps=0;this.missedPercent=0;}
  refresh(now){if(this.lastRefresh&&now-this.lastRefresh<100)this.refreshes.push(now-this.lastRefresh);this.lastRefresh=now;if(this.refreshes.length>120)this.refreshes.shift();}

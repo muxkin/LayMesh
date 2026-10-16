@@ -3,6 +3,8 @@ use crate::{display_list::*, error};
 use laymesh_core::Result;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+mod semantic;
+pub use semantic::{ChildSource, ChildrenUpdate, PropertyUpdate};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -19,6 +21,10 @@ pub struct DisplayUpdate {
     /// Changing root count/order uses an explicit complete root replacement.
     pub roots: Option<Vec<DrawNode>>,
     pub resources: Option<BTreeMap<String, Resource>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub properties: Vec<PropertyUpdate>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub structure: Vec<ChildrenUpdate>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NodeUpdate {
@@ -35,6 +41,8 @@ impl DisplayUpdate {
             height: new.height,
             nodes: Vec::new(),
             roots: None,
+            properties: vec![],
+            structure: vec![],
             resources: (old.resources != new.resources).then(|| new.resources.clone()),
         };
         if old.nodes.len() != new.nodes.len() {
@@ -54,7 +62,10 @@ impl DisplayUpdate {
             || !self.height.is_finite()
             || self.width <= 0.
             || self.height <= 0.
-            || (self.roots.is_some() && !self.nodes.is_empty())
+            || (self.roots.is_some()
+                && (!self.nodes.is_empty()
+                    || !self.properties.is_empty()
+                    || !self.structure.is_empty()))
         {
             return Err(error("无效绘制增量"));
         }
@@ -68,6 +79,7 @@ impl DisplayUpdate {
         for path in paths {
             node_at(&list.nodes, path)?;
         }
+        self.validate_semantic(list)?;
         Ok(())
     }
     pub fn apply(self, list: &mut DisplayList) -> Result<()> {
@@ -82,6 +94,7 @@ impl DisplayUpdate {
         for change in self.nodes {
             *node_at_mut(&mut list.nodes, &change.path) = change.node;
         }
+        Self::apply_semantic(self.properties, self.structure, list);
         if let Some(resources) = self.resources {
             list.resources = resources;
         }

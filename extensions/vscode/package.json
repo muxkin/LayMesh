@@ -1,7 +1,7 @@
 {
   "name": "laymesh-language",
   "displayName": "LayMesh",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "publisher": "Hyacine",
   "description": "%extension.description%",
   "icon": "icon.png",
@@ -107,7 +107,7 @@
         },
         "laymesh.preview.debounceMs": {
           "type": "integer",
-          "default": 100,
+          "default": 30,
           "minimum": 0,
           "maximum": 5000,
           "description": "%config.preview.debounceMs%"
@@ -202,13 +202,6 @@
           "minimum": 1,
           "maximum": 100
         },
-        "laymesh.preview.cacheMb": {
-          "type": "integer",
-          "default": 256,
-          "description": "%config.preview.cacheMb%",
-          "minimum": 1,
-          "maximum": 65536
-        },
         "laymesh.export.pdf.preserve16bit": {
           "type": "boolean",
           "default": true,
@@ -238,20 +231,6 @@
           "minimum": 0,
           "maximum": 6,
           "description": "%config.preview.webpMethod%"
-        },
-        "laymesh.preview.imageThreads": {
-          "type": "integer",
-          "default": 0,
-          "minimum": 0,
-          "maximum": 32,
-          "description": "%config.preview.imageThreads%"
-        },
-        "laymesh.preview.processingMemoryMb": {
-          "type": "integer",
-          "default": 128,
-          "minimum": 1,
-          "maximum": 65536,
-          "description": "%config.preview.processingMemoryMb%"
         },
         "laymesh.export.pngCompression": {
           "type": "string",

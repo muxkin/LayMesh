@@ -6,17 +6,40 @@ use serde::{Deserialize, Serialize};
 pub fn normalize_note(text: &str) -> String {
     let text = text.replace("\r\n", "\n");
     let lines: Vec<_> = text.lines().collect();
-    let first = lines.iter().position(|l| !l.trim().is_empty()).unwrap_or(lines.len());
-    let last = lines.iter().rposition(|l| !l.trim().is_empty()).map_or(first, |i| i + 1);
+    let first = lines
+        .iter()
+        .position(|l| !l.trim().is_empty())
+        .unwrap_or(lines.len());
+    let last = lines
+        .iter()
+        .rposition(|l| !l.trim().is_empty())
+        .map_or(first, |i| i + 1);
     let lines = &lines[first..last];
-    let indent = lines.iter().filter(|l| !l.trim().is_empty())
-        .map(|l| l.chars().take_while(|c| matches!(c, ' ' | '\t')).count()).min().unwrap_or(0);
-    lines.iter().map(|l| l.chars().skip(indent).collect::<String>().trim_end().to_string())
-        .collect::<Vec<_>>().join("\n")
+    let indent = lines
+        .iter()
+        .filter(|l| !l.trim().is_empty())
+        .map(|l| l.chars().take_while(|c| matches!(c, ' ' | '\t')).count())
+        .min()
+        .unwrap_or(0);
+    lines
+        .iter()
+        .map(|l| {
+            l.chars()
+                .skip(indent)
+                .collect::<String>()
+                .trim_end()
+                .to_string()
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Expr {
+    #[serde(skip)]
+    pub identity: u64,
+    #[serde(skip)]
+    pub site: u64,
     pub kind: ExprKind,
     pub loc: Loc,
 }
@@ -37,6 +60,10 @@ pub enum ExprKind {
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Stmt {
+    #[serde(skip)]
+    pub identity: u64,
+    #[serde(skip)]
+    pub revision: u64,
     pub kind: StmtKind,
     pub loc: Loc,
 }
@@ -538,14 +565,21 @@ impl<'a> Parser<'a> {
                 } else if (token.text.starts_with("\"\"\"") || token.text.starts_with("'''"))
                     && matches!(&e.kind, ExprKind::String(_, _, false))
                 {
-                    let ExprKind::String(text, _, _) = e.kind else { unreachable!() };
+                    let ExprKind::String(text, _, _) = e.kind else {
+                        unreachable!()
+                    };
                     StmtKind::Note(text)
                 } else {
                     StmtKind::Expr(e)
                 }
             }
         };
-        Ok(Stmt { kind, loc: at })
+        Ok(Stmt {
+            identity: 0,
+            revision: 0,
+            kind,
+            loc: at,
+        })
     }
     fn expr(&mut self, min: u8) -> Result<Expr> {
         self.depth += 1;
@@ -662,12 +696,19 @@ impl<'a> Parser<'a> {
                 }
             }
         };
-        let mut left = Expr { kind, loc: at };
+        let mut left = Expr {
+            identity: 0,
+            site: 0,
+            kind,
+            loc: at,
+        };
         loop {
             if self.eat("[") {
                 let index = self.expr(0)?;
                 self.need("]")?;
                 left = Expr {
+                    identity: 0,
+                    site: 0,
                     kind: ExprKind::Index(Box::new(left), Box::new(index)),
                     loc: at,
                 };
@@ -690,11 +731,15 @@ impl<'a> Parser<'a> {
                     }
                     self.need(")")?;
                     left = Expr {
+                        identity: 0,
+                        site: 0,
                         kind: ExprKind::Method(Box::new(left), name, args),
                         loc: at,
                     };
                 } else {
                     left = Expr {
+                        identity: 0,
+                        site: 0,
                         kind: ExprKind::Member(Box::new(left), name),
                         loc: at,
                     };
@@ -723,6 +768,8 @@ impl<'a> Parser<'a> {
             }
             let right = self.expr(p + 1)?;
             left = Expr {
+                identity: 0,
+                site: 0,
                 kind: ExprKind::Binary(op.text, Box::new(left), Box::new(right)),
                 loc: op.loc,
             };
@@ -740,6 +787,32 @@ pub fn parse(s: &str, file: &str) -> Result<Vec<Stmt>> {
     }
     .stmts(false)
 }
+/// Parse a source region while retaining locations in its complete file.
+pub(crate) fn parse_region(s: &str, file: &str, origin: Loc) -> Result<Vec<Stmt>> {
+    fn shift(loc: &mut Loc, origin: Loc) {
+        if loc.line == 1 {
+            loc.column += origin.column - 1;
+        }
+        loc.line += origin.line - 1;
+        loc.offset += origin.offset;
+    }
+    let mut tokens = tokenize(s, file).map_err(|mut e| {
+        shift(&mut e.loc, origin);
+        e
+    })?;
+    for token in &mut tokens {
+        shift(&mut token.loc, origin);
+        token.end += origin.offset;
+    }
+    Parser {
+        ts: tokens,
+        i: 0,
+        file,
+        depth: 0,
+    }
+    .stmts(false)
+}
+
 pub fn expression(s: &str, file: &str) -> Result<Expr> {
     let mut p = Parser {
         ts: tokenize(s, file)?,

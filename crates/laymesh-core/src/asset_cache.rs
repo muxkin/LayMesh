@@ -17,6 +17,9 @@ pub fn preview_mode(value: bool) {
     ACTIVE.with(|v| v.borrow_mut().clear());
     ACTIVE_INPUTS.with(|v| v.borrow_mut().clear());
     PREVIEW.set(value);
+    if !value {
+        prune();
+    }
 }
 pub fn is_preview() -> bool {
     PREVIEW.get()
@@ -40,7 +43,7 @@ struct Cache {
     inputs: HashMap<String, Value>,
     sources: HashMap<String, SourceEntry>,
     tick: u64,
-    budget: usize,
+    owners: HashMap<usize, (std::sync::Weak<Value>, Vec<String>)>,
 }
 static CACHE: LazyLock<Mutex<Cache>> = LazyLock::new(|| {
     Mutex::new(Cache {
@@ -48,60 +51,76 @@ static CACHE: LazyLock<Mutex<Cache>> = LazyLock::new(|| {
         inputs: HashMap::new(),
         sources: HashMap::new(),
         tick: 0,
-        budget: 256 * 1024 * 1024,
+        owners: HashMap::new(),
     })
 });
-fn bytes(e: &Entry) -> usize {
-    e.pixels.as_bytes().len()
-        + e.png.as_ref().map_or(0, |v| v.len())
-        + e.jpeg.as_ref().map_or(0, |v| v.len())
-}
-fn source_budget(c: &Cache) -> usize {
-    (c.budget / 8).min(32 * 1024 * 1024)
-}
-fn source_bytes(c: &Cache) -> usize {
-    c.sources.values().map(|s| s.bytes.len()).sum()
-}
 fn trim(c: &mut Cache, keep: &str) {
-    // Encoded source snapshots share the pixel-cache budget. Bound both bytes
-    // and paths so many tiny inputs cannot grow this lookup indefinitely.
-    while source_bytes(c) > source_budget(c) || c.sources.len() > 128 {
-        let oldest = c
-            .sources
-            .iter()
-            .min_by_key(|(_, s)| s.tick)
-            .map(|(p, _)| p.clone());
-        if let Some(path) = oldest {
-            c.sources.remove(&path);
-        } else {
-            break;
-        }
-    }
-    let pixel_budget = c.budget.saturating_sub(source_bytes(c));
-    while c.entries.values().map(bytes).sum::<usize>() > pixel_budget && c.entries.len() > 1 {
-        let oldest = c
-            .entries
-            .iter()
-            .filter(|(k, _)| k.as_str() != keep)
-            .min_by_key(|(_, e)| e.tick)
-            .map(|(k, _)| k.clone());
-        if let Some(key) = oldest {
-            c.entries.remove(&key);
-        } else {
-            break;
-        }
-    }
-    c.inputs.retain(|_, v| {
-        v.get("rasterKey")
-            .and_then(Value::as_str)
-            .is_some_and(|k| c.entries.contains_key(k))
+    c.owners.retain(|_, (owner, _)| owner.strong_count() > 0);
+    let live: std::collections::HashSet<_> = c
+        .owners
+        .values()
+        .flat_map(|(_, keys)| keys.iter().cloned())
+        .collect();
+    c.entries.retain(|key, value| {
+        key == keep || live.contains(key) || Arc::strong_count(&value.pixels) > 1
     });
+    c.inputs.retain(|_, value| {
+        value["rasterKey"]
+            .as_str()
+            .is_some_and(|key| c.entries.contains_key(key))
+    });
+    c.sources
+        .retain(|_, value| c.inputs.contains_key(&value.key));
 }
-pub fn set_budget(mib: usize) {
-    let mut c = CACHE.lock().unwrap();
-    c.budget = mib.saturating_mul(1024 * 1024);
-    trim(&mut c, "");
+pub fn prune() {
+    trim(&mut CACHE.lock().unwrap(), "");
 }
+pub fn finish_compilation() {
+    if !is_preview() {
+        ACTIVE.with(|v| v.borrow_mut().clear());
+    }
+    prune();
+}
+pub fn retain_nodes(nodes: &[Arc<Value>]) {
+    fn keys(node: &Value, out: &mut Vec<String>) {
+        match node {
+            Value::Object(m) => {
+                if let Some(key) = m.get("rasterKey").and_then(Value::as_str) {
+                    out.push(key.into());
+                }
+                for value in m.values() {
+                    if value.is_object() || value.is_array() {
+                        keys(value, out);
+                    }
+                }
+            }
+            Value::Array(a) => {
+                for value in a {
+                    keys(value, out);
+                }
+            }
+            _ => {}
+        }
+    }
+    let mut cache = CACHE.lock().unwrap();
+    for node in nodes {
+        let id = Arc::as_ptr(node) as usize;
+        if cache
+            .owners
+            .get(&id)
+            .is_some_and(|(old, _)| old.upgrade().is_some_and(|old| Arc::ptr_eq(&old, node)))
+        {
+            continue;
+        }
+        let mut refs = vec![];
+        keys(node, &mut refs);
+        if !refs.is_empty() {
+            cache.owners.insert(id, (Arc::downgrade(node), refs));
+        }
+    }
+}
+/// Kept for hosts built against the previous API; no allocation quota is applied.
+pub fn set_budget(_mib: usize) {}
 pub fn insert(image: DynamicImage) -> String {
     let mut hash = Sha256::new();
     hash.update(image.width().to_le_bytes());
@@ -121,7 +140,12 @@ pub fn insert(image: DynamicImage) -> String {
             tick,
         })
         .tick = tick;
-    trim(&mut c, &key);
+    // Pin new pixels until the current compilation has registered its scene.
+    // Other compiler threads may collect their own obsolete scenes meanwhile.
+    ACTIVE.with(|v| {
+        v.borrow_mut()
+            .insert(key.clone(), c.entries[&key].pixels.clone());
+    });
     key
 }
 pub fn pixels(key: &str) -> Option<Arc<DynamicImage>> {
@@ -144,7 +168,6 @@ pub fn register_jpeg(key: &str, bytes: &[u8]) {
     if let Some(e) = c.entries.get_mut(key) {
         e.jpeg = Some(Arc::new(bytes.to_vec()));
     }
-    trim(&mut c, key);
 }
 pub fn png(key: &str) -> Result<Arc<Vec<u8>>> {
     if let Some(data) = CACHE
@@ -168,7 +191,6 @@ pub fn png(key: &str) -> Result<Arc<Vec<u8>>> {
     if let Some(e) = c.entries.get_mut(key) {
         e.png = Some(data.clone());
     }
-    trim(&mut c, key);
     Ok(data)
 }
 pub fn asset(key: &str) -> Result<Value> {
@@ -211,7 +233,7 @@ pub fn input_key(bytes: &[u8], path: &str) -> String {
     let key = format!("{:x}", h.finalize());
     if preview {
         let mut c = CACHE.lock().unwrap();
-        if bytes.len() <= source_budget(&c) {
+        {
             c.tick += 1;
             let tick = c.tick;
             c.sources.insert(
@@ -222,7 +244,6 @@ pub fn input_key(bytes: &[u8], path: &str) -> String {
                     tick,
                 },
             );
-            trim(&mut c, "");
         }
     }
     key
@@ -279,6 +300,10 @@ mod tests {
         let first = input_key(b"abcd", path);
         assert_eq!(first, digest(b"pngabcd"));
         assert_eq!(INPUT_HASHES.get(), 1);
+        let pixels = insert(DynamicImage::new_rgb8(2, 2));
+        let owner = Arc::new(json!({"rasterKey":pixels}));
+        put_input(first.clone(), &owner);
+        retain_nodes(&[owner.clone()]);
         preview_mode(false);
         preview_mode(true);
         assert_eq!(input_key(b"abcd", path), first);
@@ -295,27 +320,34 @@ mod tests {
     }
 
     #[test]
-    fn source_snapshots_are_bounded_and_share_the_pixel_budget() {
+    fn live_resources_are_retained_without_count_or_byte_quotas() {
         let mut c = Cache {
             entries: HashMap::new(),
             inputs: HashMap::new(),
             sources: HashMap::new(),
             tick: 0,
-            budget: 8192,
+            owners: HashMap::new(),
         };
+        let mut owners = vec![];
         for i in 0..200 {
+            let key = i.to_string();
+            let node = Arc::new(json!({"rasterKey":key}));
+            c.owners.insert(
+                Arc::as_ptr(&node) as usize,
+                (Arc::downgrade(&node), vec![key.clone()]),
+            );
+            owners.push(node);
             c.sources.insert(
-                i.to_string(),
+                key.clone(),
                 SourceEntry {
                     bytes: vec![0; 8],
-                    key: i.to_string(),
+                    key: key.clone(),
                     tick: i,
                 },
             );
-        }
-        for i in 0..2 {
+            c.inputs.insert(key.clone(), json!({"rasterKey":key}));
             c.entries.insert(
-                i.to_string(),
+                key,
                 Entry {
                     pixels: Arc::new(DynamicImage::new_rgb8(32, 32)),
                     png: None,
@@ -325,13 +357,11 @@ mod tests {
             );
         }
         trim(&mut c, "");
-        assert_eq!(c.sources.len(), 128);
-        assert!(source_bytes(&c) <= source_budget(&c));
-        assert!(!c.sources.contains_key("0"));
-        assert!(c.sources.contains_key("199"));
-        c.budget = 4096;
+        assert_eq!(c.sources.len(), 200);
+        assert_eq!(c.entries.len(), 200);
+        owners.clear();
         trim(&mut c, "");
-        assert!(source_bytes(&c) <= source_budget(&c));
-        assert!(source_bytes(&c) + c.entries.values().map(bytes).sum::<usize>() <= c.budget);
+        assert!(c.sources.is_empty());
+        assert!(c.entries.is_empty());
     }
 }

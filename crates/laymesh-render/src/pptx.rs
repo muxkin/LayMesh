@@ -561,7 +561,9 @@ pub fn render_pptx(scene: &Scene, options: &ExportOptions) -> Result<(Vec<u8>, V
     }
     .validate("pptx")?;
     let mut lowered = scene.clone();
-    normalize_caps(&mut lowered.nodes);
+    for node in &mut lowered.nodes {
+        normalize_caps(std::slice::from_mut(std::sync::Arc::make_mut(node)));
+    }
     let list = to_display_list(&lowered)?;
     render_pptx_list(&list, dpi, &mut |list, rect, w, h| {
         let frame = raster::render_region(list, rect, w, h)?;

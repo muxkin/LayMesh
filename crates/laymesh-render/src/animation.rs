@@ -5,7 +5,7 @@ use crate::{
     display_update::DisplayUpdate,
     raster::{PreparedRaster, RasterFrame},
 };
-use kurbo::{Affine, BezPath, ParamCurve, ParamCurveArclen, PathSeg, PathEl, Point, Rect, Shape};
+use kurbo::{Affine, BezPath, ParamCurve, ParamCurveArclen, PathEl, PathSeg, Point, Rect, Shape};
 use laymesh_core::{
     Result,
     animation::values::{Matrix, identity},
@@ -82,7 +82,9 @@ pub(crate) fn back_facing(m: Matrix) -> bool {
 pub(crate) fn trim_paths(node: &mut DrawNode, progress: f64) -> Result<()> {
     fn total(n: &DrawNode) -> f64 {
         if let Some(d) = n.hint["drawGeometry"]["d"].as_str() {
-            return BezPath::from_svg(d).map(|p| p.segments().map(|s| s.arclen(1e-6)).sum()).unwrap_or(0.);
+            return BezPath::from_svg(d)
+                .map(|p| p.segments().map(|s| s.arclen(1e-6)).sum())
+                .unwrap_or(0.);
         }
         match &n.kind {
             DrawKind::Path {
@@ -99,26 +101,53 @@ pub(crate) fn trim_paths(node: &mut DrawNode, progress: f64) -> Result<()> {
         if let Some(d) = n.hint["drawGeometry"]["d"].as_str() {
             let path = BezPath::from_svg(d).map_err(|_| error("Invalid draw geometry"))?;
             let length: f64 = path.segments().map(|s| s.arclen(1e-6)).sum();
-            if *left >= length { *left -= length; return Ok(()); }
-            let mut simple = DrawNode::new(DrawKind::Path {path, fill:Paint::None,
-                stroke: Some(Stroke { rgba:[0.,0.,0.,1.], width:1., cap:"butt".into(), join:"miter".into(), miter:4., dash:vec![], offset:0. }), even_odd:false});
+            if *left >= length {
+                *left -= length;
+                return Ok(());
+            }
+            let mut simple = DrawNode::new(DrawKind::Path {
+                path,
+                fill: Paint::None,
+                stroke: Some(Stroke {
+                    rgba: [0., 0., 0., 1.],
+                    width: 1.,
+                    cap: "butt".into(),
+                    join: "miter".into(),
+                    miter: 4.,
+                    dash: vec![],
+                    offset: 0.,
+                }),
+                even_odd: false,
+            });
             // Trim in page coordinates so differently scaled group children have
             // a consistent drawing speed, then regenerate physical endpoint ink.
             trim(&mut simple, left)?;
-            let DrawKind::Path {path, ..} = simple.kind else { unreachable!() };
+            let DrawKind::Path { path, .. } = simple.kind else {
+                unreachable!()
+            };
             let g = &n.hint["drawGeometry"];
-            let matrix = |key: &str| Affine::new(std::array::from_fn(|i| g[key][i].as_f64().unwrap_or(0.)));
+            let matrix =
+                |key: &str| Affine::new(std::array::from_fn(|i| g[key][i].as_f64().unwrap_or(0.)));
             let tr = matrix("transform");
             let local = matrix("container").inverse();
             let recipe = serde_json::json!({"d":(tr.inverse()*path).to_svg(),"fill":"none",
                 "strokeStyle":g["strokeStyle"], "endpointRecipe":g["endpointRecipe"]});
             let mut children = vec![];
             for layer in laymesh_core::endpoints::layers(&recipe, tr).map_err(error)? {
-                let mut child = DrawNode::new(DrawKind::Path {path:local*layer.path,
-                    fill:crate::display_list::solid(&layer.color)?, stroke:None, even_odd:false});
-                child.opacity=layer.opacity; children.push(child);
+                let mut child = DrawNode::new(DrawKind::Path {
+                    path: local * layer.path,
+                    fill: crate::display_list::solid(&layer.color)?,
+                    stroke: None,
+                    even_odd: false,
+                });
+                child.opacity = layer.opacity;
+                children.push(child);
             }
-            n.kind = DrawKind::Group {children,clip:None,mask:None};
+            n.kind = DrawKind::Group {
+                children,
+                clip: None,
+                mask: None,
+            };
             return Ok(());
         }
         match &mut n.kind {
@@ -129,33 +158,51 @@ pub(crate) fn trim_paths(node: &mut DrawNode, progress: f64) -> Result<()> {
                 ..
             } => {
                 let length: f64 = path.segments().map(|s| s.arclen(1e-6)).sum();
-                if *left >= length { *left -= length; return Ok(()); }
+                if *left >= length {
+                    *left -= length;
+                    return Ok(());
+                }
                 let mut out = BezPath::new();
                 let mut current = Point::ORIGIN;
                 let mut start = current;
                 for element in path.elements() {
-                    if *left <= 0. { break; }
+                    if *left <= 0. {
+                        break;
+                    }
                     let (seg, closing) = match *element {
-                        PathEl::MoveTo(p) => { out.move_to(p); current=p; start=p; continue; }
-                        PathEl::LineTo(p) => (kurbo::Line::new(current,p).into(),false),
-                        PathEl::QuadTo(c,p) => (kurbo::QuadBez::new(current,c,p).into(),false),
-                        PathEl::CurveTo(c1,c2,p) => (kurbo::CubicBez::new(current,c1,c2,p).into(),false),
-                        PathEl::ClosePath => (kurbo::Line::new(current,start).into(),true),
+                        PathEl::MoveTo(p) => {
+                            out.move_to(p);
+                            current = p;
+                            start = p;
+                            continue;
+                        }
+                        PathEl::LineTo(p) => (kurbo::Line::new(current, p).into(), false),
+                        PathEl::QuadTo(c, p) => (kurbo::QuadBez::new(current, c, p).into(), false),
+                        PathEl::CurveTo(c1, c2, p) => {
+                            (kurbo::CubicBez::new(current, c1, c2, p).into(), false)
+                        }
+                        PathEl::ClosePath => (kurbo::Line::new(current, start).into(), true),
                     };
                     let seg: PathSeg = seg;
-                    let length=seg.arclen(1e-6);
-                    let full=*left>=length;
-                    let t=if full {1.} else {seg.inv_arclen(*left,1e-6)};
-                    let segment=seg.subsegment(0.0..t);
-                    if closing && full { out.close_path(); } else {
+                    let length = seg.arclen(1e-6);
+                    let full = *left >= length;
+                    let t = if full {
+                        1.
+                    } else {
+                        seg.inv_arclen(*left, 1e-6)
+                    };
+                    let segment = seg.subsegment(0.0..t);
+                    if closing && full {
+                        out.close_path();
+                    } else {
                         match segment {
-                            PathSeg::Line(l)=>out.line_to(l.p1),
-                            PathSeg::Quad(q)=>out.quad_to(q.p1,q.p2),
-                            PathSeg::Cubic(c)=>out.curve_to(c.p1,c.p2,c.p3),
+                            PathSeg::Line(l) => out.line_to(l.p1),
+                            PathSeg::Quad(q) => out.quad_to(q.p1, q.p2),
+                            PathSeg::Cubic(c) => out.curve_to(c.p1, c.p2, c.p3),
                         }
                     }
-                    current=segment.end();
-                    *left-=length;
+                    current = segment.end();
+                    *left -= length;
                 }
                 *path = out;
             }
@@ -168,7 +215,9 @@ pub(crate) fn trim_paths(node: &mut DrawNode, progress: f64) -> Result<()> {
         }
         Ok(())
     }
-    if progress >= 1. { return Ok(()); }
+    if progress >= 1. {
+        return Ok(());
+    }
     let length = total(node);
     if length <= 0. {
         return Ok(()); // Legacy packages may contain only filled endpoint outlines.

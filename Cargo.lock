@@ -477,6 +477,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "dlmalloc"
+version = "0.2.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ad5208a115eaba24916f7456929832e310a81518c641f93fee4f89aa93aa3675"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
 name = "dtoa"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1181,7 +1192,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-cli"
-version = "0.6.4"
+version = "0.6.5"
 dependencies = [
  "base64 0.22.1",
  "ctrlc",
@@ -1203,12 +1214,13 @@ dependencies = [
 
 [[package]]
 name = "laymesh-core"
-version = "0.6.4"
+version = "0.6.5"
 dependencies = [
  "base64 0.22.1",
  "contour",
  "cssparser",
  "csv",
+ "dlmalloc",
  "fontdb",
  "i_overlay",
  "image",
@@ -1239,7 +1251,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-language"
-version = "0.6.4"
+version = "0.6.5"
 dependencies = [
  "cssparser",
  "laymesh-core",
@@ -1250,7 +1262,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-playback"
-version = "0.6.4"
+version = "0.6.5"
 dependencies = [
  "laymesh-render",
  "serde_json",
@@ -1259,7 +1271,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-render"
-version = "0.6.4"
+version = "0.6.5"
 dependencies = [
  "base64 0.22.1",
  "image",
@@ -1285,7 +1297,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-tiff-export"
-version = "0.6.4"
+version = "0.6.5"
 dependencies = [
  "tiff",
  "wasm-bindgen",
@@ -1293,7 +1305,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-wasm"
-version = "0.6.4"
+version = "0.6.5"
 dependencies = [
  "kurbo 0.13.1",
  "laymesh-core",
@@ -1305,7 +1317,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-web-export"
-version = "0.6.4"
+version = "0.6.5"
 dependencies = [
  "laymesh-render",
  "pdf-writer",

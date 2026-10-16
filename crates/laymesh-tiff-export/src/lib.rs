@@ -73,7 +73,10 @@ mod tests {
                 2
             );
             let tiff::decoder::ifd::Value::Rational(numerator, denominator) =
-                decoder.get_tag(tiff::tags::Tag::XResolution).unwrap() else { panic!("Missing rational density") };
+                decoder.get_tag(tiff::tags::Tag::XResolution).unwrap()
+            else {
+                panic!("Missing rational density")
+            };
             assert_eq!(f64::from(numerator) / f64::from(denominator), 1200.);
             let tiff::decoder::DecodingResult::U8(actual) = decoder.read_image().unwrap() else {
                 panic!()

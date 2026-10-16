@@ -1,0 +1,19 @@
+{
+  "system": "Linux",
+  "kernel": "6.12.73+deb13-amd64",
+  "machine": "x86_64",
+  "cpu": "AMD Ryzen 7 8745H w/ Radeon 780M Graphics",
+  "logicalCpuCount": 16,
+  "memory": "21300832 kB",
+  "browserViewport": [
+    1600,
+    1000
+  ],
+  "browserMode": "headless, file://, HTTP blocked; renderer automatically selected",
+  "vscodeWindow": [
+    1440,
+    1000
+  ],
+  "vscodeDpr": 2,
+  "timingIsolation": "Task build, validation and timing stages are sequential; historical v002 comparison is not interleaved A/B."
+}

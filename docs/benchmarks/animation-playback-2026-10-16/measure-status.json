@@ -1,0 +1,148 @@
+[
+  {
+    "name": "playback-before",
+    "command": [
+      "node",
+      "scripts/test-presentation-animation.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+      "/tmp/laymesh-animation/parallel-final/playback-before"
+    ],
+    "environment": {},
+    "started": 1792133227.5667727,
+    "status": "passed",
+    "seconds": 311.22862339019775,
+    "baseline_source_directory": "/tmp/laymesh-animation/parallel-final"
+  },
+  {
+    "name": "4k-before",
+    "command": [
+      "node",
+      "scripts/test-presentation-animation.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/lifecycle-preview-v005/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u8d44\u6e90\u590d\u7528\u4f18\u5316.zip.html",
+      "/tmp/laymesh-animation/parallel-final/4k-before"
+    ],
+    "environment": {
+      "ENGINES": "chromium",
+      "WIDTH": "3840",
+      "HEIGHT": "1840",
+      "PAGES": "2",
+      "ROUNDS": "2"
+    },
+    "started": 1792133538.7956266,
+    "status": "passed",
+    "seconds": 35.40671992301941,
+    "baseline_source_directory": "/tmp/laymesh-animation/parallel-final"
+  },
+  {
+    "name": "native-animation-before",
+    "command": [
+      ".venv/bin/python",
+      "scripts/test-vscode-keyboard.py",
+      "--extension-dir",
+      "target/lifecycle-v005-extension",
+      "--binary",
+      "/home/keqing/source/LayMesh/target/lifecycle-v005-extension/bin/laymesh",
+      "--source",
+      "target/property-preview-fixture/storyboard.laydoc",
+      "--output",
+      "/tmp/laymesh-animation/parallel-final/native-animation-before.json",
+      "--animation-rounds",
+      "2"
+    ],
+    "environment": {},
+    "started": 1792133608.5583193,
+    "status": "passed",
+    "seconds": 69.97408413887024,
+    "baseline_source_directory": "/tmp/laymesh-animation/parallel-final"
+  },
+  {
+    "name": "playback-after",
+    "command": [
+      "node",
+      "scripts/test-presentation-animation.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/animation-preview-v008/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u5e76\u884c\u52a8\u753b\u4f18\u5316_v008.zip.html",
+      "/tmp/laymesh-animation/final-v008/playback-after"
+    ],
+    "environment": {},
+    "started": 1792135252.248329,
+    "status": "passed",
+    "seconds": 295.0789577960968
+  },
+  {
+    "name": "4k-after",
+    "command": [
+      "node",
+      "scripts/test-presentation-animation.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/animation-preview-v008/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u5e76\u884c\u52a8\u753b\u4f18\u5316_v008.zip.html",
+      "/tmp/laymesh-animation/final-v008/4k-after"
+    ],
+    "environment": {
+      "ENGINES": "chromium",
+      "WIDTH": "3840",
+      "HEIGHT": "1840",
+      "PAGES": "2",
+      "ROUNDS": "2"
+    },
+    "started": 1792135547.3275425,
+    "status": "passed",
+    "seconds": 33.380348443984985
+  },
+  {
+    "name": "native-animation-after",
+    "command": [
+      ".venv/bin/python",
+      "scripts/test-vscode-keyboard.py",
+      "--extension-dir",
+      "target/animation-v008-extension",
+      "--binary",
+      "/home/keqing/source/LayMesh/target/animation-v008-extension/bin/laymesh",
+      "--source",
+      "target/property-preview-fixture/storyboard.laydoc",
+      "--output",
+      "/tmp/laymesh-animation/final-v008/native-animation-after.json",
+      "--animation-rounds",
+      "2"
+    ],
+    "environment": {},
+    "started": 1792135580.7081506,
+    "status": "passed",
+    "seconds": 67.73943161964417
+  },
+  {
+    "name": "keyboard-after",
+    "command": [
+      "node",
+      "scripts/test-presentation-keyboard.cjs",
+      "/home/keqing/source/LayMesh/video/04-LCSS\u4e0e\u52a8\u753b/exports/animation-preview-v008/04_LCSS_\u79bb\u7ebf\u53ef\u7f16\u8f91_v005_\u5e76\u884c\u52a8\u753b\u4f18\u5316_v008.zip.html",
+      "/tmp/laymesh-animation/final-v008/keyboard-after"
+    ],
+    "environment": {
+      "ENGINES": "chromium",
+      "SAMPLES": "50"
+    },
+    "started": 1792135648.4478416,
+    "status": "passed",
+    "seconds": 74.44355750083923
+  },
+  {
+    "name": "native-keyboard-after",
+    "command": [
+      ".venv/bin/python",
+      "scripts/test-vscode-keyboard.py",
+      "--extension-dir",
+      "target/animation-v008-extension",
+      "--binary",
+      "target/animation-v008-extension/bin/laymesh",
+      "--source",
+      "target/property-preview-fixture/storyboard.laydoc",
+      "--output",
+      "/tmp/laymesh-animation/final-v008/native-keyboard-after.json",
+      "--samples",
+      "50"
+    ],
+    "environment": {},
+    "started": 1792135722.891664,
+    "status": "passed",
+    "seconds": 73.71254968643188
+  }
+]

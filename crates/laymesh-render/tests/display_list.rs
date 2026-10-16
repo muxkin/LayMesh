@@ -99,20 +99,20 @@ fn decoded_image_cache_tracks_bytes_instead_of_caller_ids() {
         "replaceable".into(),
         Resource {
             mime: "image/png".into(),
-            data: bytes([255, 0, 0, 128]),
+            data: bytes([255, 0, 0, 128]).into(),
             font_index: None,
             family: None,
         },
     );
     let red = render_rgba(&list, 10.).unwrap().rgba;
     assert_eq!(render_rgba(&list, 10.).unwrap().rgba, red);
-    list.resources.get_mut("replaceable").unwrap().data = bytes([0, 0, 255, 128]);
+    list.resources.get_mut("replaceable").unwrap().data = bytes([0, 0, 255, 128]).into();
     let blue = render_rgba(&list, 10.).unwrap().rgba;
     assert_ne!(red, blue);
     assert_eq!(&blue[..4], &[0, 0, 255, 128]);
     raster::set_image_cache_budget(0);
     assert_eq!(render_rgba(&list, 10.).unwrap().rgba, blue);
-    list.resources.get_mut("replaceable").unwrap().data = vec![0, 1, 2];
+    list.resources.get_mut("replaceable").unwrap().data = vec![0, 1, 2].into();
     assert!(render_rgba(&list, 10.).is_err());
     raster::set_image_cache_budget(256);
 }
@@ -140,7 +140,7 @@ fn very_wide_translucent_images_have_no_internal_edges() {
             "wide".into(),
             Resource {
                 mime: "image/png".into(),
-                data: bytes.into_inner(),
+                data: bytes.into_inner().into(),
                 font_index: None,
                 family: None,
             },

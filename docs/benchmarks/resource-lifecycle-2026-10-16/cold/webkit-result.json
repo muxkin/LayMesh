@@ -1,0 +1,44 @@
+{
+  "targets": [
+    "cover",
+    "cover",
+    "cover",
+    "cover",
+    "cover",
+    "cover",
+    "cover",
+    "cover",
+    "cover",
+    "cover"
+  ],
+  "errors": [],
+  "matches": 1,
+  "unchanged": true,
+  "state": "ready",
+  "pages": [
+    {
+      "key": "cover",
+      "valid": true
+    },
+    {
+      "key": "seed",
+      "valid": true
+    },
+    {
+      "key": "anchors",
+      "valid": true
+    },
+    {
+      "key": "motion",
+      "valid": true
+    },
+    {
+      "key": "offline",
+      "valid": true
+    },
+    {
+      "key": "editable",
+      "valid": true
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "artifactHashesVerified": 4,
+  "allPackagedRuntimeFilesMatchTestedStage": true,
+  "optionalPrecompressedFilesOmitted": [
+    "dist/wasm/laymesh_wasm_bg-7c5f9e9c457dc4562e3a.wasm.gz",
+    "dist/skia/canvaskit-25ebed8e60158c5854f8.wasm.gz",
+    "dist/skia/canvaskit-3896e26c22936f9c4d19.mjs.gz"
+  ],
+  "allRuntimeManifestTargetsPresent": true,
+  "originalAndV004HtmlUnchanged": true,
+  "navigationSamples": 400,
+  "editSamples": 2800,
+  "localTargetPassed": 0,
+  "localTargetCases": 32,
+  "preparedNavigationTargetPassed": 0,
+  "preparedNavigationEnvironments": 4,
+  "allTimingStagesComplete": true,
+  "allFinalCorrectnessStagesPassed": true,
+  "note": "Correctness and sample completeness passed; latency targets did not. CPU full-resolution transition regression remains."
+}

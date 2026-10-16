@@ -1,0 +1,12 @@
+{
+  "engine": "chromium",
+  "version": "151.0.7922.34",
+  "htmlSha256": "4076958dbe69dd8dce322daf44c76450d7de8bee2c6e5372e12c964e14279f97",
+  "restored": 6,
+  "targets": [
+    "cover"
+  ],
+  "unchanged": true,
+  "ready": true,
+  "errors": []
+}

@@ -253,7 +253,7 @@ impl Engine {
     }
     pub(crate) fn compile_animation(
         &mut self,
-        nodes: &[serde_json::Value],
+        nodes: &[std::sync::Arc<serde_json::Value>],
     ) -> Result<Option<Animation>> {
         if self.animation_steps.is_empty() {
             return Ok(None);
@@ -274,7 +274,7 @@ impl Engine {
     }
     fn compile_timeline(
         &self,
-        nodes: &[serde_json::Value],
+        nodes: &[std::sync::Arc<serde_json::Value>],
         reduced: bool,
         print: bool,
         diagnostics: &mut Vec<Diagnostic>,
@@ -360,7 +360,7 @@ impl Engine {
     fn compile_clip(
         &self,
         spec: &ClipSpec,
-        nodes: &[serde_json::Value],
+        nodes: &[std::sync::Arc<serde_json::Value>],
         reduced: bool,
         print: bool,
         diagnostics: &mut Vec<Diagnostic>,
@@ -377,7 +377,7 @@ impl Engine {
             .and_then(|n| n["id"].as_str())
             .ok_or_else(|| fail("Missing target instance".into()))?;
         fn find<'a>(
-            nodes: &'a [serde_json::Value],
+            nodes: impl IntoIterator<Item = &'a serde_json::Value>,
             id: &str,
             out: &mut Vec<&'a serde_json::Value>,
         ) {
@@ -391,7 +391,7 @@ impl Engine {
             }
         }
         let mut found = vec![];
-        find(nodes, id, &mut found);
+        find(nodes.iter().map(|n| n.as_ref()), id, &mut found);
         if found.len() != 1 {
             return Err(fail("Target must identify exactly one placed instance on this page; animate the placed group when reusing a component".into()));
         }

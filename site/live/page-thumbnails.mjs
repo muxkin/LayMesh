@@ -27,7 +27,6 @@ export class PageThumbnails {
   this.busy=true;const generation=this.generation;try{const canvas=await this.renderer.draw(index,width);if(!canvas||this.closed||generation!==this.generation)return;const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));if(!blob||this.closed||generation!==this.generation)return;
    const old=this.cache.get(index);if(old){URL.revokeObjectURL(old.url);this.cacheBytes-=old.bytes;}const item={url:URL.createObjectURL(blob),width,bytes:canvas.width*canvas.height*4,used:performance.now()};this.cache.set(index,item);this.cacheBytes+=item.bytes;
    if(this.nodes.has(index))this.nodes.get(index).firstChild.src=item.url;
-   for(const [i,c]of [...this.cache].sort((a,b)=>a[1].used-b[1].used)){if(this.cacheBytes<=32*1048576)break;if(this.nodes.has(i))continue;URL.revokeObjectURL(c.url);this.cache.delete(i);this.cacheBytes-=c.bytes;}
   }catch(error){(this.failed??=new Set()).add(index);const b=this.nodes.get(index);if(b){b.title='预览暂不可用：'+error.message;b.onclick=()=>{this.failed.delete(index);this.onSelect(index);this.pump();};}}
   finally{this.busy=false;this.timer=setTimeout(()=>this.pump(),30);}
  }

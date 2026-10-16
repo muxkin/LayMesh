@@ -1,0 +1,32 @@
+{
+  "version": "0.6.5",
+  "scope": "Local Linux x64, Python 3.13; remote platform matrix pending",
+  "rust_tests": 674,
+  "capacity_release_tests": 1,
+  "ignored": "one pre-existing manual geometry benchmark; capacity test runs separately optimized",
+  "python_tests_source": 67,
+  "python_tests_installed": 67,
+  "migration_tests": 32,
+  "legacy_assertion_sites": 891,
+  "javascript_suites": 19,
+  "native_example_entries": 255,
+  "pptx_examples": 10,
+  "jupyter": "source and installed wheel, repeated execution",
+  "browsers": [
+    "Chromium",
+    "Firefox",
+    "WebKit"
+  ],
+  "local_artifacts": [
+    {
+      "name": "laymesh-0.6.5-py3-none-manylinux_2_39_x86_64.whl",
+      "bytes": 20807255,
+      "sha256": "8cf5372425eaf3ee32437745ae64bbbd3208a459aa92c8cf2d5628966d55f227"
+    },
+    {
+      "name": "laymesh-0.6.5-linux-x64.vsix",
+      "bytes": 28266206,
+      "sha256": "aca99531ee77653f91384864791d3acf02dca81f75b23ea37c9980f2afb2aa4a"
+    }
+  ]
+}

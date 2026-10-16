@@ -21,6 +21,14 @@ pub struct NodeFrame {
     /// Only geometry-changing extensions replace commands, never CSS transforms.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<DrawNode>,
+    /// Presentation renderers clip retained content without copying its paths.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reveal: Option<RevealFrame>,
+}
+#[derive(Serialize)]
+pub struct RevealFrame {
+    pub clip: [f64; 4],
+    pub transform: [f64; 6],
 }
 pub struct RetainedScene {
     list: DisplayList,
@@ -48,9 +56,12 @@ impl RetainedScene {
         &self.list
     }
     pub fn update(&mut self, update: DisplayUpdate) -> Result<()> {
+        let reindex = update.changes_index();
         update.apply(&mut self.list)?;
-        self.targets.clear();
-        Self::index(&self.list.nodes, &[], &mut self.targets);
+        if reindex {
+            self.targets.clear();
+            Self::index(&self.list.nodes, &[], &mut self.targets);
+        }
         Ok(())
     }
     pub fn sample(
@@ -58,6 +69,35 @@ impl RetainedScene {
         time: f64,
         reduced: bool,
         print: bool,
+    ) -> Result<BTreeMap<String, NodeFrame>> {
+        self.sample_impl(time, reduced, print, true, false)
+    }
+    /// Same animation semantics, with a compact clip for non-plot reveals.
+    /// Plot reveals still preserve their separate data clips and visible axes.
+    pub fn sample_presentation(
+        &self,
+        time: f64,
+        reduced: bool,
+    ) -> Result<BTreeMap<String, NodeFrame>> {
+        self.sample_impl(time, reduced, false, true, true)
+    }
+    /// Cache density planning needs the same transforms as a real frame, but
+    /// must not clone geometry or trim/reveal paths at every probe time.
+    pub fn sample_transforms(
+        &self,
+        time: f64,
+        reduced: bool,
+        print: bool,
+    ) -> Result<BTreeMap<String, NodeFrame>> {
+        self.sample_impl(time, reduced, print, false, false)
+    }
+    fn sample_impl(
+        &self,
+        time: f64,
+        reduced: bool,
+        print: bool,
+        include_content: bool,
+        compact_reveal: bool,
     ) -> Result<BTreeMap<String, NodeFrame>> {
         if !time.is_finite() || time < 0. {
             return Err(error("Invalid animation time"));
@@ -81,36 +121,75 @@ impl RetainedScene {
                 }
             }
             let mut content = None;
-            if style.draw.is_some() || style.reveal.is_some() {
+            let compact = compact_reveal
+                && style.reveal.is_some()
+                && !original.hint["plotBounds"].is_object();
+            // A completed draw is exactly the original geometry.
+            let draw = style.draw.filter(|p| *p < 1.);
+            if include_content && (draw.is_some() || style.reveal.is_some() && !compact) {
                 let mut node = original.clone();
-                if let Some(p) = style.draw {
+                if let Some(p) = draw {
                     trim_paths(&mut node, p)?;
                 }
-                if let Some(p) = style.reveal {
+                if let Some(p) = style.reveal.filter(|_| !compact) {
                     reveal(&mut node, p);
                 }
                 content = Some(node);
             }
             let node = content.as_ref().unwrap_or(original);
-            let mut combined = affine_matrix(node.transform);
+            let layout = node.hint["animationLayout"]
+                .as_array()
+                .filter(|v| v.len() == 6)
+                .map(|v| Affine::new(std::array::from_fn(|i| v[i].as_f64().unwrap_or(0.))))
+                .unwrap_or(node.transform);
+            // Non-plot reveal introduces a wrapper in layout coordinates.
+            // Account for that matrix without constructing its clipped content.
+            let transform = if (!include_content || compact)
+                && style.reveal.is_some()
+                && !node.hint["plotBounds"].is_object()
+            {
+                layout
+            } else {
+                node.transform
+            };
+            let mut combined = affine_matrix(transform);
             if let Some(m) = style.transform {
                 let o = style.origin.unwrap_or([0.; 3]);
                 let m = multiply(
                     multiply(translate(o[0], o[1], o[2]), m),
                     translate(-o[0], -o[1], -o[2]),
                 );
-                let layout = node.hint["animationLayout"]
-                    .as_array()
-                    .filter(|v| v.len() == 6)
-                    .map(|v| Affine::new(std::array::from_fn(|i| v[i].as_f64().unwrap_or(0.))))
-                    .unwrap_or(node.transform);
                 combined = multiply(
                     multiply(affine_matrix(layout), m),
-                    affine_matrix(layout.inverse() * node.transform),
+                    affine_matrix(layout.inverse() * transform),
                 );
             }
             let hidden = style.visible == Some(false)
                 || (style.backface == Some(false) && back_facing(combined));
+            let reveal = if compact {
+                let bounds = node.hint["animationSize"]
+                    .as_array()
+                    .map(|v| {
+                        kurbo::Rect::new(
+                            0.,
+                            0.,
+                            v[0].as_f64().unwrap_or(0.),
+                            v[1].as_f64().unwrap_or(0.),
+                        )
+                    })
+                    .unwrap_or_else(|| node.local_bounds());
+                Some(RevealFrame {
+                    clip: [
+                        bounds.x0,
+                        bounds.y0,
+                        bounds.x0 + bounds.width() * style.reveal.unwrap(),
+                        bounds.y1,
+                    ],
+                    transform: (layout.inverse() * node.transform).as_coeffs(),
+                })
+            } else {
+                None
+            };
             output.insert(
                 path.iter()
                     .map(usize::to_string)
@@ -134,6 +213,7 @@ impl RetainedScene {
                         style.opacity.unwrap_or(node.opacity)
                     },
                     content,
+                    reveal,
                 },
             );
         }

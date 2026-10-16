@@ -170,3 +170,132 @@ fn clips_transforms_effects_and_two_accumulated_updates_remain_correct() {
         .unwrap();
     compare(&mut prepared, &scene, rect, 1200, 600);
 }
+
+#[test]
+fn semantic_properties_do_not_copy_group_geometry() {
+    let mut old = list();
+    old.nodes = vec![DrawNode::group(
+        (0..1536)
+            .map(|i| node(i as f64, [0.1, 0.2, 0.3, 1.]))
+            .collect(),
+    )];
+    let mut new = old.clone();
+    new.nodes[0].transform = Affine::translate((2., 3.));
+    let update = DisplayUpdate::between_incremental(&old, &new);
+    let bytes = serde_json::to_vec(&update).unwrap();
+    assert!(bytes.len() < 400, "{} bytes", bytes.len());
+    assert!(update.nodes.is_empty() && update.structure.is_empty());
+    assert_eq!(update.properties[0].values.len(), 1);
+    let mut actual = old.clone();
+    update.apply(&mut actual).unwrap();
+    assert_eq!(actual, new);
+    let previous = new.clone();
+    let DrawKind::Group { children, .. } = &mut new.nodes[0].kind else {
+        unreachable!()
+    };
+    let DrawKind::Path { fill, .. } = &mut children[517].kind else {
+        unreachable!()
+    };
+    *fill = Paint::Solid {
+        rgba: [0.8, 0.2, 0.1, 0.6],
+    };
+    let update = DisplayUpdate::between_incremental(&previous, &new);
+    assert!(serde_json::to_vec(&update).unwrap().len() < 400);
+    assert_eq!(update.properties[0].path, vec![0, 517]);
+    update.apply(&mut actual).unwrap();
+    assert_eq!(actual, new);
+}
+#[test]
+fn semantic_splices_retain_moved_children_and_apply_nested_changes_atomically() {
+    let mut old = list();
+    for (i, n) in old.nodes.iter_mut().enumerate() {
+        n.name = format!("n{i}");
+    }
+    old.nodes[0] = DrawNode::group(old.nodes.clone());
+    old.nodes[0].name = "group".into();
+    let mut new = old.clone();
+    let DrawKind::Group { children, .. } = &mut new.nodes[0].kind else {
+        unreachable!()
+    };
+    children.swap(0, 1);
+    children[0].opacity = 0.3;
+    let mut added = node(7., [0., 0., 1., 1.]);
+    added.name = "new".into();
+    children.insert(1, added);
+    new.nodes.swap(0, 1);
+    new.nodes.insert(0, node(2., [0., 1., 0., 1.]));
+    let update = DisplayUpdate::between_incremental(&old, &new);
+    assert_eq!(update.structure.len(), 2);
+    assert!(update.structure.iter().any(|s| {
+        s.insert
+            .iter()
+            .any(|v| matches!(v, ChildSource::Existing(_)))
+    }));
+    let mut actual = old.clone();
+    update.clone().apply(&mut actual).unwrap();
+    assert_eq!(actual, new);
+    let mut raster = PreparedRaster::new(old.clone()).unwrap();
+    raster.update(update.clone()).unwrap();
+    compare(&mut raster, &new, Rect::new(0., 0., 20., 10.), 600, 300);
+    for case in 0..5 {
+        let mut bad = update.clone();
+        match case {
+            0 => bad.properties.push(PropertyUpdate {
+                path: vec![0],
+                values: BTreeMap::from([("kind.children".into(), serde_json::json!([]))]),
+            }),
+            1 => bad.properties[0]
+                .values
+                .insert("opacity".into(), serde_json::json!("bad"))
+                .map(|_| ())
+                .unwrap_or(()),
+            2 => bad.structure[0].delete = usize::MAX,
+            3 => bad.structure[0].insert.push(ChildSource::Existing(999)),
+            _ => bad.structure.push(bad.structure[0].clone()),
+        }
+        let mut target = old.clone();
+        assert!(bad.apply(&mut target).is_err());
+        assert_eq!(target, old);
+    }
+    let removed = list();
+    let update = DisplayUpdate::between_incremental(&new, &removed);
+    update.apply(&mut actual).unwrap();
+    assert_eq!(actual, removed);
+}
+
+#[test]
+fn anonymous_source_insertions_use_internal_identity_instead_of_shifted_names() {
+    let source = "page=canvas(size=(80,50))\npage.add(path(commands=[move_to(0,0),cubic_to(1,2,3,4,5,6)]))\npage.add(ellipse(size=(5,5)))";
+    let mut session = laymesh_core::session::CompileSession::new(false);
+    session
+        .apply_changes(1, [("/main.lay".into(), Some(source.as_bytes().to_vec()))])
+        .unwrap();
+    let a = session.evaluate_file("/main.lay", None).unwrap();
+    let old = laymesh_render::to_display_list(&a).unwrap();
+    let source = source.replace("page.add(path", "page.add(rect(size=(3,4)))\npage.add(path");
+    session
+        .apply_changes(2, [("/main.lay".into(), Some(source.into_bytes()))])
+        .unwrap();
+    let b = session.evaluate_file("/main.lay", None).unwrap();
+    let new = laymesh_render::to_display_list(&b).unwrap();
+    let update = DisplayUpdate::between_incremental(&old, &new);
+    assert!(update.nodes.is_empty());
+    assert_eq!(update.structure.iter().map(|s| s.delete).sum::<usize>(), 0);
+    assert_eq!(
+        update
+            .structure
+            .iter()
+            .map(|s| s.insert.len())
+            .sum::<usize>(),
+        1
+    );
+    assert!(
+        !update
+            .properties
+            .iter()
+            .any(|p| p.values.contains_key("kind.path"))
+    );
+    let mut actual = old;
+    update.apply(&mut actual).unwrap();
+    assert_eq!(actual, new);
+}

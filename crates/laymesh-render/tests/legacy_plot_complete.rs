@@ -206,7 +206,7 @@ fn legacy_schema_solid_points_export() {
             }
         }
         for n in &mut s.nodes {
-            strip(n)
+            strip(std::sync::Arc::make_mut(n))
         }
         exports(&s);
     }

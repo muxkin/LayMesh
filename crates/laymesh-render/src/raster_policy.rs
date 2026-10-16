@@ -218,7 +218,11 @@ pub fn pdf_scene(scene: &Scene, options: &ExportOptions) -> Result<Scene> {
     let options = &effective;
     let mut optimized = scene.clone();
     for node in &mut optimized.nodes {
-        visit(node, kurbo::Affine::IDENTITY, options)?;
+        visit(
+            std::sync::Arc::make_mut(node),
+            kurbo::Affine::IDENTITY,
+            options,
+        )?;
     }
     if optimized.background["mime"].is_string() && optimized.background["mime"] != "image/svg+xml" {
         let mut paint = optimized.background.clone();

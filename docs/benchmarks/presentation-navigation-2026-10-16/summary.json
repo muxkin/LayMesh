@@ -1,0 +1,194 @@
+{
+  "chromium": {
+    "before": {
+      "samples": 50,
+      "elapsedMs": {
+        "median": 822.4000000059605,
+        "p95": 8136.799999982119
+      },
+      "withoutTransitionMs": {
+        "median": 161.1000000089407,
+        "p95": 7247.299999982119
+      },
+      "prepareMs": {
+        "median": 0,
+        "p95": 7160.199999988079
+      },
+      "planMs": {
+        "median": 0,
+        "p95": 7158.0999999940395
+      },
+      "transitionMs": {
+        "median": 659.8500000089407,
+        "p95": 887.3000000119209
+      }
+    },
+    "after": {
+      "samples": 50,
+      "elapsedMs": {
+        "median": 826.7000000029802,
+        "p95": 1166.5
+      },
+      "withoutTransitionMs": {
+        "median": 155.05000001192093,
+        "p95": 414.5000000298023
+      },
+      "prepareMs": {
+        "median": 0,
+        "p95": 107.09999999403954
+      },
+      "planMs": {
+        "median": 0,
+        "p95": 43.60000002384186
+      },
+      "transitionMs": {
+        "median": 660.8000000119209,
+        "p95": 876.4000000059605
+      }
+    }
+  },
+  "firefox": {
+    "before": {
+      "samples": 50,
+      "elapsedMs": {
+        "median": 2845.5,
+        "p95": 3804
+      },
+      "withoutTransitionMs": {
+        "median": 1237,
+        "p95": 2203
+      },
+      "prepareMs": {
+        "median": 120,
+        "p95": 1328
+      },
+      "planMs": {
+        "median": 0,
+        "p95": 0
+      },
+      "transitionMs": {
+        "median": 1614.5,
+        "p95": 1749
+      }
+    },
+    "after": {
+      "samples": 50,
+      "elapsedMs": {
+        "median": 2533,
+        "p95": 3437
+      },
+      "withoutTransitionMs": {
+        "median": 874,
+        "p95": 1839
+      },
+      "prepareMs": {
+        "median": 0,
+        "p95": 1
+      },
+      "planMs": {
+        "median": 0,
+        "p95": 0
+      },
+      "transitionMs": {
+        "median": 1630.5,
+        "p95": 1758
+      }
+    }
+  },
+  "webkit": {
+    "before": {
+      "samples": 50,
+      "elapsedMs": {
+        "median": 867.5,
+        "p95": 7970
+      },
+      "withoutTransitionMs": {
+        "median": 216,
+        "p95": 7117
+      },
+      "prepareMs": {
+        "median": 48,
+        "p95": 6979
+      },
+      "planMs": {
+        "median": 11,
+        "p95": 6954
+      },
+      "transitionMs": {
+        "median": 659,
+        "p95": 860
+      }
+    },
+    "after": {
+      "samples": 50,
+      "elapsedMs": {
+        "median": 868,
+        "p95": 1159
+      },
+      "withoutTransitionMs": {
+        "median": 160.5,
+        "p95": 362
+      },
+      "prepareMs": {
+        "median": 30.5,
+        "p95": 71
+      },
+      "planMs": {
+        "median": 2,
+        "p95": 25
+      },
+      "transitionMs": {
+        "median": 661,
+        "p95": 860
+      }
+    }
+  },
+  "vscode": {
+    "before": {
+      "samples": 50,
+      "elapsedMs": {
+        "median": 906.1499999910593,
+        "p95": 7682.899999976158
+      },
+      "withoutTransitionMs": {
+        "median": 244.09999997913837,
+        "p95": 7024.699999958277
+      },
+      "prepareMs": {
+        "median": 0,
+        "p95": 6686.399999976158
+      },
+      "planMs": {
+        "median": 0,
+        "p95": 6678.199999988079
+      },
+      "transitionMs": {
+        "median": 663.1000000089407,
+        "p95": 886.9000000059605
+      }
+    },
+    "after": {
+      "samples": 50,
+      "elapsedMs": {
+        "median": 918.4000000059605,
+        "p95": 1241.300000011921
+      },
+      "withoutTransitionMs": {
+        "median": 249.15000000596046,
+        "p95": 400.10000002384186
+      },
+      "prepareMs": {
+        "median": 0,
+        "p95": 88.5
+      },
+      "planMs": {
+        "median": 0,
+        "p95": 56.10000002384186
+      },
+      "transitionMs": {
+        "median": 664.3999999910593,
+        "p95": 888.8000000119209
+      }
+    }
+  }
+}

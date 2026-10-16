@@ -1,0 +1,920 @@
+[
+  {
+    "engine": "chromium",
+    "checks": [
+      {
+        "page": 1,
+        "time": 0,
+        "meanChannelError": 0.12221337890625,
+        "maxChannelError": 107,
+        "channelsOver8": 0.0037998046875,
+        "layerHits": 0,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 1,
+        "time": 0.25,
+        "meanChannelError": 0.263488037109375,
+        "maxChannelError": 107,
+        "channelsOver8": 0.006862548828125,
+        "layerHits": 1,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 1,
+        "time": 1,
+        "meanChannelError": 0.491177490234375,
+        "maxChannelError": 107,
+        "channelsOver8": 0.01841259765625,
+        "layerHits": 1,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 1,
+        "time": 3,
+        "meanChannelError": 0.540935791015625,
+        "maxChannelError": 109,
+        "channelsOver8": 0.020651123046875,
+        "layerHits": 1,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 1,
+        "time": 6.5,
+        "meanChannelError": 0.540935791015625,
+        "maxChannelError": 109,
+        "channelsOver8": 0.020651123046875,
+        "layerHits": 1,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 2,
+        "time": 0,
+        "meanChannelError": 0.03264892578125,
+        "maxChannelError": 101,
+        "channelsOver8": 0.0012509765625,
+        "layerHits": 0,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 2,
+        "time": 0.25,
+        "meanChannelError": 0.052644775390625,
+        "maxChannelError": 101,
+        "channelsOver8": 0.002041015625,
+        "layerHits": 2,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 2,
+        "time": 1,
+        "meanChannelError": 0.059688232421875,
+        "maxChannelError": 101,
+        "channelsOver8": 0.002267578125,
+        "layerHits": 2,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 2,
+        "time": 3,
+        "meanChannelError": 0.4550107421875,
+        "maxChannelError": 103,
+        "channelsOver8": 0.017759521484375,
+        "layerHits": 3,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 2,
+        "time": 6.5,
+        "meanChannelError": 0.464893310546875,
+        "maxChannelError": 106,
+        "channelsOver8": 0.0181494140625,
+        "layerHits": 3,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 3,
+        "time": 0,
+        "meanChannelError": 0.021870361328125,
+        "maxChannelError": 101,
+        "channelsOver8": 0.00081591796875,
+        "layerHits": 0,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 3,
+        "time": 0.25,
+        "meanChannelError": 0.031132080078125,
+        "maxChannelError": 101,
+        "channelsOver8": 0.0011748046875,
+        "layerHits": 1,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 3,
+        "time": 1,
+        "meanChannelError": 0.03368994140625,
+        "maxChannelError": 101,
+        "channelsOver8": 0.001259765625,
+        "layerHits": 1,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 3,
+        "time": 3,
+        "meanChannelError": 0.20475439453125,
+        "maxChannelError": 113,
+        "channelsOver8": 0.00791796875,
+        "layerHits": 3,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 3,
+        "time": 6.5,
+        "meanChannelError": 0.20475439453125,
+        "maxChannelError": 113,
+        "channelsOver8": 0.00791796875,
+        "layerHits": 3,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 4,
+        "time": 0,
+        "meanChannelError": 0.2107890625,
+        "maxChannelError": 106,
+        "channelsOver8": 0.00826611328125,
+        "layerHits": 1,
+        "staticHits": 4,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 4,
+        "time": 0.25,
+        "meanChannelError": 0.227405029296875,
+        "maxChannelError": 106,
+        "channelsOver8": 0.008961669921875,
+        "layerHits": 2,
+        "staticHits": 4,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 4,
+        "time": 1,
+        "meanChannelError": 0.230763916015625,
+        "maxChannelError": 106,
+        "channelsOver8": 0.009136474609375,
+        "layerHits": 2,
+        "staticHits": 4,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 4,
+        "time": 3,
+        "meanChannelError": 0.288619140625,
+        "maxChannelError": 101,
+        "channelsOver8": 0.010555419921875,
+        "layerHits": 3,
+        "staticHits": 4,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 4,
+        "time": 6.5,
+        "meanChannelError": 0.35381298828125,
+        "maxChannelError": 111,
+        "channelsOver8": 0.012166015625,
+        "layerHits": 4,
+        "staticHits": 4,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 5,
+        "time": 0,
+        "meanChannelError": 0.03866015625,
+        "maxChannelError": 101,
+        "channelsOver8": 0.0014755859375,
+        "layerHits": 0,
+        "staticHits": 3,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 5,
+        "time": 0.25,
+        "meanChannelError": 0.06046630859375,
+        "maxChannelError": 101,
+        "channelsOver8": 0.002250244140625,
+        "layerHits": 2,
+        "staticHits": 3,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 5,
+        "time": 1,
+        "meanChannelError": 0.067296875,
+        "maxChannelError": 101,
+        "channelsOver8": 0.00256787109375,
+        "layerHits": 2,
+        "staticHits": 3,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 5,
+        "time": 3,
+        "meanChannelError": 0.4210830078125,
+        "maxChannelError": 101,
+        "channelsOver8": 0.01667529296875,
+        "layerHits": 3,
+        "staticHits": 3,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 5,
+        "time": 6.5,
+        "meanChannelError": 0.4246416015625,
+        "maxChannelError": 102,
+        "channelsOver8": 0.0168095703125,
+        "layerHits": 3,
+        "staticHits": 3,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 6,
+        "time": 0,
+        "meanChannelError": 0.021965087890625,
+        "maxChannelError": 101,
+        "channelsOver8": 0.000822265625,
+        "layerHits": 0,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 6,
+        "time": 0.25,
+        "meanChannelError": 0.039306640625,
+        "maxChannelError": 101,
+        "channelsOver8": 0.001525390625,
+        "layerHits": 2,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 6,
+        "time": 1,
+        "meanChannelError": 0.045884033203125,
+        "maxChannelError": 101,
+        "channelsOver8": 0.001819091796875,
+        "layerHits": 2,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 6,
+        "time": 3,
+        "meanChannelError": 0.401703369140625,
+        "maxChannelError": 119,
+        "channelsOver8": 0.0163701171875,
+        "layerHits": 4,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      },
+      {
+        "page": 6,
+        "time": 6.5,
+        "meanChannelError": 0.401986328125,
+        "maxChannelError": 119,
+        "channelsOver8": 0.0163818359375,
+        "layerHits": 4,
+        "staticHits": 2,
+        "backend": "Skia WebGL2 (software driver)"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "engine": "firefox",
+    "checks": [
+      {
+        "page": 1,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 1,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 1,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 1,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 1,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 2,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 2,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 2,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 2,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 2,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 3,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 3,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 3,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 3,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 3,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 4,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 4,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 4,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 4,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 4,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 5,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 5,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 5,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 5,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 5,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 6,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 6,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 6,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 6,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 6,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      }
+    ],
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "checks": [
+      {
+        "page": 1,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 1,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 1,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 1,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 1,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 2,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 2,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 2,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 2,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 2,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 3,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 3,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 3,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 3,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 3,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 4,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 4,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 4,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 4,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 4,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 5,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 5,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 5,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 5,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 5,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 6,
+        "time": 0,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 6,
+        "time": 0.25,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 6,
+        "time": 1,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 6,
+        "time": 3,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      },
+      {
+        "page": 6,
+        "time": 6.5,
+        "meanChannelError": 0,
+        "maxChannelError": 0,
+        "channelsOver8": 0,
+        "layerHits": 0,
+        "staticHits": 0,
+        "backend": "Skia CPU"
+      }
+    ],
+    "errors": []
+  }
+]
