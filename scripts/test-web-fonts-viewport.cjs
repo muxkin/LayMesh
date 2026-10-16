@@ -314,14 +314,15 @@ function namedFont(style) {
       await page.locator("#font-apply").click();
       await page.waitForFunction(
         () =>
-          document.querySelector("#app").dataset.compileState === "ready" &&
+          document.querySelector("#app").dataset.documentState === "ready" &&
           !document.querySelector("#font-panel").open,
         null,
         { timeout: 60000 },
       );
       assert.equal(
         await page.evaluate(() => __LAYMESH_WEB.metrics.compiles),
-        1,
+        await page.evaluate(() => __LAYMESH_WEB.pages.length),
+        "Applying document-wide font bindings compiles each affected page once",
       );
       assert(
         (await page.evaluate(() => __probe.fontReads)).includes(
