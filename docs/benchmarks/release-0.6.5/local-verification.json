@@ -27,6 +27,13 @@
       "name": "laymesh-0.6.5-linux-x64.vsix",
       "bytes": 28266206,
       "sha256": "aca99531ee77653f91384864791d3acf02dca81f75b23ea37c9980f2afb2aa4a"
+    },
+    {
+      "name": "04_LCSS_离线可编辑_0.6.5.zip.html",
+      "bytes": 43585543,
+      "sha256": "4b29afe6a6ebe3a51701346e75d8842586ca73fc3f9edfb6a99e6bf19b71543a"
     }
-  ]
+  ],
+  "final_html": "three-browser cold first edit, six-page scenes, 18 animation samples, save/reopen and playback export",
+  "thumbnail_lifetime": "100 pages; 67,781,280 decoded bytes; revisit reuses URL; pagehide releases all URLs"
 }

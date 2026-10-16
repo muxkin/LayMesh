@@ -10,6 +10,8 @@
 - 安装包在无系统 Node、空 PATH 条件下完成 255 个原生示例入口检查；10 个 PPTX 示例及 VS Code 导出桥接通过。
 - Chromium、Firefox、WebKit 均验证最终导出的依赖索引恢复、首次局部修改只编译相关页、阻塞无关页时当前页仍可开播，以及保存和导出等待最新全稿。
 - VS Code 真实窗口验证中文输入法、连续编辑、旧响应丢弃、错误恢复、页面重排、动画、导出和资源传输。特意阻断 Worker 对扩展资源的直接请求，预览仍正常。19 组 JavaScript 契约检查通过。
+- 最终独立 HTML 三浏览器冷启动连续改色均只编译封面；六页场景及每页三个动画采样与 v009 一致，保存重开与播放版导出通过。[冷启动](release-0.6.5/final-html-cold.json)、[场景与往返](release-0.6.5/final-html-roundtrip.json)。
+- 百页缩略图回归保留 67,781,280 字节解码图像，超过原 32 MiB 配额后返回第一页仍复用原 URL，关闭文档后全部释放。旧测试中“必须淘汰至 32 MiB 以下”的断言已改为当前生命周期契约。[缓存证据](release-0.6.5/thumbnail-cache.json)。
 
 本机平台为 Linux x64、Python 3.13；其他平台和 Python 版本以正式 CI 结果为准。证据：[本机汇总](release-0.6.5/local-verification.json)、[源码 Jupyter](release-0.6.5/jupyter-source.json)、[安装包 Jupyter](release-0.6.5/jupyter-installed.json)、[VS Code](release-0.6.5/vscode-regression.json)、[三浏览器](release-0.6.5/incremental-preview.json)、[断言覆盖](release-0.6.5/assertion-coverage.json)。
 
