@@ -10,7 +10,7 @@ const v=Object.assign(Object.create(Presentation.prototype),{
  opened:true,ready:true,generation:1,serial:1,index:0,resident:new Set(),readyResident:new Set(),
  deck:{pages:[{id:'a',inspection:{}},{id:'b',inspection:{}}]},
  clock:new PresentationClock(),reduced:{matches:false},metrics:{transitions:[]},
- root:{dataset:{}},warning:{replaceChildren(){}},overlay:{},menu:{hidden:true},mask:{hidden:true},
+ root:{dataset:{}},overlay:{},menu:{hidden:true},mask:{hidden:true},
  worker:{postMessage:m=>messages.push(m)},sync(){},dimensions:()=>({width:10,height:10}),
  preload:blocked.promise,preloading:true,load:async()=>{},
  call:async()=>({type:'done'}),paint(){this.paints=(this.paints||0)+1;},

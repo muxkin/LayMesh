@@ -10,7 +10,7 @@
     "version": 3,
     "engine": "rust-skia-ratex"
   },
-  "engine": "fa43c7be7f9c43820b35c12cf4b849a292d91ab318421d4ee075cb1346f4da56",
+  "engine": "6b39c8c257889c23e8b086ce3a614b47fe3d76b0b0f36c8007e0d1ad5837fb2d",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",

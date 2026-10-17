@@ -1,3 +1,8 @@
+# 0.6.6
+
+- Remove diagnostic warning overlays from windowed, fullscreen and presenter audience playback, including offline HTML/ZIP exports.
+- Preserve editor and command-line diagnostics, exported diagnostic data, and presentation loading error recovery.
+
 # 0.6.4
 
 - Start presentations from the current preview page; keep ordinary fullscreen as the default and restore the preview on exit.

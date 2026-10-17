@@ -54,7 +54,7 @@ const pw=require(process.env.PLAYWRIGHT_MODULE||'playwright'),assert=require('no
    results.push({mode,passed:true,calls,consoleCalls,manualFullscreen:true,currentPage:true,exitRestoresPreview:true});
   }else{
    await page.click('#full');await page.waitForFunction(()=>__LAYMESH_WEB.presentation.ready);assert.equal(context.pages().length,1);assert.equal(await page.evaluate(()=>!!__LAYMESH_WEB.presenter.opened),false);assert.equal(await page.evaluate(()=>__LAYMESH_WEB.presentation.deck.pages[__LAYMESH_WEB.presentation.index].id),selected.id);
-   assert.doesNotMatch(await page.locator('.presentation-warning').textContent(),/无法检测|屏幕配置/);
+   assert.equal(await page.locator('.presentation-warning').count(),0);
    if(mode==='fullscreen-denied'){
     assert.equal(await page.evaluate(()=>document.fullscreenElement),null);assert.equal(await page.evaluate(()=>__LAYMESH_WEB.presentation.metrics.fullscreenResult.ok),false);
     await page.evaluate(()=>window.allowFullscreen=true);await page.locator('.presentation').focus();await page.keyboard.press('f');

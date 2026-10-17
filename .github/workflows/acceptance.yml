@@ -102,6 +102,7 @@ jobs:
           preview_pid=$!
           trap 'kill "$preview_pid"' EXIT
           node scripts/test-web-export.cjs "$RUNNER_TEMP/browser-results/web-export"
+          node scripts/test-presentation-warnings.cjs "$RUNNER_TEMP/browser-results/presentation-warnings"
           node scripts/test-web-static-export.cjs "$RUNNER_TEMP/browser-results/static-export"
           python scripts/check-web-static-export.py "$RUNNER_TEMP/browser-results/static-export"
           node scripts/test-web-pdf-resources.mjs
