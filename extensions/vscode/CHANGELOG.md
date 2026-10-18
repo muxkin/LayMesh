@@ -1,4 +1,4 @@
-# 0.7.0
+# 0.7.1
 
 - Add independent video playback, seeking, volume/mute controls, page audio and continuous document music in preview and presentations.
 - Refresh native/WASM previews correctly after media or background-music edits, share media data and release page playback resources on navigation.

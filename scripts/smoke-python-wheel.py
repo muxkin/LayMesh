@@ -37,6 +37,12 @@ def main():
     manifest = json.loads((vendor / "manifest.json").read_text(encoding="utf-8"))
     assert subprocess.check_output([command[0], "--version"], text=True).strip() == "laymesh " + manifest["rust_version"]
     examples = args.examples.resolve() if args.examples else None
+    # Video preparation is an explicit external dependency. Remember its absolute
+    # path before proving that the installed engine works with an empty PATH.
+    has_media_examples = examples and (examples / "media").is_dir()
+    ffmpeg = shutil.which("ffmpeg") if has_media_examples else None
+    if has_media_examples and not ffmpeg:
+        raise RuntimeError("Install FFmpeg before validating the media examples")
     with tempfile.TemporaryDirectory(prefix="laymesh-installed-test-") as tmp, working_directory(tmp):
         # These changes are process-local. Pip installation happens before this test.
         for name in ("LAYMESH_CLI", "PYTHONPATH", "NODE_PATH", "NODE_OPTIONS"):
@@ -105,10 +111,19 @@ page.add(p,offset=(5,5))'''
             assert shown.call_count == 2
         assert Path("notebook.svg").is_file() and Path("notebook.pdf").read_bytes().startswith(b"%PDF")
         if examples:
+            # validate reads project configuration; keep the original fixtures
+            # untouched and configure FFmpeg only in this disposable media copy.
+            if has_media_examples:
+                media_examples = Path(tmp) / "media"
+                shutil.copytree(examples / "media", media_examples)
+                (media_examples / ".laymesh.json").write_text(json.dumps({"export": {
+                    "ffmpeg": {"executable": str(Path(ffmpeg).resolve())}}}), encoding="utf-8")
             # Modules without a page are not standalone entry points.
             entries = sorted(p for p in examples.rglob("*.lay") if "canvas(" in p.read_text(encoding="utf-8"))
             for entry in entries:
-                subprocess.run([str(cli), "validate", str(entry)], check=True, stdout=subprocess.DEVNULL)
+                relative = entry.relative_to(examples)
+                source = Path(tmp) / relative if relative.parts[0] == "media" else entry
+                subprocess.run([str(cli), "validate", str(source)], check=True, stdout=subprocess.DEVNULL)
             print(f"Validated {len(entries)} native example entry points with bundled runtime")
         print(json.dumps({"wheel_version": manifest["version"], "target": manifest["target"], "engine": "rust", "exports": ["SVG", "PDF", "PNG", "JPEG", "TIFF", "WebP", "BMP", "GIF", "ICO", "TGA", "PAM", "PPM", "PGM", "PBM"], "system_node": False, "empty_path":True, "saved_data": True, "matplotlib": True, "notebook_magics": True}))
 
