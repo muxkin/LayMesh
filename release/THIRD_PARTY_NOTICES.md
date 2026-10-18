@@ -59,6 +59,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | digest | 0.11.3 | MIT OR Apache-2.0 |
 | dispatch2 | 0.3.1 | Zlib OR Apache-2.0 OR MIT |
 | displaydoc | 0.2.7 | MIT OR Apache-2.0 |
+| dlmalloc | 0.2.14 | MIT/Apache-2.0 |
 | dtoa | 1.0.11 | MIT OR Apache-2.0 |
 | dtoa-short | 0.3.5 | MPL-2.0 |
 | ecb | 0.1.2 | MIT |

@@ -67,6 +67,15 @@ cp.execFileSync(binary, [
           document.querySelector("#app").dataset.painted === "true",
       );
       assert.equal(await page.title(), "Export test");
+      // A full PPTX now combines all slides; unlike PDF it requires equal sizes.
+      await page.locator("#export").click();
+      await page.locator("#export-format").selectOption("pptx");
+      assert.equal(await page.locator("#export-scope").inputValue(), "all");
+      await page.locator("#export-file").click();
+      await page.waitForFunction(() =>
+        document.querySelector("#export-progress").textContent.includes("PPTX page 2"),
+      );
+      await page.locator("#export-panel .dialog-close").click();
       const save = async (format, suffix = format, scope) => {
         await page.locator("#export").click();
         await page.locator("#export-format").selectOption(format);
@@ -95,7 +104,7 @@ cp.execFileSync(binary, [
         "pbm",
         "tga",
       ])
-        await save(format);
+        await save(format, format, format === "pptx" ? "current" : undefined);
       assert.equal(
         await page.evaluate(() => __LAYMESH_WEB.metrics.compiles),
         0,

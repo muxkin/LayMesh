@@ -1,3 +1,11 @@
+# 0.7.0
+
+- Add independent video playback, seeking, volume/mute controls, page audio and continuous document music in preview and presentations.
+- Refresh native/WASM previews correctly after media or background-music edits, share media data and release page playback resources on navigation.
+- Export complete equal-size `.laydoc` decks to one editable PPTX with embedded media and playback timing; keep the current-page export command.
+- Include media in offline HTML/ZIP and mix video sound, page audio and document music in MP4 exports.
+- Windows Microsoft 365 PowerPoint playback and save/reopen remain pending actual-device verification.
+
 # 0.6.6
 
 - Remove diagnostic warning overlays from windowed, fullscreen and presenter audience playback, including offline HTML/ZIP exports.
