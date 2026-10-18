@@ -1,0 +1,4 @@
+d=document(name="Media experiment")
+d.play(audio(src="music.wav"),loop=true,volume=0.15)
+d.add(page(src="first.lay"))
+d.add(page(src="second.lay"))

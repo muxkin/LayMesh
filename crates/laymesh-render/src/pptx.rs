@@ -7,8 +7,11 @@ use std::{
     io::{Cursor, Write},
 };
 use zip::{ZipWriter, write::SimpleFileOptions};
+mod document;
 mod geometry;
+mod media;
 mod paint;
+pub use document::PptxDocument;
 const MM_TO_EMU: f64 = 36000.;
 const A: &str = "http://schemas.openxmlformats.org/drawingml/2006/main";
 const P: &str = "http://schemas.openxmlformats.org/presentationml/2006/main";
@@ -53,11 +56,13 @@ fn group_xfrm(b: Rect) -> String {
 struct Media {
     data: Vec<u8>,
     extension: &'static str,
+    kind: &'static str,
 }
 struct Writer<'a> {
     list: &'a DisplayList,
     dpi: f64,
     next_id: u32,
+    playback: Vec<(u32, laymesh_core::media::Cue, bool)>,
     media: Vec<Media>,
     warnings: Vec<Diagnostic>,
     fonts: BTreeSet<String>,
@@ -358,6 +363,33 @@ impl Writer<'_> {
         let t = parent * n.transform;
         let opacity = inherited * n.opacity;
         let formula = in_formula || n.semantic.is_some();
+        if n.hint["mediaId"].is_string() {
+            return self.video(n, t, opacity, name);
+        }
+        // Keep descendants playable when a group effect cannot be represented.
+        // Regular siblings retain the normal editable-object export pipeline.
+        fn contains_media(n: &DrawNode) -> bool {
+            n.hint["mediaId"].is_string()
+                || matches!(&n.kind,DrawKind::Group{children,..} if children.iter().any(contains_media))
+        }
+        if let DrawKind::Group {
+            children,
+            clip,
+            mask,
+        } = &n.kind
+        {
+            if children.iter().any(contains_media)
+                && (!n.effects.is_empty() || clip.is_some() || mask.is_some() || n.opacity != 1.)
+            {
+                self.warnings.push(Diagnostic::new("W_PPTX_MEDIA",format!("Group {name}: unsupported group effects, clipping, mask or opacity omitted; native media playback retained"),"",Loc::default()));
+                let start = self.bounds.len();
+                let mut out = String::new();
+                for child in children {
+                    out += &self.node(child, t, inherited, formula, name)?;
+                }
+                return Ok(self.group(name, &out, start));
+            }
+        }
         if !n.effects.is_empty() {
             return self.fallback(n, parent, inherited, name, "滤镜或特效");
         }
@@ -599,6 +631,7 @@ pub fn render_pptx_list(
         dpi,
         rasterize,
         next_id: 2,
+        playback: vec![],
         media: vec![],
         warnings: vec![],
         fonts: BTreeSet::new(),
@@ -608,6 +641,8 @@ pub fn render_pptx_list(
     for n in &list.nodes {
         body += &writer.node(n, Affine::IDENTITY, 1., false, "canvas")?;
     }
+    body += &writer.audio()?;
+    let timing = writer.timing();
     if !writer.fonts.is_empty() {
         writer.warnings.push(Diagnostic::new(
             "W_PPTX_FONT",
@@ -619,9 +654,12 @@ pub fn render_pptx_list(
             Loc::default(),
         ));
     }
-    Ok((package(list, &body, &writer.media)?, writer.warnings))
+    Ok((
+        package(list, &body, &writer.media, &timing)?,
+        writer.warnings,
+    ))
 }
-fn package(scene: &DisplayList, body: &str, media: &[Media]) -> Result<Vec<u8>> {
+fn package(scene: &DisplayList, body: &str, media: &[Media], timing: &str) -> Result<Vec<u8>> {
     let mut zip = ZipWriter::new(Cursor::new(Vec::new()));
     let mut add = |path: &str, data: &[u8]| -> Result<()> {
         zip.start_file(
@@ -632,7 +670,7 @@ fn package(scene: &DisplayList, body: &str, media: &[Media]) -> Result<Vec<u8>> 
         zip.write_all(data).map_err(|e| error(e.to_string()))?;
         Ok(())
     };
-    let content_types=format!("{XML}<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Default Extension=\"png\" ContentType=\"image/png\"/><Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/>{}</Types>",[
+    let content_types=format!("{XML}<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Default Extension=\"png\" ContentType=\"image/png\"/><Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/><Default Extension=\"mp4\" ContentType=\"video/mp4\"/><Default Extension=\"m4a\" ContentType=\"audio/mp4\"/><Default Extension=\"mp3\" ContentType=\"audio/mpeg\"/><Default Extension=\"wav\" ContentType=\"audio/wav\"/>{}</Types>",[
         ("/ppt/presentation.xml","presentation.main"),("/ppt/slides/slide1.xml","slide"),("/ppt/slideMasters/slideMaster1.xml","slideMaster"),("/ppt/slideLayouts/slideLayout1.xml","slideLayout")].iter().map(|(part,kind)|format!("<Override PartName=\"{part}\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.{kind}+xml\"/>")).collect::<String>()+"<Override PartName=\"/ppt/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>");
     add("[Content_Types].xml", content_types.as_bytes())?;
     add(
@@ -649,7 +687,7 @@ fn package(scene: &DisplayList, body: &str, media: &[Media]) -> Result<Vec<u8>> 
         .as_bytes(),
     )?;
     let root_group = "<p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr/>";
-    add("ppt/slides/slide1.xml",format!("{XML}<p:sld xmlns:a=\"{A}\" xmlns:r=\"{R}\" xmlns:p=\"{P}\"><p:cSld><p:spTree>{root_group}{body}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>").as_bytes())?;
+    add("ppt/slides/slide1.xml",format!("{XML}<p:sld xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" xmlns:a=\"{A}\" xmlns:r=\"{R}\" xmlns:p=\"{P}\"><p:cSld><p:spTree>{root_group}{body}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>{timing}</p:sld>").as_bytes())?;
     let mut slide_rels = vec![(
         "rId1".to_string(),
         "slideLayout",
@@ -658,7 +696,14 @@ fn package(scene: &DisplayList, body: &str, media: &[Media]) -> Result<Vec<u8>> 
     for (i, m) in media.iter().enumerate() {
         slide_rels.push((
             format!("rId{}", i + 2),
-            "image",
+            m.kind,
+            format!("../media/image{}.{}", i + 1, m.extension),
+        ));
+    }
+    for (i, m) in media.iter().enumerate().filter(|(_, m)| m.kind != "image") {
+        slide_rels.push((
+            format!("media{}", i + 2),
+            "http://schemas.microsoft.com/office/2007/relationships/media",
             format!("../media/image{}.{}", i + 1, m.extension),
         ));
     }
@@ -703,7 +748,12 @@ fn rels(items: &[(&str, &str, &str)]) -> String {
         items
             .iter()
             .map(|(id, kind, target)| format!(
-                "<Relationship Id=\"{id}\" Type=\"{R}/{kind}\" Target=\"{target}\"/>"
+                "<Relationship Id=\"{id}\" Type=\"{}\" Target=\"{target}\"/>",
+                if kind.starts_with("http") {
+                    kind.to_string()
+                } else {
+                    format!("{R}/{kind}")
+                }
             ))
             .collect::<String>()
     )

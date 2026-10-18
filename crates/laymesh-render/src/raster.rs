@@ -34,6 +34,17 @@ impl PreparedRaster {
         let images = Painter::new(&list)?.images;
         Ok(Self { list, images })
     }
+    pub fn set_media_frame(
+        &mut self,
+        resource: &str,
+        width: u32,
+        height: u32,
+        rgba: &[u8],
+    ) -> Result<()> {
+        self.images
+            .insert(resource.into(), skia::rgba_image(width, height, rgba)?);
+        Ok(())
+    }
     pub fn display_list(&self) -> &DisplayList {
         &self.list
     }

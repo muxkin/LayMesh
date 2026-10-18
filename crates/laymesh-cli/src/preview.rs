@@ -76,7 +76,7 @@ pub fn serve() -> io::Result<()> {
         }
     });
     sender
-        .send(json!({"type":"ready","protocol":1,"capabilities":["web-export-v1","animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","incremental-session-v1","incremental-document-v1","defaults"]}))
+        .send(json!({"type":"ready","protocol":1,"capabilities":["media-v1","web-export-v1","animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","incremental-session-v1","incremental-document-v1","defaults"]}))
         .unwrap();
     for (input_revision, line) in requests {
         let request: Value = match serde_json::from_str(&line?) {
@@ -161,7 +161,7 @@ pub fn serve() -> io::Result<()> {
             let mut host = Host {
                 native: true,
                 dependencies: Some(dependencies.clone()),
-                ..Host::default()
+                ..super::documents::configured_host(defaults.clone(), Path::new(file).to_path_buf())
             };
             dependencies.borrow_mut().insert(file.into());
             if let Some(overlays) = request["overlays"].as_object() {
@@ -177,6 +177,7 @@ pub fn serve() -> io::Result<()> {
                 }
             }
             host.files.insert(file.into(), source.as_bytes().to_vec());
+            compiler.set_media_host(&host);
             if request["type"] == "animate" {
                 let output = Path::new(request["output"].as_str().ok_or("Missing output path")?);
                 if !output.is_absolute() {
@@ -282,9 +283,11 @@ pub fn serve() -> io::Result<()> {
                 );
                 if request["type"] == "export" {
                     let selected = request.get("page").is_some() || request["page_id"].is_string();
-                    let pdf = request["output"]
-                        .as_str()
-                        .is_some_and(|p| p.to_ascii_lowercase().ends_with(".pdf"));
+                    let pdf = request["output"].as_str().is_some_and(|p| {
+                        [".pdf", ".pptx"]
+                            .iter()
+                            .any(|ext| p.to_ascii_lowercase().ends_with(ext))
+                    });
                     if request["document_all"]
                         .as_bool()
                         .unwrap_or(pdf && !selected)
@@ -293,14 +296,15 @@ pub fn serve() -> io::Result<()> {
                     }
                     if !selected {
                         return Err(
-                            "Document export requires an explicit page or document_all PDF".into(),
+                            "Document export requires an explicit page or document_all PDF/PPTX"
+                                .into(),
                         );
                     }
                 }
                 drawing_key = format!("{file}\n{}", page.id);
                 dependencies.borrow_mut().clear();
                 if incremental {
-                    compiler.evaluate_file(&page.src, page.transition.clone())?
+                    compiler.evaluate_page(page)?
                 } else {
                     Arc::new(laymesh_core::document::compile_preview_page(page, host)?)
                 }
@@ -491,12 +495,31 @@ fn export_document(
     if !output.is_absolute()
         || !output
             .extension()
-            .is_some_and(|e| e.eq_ignore_ascii_case("pdf"))
+            .is_some_and(|e| e.eq_ignore_ascii_case("pdf") || e.eq_ignore_ascii_case("pptx"))
     {
-        return Err("Whole document export currently requires an absolute PDF path".into());
+        return Err("Whole document export currently requires an absolute PDF/PPTX path".into());
     }
     let explicit = serde_json::from_value(request.get("options").cloned().unwrap_or(json!({})))?;
-    let options = config::export_options(defaults, "pdf", &explicit)?;
+    let format = output
+        .extension()
+        .and_then(|s| s.to_str())
+        .unwrap_or("pdf")
+        .to_ascii_lowercase();
+    let options = config::export_options(defaults, &format, &explicit)?;
+    if format == "pptx" {
+        let mut deck = laymesh_render::pptx::PptxDocument::new();
+        let mut warnings = Vec::new();
+        for page in &plan.pages {
+            let scene = laymesh_core::document::compile_page(page, host.clone())?;
+            warnings.extend(scene.warnings.clone());
+            warnings.extend(deck.append(&scene, &options)?);
+        }
+        let data = deck.finish()?;
+        super::export::write_atomic(output, &data)?;
+        return Ok(
+            json!({"exported":output.to_string_lossy(),"bytes":data.len(),"warnings":warnings,"pageCount":plan.pages.len()}),
+        );
+    }
     let mut pdf = laymesh_render::PdfDocument::new();
     let mut warnings = Vec::new();
     for page in &plan.pages {
@@ -530,9 +553,17 @@ fn export_scene(
         serde_json::from_value(request.get("options").cloned().unwrap_or(json!({})))?;
     let format = output.extension().and_then(|s| s.to_str()).unwrap_or("");
     let options = config::export_options(defaults, format, &explicit)?;
-    let data = laymesh_render::render_export(scene, format, &options)?;
+    let (data, pptx_warnings) = if format.eq_ignore_ascii_case("pptx") {
+        laymesh_render::pptx::render_pptx(scene, &options)?
+    } else {
+        (
+            laymesh_render::render_export(scene, format, &options)?,
+            vec![],
+        )
+    };
     super::export::write_atomic(output, &data)?;
     let mut warnings = scene.warnings.clone();
+    warnings.extend(pptx_warnings);
     if format.eq_ignore_ascii_case("pdf") {
         warnings.extend(laymesh_render::raster_policy::pdf_warnings(
             scene, &options,

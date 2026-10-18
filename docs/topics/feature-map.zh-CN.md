@@ -377,3 +377,8 @@
 | `css:-laymesh-transition` | [→](page-transitions.zh-CN.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
 | `css:-laymesh-transition-duration` | [→](page-transitions.zh-CN.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
 | `css:-laymesh-transition-timing-function` | [→](page-transitions.zh-CN.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
+| `api:video` | [→](media.zh-CN.md#video) | [→](../../examples/media/first.lay) | [→](../../examples/media/first.lay) |
+| `api:audio` | [→](media.zh-CN.md#audio) | [→](../../examples/media/first.lay) | [→](../../examples/media/first.lay) |
+| `api:canvas.play` | [→](media.zh-CN.md#play) | [→](../../examples/media/first.lay) | [→](../../examples/media/first.lay) |
+| `api:step.play` | [→](media.zh-CN.md#play) | [→](../../examples/media/step.lay) | [→](../../examples/media/step.lay) |
+| `api:document.play` | [→](media.zh-CN.md#play) | [→](../../examples/media/deck.laydoc) | [→](../../examples/media/deck.laydoc) |

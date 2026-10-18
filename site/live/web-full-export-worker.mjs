@@ -4,6 +4,7 @@ import init, {
   clear_resources,
   register_resource,
   PptxJob,
+  PptxDocumentJob,
   VectorJob,
   PdfJob,
 } from "./exporter-full/laymesh_wasm.js";
@@ -18,13 +19,14 @@ self.onmessage = async ({ data }) => {
   if(data.type === "pdfAck") {
     if(pendingPage?.seq===data.seq){const {resolve}=pendingPage;pendingPage=null;resolve(data.page);}return;
   }
-  let renderer, pdfJob;
+  let renderer, pdfJob, pptxDocument;
   try {
     await init({ module_or_path: data.wasm });
     const options = JSON.stringify(data.options),
       output = [],
       warnings = [];
     if(data.format === "pdf")pdfJob=new PdfJob(options);
+    if(data.format === "pptx")pptxDocument=new PptxDocumentJob();
     const raster = async (
       list,
       resources,
@@ -71,7 +73,8 @@ self.onmessage = async ({ data }) => {
       self.postMessage({
         progress: `正在导出 ${i + 1} / ${data.pages.length} 页…`,
       });
-      const page = data.pages[i].list ? data.pages[i] : await getPage(i);
+      let page = data.pages[i].list ? data.pages[i] : await getPage(i);
+      if(data.format === "pptx" && i>0 && page.list.media)page.list={...page.list,media:{...page.list.media,cues:page.list.media.cues.filter(c=>c.scope!=="document")}};
       let bytes;
       if (["pptx", "pdf", "svg"].includes(data.format)) {
         clear_resources();
@@ -118,7 +121,7 @@ self.onmessage = async ({ data }) => {
           else if (data.format === "svg")
             bytes = new TextEncoder().encode(result);
           else {
-            bytes = result;
+            pptxDocument.add_page(result,page.list.width,page.list.height);
             warnings.push(...JSON.parse(job.warnings()));
           }
         } finally {
@@ -146,6 +149,7 @@ self.onmessage = async ({ data }) => {
     }
     if (data.format === "pdf")
       output.push({ bytes: pdfJob.finish() });
+    if(pptxDocument){output.push({bytes:pptxDocument.finish()});pptxDocument=null;}
     self.postMessage(
       { output, warnings },
       output.map((o) => o.bytes.buffer),
@@ -155,5 +159,6 @@ self.onmessage = async ({ data }) => {
   } finally {
     renderer?.dispose();
     pdfJob?.free();
+    pptxDocument?.free();
   }
 };

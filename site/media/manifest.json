@@ -10,7 +10,7 @@
     "version": 3,
     "engine": "rust-skia-ratex"
   },
-  "engine": "6b39c8c257889c23e8b086ce3a614b47fe3d76b0b0f36c8007e0d1ad5837fb2d",
+  "engine": "4e281559563e44fa7d1c3bf8648bf7108813f61e2a85c14fb0bd8d753e6a3e45",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -5474,6 +5474,223 @@
         }
       ]
     },
+    "examples/media/click.lay": {
+      "fingerprint": "463d8f4fc61962df25be78f6ba57a91a9c7b32144ef790dca697b1d8a537dd11",
+      "dependencies": [
+        "examples/media/click.lay",
+        "examples/media/demo.mp4"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-click-960.webp",
+          "width": 960,
+          "height": 576,
+          "sha256": "bbded24b671dfd2877fa06074f73875941b87a3c9622d0a1f750225498f656f4"
+        },
+        {
+          "file": "site/media/media-click-1920.webp",
+          "width": 1920,
+          "height": 1152,
+          "sha256": "74b26236ac4989902c57cbc049cbd9cec8342660ba0f460ed95b5e7d6b76f5ee"
+        },
+        {
+          "file": "site/media/media-click-3840.webp",
+          "width": 3840,
+          "height": 2304,
+          "sha256": "e3b4b7d3502782b2970292fe4b6589ac03fc2bb5f871f5ae90da24ebff66beaa"
+        }
+      ]
+    },
+    "examples/media/controls.lay": {
+      "fingerprint": "6799f071b95d4bc58f4cac5d350a9e1f5c00fb5b80ab20113e13a190eb0e9519",
+      "dependencies": [
+        "examples/media/controls.lay",
+        "examples/media/controls.mp4"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-controls-960.webp",
+          "width": 960,
+          "height": 732,
+          "sha256": "c1713b27af878070b84e1854609fa005d4d38561327cc739f8fd01c11f923dbe"
+        },
+        {
+          "file": "site/media/media-controls-1920.webp",
+          "width": 1920,
+          "height": 1464,
+          "sha256": "afa2363d5967b915e3a13eb2aa4f43f912592502f2844e051924d5ca02d44ab5"
+        },
+        {
+          "file": "site/media/media-controls-3840.webp",
+          "width": 3840,
+          "height": 2928,
+          "sha256": "08a98c3a45ccfa750d4bba75ec33090c6152642b113368612b80dc47df82d2ee"
+        }
+      ]
+    },
+    "examples/media/first.lay": {
+      "fingerprint": "ce8f1821d1be5c2d207f169e0c6231b4d52fa718c9ee3515b786ab10eed60144",
+      "dependencies": [
+        "examples/media/demo.mp4",
+        "examples/media/first.lay",
+        "examples/media/music.wav"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-first-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "2524aecb15bf4cec15ae34d0c5ff5c175724a293071d581637f96b7ea7e3a091"
+        },
+        {
+          "file": "site/media/media-first-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "ef1955a02921a519e535cb415860fe021a56442afabcf72f22255e8fd32997f5"
+        },
+        {
+          "file": "site/media/media-first-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "646f2020abc63f2c1ffb895a61c202f1864e1395a50ad39e8912fe2ae894f95b"
+        }
+      ]
+    },
+    "examples/media/manual.lay": {
+      "fingerprint": "29fa157170f707c3c1238530049a86fd2647fa32ca6a7695c47286c889b93e6f",
+      "dependencies": [
+        "examples/media/controls.mp4",
+        "examples/media/manual.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-manual-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "2e0110501de5eba28d8531497d73986bdc3201cba6c1ed303fcdb4ad8fe75744"
+        },
+        {
+          "file": "site/media/media-manual-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "760b550610271b2e91066bbfba918f6edc2dc846abbd4cfbf38ea38b0dbcc08b"
+        },
+        {
+          "file": "site/media/media-manual-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "015943c213806cd9933d378ab96d024141168b8d6da5d540ba038b2a1c14aef2"
+        }
+      ]
+    },
+    "examples/media/powerpoint-end.lay": {
+      "fingerprint": "138cd4ec3b37e6a9eb0f3bff42206f07e98144f3a1f6313ba95817cf7801c3a6",
+      "dependencies": [
+        "examples/media/controls.mp4",
+        "examples/media/powerpoint-end.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-powerpoint-end-960.webp",
+          "width": 960,
+          "height": 732,
+          "sha256": "3ddebac38fa926867640a8890508743b8b840aa275fec0a50a1519914ef1bd16"
+        },
+        {
+          "file": "site/media/media-powerpoint-end-1920.webp",
+          "width": 1920,
+          "height": 1464,
+          "sha256": "bd7822de6befce369c3bbbf24c953d917e9090960649f5ac9a13097e9cef0493"
+        },
+        {
+          "file": "site/media/media-powerpoint-end-3840.webp",
+          "width": 3840,
+          "height": 2928,
+          "sha256": "055f45aee5d81f1b8546eac94f92c23a1d3b9eaf91df67265478db803df4fd14"
+        }
+      ]
+    },
+    "examples/media/powerpoint.lay": {
+      "fingerprint": "6f74eee7f947d6e4828cba8c3dd0c5ae6b8ba15295d7a8030ede1baba5d372e3",
+      "dependencies": [
+        "examples/media/controls.mp4",
+        "examples/media/powerpoint.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-powerpoint-960.webp",
+          "width": 960,
+          "height": 732,
+          "sha256": "c2edf8eb59fc3546a2885bb27420772516416e50a642c5460222e3605913fe9c"
+        },
+        {
+          "file": "site/media/media-powerpoint-1920.webp",
+          "width": 1920,
+          "height": 1464,
+          "sha256": "c411cd5f5e57940cfb94cfbe582339bbc417b2823be492b227018c076d299ab8"
+        },
+        {
+          "file": "site/media/media-powerpoint-3840.webp",
+          "width": 3840,
+          "height": 2928,
+          "sha256": "923983cda7988496f68422e4c84c70236502bf31efef967551262f064f0041f9"
+        }
+      ]
+    },
+    "examples/media/second.lay": {
+      "fingerprint": "36a2cf59131e10686fda2af1dbd2250dde3529efeec137e96ac29daea353b176",
+      "dependencies": [
+        "examples/media/second.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-second-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "258aaf7e338b6acb2ade679799d109b63382ba40c1162041eda20551e8e2688b"
+        },
+        {
+          "file": "site/media/media-second-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "e6fbe19101150e38af356d8e5f74c78c84efd713daee58c1913c2187fc4e084b"
+        },
+        {
+          "file": "site/media/media-second-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "101e8530c5e48d6252fe2ef9e452d516a75111d195d6494877d05d6134b7178a"
+        }
+      ]
+    },
+    "examples/media/step.lay": {
+      "fingerprint": "c0a77d4e68f586edc57e6bbf84651b188116fa5102353a9693d382e0a0ee0604",
+      "dependencies": [
+        "examples/media/demo.mp4",
+        "examples/media/music.wav",
+        "examples/media/step.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-step-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "5374a8c4ebfc6a3314756f6ecaf9132079fc890aea704e05cf52bc627cf44753"
+        },
+        {
+          "file": "site/media/media-step-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "62de83d94af44e354bad0bd1564045d5225e50dfc8b598802e76dddae1056aa5"
+        },
+        {
+          "file": "site/media/media-step-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "7dd3eb1b9875126f72115547bdc679908d67e647f60ef69a0079f6e9b33a56d9"
+        }
+      ]
+    },
     "examples/outlines.lay": {
       "fingerprint": "3a843845dfa91f5a0f88f000fde042750d648cc43b60d7db58e9262bd2f1dbc3",
       "dependencies": [
@@ -6024,6 +6241,96 @@
           "width": 3840,
           "height": 2496,
           "sha256": "9d55eb8bf9b6cfdcb005e91a071a27afbd65629404d40483db1a9478943ea8de"
+        }
+      ]
+    },
+    "examples/media/controls.laydoc": {
+      "fingerprint": "88c594995537b3f5008560fbeeb673c062eb87fafb910e4b97047eb063cb7b16",
+      "dependencies": [
+        "examples/media/controls.lay",
+        "examples/media/controls.laydoc",
+        "examples/media/controls.mp4",
+        "examples/media/music.wav",
+        "examples/media/second.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-controls-960.webp",
+          "width": 960,
+          "height": 732,
+          "sha256": "c1713b27af878070b84e1854609fa005d4d38561327cc739f8fd01c11f923dbe"
+        },
+        {
+          "file": "site/media/media-controls-1920.webp",
+          "width": 1920,
+          "height": 1464,
+          "sha256": "afa2363d5967b915e3a13eb2aa4f43f912592502f2844e051924d5ca02d44ab5"
+        },
+        {
+          "file": "site/media/media-controls-3840.webp",
+          "width": 3840,
+          "height": 2928,
+          "sha256": "08a98c3a45ccfa750d4bba75ec33090c6152642b113368612b80dc47df82d2ee"
+        }
+      ]
+    },
+    "examples/media/deck.laydoc": {
+      "fingerprint": "63e21f1f584fb4a540b818fd7111a456daed3720b104413adff0959650c2f261",
+      "dependencies": [
+        "examples/media/deck.laydoc",
+        "examples/media/demo.mp4",
+        "examples/media/first.lay",
+        "examples/media/music.wav",
+        "examples/media/second.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-deck-960.webp",
+          "width": 960,
+          "height": 624,
+          "sha256": "2524aecb15bf4cec15ae34d0c5ff5c175724a293071d581637f96b7ea7e3a091"
+        },
+        {
+          "file": "site/media/media-deck-1920.webp",
+          "width": 1920,
+          "height": 1248,
+          "sha256": "ef1955a02921a519e535cb415860fe021a56442afabcf72f22255e8fd32997f5"
+        },
+        {
+          "file": "site/media/media-deck-3840.webp",
+          "width": 3840,
+          "height": 2496,
+          "sha256": "646f2020abc63f2c1ffb895a61c202f1864e1395a50ad39e8912fe2ae894f95b"
+        }
+      ]
+    },
+    "examples/media/powerpoint.laydoc": {
+      "fingerprint": "d5027afaad612ffdd31e6a7f8fc4d27d900d5590576e49de54b83bec700c413d",
+      "dependencies": [
+        "examples/media/controls.mp4",
+        "examples/media/music.wav",
+        "examples/media/powerpoint-end.lay",
+        "examples/media/powerpoint.lay",
+        "examples/media/powerpoint.laydoc"
+      ],
+      "variants": [
+        {
+          "file": "site/media/media-powerpoint-960.webp",
+          "width": 960,
+          "height": 732,
+          "sha256": "c2edf8eb59fc3546a2885bb27420772516416e50a642c5460222e3605913fe9c"
+        },
+        {
+          "file": "site/media/media-powerpoint-1920.webp",
+          "width": 1920,
+          "height": 1464,
+          "sha256": "c411cd5f5e57940cfb94cfbe582339bbc417b2823be492b227018c076d299ab8"
+        },
+        {
+          "file": "site/media/media-powerpoint-3840.webp",
+          "width": 3840,
+          "height": 2928,
+          "sha256": "923983cda7988496f68422e4c84c70236502bf31efef967551262f064f0041f9"
         }
       ]
     },

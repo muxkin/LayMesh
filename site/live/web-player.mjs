@@ -10,6 +10,7 @@ import { Presentation } from "./presentation.mjs";
 import { createContextMenu, inputMenu } from "./workspace-menu.mjs";
 import { buildShell } from "./web-shell.mjs";
 import { iconLabel } from "./presentation-icons.mjs";
+import { MediaController } from "./media-runtime.mjs";
 import { PresentationClock } from "./presentation-clock.mjs";
 import { sha256 } from "./web-sha256.mjs";
 import { WebViewport } from "./web-viewport.mjs";
@@ -52,7 +53,7 @@ export function outlineList(list) {
   };
   list.nodes.forEach(walk);
   for (const [id, r] of Object.entries(list.resources))
-    if (!r.mime.startsWith("image/")) delete list.resources[id];
+    if (!/^(image|video|audio)\//.test(r.mime)) delete list.resources[id];
   return list;
 }
 export async function mountWebPlayer({
@@ -114,6 +115,10 @@ export async function mountWebPlayer({
     closed = false,
     last = performance.now(),
     raf;
+  const media = new MediaController({parent:stage,onFrame:()=>{paint();sync();},onState:()=>sync(),onError:error=>fail(error),getViewport:()=>{
+    if(!preview.page||!preview.origin)return null;const parent=stage.getBoundingClientRect(),box=preview.scroll.getBoundingClientRect(),r=preview.rect(),s=view.pixelsPerMM;
+    return {visible:!presentation.opened&&!busy&&!dirty&&!document.hidden,matrix:[s,0,box.left+r.left-parent.left,0,s,box.top+r.top-parent.top,0,0,1],clip:[box.left-parent.left,box.top-parent.top,box.right-parent.left,box.bottom-parent.top]};
+  }});
   const view = { mode: "fit", scale: 1, pan: [0, 0], rulers: true };
   const preview = new WebViewport(
     stage,
@@ -292,6 +297,7 @@ export async function mountWebPlayer({
   const workerURLs = [];
   const workerScripts = new Map();
   function makeWorker(name, renderer = false, exporter = false) {
+    const fullExporter=exporter&&name==="web-full-export-worker.mjs";
     const key = String(renderer) + String(exporter) + name;
     if (workerScripts.has(key)) return new Worker(workerScripts.get(key));
     // file:// gives each module worker an opaque origin. Inline dependencies
@@ -301,7 +307,7 @@ export async function mountWebPlayer({
       bytes(
         "runtime/" +
           (exporter
-            ? manifest.editable
+            ? fullExporter
               ? "exporter-full"
               : "exporter"
             : renderer
@@ -321,7 +327,7 @@ export async function mountWebPlayer({
             "skia-renderer.mjs",
             "presentation-resources.mjs",
             "presentation-renderer.mjs",
-            ...(exporter && !manifest.editable
+            ...(exporter && !fullExporter
               ? [
                   "web-pdf-resources.mjs",
                   "web-image-density.mjs",
@@ -444,8 +450,8 @@ export async function mountWebPlayer({
   function sync() {
     thumbnails?.select(index);
     if (closed || !el("play")) return;
-    iconLabel(el("play"), clock.running ? "pause" : "play");
-    el("play").setAttribute("aria-label", clock.running ? "暂停" : "播放");
+    iconLabel(el("play"), clock.running||media.running ? "pause" : "play");
+    el("play").setAttribute("aria-label", clock.running||media.running ? "暂停" : "播放");
     el("preview-state").textContent = viewStatic
       ? "完整排版"
       : clock.running
@@ -525,8 +531,12 @@ export async function mountWebPlayer({
       if (installed.warnings?.length) status(installed.warnings.map(w=>w.message).join("\n"));
       if (current !== serial) return;
       index = n;
+      const keepMedia=preserve&&media.list===p.list;
+      if(!keepMedia)await media.install(p.list,id=>resources(p)[id]);
       clock.install(p.inspection?.animation, reduced.matches);
-      if (preserve) clock.seek(time);
+      if(viewStatic)clock.running=false;
+      if (preserve) {clock.seek(time);if(!keepMedia)media.seek(time);}
+      if(!viewStatic)media.begin();
       let drawSize, frame, attempt = 0;
       do {
       drawSize = size();
@@ -612,20 +622,23 @@ export async function mountWebPlayer({
           const drawSize = size(),
             drawTime =
               staticFrame || viewStatic || clock.staticPage ? null : clock.time;
-          if (preview.covered(drawTime, pages[index].id)) {
+          if (!media.frames.size&&!media.running&&preview.covered(drawTime, pages[index].id)) {
             root.dataset.painted = "true";
             continue;
           }
+          const mediaFrames=media.takeFrames();
           const frame = await call({
+            mediaFrames,
             type: "paint",
             serial: current,
             pageId: pages[index].id,
             time:
               staticFrame || viewStatic || clock.staticPage ? null : clock.time,
             reduced: reduced.matches,
-            running: clock.running,
+            running: clock.running||media.running,
             ...drawSize,
-          });
+          },mediaFrames.map(f=>f.bitmap));
+          media.states=frame.mediaStates||{};
           if (current === serial) {
             if (frame.skipped || frame.type === "stale") continue;
             preview.present(drawSize, drawTime, pages[index].id);
@@ -658,6 +671,7 @@ export async function mountWebPlayer({
     if (closed) return;
     const seconds = Math.max(0, (now - last) / 1000);
     last = now;
+    if(!busy&&!(previewCompiler ? !previewCompiler.currentReady : dirty))media.tick(seconds,clock);
     if (clock.running && !busy && !(previewCompiler ? !previewCompiler.currentReady : dirty)) {
       if (clock.tick(seconds) && index + 1 < pages.length)
         go(index + 1).catch(fail);
@@ -667,6 +681,7 @@ export async function mountWebPlayer({
     raf = requestAnimationFrame(tick);
   }
   function advance() {
+    media.begin();
     viewStatic = false;
     if (clock.advance()) {
       if (index + 1 < pages.length) go(index + 1).catch(fail);
@@ -674,8 +689,13 @@ export async function mountWebPlayer({
     sync();
   }
   el("play").onclick = () => {
+    if(media.running){media.pause();clock.running=false;sync();return;}
+    const restart=clock.time>=clock.duration;
+    if(viewStatic||clock.time>=clock.duration){clock.install(pages[index].inspection?.animation,reduced.matches);clock.running=false;}
+    if(restart)media.seek(0,0,{preserveManual:true,preserveDocument:true});
+    media.resume();
     viewStatic = false;
-    if (clock.staticPage) {
+    if (clock.staticPage && !media.tracks.length) {
       if (index + 1 < pages.length) go(index + 1).catch(fail);
     } else {
       clock.toggle();
@@ -701,6 +721,7 @@ export async function mountWebPlayer({
   };
   el("static").onclick = () => {
     viewStatic = true;
+    media.seek(0);media.stop();
     clock.running = false;
     paint(true);
     sync();
@@ -709,6 +730,7 @@ export async function mountWebPlayer({
   el("seek").oninput = () => {
     viewStatic = false;
     clock.seek(Number(el("seek").value));
+    media.seek(clock.time,pages.slice(0,index).reduce((sum,p)=>sum+(p.inspection?.animation?.duration||0),0));
     paint();
     sync();
   };
@@ -716,6 +738,14 @@ export async function mountWebPlayer({
     clock.mode = el("mode").value;
     sync();
   };
+  stage.addEventListener('click',e=>{
+    if(e.target.closest('.media-controls'))return;
+    if(!media.list)return;const box=preview.canvas?.getBoundingClientRect?.()||stage.querySelector('canvas')?.getBoundingClientRect();if(!box)return;
+    const request=preview.request();if(!request)return;const v=request.viewport;
+    const x=v[0]+(e.clientX-box.left)/box.width*(v[2]-v[0]),y=v[1]+(e.clientY-box.top)/box.height*(v[3]-v[1]);
+    if(media.click(x,y,media.states)){e.preventDefault();e.stopImmediatePropagation();}
+  },true);
+  document.addEventListener("visibilitychange",()=>{if(document.hidden){clock.running=false;media.pause({lock:true});sync();}});
   let previewSnapshot;
   const presentationAdapter = async (p, generation) => {
     const init = {
@@ -796,6 +826,7 @@ export async function mountWebPlayer({
         time: clock.time,
         active: clock.active,
         completed: clock.completed,
+        mediaSnapshot:media.suspend(),
         running: clock.running,
       };
       clearTimeout(resizeTimer);
@@ -824,6 +855,7 @@ export async function mountWebPlayer({
             completed: snapshot.completed,
             running: snapshot.running && !dirty && !document.hidden,
           });
+          if(!document.hidden)media.restore(snapshot.mediaSnapshot);
           last = performance.now();
           sync();
           paint(viewStatic);
@@ -981,6 +1013,7 @@ export async function mountWebPlayer({
         (r.requestedFonts || []).map(f => [JSON.stringify(f), f]))).values()];
       workspace.refreshFonts();
     }
+    if(pages.some(p=>Object.keys(p.list?.media?.assets||{}).length)){manifest.schemaVersion=3;manifest.capabilities=["media-v1"];}
     metrics.warnings = records.flatMap(r => r.warnings || []);
     if (result.pages.some(p => p.id === records[index]?.key)) {
       viewStatic = true;
@@ -1141,7 +1174,7 @@ export async function mountWebPlayer({
       run: () => el(id).click(),
     });
     return [
-      command(clock.running ? "暂停" : "播放", "play"),
+      command(clock.running||media.running ? "暂停" : "播放", "play"),
       command("上一页／步", "previous"),
       command("下一页／步", "next"),
       command("重播当前页", "replay"),
@@ -1333,16 +1366,17 @@ export async function mountWebPlayer({
             }
           : undefined,
       };
+    const runtimeProfile=editable?"editable":pages.some(p=>Object.keys(p.list.media?.assets||{}).length)?"media":"playback";
     const runtimeFiles = new Set(
       JSON.parse(decoder.decode(bytes("runtime/runtime-files.json")))[
-        editable ? "editable" : "playback"
+        runtimeProfile
       ],
     );
     for (const [name, data] of Object.entries(files))
       if (name.startsWith("licenses/") || runtimeFiles.has(name))
         out[name] =
           name === "licenses/manifest.json"
-            ? selectWebLicenses(data, editable)
+            ? selectWebLicenses(data, runtimeProfile)
             : data;
     for (let i = 0; i < pages.length; i++) {
       const page = pages[i],
@@ -1439,9 +1473,9 @@ export async function mountWebPlayer({
     archive,
     status,
     onError: fail,
-    makeWorker: () =>
+    makeWorker: (format) =>
       makeWorker(
-        manifest.editable
+        manifest.editable || format === "pptx"
           ? "web-full-export-worker.mjs"
           : "web-static-export-worker.mjs",
         false,
@@ -1467,6 +1501,7 @@ export async function mountWebPlayer({
       return pages;
     },
     presenter,
+    media,
     get clock() {
       return clock;
     },
@@ -1493,6 +1528,7 @@ export async function mountWebPlayer({
     "pagehide",
     () => {
       closed = true;
+      media.dispose();
       disposeExport();
       clearTimeout(resizeTimer);
       viewportObserver.disconnect();

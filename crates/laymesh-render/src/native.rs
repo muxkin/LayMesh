@@ -78,6 +78,7 @@ mod tests {
     use super::*;
     fn scene() -> Scene {
         Scene {
+            media: Default::default(),
             page_transition: None,
             animation: None,
             schema_version: 8,
@@ -192,6 +193,7 @@ mod extraction_tests {
         formula["y"] = json!(10.);
         let scene = Scene {
             speaker_notes: None,
+            media: Default::default(),
             page_transition: None,
             animation: None,
             schema_version: 8,

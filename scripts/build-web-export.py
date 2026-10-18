@@ -35,8 +35,9 @@ def build(output=None,skip_wasm=False):
  entries['runtime/web-archive.mjs']=(ROOT/'site/live/web-archive.mjs').read_bytes().replace(b"../../vendor/fflate/fflate.mjs",b"./fflate.mjs")
  entries['runtime/fflate.mjs']=(ROOT/'vendor/fflate/fflate.mjs').read_bytes()
  entries['licenses/manifest.json']=json.dumps(collect_web_licenses(ROOT),ensure_ascii=False,separators=(',',':')).encode()
- def closure(editable):
+ def closure(editable,media=False):
   roots=['runtime/web-player.mjs','runtime/presentation-worker.mjs','runtime/web-archive.mjs','runtime/web-static-export-worker.mjs']
+  if media: roots+=['runtime/web-full-export-worker.mjs']
   if editable: roots+=['runtime/web-full-export-worker.mjs','runtime/web-workspace.mjs','runtime/source-editor.mjs','runtime/web-language-worker.mjs','runtime/web-compiler-worker.mjs']
   selected=set()
   def visit(name):
@@ -51,8 +52,9 @@ def build(output=None,skip_wasm=False):
   for name in roots:visit(name)
   selected.update(['runtime/web-player.css','runtime/presentation.css','runtime/bootstrap.js','runtime/wasm/laymesh.wasm','runtime/exporter/laymesh.wasm','runtime/skia/canvaskit.wasm'])
   if editable:selected.update(['runtime/compiler/laymesh.wasm','runtime/exporter-full/laymesh.wasm'])
+  if media:selected.add('runtime/exporter-full/laymesh.wasm')
   return sorted(selected)
- entries['runtime/runtime-files.json']=json.dumps({'playback':closure(False)+['runtime/runtime-files.json'],'editable':closure(True)+['runtime/runtime-files.json']}).encode()
+ entries['runtime/runtime-files.json']=json.dumps({'media':closure(False,True)+['runtime/runtime-files.json'],'playback':closure(False)+['runtime/runtime-files.json'],'editable':closure(True)+['runtime/runtime-files.json']}).encode()
  entries['runtime-files.json']=entries['runtime/runtime-files.json']
  temporary=output.with_suffix('.zip.tmp')
  with zipfile.ZipFile(temporary,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:

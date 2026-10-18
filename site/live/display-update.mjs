@@ -44,7 +44,7 @@ export function applyDisplayUpdate(previous, update) {
       } else if (!item.new?.kind) throw Error('Invalid inserted child');
     }
   }
-  const list={...previous,animation:update.animation,pageTransition:update.pageTransition,width:update.width,height:update.height,nodes:update.roots||previous.nodes.slice(),resources:update.resources||previous.resources};
+  const list={...previous,media:update.media,animation:update.animation,pageTransition:update.pageTransition,width:update.width,height:update.height,nodes:update.roots||previous.nodes.slice(),resources:update.resources||previous.resources};
   const copied = new Set();
   const copy = path => {
     let nodes=list.nodes,node;

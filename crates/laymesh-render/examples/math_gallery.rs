@@ -150,6 +150,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             node["y"] = json!(y);
                             let scene = Scene {
                                 speaker_notes: None,
+                                media: Default::default(),
                                 page_transition: None,
                                 animation: None,
                                 schema_version: 1,

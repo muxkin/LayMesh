@@ -20,7 +20,7 @@ def measure(path):
   playback=modes['playback']
   assert not any('exporter-full/' in name or name.endswith('web-full-export-worker.mjs') for name in playback)
   assert all(name in modes['editable'] for name in playback),'Editable must support saving a self-contained playback copy'
-  names=[n for n in playback if any(x in n for x in ('/presenter','/page-previews.mjs','/page-thumbnails.mjs','/presentation-entry.mjs','/presentation.css','/exporter/','/vendor/pdf-export/','/web-export-dialog.mjs','/web-static-export-worker.mjs','/web-pdf-export.mjs','/web-pdf-resources.mjs','/web-export-raster.mjs','/web-archive.mjs','/fflate.mjs','/web-jpeg-export.mjs','/web-vector-export.mjs','/web-image-density.mjs','/web-player.mjs','/web-player.css','/web-licenses.mjs','/web-transition-package.mjs','/runtime-files.json'))]
+  names=[n for n in playback if any(x in n for x in ('/presenter','/page-previews.mjs','/page-thumbnails.mjs','/presentation-entry.mjs','/presentation.css','/exporter/','/vendor/pdf-export/','/web-export-dialog.mjs','/web-media-export.mjs','/web-static-export-worker.mjs','/web-pdf-export.mjs','/web-pdf-resources.mjs','/web-export-raster.mjs','/web-archive.mjs','/fflate.mjs','/web-jpeg-export.mjs','/web-vector-export.mjs','/web-image-density.mjs','/web-player.mjs','/web-player.css','/web-licenses.mjs','/web-transition-package.mjs','/runtime-files.json'))]
   licenses=select(json.loads(z.read('licenses/manifest.json')),False)
   only={**licenses,'packages':[p for p in licenses['packages'] if p['playbackExportOnly']]}
   used={t['sha256'] for p in only['packages'] for t in p['texts']}

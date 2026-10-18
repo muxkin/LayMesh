@@ -1,0 +1,3 @@
+p=canvas(size=(100mm,65mm),background="#ffffff")
+p.add(text("Background music continues",font_size=4mm),offset=(10mm,25mm))
+s=p.step(duration=2s,hold=0s,start="after-previous")

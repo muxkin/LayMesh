@@ -667,7 +667,7 @@ def render_document(
     preview_dpi: float = 192, preview_quality: int = 95,
     preview_background: str = "#ffffff", **export_options,
 ) -> DocumentResult:
-    """Render .laydoc with the ordinary Lay DSL. PDF exports all pages by
+    """Render .laydoc with the ordinary Lay DSL. PDF/PPTX exports all pages by
     default; page=N selects a single page. One native process also creates the
     JPEG preview, keeping export and preview settings independent.
     """
@@ -687,8 +687,8 @@ def render_document(
     output_path = Path(output).expanduser().resolve() if output is not None else None
     if output_path and output_path.suffix.lower() not in _FORMATS:
         raise LayMeshBridgeError("不支持的输出格式")
-    if output_path and output_path.suffix.lower() not in {".pdf", ".html", ".zip"} and page is None:
-        raise LayMeshBridgeError("此格式需要 page=N；完整文档目前支持 PDF")
+    if output_path and output_path.suffix.lower() not in {".pdf", ".pptx", ".html", ".zip"} and page is None:
+        raise LayMeshBridgeError("此格式需要 page=N；完整文档支持 PDF/PPTX")
     if dpi is not None and (type(dpi) not in {int,float} or not math.isfinite(dpi) or not 0 < dpi <= 25400
                             or output_path is None or output_path.suffix.lower() in {".svg", ".html", ".zip"}):
         raise LayMeshBridgeError("dpi 需要位图/PDF/PPTX 输出且为 0–25400 之间的正数")

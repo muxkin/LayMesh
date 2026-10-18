@@ -162,6 +162,7 @@ pub(super) fn snapshot(list: &mut DisplayList, changes: Vec<Translation>) -> Res
         return Ok(());
     }
     let mut update = DisplayUpdate {
+        media: list.media.clone(),
         page_transition: list.page_transition.clone(),
         animation: list.animation.clone(),
         schema_version: list.schema_version,

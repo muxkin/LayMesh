@@ -21,6 +21,7 @@ def collect(root):
         ], cwd=root, text=True)
         profiles[package] = set(re.findall(r'^([^\s]+) v([^\s]+)', tree, re.M))
     playback = profiles['laymesh-playback'] | profiles['laymesh-tiff-export']
+    media = playback | profiles['laymesh-web-export']
     editable = playback | profiles['laymesh-wasm'] | profiles['laymesh-web-export']
 
     def add(name, version, license, source, refs, modes):
@@ -46,14 +47,14 @@ def collect(root):
         if key not in editable:
             continue
         found.add(key)
-        modes = ['editable'] + (['playback'] if key in playback else [])
+        modes = ['editable'] + (['playback'] if key in playback else []) + (['media'] if key in media else [])
         add(*key, record['license'], record.get('repository'), [
             (r['file'], (root/'release/licenses'/r['file']).read_bytes(), r['sha256'])
             for r in record['texts']
         ], modes)
     assert not {p for p in editable-found if not p[0].startswith('laymesh-')}, editable-found
 
-    def local(name, version, license, source, path, modes=('editable','playback')):
+    def local(name, version, license, source, path, modes=('editable','playback','media')):
         add(name, version, license, source, [(path.name, path.read_bytes(), None)], list(modes))
 
     local('LayMesh', tomllib.loads((root/'Cargo.toml').read_text())['workspace']['package']['version'], 'MIT', 'https://github.com/muxkin/LayMesh', root/'LICENSE')
@@ -67,7 +68,7 @@ def collect(root):
         if record['name']=='Matplotlib colormap data' or record['name'].endswith(' CSS'):
             add(record['name'], record['version'], record['license'], record.get('repository'), [
                 (r['file'], (root/'release/licenses'/r['file']).read_bytes(),r['sha256']) for r in record['texts']
-            ], ['editable','playback'])
+            ], ['editable','playback','media'])
     for name, info in json.loads((root/'vendor/workspace-ui/manifest.json').read_text()).items():
         file=next(p for p in info['files'] if 'LICENSE' in p)
         local(name, info['version'], info['license'], info['source'], root/'vendor/workspace-ui'/file)
@@ -79,7 +80,7 @@ def collect(root):
         local(name,info['version'],'See original text',None,root/'site/vendor'/info['license'],('editable',))
     for name, info in json.loads((root/'vendor/pdf-export/manifest.json').read_text()).items():
         refs=[(p,(root/'vendor/pdf-export'/p).read_bytes(),digest) for p,digest in info['files'].items() if any(n in p.upper() for n in ('LICENSE','COPYING','NOTICE'))]
-        add(name,info['version'],info['license'],info['source'],refs,['editable','playback'])
+        add(name,info['version'],info['license'],info['source'],refs,['editable','playback','media'])
         packages[-1]['playbackExportOnly']=True
     return dict(schemaVersion=1,
                 description='Original license and attribution texts. Each package references the SHA-256 of its complete UTF-8 text; identical texts are stored once. Native-only and build-only dependencies are not part of this web runtime.',

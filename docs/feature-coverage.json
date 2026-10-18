@@ -2694,6 +2694,41 @@
       "reference": "canvas",
       "minimal": "examples/animation/transitions/demo.laydoc",
       "composition": "examples/animation/transitions/demo.laydoc"
+    },
+    "api:video": {
+      "topic": "media",
+      "anchor": "video",
+      "reference": "video",
+      "minimal": "examples/media/first.lay",
+      "composition": "examples/media/first.lay"
+    },
+    "api:audio": {
+      "topic": "media",
+      "anchor": "audio",
+      "reference": "audio",
+      "minimal": "examples/media/first.lay",
+      "composition": "examples/media/first.lay"
+    },
+    "api:canvas.play": {
+      "topic": "media",
+      "anchor": "play",
+      "reference": "canvas.play",
+      "minimal": "examples/media/first.lay",
+      "composition": "examples/media/first.lay"
+    },
+    "api:step.play": {
+      "topic": "media",
+      "anchor": "play",
+      "reference": "step.play",
+      "minimal": "examples/media/step.lay",
+      "composition": "examples/media/step.lay"
+    },
+    "api:document.play": {
+      "topic": "media",
+      "anchor": "play",
+      "reference": "document.play",
+      "minimal": "examples/media/deck.laydoc",
+      "composition": "examples/media/deck.laydoc"
     }
   }
 }

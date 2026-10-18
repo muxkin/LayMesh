@@ -41,7 +41,7 @@ laymesh render examples/document/report.laydoc -o results.png --page 2
 laymesh render examples/document/report.laydoc -o page.png --all-pages
 ```
 
-页码从 1 开始。PDF 默认输出所有页，各页保留自己的物理尺寸和矢量内容。其它格式必须指定 `--page N` 或 `--all-pages`；批量输出为 `page-001.png`、`page-002.png` 等。整本 PPTX 尚未实现；单页和编号批量 PPTX 保留现有可编辑对象及回退诊断。
+页码从 1 开始。PDF 默认输出所有页，各页保留自己的物理尺寸和矢量内容。PPTX 默认导出整本文档，要求每页画布尺寸一致，并内嵌可播放媒体。其它格式须指定 `--page N` 或 `--all-pages`；PPTX 也保留编号单页批量输出。
 
 VS Code 打开 `.laydoc` 后可选择页面、打开对应页面源码、导出当前页或整本 PDF。网页使用相同 Rust/WASM 编排接口，按选中页绘制。预览中的选中页使用稳定 `id`，调整页序后继续显示该页；当前页被删除时明确报错。
 
@@ -55,3 +55,5 @@ result = render_document("examples/document/report.laydoc", output="results.png"
 Python 返回包含 `output`、`page` 和 `preview_jpeg` 的 `DocumentResult`。Notebook 可直接显示结果，或运行 `%laymesh report.laydoc --page 2`；预览继续使用 Rust CPU 的 192 DPI、质量 95、4:4:4 JPEG。`preview_page=2` 只选择预览页，保留整本 PDF 导出。
 
 完整示例：[report.laydoc](../../examples/document/report.laydoc)。
+
+PPTX 默认将整个 `.laydoc` 打包为一份文件，要求各页画布尺寸一致。`--page N` 选择单页，`--all-pages` 保留编号单页输出。可播放媒体规则与 Windows 待验收项见[视频与音频](media.zh-CN.md)。

@@ -10,6 +10,8 @@ pub use semantic::{ChildSource, ChildrenUpdate, PropertyUpdate};
 #[serde(rename_all = "camelCase")]
 pub struct DisplayUpdate {
     #[serde(default)]
+    pub media: laymesh_core::media::Media,
+    #[serde(default)]
     pub page_transition: Option<laymesh_core::page_transition::PageTransition>,
     #[serde(default)]
     pub animation: Option<laymesh_core::animation::Animation>,
@@ -34,6 +36,7 @@ pub struct NodeUpdate {
 impl DisplayUpdate {
     pub fn between(old: &DisplayList, new: &DisplayList) -> Self {
         let mut update = Self {
+            media: new.media.clone(),
             animation: new.animation.clone(),
             page_transition: new.page_transition.clone(),
             schema_version: new.schema_version,
@@ -84,6 +87,7 @@ impl DisplayUpdate {
     }
     pub fn apply(self, list: &mut DisplayList) -> Result<()> {
         self.validate(list)?;
+        list.media = self.media;
         list.animation = self.animation;
         list.page_transition = self.page_transition;
         list.width = self.width;

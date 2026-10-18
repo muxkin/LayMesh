@@ -37,7 +37,7 @@ laymesh render examples/document/report.laydoc -o results.png --page 2
 laymesh render examples/document/report.laydoc -o page.png --all-pages
 ```
 
-Page numbers start at 1. PDF exports the entire document by default, preserving each page's physical size and vector content. Other formats require `--page N` or `--all-pages`; batch files are named `page-001.png`, `page-002.png`, etc. Whole-document PPTX is not implemented; selected-page and numbered PPTX exports retain existing editable objects and fallback diagnostics.
+Page numbers start at 1. PDF exports the entire document by default, preserving each page's physical size and vector content. PPTX also exports the complete document by default, requiring equal canvas dimensions on every page. It embeds playable media and retains editable objects. Other formats require `--page N` or `--all-pages`; numbered batch exports remain available for PPTX too. See [media](media.en.md) for playback rules and the pending Windows acceptance checks.
 
 VS Code previews offer page selection, opening page sources, exporting the current page and exporting the document PDF. Web previews use the same Rust/WASM orchestration and render the selected page. Stable IDs preserve selection when pages are reordered; removing the selected page produces an explicit error.
 

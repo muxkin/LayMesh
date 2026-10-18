@@ -1,0 +1,4 @@
+p = canvas(size=(160mm,122mm),background="#eef1f5")
+p.add(text("Background music continues",font_size=6mm),offset=(10mm,10mm))
+p.add(text("Previous page videos stop. Click this video to play.",font_size=3.5mm),offset=(10mm,24mm))
+v = p.add(video(src="controls.mp4"),size=(100mm,56.25mm),offset=(30mm,40mm))

@@ -12,7 +12,7 @@ const commands=new Map(),dialogs=[],errors=[],warnings=[],context={subscriptions
 const disposable=()=>({dispose(){}});
 const vscode={env:{language:'en'},Uri:{file:uri},ProgressLocation:{Notification:1},
  commands:{getCommands:async()=>[],registerCommand:(name,fn)=>{commands.set(name,fn);return disposable();}},
- workspace:{isTrusted:true,textDocuments:docs,openTextDocument:async()=>docs[0],
+ workspace:{isTrusted:true,textDocuments:docs,openTextDocument:async uri=>docs.find(d=>d.uri.fsPath===uri.fsPath),
  getConfiguration:()=>({get:(_key,fallback)=>fallback,inspect:()=>undefined}),
  onDidChangeTextDocument:disposable,onDidSaveTextDocument:disposable,onDidCloseTextDocument:disposable,onDidChangeConfiguration:disposable},
  window:{activeTextEditor:{document:docs[0]},
@@ -37,6 +37,9 @@ vm.runInNewContext(fs.readFileSync(path.join(root,'extensions/vscode/src/preview
   const original=fs.readFileSync(destination.fsPath);
   await assert.rejects(()=>exportFigure(main,{output:destination,options:{quality:90}}));
   assert.deepEqual(fs.readFileSync(destination.fsPath),original);
-  console.log('PPTX picker, two-dialog flow, unsaved dependencies, native export and failure protection passed.');
+  const document=uri(path.join(directory,'deck.laydoc')),source='d=document()\nd.add(page(src="main.lay",id="one"))\nd.add(page(src="main.lay",id="two"))';fs.writeFileSync(document.fsPath,source);docs.push({uri:document,isDirty:false,getText:()=>source});
+  const whole=await exportFigure(document,{output:uri(path.join(directory,'deck.pptx'))});assert.equal(whole.pageCount,2);
+  const current=await exportFigure(document,{output:uri(path.join(directory,'page.pptx'))},'two');assert.equal(current.pageCount,undefined);assert(fs.statSync(path.join(directory,'page.pptx')).size>0);
+  console.log('PPTX picker, two-dialog flow, unsaved dependencies, native export, default multi-page/current-page selection and failure protection passed.');
  }finally{for(const subscription of context.subscriptions)subscription.dispose();fs.rmSync(directory,{recursive:true,force:true});}
 })().catch(error=>{console.error(error);process.exitCode=1;});

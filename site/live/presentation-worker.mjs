@@ -60,7 +60,7 @@ const prune=()=>{for(const id of [...jobs.keys()])if(!renderer.pages.has(id)){jo
    result.resident=[...jobs.keys()];result.readyResident=[...renderer.pages.values()].filter(p=>p.ready&&p.readySize?.[0]===data.width&&p.readySize?.[1]===data.height).map(p=>p.id);
    result.entryFrames=[...renderer.pages.values()].flatMap(p=>[...p.frames?.keys()||[]].map(key=>p.id+'/'+key));
   }else if(data.type==='activate'||data.type==='paint'){
-   if(data.serial!==latest){data.previousFrame?.bitmap.close();return {type:'stale'};}
+   if(data.serial!==latest){data.previousFrame?.bitmap.close();for(const f of data.mediaFrames||[])f.bitmap.close();return {type:'stale'};}
    if(!jobs.has(data.pageId))throw Error('Presentation page was evicted');
    if(data.type==='activate'){
     const reverse=!!data.transition?.reverse,spec=reverse?jobs.get(current)?.list.pageTransition:jobs.get(data.pageId).list.pageTransition;
@@ -68,11 +68,12 @@ const prune=()=>{for(const id of [...jobs.keys()])if(!renderer.pages.has(id)){jo
     if(data.previousFrame){renderer.skia.ensureSurface(data.width,data.height);renderer.skia.transitions.captureBitmap(data.transition&&!data.reduced?(reverse?data.previousFrame.transition:spec):null,reverse,data.previousFrame);}
     else renderer.skia.transitions.capture(data.transition&&!data.reduced?spec:null,reverse);
    }
+   renderer.use(data.pageId);renderer.skia.setMediaFrames(data.mediaFrames);
    presenting={pageId:data.pageId,serial:data.serial,time:data.time,running:!!data.running||data.type==='activate'&&!!data.transition};
    try{
-   const p=jobs.get(data.pageId),start=performance.now();let sampleMs=0;
-   result=data.usePrepared&&renderer.show(data.pageId,data.width,data.height,data.time??0,!!data.reduced);
-   if(!result){const states=data.time===null?{}:JSON.parse(p.job.presentation_state(data.time,!!data.reduced));sampleMs=performance.now()-start;result=renderer.render(data.pageId,data.width,data.height,states,data.type==='paint'&&data.running,data.viewport);}if(!result.skipped){current=data.pageId;lastPaint=data;}
+   const p=jobs.get(data.pageId),start=performance.now();let sampleMs=0;let states={};
+   result=!data.mediaFrames?.length&&data.usePrepared&&renderer.show(data.pageId,data.width,data.height,data.time??0,!!data.reduced);
+   if(!result){states=data.time===null?{}:JSON.parse(p.job.presentation_state(data.time,!!data.reduced));sampleMs=performance.now()-start;result=renderer.render(data.pageId,data.width,data.height,states,data.type==='paint'&&data.running,data.viewport);}if(!result.skipped){current=data.pageId;lastPaint=data;}
    if(data.type==='activate'&&result.skipped)throw Error('Presentation drawing interrupted; waiting for the rendering context');
    if(data.type==='activate'){
     let visible;
@@ -82,7 +83,7 @@ const prune=()=>{for(const id of [...jobs.keys()])if(!renderer.pages.has(id)){jo
    if(bitmapFrames){await frameDelivery;result.presentationConfirmed=!result.skipped&&data.visible!==false;}
    else if(data.type==='activate'||!data.running&&!result.skipped)result.presentationConfirmed=await renderer.skia.completeFrame(data.visible!==false);
    if(data.serial!==latest)return {type:'stale'};
-   Object.assign(result,{sampleMs,wasmMemoryBytes:memory.buffer.byteLength,skiaMemoryBytes:ck.HEAPU8.byteLength,preserveDrawingBuffer:renderer.skia.gl?.getContextAttributes()?.preserveDrawingBuffer,residentCacheBytes:[...renderer.pages.values()].reduce((n,p)=>n+renderer.cost(p),0),resident:[...jobs.keys()]});
+   Object.assign(result,{mediaStates:Object.keys(p.list.media?.assets||{}).length?states:undefined,sampleMs,wasmMemoryBytes:memory.buffer.byteLength,skiaMemoryBytes:ck.HEAPU8.byteLength,preserveDrawingBuffer:renderer.skia.gl?.getContextAttributes()?.preserveDrawingBuffer,residentCacheBytes:[...renderer.pages.values()].reduce((n,p)=>n+renderer.cost(p),0),resident:[...jobs.keys()]});
    }finally{presenting=null;}
   }else if(data.type==='snapshot'){
    if(!lastPaint)throw Error('No presentation frame to transfer');

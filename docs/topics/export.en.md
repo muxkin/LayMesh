@@ -16,7 +16,7 @@ laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quali
 | Format | Options and defaults | Transparency and density |
 | --- | --- | --- |
 | SVG | No raster encoding options | Vector graphics, physical page size and transparency |
-| PPTX | `dpi` controls local PNG fallback only; default 1200 | One slide; editable text boxes and vector shapes; fonts are not embedded |
+| PPTX | `dpi` controls local PNG fallback only; default 1200 | One slide or an equal-size document deck; embedded media and editable text boxes and vector shapes; fonts are not embedded |
 | PDF | `pdf_image_compression=auto`, `pdf_jpeg_quality=90`, `pdf_downsample=true` | Vector text/formulas; JPEG or lossless Flate images, never WebP |
 | PNG | `compression=fast/default/best`, default `default` | RGBA; records DPI metadata |
 | JPEG | `quality=1–100`, default 90; `background="#ffffff"` | Alpha is composited over the matte; records DPI metadata |
@@ -116,3 +116,5 @@ Precedence, highest first: one-shot API/CLI parameters; explicitly set VS Code f
 ```
 
 SVG has no DPI. Format groups use canonical names (`jpeg`, `tiff`, `webp`, etc.) and exporter keyword names. Raster exports keep the 100000000-pixel limit; increasing DPI beyond it fails before allocating a page buffer.
+
+Media playback and its Windows acceptance boundary are documented in [Video and audio](media.en.md).

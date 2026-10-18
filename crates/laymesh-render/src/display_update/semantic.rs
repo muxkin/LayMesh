@@ -344,6 +344,7 @@ impl DisplayUpdate {
     /// `header.nodes` is ignored; nodes may borrow unchanged old contributions.
     pub fn between_retained(old: &DisplayList, new: &DisplayList, nodes: &[&DrawNode]) -> Self {
         let mut update = Self {
+            media: new.media.clone(),
             animation: new.animation.clone(),
             page_transition: new.page_transition.clone(),
             schema_version: new.schema_version,

@@ -377,3 +377,8 @@ This map covers public functions, geometry members, LCSS properties and integrat
 | `css:-laymesh-transition` | [→](page-transitions.en.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
 | `css:-laymesh-transition-duration` | [→](page-transitions.en.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
 | `css:-laymesh-transition-timing-function` | [→](page-transitions.en.md#transition) | [→](../../examples/animation/transitions/demo.laydoc) | [→](../../examples/animation/transitions/demo.laydoc) |
+| `api:video` | [→](media.en.md#video) | [→](../../examples/media/first.lay) | [→](../../examples/media/first.lay) |
+| `api:audio` | [→](media.en.md#audio) | [→](../../examples/media/first.lay) | [→](../../examples/media/first.lay) |
+| `api:canvas.play` | [→](media.en.md#play) | [→](../../examples/media/first.lay) | [→](../../examples/media/first.lay) |
+| `api:step.play` | [→](media.en.md#play) | [→](../../examples/media/step.lay) | [→](../../examples/media/step.lay) |
+| `api:document.play` | [→](media.en.md#play) | [→](../../examples/media/deck.laydoc) | [→](../../examples/media/deck.laydoc) |

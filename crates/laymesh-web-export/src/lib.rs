@@ -317,3 +317,24 @@ impl PptxJob {
         Ok(serde_json::to_string(&warnings).unwrap())
     }
 }
+
+/// Shared multi-slide packaging; page encoding remains in PptxJob.
+#[wasm_bindgen]
+pub struct PptxDocumentJob {
+    inner: laymesh_render::pptx::PptxDocument,
+}
+#[wasm_bindgen]
+impl PptxDocumentJob {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Self {
+        Self {
+            inner: laymesh_render::pptx::PptxDocument::new(),
+        }
+    }
+    pub fn add_page(&mut self, bytes: &[u8], width: f64, height: f64) -> Result<(), JsValue> {
+        self.inner.add_page(bytes, width, height).map_err(err)
+    }
+    pub fn finish(self) -> Result<Vec<u8>, JsValue> {
+        self.inner.finish().map_err(err)
+    }
+}

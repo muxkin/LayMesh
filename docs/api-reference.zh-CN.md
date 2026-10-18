@@ -4153,6 +4153,179 @@ s4.animate(title, class="animate__animated animate__pulse", duration=600ms)
 
 [概念与常见错误](topics/animation.zh-CN.md#animate) · [组合源码](../examples/animation/presentation.lay)
 
+## video
+
+定义本地视频素材，通过 add 放置，通过 canvas.play 或 step.play 设置播放。
+
+返回：material
+
+位置参数：`src`.
+
+必需：`src`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `src` | string | 相对于定义文件的本地资源路径 | — |
+| `size` | (length \| auto, length \| auto) / 画布单位 | 二维物理尺寸 (宽,高)；auto 保持比例或自然排版 | — |
+| `class` | string | 空格分隔的 LCSS 类名 | "" |
+| `background` | paint | 对象区域的底色或填充，不是文字或轴线颜色 | none |
+| `padding` | length \| length[] / 画布单位 | 内部留白；一个值或上、右、下、左四个值 | 0 |
+| `border_radius` | length / 画布单位 | 底框圆角的物理半径 | 0 |
+| `border_color` | color | 封闭轮廓颜色，none 表示无边框 | none |
+| `border_width` | length / pt | 封闭轮廓线宽；裸值为 pt | — |
+| `border_style` | "none" \| "solid" \| "dashed" \| "dotted" \| "dash_dot" \| "double" \| "triple" | 边框线型；与填充独立<br>`none`: 不绘制此项<br>`solid`: 连续实线<br>`dashed`: 虚线；可用 dash 参数覆盖长度<br>`dotted`: 点线<br>`dash_dot`: 点划线<br>`double`: 双线描边<br>`triple`: 三线描边 | solid |
+| `border_dash` | length[] / pt | 交替的边框线段和间隔长度列表；须成对 | — |
+| `border_dash_offset` | length / pt | 虚线相位；裸值为 pt | 0 |
+| `border_cap` | "butt" \| "round" \| "square" | 轮廓虚线端点形状<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | butt |
+| `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
+| `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
+| `border_opacity` | value | 边框独立透明度 0–1 | 1 |
+| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `poster` | string | 可选封面图片路径 | — |
+
+### 最小完整示例
+
+```lay
+p=canvas(size=(100mm,65mm),background="#f4f5f7")
+v=p.add(video(src="demo.mp4"),size=(80mm,45mm),offset=(10mm,5mm))
+p.add(text("Video + audio",font_size=4mm),offset=(10mm,55mm))
+p.play(v)
+p.play(audio(src="music.wav"),loop=true,volume=0.2)
+s=p.step(duration=3s,hold=0s,start="after-previous")
+```
+
+[概念与常见错误](topics/media.zh-CN.md#video) · [组合源码](../examples/media/first.lay)
+
+## audio
+
+定义本地音频素材，使用 canvas.play、step.play 或 document.play 播放。
+
+返回：audio material
+
+位置参数：`src`.
+
+必需：`src`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `src` | string | 相对于定义文件的本地资源路径 | — |
+
+### 最小完整示例
+
+```lay
+p=canvas(size=(100mm,65mm),background="#f4f5f7")
+v=p.add(video(src="demo.mp4"),size=(80mm,45mm),offset=(10mm,5mm))
+p.add(text("Video + audio",font_size=4mm),offset=(10mm,55mm))
+p.play(v)
+p.play(audio(src="music.wav"),loop=true,volume=0.2)
+s=p.step(duration=3s,hold=0s,start="after-previous")
+```
+
+[概念与常见错误](topics/media.zh-CN.md#audio) · [组合源码](../examples/media/first.lay)
+
+## canvas.play
+
+设置媒体的页面、步骤或文档播放规则，并保留独立媒体时钟。
+
+返回：none
+
+位置参数：`target`.
+
+必需：`target`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `target` | instance \| audio | 已放置的视频实例或音频素材 | — |
+| `trigger` | "auto" \| "click" | 启动方式：auto 随页面或步骤开始，click 独立点击视频启动。<br>`auto`: 页面、步骤或文档开始时自动启动<br>`click`: 独立点击视频启动或暂停 | — |
+| `delay` | time / s/ms | 启动规则满足后的延迟，使用 s/ms。 | — |
+| `trim_start` | time / s/ms | 片段起点，源文件的绝对时间，使用 s/ms。 | — |
+| `trim_end` | time / s/ms | 片段终点，源文件的绝对时间，使用 s/ms。 | — |
+| `loop` | bool | 循环播放裁剪后的片段。 | — |
+| `volume` | number | 播放音量，范围 0 到 1，默认 1。 | — |
+| `muted` | bool | 静音播放，仍保留视频画面。 | — |
+| `export_start` | time / s/ms | 点击视频的 MP4 导出开始时间，使用页面绝对时间 s/ms。 | — |
+
+### 最小完整示例
+
+```lay
+p=canvas(size=(100mm,65mm),background="#f4f5f7")
+v=p.add(video(src="demo.mp4"),size=(80mm,45mm),offset=(10mm,5mm))
+p.add(text("Video + audio",font_size=4mm),offset=(10mm,55mm))
+p.play(v)
+p.play(audio(src="music.wav"),loop=true,volume=0.2)
+s=p.step(duration=3s,hold=0s,start="after-previous")
+```
+
+[概念与常见错误](topics/media.zh-CN.md#play) · [组合源码](../examples/media/first.lay)
+
+## step.play
+
+设置媒体的页面、步骤或文档播放规则，并保留独立媒体时钟。
+
+返回：none
+
+位置参数：`target`.
+
+必需：`target`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `target` | instance \| audio | 已放置的视频实例或音频素材 | — |
+| `trigger` | "auto" \| "click" | 启动方式：auto 随页面或步骤开始，click 独立点击视频启动。<br>`auto`: 页面、步骤或文档开始时自动启动<br>`click`: 独立点击视频启动或暂停 | — |
+| `delay` | time / s/ms | 启动规则满足后的延迟，使用 s/ms。 | — |
+| `trim_start` | time / s/ms | 片段起点，源文件的绝对时间，使用 s/ms。 | — |
+| `trim_end` | time / s/ms | 片段终点，源文件的绝对时间，使用 s/ms。 | — |
+| `loop` | bool | 循环播放裁剪后的片段。 | — |
+| `volume` | number | 播放音量，范围 0 到 1，默认 1。 | — |
+| `muted` | bool | 静音播放，仍保留视频画面。 | — |
+| `export_start` | time / s/ms | 点击视频的 MP4 导出开始时间，使用页面绝对时间 s/ms。 | — |
+
+### 最小完整示例
+
+```lay
+p = canvas(size=(100mm,65mm),background="#f4f5f7")
+v = p.add(video(src="demo.mp4"),size=(80mm,45mm),offset=(10mm,5mm))
+p.add(text("Step starts video + sound",font_size=4mm),offset=(10mm,55mm))
+s = p.step(duration=3s,hold=0s)
+s.play(v,delay=250ms,trim_start=500ms,trim_end=2500ms)
+s.play(audio(src="music.wav"),delay=250ms,volume=0.2)
+```
+
+[概念与常见错误](topics/media.zh-CN.md#play) · [组合源码](../examples/media/step.lay)
+
+## document.play
+
+设置媒体的页面、步骤或文档播放规则，并保留独立媒体时钟。
+
+返回：none
+
+位置参数：`target`.
+
+必需：`target`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `target` | audio | 跨页连续播放的音频素材 | — |
+| `trigger` | "auto" | 启动方式：auto 随页面或步骤开始，click 独立点击视频启动。<br>`auto`: 页面、步骤或文档开始时自动启动 | — |
+| `delay` | time / s/ms | 启动规则满足后的延迟，使用 s/ms。 | — |
+| `trim_start` | time / s/ms | 片段起点，源文件的绝对时间，使用 s/ms。 | — |
+| `trim_end` | time / s/ms | 片段终点，源文件的绝对时间，使用 s/ms。 | — |
+| `loop` | bool | 循环播放裁剪后的片段。 | — |
+| `volume` | number | 播放音量，范围 0 到 1，默认 1。 | — |
+| `muted` | bool | 静音播放，仍保留视频画面。 | — |
+| `export_start` | time / s/ms | 点击视频的 MP4 导出开始时间，使用页面绝对时间 s/ms。 | — |
+
+### 最小完整示例
+
+```lay
+d=document(name="Media experiment")
+d.play(audio(src="music.wav"),loop=true,volume=0.15)
+d.add(page(src="first.lay"))
+d.add(page(src="second.lay"))
+```
+
+[概念与常见错误](topics/media.zh-CN.md#play) · [组合源码](../examples/media/deck.laydoc)
+
 ## css-properties
 
 CSS 属性支持由编译器、补全、悬停与颜色编辑共享。不支持的 CSS 会恢复解析，每文件集中提示一次。草案阴影分项规则见 [LCSS](topics/lcss.zh-CN.md#shadow-overrides)。

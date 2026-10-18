@@ -5,6 +5,7 @@ use std::{collections::BTreeMap, io::Cursor};
 
 fn list(nodes: Vec<DrawNode>) -> DisplayList {
     DisplayList {
+        media: Default::default(),
         page_transition: None,
         animation: None,
         schema_version: 1,

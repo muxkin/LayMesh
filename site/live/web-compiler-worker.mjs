@@ -114,7 +114,7 @@ self.onmessage = ({ data }) => {
         // Revalidate each page's actual reads and its visual descriptor, even
         // if its heavy draw job was evicted. Only the client's exact accepted
         // baseline can be reused; discarded/obsolete replies cannot pass here.
-        const descriptor=p=>JSON.stringify({src:p.src,transition:p.transition&&{args:p.transition.args,file:p.transition.file}});
+        const descriptor=p=>JSON.stringify({src:p.src,mediaKey:p.mediaKey,transition:p.transition&&{args:p.transition.args,file:p.transition.file}});
         const unchanged=data.mode==='preview'?directory.filter(p=>{const old=pageInputs.get(p.id);return old&&old.listId===data.knownPages?.[p.id]&&old.spec===descriptor(p)&&old.fontVersion===fontVersion&&old.reads.every(([path,version])=>(inputVersions.get(path)||0)===version);}).map(p=>p.id):[];
         const target = directory.find((p) => p.id === data.targetPageId) ||
           directory[Math.min(data.fallbackPageIndex || 0, directory.length - 1)];
@@ -140,10 +140,10 @@ self.onmessage = ({ data }) => {
             const list = JSON.parse(partial?draw.drawing_info():draw.display_list()),
               resources = Object.fromEntries(
                 Object.keys(list.resources)
-                  .filter((id) => list.resources[id].mime.startsWith("image/")&&(!partial||!previous.resourceIds.has(id)))
+                  .filter((id) => /^(image|video|audio)\//.test(list.resources[id].mime)&&(!partial||!previous.resourceIds.has(id)))
                   .map((id) => [id, draw.resource_bytes(id)]),
               );
-            drawings.delete(page.id);drawings.set(page.id,{job:draw,id:listId,fontIds:Object.keys(list.resources).filter(id=>!list.resources[id].mime.startsWith('image/')),resourceIds:new Set(Object.keys(list.resources).filter(id=>list.resources[id].mime.startsWith('image/')))});
+            drawings.delete(page.id);drawings.set(page.id,{job:draw,id:listId,fontIds:Object.keys(list.resources).filter(id=>list.resources[id].mime.startsWith('font/')),resourceIds:new Set(Object.keys(list.resources).filter(id=>/^(image|video|audio)\//.test(list.resources[id].mime)))});
             const inspected = JSON.parse(job.inspection());
             const dependencies=JSON.parse(preview_dependencies());
             pageInputs.set(page.id,{spec:descriptor(page),listId,fontVersion,reads:dependencies.map(path=>[path,inputVersions.get(path)||0])});
@@ -152,15 +152,15 @@ self.onmessage = ({ data }) => {
               requestedFonts.set(JSON.stringify(r), r);
             warnings.push(...(inspected.warnings || []));
             for (const [id, r] of Object.entries(list.resources))
-              if (!r.mime.startsWith("image/")) {
+              if (r.mime.startsWith("font/")) {
                 if(!fontFaces.has(id))fontFaces.set(id,JSON.parse(describe_font(draw.resource_bytes(id))));
                 for (const face of fontFaces.get(id)) {
                   faces.set(face.postscriptName, face);
                   pageFaces.set(face.postscriptName, face);
                 }
               }
-            for(const [id,r] of Object.entries(list.resources))if(!r.mime.startsWith("image/"))delete list.resources[id];
-            if(listUpdate?.resources)for(const [id,r] of Object.entries(listUpdate.resources))if(!r.mime.startsWith("image/"))delete listUpdate.resources[id];
+            for(const [id,r] of Object.entries(list.resources))if(r.mime.startsWith("font/"))delete list.resources[id];
+            if(listUpdate?.resources)for(const [id,r] of Object.entries(listUpdate.resources))if(r.mime.startsWith("font/"))delete listUpdate.resources[id];
             diagnostics.pages ||= [];
             diagnostics.pages.push({id:page.id,evaluateMs,drawMs,serializeMs:performance.now()-pageStarted-evaluateMs-drawMs});
             pages.push({

@@ -376,6 +376,7 @@ impl CompileSession {
             }
         }
         self.apply_shared_changes(revision, changes)?;
+        self.set_media_host(host);
         self.host.native = host.native;
         self.host.dependencies = host.dependencies.clone();
         Ok(())
@@ -385,6 +386,28 @@ impl CompileSession {
         source: &str,
         file: &str,
         transition: Option<crate::document::TransitionSpec>,
+    ) -> Result<Arc<Scene>> {
+        self.evaluate_media(source, file, transition, crate::media::Media::default())
+    }
+    pub fn evaluate_page(&mut self, page: &crate::document::PageSpec) -> Result<Arc<Scene>> {
+        let source = self.source(&page.src)?;
+        self.evaluate_media(
+            &source,
+            &page.src,
+            page.transition.clone(),
+            page.background_media.as_ref().clone(),
+        )
+    }
+    pub fn set_media_host(&mut self, host: &Host) {
+        self.host.media_ffmpeg = host.media_ffmpeg.clone();
+        self.host.media_ffmpeg_resolver = host.media_ffmpeg_resolver.clone();
+    }
+    fn evaluate_media(
+        &mut self,
+        source: &str,
+        file: &str,
+        transition: Option<crate::document::TransitionSpec>,
+        media: crate::media::Media,
     ) -> Result<Arc<Scene>> {
         if self.disposed {
             return Err(Diagnostic::new(
@@ -402,6 +425,10 @@ impl CompileSession {
         let compile = || {
             let mut engine = Engine::new(self.host.clone());
             engine.page_transition_override = transition;
+            for asset in media.assets.values() {
+                self.host.read(&asset.src, file, Loc::default())?;
+            }
+            engine.media = media;
             engine.compile(source, file)
         };
         let result = if self.cache_enabled {

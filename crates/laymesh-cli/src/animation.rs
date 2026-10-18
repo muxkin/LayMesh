@@ -140,7 +140,7 @@ fn frame(
 pub fn export(
     file: &str,
     source: &str,
-    host: Host,
+    mut host: Host,
     output: &Path,
     defaults: &Value,
     explicit: &Value,
@@ -157,6 +157,8 @@ pub fn export(
     }
     let o = options(&format, defaults, explicit)?;
     let bg = background(&o.background)?;
+    let encoder = super::ffmpeg::require(defaults, Path::new(file), &format)?;
+    host.media_ffmpeg = Some(encoder.to_string_lossy().into_owned());
     let plan = if file.ends_with(".laydoc") {
         Some(laymesh_core::document::plan_source(
             source,
@@ -198,7 +200,18 @@ pub fn export(
     if h > 8192 || w as u64 * h as u64 > 32_000_000 {
         return Err("Animation frame exceeds pixel limit".into());
     }
-    let encoder = super::ffmpeg::require(defaults, Path::new(file), &format)?;
+    let mut media_session = super::media_export::Session::new()?;
+    for (i, number) in pages.iter().enumerate() {
+        if CANCELLED.load(Ordering::Relaxed) || cancel.is_some_and(Path::exists) {
+            return Err("Animation export cancelled".into());
+        }
+        if i == 0 {
+            media_session.add(&first, o.reduced_motion, o.media == "print")?;
+        } else {
+            media_session.add(&compile(*number)?, o.reduced_motion, o.media == "print")?;
+        }
+    }
+    let encoded_duration = (media_session.duration * o.fps).ceil() / o.fps;
     let dir = output
         .parent()
         .filter(|p| !p.as_os_str().is_empty())
@@ -220,7 +233,7 @@ pub fn export(
         path: temp,
         child: None,
     };
-    let mut cmd = Command::new(encoder);
+    let mut cmd = Command::new(&encoder);
     cmd.args([
         "-hide_banner",
         "-loglevel",
@@ -236,9 +249,9 @@ pub fn export(
         &o.fps.to_string(),
         "-i",
         "pipe:0",
-        "-an",
     ]);
     if format == "mp4" {
+        media_session.audio_args(&mut cmd, encoded_duration);
         cmd.args([
             "-c:v",
             "libx264",
@@ -252,6 +265,7 @@ pub fn export(
             "+faststart",
         ]);
     } else {
+        cmd.arg("-an");
         cmd.args([
             "-filter_complex",
             "split[a][b];[a]palettegen=stats_mode=single[p];[b][p]paletteuse=new=1",
@@ -276,26 +290,16 @@ pub fn export(
         let _ = stderr.take(65536).read_to_string(&mut text);
         text
     });
-    let mut first = Some(first);
+    drop(first);
     let mut count = 0u64;
     let mut duration = 0.;
-    for number in pages.iter() {
-        let scene = if let Some(s) = first.take() {
-            s
-        } else {
-            compile(*number)?
-        };
-        let animation = scene
-            .animation
-            .as_ref()
-            .ok_or("Video export requires page.step() on every page")?;
-        let length = animation
-            .timeline_with_media(o.reduced_motion, o.media == "print")
-            .duration;
-        if length <= 0. {
-            return Err("Animation duration must be positive".into());
-        }
-        let mut renderer = AnimationRenderer::new(laymesh_render::to_display_list(&scene)?)?;
+    for (scene_path, length) in &media_session.pages {
+        let scene: Scene = serde_json::from_reader(std::fs::File::open(scene_path)?)?;
+        let length = *length;
+        let list = laymesh_render::to_display_list(&scene)?;
+        let mut media_frames =
+            media_session.renderer(&list, &encoder, o.fps, o.reduced_motion, o.media == "print")?;
+        let mut renderer = AnimationRenderer::new(list)?;
         // Round boundaries on the global clock, avoiding accumulated page rounding errors.
         let end = ((duration + length) * o.fps).ceil() as u64;
         while count < end {
@@ -303,6 +307,7 @@ pub fn export(
                 return Err("Animation export cancelled".into());
             }
             let time = (count as f64 / o.fps - duration).max(0.).min(length);
+            media_frames.sample(time, &mut renderer)?;
             let mut rgba = frame(&scene, &o, w, h, Some(time), &mut renderer)?;
             for p in rgba.chunks_exact_mut(4) {
                 let a = p[3] as u32;
@@ -444,6 +449,19 @@ pub fn run(args: &[String]) -> Result<()> {
     let w = o.width;
     let h = (w as f64 * scene.height / scene.width).round().max(1.) as u32;
     let mut renderer = AnimationRenderer::new(laymesh_render::to_display_list(&scene)?)?;
+    let mut media_session = super::media_export::Session::new()?;
+    if scene.media.cues.iter().any(|c| c.target.is_some()) {
+        let encoder = super::ffmpeg::require(&defaults, Path::new(file.as_ref()), "mp4")?;
+        media_session.add(&scene, o.reduced_motion, o.media == "print")?;
+        let mut frames = media_session.renderer(
+            renderer.base(),
+            &encoder,
+            o.fps,
+            o.reduced_motion,
+            o.media == "print",
+        )?;
+        frames.sample(t, &mut renderer)?;
+    }
     let rgba = frame(&scene, &o, w, h, Some(t), &mut renderer)?;
     let mut bytes = vec![];
     {

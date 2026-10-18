@@ -115,7 +115,7 @@ impl DrawJob {
                 )
             })
             .collect();
-        serde_json::to_string(&json!({"schemaVersion":list.schema_version,"width":list.width,"height":list.height,"resources":resources,"animation":list.animation,"pageTransition":list.page_transition})).map_err(js_error)
+        serde_json::to_string(&json!({"schemaVersion":list.schema_version,"width":list.width,"height":list.height,"resources":resources,"media":list.media,"animation":list.animation,"pageTransition":list.page_transition})).map_err(js_error)
     }
     /// Updates are accepted only after the client validates their baseline ID.
     pub fn update_display_list(&mut self, json: &str) -> Result<(), JsValue> {
@@ -689,10 +689,13 @@ impl CompileSession {
         } else {
             (self.entry.clone(), None, None)
         };
-        let scene = self
-            .inner
-            .evaluate_file(&file, transition)
-            .map_err(diagnostic_js_error)?;
+        let scene = if let Some(plan) = &self.plan {
+            self.inner
+                .evaluate_page(plan.pages.iter().find(|p| p.id == page_id).unwrap())
+        } else {
+            self.inner.evaluate_file(&file, transition)
+        }
+        .map_err(diagnostic_js_error)?;
         Ok(RenderJob { scene, document })
     }
     pub fn metrics(&self) -> String {

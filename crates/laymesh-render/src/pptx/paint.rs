@@ -22,7 +22,11 @@ impl Writer<'_> {
         {
             return index + 2;
         }
-        self.media.push(Media { data, extension });
+        self.media.push(Media {
+            data,
+            extension,
+            kind: "image",
+        });
         self.media.len() + 1
     }
     pub(super) fn blip_fill(

@@ -1,0 +1,4 @@
+d = document(name="PowerPoint media acceptance")
+d.play(audio(src="music.wav"),loop=true,volume=0.12)
+d.add(page(src="powerpoint.lay",id="media"))
+d.add(page(src="powerpoint-end.lay",id="music"))

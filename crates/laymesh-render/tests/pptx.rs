@@ -810,3 +810,27 @@ fn missing_glyphs_remain_editable_source_text() {
         assert_eq!(style.attribute("i"), Some("1"));
     }
 }
+
+#[test]
+fn unsupported_group_opacity_keeps_native_video_playable() {
+    let mut host = Host::default();
+    host.files.insert(
+        "/movie.mp4".into(),
+        include_bytes!("../../../examples/media/demo.mp4").to_vec(),
+    );
+    let scene=compile_source("g=group()\ng.add(video(src=\"movie.mp4\"),size=(60,35))\ng.add(rect(size=(5,5),fill=\"#ff0000\"))\np=canvas(size=(100,60))\np.add(g,opacity=0.5)","/main.lay",host).unwrap();
+    let (bytes, warnings) = render_pptx(&scene, &ExportOptions::default()).unwrap();
+    assert!(warnings.iter().any(|w| w.code == "W_PPTX_MEDIA"));
+    assert!(!warnings.iter().any(|w| w.code == "W_PPTX_RASTER"));
+    let package = files(&bytes);
+    let slide = xml(&package, "ppt/slides/slide1.xml");
+    assert_eq!(
+        slide
+            .descendants()
+            .filter(|n| n.tag_name().name() == "videoFile")
+            .count(),
+        1
+    );
+    assert!(slide.descendants().any(|n| n.tag_name().name() == "sp"));
+    assert!(package.keys().any(|n| n.ends_with(".mp4")));
+}

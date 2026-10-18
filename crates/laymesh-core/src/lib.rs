@@ -17,6 +17,7 @@ pub mod geometry;
 mod geometry_cache;
 pub mod geometry_query;
 mod geometry_recipe;
+pub mod media;
 pub mod migration;
 pub mod model;
 mod opentype_math;

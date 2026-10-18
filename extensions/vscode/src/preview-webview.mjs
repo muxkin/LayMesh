@@ -1,3 +1,4 @@
+import {MediaController} from './media-runtime.mjs';
 import {drawPreviewRuler} from './preview-geometry.mjs';
 import {PresentationSession} from './presentation-session.mjs';
 import {Presentation} from './presentation.mjs';
@@ -22,7 +23,7 @@ openPage.type=exportDocument.type='button';openPage.dataset.action='open-page';e
 pageSelect.onchange=()=>{view.mode='fit';view.pan={x:0,y:0};syncPages();bridge.postMessage({type:'select-page',pageId:pageSelect.value});};
 openPage.onclick=()=>bridge.postMessage({type:'open-page'});
 exportDocument.onclick=()=>bridge.postMessage({type:'export-document'});
-const playbackStats=new PlaybackStats();let wasRunning=false;
+const playbackStats=new PlaybackStats();let wasRunning=false,media;
 const details=el('details','render-details',root),summary=el('summary','',details,'Skia'),metrics=el('output','',details);details.style.cssText='font-size:11px;padding:0 8px';
 const player=new PreviewPlayer(root,()=>{if(player?.running)playbackStats.refresh(performance.now());wasRunning=!!player?.running;schedule();},{locale:()=>locale,page:direction=>{const n=pageSelect.selectedIndex+direction;if(n<0||n>=pageSelect.options.length)return false;pageSelect.selectedIndex=n;pageSelect.onchange();return true;}});
 const motionMenu=el('details','motion-menu',toolbar);el('summary','',motionMenu,'播放设置');motionMenu.append(player.bar);
@@ -31,11 +32,11 @@ function selectPage(delta){const index=pageSelect.selectedIndex+delta;if(index<0
 previousPage.onclick=()=>selectPage(-1);nextPage.onclick=()=>selectPage(1);
 function syncPages(){pageTools.hidden=pageSelect.hidden;previousPage.disabled=pageSelect.selectedIndex<=0;nextPage.disabled=pageSelect.selectedIndex>=pageSelect.options.length-1;}
 const presentationMenu=el('details','presentation-choice',toolbar);el('summary','',presentationMenu,'放映 ▾');
-let previewResume=false;
+let previewMediaSnapshot,previewResume=false;
 let deckResolve,deckReject,deckStore,deckReceive=Promise.resolve(),deckProgress,deckRevision,deckSession,deckRequest=0,deckRestart;
-const presentation=new Presentation({parent:root,base:new URL('./',import.meta.url),blobWorker:true,fullscreen:false,getStartPageId:()=>pageSelect.value,onEnter:()=>{previewResume=player.running;if(previewResume)player.action('play');},provider:({signal,onProgress,startPageId,plannedOnly})=>new Promise((resolve,reject)=>{
+const presentation=new Presentation({parent:root,base:new URL('./',import.meta.url),blobWorker:true,fullscreen:false,compatibleAudio:true,getStartPageId:()=>pageSelect.value,onEnter:()=>{previewMediaSnapshot=[...root.querySelectorAll('details')].find(menu=>menu.open&&menu.mediaSnapshot)?.mediaSnapshot||media.snapshot();media.pause({lock:true});previewResume=player.running;if(previewResume)player.action('play');},provider:({signal,onProgress,startPageId,plannedOnly})=>new Promise((resolve,reject)=>{
  deckRevision=null;const requestId=++deckRequest;deckStore=retainedDeck.session();const store=deckStore;deckSession=new PresentationSession(store,{onProgress,request:(id,retry)=>bridge.postMessage({type:'deck-priority',revision:deckRevision,pageId:id,retry}),stop:()=>bridge.postMessage({type:'deck-cancel',requestId})});deckSession.preparation={};deckResolve=resolve;deckReject=reject;deckProgress=onProgress;deckReceive=Promise.resolve();(plannedOnly?deckSession.planReady:deckSession.firstReady).then(resolve,reject);signal.addEventListener('abort',()=>store.dispose(),{once:true});bridge.postMessage({type:'deck-prepare',requestId,startPageId,knownPages:retainedDeck.known()});
-}),onExit:()=>{bridge.postMessage({type:'deck-release'});if(previewResume)player.start();}});
+}),onExit:()=>{if(!document.hidden)media.restore(previewMediaSnapshot);bridge.postMessage({type:'deck-release'});if(previewResume)player.start();}});
 const presentationPopover=el('div','toolbar-popover',presentationMenu);const presentHere=el('button','',presentationPopover);presentHere.type='button';presentHere.onclick=()=>presentation.button.click();presentation.button.addEventListener('click',()=>{presentationMenu.open=false;bridge.postMessage({type:'deck-pin'});});
 const browserPresent=el('button','',presentationPopover,'在浏览器全屏放映');browserPresent.onclick=async()=>{presentationMenu.open=false;try{await presentation.prepare();bridge.postMessage({type:'deck-browser',startPageId:pageSelect.value});}catch(e){diagnostic={message:e.message};showDiagnostic();}};
 const speakerPresent=el('button','',presentationPopover,'演讲者视图（浏览器）');speakerPresent.onclick=async()=>{presentationMenu.open=false;try{await presentation.prepare();bridge.postMessage({type:'deck-browser',startPageId:pageSelect.value,presenter:true});}catch(e){diagnostic={message:e.message};showDiagnostic();}};
@@ -91,15 +92,15 @@ const zoomMenu=el('details','zoom-menu',toolbar),zoomSummary=el('summary','',zoo
 const presentGroup=el('div','present-group',toolbar);presentGroup.append(presentation.button,presentationMenu);
 const playbackButtons=el('div','playback-buttons',footer);playbackButtons.setAttribute('role','group');for(const id of ['previous','play','next'])playbackButtons.append(player.buttons[id]);
 function syncPlaybackButtons(){
- playbackButtons.hidden=!player.metadata?.steps?.length;
- for(const [id,icon,zh,en]of [['previous','previous','上一步','Previous step'],['play',player.running?'pause':'play',player.running?'暂停':'开始',player.running?'Pause':'Play'],['next','next','下一步','Next step']]){const b=player.buttons[id];iconLabel(b,icon);b.title=text(zh,en);b.setAttribute('aria-label',b.title);}
+ playbackButtons.hidden=!player.metadata?.steps?.length&&!media?.tracks.length;
+ for(const [id,icon,zh,en]of [['previous','previous','上一步','Previous step'],['play',player.running||media?.running?'pause':'play',player.running||media?.running?'暂停':'开始',player.running||media?.running?'Pause':'Play'],['next','next','下一步','Next step']]){const b=player.buttons[id];iconLabel(b,icon);b.title=text(zh,en);b.setAttribute('aria-label',b.title);}
  playbackButtons.setAttribute('aria-label',text('动画播放控制','Animation playback controls'));
 }
 const originalSync=player.sync.bind(player);player.sync=(...args)=>{originalSync(...args);syncPlaybackButtons();};
 toolbar.replaceChildren(buttons.refresh,buttons.fit,zoomMenu,pageTools,presentGroup,buttons.export,more);footer.replaceChildren(playbackButtons,diagnosticMenu,status,readout,details);
-viewport.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey||e.repeat||!player.metadata)return;const action={ArrowRight:'next',ArrowDown:'next',ArrowLeft:'previous',ArrowUp:'previous',Enter:'next',s:'play',S:'play',Escape:'static'}[e.key];if(action){e.preventDefault();player.action(action);}});
+viewport.addEventListener('keydown',e=>{if(e.target.closest('.media-controls')||e.ctrlKey||e.metaKey||e.altKey||e.repeat||!player.metadata)return;const action={ArrowRight:'next',ArrowDown:'next',ArrowLeft:'previous',ArrowUp:'previous',Enter:'next',s:'play',S:'play',Escape:'static'}[e.key];if(action){e.preventDefault();player.action(action);}});
 
-for(const menu of [more,zoomMenu,presentationMenu,diagnosticMenu,details])menu.addEventListener('toggle',()=>{if(menu.open)for(const other of [more,zoomMenu,presentationMenu,diagnosticMenu,details])if(other!==menu)other.open=false;});
+for(const menu of [more,zoomMenu,presentationMenu,diagnosticMenu,details])menu.addEventListener('toggle',()=>{if(menu.open){for(const other of [more,zoomMenu,presentationMenu,diagnosticMenu,details])if(other!==menu&&other.open){other.open=false;media.restore(other.mediaSnapshot);other.mediaSnapshot=null;}menu.mediaSnapshot=media.suspend();}else{if(!presentation.opened&&!document.hidden)media.restore(menu.mediaSnapshot);menu.mediaSnapshot=null;}});
 document.addEventListener('pointerdown',e=>{for(const menu of [more,zoomMenu,presentationMenu,diagnosticMenu,details])if(menu.open&&!menu.contains(e.target))menu.open=false;});
 function persist(){bridge.setState({mode:view.mode,scale:view.scale,pan:view.pan,rulers:view.rulers});}
 function containsPath(shape,p){
@@ -163,6 +164,23 @@ player.motion.addEventListener('change',cancelTransition);
 new ResizeObserver(()=>{cancelTransition();schedule();}).observe(viewport);
 
 let renderSequence=0,frameTimings={};
+media=new MediaController({parent:root,compatibleAudio:true,onFrame:()=>{drawKey='';syncPlaybackButtons();schedule();},onState:()=>syncPlaybackButtons(),getViewport:()=>{
+ if(!page)return null;const parent=root.getBoundingClientRect(),box=viewport.getBoundingClientRect(),r=rect();return {visible:!presentation.opened&&!document.hidden,matrix:[view.scale,0,box.left+r.left-parent.left,0,view.scale,box.top+r.top-parent.top,0,0,1],clip:[box.left-parent.left,box.top-parent.top,box.right-parent.left,box.bottom-parent.top]};
+},onError:e=>{diagnostic={code:'E_MEDIA',message:String(e)};showDiagnostic();}});
+window.__LAYMESH_PREVIEW_MEDIA=media;
+let mediaLast=performance.now(),mediaRaf;
+function tickMedia(now){const elapsed=(now-mediaLast)/1000;mediaLast=now;media.tick(elapsed,player.clock);mediaRaf=requestAnimationFrame(tickMedia);}mediaRaf=requestAnimationFrame(tickMedia);
+const mediaAction=player.action.bind(player);player.action=id=>{
+ if(id==='static'){media.seek(0);media.stop();}
+ else if(id==='play'&&(media.running||player.running)){media.pause();player.clock.running=false;player.refresh();return;}
+ else if(id==='play'){if(player.time!==null&&player.clock.time>=player.clock.duration)media.seek(0,0,{preserveManual:true,preserveDocument:true});media.resume();}
+ else if(id==='next')media.begin();
+ mediaAction(id);
+ if(id==='replay')media.resume();
+};
+const mediaSeek=player.seek.bind(player);player.seek=(time,...args)=>{if(time!==null)media.seek(time);return mediaSeek(time,...args);};
+viewport.addEventListener('click',e=>{if(e.target.closest('.media-controls')||drag||e.button!==0||!page)return;const box=viewport.getBoundingClientRect(),r=rect();if(media.click((e.clientX-box.left-r.left)/view.scale,(e.clientY-box.top-r.top)/view.scale,media.states)){e.preventDefault();e.stopImmediatePropagation();}},true);
+const mediaResourceUris=new Map();
 async function installFrame(data){
  const sequence=++renderSequence;
  if(data.protocol!==3||(!data.displayList&&!data.displayListCompressed&&!data.displayListUpdate))throw Error('Expected drawing protocol 3');
@@ -174,6 +192,9 @@ async function installFrame(data){
  rasterResourceIds=new Set(installed.resourceIds);
  installed.resourcesMs+=resourceLoadMs;
  if(sequence!==renderSequence)return;
+ for(const version of data.displayListReplay||[data])for(const resource of version.resources||[])if(/^(video|audio)\//.test(resource.mime||""))mediaResourceUris.set(resource.id,resource.uri);
+ if(installed.mediaList){await media.install(installed.mediaList,async id=>{const uri=mediaResourceUris.get(id);if(!uri)throw Error("Missing media resource: "+id);const response=await fetch(uri);if(!response.ok)throw Error("Media loading failed");return new Uint8Array(await response.arrayBuffer());});}else{await media.install({nodes:[],media:{assets:{},cues:[]}},()=>{});}
+ for(const id of mediaResourceUris.keys())if(!installed.mediaList?.resources?.[id])mediaResourceUris.delete(id);
  if(!directCanvas){const {initializeSkia,SkiaRenderer}=await import('./skia-renderer.mjs');if(!mainSkia){const meta=await(await fetch(new URL('skia/manifest.json',import.meta.url))).json();mainSkia=new SkiaRenderer(await initializeSkia(new URL('skia/'+meta.wasm,import.meta.url).href),image,{onContextChange:ready=>{if(ready){drawKey='';presented=null;schedule();}}});}await mainSkia.install(installed.scene,id=>installed.sceneResources[id],data.generation,{...data.document,reduced:player.reduced});}
  drawReady=true;drawJobId=data.displayListId||data.displayListCompressed?.id||String(data.generation);if(!installed.reused)drawKey='';wasmMemoryBytes=installed.wasmMemoryBytes;
  drawGeneration=data.generation;
@@ -197,13 +218,13 @@ function paint(r,force=false){
  const left=Math.max(0,r.left),top=Math.max(0,r.top),right=Math.min(viewport.clientWidth,r.left+r.width),bottom=Math.min(viewport.clientHeight,r.top+r.height);
  if(right<=left||bottom<=top){image.hidden=true;return;}image.hidden=false;
  const visible=[(left-r.left)/view.scale,(top-r.top)/view.scale,(right-r.left)/view.scale,(bottom-r.top)/view.scale],dpr=devicePixelRatio||1;
- if(presented?.confirmed!==false&&presented?.time===player.time&&presented?.reduced===player.reduced&&presented?.content===drawJobId&&presented.scale===view.scale&&presented.dpr===dpr&&visible[0]>=presented.crop[0]-1e-9&&visible[1]>=presented.crop[1]-1e-9&&visible[2]<=presented.crop[2]+1e-9&&visible[3]<=presented.crop[3]+1e-9){
+ if(!media.frames.size&&!media.running&&presented?.confirmed!==false&&presented?.time===player.time&&presented?.reduced===player.reduced&&presented?.content===drawJobId&&presented.scale===view.scale&&presented.dpr===dpr&&visible[0]>=presented.crop[0]-1e-9&&visible[1]>=presented.crop[1]-1e-9&&visible[2]<=presented.crop[2]+1e-9&&visible[3]<=presented.crop[3]+1e-9){
   pendingPaint=null;clearTimeout(paintTimer);paintTimer=0;drawKey=presented.key;root.dataset.painted='true';if(force)reportPaint(0);return;
  }
  const pad=96/view.scale,crop=[Math.max(0,visible[0]-pad),Math.max(0,visible[1]-pad),Math.min(page.width,visible[2]+pad),Math.min(page.height,visible[3]+pad)];
  const width=Math.max(1,Math.ceil((crop[2]-crop[0])*view.scale*dpr)),height=Math.max(1,Math.ceil((crop[3]-crop[1])*view.scale*dpr));
  const key=JSON.stringify([drawJobId,crop,width,height,player.time,player.reduced]);if(key===drawKey)return;drawKey=key;root.dataset.painted='false';
- pendingPaint={running:player.running,visible:document.visibilityState==='visible',time:player.time,reduced:player.reduced,type:'paint',generation:drawGeneration,crop,width,height,content:drawJobId,scale:view.scale,dpr,key};
+ pendingPaint={running:player.running||media.running,visible:document.visibilityState==='visible',time:player.time,reduced:player.reduced,type:'paint',generation:drawGeneration,crop,width,height,content:drawJobId,scale:view.scale,dpr,key};
  clearTimeout(paintTimer);paintTimer=0;
  // Translate the retained Canvas immediately. Changing zoom temporarily
  // scales its pixels; the worker restores exact DPR pixels after motion settles.
@@ -211,9 +232,10 @@ function paint(r,force=false){
 }
 async function flushPaint(){if(paintInFlight||!pendingPaint||!rasterWorker)return;
  const request=pendingPaint;pendingPaint=null;paintInFlight=true;if(request.running)playbackStats.submit(performance.now());
- try{const data=await workerCall(request);
+ const mediaFrames=media.takeFrames();
+ try{const data=await workerCall(directCanvas?{...request,mediaFrames}:request,directCanvas?mediaFrames.map(f=>f.bitmap):[]);media.states=data.mediaStates||data.states||{};
   if(data.type==='painted'&&data.generation===drawGeneration&&request.content===drawJobId&&(request.key===drawKey||pendingPaint)){
-   if(!directCanvas){const metrics=mainSkia.render(request.crop,data.width,data.height,data.states,data.generation,!!request.running);if(metrics.skipped)return;Object.assign(metrics,await mainSkia.transitions.play(player.reduced));if(!request.running)metrics.presentationConfirmed=await mainSkia.completeFrame(request.visible);Object.assign(data,metrics);}if(player.resumeAfterTransition){player.resumeAfterTransition=false;player.start();}root.dataset.renderBackend=data.backend;root.dataset.transitionName=data.transitionName||'';root.dataset.transitionFrames=String(data.transitionFrames||0);root.dataset.transitionError=data.transitionError||'';root.dataset.renderWidth=String(data.width);root.dataset.renderHeight=String(data.height);root.dataset.sampleMs=String(data.sampleMs);
+   if(!directCanvas){mainSkia.setMediaFrames(mediaFrames);const metrics=mainSkia.render(request.crop,data.width,data.height,data.states,data.generation,!!request.running);if(metrics.skipped)return;Object.assign(metrics,await mainSkia.transitions.play(player.reduced));if(!request.running)metrics.presentationConfirmed=await mainSkia.completeFrame(request.visible);Object.assign(data,metrics);}if(player.resumeAfterTransition){player.resumeAfterTransition=false;player.start();}root.dataset.renderBackend=data.backend;root.dataset.transitionName=data.transitionName||'';root.dataset.transitionFrames=String(data.transitionFrames||0);root.dataset.transitionError=data.transitionError||'';root.dataset.renderWidth=String(data.width);root.dataset.renderHeight=String(data.height);root.dataset.sampleMs=String(data.sampleMs);
    request.confirmed=false;presented=request;positionPixels();
    if(!request.running){data.presentationConfirmed=data.presentationConfirmed&&await waitForPresentation(request.visible);if(request.generation!==drawGeneration||request.content!==drawJobId)return;}
    request.confirmed=true;
@@ -259,7 +281,7 @@ window.addEventListener('message',({data})=>{
   else{diagnostic={code:'E_PREVIEW_PROTOCOL',message:'Expected drawing protocol 3'};showDiagnostic();showStatus('error');}
  }
 });
-window.addEventListener('pagehide',()=>{presentation.dispose();renderSequence++;clearTimeout(paintTimer);pendingPaint=null;stopWorker(Error('Preview closed'));});
+window.addEventListener('pagehide',()=>{media.dispose();cancelAnimationFrame(mediaRaf);presentation.dispose();renderSequence++;clearTimeout(paintTimer);pendingPaint=null;stopWorker(Error('Preview closed'));});
 labels();bridge.postMessage({type:'ready'});
 
 addEventListener("pagehide",()=>retainedDeck.dispose());

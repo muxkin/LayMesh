@@ -16,7 +16,7 @@ laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quali
 | 格式 | 编码参数及默认值 | 透明度与分辨率 |
 | --- | --- | --- |
 | SVG | 不接受位图编码参数 | 保留矢量图形、物理页面尺寸及透明度 |
-| PPTX | `dpi` 仅控制局部 PNG 回退，默认 1200 | 一张幻灯片；文字为文本框，公式及几何为可编辑形状；不嵌入字体 |
+| PPTX | `dpi` 仅控制局部 PNG 回退，默认 1200 | 单页或同尺寸多页文档，内嵌媒体；文字为文本框，公式及几何为可编辑形状；不嵌入字体 |
 | PDF | `pdf_image_compression=auto`、`pdf_jpeg_quality=90`、`pdf_downsample=true` | 文字和公式保持矢量；位图采用 JPEG 或无损 Flate，不采用 WebP |
 | PNG | `compression=fast/default/best`，默认 `default` | RGBA；写入 DPI 元数据 |
 | JPEG | `quality=1–100`，默认 90；`background="#ffffff"` | 不支持 Alpha；先与底色合成；写入 DPI 元数据 |
@@ -116,3 +116,5 @@ PPTX 也使用 Rust CPU JPEG Notebook 预览，`%laymesh figure.lay -o figure.pp
 ```
 
 SVG 不接受 DPI。各格式配置使用标准名称（`jpeg`、`tiff`、`webp` 等），参数名与 Python 导出关键字一致。位图导出保留 100000000 像素上限；过高 DPI 会在页面缓冲区分配前失败。
+
+可播放媒体规则与 Windows 验收边界见[视频与音频](media.zh-CN.md)。

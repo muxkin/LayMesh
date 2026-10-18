@@ -164,7 +164,7 @@ export async function webBoot(files) {
         })(),
     );
   const manifest = JSON.parse(text("manifest.json"));
-  if (![1, 2].includes(manifest.schemaVersion))
+  if (![1, 2, 3].includes(manifest.schemaVersion))
     throw Error("Unsupported LayMesh package version");
   const urls = new Map(),
     building = new Set();

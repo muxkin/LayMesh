@@ -34,6 +34,8 @@ def build(binary=None,extension_dir=None):
  shutil.copy2(ROOT/'site/live/renderer-resources.mjs',extension/'dist/renderer-resources.mjs')
  shutil.copy2(ROOT/'site/live/page-previews.mjs',extension/'dist/page-previews.mjs')
  shutil.copy2(ROOT/'site/live/page-thumbnails.mjs',extension/'dist/page-thumbnails.mjs')
+ shutil.copy2(ROOT/'site/live/media-runtime.mjs',extension/'dist/media-runtime.mjs')
+ shutil.copy2(ROOT/'site/live/media-controls.mjs',extension/'dist/media-controls.mjs')
  shutil.copy2(ROOT/'site/live/animation-player.mjs',extension/'dist/animation-player.mjs')
  shutil.copy2(ROOT/'site/live/preview-player.mjs',extension/'dist/preview-player.mjs')
  shutil.copy2(ROOT/'site/live/preview-geometry.mjs',extension/'dist/preview-geometry.mjs')

@@ -7,7 +7,7 @@ const source=fs.readFileSync(new URL('../site/live/presentation-worker.mjs',impo
 let renderer,resolveBitmap,rejectBitmap,closed=0,failNotification=false,planning=0,geometry=0;
 const frames=[];
 class Renderer {
- constructor(ck,canvas,options){renderer=this;this.options=options;this.pages=new Map();this.skip=false;this.skia={canvas,gl:{getContextAttributes:()=>({preserveDrawingBuffer:true})},transitions:{cancel(){},capture(){},async play(){return {};}},completeFrame:async()=>true};}
+ constructor(ck,canvas,options){renderer=this;this.options=options;this.pages=new Map();this.skip=false;this.skia={canvas,setMediaFrames(){},gl:{getContextAttributes:()=>({preserveDrawingBuffer:true})},transitions:{cancel(){},capture(){},async play(){return {};}},completeFrame:async()=>true};}
  async install(id){this.pages.set(id,{ready:true,readySize:[10,10]});}
  async prepare(id,w,h,sample,priority,viewport,cancelled){
   sample(0,false);await new Promise(resolve=>setImmediate(resolve));

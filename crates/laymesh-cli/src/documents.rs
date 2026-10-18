@@ -6,8 +6,23 @@ use laymesh_render::{ExportOptions, JpegPreviewOptions};
 use std::path::Path;
 
 pub fn native_host() -> Host {
+    configured_host(serde_json::json!({}), Path::new(".").to_path_buf())
+}
+pub fn configured_host(defaults: serde_json::Value, file: std::path::PathBuf) -> Host {
     Host {
         native: true,
+        media_ffmpeg_resolver: Some(std::rc::Rc::new(move || {
+            super::ffmpeg::require(&defaults, &file, "mp4")
+                .map(|p| p.to_string_lossy().into_owned())
+                .map_err(|e| {
+                    laymesh_core::Diagnostic::new(
+                        "E_FFMPEG_MISSING",
+                        e.to_string(),
+                        "",
+                        Default::default(),
+                    )
+                })
+        })),
         ..Host::default()
     }
 }
@@ -29,9 +44,10 @@ pub fn render(
     preview_page: usize,
     preview_options: &JpegPreviewOptions,
     warnings: &str,
+    host: Host,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    if !all && format != "pdf" {
-        return Err("多页文档导出此格式需要 --page N 或 --all-pages；完整文档目前支持 PDF".into());
+    if !all && !matches!(format, "pdf" | "pptx") {
+        return Err("多页文档导出此格式需要 --page N 或 --all-pages；完整文档支持 PDF/PPTX".into());
     }
     if let Some(preview) = preview {
         if super::output_identity(Path::new(output))? == super::output_identity(Path::new(preview))?
@@ -58,7 +74,7 @@ pub fn render(
         )?;
         let mut outputs = Vec::new();
         for (i, page) in plan.pages.iter().enumerate() {
-            let scene = laymesh_core::document::compile_page(page, native_host())?;
+            let scene = laymesh_core::document::compile_page(page, host.clone())?;
             scene_warnings(&scene, warnings);
             if warnings == "show" && format == "pdf" {
                 for note in laymesh_render::raster_policy::pdf_warnings(&scene, options)? {
@@ -87,10 +103,29 @@ pub fn render(
             std::fs::rename(staged, &path)?;
             println!("已导出：{}", path.display());
         }
+    } else if format == "pptx" {
+        let mut deck = laymesh_render::pptx::PptxDocument::new();
+        for (i, page) in plan.pages.iter().enumerate() {
+            let scene = laymesh_core::document::compile_page(page, host.clone())?;
+            scene_warnings(&scene, warnings);
+            for note in deck.append(&scene, options)? {
+                if warnings == "show" {
+                    eprintln!("{note}");
+                }
+            }
+            if preview.is_some() && i + 1 == preview_page {
+                preview_data = Some(laymesh_render::render_jpeg_preview(
+                    &scene,
+                    preview_options,
+                )?);
+            }
+        }
+        super::export::write_atomic(Path::new(output), &deck.finish()?)?;
+        println!("已导出：{output}（{} 页）", plan.pages.len());
     } else {
         let mut pdf = laymesh_render::PdfDocument::new();
         for (i, page) in plan.pages.iter().enumerate() {
-            let scene = laymesh_core::document::compile_page(page, native_host())?;
+            let scene = laymesh_core::document::compile_page(page, host.clone())?;
             scene_warnings(&scene, warnings);
             if warnings == "show" {
                 for note in laymesh_render::raster_policy::pdf_warnings(&scene, options)? {

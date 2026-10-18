@@ -1,0 +1,6 @@
+p = canvas(size=(100mm,65mm),background="#f4f5f7")
+v = p.add(video(src="demo.mp4"),size=(80mm,45mm),offset=(10mm,5mm))
+p.add(text("Step starts video + sound",font_size=4mm),offset=(10mm,55mm))
+s = p.step(duration=3s,hold=0s)
+s.play(v,delay=250ms,trim_start=500ms,trim_end=2500ms)
+s.play(audio(src="music.wav"),delay=250ms,volume=0.2)

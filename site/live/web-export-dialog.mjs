@@ -1,3 +1,4 @@
+import {mediaPosters} from './web-media-export.mjs';
 import { exportBrowserJPEG } from "./web-jpeg-export.mjs";
 import { createPDFExport } from "./web-pdf-export.mjs";
 const formats = [
@@ -57,7 +58,7 @@ export function installExportDialog({
   section.innerHTML = `<div class="export-field"><label for="export-format">格式</label><select id="export-format">${formats
     .filter(
       ([f]) =>
-        manifest.editable || ["pdf", "svg", "png", "jpg", "tif"].includes(f),
+        manifest.editable || (f === "pptx" && manifest.capabilities?.includes("media-v1")) || ["pdf", "svg", "png", "jpg", "tif"].includes(f),
     )
     .map(([value, name]) => `<option value="${value}">${name}</option>`)
     .join(
@@ -131,27 +132,25 @@ export function installExportDialog({
     };
   };
   const extension = () =>
-    el("export-scope").value === "all" && el("export-format").value !== "pdf"
+    el("export-scope").value === "all" && !["pdf","pptx"].includes(el("export-format").value)
       ? "zip"
       : el("export-format").value;
   const update = () => {
     const f = el("export-format").value;
     el("export-extension").textContent = "." + extension();
     el("export-format-note").textContent =
-      f === "pdf"
+      f === "pptx" ? "内嵌视频和音频；全部页面合并为一个 PPTX，要求各页尺寸一致。" : f === "pdf"
         ? "保留各页尺寸与矢量内容。"
         : el("export-scope").value === "all"
           ? "每页单独导出，合并下载为 ZIP。"
-          : f === "pptx"
-            ? "保留可编辑对象；复杂特效转换为局部图片。"
-            : f === "ico"
+          : f === "ico"
               ? "ICO 最大 256 × 256 像素，可在设置中调整 DPI。"
               : "导出完整页面，尺寸与缩放和播放进度无关。";
   };
   el("export-name").value = clean(manifest.name);
   el("export-format").onchange = () => {
     el("export-scope").value =
-      el("export-format").value === "pdf" ? "all" : "current";
+      ["pdf","pptx"].includes(el("export-format").value) ? "all" : "current";
     update();
   };
   el("export-scope").onchange = update;
@@ -215,7 +214,7 @@ export function installExportDialog({
       });
       const result = await new Promise((resolve, reject) => {
         rejectWork = reject;
-        const jobWorker = makeWorker();
+        const jobWorker = makeWorker(format);
         worker = jobWorker;
         jobWorker.onerror = (e) => reject(Error(e.message));
         jobWorker.onmessage = async ({ data }) => {
@@ -224,7 +223,8 @@ export function installExportDialog({
               if(aborted)return;
               const p=selection[data.requestPage];
               if(!p)throw Error("无效导出页面请求");
-              jobWorker.postMessage({type:"pdfAck",seq:data.seq,page:{number:p.number,list:p.list,resources:resources(p)}});
+              const prepared=format==="pptx"?await mediaPosters(p.list,resources(p),()=>aborted):{list:p.list,resources:resources(p)};
+              if(!aborted)jobWorker.postMessage({type:"pdfAck",seq:data.seq,page:{number:p.number,...prepared}});
               return;
             }
             if(data.pdfResource || data.pdfLayer || data.pdfPage) {
@@ -247,7 +247,7 @@ export function installExportDialog({
           options: options(format),
           pages: selection.map(p=>({number:p.number})),
           wasm: bytes(
-            manifest.editable
+            manifest.editable || format === "pptx"
               ? "runtime/exporter-full/laymesh.wasm"
               : "runtime/exporter/laymesh.wasm",
           ),

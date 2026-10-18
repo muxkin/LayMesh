@@ -1,0 +1,13 @@
+# Native media export acceptance fixture; synthetic test picture and tones.
+p = canvas(size=(160mm,122mm),background="#eef1f5")
+p.add(text("PowerPoint media",font_size=6mm),offset=(10mm,5mm))
+auto = p.add(video(src="controls.mp4"),size=(64mm,36mm),offset=(10mm,20mm))
+click = p.add(video(src="controls.mp4"),size=(64mm,36mm),offset=(86mm,20mm),crop=box(offset=(0.25,0),size=(0.5,1)),fit=cover,rotation=5deg)
+manual = p.add(video(src="controls.mp4"),size=(64mm,36mm),offset=(10mm,73mm))
+step_video = p.add(video(src="controls.mp4"),size=(64mm,36mm),offset=(86mm,73mm))
+p.play(auto,delay=500ms,trim_start=1s,trim_end=4s,loop=true,volume=0.4)
+p.play(click,trigger="click",trim_start=2s,trim_end=10s,muted=true,export_start=1s)
+s = p.step(duration=3s,hold=0s,start="click")
+s.play(step_video,delay=200ms,trim_start=1s,trim_end=4s,volume=0.7)
+p.add(text("Automatic / click + crop + rotation",font_size=3mm),offset=(10mm,59mm))
+p.add(text("Manual / next step",font_size=3mm),offset=(10mm,112mm))

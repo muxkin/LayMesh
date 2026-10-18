@@ -163,7 +163,9 @@ fn page(
 ) -> Result<Value> {
     let mut list: DisplayList = laymesh_render::to_display_list(scene)?;
     outlines(&mut list.nodes);
-    list.resources.retain(|_, r| r.mime.starts_with("image/"));
+    list.resources.retain(|_, r| {
+        r.mime.starts_with("image/") || r.mime.starts_with("video/") || r.mime.starts_with("audio/")
+    });
     for (id, r) in &mut list.resources {
         // Match normalized pixels so orientation, ICC conversion and crops
         // still use their prepared derivative, while ordinary images retain
@@ -185,7 +187,8 @@ fn page(
         json!({"id":id,"name":name,"list":list,"inspection":laymesh_language::inspect::inspect_scene(scene)}),
     )
 }
-fn runtime(editable: bool) -> Result<BTreeMap<String, Vec<u8>>> {
+fn runtime(profile: &str) -> Result<BTreeMap<String, Vec<u8>>> {
+    let editable = profile == "editable";
     let bytes = if let Some(path) = std::env::var_os("LAYMESH_WEB_RUNTIME") {
         std::fs::read(path)?
     } else if RUNTIME.is_empty() {
@@ -201,7 +204,7 @@ fn runtime(editable: bool) -> Result<BTreeMap<String, Vec<u8>>> {
     let mut zip = zip::ZipArchive::new(Cursor::new(bytes))?;
     let mut files = BTreeMap::new();
     let index: Value = serde_json::from_reader(zip.by_name("runtime-files.json")?)?;
-    let allowed: BTreeSet<String> = index[if editable { "editable" } else { "playback" }]
+    let allowed: BTreeSet<String> = index[profile]
         .as_array()
         .ok_or("Invalid runtime index")?
         .iter()
@@ -220,7 +223,6 @@ fn runtime(editable: bool) -> Result<BTreeMap<String, Vec<u8>>> {
         f.read_to_end(&mut data)?;
         if name == "licenses/manifest.json" {
             let mut inventory: Value = serde_json::from_slice(&data)?;
-            let profile = if editable { "editable" } else { "playback" };
             if inventory["schemaVersion"] == 1 {
                 let records = inventory["packages"]
                     .as_array_mut()
@@ -317,7 +319,7 @@ pub fn export(
     let journal = Rc::new(RefCell::new(BTreeSet::new()));
     host.dependencies = Some(journal.clone());
     host.files.insert(file.into(), source.as_bytes().to_vec());
-    let mut files = runtime(editable)?;
+    let mut files = runtime(if editable { "editable" } else { "playback" })?;
     let mut resources = BTreeMap::new();
     let mut pages = Vec::new();
     let mut transitions = BTreeSet::new();
@@ -518,7 +520,16 @@ pub fn export(
         .extension()
         .and_then(|s| s.to_str())
         .is_some_and(|s| s.eq_ignore_ascii_case("zip"));
-    let manifest = json!({"schemaVersion":2,"resourceInfo":resource_info,"embedFonts":options.html_embed_fonts.unwrap_or(false),"fontRequirements":font_meta,"requestedFonts":requested_fonts.into_values().collect::<Vec<_>>(),"name":name,"editable":editable,"container":if standard{"zip"}else{"universal"},"pages":pages,"resources":resources,"fonts":font_meta,"project":project,"imageCompression":options.html_image_compression.as_deref().unwrap_or("auto"),"imageQuality":options.html_image_quality.unwrap_or(85.),"laymeshVersion":env!("CARGO_PKG_VERSION")});
+    let has_media = files.iter().any(|(k, v)| {
+        k.starts_with("pages/")
+            && serde_json::from_slice::<Value>(v)
+                .ok()
+                .is_some_and(|p| p["list"]["media"].is_object())
+    });
+    if has_media && !editable {
+        files.extend(runtime("media")?);
+    }
+    let manifest = json!({"schemaVersion":if has_media{3}else{2},"capabilities":if has_media{json!(["media-v1"])}else{json!([])},"resourceInfo":resource_info,"embedFonts":options.html_embed_fonts.unwrap_or(false),"fontRequirements":font_meta,"requestedFonts":requested_fonts.into_values().collect::<Vec<_>>(),"name":name,"editable":editable,"container":if standard{"zip"}else{"universal"},"pages":pages,"resources":resources,"fonts":font_meta,"project":project,"imageCompression":options.html_image_compression.as_deref().unwrap_or("auto"),"imageQuality":options.html_image_quality.unwrap_or(85.),"laymeshVersion":env!("CARGO_PKG_VERSION")});
     if editable && font_meta.iter().all(|f| f["file"].is_string()) {
         let mut inputs = BTreeMap::new();
         for (p, asset) in project["files"].as_object().unwrap() {

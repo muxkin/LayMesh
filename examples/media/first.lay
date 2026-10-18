@@ -1,0 +1,6 @@
+p=canvas(size=(100mm,65mm),background="#f4f5f7")
+v=p.add(video(src="demo.mp4"),size=(80mm,45mm),offset=(10mm,5mm))
+p.add(text("Video + audio",font_size=4mm),offset=(10mm,55mm))
+p.play(v)
+p.play(audio(src="music.wav"),loop=true,volume=0.2)
+s=p.step(duration=3s,hold=0s,start="after-previous")

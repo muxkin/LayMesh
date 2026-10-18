@@ -1065,10 +1065,35 @@ impl Engine {
                     l,
                 )?
             }
-            "image" => {
+            "image" | "video" => {
                 let src = string(a, "src", "");
                 let path = resolve(&o.file, &src);
-                let mut asset = self.load_image(&path, &o.file, l)?;
+                let media_id = string(a, "__media_id", "");
+                let mut asset = if o.kind == "video" {
+                    let m = self
+                        .media
+                        .assets
+                        .get(&media_id)
+                        .ok_or_else(|| self.error("E_MEDIA", "Missing video material", l))?;
+                    let explicit = a.get("poster").map(|v| resolve(&o.file, &v.as_str()));
+                    let bytes = if let Some(path) = explicit {
+                        self.host.read(&path, &o.file, l)?
+                    } else if m.poster.is_empty() {
+                        let im = image::DynamicImage::new_rgba8(
+                            320,
+                            (320. * m.height as f64 / m.width as f64).round().max(1.) as u32,
+                        );
+                        let mut b = std::io::Cursor::new(Vec::new());
+                        im.write_to(&mut b, image::ImageFormat::Png)
+                            .map_err(|e| self.error("E_MEDIA", e.to_string(), l))?;
+                        b.into_inner()
+                    } else {
+                        m.poster.as_ref().clone()
+                    };
+                    crate::assets::load(&bytes, "poster.png", &o.file, l)?
+                } else {
+                    self.load_image(&path, &o.file, l)?
+                };
                 let (iw, ih) = (jnum(&asset, "width", 1.), jnum(&asset, "height", 1.));
                 let crop = if let Some(c) = a.get("crop").and_then(V::object) {
                     let args = &c.borrow().args;
@@ -1122,6 +1147,15 @@ impl Engine {
                     h = w * ch / cw;
                 }
                 let mut n = base("image", w, h);
+                if o.kind == "video" {
+                    n["mediaId"] = json!(media_id);
+                    n["mediaPosterExplicit"] = json!(a.contains_key("poster"));
+                    if let Some(c) = a.get("crop").and_then(V::object) {
+                        let c = c.borrow();
+                        n["mediaCrop"] =
+                            json!({"offset":nums(&c.args,"offset"),"size":nums(&c.args,"size")});
+                    }
+                }
                 n["data"] = asset["data"].clone();
                 if asset["rasterKey"].is_string() {
                     n["rasterKey"] = asset["rasterKey"].clone();

@@ -1,15 +1,16 @@
-use laymesh_core::engine::compile_file;
+use laymesh_core::engine::compile_source;
 use std::{env, path::Path, process};
 mod animation;
 mod documents;
 mod export;
 mod ffmpeg;
+mod media_export;
 mod preview;
 mod web_export;
 
 fn usage(status: i32) -> ! {
     let help = "用法:\n  laymesh animate <file.lay|laydoc> -o <output.mp4|gif> [--width N] [--fps N] [--reduced-motion reduce|no-preference]\n  laymesh render <file.lay|laydoc> -o frame.png --time SECONDS|--step N [--width N]\n  laymesh validate <file.lay>\n  laymesh inspect <file.lay> --json\n  laymesh render <file.lay> -o <output.svg|pdf|pptx|png|jpg|tif|webp|bmp|gif|ico|pnm|pbm|pgm|ppm|pam|tga>\n    [--dpi <number>] [--quality <1–100 (JPEG) / 0–100 (WebP)>]\n    [--compression <fast|default|best (PNG) / none|lzw|deflate|packbits (TIFF)>]\n    [--background <#RRGGBB>] [--webp-lossless <true|false>]\n    [--webp-method <0–6>] [--webp-alpha-quality <0–100>] [--webp-near-lossless <0–100>]\n    [--config <file.json>] [--pdf-image-compression <auto|lossless|jpeg>]\n    [--pdf-jpeg-quality <1–100>] [--pdf-downsample <true|false>]\n    [--pdf-recompress-jpeg <true|false>] [--pdf-preserve-16bit <true|false>] [--pdf-preserve-alpha <true|false>] [--pdf-alpha-background <#RRGGBB>]\n    [--pdf-auto-palette-limit <0–16384>] [--pdf-auto-flatness-threshold <0–1>]\n    [--preview-output <preview.jpg> [--preview-dpi <number>] [--preview-quality <1–100>] [--preview-background <#RRGGBB>]]\n  laymesh render <file.lay> --preview-output <preview.jpg>\n  laymesh lsp --stdio\n  laymesh preview --stdio\nFFmpeg：laymesh ffmpeg status|install [--file SOURCE] [--config FILE] [--format mp4|gif] [--json] [--yes]\n所有命令支持 --warnings show|hide（默认读取 LAYMESH_WARNINGS）\n几何默认 mm；字号与线宽默认 pt；样式表使用 .lcss";
-    let document_help = "Web export: laymesh render input.lay|laydoc -o output.zip.html|zip [--html-editable] [--html-embed-fonts] [--html-image-compression auto|original|lossless] [--html-image-quality 85]\n多页文档：validate/inspect/render 支持 .laydoc；--page N 从 1 开始。\n  laymesh render report.laydoc -o report.pdf\n  laymesh render report.laydoc -o page.png --page 2\n  laymesh render report.laydoc -o page.png --all-pages\n  inspect report.laydoc --json 列出页面；--preview-page N 只选择 JPEG 预览页。";
+    let document_help = "Web export: laymesh render input.lay|laydoc -o output.zip.html|zip [--html-editable] [--html-embed-fonts] [--html-image-compression auto|original|lossless] [--html-image-quality 85]\n多页文档：validate/inspect/render 支持 .laydoc；--page N 从 1 开始。\n  laymesh render report.laydoc -o report.pdf|report.pptx（完整文档）\n  laymesh render report.laydoc -o page.png --page 2\n  laymesh render report.laydoc -o page.png --all-pages\n  inspect report.laydoc --json 列出页面；--preview-page N 只选择 JPEG 预览页。";
     if status == 0 {
         println!("{help}\n{document_help}")
     } else {
@@ -75,8 +76,37 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     if !["show", "hide"].contains(&warning_mode.as_str()) {
         return Err("--warnings / LAYMESH_WARNINGS 须为 show 或 hide".into());
     }
+    let absolute = if Path::new(file).is_absolute() {
+        Path::new(file).to_path_buf()
+    } else {
+        env::current_dir()?.join(file)
+    };
+    let initial_config = rest
+        .windows(2)
+        .find(|p| p[0] == "--config")
+        .map(|p| Path::new(p[1]));
+    let (initial_defaults, _) = laymesh_render::config::resolve(
+        &absolute,
+        initial_config,
+        &serde_json::json!({}),
+        &serde_json::json!({}),
+    )?;
+    let host = documents::configured_host(initial_defaults, absolute.clone());
+    let compile_single = || {
+        compile_source(
+            &std::fs::read_to_string(&absolute).map_err(|e| {
+                laymesh_core::Diagnostic::new("E_IO", e.to_string(), file, Default::default())
+            })?,
+            absolute.to_str().unwrap_or(file),
+            host.clone(),
+        )
+    };
     let plan = if file.ends_with(".laydoc") {
-        Some(laymesh_core::document::plan_file(file)?)
+        Some(laymesh_core::document::plan_source(
+            &std::fs::read_to_string(&absolute)?,
+            absolute.to_str().ok_or("Invalid input path")?,
+            host.clone(),
+        )?)
     } else {
         None
     };
@@ -93,10 +123,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         };
         if let Some(plan) = &plan {
             let value = if let Some(number) = page_number {
-                let scene = laymesh_core::document::compile_page(
-                    plan.page(number)?,
-                    documents::native_host(),
-                )?;
+                let scene = laymesh_core::document::compile_page(plan.page(number)?, host.clone())?;
                 serde_json::json!({"document":plan,"pageNumber":number,"inspection":laymesh_language::inspect::inspect_scene(&scene)})
             } else {
                 serde_json::json!({"document":plan})
@@ -107,7 +134,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         println!(
             "{}",
             serde_json::to_string_pretty(&laymesh_language::inspect::inspect_scene(
-                &compile_file(file)?
+                &compile_single()?
             ))?
         );
         return Ok(());
@@ -118,22 +145,18 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         };
         if let Some(plan) = &plan {
             if let Some(number) = page_number {
-                let scene = laymesh_core::document::compile_page(
-                    plan.page(number)?,
-                    documents::native_host(),
-                )?;
+                let scene = laymesh_core::document::compile_page(plan.page(number)?, host.clone())?;
                 documents::scene_warnings(&scene, &warning_mode);
             } else {
                 for page in &plan.pages {
-                    let scene =
-                        laymesh_core::document::compile_page(page, documents::native_host())?;
+                    let scene = laymesh_core::document::compile_page(page, host.clone())?;
                     documents::scene_warnings(&scene, &warning_mode);
                 }
             }
             println!("有效：{file}（{} 页）", plan.pages.len());
             return Ok(());
         }
-        let scene = compile_file(file)?;
+        let scene = compile_single()?;
         if warning_mode == "show" {
             for w in &scene.warnings {
                 eprintln!("{w}")
@@ -343,11 +366,6 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     {
         return Err("导出参数需要 -o；预览请使用 --preview-dpi/quality/background".into());
     }
-    let absolute = if Path::new(file).is_absolute() {
-        Path::new(file).to_path_buf()
-    } else {
-        env::current_dir()?.join(file)
-    };
     let (defaults, _) = laymesh_render::config::resolve(
         &absolute,
         config_path,
@@ -372,25 +390,20 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         let result = web_export::export(
             absolute.to_str().ok_or("Invalid input path")?,
             &source,
-            documents::native_host(),
+            documents::configured_host(defaults.clone(), absolute.clone()),
             Path::new(output.unwrap()),
             &options,
             page_number,
             &warning_mode,
         )?;
         if let Some(path) = preview_output {
-            let plan = if file.ends_with(".laydoc") {
-                Some(laymesh_core::document::plan_file(file)?)
-            } else {
-                None
-            };
-            let scene = if let Some(plan) = plan {
+            let scene = if let Some(plan) = &plan {
                 laymesh_core::document::compile_page(
                     plan.page(page_number.or(preview_page).unwrap_or(1))?,
-                    documents::native_host(),
+                    documents::configured_host(defaults.clone(), absolute.clone()),
                 )?
             } else {
-                compile_file(file)?
+                compile_single()?
             };
             export::write_atomic(
                 Path::new(path),
@@ -413,16 +426,17 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 preview_page.unwrap_or(1),
                 &preview_options,
                 &warning_mode,
+                host.clone(),
             );
         }
     }
     let scene = if let Some(plan) = &plan {
         laymesh_core::document::compile_page(
             plan.page(page_number.or(preview_page).unwrap_or(1))?,
-            documents::native_host(),
+            documents::configured_host(defaults.clone(), absolute.clone()),
         )?
     } else {
-        compile_file(file)?
+        compile_single()?
     };
     if warning_mode == "show" {
         for w in &scene.warnings {

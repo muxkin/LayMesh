@@ -1,0 +1,4 @@
+d = document(name="Video controls experiment")
+d.play(audio(src="music.wav"),loop=true,volume=0.12)
+d.add(page(src="controls.lay",id="controls"))
+d.add(page(src="second.lay",id="music"))

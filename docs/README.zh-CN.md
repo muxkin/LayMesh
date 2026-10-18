@@ -30,7 +30,7 @@
 
 [重建画廊与高清图片](../site/README.md)
 
-[样式完整手册](topics/lcss.zh-CN.md) · [动画完整手册](topics/animation.zh-CN.md) · [视频教程](https://www.bilibili.com/video/BV1gpHn6eE4V)
+[样式完整手册](topics/lcss.zh-CN.md) · [动画完整手册](topics/animation.zh-CN.md) · [视频与音频](topics/media.zh-CN.md) · [视频教程](https://www.bilibili.com/video/BV1gpHn6eE4V)
 
 当前源码、已发布包与历史验证分别标明；用实际版本和发布说明确认功能。
 

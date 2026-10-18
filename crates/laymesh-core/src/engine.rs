@@ -47,6 +47,7 @@ pub struct Engine {
     pub(crate) style_cache: RefCell<crate::style::StyleCache>,
     pub animation_sheets: Vec<crate::animation::css::Sheet>,
     pub animation_steps: Vec<crate::animation::StepSpec>,
+    pub media: crate::media::Media,
     pub file: String,
     pub steps: usize,
     pub calls: usize,
@@ -133,6 +134,7 @@ impl Engine {
             style_cache: RefCell::new(crate::style::StyleCache::default()),
             animation_sheets: vec![],
             animation_steps: vec![],
+            media: crate::media::Media::default(),
             file: String::new(),
             steps: 0,
             calls: 0,
@@ -275,15 +277,48 @@ impl Engine {
             }
         }
         let canvas_style = self.styled("canvas", &c.args, &Args::new())?;
-        crate::asset_cache::retain_nodes(&c.nodes);
+        let mut nodes = c.nodes.clone();
+        self.prepare_media_posters(&mut nodes)?;
+        let mut animation = self.compile_animation(&nodes)?;
+        if self.media.cues.iter().any(|cue| cue.scope == "page") {
+            let mut a = animation.take().unwrap_or_default();
+            for (reduced, print) in [(false, false), (true, false), (false, true), (true, true)] {
+                let duration = crate::media::duration(&self.media, Some(&a), reduced, print)?;
+                let timeline = if print {
+                    if reduced {
+                        &mut a.print_reduced
+                    } else {
+                        &mut a.print
+                    }
+                } else if reduced {
+                    &mut a.reduced
+                } else {
+                    &mut a.normal
+                };
+                timeline.duration = duration;
+                if timeline.steps.is_empty() && duration > 0. {
+                    timeline.steps.push(crate::animation::Step {
+                        name: "Media".into(),
+                        trigger: "after-previous".into(),
+                        start: 0.,
+                        duration,
+                        hold: 0.,
+                        clips: vec![],
+                    });
+                }
+            }
+            animation = Some(a);
+        }
+        crate::asset_cache::retain_nodes(&nodes);
         Ok(Scene {
             speaker_notes: self.speaker_notes.clone(),
+            media: self.media.clone(),
             page_transition: if let Some(spec) = &self.page_transition_override {
                 spec.compile(Some(&self.host))?
             } else {
                 crate::page_transition::compile(&canvas_style, &self.file, c.loc)?
             },
-            animation: self.compile_animation(&c.nodes)?,
+            animation,
             schema_version: 8,
             width: c.width,
             height: c.height,
@@ -294,7 +329,7 @@ impl Engine {
             layout_dpi: self.dpi,
             canvas_unit: self.unit.clone(),
             export_dpi: 1200.,
-            nodes: c.nodes.clone(),
+            nodes,
             warnings: self
                 .warnings
                 .iter()
@@ -423,11 +458,11 @@ impl Engine {
             StmtKind::Bind(..) | StmtKind::Return(..) | StmtKind::If(..) => unreachable!(),
             StmtKind::SetIndex(target, value) => self.set_index(target, value, scope, stmt.loc)?,
             StmtKind::Expr(e) => {
-                if !matches!(&e.kind,ExprKind::Call(parts,_) if parts.len()==2 && (matches!(parts[1].as_str(),"add"|"fuse"|"animate") || Environment::get(scope,&parts[0]).and_then(|v|v.object()).is_some_and(|o|o.borrow().kind=="plot")))
+                if !matches!(&e.kind,ExprKind::Call(parts,_) if parts.len()==2 && (matches!(parts[1].as_str(),"add"|"fuse"|"animate"|"play") || Environment::get(scope,&parts[0]).and_then(|v|v.object()).is_some_and(|o|o.borrow().kind=="plot")))
                 {
                     return Err(self.error(
                         "E_STATEMENT",
-                        "独立语句只能调用容器的 add/fuse",
+                        "独立语句只能调用容器的 add/fuse/animate/play",
                         stmt.loc,
                     ));
                 }
@@ -1118,6 +1153,11 @@ impl Engine {
                 .entry(qualified.clone())
                 .or_default() += 1;
         }
+        if parts.len() == 2 && parts[1] == "play" {
+            if let Some(owner) = Environment::get(s, &parts[0]).and_then(|v| v.object()) {
+                return self.play_media(owner, pos, a, l);
+            }
+        }
         if let Some(result) = self.document_call(parts, &pos, &a, s, l) {
             return result;
         }
@@ -1423,6 +1463,18 @@ impl Engine {
                 .read(&path, &self.file, l)
                 .map_err(|e| self.error("E_DATA", e.message, l))?;
             return crate::data::load(name, &path, &bytes, &self.file, l);
+        }
+        if matches!(name, "video" | "audio") {
+            let path = resolve(&self.file, &string(&a, "src", ""));
+            let poster = a.get("poster").map(|v| resolve(&self.file, &v.as_str()));
+            let id = self.load_media(
+                &path,
+                name == "video",
+                poster.as_deref(),
+                &self.file.clone(),
+                l,
+            )?;
+            a.insert("__media_id".into(), V::text(id));
         }
         if name == "image_fill" {
             let path = resolve(&self.file, &string(&a, "src", ""));
