@@ -14,7 +14,13 @@ for(const ext of ['svg','png','pdf'])cp.execFileSync(binary,['render',entry,'-o'
   if(JSON.parse(fontStack.inspection()).warnings.some(w=>w.code==='W_FONT'))throw Error('Bootstrap font stack failed with registered WASM fonts');fontStack.free();
   const {initializeSkia,SkiaRenderer}=await import(new URL('skia-renderer.mjs',base)),meta=await(await fetch(new URL('skia/manifest.json',base))).json(),ck=await initializeSkia(new URL('skia/'+meta.wasm,base).href);
   const job=wasm.prepare_render(source,entry,'{}'),inspection=JSON.parse(job.inspection()),svg=job.svg();
-  if(svg!==nativeSVG)throw Error('Native/WASM SVG differs');
+  // Float color conversion can differ by a few ULPs between native and WASM.
+  // Preserve exact structure and bound numeric serialization, then compare
+  // actual pixels below; do not quantize source colors to make strings equal.
+  const numbers=/[-+]?\d*\.?\d+(?:e[-+]?\d+)?/gi;
+  const a=Array.from(svg.matchAll(numbers),m=>Number(m[0])),b=Array.from(nativeSVG.matchAll(numbers),m=>Number(m[0]));
+  const svgNumericError=a.length===b.length?a.reduce((max,x,i)=>Math.max(max,x===b[i]?0:Math.abs(x-b[i])),0):Infinity;
+  if(svg.replace(numbers,'#')!==nativeSVG.replace(numbers,'#')||svgNumericError>0.0001)throw Error('Native/WASM SVG structure or numeric values differ: '+svgNumericError);
   const warnings=inspection.warnings.filter(w=>w.code==='W_CSS');if(warnings.length!==2)throw Error('Expected one warning per pinned CSS file');
   const draw=job.draw_job(),list=JSON.parse(draw.display_list()),canvas=document.createElement('canvas');document.body.replaceChildren(canvas);document.body.style.margin='16px';canvas.style.width='1000px';canvas.style.height='700px';
   const renderer=new SkiaRenderer(ck,canvas,{software:true});await renderer.install(list,id=>draw.resource_bytes(id),1);renderer.render([0,0,100,70],1000,700);const pixels=renderer.readPixels();
@@ -26,7 +32,7 @@ for(const ext of ['svg','png','pdf'])cp.execFileSync(binary,['render',entry,'-o'
   const old=effects.filter(e=>e.knockout)[0],changed=modified[0];for(const key of ['rgba','offset','spread','inner'])if(JSON.stringify(old[key])!==JSON.stringify(changed[key]))throw Error('Partial blur changed '+key);if(changed.blur!==2||old.blur!==1)throw Error('CSS blur radius was not halved');
   await renderer.install(nextList,id=>next.resource_bytes(id),2);renderer.render([0,0,100,70],1000,700);const after=renderer.readPixels();if(!pixels.some((v,i)=>v!==after[i]))throw Error('Local blur override did not repaint');
   renderer.dispose();next.free();updated.free();draw.free();job.free();
-  return {nativeWasmSVG:'identical',nativeWasmPNG:{mean,max},offlineLibraries:['bootstrap@5.3.8','open-props@1.7.23'],fontStack:'registered WASM fonts; no font warnings',warnings: warnings.length,blurOverride:{beforeRadius:2,afterRadius:4,otherFields:'preserved'},effects:effects.length};
+  return {nativeWasmSVG:{structure:'identical',maxNumericError:svgNumericError},nativeWasmPNG:{mean,max},offlineLibraries:['bootstrap@5.3.8','open-props@1.7.23'],fontStack:'registered WASM fonts; no font warnings',warnings: warnings.length,blurOverride:{beforeRadius:2,afterRadius:4,otherFields:'preserved'},effects:effects.length};
  },{base:new URL('site/live/',url).href,entry,source,font:fs.readFileSync(path.join(root,'tests/fonts/DejaVuSans.ttf')).toString('base64'),fontPath:path.join(root,'tests/fonts/DejaVuSans.ttf'),nativeSVG:fs.readFileSync(path.join(output,'native.svg'),'utf8'),nativePNG:fs.readFileSync(path.join(output,'native.png')).toString('base64')});
  assert.deepEqual(errors,[]);report.consoleErrors=errors;await page.screenshot({path:path.join(output,'wasm-libraries.png')});
  fs.writeFileSync(path.join(output,'verification.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report));

@@ -22,6 +22,18 @@ pub fn color(s: &str, current: &str) -> Result<String, String> {
     if let Ok(c) = Color::parse(s) {
         return Ok(c.css());
     }
+    if s.contains('(')
+        && let Ok(c) = csscolor::parse_color(s)
+    {
+        let c = crate::gradient_color::rgba(c);
+        return Ok(format!(
+            "rgba({},{},{},{})",
+            c[0] * 255.,
+            c[1] * 255.,
+            c[2] * 255.,
+            c[3]
+        ));
+    }
     if s.starts_with('#') {
         return Err("Invalid hexadecimal CSS color".into());
     }
@@ -85,155 +97,7 @@ pub fn color(s: &str, current: &str) -> Result<String, String> {
 }
 
 pub fn gradient(s: &str, ctx: Context, current: &str) -> Result<Json, String> {
-    let (name, body) = s.split_once('(').ok_or("Expected gradient")?;
-    let body = body.strip_suffix(')').ok_or("Unclosed gradient")?;
-    if !matches!(name, "linear-gradient" | "radial-gradient") {
-        return Err("Only single linear/radial gradients are supported".into());
-    }
-    let radial = name == "radial-gradient";
-    let mut args = split(body, ',');
-    let mut angle = std::f64::consts::PI;
-    let mut corner = false;
-    let mut center = [0.5, 0.5];
-    let mut circle = false;
-    if args
-        .first()
-        .is_some_and(|v| v.starts_with("to ") || values::angle(v).is_ok())
-    {
-        let dir = args.remove(0);
-        corner = dir.starts_with("to ") && values::words(&dir).len() == 3;
-        angle = match dir.as_str() {
-            "to top" => 0.,
-            "to right" => std::f64::consts::FRAC_PI_2,
-            "to bottom" => std::f64::consts::PI,
-            "to left" => 3. * std::f64::consts::FRAC_PI_2,
-            "to top right" | "to right top" => std::f64::consts::FRAC_PI_4,
-            "to bottom right" | "to right bottom" => 3. * std::f64::consts::FRAC_PI_4,
-            "to bottom left" | "to left bottom" => 5. * std::f64::consts::FRAC_PI_4,
-            "to top left" | "to left top" => 7. * std::f64::consts::FRAC_PI_4,
-            _ => values::angle(&dir)?,
-        };
-    }
-    if args
-        .first()
-        .is_some_and(|v| v.contains(" in ") || v.starts_with("in "))
-    {
-        return Err("Gradient interpolation color spaces are not supported".into());
-    }
-    if radial
-        && args.first().is_some_and(|s| {
-            s.starts_with("circle") || s.starts_with("ellipse") || s.starts_with("at ")
-        })
-    {
-        let spec = args.remove(0);
-        circle = spec.starts_with("circle");
-        let shape = spec.split(" at ").next().unwrap_or("");
-        if !matches!(shape, "circle" | "ellipse") && !spec.starts_with("at ") {
-            return Err("Unsupported radial gradient size".into());
-        }
-        if let Some(position) = spec.split_once("at ").map(|(_, v)| v) {
-            let mut words = values::words(position);
-            if words.len() == 1 {
-                words.push("center".into());
-            }
-            if words.len() != 2 {
-                return Err("Radial position requires one or two coordinates".into());
-            }
-            if matches!(words[0].as_str(), "top" | "bottom")
-                || matches!(words[1].as_str(), "left" | "right")
-            {
-                words.swap(0, 1);
-            }
-            for (i, word) in words.iter().enumerate() {
-                center[i] = match word.as_str() {
-                    "center" => 0.5,
-                    "left" if i == 0 => 0.,
-                    "right" if i == 0 => 1.,
-                    "top" if i == 1 => 0.,
-                    "bottom" if i == 1 => 1.,
-                    _ if word.ends_with('%') => values::length_context(
-                        word,
-                        Context {
-                            reference: 1.,
-                            ..ctx
-                        },
-                    )?,
-                    _ => {
-                        return Err(
-                            "Radial gradient position requires percentages or keywords".into()
-                        );
-                    }
-                };
-            }
-        }
-    }
-    let mut stops: Vec<(String, Option<f64>)> = vec![];
-    for arg in args {
-        let words = values::words(&arg);
-        if words.is_empty() || words.len() > 3 {
-            return Err("Invalid gradient stop".into());
-        }
-        let c = color(&words[0], current)?;
-        if words.len() == 1 {
-            stops.push((c, None));
-        } else {
-            for word in &words[1..] {
-                let position = values::length_context(
-                    word,
-                    Context {
-                        reference: 1.,
-                        ..ctx
-                    },
-                )?;
-                // Physical stops need the actual gradient line length, not a guessed box.
-                if !word.ends_with('%') {
-                    return Err("Gradient stops currently require percentages".into());
-                }
-                stops.push((c.clone(), Some(position.clamp(0., 1.))));
-            }
-        }
-    }
-    if stops.len() < 2 {
-        return Err("Gradient requires two stops".into());
-    }
-    stops[0].1.get_or_insert(0.);
-    stops.last_mut().unwrap().1.get_or_insert(1.);
-    let mut previous = 0.;
-    for stop in &mut stops {
-        if let Some(v) = &mut stop.1 {
-            *v = v.max(previous);
-            previous = *v;
-        }
-    }
-    let mut i = 0;
-    while i < stops.len() - 1 {
-        let mut j = i + 1;
-        while stops[j].1.is_none() {
-            j += 1;
-        }
-        let a = stops[i].1.unwrap();
-        let b = stops[j].1.unwrap();
-        for k in i + 1..j {
-            stops[k].1 = Some(a + (b - a) * (k - i) as f64 / (j - i) as f64);
-        }
-        i = j;
-    }
-    let stops: Vec<_> = stops
-        .into_iter()
-        .map(|(c, p)| json!({"color":c,"at":p.unwrap(),"opacity":1.}))
-        .collect();
-    if radial {
-        Ok(
-            json!({"kind":"radialGradient","center":center,"radius":0.5,"stops":stops,"cssRadial":if circle {"circle"} else {"ellipse"}}),
-        )
-    } else {
-        let dx = angle.sin();
-        let dy = -angle.cos();
-        let scale = dx.abs().max(dy.abs());
-        Ok(
-            json!({"kind":"linearGradient","start":[0.5-dx/scale/2.,0.5-dy/scale/2.],"end":[0.5+dx/scale/2.,0.5+dy/scale/2.],"stops":stops,"cssAngle":angle,"cssCorner":corner}),
-        )
-    }
+    crate::gradients::parse(s, ctx, current)
 }
 
 pub fn gradient_box(p: &Json, bbox: [f64; 4]) -> std::borrow::Cow<'_, Json> {

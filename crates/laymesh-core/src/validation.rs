@@ -195,7 +195,10 @@ impl Engine {
                 l,
             )?;
         }
-        if matches!(name, "linear_gradient" | "radial_gradient") {
+        if matches!(
+            name,
+            "linear_gradient" | "radial_gradient" | "conic_gradient"
+        ) {
             let stops = array(a, "stops");
             let mut last = -1.;
             if stops.len() < 2 {

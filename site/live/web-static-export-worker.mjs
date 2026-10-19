@@ -152,14 +152,19 @@ self.onmessage = async ({ data }) => {
               layerCache.set(key,markup);
               return markup;
             }
-            const density=exportDensity(t,dpi), scale=density*25.4/dpi;
+            const density=exportDensity(t,dpi);
             if(density<=0)return null;
-            const raw=renderer.prepare(node).bounds;
-            const view=raw.map((v,i)=>(i<2?Math.floor(v*density):Math.ceil(v*density))/density);
-            if(view[2]<=view[0]||view[3]<=view[1])return null;
-            const [w,h]=dimensions((view[2]-view[0])*scale,(view[3]-view[1])*scale);
-            const pixels=await raster({...list,nodes:[node],animation:null,pageTransition:null},page.resources,view,w,h,effectsOnly);
-            return {rect:view,bytes:await encode(pixels,w,h)};
+            const fragments=[];
+            await rasterExportTiles({renderer,list,resources:page.resources,node,density,effectsOnly,alphaOnly:false,consume:async tile=>{
+              // Remove the assembly overlap so adjacent SVG images never
+              // double-composite translucent fills or shadows.
+              const w=tile.width-2,h=tile.height-2,pixels=new Uint8Array(w*h*4);
+              for(let y=0;y<h;y++)pixels.set(tile.pixels.subarray(((y+1)*tile.width+1)*4,((y+1)*tile.width+1+w)*4),y*w*4);
+              const url=imageDataURL(await encode(pixels,w,h));
+              fragments.push(`<image x="${tile.rect[0]+1/density}" y="${tile.rect[1]+1/density}" width="${w/density}" height="${h/density}" preserveAspectRatio="none" xlink:href="${url}"/>`);
+              metrics.tiles++;metrics.peakTileRGBABytes=Math.max(metrics.peakTileRGBABytes,tile.surfaceBytes);
+            }});
+            return fragments.join("");
           },
         });
         for(let w=warningStart;w<warnings.length;w++)warnings[w].message=`第 ${page.number} 页：${warnings[w].message}`;

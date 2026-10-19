@@ -1,0 +1,11 @@
+page=canvas(size=(160mm,105mm),background="#f1f5f9")
+style {
+ .card { background:radial-gradient(at 20% 20%,#ffffffcc,transparent),conic-gradient(from 45deg in oklab,#fb923c,#60a5fa,#a78bfa,#fb923c) #ffffff;border-radius:5mm;border:0.3mm solid #334155;box-shadow:1mm 2mm 2mm #0003; }
+ .tiles { background:linear-gradient(45deg,#0ea5e9,#1e3a8a) center / 12mm 10mm space round #e2e8f0;border-radius:3mm; }
+}
+page.add(rect(size=(65mm,42mm),class="card"),offset=(10mm,10mm))
+page.add(rect(size=(65mm,42mm),class="tiles"),offset=(85mm,10mm))
+wheel=conic_gradient(stops=[(0,"#f97316"),(0.5,"#2563eb"),(1,"#f97316")])
+page.add(ellipse(size=(30mm,30mm),fill=wheel,border_width=0),offset=(15mm,65mm))
+ink=gradient(css="linear-gradient(to right in oklch longer hue,oklch(65% .15 30),oklch(65% .15 250))")
+page.add(text("Gradient",font_family="DejaVu Sans",font_size=32pt,font_weight=700,text_fill=ink,text_stroke_color="#ffffff",text_stroke_width=0.3pt),offset=(58mm,70mm))

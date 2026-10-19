@@ -13,7 +13,7 @@
   "capability.untrustedWorkspaces": "可使用静态语言提示；图形预览需要受信任的工作区。",
   "capability.virtualWorkspaces": "LayMesh 在扩展宿主中使用原生可执行文件和本地资源。",
   "command.exportFigure": "LayMesh：导出图形",
-  "config.export.dpi": "默认位图导出分辨率及 PDF 图片 DPI 上限。",
+  "config.export.dpi": "位图导出及 SVG/PDF/PPTX 局部填充与特效分辨率，同时作为 PDF 图片 DPI 上限。",
   "config.export.quality": "JPEG 和有损 WebP 的默认图像质量。",
   "config.export.tiffCompression": "TIFF 导出的默认无损压缩方式。",
   "config.export.webpLossless": "默认使用无损 WebP 导出。",

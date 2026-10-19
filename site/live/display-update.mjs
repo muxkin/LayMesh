@@ -1,7 +1,8 @@
 // Paths address the previous baseline. Copy only changed ancestors; unchanged
 // geometry, siblings and resource buffers retain their JavaScript identities.
 export function applyDisplayUpdate(previous, update) {
-  if (!previous || update.schemaVersion !== previous.schemaVersion ||
+  if (!previous || ![1,2].includes(update.schemaVersion) ||
+      (update.schemaVersion !== previous.schemaVersion && !update.roots) ||
       ![update.width, update.height].every(n => Number.isFinite(n) && n > 0))
     throw Error('Invalid drawing update');
   const changes = update.nodes || [], properties = update.properties || [], structure = update.structure || [];
@@ -44,7 +45,7 @@ export function applyDisplayUpdate(previous, update) {
       } else if (!item.new?.kind) throw Error('Invalid inserted child');
     }
   }
-  const list={...previous,media:update.media,animation:update.animation,pageTransition:update.pageTransition,width:update.width,height:update.height,nodes:update.roots||previous.nodes.slice(),resources:update.resources||previous.resources};
+  const list={...previous,schemaVersion:update.schemaVersion,media:update.media,animation:update.animation,pageTransition:update.pageTransition,width:update.width,height:update.height,nodes:update.roots||previous.nodes.slice(),resources:update.resources||previous.resources};
   const copied = new Set();
   const copy = path => {
     let nodes=list.nodes,node;

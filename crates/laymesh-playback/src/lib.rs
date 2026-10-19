@@ -110,7 +110,7 @@ impl DrawJob {
 #[wasm_bindgen]
 pub fn prepare_display_list(json: &str) -> Result<DrawJob, JsValue> {
     let mut list: laymesh_render::DisplayList = serde_json::from_str(json).map_err(js_error)?;
-    if list.schema_version != laymesh_render::display_list::DISPLAY_LIST_VERSION {
+    if !laymesh_render::display_list::supported_version(list.schema_version) {
         return Err(js_error("Unsupported display list version"));
     }
     resolve_resources(&mut list.resources)?;

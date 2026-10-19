@@ -156,7 +156,7 @@ pub fn export_options(
     }) {
         return Err(error("Unknown export configuration key"));
     }
-    if !matches!(format, "svg" | "html") {
+    if format != "html" {
         if let Some(dpi) = common.get("dpi") {
             value["dpi"] = dpi.clone();
         }

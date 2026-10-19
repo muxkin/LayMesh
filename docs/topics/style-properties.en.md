@@ -950,7 +950,7 @@ Applies to: Drawable object regions; target support depends on material.
 
 ### background-image
 
-Single CSS gradient
+Gradients, images or patterns ordered front to back
 
 Accepted values: paint.
 
@@ -1117,5 +1117,53 @@ Applies to: Drawable object regions; target support depends on material.
 ```
 
 [Existing layers, lists and shorthand reset](style-shadows.en.md#partial-overrides)
+
+### background-position
+
+Per-layer background position
+
+Accepted values: string.
+
+Units: none.
+
+Default: 0% 0%. Not inherited.
+
+Applies to: Drawable object regions; target support depends on material.
+
+```lcss
+.sample { background-position: center, right 2mm bottom 3mm; }
+```
+
+### background-size
+
+Per-layer dimensions including auto/cover/contain
+
+Accepted values: string.
+
+Units: none.
+
+Default: auto. Not inherited.
+
+Applies to: Drawable object regions; target support depends on material.
+
+```lcss
+.sample { background-size: cover, 20mm 15mm; }
+```
+
+### background-repeat
+
+Per-layer tiling: repeat/no-repeat/space/round
+
+Accepted values: string.
+
+Units: none.
+
+Default: repeat. Not inherited.
+
+Applies to: Drawable object regions; target support depends on material.
+
+```lcss
+.sample { background-repeat: no-repeat, space round; }
+```
 
 <!-- properties:end -->

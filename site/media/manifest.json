@@ -10,7 +10,7 @@
     "version": 3,
     "engine": "rust-skia-ratex"
   },
-  "engine": "4e4e2f34a76987d86f396e20fb32f50a7ee49a4345a84a7a35de2d16de95a85e",
+  "engine": "996b1d997fc9c03ec496676c1a88adc09928bd6367af1ce3275caba435a0b5f2",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -1779,19 +1779,19 @@
           "file": "site/media/gallery-styles-libraries-960.webp",
           "width": 960,
           "height": 600,
-          "sha256": "12708c697c0a0250a1c6f096f24dc7dfdbe9ff1d432c8ecc335a8f33e42c3218"
+          "sha256": "010d05ad602661a93f8635bf230c9d08a965d7f2fed2c5162a9598d94aca502c"
         },
         {
           "file": "site/media/gallery-styles-libraries-1920.webp",
           "width": 1920,
           "height": 1200,
-          "sha256": "8b743903f9ea4b3b0732fa5b99eef71af5260203c55bbd0ec0fb31777bf19fbe"
+          "sha256": "0de24b96a792685c05a1c48e3b62fb73d91786258addc26dac2d350a1e821247"
         },
         {
           "file": "site/media/gallery-styles-libraries-3840.webp",
           "width": 3840,
           "height": 2400,
-          "sha256": "4578bd59920b2d4f07cb21385a6d31390f07f393bbc481fa41a6c90175e4044b"
+          "sha256": "e5a5bb1fb8d28aa3e6069caf0d7f04f0913948a46a2363cb6b90858bf3be2e96"
         }
       ]
     },
@@ -1859,19 +1859,19 @@
           "file": "site/media/animation-art-direction-960.webp",
           "width": 960,
           "height": 667,
-          "sha256": "767e5a5776580b6ee746ddfdb1bae2a6d5a8928d4a035e9f518aee66f4a50db4"
+          "sha256": "bf1cc144c7286ad4cea8081f7f3d4f130352dd23cfa0846bf60e039a62cdcd7d"
         },
         {
           "file": "site/media/animation-art-direction-1920.webp",
           "width": 1920,
           "height": 1334,
-          "sha256": "e3a24226bd829467b3f6c0e39c8264f4bcedd3d05d70640c10a2dff2c9db1442"
+          "sha256": "8a4baad2c0040888a7f60c262dcf0a7cd97511df530ba90e699528b8caa7aa0e"
         },
         {
           "file": "site/media/animation-art-direction-3840.webp",
           "width": 3840,
           "height": 2667,
-          "sha256": "131c1b83b06c62b2baa8e25dbfc97e079f5cd3ceb3e8b84aedc052ffa48732f5"
+          "sha256": "abacc98e1c09147f8dfc5d0228863e72dc8df8a887ea461c967be67268b8d667"
         }
       ]
     },
@@ -2099,19 +2099,19 @@
           "file": "site/media/animation-styled-cards-960.webp",
           "width": 960,
           "height": 504,
-          "sha256": "da328b8b114395b6c6f4de7993d5ac57f0679cbc98f03215bf341b5191b57992"
+          "sha256": "4ae3e673e2eaca5f0e823ace5260a7017381bd5c9abfd105d7491bf13c9370ec"
         },
         {
           "file": "site/media/animation-styled-cards-1920.webp",
           "width": 1920,
           "height": 1008,
-          "sha256": "ee3a432baa67e28142e277b6710641fe6e4d4b0d4db0842a44222df6d205234d"
+          "sha256": "53be4fd69d327e72aed0d72401458e1ff2ff6b519b9c7e0414844e371b2fdd0b"
         },
         {
           "file": "site/media/animation-styled-cards-3840.webp",
           "width": 3840,
           "height": 2016,
-          "sha256": "3382698a34e243617f015e1137d9cbe3dc0fa0b65474176b4c27bfd950e6c2cc"
+          "sha256": "e6da02df95b143c16c2f640778ab8fe83bb868585e84c215e29982679d25e5e7"
         }
       ]
     },
@@ -2634,19 +2634,19 @@
           "file": "site/media/libraries-all-three-960.webp",
           "width": 960,
           "height": 548,
-          "sha256": "835551940c2e0c8cfaca318a7d5ad277483b6b25186a4cacb80b29b72600a18b"
+          "sha256": "815942a95b7f126d38f8ece57bb2c18d6b4ac58e35a83e05babbee4002ca5bee"
         },
         {
           "file": "site/media/libraries-all-three-1920.webp",
           "width": 1920,
           "height": 1097,
-          "sha256": "4d792919ace0bb7d6ffd8c3d1d54d5e46e76d1ddd678614e40bef17eedb31631"
+          "sha256": "564825647123968f5a71f5c1775c457d5f9457e4f1a433e9ee3ca565058d8637"
         },
         {
           "file": "site/media/libraries-all-three-3840.webp",
           "width": 3840,
           "height": 2194,
-          "sha256": "c30ddc140f80705eb3cee4abcb1709840fc390bb61b08b7d634269e33650b734"
+          "sha256": "08b8c8954d2e51d8f454e9ce4a59ed6fb92665139c63c253e736cc2a32c5191c"
         }
       ]
     },
@@ -2790,19 +2790,19 @@
           "file": "site/media/libraries-catalog-open-props-960.webp",
           "width": 960,
           "height": 960,
-          "sha256": "579d823ac2f6887964c09b39b5f71f5fc73db1e5ea46d572bbb8c8fd55843102"
+          "sha256": "4e761ae3bfa6c4b55570c7f9a0d04c9b0eaa6283aea912a9e616d45f4e2c7c42"
         },
         {
           "file": "site/media/libraries-catalog-open-props-1920.webp",
           "width": 1920,
           "height": 1920,
-          "sha256": "a7d283f31769280919d38a42b987bd603c3dfb5ade8ef6e01411b37f34cbdf34"
+          "sha256": "fb5fc7005a18425b64af67aa4f55c3f444f57c68b8a791528c0266aa5ba3b9c0"
         },
         {
           "file": "site/media/libraries-catalog-open-props-3840.webp",
           "width": 3840,
           "height": 3840,
-          "sha256": "6664803db3fe91349515f34348ca89fe1cb73fac20bda3bb9bfc5d302cd5f3c3"
+          "sha256": "d22cef3872153be09fb76eca5f926687a019347dd4ac509a9c695d5d269cbfe2"
         }
       ]
     },
@@ -2816,19 +2816,45 @@
           "file": "site/media/libraries-open-props-animate-960.webp",
           "width": 960,
           "height": 624,
-          "sha256": "0e7309a2f170fde98f8ae0b6553c4ad98a48a9da0288e1ae5c211b1bd529b01c"
+          "sha256": "818097c5bab4048da985b68948dd10afa9250f1c5aca6752010a105d1ddb3ae7"
         },
         {
           "file": "site/media/libraries-open-props-animate-1920.webp",
           "width": 1920,
           "height": 1248,
-          "sha256": "82c49fff81e1aed309a98499c874e95be43e5c246449bb2f4a42c6915c99e6af"
+          "sha256": "a8334cf30bd5208fe07a235d5bacbdc4be7a418219a9cdf46ac30abe2fece0cf"
         },
         {
           "file": "site/media/libraries-open-props-animate-3840.webp",
           "width": 3840,
           "height": 2496,
-          "sha256": "eb87971fb9514e9e976544332c7d5f224abe5065faf70f3630c10f74db425855"
+          "sha256": "7b2293898d542f82ecfb94f71a8c5add58765836c4cc634e4098867adaf115c3"
+        }
+      ]
+    },
+    "examples/libraries/open-props-gradients.lay": {
+      "fingerprint": "f7ac08e816b7d4960a55442cd82e3ca87a85a6c0374d1c5892e6234531a875f6",
+      "dependencies": [
+        "examples/libraries/open-props-gradients.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-open-props-gradients-960.webp",
+          "width": 960,
+          "height": 1016,
+          "sha256": "b1ab38e7ce0094efa7a97defbc2ce8ef96148563ca8168b1818a608255a62cd6"
+        },
+        {
+          "file": "site/media/libraries-open-props-gradients-1920.webp",
+          "width": 1920,
+          "height": 2033,
+          "sha256": "f5a9691970b25133574812d0611e294d871262c397d58294f9de637bf74d16fb"
+        },
+        {
+          "file": "site/media/libraries-open-props-gradients-3840.webp",
+          "width": 3840,
+          "height": 4066,
+          "sha256": "c762ada7cf8b258b92388f155c14c78fb98b1d98bc9a7e1504b06749f92a2992"
         }
       ]
     },
@@ -2842,19 +2868,19 @@
           "file": "site/media/libraries-open-props-motion-960.webp",
           "width": 960,
           "height": 624,
-          "sha256": "24b1bfde6ab7616c88ba6348ab0824fbf4e2891d5c7569bbf3919848e2d9ee32"
+          "sha256": "96f9d5c91d9e50204de75b42e43478ef9345c5f97fe3d17d4c70126aef6da8c6"
         },
         {
           "file": "site/media/libraries-open-props-motion-1920.webp",
           "width": 1920,
           "height": 1248,
-          "sha256": "c8d91198479f9475444e7bebcb4a2902e08975ef8666adc6639fef32bbf7bd08"
+          "sha256": "abcaa4d7844865a1fdcc73317fed858611d5f56852b1f588ea7244224198cdc5"
         },
         {
           "file": "site/media/libraries-open-props-motion-3840.webp",
           "width": 3840,
           "height": 2496,
-          "sha256": "fa6fde1c584ba9116600de893b615ab66f421db6d5b4df3084ed6ccc201e310b"
+          "sha256": "a2cb25bb3505e64054e75e17b61fdf725502bd6d1776698287bd4181abda5c0d"
         }
       ]
     },
@@ -2868,19 +2894,19 @@
           "file": "site/media/libraries-open-props-960.webp",
           "width": 960,
           "height": 624,
-          "sha256": "f33afb9d1d22df7ab29bdb6206f2ecaadda42c77dffeebcdbdd0fb7521766e03"
+          "sha256": "3d9a3f9696efa20b594765c8a4e099bc3d2c9464ca67579f9056c867a1976e13"
         },
         {
           "file": "site/media/libraries-open-props-1920.webp",
           "width": 1920,
           "height": 1248,
-          "sha256": "871001d4f954321f47ef56d6bb4f6ef5a31167343059a82411e74d53a917dd2c"
+          "sha256": "e6d1ff2a60afcf662f83f7b34706fbc9e24bcb96aa214b5c103cf68393153979"
         },
         {
           "file": "site/media/libraries-open-props-3840.webp",
           "width": 3840,
           "height": 2496,
-          "sha256": "bded7d66d293d02543f0df1f34f3ccee1afc90d61e3c1f438c865a3b58c76285"
+          "sha256": "7b077fa5f0f6a17a4740a3842084cf951de98385541e9e050b7aa94a02f24468"
         }
       ]
     },
@@ -2895,19 +2921,19 @@
           "file": "site/media/libraries-shared-page-1-960.webp",
           "width": 960,
           "height": 624,
-          "sha256": "cd76a690640b7c435807f15d25d7c1225dcc0a70952e07aa7018870e928b1638"
+          "sha256": "a509bfa8e0a1c11873486f7fe4501b48125c9835d2d097e6ebc5df6261c40827"
         },
         {
           "file": "site/media/libraries-shared-page-1-1920.webp",
           "width": 1920,
           "height": 1248,
-          "sha256": "3dacdf8187c9477bd043ae488b619b361b30533ecfb9e2b14a2f122722ef7a2b"
+          "sha256": "eda501e2bcbf2790cbd646e6bf7c8706757078d8ab9cb1acaa2ca884c16ae74b"
         },
         {
           "file": "site/media/libraries-shared-page-1-3840.webp",
           "width": 3840,
           "height": 2496,
-          "sha256": "9d55eb8bf9b6cfdcb005e91a071a27afbd65629404d40483db1a9478943ea8de"
+          "sha256": "a68afa5caccc5c4ea4d6c437147ffe1f33b3a2b3db20ca0c0091cb37d8bc846a"
         }
       ]
     },
@@ -2922,19 +2948,19 @@
           "file": "site/media/libraries-shared-page-2-960.webp",
           "width": 960,
           "height": 624,
-          "sha256": "f3b8d93ff94927018bedb37a6d8210a15a2e901c7387f05c9fae3dc53f557dd1"
+          "sha256": "09448d328c5e8e38afbebee24f992cb305760750f8f241ed81b4bf641f518afe"
         },
         {
           "file": "site/media/libraries-shared-page-2-1920.webp",
           "width": 1920,
           "height": 1248,
-          "sha256": "96a59a05c2b95a76f8c253afbf5e44446ac803a737852b9be06de1ce92d31c75"
+          "sha256": "2da51cd67c587d4b47d6a644feadb9e0031f5544e4d4d2a9a0141a6a49dfc940"
         },
         {
           "file": "site/media/libraries-shared-page-2-3840.webp",
           "width": 3840,
           "height": 2496,
-          "sha256": "3a340c836c07d92215b3fca5a61af7e1753ea4cb5140ff8d538265d2d838d6b3"
+          "sha256": "a44acc0702e52ce2e3c2a53b673fc82b43bc83b42c8e909d9b4db58d1cf1711f"
         }
       ]
     },
@@ -2980,19 +3006,19 @@
           "file": "site/media/libraries-third-party-main-960.webp",
           "width": 960,
           "height": 548,
-          "sha256": "25dfdc5c1238e78972cb995bd1094e713169a5728aade68262590600b66fc588"
+          "sha256": "49f13de03c40339f5d71421894c1ea28aa8ef94639a536fa3131f505a45b8e03"
         },
         {
           "file": "site/media/libraries-third-party-main-1920.webp",
           "width": 1920,
           "height": 1097,
-          "sha256": "246fa9d5deca27664228f46cdca284a724a0cb830d5bc1a0f66a28b9a2b39c02"
+          "sha256": "27356a17847497c59b6640ff9e4062df69dd5415df820ae62d3ccb46ba57b4de"
         },
         {
           "file": "site/media/libraries-third-party-main-3840.webp",
           "width": 3840,
           "height": 2194,
-          "sha256": "23126f2bb3e5b92b61d33f703a0f77d2da7dce902d434c06ed1df67302ae62e0"
+          "sha256": "3ec0d5e6ead28351480b801e0fde495bcffc130db3693d84ff2518fb3c878811"
         }
       ]
     },
@@ -3544,6 +3570,32 @@
         }
       ]
     },
+    "examples/manual/conic_gradient.lay": {
+      "fingerprint": "4db1b8ebeb0e8d562ee536a07b947517648588984d38f0aaaf668e116203a904",
+      "dependencies": [
+        "examples/manual/conic_gradient.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-conic_gradient-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "c8686654cf91ca28480500e565f28a4821c9daeb1e251062ebb6107d56f6a3bf"
+        },
+        {
+          "file": "site/media/manual-conic_gradient-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "e9d5837fd3624445f5ea2c148d4068c562cb3f0b172780702b1e50178962cdb3"
+        },
+        {
+          "file": "site/media/manual-conic_gradient-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "c31f65c1ea597cb527e1b562781b268aa6d30bd472a7413ff5c3b9fe46ab438e"
+        }
+      ]
+    },
     "examples/manual/css-shadow-override.lay": {
       "fingerprint": "825b2c6a2bfa22603abccdad86e6e53f6de514e088bb56cb51bdc7392e84cf81",
       "dependencies": [
@@ -3750,6 +3802,58 @@
           "width": 3840,
           "height": 3178,
           "sha256": "9348cbe9e47b3757905e612e327444967970f963bf4549e940baa97242a3f9de"
+        }
+      ]
+    },
+    "examples/manual/gradient-composition.lay": {
+      "fingerprint": "cd55e508b06c4c624cf9b98b7f2b916aa4f08be27741ab2e88dad0f4015624a4",
+      "dependencies": [
+        "examples/manual/gradient-composition.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-gradient-composition-960.webp",
+          "width": 960,
+          "height": 630,
+          "sha256": "3ca22a497b7bf7672bc81971d2b6e7814a6edf42257f9d694e36b3594a4d435b"
+        },
+        {
+          "file": "site/media/manual-gradient-composition-1920.webp",
+          "width": 1920,
+          "height": 1260,
+          "sha256": "4c94cd216d3af6558905e7078359b80da9536381eeb8d4348505ed32d0d9f6c4"
+        },
+        {
+          "file": "site/media/manual-gradient-composition-3840.webp",
+          "width": 3840,
+          "height": 2520,
+          "sha256": "1114299eb75a12c51397048bf051a3a6eaccb889a701a71ae5a644a943b62c66"
+        }
+      ]
+    },
+    "examples/manual/gradient.lay": {
+      "fingerprint": "64cfe9deb0744f87c57296f03909e678dc55f1ed7b41bf4cbf620bbf188c75bc",
+      "dependencies": [
+        "examples/manual/gradient.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-gradient-960.webp",
+          "width": 960,
+          "height": 720,
+          "sha256": "f4bea1898b8b94849bcf73b2e3598427500739743e88dbe68bbc3b326e805db9"
+        },
+        {
+          "file": "site/media/manual-gradient-1920.webp",
+          "width": 1920,
+          "height": 1440,
+          "sha256": "37a7c963cafb7e9f0225225466dbae4f578661ad854b369bdb3843325ba4fcfe"
+        },
+        {
+          "file": "site/media/manual-gradient-3840.webp",
+          "width": 3840,
+          "height": 2880,
+          "sha256": "4968f15db9ed5927ef68eed0d459f967cbc44e08e8bae73e7d1773b539f827d5"
         }
       ]
     },
@@ -5379,19 +5483,19 @@
           "file": "site/media/manual-style-project-960.webp",
           "width": 960,
           "height": 473,
-          "sha256": "db4b74c6ffcc248eb697767bfb4ba1d209beb7c9f0df0c8b7d7569b9bac72242"
+          "sha256": "2a484b4d943c5cba4f4a5482422a449b6d1160c57709c9736c34a15625a1aa4b"
         },
         {
           "file": "site/media/manual-style-project-1920.webp",
           "width": 1920,
           "height": 946,
-          "sha256": "5a70e5ec029e888ae45529f16084a2138c1d06101f54f45dc73155b14f9fa9b3"
+          "sha256": "51ec2cd896aad61404ef181e702573b1589dd6c49c0c3279d08aed990f7b4dc9"
         },
         {
           "file": "site/media/manual-style-project-3840.webp",
           "width": 3840,
           "height": 1891,
-          "sha256": "0b6c652b744962b01df134b48fb6629c5564a8f2564ec31016774ab356bcd364"
+          "sha256": "ca7dd64796da405bbc5e304e5c90ff88dec2e51b8bbfe7239c965ae63415b75c"
         }
       ]
     },
@@ -6228,19 +6332,19 @@
           "file": "site/media/libraries-shared-960.webp",
           "width": 960,
           "height": 624,
-          "sha256": "cd76a690640b7c435807f15d25d7c1225dcc0a70952e07aa7018870e928b1638"
+          "sha256": "a509bfa8e0a1c11873486f7fe4501b48125c9835d2d097e6ebc5df6261c40827"
         },
         {
           "file": "site/media/libraries-shared-1920.webp",
           "width": 1920,
           "height": 1248,
-          "sha256": "3dacdf8187c9477bd043ae488b619b361b30533ecfb9e2b14a2f122722ef7a2b"
+          "sha256": "eda501e2bcbf2790cbd646e6bf7c8706757078d8ab9cb1acaa2ca884c16ae74b"
         },
         {
           "file": "site/media/libraries-shared-3840.webp",
           "width": 3840,
           "height": 2496,
-          "sha256": "9d55eb8bf9b6cfdcb005e91a071a27afbd65629404d40483db1a9478943ea8de"
+          "sha256": "a68afa5caccc5c4ea4d6c437147ffe1f33b3a2b3db20ca0c0091cb37d8bc846a"
         }
       ]
     },
@@ -6385,6 +6489,26 @@
           "width": 800,
           "height": 600,
           "sha256": "10bf668eb7ba7bd6d4fb8c0ddf5e79123e4dd31c99be4de36afc0d16e3055b5a"
+        }
+      ]
+    },
+    "docs/benchmarks/gradients-2026-10-19/open-props.png": {
+      "fingerprint": "e7ec218dcf507b58bfc10f40bf56fdf9d2a1a035b90963203340a0f998ea8f10",
+      "dependencies": [
+        "docs/benchmarks/gradients-2026-10-19/open-props.png"
+      ],
+      "variants": [
+        {
+          "file": "site/media/docs-benchmarks-gradients-2026-10-19-open-props-960.webp",
+          "width": 960,
+          "height": 1016,
+          "sha256": "7221c71198156f177c0279c663f09b725aac4607e8368cc7878a6f019c874fda"
+        },
+        {
+          "file": "site/media/docs-benchmarks-gradients-2026-10-19-open-props-964.webp",
+          "width": 964,
+          "height": 1020,
+          "sha256": "491a00889d062e5a5a56b44e4d269e6814fe97e0fd5d878636904d7be062a834"
         }
       ]
     }

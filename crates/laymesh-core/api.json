@@ -5190,6 +5190,70 @@
       }
     },
     {
+      "name": "conic_gradient",
+      "description": "创建圆锥渐变填充",
+      "descriptionEn": "Create a conic-gradient paint",
+      "required": [
+        "stops"
+      ],
+      "parameters": [
+        {
+          "name": "stops",
+          "unit": "scalar",
+          "type": "(number, color, number?)[]",
+          "description": "至少两个递增色标，位置 0–1 对应一整圈",
+          "descriptionEn": "At least two ordered stops; 0–1 spans one turn"
+        },
+        {
+          "name": "center",
+          "unit": "scalar",
+          "type": "value",
+          "default": [
+            0.5,
+            0.5
+          ],
+          "description": "归一化中心，可在布局框外",
+          "descriptionEn": "Normalized center, including outside the bounds"
+        },
+        {
+          "name": "angle",
+          "unit": "deg",
+          "type": "angle",
+          "default": 0,
+          "description": "从正上方顺时针计算起始角度",
+          "descriptionEn": "Starting angle clockwise from the top"
+        }
+      ],
+      "returns": {
+        "zh": "paint",
+        "en": "paint"
+      },
+      "positional": [
+        "stops"
+      ]
+    },
+    {
+      "name": "gradient",
+      "description": "使用完整 CSS 渐变语法创建填充，支持重复渐变和颜色插值",
+      "descriptionEn": "Create paint from CSS gradient syntax, including repetition and color interpolation",
+      "required": [
+        "css"
+      ],
+      "parameters": [
+        {
+          "name": "css",
+          "type": "string",
+          "unit": "none",
+          "description": "单个 CSS 渐变函数",
+          "descriptionEn": "One CSS gradient function"
+        }
+      ],
+      "returns": {
+        "zh": "paint",
+        "en": "paint"
+      }
+    },
+    {
       "name": "hatch",
       "description": "创建 slash/cross/dots 重复图案填充。spacing 和 line_width 为物理尺寸，图案限制在素材填充区域内。",
       "descriptionEn": "Create slash/cross/dots pattern paint. spacing and line_width are physical dimensions; the pattern is confined to the material fill region.",
@@ -19732,9 +19796,9 @@
     {
       "name": "background-image",
       "type": "paint",
-      "description": "单层 CSS 渐变",
+      "description": "按从上到下顺序排列的渐变、图片或纹理",
       "values": [],
-      "descriptionEn": "Single CSS gradient",
+      "descriptionEn": "Gradients, images or patterns ordered front to back",
       "unit": "none"
     },
     {
@@ -19947,6 +20011,30 @@
       "descriptionEn": "Page transition easing, including cubic-bezier() and steps().",
       "unit": "none",
       "default": "ease-in-out"
+    },
+    {
+      "name": "background-position",
+      "type": "string",
+      "description": "逐层背景位置",
+      "descriptionEn": "Per-layer background position",
+      "unit": "none",
+      "default": "0% 0%"
+    },
+    {
+      "name": "background-size",
+      "type": "string",
+      "description": "逐层背景尺寸，支持 auto/cover/contain",
+      "descriptionEn": "Per-layer dimensions including auto/cover/contain",
+      "unit": "none",
+      "default": "auto"
+    },
+    {
+      "name": "background-repeat",
+      "type": "string",
+      "description": "逐层平铺，支持 repeat/no-repeat/space/round",
+      "descriptionEn": "Per-layer tiling: repeat/no-repeat/space/round",
+      "unit": "none",
+      "default": "repeat"
     }
   ]
 }

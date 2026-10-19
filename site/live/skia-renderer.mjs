@@ -76,6 +76,11 @@ export class SkiaRenderer {
    if(spec.kind==='linear'||spec.kind==='radial'){
     const colors=spec.stops.map(s=>this.color(s.rgba)),stops=spec.stops.map(s=>s.offset),m=matrix(spec.transform);
     shader=spec.kind==='linear'?ck.Shader.MakeLinearGradient(spec.start,spec.end,colors,stops,tile,m):ck.Shader.MakeTwoPointConicalGradient(spec.focal,0,spec.center,spec.radius,colors,stops,tile,m);
+   }else if(spec.kind==='conic'){
+    const [x,y]=spec.center,a=spec.angle-Math.PI/2,c=Math.cos(a),s=Math.sin(a),[m0,m1,m2,m3,m4,m5]=spec.transform;
+    const r=[c,s,-s,c,x-c*x+s*y,y-s*x-c*y];
+    const m=matrix([m0*r[0]+m2*r[1],m1*r[0]+m3*r[1],m0*r[2]+m2*r[3],m1*r[2]+m3*r[3],m0*r[4]+m2*r[5]+m4,m1*r[4]+m3*r[5]+m5]);
+    shader=ck.Shader.MakeSweepGradient(x,y,spec.stops.map(s=>this.color(s.rgba)),spec.stops.map(s=>s.offset),ck.TileMode.Clamp,m,0,0,360);
    }else if(spec.kind==='pattern'){
     const recorder=new ck.PictureRecorder(),bounds=[0,0,spec.width,spec.height],c=recorder.beginRecording(bounds);
     spec.nodes.forEach((n,i)=>this.drawNode(c,n,`pattern/${i}`,{}));
@@ -139,7 +144,7 @@ export class SkiaRenderer {
  }
  async install(list,readResource,generation,navigation,incremental=false){
   if(navigation!==undefined)this.transitions.navigate(list,navigation);
-  if(list.schemaVersion!==1)throw Error('Unsupported Skia display list version');
+  if(![1,2].includes(list.schemaVersion))throw Error('Unsupported Skia display list version');
   const incoming=new Map(),bytesById=new Map(),old={list:this.list,images:this.images,imageBytes:this.imageBytes,animatedNames:this.animatedNames,generation:this.generation,revealContents:this.revealContents};
   const ownedBefore=this.owned.length,cacheBefore=new Map(this.commandCache),entriesBefore=new Set(this.entries);let resourceChanged=false;
   try{

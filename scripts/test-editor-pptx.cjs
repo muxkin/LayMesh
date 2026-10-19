@@ -6,7 +6,7 @@ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'laymesh-editor-pptx-'));
 const uri=file=>({scheme:'file',fsPath:file});
 const main=uri(path.join(directory,'main.lay')),dependency=uri(path.join(directory,'label.lay')),destination=uri(path.join(directory,'figure.pptx'));
 fs.writeFileSync(main.fsPath,'page=canvas(size=(64mm,36mm))');fs.writeFileSync(dependency.fsPath,'export label="Disk"');
-const docs=[{uri:main,isDirty:true,getText:()=> 'import {label} from "./label.lay"\npage=canvas(size=(64mm,36mm))\npage.add(text(label))'},
+const docs=[{uri:main,isDirty:true,getText:()=> 'import {label} from "./label.lay"\npage=canvas(size=(64mm,36mm))\npage.add(text(label))\npage.add(rect(size=(10mm,10mm),fill=gradient(css="conic-gradient(red,blue)")),offset=(30mm,10mm))'},
  {uri:dependency,isDirty:true,getText:()=> 'export label="Unsaved editor text"'}];
 const commands=new Map(),dialogs=[],errors=[],warnings=[],context={subscriptions:[],extensionUri:uri(path.join(root,'extensions/vscode'))};
 const disposable=()=>({dispose(){}});
@@ -29,7 +29,7 @@ vm.runInNewContext(fs.readFileSync(path.join(root,'extensions/vscode/src/preview
   sandbox.module.exports.activatePreview(context,binary,{appendLine:line=>warnings.push(line)});
   const exportFigure=commands.get('laymesh.exportFigure');assert.equal(typeof exportFigure,'function');
   const result=await exportFigure(main);
-  assert.deepEqual(dialogs,['format','destination']);assert.deepEqual(errors,[]);
+  assert.deepEqual(dialogs,['format','destination']);assert.deepEqual(errors,[]);assert(!warnings.some(w=>/W_PPTX_RASTER|W_PDF_RASTER/.test(w)));
   assert.equal(result.exported,destination.fsPath.replace(/\\/g,'/'));
   assert.equal(result.bytes,fs.statSync(destination.fsPath).size);
   assert.equal(fs.readFileSync(destination.fsPath).subarray(0,2).toString(),'PK');

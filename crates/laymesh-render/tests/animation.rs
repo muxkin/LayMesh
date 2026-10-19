@@ -16,6 +16,27 @@ fn animation_opacity_replaces_instance_and_static_is_restored() {
     );
 }
 #[test]
+fn layered_conic_paint_fades_once_and_seeking_restores_static_pixels() {
+    let scene=compile_source("style {@keyframes f {from{opacity:0}to{opacity:1}} .a {background:linear-gradient(red,transparent),conic-gradient(blue,lime) yellow;border-radius:2mm;border-width:0}}\np=canvas(size=(20,20),background=\"none\")\na=p.add(rect(size=(10,10),class=\"a\"),offset=(5,5),opacity=0.4)\ns=p.step()\ns.animate(a,name=\"f\",duration=1s,easing=\"linear\",fill=\"both\")","/main.lay",Host::default()).unwrap();
+    let list = to_display_list(&scene).unwrap();
+    let rect = Rect::new(0., 0., 20., 20.);
+    let baseline = raster::render_region(&list, rect, 80, 80).unwrap();
+    let mut r = AnimationRenderer::new(list).unwrap();
+    let middle = r.render(rect, 80, 80, Some(0.5), false).unwrap();
+    assert!((middle.rgba[(40 * 80 + 40) * 4 + 3] as i32 - 128).abs() <= 1);
+    for t in [0., 1., 0.2, 0.8] {
+        r.render(rect, 80, 80, Some(t), false).unwrap();
+    }
+    assert_eq!(
+        middle.rgba,
+        r.render(rect, 80, 80, Some(0.5), false).unwrap().rgba
+    );
+    assert_eq!(
+        baseline.rgba,
+        r.render(rect, 80, 80, None, false).unwrap().rgba
+    );
+}
+#[test]
 fn all_97_effects_render_and_seek_reproducibly() {
     let lib = include_str!("../../../tests/animation/vendor/animate.css");
     let (_, sheet) =

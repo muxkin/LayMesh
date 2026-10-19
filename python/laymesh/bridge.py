@@ -546,8 +546,8 @@ def _render_impl(
     output_path = Path(output).resolve() if output is not None else None
     if output_path and output_path.suffix.lower() not in _FORMATS:
         raise LayMeshBridgeError("输出文件须为 SVG/PDF/PPTX/PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA")
-    if dpi is not None and (not output_path or output_path.suffix.lower() not in (_RASTER_FORMATS | {".pdf", ".pptx"})):
-        raise LayMeshBridgeError("--dpi 只用于位图/PDF 输出及 PPTX 局部回退")
+    if dpi is not None and (not output_path or output_path.suffix.lower() not in (_RASTER_FORMATS | {".svg", ".pdf", ".pptx"})):
+        raise LayMeshBridgeError("--dpi 需要位图、SVG、PDF 或 PPTX 导出路径")
     option_args = _export_args(output_path, export_options)
     if notebook_preview:
         if type(preview_dpi) not in {int, float} or not math.isfinite(preview_dpi) or not 0 < preview_dpi <= 25400:

@@ -5,6 +5,10 @@ pub mod animation;
 pub mod display_list;
 pub mod display_update;
 mod effects;
+mod export_geometry;
+#[cfg(not(feature = "native"))]
+mod gradient_raster;
+pub use export_geometry::{export_format, raster_dimensions};
 #[cfg(feature = "native")]
 pub mod raster;
 pub mod retained;
@@ -35,17 +39,56 @@ fn pair(v: &Json, default: [f64; 2]) -> [f64; 2] {
         v[1].as_f64().unwrap_or(default[1]),
     ]
 }
-fn paint(p: &Json, defs: &mut Vec<String>) -> String {
+struct SvgDefs {
+    items: Vec<String>,
+    dpi: f64,
+}
+impl std::ops::Deref for SvgDefs {
+    type Target = Vec<String>;
+    fn deref(&self) -> &Self::Target {
+        &self.items
+    }
+}
+impl std::ops::DerefMut for SvgDefs {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.items
+    }
+}
+fn paint(p: &Json, defs: &mut SvgDefs) -> Result<String> {
     paint_box(p, defs, [1., 1.])
 }
-fn paint_box(p: &Json, defs: &mut Vec<String>, size: [f64; 2]) -> String {
+fn paint_box(p: &Json, defs: &mut SvgDefs, size: [f64; 2]) -> Result<String> {
+    if p["gradient"].is_object() || p["kind"] == "backgroundLayers" || p["kind"] == "conic_gradient"
+    {
+        let id = format!("paint-{}", defs.len());
+        let b = p["paintBox"]
+            .as_array()
+            .map(|b| {
+                [
+                    b[0].as_f64().unwrap_or(0.),
+                    b[1].as_f64().unwrap_or(0.),
+                    b[2].as_f64().unwrap_or(size[0]),
+                    b[3].as_f64().unwrap_or(size[1]),
+                ]
+            })
+            .unwrap_or([0., 0., size[0], size[1]]);
+        let mut source = p.clone();
+        source.as_object_mut().unwrap().remove("paintBox");
+        let fragment = paint_fragment(&source, [b[2], b[3]], defs.dpi)?;
+        let fragment = fragment
+            .replace("id='lm", &format!("id='{id}-lm"))
+            .replace("url(#lm", &format!("url(#{id}-lm"))
+            .replace("href='#lm", &format!("href='#{id}-lm"));
+        defs.push(format!("<pattern id='{id}' patternUnits='userSpaceOnUse' width='{}' height='{}' patternTransform='translate({} {})'>{fragment}</pattern>",b[2],b[3],b[0],b[1]));
+        return Ok(format!("url(#{id})"));
+    }
     let computed = laymesh_core::css_values::gradient_box(p, [0., 0., size[0], size[1]]);
     let p = computed.as_ref();
     if let Some(s) = p.as_str() {
-        return escape(&laymesh_core::color::css(s));
+        return Ok(escape(&laymesh_core::color::css(s)));
     }
     if p.is_null() {
-        return "none".into();
+        return Ok("none".into());
     }
     let id = format!("paint-{}", defs.len());
     let kind = jstr(p, "kind", "");
@@ -165,19 +208,19 @@ fn paint_box(p: &Json, defs: &mut Vec<String>, size: [f64; 2]) -> String {
                     a = [r[0] + a[0] * r[2], r[1] + a[1] * r[3]];
                     b = [r[0] + b[0] * r[2], r[1] + b[1] * r[3]];
                     defs.push(format!("<linearGradient id='{id}' gradientUnits='userSpaceOnUse' x1='{}' y1='{}' x2='{}' y2='{}'>{stops}</linearGradient>",a[0],a[1],b[0],b[1]));
-                    return format!("url(#{id})");
+                    return Ok(format!("url(#{id})"));
                 }
                 defs.push(format!("<linearGradient id='{id}' x1='{}%' y1='{}%' x2='{}%' y2='{}%'>{stops}</linearGradient>",a[0]*100.,a[1]*100.,b[0]*100.,b[1]*100.));
             } else {
                 let c = pair(&p["center"], [0.5, 0.5]);
                 if let Some(b) = p["cssEllipseBox"].as_array() {
                     defs.push(format!("<radialGradient id='{id}' gradientUnits='userSpaceOnUse' cx='{}' cy='{}' r='{}' gradientTransform='matrix({} 0 0 {} {} {})'>{stops}</radialGradient>",c[0],c[1],jnum(p,"radius",0.5),b[2],b[3],b[0],b[1]));
-                    return format!("url(#{id})");
+                    return Ok(format!("url(#{id})"));
                 }
                 if let Some(bb) = p["paintBox"].as_array() {
                     let r: Vec<f64> = bb.iter().map(|v| v.as_f64().unwrap_or(0.)).collect();
                     defs.push(format!("<radialGradient id='{id}' gradientUnits='userSpaceOnUse' cx='{}' cy='{}' r='{}'>{stops}</radialGradient>",r[0]+c[0]*r[2],r[1]+c[1]*r[3],jnum(p,"radius",0.5)*r[2].max(r[3])));
-                    return format!("url(#{id})");
+                    return Ok(format!("url(#{id})"));
                 }
                 defs.push(format!(
                     "<radialGradient id='{id}' cx='{}%' cy='{}%' r='{}%'>{stops}</radialGradient>",
@@ -188,8 +231,61 @@ fn paint_box(p: &Json, defs: &mut Vec<String>, size: [f64; 2]) -> String {
             }
         }
     }
-    format!("url(#{id})")
+    Ok(format!("url(#{id})"))
 }
+fn paint_fragment(p: &Json, size: [f64; 2], dpi: f64) -> Result<String> {
+    let scene = Scene {
+        media: Default::default(),
+        page_transition: None,
+        animation: None,
+        schema_version: 8,
+        width: size[0].max(1e-12),
+        height: size[1].max(1e-12),
+        background: p.clone(),
+        layout_dpi: 96.,
+        canvas_unit: "mm".into(),
+        export_dpi: dpi,
+        nodes: vec![],
+        warnings: vec![],
+        speaker_notes: None,
+        fonts: Default::default(),
+        font_requests: Default::default(),
+    };
+    let list = to_display_list(&scene)?;
+    #[cfg(feature = "native")]
+    let svg = portable_svg::render_with_mode(
+        &list,
+        dpi,
+        Some(&mut |node, rect, w, h, _| {
+            let mut tile = list.clone();
+            tile.nodes = vec![node.clone()];
+            let frame = raster::render_region(&tile, rect, w, h)?;
+            let image = image::RgbaImage::from_raw(w, h, frame.rgba)
+                .ok_or_else(|| error("Invalid paint raster"))?;
+            let mut out = std::io::Cursor::new(Vec::new());
+            image::DynamicImage::ImageRgba8(image)
+                .write_to(&mut out, image::ImageFormat::Png)
+                .map_err(|e| error(e.to_string()))?;
+            Ok(out.into_inner())
+        }),
+        false,
+    )?;
+    #[cfg(not(feature = "native"))]
+    let svg = portable_svg::render_with_mode(
+        &list,
+        dpi,
+        Some(&mut |node, rect, w, h, _| gradient_raster::conic(node, rect, w, h)),
+        false,
+    )?;
+    Ok(svg
+        .split_once('>')
+        .unwrap()
+        .1
+        .strip_suffix("</svg>")
+        .unwrap()
+        .into())
+}
+
 fn wrap(node: &Json, body: String) -> String {
     let (w, h) = (jnum(node, "width", 0.), jnum(node, "height", 0.));
     let (x, y) = (jnum(node, "x", 0.) + w / 2., jnum(node, "y", 0.) + h / 2.);
@@ -204,7 +300,7 @@ fn wrap(node: &Json, body: String) -> String {
         number(-h / 2.)
     )
 }
-fn item_svg(item: &Json, defs: &mut Vec<String>) -> Result<String> {
+fn item_svg(item: &Json, defs: &mut SvgDefs) -> Result<String> {
     let kind = jstr(item, "kind", "");
     Ok(match kind {
         "glyph" => format!(
@@ -278,7 +374,7 @@ fn item_svg(item: &Json, defs: &mut Vec<String>) -> Result<String> {
         "path" if item.get("strokeStyle").is_none() => format!(
             "<path d=\"{}\" fill=\"{}\" stroke=\"{}\" stroke-width=\"{}\" opacity=\"{}\"/>",
             escape(jstr(item, "d", "")),
-            paint(&item["fill"], defs),
+            paint(&item["fill"], defs)?,
             escape(&laymesh_core::color::css(jstr(item, "stroke", "none"))),
             n(item, "strokeWidth", 0.),
             n(item, "opacity", 1.)
@@ -287,7 +383,7 @@ fn item_svg(item: &Json, defs: &mut Vec<String>) -> Result<String> {
         _ => node_svg(item, defs)?,
     })
 }
-fn formula_svg(node: &Json, defs: &mut Vec<String>) -> Result<String> {
+fn formula_svg(node: &Json, defs: &mut SvgDefs) -> Result<String> {
     let mut body = String::new();
     for item in node["items"].as_array().into_iter().flatten() {
         body += &item_svg(item, defs)?;
@@ -326,14 +422,10 @@ fn stroke_attrs(s: &Json) -> String {
         }
     )
 }
-fn node_svg(node: &Json, defs: &mut Vec<String>) -> Result<String> {
+fn node_svg(node: &Json, defs: &mut SvgDefs) -> Result<String> {
     node_svg_transformed(node, defs, kurbo::Affine::IDENTITY)
 }
-fn node_svg_transformed(
-    node: &Json,
-    defs: &mut Vec<String>,
-    parent: kurbo::Affine,
-) -> Result<String> {
+fn node_svg_transformed(node: &Json, defs: &mut SvgDefs, parent: kurbo::Affine) -> Result<String> {
     let transform = parent * laymesh_core::geometry::node_transform(node);
     if node["kind"] == "image"
         && node["mime"] == "image/png"
@@ -523,17 +615,27 @@ fn node_svg_transformed(
                     .collect::<String>();
                 return Ok(wrap(node, effects::apply(node, body, defs)));
             }
-            let fill = if matches!(
-                jstr(&node["fill"], "kind", ""),
-                "imagePaint" | "image_paint" | "image_fill"
-            ) {
-                let bounds = kurbo::Shape::bounding_box(
-                    &kurbo::BezPath::from_svg(jstr(node, "d", "")).unwrap_or_default(),
+            let bounds = kurbo::Shape::bounding_box(
+                &kurbo::BezPath::from_svg(jstr(node, "d", "")).unwrap_or_default(),
+            );
+            let mut source = node["fill"].clone();
+            if (source["gradient"].is_object()
+                || source["kind"] == "backgroundLayers"
+                || source["kind"] == "conic_gradient")
+                && source["paintBox"].is_null()
+            {
+                source["paintBox"] = json!([bounds.x0, bounds.y0, bounds.width(), bounds.height()]);
+            }
+            let previous_dpi = defs.dpi;
+            let local = transform
+                * kurbo::Affine::scale_non_uniform(
+                    w / jnum(node, "intrinsicWidth", w).max(1e-12),
+                    h / jnum(node, "intrinsicHeight", h).max(1e-12),
                 );
-                paint_box(&node["fill"], defs, [bounds.width(), bounds.height()])
-            } else {
-                paint(&node["fill"], defs)
-            };
+            defs.dpi *= portable_svg::max_scale(local);
+            let fill = paint_box(&source, defs, [bounds.width(), bounds.height()]);
+            defs.dpi = previous_dpi;
+            let fill = fill?;
             let attrs = stroke_attrs(&node["strokeStyle"]);
             let d = escape(jstr(node, "d", ""));
             let rule = escape(jstr(node, "fillRule", "nonzero"));
@@ -570,7 +672,7 @@ fn node_svg_transformed(
         "rect" => format!(
             "<rect width='{w}' height='{h}' rx='{}' fill='{}' stroke='{}' stroke-width='{}'/>",
             n(node, "radius", 0.),
-            paint_box(&node["fill"], defs, [w, h]),
+            paint_box(&node["fill"], defs, [w, h])?,
             escape(&laymesh_core::color::css(jstr(node, "stroke", "none"))),
             n(node, "strokeWidth", 0.)
         ),
@@ -580,7 +682,7 @@ fn node_svg_transformed(
             h / 2.,
             w / 2.,
             h / 2.,
-            paint_box(&node["fill"], defs, [w, h]),
+            paint_box(&node["fill"], defs, [w, h])?,
             escape(&laymesh_core::color::css(jstr(node, "stroke", "none"))),
             n(node, "strokeWidth", 0.)
         ),
@@ -785,14 +887,17 @@ fn svg(scene: &Scene, embed_fonts: bool) -> Result<String> {
     {
         return Err(error("画布尺寸必须为正"));
     }
-    let mut defs = vec![];
+    let mut defs = SvgDefs {
+        items: vec![],
+        dpi: scene.export_dpi,
+    };
     let mut body = String::new();
     if !scene.background.is_null() && scene.background != "none" {
         body += &format!(
             "<rect width='{}' height='{}' fill='{}'/>",
             number(scene.width),
             number(scene.height),
-            paint_box(&scene.background, &mut defs, [scene.width, scene.height])
+            paint_box(&scene.background, &mut defs, [scene.width, scene.height])?
         );
     }
     for node in &scene.nodes {
@@ -837,7 +942,6 @@ mod jpeg_preview;
 mod native;
 #[cfg(feature = "native")]
 mod pdf;
-#[cfg(any(feature = "native", feature = "portable-export"))]
 pub mod portable_svg;
 #[cfg(any(feature = "native", feature = "portable-export"))]
 pub mod pptx;
@@ -848,7 +952,7 @@ pub mod raster_policy;
 #[cfg(feature = "native")]
 pub use export::render_export;
 #[cfg(any(feature = "native", feature = "portable-export"))]
-pub use export::{ExportOptions, encode_rgba, export_format, raster_dimensions};
+pub use export::{ExportOptions, encode_rgba};
 #[cfg(feature = "native")]
 pub use jpeg_preview::{JpegPreviewOptions, render_jpeg_preview};
 #[cfg(feature = "native")]

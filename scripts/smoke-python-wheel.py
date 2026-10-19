@@ -62,6 +62,27 @@ page.add(text("中文 $E=mc^2$ $\\mathbb{R} \\alpha \\sum_{i=1}^n i$", font_size
             render_file("figure.lay", output=f"figure.{ext}", **({"dpi": 150} if ext == "png" else {}))
             assert Path(f"figure.{ext}").read_bytes().startswith(magic)
         from PIL import Image
+        # Exercise the new paint parser and compositor in every packaged native
+        # engine, including preservation of the color below transparent stops.
+        gradient_source = '''p=canvas(size=(50.8mm,25.4mm),background="#fff")
+style{.layers{background:linear-gradient(to right,rgba(255,0,0,.5),transparent) lime}}
+p.add(rect(size=(32px,32px),class="layers",border_width=0))
+p.add(rect(size=(32px,32px),fill=conic_gradient([(0,"#f00"),(.25,"#f00"),(.25,"#00f"),(1,"#00f")]),border_width=0),offset=(32px,0px))
+'''
+        for ext in ('svg', 'pdf', 'pptx', 'png'):
+            render_source(gradient_source, output='gradients.'+ext, dpi=96)
+        ET.parse('gradients.svg')
+        assert Path('gradients.pdf').read_bytes().startswith(b'%PDF')
+        import zipfile
+        with zipfile.ZipFile('gradients.pptx') as deck:
+            assert deck.testzip() is None and 'ppt/slides/slide1.xml' in deck.namelist()
+        with Image.open('gradients.png') as image:
+            image = image.convert('RGB')
+            assert image.size == (192, 96)
+            assert image.getpixel((0, 16))[1] >= 127
+            assert image.getpixel((31, 16))[1] >= 250
+            assert image.getpixel((56, 8)) == (255, 0, 0)
+            assert image.getpixel((40, 8)) == (0, 0, 255)
         raster_source='page=canvas(size=(25.4mm,12.7mm),background="none")\npage.add(rect(size=(10mm,10mm),fill="#ff000080",border_width=0),offset=(1mm,1mm))'
         for ext, options in [('png',{'compression':'best'}),('jpg',{'quality':93,'background':'#0000ff'}),('tif',{'compression':'deflate'}),('webp',{'webp_lossless':False,'quality':90,'webp_method':6,'webp_alpha_quality':100}),('bmp',{}),('gif',{}),('ico',{}),('tga',{}),('ppm',{}),('pgm',{}),('pbm',{})]:
             render_source(raster_source,output='中文 # export.'+ext,dpi=144,**options)
@@ -125,7 +146,7 @@ page.add(p,offset=(5,5))'''
                 source = Path(tmp) / relative if relative.parts[0] == "media" else entry
                 subprocess.run([str(cli), "validate", str(source)], check=True, stdout=subprocess.DEVNULL)
             print(f"Validated {len(entries)} native example entry points with bundled runtime")
-        print(json.dumps({"wheel_version": manifest["version"], "target": manifest["target"], "engine": "rust", "exports": ["SVG", "PDF", "PNG", "JPEG", "TIFF", "WebP", "BMP", "GIF", "ICO", "TGA", "PAM", "PPM", "PGM", "PBM"], "system_node": False, "empty_path":True, "saved_data": True, "matplotlib": True, "notebook_magics": True}))
+        print(json.dumps({"wheel_version": manifest["version"], "target": manifest["target"], "engine": "rust", "exports": ["SVG", "PDF", "PNG", "JPEG", "TIFF", "WebP", "BMP", "GIF", "ICO", "TGA", "PAM", "PPM", "PGM", "PBM"], "gradients": {"conic": True, "background_color": True, "exports": ["SVG", "PDF", "PPTX", "PNG"]}, "system_node": False, "empty_path":True, "saved_data": True, "matplotlib": True, "notebook_magics": True}))
 
 
 if __name__ == "__main__":

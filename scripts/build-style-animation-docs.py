@@ -88,6 +88,7 @@ samples = {
     'extrude':'text_extrude(depth=1mm,angle=45deg,color="#334155")', 'shaft-width':'2mm',
     'heads':'end', 'head-size':'(4mm,3mm)', 'start-head-size':'(4mm,3mm)', 'end-head-size':'(4mm,3mm)',
     'line':'0.6pt solid #243447', 'border':'0.5pt solid #94a3b8', 'background-color':'#eff6ff',
+    'background-size':'cover, 20mm 15mm', 'background-position':'center, right 2mm bottom 3mm', 'background-repeat':'no-repeat, space round',
     'background-image':'linear-gradient(120deg,#60a5fa,#075985)', 'font':'italic 700 4mm "DejaVu Sans"',
     'box-shadow':'1mm 2mm 3mm 0mm #0004', 'text-shadow':'0.5mm 0.5mm 1mm #0006',
     'filter':'drop-shadow(1mm 1mm 1mm #0005)', 'box-shadow-blur':'2mm', 'box-shadow-spread':'-0.5mm',

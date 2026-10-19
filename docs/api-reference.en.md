@@ -1131,6 +1131,54 @@ page.add(ellipse(size=(60mm,35mm),fill=paint),offset=(10mm,10mm))
 
 [Concepts and common errors](topics/fills.en.md#radial_gradient) · [Composition source](../examples/gallery/shapes/radial-gradient.lay)
 
+## conic_gradient
+
+Create a conic-gradient paint
+
+Returns: paint
+
+Positional parameters: `stops`.
+
+Required: `stops`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `stops` | (number, color, number?)[] / scalar | At least two ordered stops; 0–1 spans one turn | — |
+| `center` | value / scalar | Normalized center, including outside the bounds | [0.5, 0.5] |
+| `angle` | angle / deg | Starting angle clockwise from the top | 0 |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(100mm,75mm),background="#ffffff")
+paint=conic_gradient(stops=[(0,"#f97316"),(0.5,"#2563eb"),(1,"#f97316")],center=(0.5,0.5),angle=0deg)
+page.add(ellipse(size=(60mm,50mm),fill=paint,border_width=0),offset=(20mm,12mm))
+```
+
+[Concepts and common errors](topics/fills.en.md#conic_gradient) · [Composition source](../examples/manual/gradient-composition.lay)
+
+## gradient
+
+Create paint from CSS gradient syntax, including repetition and color interpolation
+
+Returns: paint
+
+Required: `css`.
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `css` | string | One CSS gradient function | — |
+
+### Minimal complete example
+
+```lay
+page=canvas(size=(100mm,75mm),background="#ffffff")
+paint=gradient(css="repeating-linear-gradient(35deg in oklab, #f97316 0mm 4mm, #2563eb 4mm 8mm)")
+page.add(rect(size=(80mm,50mm),fill=paint,border_width=0),offset=(10mm,12mm))
+```
+
+[Concepts and common errors](topics/fills.en.md#gradient) · [Composition source](../examples/manual/gradient-composition.lay)
+
 ## hatch
 
 Create slash/cross/dots pattern paint. spacing and line_width are physical dimensions; the pattern is confined to the material fill region.
@@ -4388,7 +4436,7 @@ CSS property support is shared by the compiler, completion, hover and color edit
 | `line` | shorthand / none | Stroke shorthand: width style color |
 | `border` | shorthand / none | Stroke shorthand: width style color |
 | `background-color` | color / none | Background color |
-| `background-image` | paint / none | Single CSS gradient |
+| `background-image` | paint / none | Gradients, images or patterns ordered front to back |
 | `font` | string / none | Font shorthand: optional style and weight, required size and family, optional /line-height; resets those component properties. |
 | `box-shadow` | "none" / none | Comma-separated box shadows: x/y offset, optional blur/spread/color and inset. First layer is on top; the shorthand resets all shadow components. |
 | `text-shadow` | "none" / none | Glyph shadows |
@@ -4414,3 +4462,6 @@ CSS property support is shared by the compiler, completion, hover and color edit
 | `-laymesh-transition` | text / none | GL Transitions effect on entering this page; none switches immediately. |
 | `-laymesh-transition-duration` | text / none | Page transition duration in ms or s. |
 | `-laymesh-transition-timing-function` | text / none | Page transition easing, including cubic-bezier() and steps(). |
+| `background-position` | string / none | Per-layer background position |
+| `background-size` | string / none | Per-layer dimensions including auto/cover/contain |
+| `background-repeat` | string / none | Per-layer tiling: repeat/no-repeat/space/round |

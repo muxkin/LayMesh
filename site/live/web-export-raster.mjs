@@ -30,7 +30,7 @@ export function exportHaloMM(node) {
   return own+halo;
 }
 
-export async function rasterExportTiles({ renderer, list, resources, node, density, effectsOnly = null, consume }) {
+export async function rasterExportTiles({ renderer, list, resources, node, density, effectsOnly = null, alphaOnly = effectsOnly !== null, consume }) {
   if (density <= 0) return;
   const localList = { ...list, nodes: [node], animation: null, pageTransition: null };
   await renderer.install(localList, id => resources[id], 0);
@@ -52,7 +52,7 @@ export async function rasterExportTiles({ renderer, list, resources, node, densi
     // The filter halo stays in Skia. Only a one-pixel assembly overlap is read.
     const snapshot = renderer.surface.makeImageSnapshot();
     let pixels;
-    const ck=renderer.ck, alphaOnly=effectsOnly!==null;
+    const ck=renderer.ck;
     const dest=alphaOnly?ck.Malloc(Uint8Array,rw*rh):null;
     try {
       pixels = snapshot.readPixels(0, 0, { width: rw, height: rh, colorType: alphaOnly?ck.ColorType.Alpha_8:ck.ColorType.RGBA_8888, alphaType: alphaOnly?ck.AlphaType.Premul:ck.AlphaType.Unpremul, colorSpace: ck.ColorSpace.SRGB },dest||undefined,alphaOnly?rw:undefined);

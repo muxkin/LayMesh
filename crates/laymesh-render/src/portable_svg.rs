@@ -10,7 +10,7 @@ use std::collections::BTreeMap;
 
 type Raster<'a> = &'a mut dyn FnMut(&DrawNode, Rect, u32, u32, Option<bool>) -> Result<Vec<u8>>;
 
-fn max_scale(t: Affine) -> f64 {
+pub(crate) fn max_scale(t: Affine) -> f64 {
     let [a, b, c, d, _, _] = t.as_coeffs();
     let sum = a * a + b * b + c * c + d * d;
     let det = a * d - b * c;
@@ -62,9 +62,9 @@ fn matrix(t: Affine) -> String {
 fn rgb(c: [f64; 4]) -> String {
     format!(
         "rgb({},{},{})",
-        (c[0].clamp(0., 1.) * 255.).round(),
-        (c[1].clamp(0., 1.) * 255.).round(),
-        (c[2].clamp(0., 1.) * 255.).round()
+        c[0].clamp(0., 1.) * 255.,
+        c[1].clamp(0., 1.) * 255.,
+        c[2].clamp(0., 1.) * 255.
     )
 }
 fn href(mime: &str, bytes: &[u8]) -> String {
@@ -89,6 +89,7 @@ struct Writer<'a> {
     images: BTreeMap<String, String>,
     dpi: f64,
     raster: Option<Raster<'a>>,
+    pdf: bool,
 }
 impl Writer<'_> {
     fn id(&mut self) -> String {
@@ -302,12 +303,32 @@ impl Writer<'_> {
                 // svg2pdf does not support reflected/repeated gradients. Use a
                 // local CanvasKit fallback for those paints instead of silently
                 // changing them to pad; other paths remain vectors.
-                if self.raster.is_some()
-                    && matches!(fill,Paint::Linear{spread,..}|Paint::Radial{spread,..} if spread!="pad")
+                if matches!(fill, Paint::Conic { .. })
+                    || (self.pdf
+                        && self.raster.is_some()
+                        && (matches!(fill,Paint::Linear{spread,..}|Paint::Radial{spread,..} if spread!="pad")
+                            || matches!(fill,Paint::Radial{stops,..} if stops.windows(2).any(|s| s[0].offset==s[1].offset && s[0].rgba!=s[1].rgba))))
                 {
+                    if self.raster.is_none() {
+                        return Err(error("Conic SVG export requires a local paint rasterizer"));
+                    }
                     let mut subject = n.clone();
                     subject.effects.clear();
-                    self.layer(&subject, t, None)?
+                    if let DrawKind::Path { stroke, .. } = &mut subject.kind {
+                        *stroke = None;
+                    }
+                    let mut body = self.layer(&subject, t, None)?;
+                    if stroke.is_some() {
+                        let mut outline = n.clone();
+                        outline.effects.clear();
+                        outline.opacity = 1.;
+                        outline.transform = Affine::IDENTITY;
+                        if let DrawKind::Path { fill, .. } = &mut outline.kind {
+                            *fill = Paint::None;
+                        }
+                        body += &self.node(&outline, t)?;
+                    }
+                    body
                 } else {
                     let (fill, alpha) = self.paint(fill, t)?;
                     let stroke=stroke.as_ref().map(|s|format!("stroke='{}' stroke-opacity='{}' stroke-width='{}' stroke-linecap='{}' stroke-linejoin='{}' stroke-miterlimit='{}' stroke-dasharray='{}' stroke-dashoffset='{}'",rgb(s.rgba),s.rgba[3],s.width,escape(&s.cap),escape(&s.join),s.miter,if s.dash.is_empty(){"none".into()}else{s.dash.iter().map(ToString::to_string).collect::<Vec<_>>().join(" ")},s.offset)).unwrap_or_default();
@@ -339,7 +360,7 @@ impl Writer<'_> {
         };
         let body = if n.effects.is_empty() {
             body
-        } else if self.raster.is_some() {
+        } else if self.pdf && self.raster.is_some() {
             let back = if n.effects.iter().any(|e| !e.inner) {
                 self.layer(n, t, Some(false))?
             } else {
@@ -369,7 +390,16 @@ impl Writer<'_> {
 }
 
 pub fn render<'a>(list: &'a DisplayList, dpi: f64, raster: Option<Raster<'a>>) -> Result<String> {
-    if list.schema_version != 1
+    let pdf = raster.is_some();
+    render_with_mode(list, dpi, raster, pdf)
+}
+pub fn render_with_mode<'a>(
+    list: &'a DisplayList,
+    dpi: f64,
+    raster: Option<Raster<'a>>,
+    pdf: bool,
+) -> Result<String> {
+    if !supported_version(list.schema_version)
         || ![list.width, list.height, dpi]
             .iter()
             .all(|v| v.is_finite() && *v > 0.)
@@ -383,6 +413,7 @@ pub fn render<'a>(list: &'a DisplayList, dpi: f64, raster: Option<Raster<'a>>) -
         images: BTreeMap::new(),
         dpi,
         raster,
+        pdf,
     };
     let body = writer.nodes(&list.nodes, Affine::IDENTITY)?;
     Ok(format!(

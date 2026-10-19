@@ -37,6 +37,8 @@ impl Quantity {
             self.dim
         } else if matches!((self.dim, b.dim), (1, 4) | (4, 1)) {
             1
+        } else if matches!((self.dim, b.dim), (3, 4) | (4, 3)) {
+            3
         } else {
             return Err("Incompatible calc() dimensions".into());
         };
@@ -160,7 +162,7 @@ fn atom(p: &mut Parser<'_>, ctx: Context) -> std::result::Result<Quantity, Strin
                 }
                 let dim = list
                     .iter()
-                    .find(|q| q.dim == 1)
+                    .find(|q| matches!(q.dim, 1 | 3))
                     .map_or(first.dim, |q| q.dim);
                 let vals: Vec<_> = list.iter().map(|q| q.n + q.p * ctx.reference).collect();
                 let n = match name.as_str() {
@@ -246,6 +248,20 @@ pub fn angle(s: &str) -> std::result::Result<f64, String> {
         return Err("Angle requires deg/rad/grad/turn".into());
     }
     Ok(q.n)
+}
+/// Angles and percentages share a full-turn reference for conic stops.
+pub fn angle_percentage(s: &str) -> std::result::Result<f64, String> {
+    let q = quantity_context(
+        s,
+        Context {
+            reference: std::f64::consts::TAU,
+            ..Context::default()
+        },
+    )?;
+    if !matches!(q.dim, 3 | 4) && !(q.dim == 0 && q.n == 0.) {
+        return Err("Conic stops need angles or percentages".into());
+    }
+    Ok(q.n / std::f64::consts::TAU + q.p)
 }
 pub fn words(s: &str) -> Vec<String> {
     css::split(&s.replace(['\n', '\r', '\t'], " "), ' ')

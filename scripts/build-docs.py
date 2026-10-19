@@ -181,6 +181,11 @@ def check():
    assert text==(ROOT/'tests/skia/benchmark.html').read_text(),f'Stale standalone benchmark: {p}'
   elif p.relative_to(OUT).as_posix() in ('presentation-test.html','tests/skia/presentation.html'):
    assert text==(ROOT/'tests/skia/presentation.html').read_text(),f'Stale presentation test: {p}'
+  elif p.relative_to(OUT).as_posix()=='docs/benchmarks/gradients-2026-10-19/gallery.html':
+   assert text==(ROOT/'docs/benchmarks/gradients-2026-10-19/gallery.html').read_text(), 'Stale gradient gallery'
+   assert text.count('<article ')==119 and '原式不被接受' in text and '正常暗色配方' in text
+  elif p.relative_to(OUT).as_posix()=='gradient-gallery.html':
+   assert 'docs/benchmarks/gradients-2026-10-19/gallery.html' in text
   else:assert 'class="lang-switch"' in text,p
   # Inline scripts may construct markup with template expressions; validate
   # actual HTML attributes, including script src, rather than JS string data.
@@ -237,6 +242,13 @@ def main():
   if (ROOT/name).is_file():shutil.copy2(ROOT/name,OUT/name)
  for name in ['styles.css','app.js','logo.svg']:shutil.copy2(ROOT/'site'/name,OUT/'site'/name)
  shutil.copytree(ROOT/'site/media',OUT/'site/media',dirs_exist_ok=True)
+ # Keep the measured gallery and its downloadable evidence as real Pages
+ # assets; Markdown rendering alone does not copy standalone HTML/JSON/PNG.
+ gallery_dir=Path('docs/benchmarks/gradients-2026-10-19')
+ for source in (ROOT/gallery_dir).iterdir():
+  if source.suffix in ('.html','.json','.png'):
+   target=OUT/gallery_dir/source.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
+ (OUT/'gradient-gallery.html').write_text('<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=docs/benchmarks/gradients-2026-10-19/gallery.html"><title>LayMesh 渐变对照画廊</title><a href="docs/benchmarks/gradients-2026-10-19/gallery.html">打开渐变对照画廊</a></html>')
  for page in PAGES:
   page['body']=body(page);page['sections']=[{'depth':int(m[1]),'id':m[2],'title':html.unescape(re.sub(r'<[^>]+>','',re.sub(r'<a class="heading-anchor".*?</a>','',m[3])))} for m in re.finditer(r'<h([23]) id="([^"]+)">(.*?)</h\1>',page['body'],re.S)]
  for lang in ['zh-CN','en']:

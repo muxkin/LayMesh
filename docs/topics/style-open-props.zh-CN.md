@@ -1,5 +1,7 @@
 # Open Props：变量、参数与完整目录
 
+[对照画廊：原始配方、跨端输出与差异说明](../benchmarks/gradients-2026-10-19/gallery.html)
+
 [样式与动画库](style-libraries.zh-CN.md)
 
 ## 是什么、从哪里来
@@ -40,3 +42,11 @@ Open Props 是[开源设计变量库](https://open-props.style/)，固定使用 
 目录案例用低具体程度的 `rect` 底色与边框，让圆角、透明度和动画可见；类声明与变量属性照常级联。
 
 <!-- style-catalog:open-props -->
+
+## 全部 30 组渐变配方
+
+原始 `--gradient-1` 至 `--gradient-30` 配方均可直接引用，无需改写或拆成多个用户对象。样式库的 `@supports` 分支默认启用 OKLab；设置 `:root { --gradient-space: in srgb; }` 可对照传统插值，不必改动配方。
+
+<!-- source:examples/libraries/open-props-gradients.lay -->
+
+[渐变语义与导出](gradients.zh-CN.md)

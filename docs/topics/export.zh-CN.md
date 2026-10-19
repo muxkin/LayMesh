@@ -28,7 +28,7 @@ laymesh render figure.lay -o figure.webp --dpi 300 --webp-lossless false --quali
 | PAM、PNM | 无额外编码参数 | RGBA PAM，保留 Alpha |
 | PPM、PGM、PBM | `background="#ffffff"` | 先与底色合成；RGB、灰度、黑白二值；PBM 灰度阈值 128 |
 
-所有位图支持 `--dpi`：正数，最多 25400；CLI、Python/Jupyter 与 VS Code 省略时默认 1200 DPI。PDF 也接受 DPI，作为内嵌图片降采样上限。每轴像素数为 `round(毫米尺寸 × DPI / 25.4)`，最少 1；总像素上限为 100000000。DPI 不改变布局尺寸、字号或 `layout_dpi`。仅 PNG/JPEG/TIFF/BMP 写入密度元数据；其他格式的 DPI 控制像素尺寸。JPEG/GIF/TGA 每轴最多 65535 px，WebP 为 16383 px。
+所有位图支持 `--dpi`：正数，最多 25400；CLI、Python/Jupyter 与 VS Code 省略时默认 1200 DPI。PDF 也接受 DPI，作为内嵌图片降采样上限及渐变局部回退分辨率。SVG 同样接受 DPI 控制渐变局部回退，矢量布局和路径尺寸保持不变。每轴像素数为 `round(毫米尺寸 × DPI / 25.4)`，最少 1；总像素上限为 100000000。DPI 不改变布局尺寸、字号或 `layout_dpi`。仅 PNG/JPEG/TIFF/BMP 写入密度元数据；其他格式的 DPI 控制像素尺寸。JPEG/GIF/TGA 每轴最多 65535 px，WebP 为 16383 px。
 
 WebP 还支持 `--webp-alpha-quality 0–100`（默认 100；降低需使用有损模式）、`--webp-near-lossless 0–100`（仅无损模式，默认 100，100 完全无损）。`method` 越高编码越慢，通常文件越小；有损 `quality` 越高视觉质量越高。无损模式的 `quality` 控制压缩力度。近无损值小于 100 允许 RGB 样本近似，Alpha 仍保留。参数说明依据 [WebP 编码器文档](https://developers.google.com/speed/webp/docs/api)。
 
@@ -45,7 +45,7 @@ laymesh render figure.lay -o figure.pptx --dpi 300
 
 每份源码生成一张幻灯片，保留画布物理尺寸、背景和绘制顺序。普通文字按已布局的文字段生成可修改文本框，关闭自动缩放；公式转为可解组的矢量轮廓，不能直接修改为另一条公式。矩形、圆角矩形、椭圆和直线使用 DrawingML 原生预设；可表达的自定义路径合并填充与描边，保留可编辑的线宽、颜色、虚线、连接和对称端帽。非均匀缩放的描边、偏移虚线及装饰端点保留精确矢量轮廓。源码显式分组与公式分组保留，布局及 SVG 包装分组去除。图表保留组成它的形状与文字，不生成原生数据图表。
 
-PNG/JPEG 图片作为独立资源嵌入并复用。矩形裁剪、圆角形状及箭头的图片填充支持 `contain/cover/stretch`、旋转、缩放、镜像和透明度，无需新增栅格回退。带留白的 `contain` 填充导出为带图片填充的可编辑形状，在 LibreOffice 中也保留留白。原生 SVG/PDF/位图的图片填充同样按形状实际宽高比适配。色标透明度一致的线性渐变保留为可编辑渐变填充；径向渐变、色标透明度变化、纹理、复杂裁剪或蒙版、滤镜、重叠对象的组透明度、多轮廓奇偶填充以及无法精确表示的文字或图片变换按最小完整子树转为透明 PNG；其他对象继续保持可编辑。`W_PPTX_RASTER` 列出回退对象和原因。效果流程允许只回退阴影层，保留主体为矢量。
+PNG/JPEG 图片作为独立资源嵌入并复用。矩形裁剪、圆角形状及箭头的图片填充支持 `contain/cover/stretch`、旋转、缩放、镜像和透明度，无需新增栅格回退。带留白的 `contain` 填充导出为带图片填充的可编辑形状，在 LibreOffice 中也保留留白。原生 SVG/PDF/位图的图片填充同样按形状实际宽高比适配。色标透明度一致的线性渐变保留为可编辑渐变填充；径向渐变、色标透明度变化、纹理、复杂裁剪或蒙版、滤镜、重叠对象的组透明度、多轮廓奇偶填充以及无法精确表示的文字或图片变换按最小完整子树转为透明 PNG；其他对象继续保持可编辑。正常栅格回退保持静默；技术原因保留在导出对象名称中。效果流程允许只回退阴影层，保留主体为矢量。
 
 `--dpi` 只控制局部回退图片的像素尺寸，沿用默认 1200，支持项目配置 `export.pptx.dpi`；不改变幻灯片大小。每个回退图片仍受 100000000 像素上限约束。`quality`、`compression`、`background`、`pdf_*`、`webp_*` 不适用于 PPTX。`--warnings hide` 可隐藏导出警告，失败仍保留原目标文件。
 
@@ -115,6 +115,6 @@ PPTX 也使用 Rust CPU JPEG Notebook 预览，`%laymesh figure.lay -o figure.pp
 }
 ```
 
-SVG 不接受 DPI。各格式配置使用标准名称（`jpeg`、`tiff`、`webp` 等），参数名与 Python 导出关键字一致。位图导出保留 100000000 像素上限；过高 DPI 会在页面缓冲区分配前失败。
+SVG 的 DPI 只控制局部栅格回退，矢量几何仍与分辨率无关。各格式配置使用标准名称（`jpeg`、`tiff`、`webp` 等），参数名与 Python 导出关键字一致。位图导出保留 100000000 像素上限；过高 DPI 会在页面缓冲区分配前失败。
 
 可播放媒体规则与 Windows 验收边界见[视频与音频](media.zh-CN.md)。

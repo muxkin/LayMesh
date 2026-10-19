@@ -85,7 +85,7 @@ def main():
             assert not any('W_PPTX_RASTER' in w for w in case['exports']['pptx']['warnings'])
         else:
             assert info['pictures'] > 0
-            assert any('W_PPTX_RASTER' in w for w in case['exports']['pptx']['warnings'])
+            assert not any('W_PPTX_RASTER' in w for w in case['exports']['pptx']['warnings'])
         # Poppler rasterizes the actual PDF, independently of native PNG output.
         png = args.output/f'{name}.png'
         with Image.open(png) as im: width, height = im.size

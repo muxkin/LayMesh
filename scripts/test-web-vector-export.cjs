@@ -25,6 +25,8 @@ p.add(rect(size=(25mm,16mm),fill=hatch(pattern=cross,color="#137f8c",spacing=2mm
 p.add(ellipse(size=(20mm,15mm),fill=radial_gradient(stops=[(0,"#ffed00"),(1,"#ed008f80")]),effects=[shadow(blur=0.5mm,offset=(1mm,1mm))]),offset=(45mm,35mm))
 `,
 );
+if(process.env.LAYMESH_GRADIENT_FIXTURE)fs.appendFileSync(out+"/page.lay", '\np.add(rect(size=(20mm,12mm),fill=gradient(css="conic-gradient(from 20deg in oklab,red,blue,lime,red)"),border_width=0),offset=(30mm,24mm))\n');
+if(process.env.LAYMESH_GRADIENT_FIXTURE)fs.appendFileSync(out+"/page.lay", '\nstyle{.gradient-layers{background:linear-gradient(90deg,#f008,transparent),conic-gradient(blue,transparent) yellow;border-radius:2mm;border:0.3mm solid black}}\np.add(rect(size=(10mm,6mm),class="gradient-layers"),offset=(62mm,24mm))\n');
 cp.execFileSync(binary, [
   "render",
   out + "/page.lay",

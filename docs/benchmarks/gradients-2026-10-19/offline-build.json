@@ -1,0 +1,8 @@
+{
+  "engineSha256": "af561da97d059782ad60e93f3109768d8e4a040fd75f65dd135d93a56e42ba7e",
+  "pages": 119,
+  "sourceMatrix": "v005; all 119 sources verified byte-identical to v006",
+  "runtimeSha256": "eec45539e305f5344a1ab9487a37f2cd3e4df9179d69e18505356f9e1a9d04ab",
+  "fixtureSha256": "a1cdc5675ca8e033481cd46d569734a2a617f9861848810b18b6f391f5e178dd",
+  "primaryMatrixEngineSha256": "8dfb0b96bc698e90eb3192900a2cf5285084d0987d9a9952fd28763653c89e1a"
+}

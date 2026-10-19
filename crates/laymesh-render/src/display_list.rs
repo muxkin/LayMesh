@@ -5,7 +5,10 @@ use laymesh_core::{model::FontAsset, text::PositionedGlyph};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-pub const DISPLAY_LIST_VERSION: u32 = 1;
+pub const DISPLAY_LIST_VERSION: u32 = 2;
+pub fn supported_version(version: u32) -> bool {
+    matches!(version, 1 | 2)
+}
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -105,6 +108,12 @@ pub enum Paint {
         stops: Vec<Stop>,
         transform: Affine,
         spread: String,
+    },
+    Conic {
+        center: [f64; 2],
+        angle: f64,
+        stops: Vec<Stop>,
+        transform: Affine,
     },
     Pattern {
         width: f64,
@@ -293,6 +302,192 @@ impl Builder<'_> {
         id
     }
     fn paint(&mut self, p: &Json, bbox: Rect) -> Result<Paint> {
+        let bbox = if let Some(b) = p["paintBox"].as_array().filter(|v| v.len() == 4) {
+            Rect::new(
+                b[0].as_f64().unwrap_or(bbox.x0),
+                b[1].as_f64().unwrap_or(bbox.y0),
+                b[0].as_f64().unwrap_or(bbox.x0) + b[2].as_f64().unwrap_or(bbox.width()),
+                b[1].as_f64().unwrap_or(bbox.y0) + b[3].as_f64().unwrap_or(bbox.height()),
+            )
+        } else {
+            bbox
+        };
+        if p["gradient"].is_object() {
+            use laymesh_core::gradients::{self, Geometry};
+            let g = gradients::from_json(p).map_err(error)?.resolve([
+                bbox.x0,
+                bbox.y0,
+                bbox.width(),
+                bbox.height(),
+            ]);
+            let mut range = g.range;
+            let mut stops = g.stops;
+            if !g.repeating {
+                // Preserve outside-box interpolation by extending the gradient
+                // geometry, not by clamping source positions before sampling.
+                range = [range[0].min(0.), range[1].max(1.)];
+                if matches!(g.geometry, Geometry::Radial { .. }) {
+                    range = [0., range[1]];
+                    stops = gradients::visible_stops(&stops, false, g.range, 0., range[1]);
+                }
+            }
+            let span = (range[1] - range[0]).max(1e-12);
+            let stops: Vec<Stop> = stops
+                .into_iter()
+                .map(|(offset, rgba)| Stop {
+                    offset: ((offset - range[0]) / span).clamp(0., 1.),
+                    rgba,
+                })
+                .collect();
+            let spread = if g.repeating { "repeat" } else { "pad" }.to_string();
+            return Ok(match g.geometry {
+                Geometry::Linear { start, end } => {
+                    let point = |t: f64| {
+                        [
+                            start[0] + (end[0] - start[0]) * t,
+                            start[1] + (end[1] - start[1]) * t,
+                        ]
+                    };
+                    Paint::Linear {
+                        start: point(range[0]),
+                        end: point(range[1]),
+                        stops,
+                        transform: Affine::IDENTITY,
+                        spread,
+                    }
+                }
+                Geometry::Conic { center, angle } => Paint::Conic {
+                    center,
+                    angle,
+                    stops,
+                    transform: Affine::IDENTITY,
+                },
+                Geometry::Radial { center, radii } => {
+                    if radii[1] / radii[0] > 1e12 {
+                        let extent = if g.repeating {
+                            ((bbox.x0 - center[0]).abs().max((bbox.x1 - center[0]).abs())
+                                / radii[0])
+                                .max(1.)
+                        } else {
+                            range[1]
+                        };
+                        let original: Vec<_> = stops
+                            .iter()
+                            .map(|s| (s.offset * span + range[0], s.rgba))
+                            .collect();
+                        let half =
+                            gradients::visible_stops(&original, g.repeating, range, 0., extent);
+                        let mut mirrored: Vec<Stop> = half
+                            .iter()
+                            .rev()
+                            .map(|&(t, rgba)| Stop {
+                                offset: 0.5 - t / (2. * extent),
+                                rgba,
+                            })
+                            .collect();
+                        mirrored.extend(half.iter().map(|&(t, rgba)| Stop {
+                            offset: 0.5 + t / (2. * extent),
+                            rgba,
+                        }));
+                        return Ok(Paint::Linear {
+                            start: [center[0] - radii[0] * extent, center[1]],
+                            end: [center[0] + radii[0] * extent, center[1]],
+                            stops: mirrored,
+                            transform: Affine::IDENTITY,
+                            spread: "pad".into(),
+                        });
+                    }
+
+                    // Nonzero repeating radial origins are represented by a
+                    // two-circle gradient, retaining the period's phase.
+                    if g.repeating && range[0] != 0. {
+                        let max_r = [bbox.x0, bbox.x1]
+                            .into_iter()
+                            .flat_map(|x| {
+                                [bbox.y0, bbox.y1].map(|y| {
+                                    ((x - center[0]) / radii[0]).hypot((y - center[1]) / radii[1])
+                                })
+                            })
+                            .fold(1., f64::max);
+                        let original: Vec<_> = stops
+                            .iter()
+                            .map(|s| (s.offset * span + range[0], s.rgba))
+                            .collect();
+                        let stops = gradients::visible_stops(&original, true, range, 0., max_r)
+                            .into_iter()
+                            .map(|(offset, rgba)| Stop {
+                                offset: offset / max_r,
+                                rgba,
+                            })
+                            .collect();
+                        Paint::Radial {
+                            center: [0., 0.],
+                            focal: [0., 0.],
+                            radius: max_r,
+                            stops,
+                            transform: Affine::translate((center[0], center[1]))
+                                * Affine::scale_non_uniform(radii[0], radii[1]),
+                            spread: "pad".into(),
+                        }
+                    } else {
+                        Paint::Radial {
+                            center: [0., 0.],
+                            focal: [0., 0.],
+                            radius: range[1],
+                            stops,
+                            transform: Affine::translate((center[0], center[1]))
+                                * Affine::scale_non_uniform(radii[0], radii[1]),
+                            spread,
+                        }
+                    }
+                }
+            });
+        }
+        if p["kind"] == "backgroundLayers" {
+            let bg: laymesh_core::backgrounds::Background =
+                serde_json::from_value(p["background"].clone())
+                    .map_err(|e| error(e.to_string()))?;
+            let w = bbox.width().max(1e-12);
+            let h = bbox.height().max(1e-12);
+            let b = Rect::new(0., 0., w, h);
+            let mut nodes = vec![path_node(
+                b.to_path(0.001),
+                self.paint(&bg.color, b)?,
+                None,
+                false,
+            )];
+            for layer in bg.layers.iter().rev() {
+                if layer.paint == "none" {
+                    continue;
+                }
+                let Some(tile) = layer.layout(&bg.units, [0., 0., w, h]) else {
+                    continue;
+                };
+                let mut source = layer.paint.clone();
+                if source["kind"] == "imagePaint" {
+                    source["fit"] = json!("stretch");
+                }
+                let rect = Rect::new(0., 0., tile.size[0], tile.size[1]);
+                let paint = self.paint(&source, rect)?;
+                let content = path_node(rect.to_path(0.001), paint, None, false);
+                let paint = Paint::Pattern {
+                    width: tile.period[0],
+                    height: tile.period[1],
+                    transform: Affine::translate((tile.origin[0], tile.origin[1])),
+                    nodes: vec![content],
+                };
+                let clip = Rect::new(tile.clip[0], tile.clip[1], tile.clip[2], tile.clip[3]);
+                if clip.width() > 0. && clip.height() > 0. {
+                    nodes.push(path_node(clip.to_path(0.001), paint, None, false));
+                }
+            }
+            return Ok(Paint::Pattern {
+                width: w,
+                height: h,
+                transform: Affine::translate((bbox.x0, bbox.y0)),
+                nodes,
+            });
+        }
         let computed = laymesh_core::css_values::gradient_box(
             p,
             [bbox.x0, bbox.y0, bbox.width(), bbox.height()],
@@ -392,7 +587,15 @@ impl Builder<'_> {
                     )
                 });
                 let b = pb.unwrap_or(bbox);
-                if matches!(kind, "linearGradient" | "linear_gradient") {
+                if matches!(kind, "conicGradient" | "conic_gradient") {
+                    let c = pair(&p["center"], [0.5, 0.5]);
+                    Ok(Paint::Conic {
+                        center: [b.x0 + c[0] * b.width(), b.y0 + c[1] * b.height()],
+                        angle: jnum(p, "angle", 0.).to_radians(),
+                        stops,
+                        transform: Affine::IDENTITY,
+                    })
+                } else if matches!(kind, "linearGradient" | "linear_gradient") {
                     let a = pair(&p["start"], [0., 0.]);
                     let z = pair(&p["end"], [1., 1.]);
                     Ok(Paint::Linear {

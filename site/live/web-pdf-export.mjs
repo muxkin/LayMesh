@@ -76,6 +76,19 @@ export function createPDFExport({ cancelled, progress }) {
       const parsed=new DOMParser().parseFromString(new TextDecoder().decode(page.bytes),"image/svg+xml");
       if(parsed.querySelector("parsererror"))throw Error("无法解析导出的 SVG 页面");
       const svg=document.importNode(parsed.documentElement,true);
+      // svg2pdf/jsPDF retains named gradients/patterns across pages. A new
+      // standalone SVG starts its identifiers at lm1 again, so scope all IDs
+      // and local references to this page before adding it to the document.
+      const ids=new Map();
+      for(const element of svg.querySelectorAll('[id]')) {
+        const old=element.id,next=`lmPage${pageCount}_${old}`;
+        ids.set(old,next);element.id=next;
+      }
+      for(const element of [svg,...svg.querySelectorAll('*')])for(const attribute of [...element.attributes]) {
+        let value=attribute.value.replace(/url\(["']?#([^)'"\s]+)["']?\)/g,(all,id)=>ids.has(id)?`url(#${ids.get(id)})`:all);
+        if(value.startsWith('#')&&ids.has(value.slice(1)))value='#'+ids.get(value.slice(1));
+        if(value!==attribute.value)element.setAttributeNS(attribute.namespaceURI,attribute.name,value);
+      }
       for(const element of svg.querySelectorAll("image")) {
         const url=element.getAttribute("href")||element.getAttribute("xlink:href");
         if(url?.startsWith("laymesh-pdf:")) {

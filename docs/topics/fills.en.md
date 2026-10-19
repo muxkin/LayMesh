@@ -43,6 +43,26 @@ Required inputs: `stops`.
 
 [Minimal complete source](../../examples/manual/radial_gradient.lay) · [Composition source](../../examples/gallery/shapes/radial-gradient.lay) · [All parameters](interface-reference.en.md#radial_gradient)
 
+### conic_gradient
+
+Create a conic-gradient paint
+
+Returns: paint
+
+Required inputs: `stops`.
+
+[Minimal complete source](../../examples/manual/conic_gradient.lay) · [Composition source](../../examples/manual/gradient-composition.lay) · [All parameters](interface-reference.en.md#conic_gradient)
+
+### gradient
+
+Create paint from CSS gradient syntax, including repetition and color interpolation
+
+Returns: paint
+
+Required inputs: `css`.
+
+[Minimal complete source](../../examples/manual/gradient.lay) · [Composition source](../../examples/manual/gradient-composition.lay) · [All parameters](interface-reference.en.md#gradient)
+
 ### hatch
 
 Create slash/cross/dots pattern paint. spacing and line_width are physical dimensions; the pattern is confined to the material fill region.

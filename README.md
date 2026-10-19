@@ -1,5 +1,7 @@
 # LayMesh
 
+[渐变对照画廊](https://muxkin.github.io/LayMesh/gradient-gallery.html)：30 组原始配方与跨端输出，附参考差异说明。
+
 **用可读代码绘制科研图，按物理尺寸组织版面。** 一个可编辑项目可以组合原生图表、图片、矢量图形、文字和公式，生成静态图件或多页演示。
 
 [在线文档](https://muxkin.github.io/LayMesh/) · [视频教程（Bilibili）](https://www.bilibili.com/video/BV1gpHn6eE4V) · [English](README.en.md) · [示例库](docs/sections/examples.zh-CN.md)

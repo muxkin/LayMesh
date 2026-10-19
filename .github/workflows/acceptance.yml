@@ -117,6 +117,7 @@ jobs:
           python scripts/serve-preview.py --bind 127.0.0.1 --port 8769 > "$RUNNER_TEMP/preview.log" 2>&1 &
           preview_pid=$!
           trap 'kill "$preview_pid"' EXIT
+          node scripts/test-gradient-gallery.cjs http://127.0.0.1:8769/gradient-gallery.html
           node scripts/test-web-export.cjs "$RUNNER_TEMP/browser-results/web-export"
           node scripts/test-presentation-warnings.cjs "$RUNNER_TEMP/browser-results/presentation-warnings"
           node scripts/test-web-static-export.cjs "$RUNNER_TEMP/browser-results/static-export"

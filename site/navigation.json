@@ -74,7 +74,8 @@
             "formulas",
             "shapes",
             "arrows",
-            "fills"
+            "fills",
+            "gradients"
           ]
         },
         {
@@ -958,6 +959,13 @@
         "Video and audio experiment"
       ],
       "example": "examples/media/first.lay"
+    },
+    {
+      "key": "gradients",
+      "title": [
+        "渐变与多层背景",
+        "Gradients and layered backgrounds"
+      ]
     }
   ]
 }

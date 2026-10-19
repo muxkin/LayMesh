@@ -382,3 +382,8 @@ This map covers public functions, geometry members, LCSS properties and integrat
 | `api:canvas.play` | [→](media.en.md#play) | [→](../../examples/media/first.lay) | [→](../../examples/media/first.lay) |
 | `api:step.play` | [→](media.en.md#play) | [→](../../examples/media/step.lay) | [→](../../examples/media/step.lay) |
 | `api:document.play` | [→](media.en.md#play) | [→](../../examples/media/deck.laydoc) | [→](../../examples/media/deck.laydoc) |
+| `api:gradient` | [→](fills.en.md#gradient) | [→](../../examples/manual/gradient.lay) | [→](../../examples/manual/gradient-composition.lay) |
+| `api:conic_gradient` | [→](fills.en.md#conic_gradient) | [→](../../examples/manual/conic_gradient.lay) | [→](../../examples/manual/gradient-composition.lay) |
+| `css:background-size` | [→](style-properties.en.md#background-size) | [→](../../examples/manual/gradient-composition.lay) | [→](../../examples/manual/gradient-composition.lay) |
+| `css:background-position` | [→](style-properties.en.md#background-position) | [→](../../examples/manual/gradient-composition.lay) | [→](../../examples/manual/gradient-composition.lay) |
+| `css:background-repeat` | [→](style-properties.en.md#background-repeat) | [→](../../examples/manual/gradient-composition.lay) | [→](../../examples/manual/gradient-composition.lay) |

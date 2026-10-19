@@ -223,6 +223,7 @@ fn jpeg_quality_and_matte_and_webp_encoder_controls_are_effective() {
 
 #[test]
 fn invalid_options_and_codec_dimensions_fail_before_encoding() {
+    assert!(render_export(&scene(), "svg", &options()).is_ok());
     let invalid = [
         (
             "png",
@@ -245,7 +246,6 @@ fn invalid_options_and_codec_dimensions_fail_before_encoding() {
                 ..options()
             },
         ),
-        ("svg", options()),
         (
             "png",
             ExportOptions {

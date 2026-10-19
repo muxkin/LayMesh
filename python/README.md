@@ -122,7 +122,7 @@ LayMesh 用一个可编辑的 `.lay` 文件组织科研图表、图片、文字�
 
 LayMesh is [MIT licensed](https://github.com/muxkin/LayMesh/blob/main/LICENSE). Bundled native dependencies, formula fonts and colormap data retain their own license texts inside the installed package. `_vendor/manifest.json` records engine, platform and build hashes; `_vendor/licenses/manifest.json` records dependency license provenance.
 
-Exports default to 1200 DPI, independently of `layout_dpi`. PDF accepts `dpi`, `pdf_image_compression`, `pdf_jpeg_quality`, `pdf_downsample`, `pdf_recompress_jpeg`, `pdf_preserve_16bit`, `pdf_preserve_alpha`, `pdf_alpha_background`, `pdf_auto_palette_limit`, and `pdf_auto_flatness_threshold`. `config=PATH` selects project defaults; Notebook magics support corresponding `--config` and `--pdf-*` flags. See [configuration](https://muxkin.github.io/LayMesh/en/docs/topics/export.html).
+Exports default to 1200 DPI, independently of `layout_dpi`. SVG accepts `dpi` for local gradient fallback without changing vector layout dimensions. PDF accepts `dpi`, `pdf_image_compression`, `pdf_jpeg_quality`, `pdf_downsample`, `pdf_recompress_jpeg`, `pdf_preserve_16bit`, `pdf_preserve_alpha`, `pdf_alpha_background`, `pdf_auto_palette_limit`, and `pdf_auto_flatness_threshold`. `config=PATH` selects project defaults; Notebook magics support corresponding `--config` and `--pdf-*` flags. See [configuration](https://muxkin.github.io/LayMesh/en/docs/topics/export.html).
 
 ## Editable PowerPoint export
 

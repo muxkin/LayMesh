@@ -1,0 +1,3 @@
+page=canvas(size=(100mm,75mm),background="#ffffff")
+paint=gradient(css="repeating-linear-gradient(35deg in oklab, #f97316 0mm 4mm, #2563eb 4mm 8mm)")
+page.add(rect(size=(80mm,50mm),fill=paint,border_width=0),offset=(10mm,12mm))

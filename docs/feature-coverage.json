@@ -2729,6 +2729,38 @@
       "reference": "document.play",
       "minimal": "examples/media/deck.laydoc",
       "composition": "examples/media/deck.laydoc"
+    },
+    "api:gradient": {
+      "topic": "fills",
+      "anchor": "gradient",
+      "reference": "gradient",
+      "minimal": "examples/manual/gradient.lay",
+      "composition": "examples/manual/gradient-composition.lay"
+    },
+    "api:conic_gradient": {
+      "topic": "fills",
+      "anchor": "conic_gradient",
+      "reference": "conic_gradient",
+      "minimal": "examples/manual/conic_gradient.lay",
+      "composition": "examples/manual/gradient-composition.lay"
+    },
+    "css:background-size": {
+      "topic": "style-properties",
+      "anchor": "background-size",
+      "minimal": "examples/manual/gradient-composition.lay",
+      "composition": "examples/manual/gradient-composition.lay"
+    },
+    "css:background-position": {
+      "topic": "style-properties",
+      "anchor": "background-position",
+      "minimal": "examples/manual/gradient-composition.lay",
+      "composition": "examples/manual/gradient-composition.lay"
+    },
+    "css:background-repeat": {
+      "topic": "style-properties",
+      "anchor": "background-repeat",
+      "minimal": "examples/manual/gradient-composition.lay",
+      "composition": "examples/manual/gradient-composition.lay"
     }
   }
 }

@@ -31,32 +31,6 @@ pub struct ExportOptions {
     pub pdf_auto_flatness_threshold: Option<f64>,
 }
 
-pub fn export_format(extension: &str) -> Result<&'static str> {
-    Ok(match extension.to_ascii_lowercase().as_str() {
-        "html" | "zip" => "html",
-        "svg" => "svg",
-        "pdf" => "pdf",
-        "pptx" => "pptx",
-        "png" => "png",
-        "jpg" | "jpeg" => "jpeg",
-        "tif" | "tiff" => "tiff",
-        "webp" => "webp",
-        "bmp" => "bmp",
-        "gif" => "gif",
-        "ico" => "ico",
-        "tga" => "tga",
-        "pnm" | "pam" => "pam",
-        "ppm" => "ppm",
-        "pgm" => "pgm",
-        "pbm" => "pbm",
-        _ => {
-            return Err(error(
-                "不支持的导出格式；可用 SVG/PDF/PPTX/PNG/JPEG/TIFF/WebP/BMP/GIF/ICO/PNM/TGA",
-            ));
-        }
-    })
-}
-
 impl ExportOptions {
     pub fn validate(&self, extension: &str) -> Result<()> {
         let format = export_format(extension)?;
@@ -81,13 +55,13 @@ impl ExportOptions {
             }
         }
         if let Some(dpi) = self.dpi {
-            if !(raster || matches!(format, "pdf" | "pptx"))
+            if !(raster || matches!(format, "svg" | "pdf" | "pptx"))
                 || !dpi.is_finite()
                 || dpi <= 0.
                 || dpi > 25_400.
             {
                 return Err(error(
-                    "DPI 仅用于位图/PDF/PPTX 输出，须为 0–25400 之间的正数",
+                    "DPI 仅用于位图/SVG/PDF/PPTX 输出，须为 0–25400 之间的正数",
                 ));
             }
         }
@@ -209,7 +183,9 @@ pub fn render_export(scene: &Scene, extension: &str, options: &ExportOptions) ->
         ));
     }
     if format == "svg" {
-        return Ok(render_svg(scene)?.into_bytes());
+        let mut scene = scene.clone();
+        scene.export_dpi = options.dpi.unwrap_or(scene.export_dpi);
+        return Ok(render_svg(&scene)?.into_bytes());
     }
     if format == "pdf" {
         return native::render_pdf_with_options(scene, options);
@@ -221,38 +197,6 @@ pub fn render_export(scene: &Scene, extension: &str, options: &ExportOptions) ->
     raster_dimensions(scene.width, scene.height, dpi, extension)?;
     let (w, h, rgba) = native::rasterize(scene, dpi)?;
     encode_rgba(w, h, &rgba, dpi, extension, options)
-}
-
-/// Validate physical export dimensions before any pixel allocation.
-pub fn raster_dimensions(width: f64, height: f64, dpi: f64, extension: &str) -> Result<(u32, u32)> {
-    let format = export_format(extension)?;
-    if ![width, height, dpi]
-        .iter()
-        .all(|v| v.is_finite() && *v > 0.)
-    {
-        return Err(error("Export size and DPI must be positive"));
-    }
-    let dimensions = (
-        (width * dpi / 25.4).round().max(1.),
-        (height * dpi / 25.4).round().max(1.),
-    );
-    let limit = match format {
-        "ico" => 256.,
-        "webp" => 16383.,
-        "jpeg" | "gif" | "tga" => 65535.,
-        _ => u32::MAX as f64,
-    };
-    if dimensions.0 > limit || dimensions.1 > limit {
-        return Err(error(format!(
-            "{format} 宽高不能超过 {limit} 像素；请在导出设置中减小 DPI 或画布尺寸"
-        )));
-    }
-    if dimensions.0 * dimensions.1 > 100_000_000. {
-        return Err(error(
-            "导出超过 100,000,000 像素；请在导出设置中减小 DPI 或画布尺寸",
-        ));
-    }
-    Ok((dimensions.0 as u32, dimensions.1 as u32))
 }
 
 /// Shared native/browser encoder. Input is straight-alpha sRGB, never a viewport screenshot.

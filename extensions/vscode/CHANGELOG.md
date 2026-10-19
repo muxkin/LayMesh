@@ -1,3 +1,11 @@
+# 0.7.2
+
+- Complete CSS gradients and layered backgrounds, including conic/repeating gradients, color interpolation and retained background colors.
+- Add `gradient(css=...)` and `conic_gradient(...)` paint completion.
+- Share display list v2 across previews, retain v1 compatibility, and keep normal local export fallbacks silent.
+- Fix offline multi-page PDF gradient resources, export DPI and translucent PPTX fill/stroke composition.
+- Add the public [gradient comparison gallery](https://muxkin.github.io/LayMesh/gradient-gallery.html).
+
 # 0.7.1
 
 - Add independent video playback, seeking, volume/mute controls, page audio and continuous document music in preview and presentations.

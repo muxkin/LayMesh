@@ -39,6 +39,7 @@ roxmltree = "0.21"
 regex = "1"
 sha2 = "0.10"
 cssparser = "0.38.0"
+csscolor = { package = "color", version = "=0.3.3", features = ["serde"] }
 
 [target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
 dlmalloc = "0.2.14"

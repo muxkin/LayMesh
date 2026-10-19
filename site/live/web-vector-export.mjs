@@ -7,6 +7,27 @@ export function imageDataURL(bytes, mime = "image/png") {
   return `data:${mime};base64,${btoa(chunks.join(""))}`;
 }
 
+// The bundled jsPDF writes shading functions as 21 uniformly spaced 8-bit
+// samples. Compare that piecewise-linear approximation at every breakpoint;
+// its error extrema occur there. Preserve vector gradients when accurate and
+// rasterize only a fill whose adaptive stops/hard edges would lose precision.
+function pdfShadingAccurate(stops) {
+  if (stops.some((s, i) => i && s.offset === stops[i - 1].offset)) return false;
+  const color = (x) => {
+    let i = 0;
+    while (i + 1 < stops.length && stops[i + 1].offset < x) i++;
+    const a = stops[i], b = stops[Math.min(i + 1, stops.length - 1)];
+    const u = a === b ? 0 : Math.max(0, Math.min(1, (x - a.offset) / (b.offset - a.offset)));
+    return a.rgba.slice(0, 3).map((v, j) => v + u * (b.rgba[j] - v));
+  };
+  const sampled = Array.from({ length: 21 }, (_, i) => color(i / 20).map(v => Math.round(v * 255) / 255));
+  return [...stops.map(s => s.offset), ...sampled.map((_, i) => i / 20)].every(x => {
+    if (x < 0 || x > 1) return true;
+    const i = Math.min(19, Math.floor(x * 20)), u = x * 20 - i;
+    return color(x).every((v, j) => Math.abs(v - (sampled[i][j] * (1 - u) + sampled[i + 1][j] * u)) <= 1 / 255);
+  });
+}
+
 export async function vectorSVG(
   list,
   { pdf = false, image, bounds, raster, warnings = [] },
@@ -42,7 +63,7 @@ export async function vectorSVG(
   const rgb = (c) =>
     `rgb(${c
       .slice(0, 3)
-      .map((v) => Math.round(Math.max(0, Math.min(1, v)) * 255))
+      .map((v) => { const c=Math.max(0, Math.min(1, v))*255;return pdf?Math.round(c):c; })
       .join(",")})`;
   const at = (url, b) =>
     `<image x="${b[0]}" y="${b[1]}" width="${b[2] - b[0]}" height="${b[3] - b[1]}" preserveAspectRatio="none" xlink:href="${url}"/>`;
@@ -93,17 +114,15 @@ export async function vectorSVG(
     const reasons=[];
     if(n.opacity < 1 && (k.kind === "group" || n.effects.length || (k.kind === "path" && k.stroke && k.fill.kind !== "none")))reasons.push("隔离透明组合");
     if(k.kind === "group" && k.mask)reasons.push("蒙版");
-    if(k.kind === "path" && ["linear", "radial"].includes(k.fill.kind)) {
-      if(k.fill.spread !== "pad")reasons.push("重复或镜像渐变");
-      if(k.fill.stops.some(s=>s.rgba[3]!==1))reasons.push("透明度渐变");
-    }
+    const gradient=p=>["linear","radial","conic"].includes(p.kind)||(p.kind==="pattern"&&p.nodes.some(n=>n.kind.kind==="path"&&gradient(n.kind.fill)));
+    const rasterFill=k.kind==="path"&&(k.fill.kind==="conic"||(pdf&&(
+      (k.fill.kind==="pattern"&&gradient(k.fill)) ||
+      (["linear","radial"].includes(k.fill.kind)&&(k.fill.spread!=="pad"||k.fill.stops.some(s=>s.rgba[3]!==1)||!pdfShadingAccurate(k.fill.stops))) ||
+      (k.fill.kind==="radial"&&k.fill.stops.some((s,i,a)=>i&&s.offset===a[i-1].offset&&s.rgba.some((v,j)=>v!==a[i-1].rgba[j])))
+    )));
     const complex=pdf && reasons.length;
     if (complex) {
-      warnings.push({
-        code: "W_PDF_RASTER",
-        message: `对象 ${n.name || "未命名"}：${reasons.join("、")}使用局部高分辨率图片，其余内容保留矢量。`,
-      });
-      return `<g transform="${matrix(n.transform)}" opacity="${n.opacity}">${await layer(n, t)}</g>`;
+      return `<g data-laymesh-raster="composition" transform="${matrix(n.transform)}" opacity="${n.opacity}">${await layer(n, t)}</g>`;
     }
     let body = "";
     if (k.kind === "group") {
@@ -125,12 +144,13 @@ export async function vectorSVG(
       }
       body = `<g${attrs}>${await nodes(k.children, t)}</g>`;
     } else if (k.kind === "path") {
-      const [fill, alpha] = await paint(k.fill, t),
+      const [fill, alpha] = rasterFill?["none",1]:await paint(k.fill, t),
         s = k.stroke;
       const stroke = s
         ? `stroke="${rgb(s.rgba)}" stroke-opacity="${s.rgba[3]}" stroke-width="${s.width}" stroke-linecap="${s.cap}" stroke-linejoin="${s.join}" stroke-miterlimit="${s.miter}" stroke-dasharray="${s.dash.length ? s.dash.join(" ") : "none"}" stroke-dashoffset="${s.offset}"`
         : "";
       body = `<path d="${pathData(k.path)}" fill="${fill}" fill-opacity="${alpha}" fill-rule="${k.even_odd ? "evenodd" : "nonzero"}" ${stroke}/>`;
+      if(rasterFill)body=`<g data-laymesh-raster="gradient-fill">${await layer({...n,effects:[],kind:{...k,stroke:null}},t)}</g>`+body;
     } else if (k.kind === "glyphs")
       body = k.outlines
         .map(

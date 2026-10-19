@@ -1132,6 +1132,54 @@ page.add(ellipse(size=(60mm,35mm),fill=paint),offset=(10mm,10mm))
 
 [概念与常见错误](fills.zh-CN.md#radial_gradient) · [组合源码](../../examples/gallery/shapes/radial-gradient.lay)
 
+## conic_gradient
+
+创建圆锥渐变填充
+
+返回：paint
+
+位置参数：`stops`.
+
+必需：`stops`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `stops` | (number, color, number?)[] / scalar | 至少两个递增色标，位置 0–1 对应一整圈 | — |
+| `center` | value / scalar | 归一化中心，可在布局框外 | [0.5, 0.5] |
+| `angle` | angle / deg | 从正上方顺时针计算起始角度 | 0 |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(100mm,75mm),background="#ffffff")
+paint=conic_gradient(stops=[(0,"#f97316"),(0.5,"#2563eb"),(1,"#f97316")],center=(0.5,0.5),angle=0deg)
+page.add(ellipse(size=(60mm,50mm),fill=paint,border_width=0),offset=(20mm,12mm))
+```
+
+[概念与常见错误](fills.zh-CN.md#conic_gradient) · [组合源码](../../examples/manual/gradient-composition.lay)
+
+## gradient
+
+使用完整 CSS 渐变语法创建填充，支持重复渐变和颜色插值
+
+返回：paint
+
+必需：`css`.
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `css` | string | 单个 CSS 渐变函数 | — |
+
+### 最小完整示例
+
+```lay
+page=canvas(size=(100mm,75mm),background="#ffffff")
+paint=gradient(css="repeating-linear-gradient(35deg in oklab, #f97316 0mm 4mm, #2563eb 4mm 8mm)")
+page.add(rect(size=(80mm,50mm),fill=paint,border_width=0),offset=(10mm,12mm))
+```
+
+[概念与常见错误](fills.zh-CN.md#gradient) · [组合源码](../../examples/manual/gradient-composition.lay)
+
 ## hatch
 
 创建 slash/cross/dots 重复图案填充。spacing 和 line_width 为物理尺寸，图案限制在素材填充区域内。
@@ -4389,7 +4437,7 @@ CSS 属性支持由编译器、补全、悬停与颜色编辑共享。不支持�
 | `line` | shorthand / none | 线条/边框简写：宽度 样式 颜色 |
 | `border` | shorthand / none | 线条/边框简写：宽度 样式 颜色 |
 | `background-color` | color / none | 背景颜色 |
-| `background-image` | paint / none | 单层 CSS 渐变 |
+| `background-image` | paint / none | 按从上到下顺序排列的渐变、图片或纹理 |
 | `font` | string / none | 字体简写：可选样式与字重、必需字号和字体族、可选 /行高；声明同时重置这些分项。 |
 | `box-shadow` | "none" / none | 逗号分层的盒阴影：x/y 偏移、可选 blur/spread/颜色及 inset；首层在上，声明重置全部阴影分项。 |
 | `text-shadow` | "none" / none | 文字阴影 |
@@ -4415,6 +4463,9 @@ CSS 属性支持由编译器、补全、悬停与颜色编辑共享。不支持�
 | `-laymesh-transition` | text / none | 进入此页的 GL Transitions 效果名；none 直接切换。 |
 | `-laymesh-transition-duration` | text / none | 页间转场时长，ms 或 s。 |
 | `-laymesh-transition-timing-function` | text / none | 页间转场缓动，支持 cubic-bezier() 和 steps()。 |
+| `background-position` | string / none | 逐层背景位置 |
+| `background-size` | string / none | 逐层背景尺寸，支持 auto/cover/contain |
+| `background-repeat` | string / none | 逐层平铺，支持 repeat/no-repeat/space/round |
 
 ## 几何视图类型
 

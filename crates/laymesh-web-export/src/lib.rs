@@ -57,7 +57,8 @@ fn hydrated_list(raw: &str) -> Result<DisplayList, JsValue> {
     Ok(list)
 }
 /// Assemble vector output on demand from the same retained commands used for
-/// playback. Only PDF effect layers need pixels; SVG retains SVG filters.
+/// playback. Unsupported gradient fills need pixels in both SVG and PDF;
+/// PDF also rasterizes effect layers while SVG retains its native filters.
 #[wasm_bindgen]
 pub struct VectorJob {
     list: DisplayList,
@@ -77,15 +78,15 @@ impl VectorJob {
         let mut requests = Vec::new();
         let mut raster_nodes = Vec::new();
         let mut node_ids = BTreeMap::new();
-        if pdf {
-            laymesh_render::portable_svg::render(&list,dpi,Some(&mut |node,rect,width,height,effects_only| {
+        {
+            laymesh_render::portable_svg::render_with_mode(&list,dpi,Some(&mut |node,rect,width,height,effects_only| {
                 let key = serde_json::to_string(node).unwrap();
                 let index = *node_ids.entry(key).or_insert_with(|| {
                     let index=raster_nodes.len();raster_nodes.push(json!(node));index
                 });
                 requests.push(json!({"node":index,"rect":[rect.x0,rect.y0,rect.x1,rect.y1],"width":width,"height":height,"effectsOnly":effects_only}));
                 Ok(Vec::new())
-            })).map_err(err)?;
+            }),pdf).map_err(err)?;
         }
         Ok(Self {
             list,
@@ -146,10 +147,11 @@ impl VectorJob {
             index += 1;
             Ok(bytes)
         };
-        laymesh_render::portable_svg::render(
+        laymesh_render::portable_svg::render_with_mode(
             &self.list,
             self.dpi,
-            if self.pdf { Some(&mut raster) } else { None },
+            Some(&mut raster),
+            self.pdf,
         )
         .map_err(err)
     }

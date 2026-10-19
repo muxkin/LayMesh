@@ -10,7 +10,7 @@ fn dimension(unit: &str) -> &str {
     match unit {
         "" => "无量纲数",
         "s" | "ms" => "时间",
-        "deg" | "rad" => "角度",
+        "deg" | "rad" | "grad" | "turn" => "角度",
         _ => "长度",
     }
 }
@@ -48,11 +48,20 @@ fn literal(expr: &Expr) -> Option<(f64, &str)> {
 
 fn pure_eval(expr: &Expr, binary: &impl Fn(&str, V, V, Loc) -> Result<V>) -> Option<V> {
     match &expr.kind {
-        ExprKind::Number(n, u) if n.is_finite() => Some(if u == "rad" {
-            V::Number(n.to_degrees(), "deg".into())
-        } else {
-            V::Number(*n, u.clone())
-        }),
+        ExprKind::Number(n, u) if n.is_finite() => {
+            Some(if matches!(u.as_str(), "rad" | "grad" | "turn") {
+                V::Number(
+                    match u.as_str() {
+                        "rad" => n.to_degrees(),
+                        "grad" => n * 0.9,
+                        _ => n * 360.,
+                    },
+                    "deg".into(),
+                )
+            } else {
+                V::Number(*n, u.clone())
+            })
+        }
         ExprKind::Unary(op, e) if op == "-" => match pure_eval(e, binary)? {
             V::Number(n, u) => Some(V::Number(-n, u)),
             _ => None,

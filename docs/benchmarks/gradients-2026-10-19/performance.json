@@ -1,0 +1,379 @@
+{
+  "platform": "Linux-6.12.73+deb13-amd64-x86_64-with-glibc2.41",
+  "method": "Alternating binaries; two warmups then 9 measured processes; PNG 144 DPI; same inputs and environment; no concurrent task builds/browser tests. POSIX wait4 per-child CPU/RSS. Total CLI compile/render/encode/process time, not a phase profile.",
+  "binaries": {
+    "baseline": {
+      "sha256": "d126c053964a7d9f914afe76eac825a15404ff01241c806646816a44c7035171",
+      "bytes": 35276304
+    },
+    "candidate": {
+      "sha256": "af561da97d059782ad60e93f3109768d8e4a040fd75f65dd135d93a56e42ba7e",
+      "bytes": 35711696
+    }
+  },
+  "results": {
+    "legacy-constructor": {
+      "baseline": {
+        "medianMs": 51.794,
+        "minMs": 49.763,
+        "maxMs": 53.863,
+        "peakRSSKiB": 25412,
+        "runs": [
+          {
+            "wallMs": 51.295,
+            "userSeconds": 0.026573,
+            "systemSeconds": 0.022144,
+            "peakRSSKiB": 25252,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 52.117,
+            "userSeconds": 0.020427999999999998,
+            "systemSeconds": 0.028599,
+            "peakRSSKiB": 24972,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 51.806,
+            "userSeconds": 0.024083,
+            "systemSeconds": 0.024083,
+            "peakRSSKiB": 25412,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 53.169,
+            "userSeconds": 0.030705999999999997,
+            "systemSeconds": 0.019191,
+            "peakRSSKiB": 25264,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 53.863,
+            "userSeconds": 0.024746999999999998,
+            "systemSeconds": 0.024746999999999998,
+            "peakRSSKiB": 25076,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 51.524,
+            "userSeconds": 0.021792,
+            "systemSeconds": 0.02615,
+            "peakRSSKiB": 25132,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 49.763,
+            "userSeconds": 0.018113999999999998,
+            "systemSeconds": 0.028983,
+            "peakRSSKiB": 25100,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 51.466,
+            "userSeconds": 0.024052,
+            "systemSeconds": 0.024052,
+            "peakRSSKiB": 24996,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 51.794,
+            "userSeconds": 0.018716,
+            "systemSeconds": 0.029945999999999997,
+            "peakRSSKiB": 25276,
+            "outputBytes": 36376
+          }
+        ]
+      },
+      "candidate": {
+        "medianMs": 51.692,
+        "minMs": 49.301,
+        "maxMs": 55.743,
+        "peakRSSKiB": 25940,
+        "runs": [
+          {
+            "wallMs": 49.301,
+            "userSeconds": 0.025325999999999998,
+            "systemSeconds": 0.021707999999999998,
+            "peakRSSKiB": 25232,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 49.437,
+            "userSeconds": 0.030216,
+            "systemSeconds": 0.017266,
+            "peakRSSKiB": 25644,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 52.475,
+            "userSeconds": 0.021359,
+            "systemSeconds": 0.02563,
+            "peakRSSKiB": 25172,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 50.792,
+            "userSeconds": 0.026303,
+            "systemSeconds": 0.021918999999999998,
+            "peakRSSKiB": 25440,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 53.765,
+            "userSeconds": 0.01452,
+            "systemSeconds": 0.036301,
+            "peakRSSKiB": 25940,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 49.91,
+            "userSeconds": 0.021551,
+            "systemSeconds": 0.025861,
+            "peakRSSKiB": 25452,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 55.743,
+            "userSeconds": 0.027735,
+            "systemSeconds": 0.023773,
+            "peakRSSKiB": 25760,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 51.692,
+            "userSeconds": 0.02242,
+            "systemSeconds": 0.026157,
+            "peakRSSKiB": 25720,
+            "outputBytes": 36376
+          },
+          {
+            "wallMs": 52.773,
+            "userSeconds": 0.024482999999999998,
+            "systemSeconds": 0.024482999999999998,
+            "peakRSSKiB": 25576,
+            "outputBytes": 36376
+          }
+        ]
+      },
+      "medianChangePercent": -0.2
+    },
+    "legacy-css": {
+      "baseline": {
+        "medianMs": 56.864,
+        "minMs": 54.901,
+        "maxMs": 59.38,
+        "peakRSSKiB": 26320,
+        "runs": [
+          {
+            "wallMs": 58.468,
+            "userSeconds": 0.029375,
+            "systemSeconds": 0.025179,
+            "peakRSSKiB": 26048,
+            "outputBytes": 57458
+          },
+          {
+            "wallMs": 56.864,
+            "userSeconds": 0.028651,
+            "systemSeconds": 0.024558,
+            "peakRSSKiB": 26012,
+            "outputBytes": 57458
+          },
+          {
+            "wallMs": 59.38,
+            "userSeconds": 0.034164,
+            "systemSeconds": 0.021352,
+            "peakRSSKiB": 25980,
+            "outputBytes": 57458
+          },
+          {
+            "wallMs": 56.31,
+            "userSeconds": 0.034878,
+            "systemSeconds": 0.019375999999999997,
+            "peakRSSKiB": 25892,
+            "outputBytes": 57458
+          },
+          {
+            "wallMs": 56.273,
+            "userSeconds": 0.019374,
+            "systemSeconds": 0.034873,
+            "peakRSSKiB": 26320,
+            "outputBytes": 57458
+          },
+          {
+            "wallMs": 58.093,
+            "userSeconds": 0.0338,
+            "systemSeconds": 0.021124999999999998,
+            "peakRSSKiB": 26104,
+            "outputBytes": 57458
+          },
+          {
+            "wallMs": 54.901,
+            "userSeconds": 0.030362,
+            "systemSeconds": 0.021686999999999998,
+            "peakRSSKiB": 26256,
+            "outputBytes": 57458
+          },
+          {
+            "wallMs": 55.508,
+            "userSeconds": 0.035883,
+            "systemSeconds": 0.017941,
+            "peakRSSKiB": 26140,
+            "outputBytes": 57458
+          },
+          {
+            "wallMs": 58.391,
+            "userSeconds": 0.026978,
+            "systemSeconds": 0.026978,
+            "peakRSSKiB": 26312,
+            "outputBytes": 57458
+          }
+        ]
+      },
+      "candidate": {
+        "medianMs": 59.525,
+        "minMs": 56.748,
+        "maxMs": 62.576,
+        "peakRSSKiB": 28160,
+        "runs": [
+          {
+            "wallMs": 59.264,
+            "userSeconds": 0.033784,
+            "systemSeconds": 0.022522,
+            "peakRSSKiB": 27688,
+            "outputBytes": 57457
+          },
+          {
+            "wallMs": 60.0,
+            "userSeconds": 0.037425,
+            "systemSeconds": 0.018712,
+            "peakRSSKiB": 28064,
+            "outputBytes": 57457
+          },
+          {
+            "wallMs": 60.265,
+            "userSeconds": 0.033169,
+            "systemSeconds": 0.024877,
+            "peakRSSKiB": 27340,
+            "outputBytes": 57457
+          },
+          {
+            "wallMs": 59.525,
+            "userSeconds": 0.03795,
+            "systemSeconds": 0.016866,
+            "peakRSSKiB": 27936,
+            "outputBytes": 57457
+          },
+          {
+            "wallMs": 62.576,
+            "userSeconds": 0.036781999999999995,
+            "systemSeconds": 0.020434,
+            "peakRSSKiB": 27268,
+            "outputBytes": 57457
+          },
+          {
+            "wallMs": 56.748,
+            "userSeconds": 0.027464,
+            "systemSeconds": 0.027464,
+            "peakRSSKiB": 27512,
+            "outputBytes": 57457
+          },
+          {
+            "wallMs": 60.968,
+            "userSeconds": 0.038284,
+            "systemSeconds": 0.019142,
+            "peakRSSKiB": 28160,
+            "outputBytes": 57457
+          },
+          {
+            "wallMs": 58.502,
+            "userSeconds": 0.029932,
+            "systemSeconds": 0.025655999999999998,
+            "peakRSSKiB": 27348,
+            "outputBytes": 57457
+          },
+          {
+            "wallMs": 57.389,
+            "userSeconds": 0.021063,
+            "systemSeconds": 0.033701,
+            "peakRSSKiB": 27124,
+            "outputBytes": 57457
+          }
+        ]
+      },
+      "medianChangePercent": 4.68
+    },
+    "open-props-30": {
+      "candidate": {
+        "medianMs": 187.35,
+        "minMs": 186.101,
+        "maxMs": 190.458,
+        "peakRSSKiB": 39928,
+        "runs": [
+          {
+            "wallMs": 188.587,
+            "userSeconds": 0.151482,
+            "systemSeconds": 0.027903999999999998,
+            "peakRSSKiB": 39584,
+            "outputBytes": 254555
+          },
+          {
+            "wallMs": 187.07,
+            "userSeconds": 0.154489,
+            "systemSeconds": 0.023767,
+            "peakRSSKiB": 39320,
+            "outputBytes": 254555
+          },
+          {
+            "wallMs": 187.975,
+            "userSeconds": 0.139363,
+            "systemSeconds": 0.039818,
+            "peakRSSKiB": 39004,
+            "outputBytes": 254555
+          },
+          {
+            "wallMs": 190.458,
+            "userSeconds": 0.153683,
+            "systemSeconds": 0.027583999999999997,
+            "peakRSSKiB": 39836,
+            "outputBytes": 254555
+          },
+          {
+            "wallMs": 187.277,
+            "userSeconds": 0.14317,
+            "systemSeconds": 0.035792,
+            "peakRSSKiB": 39928,
+            "outputBytes": 254555
+          },
+          {
+            "wallMs": 189.568,
+            "userSeconds": 0.156267,
+            "systemSeconds": 0.024041,
+            "peakRSSKiB": 39492,
+            "outputBytes": 254555
+          },
+          {
+            "wallMs": 187.35,
+            "userSeconds": 0.142176,
+            "systemSeconds": 0.036559,
+            "peakRSSKiB": 39324,
+            "outputBytes": 254555
+          },
+          {
+            "wallMs": 186.101,
+            "userSeconds": 0.14919,
+            "systemSeconds": 0.028225,
+            "peakRSSKiB": 39296,
+            "outputBytes": 254555
+          },
+          {
+            "wallMs": 187.141,
+            "userSeconds": 0.138948,
+            "systemSeconds": 0.039699,
+            "peakRSSKiB": 39696,
+            "outputBytes": 254555
+          }
+        ]
+      }
+    }
+  }
+}

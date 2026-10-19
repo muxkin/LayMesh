@@ -104,7 +104,7 @@ class Exports(unittest.TestCase):
             root = Path(temporary)
             for suffix, options in [('png', dict(quality=95)), ('jpg', dict(quality=0)), ('tif', dict(compression='jpeg')),
                                     ('webp',dict(webp_method=7)), ('webp',dict(webp_lossless=False,webp_near_lossless=80)),
-                                    ('svg',dict(dpi=144)), ('jpg',dict(background='transparent'))]:
+                                    ('svg',dict(dpi=0)), ('jpg',dict(background='transparent'))]:
                 dest=root/('existing.'+suffix); dest.write_bytes(b'existing')
                 with self.subTest(options=options), self.assertRaises(LayMeshBridgeError):
                     render_source(SOURCE, base_dir=root, output=dest, save_source='staged.lay', **options)
@@ -117,6 +117,24 @@ class Exports(unittest.TestCase):
                 result=subprocess.run([*_command(),'render',str(file),'-o',str(dest),flag,value],capture_output=True,text=True)
                 self.assertEqual(result.returncode,2,result.stderr)
                 self.assertEqual(dest.read_bytes(),b'existing')
+
+    def test_svg_gradient_fallback_respects_dpi_without_changing_layout(self):
+        import base64
+        import io
+        source = 'p=canvas(size=(25.4mm,12.7mm))\np.add(rect(size=(25.4mm,12.7mm),fill=gradient(css="conic-gradient(red,blue,red)"),border_width=0))'
+        with tempfile.TemporaryDirectory() as temporary:
+            viewboxes = []
+            for dpi in (96, 192):
+                output = Path(temporary) / f'gradient-{dpi}.svg'
+                render_source(source, output=output, dpi=dpi)
+                document = ET.parse(output).getroot()
+                viewboxes.append(document.attrib['viewBox'])
+                images = document.findall('.//{http://www.w3.org/2000/svg}image')
+                self.assertEqual(len(images), 1)
+                href = images[0].get('href') or images[0].get('{http://www.w3.org/1999/xlink}href')
+                with Image.open(io.BytesIO(base64.b64decode(href.split(',', 1)[1]))) as image:
+                    self.assertEqual(image.size, (dpi, dpi // 2))
+            self.assertEqual(viewboxes[0], viewboxes[1])
 
     def test_editor_export_uses_unsaved_imports_and_recovers_after_errors(self):
         with tempfile.TemporaryDirectory() as temporary:

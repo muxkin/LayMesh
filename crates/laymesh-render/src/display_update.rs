@@ -48,7 +48,7 @@ impl DisplayUpdate {
             structure: vec![],
             resources: (old.resources != new.resources).then(|| new.resources.clone()),
         };
-        if old.nodes.len() != new.nodes.len() {
+        if old.schema_version != new.schema_version || old.nodes.len() != new.nodes.len() {
             update.roots = Some(new.nodes.clone());
         } else {
             for (i, (a, b)) in old.nodes.iter().zip(&new.nodes).enumerate() {
@@ -60,7 +60,8 @@ impl DisplayUpdate {
     /// Validate everything before mutating a retained drawing. Overlapping or
     /// repeated paths would make application order ambiguous and are rejected.
     pub fn validate(&self, list: &DisplayList) -> Result<()> {
-        if self.schema_version != DISPLAY_LIST_VERSION
+        if !supported_version(self.schema_version)
+            || (list.schema_version != self.schema_version && self.roots.is_none())
             || !self.width.is_finite()
             || !self.height.is_finite()
             || self.width <= 0.
@@ -87,6 +88,7 @@ impl DisplayUpdate {
     }
     pub fn apply(self, list: &mut DisplayList) -> Result<()> {
         self.validate(list)?;
+        list.schema_version = self.schema_version;
         list.media = self.media;
         list.animation = self.animation;
         list.page_transition = self.page_transition;

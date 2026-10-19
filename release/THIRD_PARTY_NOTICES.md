@@ -36,6 +36,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | chacha20 | 0.10.2 | MIT OR Apache-2.0 |
 | cipher | 0.4.4 | MIT OR Apache-2.0 |
 | clang-sys | 1.9.1 | Apache-2.0 |
+| color | 0.3.3 | Apache-2.0 OR MIT |
 | color_quant | 1.1.0 | MIT |
 | const-oid | 0.10.2 | Apache-2.0 OR MIT |
 | contour | 0.13.1 | MIT OR Apache-2.0 |

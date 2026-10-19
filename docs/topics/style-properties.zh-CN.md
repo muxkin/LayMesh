@@ -950,7 +950,7 @@ normal、italic 或 oblique；oblique 当前按 italic 处理。
 
 ### background-image
 
-单层 CSS 渐变
+按从上到下顺序排列的渐变、图片或纹理
 
 合法值：paint.
 
@@ -1117,5 +1117,53 @@ normal、italic 或 oblique；oblique 当前按 italic 处理。
 ```
 
 [已有层、列表与简写重置规则](style-shadows.zh-CN.md#partial-overrides)
+
+### background-position
+
+逐层背景位置
+
+合法值：string.
+
+单位：无.
+
+默认：0% 0%. 不继承。
+
+适用对象：对象区域；具体适用范围随素材而定.
+
+```lcss
+.sample { background-position: center, right 2mm bottom 3mm; }
+```
+
+### background-size
+
+逐层背景尺寸，支持 auto/cover/contain
+
+合法值：string.
+
+单位：无.
+
+默认：auto. 不继承。
+
+适用对象：对象区域；具体适用范围随素材而定.
+
+```lcss
+.sample { background-size: cover, 20mm 15mm; }
+```
+
+### background-repeat
+
+逐层平铺，支持 repeat/no-repeat/space/round
+
+合法值：string.
+
+单位：无.
+
+默认：repeat. 不继承。
+
+适用对象：对象区域；具体适用范围随素材而定.
+
+```lcss
+.sample { background-repeat: no-repeat, space round; }
+```
 
 <!-- properties:end -->

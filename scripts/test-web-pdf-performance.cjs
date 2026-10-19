@@ -40,6 +40,14 @@ const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
         return {rssMiB:rss.trim().split(/\s+/).map(Number).reduce((a,b)=>a+b,0)/1024,cpuSeconds:processInfo.reduce((n,p)=>n+p.cpuTime,0)};
       };
       const open=async()=>{await page.locator('#export').click();await page.locator('#export-format').selectOption('pdf');};
+      // The editable profile lazily starts its persistent compiler/language
+      // workers during prepare(). Establish their baseline before testing
+      // exporter lifetime, rather than mistaking them for cancelled exporters.
+      await open();
+      const warmDownload=page.waitForEvent('download');
+      await page.locator('#export-file').click();await warmDownload;
+      await page.waitForFunction(()=>!document.querySelector('#export-file').disabled);
+      await delay(500);
       const live=await page.evaluate(()=>exportAudit.live);
       // Cancel while effects are running, then reuse the same application.
       await open();await page.locator('#export-file').click();await delay(500);
@@ -75,7 +83,7 @@ const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
         } finally {if(timer)clearInterval(timer);}
       }
       assert.deepEqual(errors,[]);
-      results.push({engine,browser:browser.version(),dpi:1200,cancelMs,runs,errors});
+      results.push({engine,browser:browser.version(),dpi:1200,warmupExports:1,baselineLiveWorkers:live,cancelMs,runs,errors});
       fs.writeFileSync(path.join(out,'results.json'),JSON.stringify(results,null,2)+'\n');
     } finally {await browser.close();}
   }

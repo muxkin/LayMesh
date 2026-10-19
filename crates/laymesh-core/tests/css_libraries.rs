@@ -90,10 +90,16 @@ fn original_open_props_empty_variable_hsl_calc_gradient_and_multilayer_shadows()
     let a = e.styled("rect", &classes("card"), &root).unwrap();
     assert!(a["color"].as_str().starts_with('#'));
     assert_eq!(a["fill"].json()["kind"], "linearGradient");
-    assert_eq!(a["fill"].json()["stops"].as_array().unwrap().len(), 8);
+    assert_eq!(
+        a["fill"].json()["gradient"]["stops"]
+            .as_array()
+            .unwrap()
+            .len(),
+        8
+    );
     assert_eq!(a["__css_box_shadows"].json().as_array().unwrap().len(), 2);
     assert!(
-        !root["__style_variables"].json()["--gradient-space"]
+        root["__style_variables"].json()["--gradient-space"]
             .as_str()
             .unwrap()
             .contains("oklab")
@@ -289,8 +295,13 @@ fn single_radial_open_props_gradients_and_physical_linear_angles() {
     for class in ["a", "b"] {
         let paint = e.styled("rect", &classes(class), &root).unwrap()["fill"].json();
         assert_eq!(paint["kind"], "radialGradient");
-        let computed = laymesh_core::css_values::gradient_box(&paint, [0., 0., 30., 20.]);
-        assert!(computed["radius"].as_f64().unwrap() > 1.);
+        let computed = laymesh_core::gradients::from_json(&paint)
+            .unwrap()
+            .resolve([0., 0., 30., 20.]);
+        let laymesh_core::gradients::Geometry::Radial { radii, .. } = computed.geometry else {
+            panic!("expected radial")
+        };
+        assert!(radii[0] > 30.);
     }
     let paint = laymesh_core::css_values::gradient(
         "linear-gradient(45deg,red,blue)",
@@ -298,9 +309,14 @@ fn single_radial_open_props_gradients_and_physical_linear_angles() {
         "black",
     )
     .unwrap();
-    let p = laymesh_core::css_values::gradient_box(&paint, [0., 0., 30., 10.]);
-    let dx = (p["end"][0].as_f64().unwrap() - p["start"][0].as_f64().unwrap()) * 30.;
-    let dy = (p["end"][1].as_f64().unwrap() - p["start"][1].as_f64().unwrap()) * 10.;
+    let p = laymesh_core::gradients::from_json(&paint)
+        .unwrap()
+        .resolve([0., 0., 30., 10.]);
+    let laymesh_core::gradients::Geometry::Linear { start, end } = p.geometry else {
+        panic!("expected linear")
+    };
+    let dx = end[0] - start[0];
+    let dy = end[1] - start[1];
     assert!((dx + dy).abs() < 1e-8);
 }
 

@@ -1,0 +1,3 @@
+page=canvas(size=(100mm,75mm),background="#ffffff")
+paint=conic_gradient(stops=[(0,"#f97316"),(0.5,"#2563eb"),(1,"#f97316")],center=(0.5,0.5),angle=0deg)
+page.add(ellipse(size=(60mm,50mm),fill=paint,border_width=0),offset=(20mm,12mm))

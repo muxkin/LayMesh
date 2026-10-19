@@ -1,0 +1,1 @@
+{"nativeWasmSVG":{"structure":"identical","maxNumericError":4.559755325317383e-05},"nativeWasmPNG":{"mean":0.03545178571428571,"max":26},"offlineLibraries":["bootstrap@5.3.8","open-props@1.7.23"],"fontStack":"registered WASM fonts; no font warnings","warnings":2,"blurOverride":{"beforeRadius":2,"afterRadius":4,"otherFields":"preserved"},"effects":7,"consoleErrors":[]}

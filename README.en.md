@@ -1,5 +1,7 @@
 # LayMesh
 
+[Gradient comparison gallery](https://muxkin.github.io/LayMesh/gradient-gallery.html): 30 original recipes, actual exports and explained reference differences.
+
 **Create scientific figures and precise physical layouts from readable code.** Combine native plots, images, vector shapes, text and formulas in an editable project, then export static figures or multipage presentations.
 
 [Documentation](https://muxkin.github.io/LayMesh/en/) · [Video tutorial (Bilibili)](https://www.bilibili.com/video/BV1gpHn6eE4V) · [中文](README.md) · [Examples](docs/sections/examples.en.md)

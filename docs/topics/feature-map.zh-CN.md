@@ -382,3 +382,8 @@
 | `api:canvas.play` | [→](media.zh-CN.md#play) | [→](../../examples/media/first.lay) | [→](../../examples/media/first.lay) |
 | `api:step.play` | [→](media.zh-CN.md#play) | [→](../../examples/media/step.lay) | [→](../../examples/media/step.lay) |
 | `api:document.play` | [→](media.zh-CN.md#play) | [→](../../examples/media/deck.laydoc) | [→](../../examples/media/deck.laydoc) |
+| `api:gradient` | [→](fills.zh-CN.md#gradient) | [→](../../examples/manual/gradient.lay) | [→](../../examples/manual/gradient-composition.lay) |
+| `api:conic_gradient` | [→](fills.zh-CN.md#conic_gradient) | [→](../../examples/manual/conic_gradient.lay) | [→](../../examples/manual/gradient-composition.lay) |
+| `css:background-size` | [→](style-properties.zh-CN.md#background-size) | [→](../../examples/manual/gradient-composition.lay) | [→](../../examples/manual/gradient-composition.lay) |
+| `css:background-position` | [→](style-properties.zh-CN.md#background-position) | [→](../../examples/manual/gradient-composition.lay) | [→](../../examples/manual/gradient-composition.lay) |
+| `css:background-repeat` | [→](style-properties.zh-CN.md#background-repeat) | [→](../../examples/manual/gradient-composition.lay) | [→](../../examples/manual/gradient-composition.lay) |

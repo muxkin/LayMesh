@@ -100,7 +100,7 @@ def main():
         if name == 'editable':
             assert '可编辑文字与矢量公式' in ''.join(actual['texts'])
             assert actual['pictures'] == 2  # Original PNG and shadow; gradient is native.
-            assert sum('W_PPTX_RASTER' in s for s in actual['warnings']) == 1
+            assert not any('W_PPTX_RASTER' in s for s in actual['warnings'])
         if name == 'strokes':
             assert actual['pictures'] == 0
             assert not any('W_PPTX_RASTER' in s for s in actual['warnings'])
@@ -110,7 +110,7 @@ def main():
             # Two explicit groups and one formula group; font fallback can split
             # the title into multiple runs requiring one compound text group.
             assert 3 <= actual['groups'] <= 4, actual
-            assert sum('W_PPTX_RASTER' in s for s in actual['warnings']) == 1
+            assert not any('W_PPTX_RASTER' in s for s in actual['warnings'])
         evidence['cases'].append(actual)
     with tempfile.TemporaryDirectory(prefix='laymesh-pptx-cli-') as tmp:
         tmp = Path(tmp)

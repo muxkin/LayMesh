@@ -356,7 +356,11 @@ impl DisplayUpdate {
             properties: vec![],
             structure: vec![],
         };
-        diff_children(&old.nodes, nodes, &mut vec![], &mut update);
+        if old.schema_version != new.schema_version {
+            update.roots = Some(nodes.iter().map(|n| (*n).clone()).collect());
+        } else {
+            diff_children(&old.nodes, nodes, &mut vec![], &mut update);
+        }
         update
     }
     pub(super) fn validate_semantic(&self, list: &DisplayList) -> Result<()> {

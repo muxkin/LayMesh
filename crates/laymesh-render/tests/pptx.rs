@@ -176,7 +176,7 @@ page.add(rect(size=(10mm,8mm),fill=radial_gradient(stops=[(0,"#ff000080"),(1,"#0
                 .iter()
                 .filter(|w| w.code == "W_PPTX_RASTER")
                 .count(),
-            1
+            0
         );
         let files = crate::files(&bytes);
         let image = image::load_from_memory(&files["ppt/media/image1.png"])
@@ -299,17 +299,15 @@ fn clipping_group_alpha_and_effect_overflow_are_not_silently_lost() {
             .iter()
             .filter(|w| w.code == "W_PPTX_RASTER")
             .count(),
-        2
+        0
     );
     assert!(
-        warnings
-            .iter()
-            .any(|w| w.message.contains("clipped-group") && w.message.contains("裁剪"))
+        String::from_utf8_lossy(&files(&bytes)["ppt/slides/slide1.xml"])
+            .contains("clipped-group [raster: 复杂裁剪")
     );
     assert!(
-        warnings
-            .iter()
-            .any(|w| w.message.contains("alpha-group") && w.message.contains("透明度"))
+        String::from_utf8_lossy(&files(&bytes)["ppt/slides/slide1.xml"])
+            .contains("alpha-group [raster: 分组透明度")
     );
     let files = crate::files(&bytes);
     let clipped = image::load_from_memory(&files["ppt/media/image1.png"])
@@ -343,7 +341,7 @@ page.add(rect(size=(10mm,8mm),fill="#3782d6",border_width=0,effects=[shadow(blur
             .iter()
             .filter(|w| w.code == "W_PPTX_RASTER")
             .count(),
-        1
+        0
     );
     let files = crate::files(&bytes);
     let image = image::load_from_memory(&files["ppt/media/image1.png"]).unwrap();
@@ -387,11 +385,8 @@ fn formula_text_glyphs_become_outlines_and_anisotropic_text_falls_back() {
         },
     )
     .unwrap();
-    assert!(
-        warnings
-            .iter()
-            .any(|w| w.code == "W_PPTX_RASTER" && w.message.contains("文字变换"))
-    );
+    assert!(!warnings.iter().any(|w| w.code == "W_PPTX_RASTER"));
+    assert!(String::from_utf8_lossy(&files(&bytes)["ppt/slides/slide1.xml"]).contains("文字变换"));
     assert_eq!(
         files(&bytes)
             .keys()
@@ -565,7 +560,7 @@ fn rounded_image_fill_fit_and_rectangular_crop_keep_original_media() {
     assert!(svg.contains("preserveAspectRatio='xMidYMid slice'"));
 }
 #[test]
-fn gradients_are_native_when_exact_and_other_paints_warn_locally() {
+fn gradients_are_native_when_exact_and_other_paints_fall_back_silently() {
     let scene = compile(
         r##"
 page=canvas(size=(160mm,100mm),background="none")
@@ -587,7 +582,7 @@ page.add(rect(size=(20mm,15mm),fill=hatch(color="#3782d6"),border_width=0),offse
             .iter()
             .filter(|w| w.code == "W_PPTX_RASTER")
             .count(),
-        2
+        0
     );
     let data = files(&bytes);
     let slide = xml(&data, "ppt/slides/slide1.xml");
@@ -605,6 +600,41 @@ page.add(rect(size=(20mm,15mm),fill=hatch(color="#3782d6"),border_width=0),offse
             .count(),
         2
     );
+}
+#[test]
+fn translucent_gradient_and_stroke_are_composited_before_object_opacity() {
+    let scene = compile(
+        r##"
+p=canvas(size=(60mm,40mm),background="none")
+p.add(rect(size=(30mm,20mm),fill=gradient(css="conic-gradient(red,blue,red)"),border_color="#000000",border_width=2mm),offset=(10mm,10mm),opacity=0.5)
+"##,
+    );
+    let (bytes, warnings) = render_pptx(
+        &scene,
+        &ExportOptions {
+            dpi: Some(96.),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    assert!(warnings.is_empty());
+    let data = files(&bytes);
+    let slide = xml(&data, "ppt/slides/slide1.xml");
+    assert_eq!(
+        slide
+            .descendants()
+            .filter(|n| n.tag_name().name() == "pic")
+            .count(),
+        1
+    );
+    let png = data
+        .iter()
+        .find(|(name, _)| name.starts_with("ppt/media/") && name.ends_with(".png"))
+        .unwrap()
+        .1;
+    let image = image::load_from_memory(png).unwrap().to_rgba8();
+    // Independently faded fill and stroke would make their overlap alpha 192.
+    assert_eq!(image.pixels().map(|p| p[3]).max(), Some(128));
 }
 #[test]
 fn anisotropic_stroke_keeps_vector_outline_and_mirrored_image_is_native() {

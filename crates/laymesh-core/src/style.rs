@@ -446,9 +446,28 @@ impl StyleRead {
         )
     }
     pub fn paint_only_change(&self, engine: &Engine) -> bool {
+        fn has_image(value: &V) -> bool {
+            match value {
+                V::Map(a) => {
+                    a.get("kind").is_some_and(|k| k.as_str() == "imagePaint")
+                        || a.values().any(has_image)
+                }
+                V::List(a) => a.iter().any(has_image),
+                _ => false,
+            }
+        }
         crate::session::queries::without_recording(|| {
-            engine.styled_part(&self.kind, &self.original, &self.parent, self.part.as_deref(), self.part_name.as_deref())
-                .is_ok_and(|next| !next.values().any(|v|matches!(v,V::Map(a) if a.get("kind").is_some_and(|k|k.as_str()=="imagePaint"))) && self.layout_signature(&next) == self.layout)
+            engine
+                .styled_part(
+                    &self.kind,
+                    &self.original,
+                    &self.parent,
+                    self.part.as_deref(),
+                    self.part_name.as_deref(),
+                )
+                .is_ok_and(|next| {
+                    !next.values().any(has_image) && self.layout_signature(&next) == self.layout
+                })
         })
     }
     pub fn current(&self, engine: &Engine) -> std::rc::Rc<Self> {
@@ -926,7 +945,11 @@ impl Engine {
             let value = expanded[&key].value.clone();
             if matches!(value.as_str(), "inherit" | "unset") {
                 if value == "inherit" || INHERITED.contains(&key.as_str()) {
-                    if let Some(v) = parent.get(&key) {
+                    if let Some(v) = parent.get(&key).or_else(|| {
+                        parent
+                            .get("__css_background_parts")
+                            .and_then(|v| if let V::Map(m) = v { m.get(&key) } else { None })
+                    }) {
                         output.insert(key.clone(), v.clone());
                     }
                 } else {
@@ -1005,13 +1028,51 @@ impl Engine {
             }
             _ => {}
         }
-        if let Some(v) = output.remove("background_image") {
-            if v.as_str() != "none" {
-                output.insert("background".into(), v);
-            }
-        }
-        if let Some(v) = output.remove("background_color") {
-            output.entry("background".into()).or_insert(v);
+        if crate::backgrounds::PARTS
+            .iter()
+            .any(|k| output.contains_key(*k))
+        {
+            let snapshot = crate::backgrounds::PARTS
+                .iter()
+                .filter_map(|k| output.get(*k).map(|v| (k.to_string(), v.clone())))
+                .collect::<Args>();
+            let images = output
+                .remove("background_image")
+                .map(|v| v.list().iter().map(V::json).collect())
+                .unwrap_or_else(|| vec![json!("none")]);
+            let color = output
+                .remove("background_color")
+                .map(|v| v.json())
+                .unwrap_or(json!("none"));
+            let pos = output
+                .remove("background_position")
+                .map(|v| v.as_str())
+                .unwrap_or("0% 0%".into());
+            let size = output
+                .remove("background_size")
+                .map(|v| v.as_str())
+                .unwrap_or("auto".into());
+            let repeat = output
+                .remove("background_repeat")
+                .map(|v| v.as_str())
+                .unwrap_or("repeat".into());
+            // Preserve the compact legacy representation for a single full-box
+            // gradient without an underlying color.
+            let paint = if images.iter().all(|v| v == "none") {
+                color
+            } else if images.len() == 1
+                && color == "none"
+                && pos == "0% 0%"
+                && size == "auto"
+                && repeat == "repeat"
+                && images[0]["gradient"].is_object()
+            {
+                images[0].clone()
+            } else {
+                crate::backgrounds::compose(images, color, &pos, &size, &repeat, ctx)
+            };
+            output.insert("background".into(), V::from_json(&paint));
+            output.insert("__css_background_parts".into(), V::Map(snapshot.into()));
         }
         if !matches!(
             kind,
@@ -1193,7 +1254,10 @@ impl Engine {
                 "border" | "line" => ["width", "color", "style"]
                     .map(|p| format!("{key}_{p}"))
                     .to_vec(),
-                "background" => vec!["background_image".into(), "background_color".into()],
+                "background" => crate::backgrounds::PARTS
+                    .iter()
+                    .map(|s| s.to_string())
+                    .collect(),
                 "font" => [
                     "font_size",
                     "font_family",
@@ -1213,6 +1277,9 @@ impl Engine {
                 | "fill" => "none",
                 "color" => "black",
                 "background_color" => "transparent",
+                "background_size" => "auto",
+                "background_position" => "0% 0%",
+                "background_repeat" => "repeat",
                 "font_family" => "system-ui",
                 "font_weight" => "400",
                 "font_size" => "16px",
@@ -1277,20 +1344,10 @@ impl Engine {
             ]);
         }
         if key == "background" {
-            if s.contains("gradient(") {
-                css_values::gradient(s, ctx, current).map_err(fail)?;
-                return Ok(vec![
-                    ("background_image".into(), s.into()),
-                    ("background_color".into(), "transparent".into()),
-                ]);
-            }
-            if !s.starts_with("hatch(") && !s.starts_with("url(") && !s.starts_with("image(") {
-                css_values::color(s, current).map_err(fail)?;
-                return Ok(vec![
-                    ("background_color".into(), s.into()),
-                    ("background_image".into(), "none".into()),
-                ]);
-            }
+            return crate::backgrounds::shorthand(s, ctx, current).map_err(fail);
+        }
+        if crate::backgrounds::PARTS.contains(&key.as_str()) {
+            crate::backgrounds::validate(key, s, ctx, current).map_err(fail)?;
         }
         if key == "font" {
             let words = values::words(s);
@@ -1430,17 +1487,28 @@ impl Engine {
             }
             return Ok(V::from_json(&json!(shadows)));
         }
+        if matches!(
+            key,
+            "background_size" | "background_position" | "background_repeat"
+        ) {
+            return Ok(V::text(s));
+        }
         if key == "background_image" {
-            return if s == "none" {
-                Ok(V::text("none"))
-            } else {
-                css_values::gradient(s, ctx, current)
-                    .map(|v| V::from_json(&v))
-                    .map_err(fail)
-            };
+            let mut images = Vec::new();
+            for layer in split(s, ',') {
+                let image = if layer == "none" {
+                    V::text("none")
+                } else if layer.to_ascii_lowercase().contains("gradient(") {
+                    V::from_json(&css_values::gradient(&layer, ctx, current).map_err(&fail)?)
+                } else {
+                    self.css_value("background", &layer, file, loc)?
+                };
+                images.push(image);
+            }
+            return Ok(V::List(images));
         }
         if key.ends_with("color") || matches!(key, "fill" | "text_fill" | "background") {
-            if s.contains("gradient(") {
+            if s.to_ascii_lowercase().contains("gradient(") {
                 return css_values::gradient(s, ctx, current)
                     .map(|v| V::from_json(&v))
                     .map_err(fail);

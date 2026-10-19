@@ -1,0 +1,41 @@
+# Original Open Props recipes; one object per recipe.
+page=canvas(size=(170mm,180mm),stylesheet="@laymesh/open-props.css",background="#ffffff")
+style {
+ .g1 { background:var(--gradient-1);border:0;border-radius:1mm; }
+ .g2 { background:var(--gradient-2);border:0;border-radius:1mm; }
+ .g3 { background:var(--gradient-3);border:0;border-radius:1mm; }
+ .g4 { background:var(--gradient-4);border:0;border-radius:1mm; }
+ .g5 { background:var(--gradient-5);border:0;border-radius:1mm; }
+ .g6 { background:var(--gradient-6);border:0;border-radius:1mm; }
+ .g7 { background:var(--gradient-7);border:0;border-radius:1mm; }
+ .g8 { background:var(--gradient-8);border:0;border-radius:1mm; }
+ .g9 { background:var(--gradient-9);border:0;border-radius:1mm; }
+ .g10 { background:var(--gradient-10);border:0;border-radius:1mm; }
+ .g11 { background:var(--gradient-11);border:0;border-radius:1mm; }
+ .g12 { background:var(--gradient-12);border:0;border-radius:1mm; }
+ .g13 { background:var(--gradient-13);border:0;border-radius:1mm; }
+ .g14 { background:var(--gradient-14);border:0;border-radius:1mm; }
+ .g15 { background:var(--gradient-15);border:0;border-radius:1mm; }
+ .g16 { background:var(--gradient-16);border:0;border-radius:1mm; }
+ .g17 { background:var(--gradient-17);border:0;border-radius:1mm; }
+ .g18 { background:var(--gradient-18);border:0;border-radius:1mm; }
+ .g19 { background:var(--gradient-19);border:0;border-radius:1mm; }
+ .g20 { background:var(--gradient-20);border:0;border-radius:1mm; }
+ .g21 { background:var(--gradient-21);border:0;border-radius:1mm; }
+ .g22 { background:var(--gradient-22);border:0;border-radius:1mm; }
+ .g23 { background:var(--gradient-23);border:0;border-radius:1mm; }
+ .g24 { background:var(--gradient-24);border:0;border-radius:1mm; }
+ .g25 { background:var(--gradient-25);border:0;border-radius:1mm; }
+ .g26 { background:var(--gradient-26);border:0;border-radius:1mm; }
+ .g27 { background:var(--gradient-27);border:0;border-radius:1mm; }
+ .g28 { background:var(--gradient-28);border:0;border-radius:1mm; }
+ .g29 { background:var(--gradient-29);border:0;border-radius:1mm; }
+ .g30 { background:var(--gradient-30);border:0;border-radius:1mm; }
+}
+for row in range(6) {
+ for col in range(5) {
+  i=row*5+col+1
+  page.add(rect(size=(30mm,21mm),class=f"g{i}"),offset=(5mm+col*33mm,5mm+row*29mm))
+  page.add(text(f"{i}",font_family="DejaVu Sans",font_size=7pt,color="#334155"),offset=(6mm+col*33mm,27mm+row*29mm))
+ }
+}

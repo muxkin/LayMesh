@@ -158,12 +158,8 @@ impl Writer<'_> {
         name: &str,
         reason: &str,
     ) -> Result<String> {
-        self.warnings.push(Diagnostic::new(
-            "W_PPTX_RASTER",
-            format!("对象 {name} 转为透明 PNG：{reason}"),
-            "",
-            Loc::default(),
-        ));
+        // Successful local fallback is an export detail, not an actionable
+        // warning. Keep its reason and quality in the picture's diagnostic name.
         let mut node = n.clone();
         node.transform = parent * node.transform;
         node.opacity *= opacity;
@@ -172,10 +168,10 @@ impl Writer<'_> {
             .intersect(Rect::new(0., 0., self.list.width, self.list.height));
         let density = self.dpi / 25.4;
         let rect = Rect::new(
-            (b.x0 * density).floor() / density,
-            (b.y0 * density).floor() / density,
-            (b.x1 * density).ceil() / density,
-            (b.y1 * density).ceil() / density,
+            (b.x0 * density + 1e-9).floor() / density,
+            (b.y0 * density + 1e-9).floor() / density,
+            (b.x1 * density - 1e-9).ceil() / density,
+            (b.y1 * density - 1e-9).ceil() / density,
         );
         if rect.width() <= 0. || rect.height() <= 0. {
             return Ok(String::new());
@@ -184,21 +180,41 @@ impl Writer<'_> {
             nodes: vec![node],
             ..self.list.clone()
         };
-        let bytes = (self.rasterize)(
-            &list,
-            rect,
-            (rect.width() * density).round() as u32,
-            (rect.height() * density).round() as u32,
-        )?;
-        Ok(self.picture(
-            bytes,
-            "png",
-            rect,
-            0.,
-            1.,
-            &format!("{name} [raster: {reason}]"),
-        ))
+        let (w, h) = crate::raster_dimensions(rect.width(), rect.height(), self.dpi, "png")?;
+        let mut out = String::new();
+        // Bounded tile allocations also apply to large gradient fills.
+        for y in (0..h).step_by(4096) {
+            for x in (0..w).step_by(4096) {
+                let tw = (w - x).min(4096);
+                let th = (h - y).min(4096);
+                let tile = Rect::new(
+                    rect.x0 + x as f64 / density,
+                    rect.y0 + y as f64 / density,
+                    rect.x0 + (x + tw) as f64 / density,
+                    rect.y0 + (y + th) as f64 / density,
+                );
+                let bytes = (self.rasterize)(&list, tile, tw, th)?;
+                out += &self.picture(
+                    bytes,
+                    "png",
+                    tile,
+                    0.,
+                    1.,
+                    &format!(
+                        "{name} [raster: {}; {} dpi]",
+                        if reason.is_empty() {
+                            "gradient fill"
+                        } else {
+                            reason
+                        },
+                        self.dpi
+                    ),
+                );
+            }
+        }
+        Ok(out)
     }
+
     fn text(
         &mut self,
         n: &DrawNode,
@@ -314,13 +330,41 @@ impl Writer<'_> {
         let line = geometry::native_stroke(stroke, t, opacity)?;
         let mut g = geometry::geometry(&path, t, line.is_some(), Some(&n.hint));
         let Some(fill_xml) = self.fill(fill, opacity, path.bounding_box(), &g)? else {
-            return self.fallback(
-                n,
-                parent,
-                inherited,
-                name,
-                "无法准确映射的渐变、纹理或图片填充",
-            );
+            fn has_gradient(p: &Paint) -> bool {
+                match p {
+                    Paint::Linear { .. } | Paint::Radial { .. } | Paint::Conic { .. } => true,
+                    Paint::Pattern { nodes, .. } => nodes.iter().any(|n| match &n.kind {
+                        DrawKind::Path { fill, .. } => has_gradient(fill),
+                        _ => false,
+                    }),
+                    _ => false,
+                }
+            }
+            if has_gradient(fill) {
+                // Only the unsupported fill is rasterized. The path's outline
+                // stays editable; opacity is baked into the fill exactly once.
+                let mut fill_node = n.clone();
+                if let DrawKind::Path { stroke, .. } = &mut fill_node.kind {
+                    *stroke = None;
+                }
+                let mut out = self.fallback(&fill_node, parent, inherited, name, "")?;
+                if stroke.is_some() {
+                    out += &self.shape(
+                        n,
+                        &path,
+                        &Paint::None,
+                        stroke,
+                        even_odd,
+                        parent,
+                        t,
+                        opacity,
+                        inherited,
+                        name,
+                    )?;
+                }
+                return Ok(out);
+            }
+            return self.fallback(n, parent, inherited, name, "无法准确映射的纹理或图片填充");
         };
         let outline = stroke.map(|s| {
             laymesh_core::geometry::outline_transformed(&path, &geometry::stroke_style(s), t)
@@ -392,6 +436,13 @@ impl Writer<'_> {
         }
         if !n.effects.is_empty() {
             return self.fallback(n, parent, inherited, name, "滤镜或特效");
+        }
+        if opacity != 1.
+            && matches!(&n.kind, DrawKind::Path { fill, stroke: Some(_), .. } if !matches!(fill, Paint::None))
+        {
+            // DrawingML applies fill/line alpha independently. Their overlap
+            // must be composited before applying this object's opacity once.
+            return self.fallback(n, parent, inherited, name, "填充与描边透明度合成");
         }
         if !formula && n.hint.get("exportText").is_some() {
             let mut text = n.clone();

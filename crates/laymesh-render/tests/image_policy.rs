@@ -261,6 +261,19 @@ fn configuration_precedence_and_changed_defaults() {
     let o = config::export_options(&cfg, "pdf", &Default::default()).unwrap();
     assert_eq!(o.dpi, Some(800.));
     assert_eq!(o.pdf_jpeg_quality, Some(95));
+    // SVG's local gradient fallback obeys the same configured quality as PDF.
+    assert_eq!(
+        config::export_options(&cfg, "svg", &Default::default())
+            .unwrap()
+            .dpi,
+        Some(800.)
+    );
+    assert_eq!(
+        config::export_options(&cfg, "html", &Default::default())
+            .unwrap()
+            .dpi,
+        None
+    );
     let o = config::export_options(
         &cfg,
         "pdf",

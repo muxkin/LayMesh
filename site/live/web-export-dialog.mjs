@@ -68,7 +68,7 @@ export function installExportDialog({
   const settings = document.createElement("dialog");
   settings.id = "export-settings-panel";
   settings.className = "export-settings-panel";
-  settings.innerHTML = `<form><div class="dialog-heading"><h2>导出设置</h2><button type="button" class="dialog-close" aria-label="关闭导出设置">×</button></div><label>图片分辨率（DPI）<input id="export-dpi" type="number" min="1" max="25400" required></label><label>PNG 压缩<select id="export-png-compression"><option value="fast">快速</option><option value="default">标准</option><option value="best">最小体积</option></select></label><label>TIFF 压缩<select id="export-tiff-compression"><option value="lzw">LZW</option><option value="deflate">Deflate</option><option value="packbits">PackBits</option><option value="none">不压缩</option></select></label><label>JPEG 质量<input id="export-jpeg-quality" type="number" min="1" max="100" required></label><label>不透明图片背景<input id="export-background" type="text" required placeholder="#ffffff"></label><p class="export-note">设置随作品保存。WebP 使用无损编码；SVG、PDF 保留矢量内容。PPTX 的复杂特效按此分辨率生成局部图片。</p><div class="export-actions"><button type="button" id="export-defaults">恢复默认</button><button type="submit" class="primary">保存设置</button></div></form>`;
+  settings.innerHTML = `<form><div class="dialog-heading"><h2>导出设置</h2><button type="button" class="dialog-close" aria-label="关闭导出设置">×</button></div><label>图片分辨率（DPI）<input id="export-dpi" type="number" min="1" max="25400" required></label><label>PNG 压缩<select id="export-png-compression"><option value="fast">快速</option><option value="default">标准</option><option value="best">最小体积</option></select></label><label>TIFF 压缩<select id="export-tiff-compression"><option value="lzw">LZW</option><option value="deflate">Deflate</option><option value="packbits">PackBits</option><option value="none">不压缩</option></select></label><label>JPEG 质量<input id="export-jpeg-quality" type="number" min="1" max="100" required></label><label>不透明图片背景<input id="export-background" type="text" required placeholder="#ffffff"></label><p class="export-note">设置随作品保存。WebP 使用无损编码；SVG、PDF 保留矢量内容。必要的渐变与特效按此分辨率生成局部图片。</p><div class="export-actions"><button type="button" id="export-defaults">恢复默认</button><button type="submit" class="primary">保存设置</button></div></form>`;
   root.append(settings);
   if (!manifest.editable) {
     el("export-png-compression").closest("label").hidden = true;
@@ -122,7 +122,7 @@ export function installExportDialog({
   const options = (format) => {
     const s = { ...defaults, ...manifest.exportSettings };
     return {
-      ...(format === "svg" && manifest.editable ? {} : { dpi: s.dpi }),
+      dpi: s.dpi,
       ...(format === "png" ? { compression: s.png } : {}),
       ...(format === "tif" ? { compression: s.tiff } : {}),
       ...(format === "jpg" ? { quality: s.jpeg } : {}),

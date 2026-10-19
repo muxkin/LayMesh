@@ -13,7 +13,7 @@
   "capability.untrustedWorkspaces": "Static language help is available; figure preview requires workspace trust.",
   "capability.virtualWorkspaces": "LayMesh uses a native executable and local resources in the extension host.",
   "command.exportFigure": "LayMesh: Export Figure",
-  "config.export.dpi": "Default raster export resolution and PDF image DPI cap.",
+  "config.export.dpi": "Raster export resolution, local SVG/PDF/PPTX fill/effect resolution and PDF image DPI cap.",
   "config.export.quality": "Default JPEG and lossy WebP quality.",
   "config.export.tiffCompression": "Default lossless TIFF compression.",
   "config.export.webpLossless": "Use lossless WebP export by default.",

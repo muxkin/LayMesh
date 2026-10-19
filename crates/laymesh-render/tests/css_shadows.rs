@@ -129,8 +129,20 @@ fn text_and_drop_shadow_use_content_alpha_and_distinct_blur_units() {
     assert_eq!(original["kind"], "path");
     assert_eq!(original["strokeStyle"]["color"], "#000000");
     assert_eq!(original["effects"][0]["blur"], 3.);
-    let error = render_export(&scene, "pdf", &Default::default()).unwrap_err();
-    assert!(error.message.contains("64MB"));
+    // The PDF device matrix already contains export DPI. Applying it twice
+    // incorrectly exhausted the tile budget even for this small default export.
+    render_export(&scene, "pdf", &Default::default()).unwrap();
+    assert!(
+        render_export(
+            &scene,
+            "pdf",
+            &ExportOptions {
+                dpi: Some(10000.),
+                ..Default::default()
+            }
+        )
+        .is_err()
+    );
     render_export(
         &scene,
         "pdf",

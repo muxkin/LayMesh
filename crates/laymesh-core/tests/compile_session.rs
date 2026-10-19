@@ -421,6 +421,33 @@ fn recorded_resource_reads_follow_replacement_missing_and_recovery() {
     }
 }
 #[test]
+fn layered_background_image_and_style_edits_match_fresh_compilation() {
+    let source = "p=canvas(size=(50mm,30mm))\nstyle{.a{background:linear-gradient(red,transparent),url(\"tile.svg\") center/cover no-repeat white}}\np.add(rect(size=(40mm,20mm),class=\"a\"))";
+    let mut session = CompileSession::new(false);
+    for (i, (color, css)) in [
+        ("blue", source.to_owned()),
+        ("lime", source.to_owned()),
+        (
+            "lime",
+            source.replace("red,transparent", "yellow,transparent"),
+        ),
+        ("blue", source.replace("cover", "contain")),
+        ("blue", source.to_owned()),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let mut host = Host::default();
+        host.files.insert("/tile.svg".into(),format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"10\"><rect width=\"20\" height=\"10\" fill=\"{color}\"/></svg>").into_bytes());
+        host.files
+            .insert("/main.lay".into(), css.as_bytes().to_vec());
+        session.sync_host(&host, i as u64 + 1).unwrap();
+        let actual = session.evaluate(&css, "/main.lay", None).unwrap();
+        let expected = compile_source(&css, "/main.lay", host).unwrap();
+        assert_eq!(scene(&actual), scene(&expected), "revision {i}");
+    }
+}
+#[test]
 fn independent_group_iterations_reuse_existing_constructions() {
     let source = "page=canvas(size=(80,50))\nfunction item(i) {g=group()\ng.add(path(commands=[move_to(0,0),cubic_to(2,i,3,4,5,6)]))\nreturn g}\nfor i in range(8) {page.add(item(i),offset=(i*8,0))}";
     let mut session = CompileSession::new(false);

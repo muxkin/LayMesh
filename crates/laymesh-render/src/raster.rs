@@ -28,7 +28,7 @@ pub struct PreparedRaster {
 }
 impl PreparedRaster {
     pub fn new(list: DisplayList) -> Result<Self> {
-        if list.schema_version != DISPLAY_LIST_VERSION {
+        if !supported_version(list.schema_version) {
             return Err(error("Unsupported drawing version"));
         }
         let images = Painter::new(&list)?.images;

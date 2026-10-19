@@ -1,5 +1,7 @@
 # Open Props: variables, parameters and complete catalog
 
+[Comparison gallery: original recipes, actual exports and reference differences](../benchmarks/gradients-2026-10-19/gallery.html)
+
 [Style and animation libraries](style-libraries.en.md)
 
 ## What it is and where it comes from
@@ -40,3 +42,11 @@ The catalog lists every declared variable and keyframe, including helpers and cu
 Catalog recipes give `rect` a low-specificity color and border so corners, opacity and motion are visible. Class declarations and variable consumers still cascade normally.
 
 <!-- style-catalog:open-props -->
+
+## All 30 gradient recipes
+
+The original `--gradient-1` through `--gradient-30` recipes are accepted without rewriting or splitting objects. The library’s `@supports` branch enables OKLab by default. To compare legacy interpolation, set `:root { --gradient-space: in srgb; }`. This changes the interpolation space without changing the recipes.
+
+<!-- source:examples/libraries/open-props-gradients.lay -->
+
+[Gradient semantics and exports](gradients.en.md)

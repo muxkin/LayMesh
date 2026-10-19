@@ -43,6 +43,26 @@ RGB 为 0–255，HSV 的 S/V 和 OKLCH 的 L 为 0–1，C 非负，alpha 为 0
 
 [最小完整源码](../../examples/manual/radial_gradient.lay) · [组合源码](../../examples/gallery/shapes/radial-gradient.lay) · [全部参数](interface-reference.zh-CN.md#radial_gradient)
 
+### conic_gradient
+
+创建圆锥渐变填充
+
+返回：paint
+
+必需输入：`stops`.
+
+[最小完整源码](../../examples/manual/conic_gradient.lay) · [组合源码](../../examples/manual/gradient-composition.lay) · [全部参数](interface-reference.zh-CN.md#conic_gradient)
+
+### gradient
+
+使用完整 CSS 渐变语法创建填充，支持重复渐变和颜色插值
+
+返回：paint
+
+必需输入：`css`.
+
+[最小完整源码](../../examples/manual/gradient.lay) · [组合源码](../../examples/manual/gradient-composition.lay) · [全部参数](interface-reference.zh-CN.md#gradient)
+
 ### hatch
 
 创建 slash/cross/dots 重复图案填充。spacing 和 line_width 为物理尺寸，图案限制在素材填充区域内。

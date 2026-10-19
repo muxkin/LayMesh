@@ -144,7 +144,7 @@ Use **LayMesh: Set Preview Delay** in the Command Palette to enter any integer f
 
 Version 0.5.0 includes PPTX export as **PowerPoint (PPTX)** in the format picker. Text and supported shapes remain editable; complex effects use reported local PNG fallback. DPI controls fallback only (default 1200), and fonts are not embedded.
 
-0.5.0 的格式列表支持 **PowerPoint (PPTX)**。文字和支持的形状可编辑，复杂效果局部回退为 PNG 并给出警告；DPI 仅控制回退图片（默认 1200），不嵌入字体。
+0.5.0 的格式列表支持 **PowerPoint (PPTX)**。文字和支持的形状可编辑，复杂效果局部回退为 PNG，正常回退保持静默；DPI 仅控制回退图片（默认 1200），不嵌入字体。
 
 打开 `.laydoc` 可预览独立 `.lay` 页面，通过页面选择器切换、打开页面源码、导出当前页或整本 PDF。编排语法与 Lay 相同，页面顺序由 `doc.add(page(...))` 决定。
 

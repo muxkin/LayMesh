@@ -694,12 +694,30 @@ impl Engine {
                 }
                 if !matches!(
                     u.as_str(),
-                    "" | "mm" | "cm" | "in" | "inch" | "pt" | "px" | "deg" | "rad" | "s" | "ms"
+                    "" | "mm"
+                        | "cm"
+                        | "in"
+                        | "inch"
+                        | "pt"
+                        | "px"
+                        | "deg"
+                        | "rad"
+                        | "grad"
+                        | "turn"
+                        | "s"
+                        | "ms"
                 ) {
                     return Err(self.error("E_UNIT", format!("未知单位 {u}"), l));
                 }
-                if u == "rad" {
-                    V::Number(n.to_degrees(), "deg".into())
+                if matches!(u.as_str(), "rad" | "grad" | "turn") {
+                    V::Number(
+                        match u.as_str() {
+                            "rad" => n.to_degrees(),
+                            "grad" => n * 0.9,
+                            _ => n * 360.,
+                        },
+                        "deg".into(),
+                    )
                 } else {
                     V::Number(*n, u.clone())
                 }
@@ -1475,6 +1493,31 @@ impl Engine {
                 l,
             )?;
             a.insert("__media_id".into(), V::text(id));
+        }
+        if name == "conic_gradient" {
+            if let Some(v) = a.get("angle") {
+                let V::Number(n, u) = v.value() else {
+                    return Err(self.error("E_PAINT", "angle requires an angle", l));
+                };
+                let text = if u.is_empty() {
+                    format!("{n}deg")
+                } else {
+                    format!("{n}{u}")
+                };
+                let degrees = crate::animation::values::angle(&text)
+                    .map_err(|m| self.error("E_PAINT", m, l))?
+                    .to_degrees();
+                a.insert("angle".into(), V::num(degrees));
+            }
+        }
+        if name == "gradient" {
+            let paint = crate::gradients::parse(
+                &string(&a, "css", ""),
+                self.css_context(&Args::new()),
+                "#000000",
+            )
+            .map_err(|m| self.error("E_PAINT", m, l))?;
+            return Ok(V::from_json(&paint));
         }
         if name == "image_fill" {
             let path = resolve(&self.file, &string(&a, "src", ""));

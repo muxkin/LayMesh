@@ -177,6 +177,27 @@ impl<'a> Painter<'a> {
                     )
                 }
             }
+            Paint::Conic {
+                center,
+                angle,
+                stops,
+                transform,
+            } => {
+                let colors: Vec<_> = stops.iter().map(|s| color(s.rgba)).collect();
+                let offsets: Vec<_> = stops.iter().map(|s| s.offset as f32).collect();
+                let rotation = Affine::translate((center[0], center[1]))
+                    * Affine::rotate(*angle - std::f64::consts::FRAC_PI_2)
+                    * Affine::translate((-center[0], -center[1]));
+                sk::gradient_shader::sweep(
+                    (center[0] as f32, center[1] as f32),
+                    colors.as_slice(),
+                    offsets.as_slice(),
+                    sk::TileMode::Clamp,
+                    None,
+                    None,
+                    &matrix(*transform * rotation),
+                )
+            }
             Paint::Pattern {
                 width,
                 height,
@@ -242,10 +263,16 @@ impl<'a> Painter<'a> {
         // PDF keeps subjects vector and rasterizes only explicit effect tiles.
         let tiles = if self.pdf && !node.effects.is_empty() {
             let m = c.local_to_device_as_3x3();
-            let scale = (m.scale_x() as f64)
-                .hypot(m.skew_y() as f64)
-                .max((m.skew_x() as f64).hypot(m.scale_y() as f64));
-            let tiles = crate::raster::effect_tiles(self.list, node, self.dpi / 72. * scale)?;
+            // SkPDF's device matrix already includes metadata.raster_dpi / 72.
+            let scale = crate::portable_svg::max_scale(Affine::new([
+                m.scale_x() as f64,
+                m.skew_y() as f64,
+                m.skew_x() as f64,
+                m.scale_y() as f64,
+                0.,
+                0.,
+            ]));
+            let tiles = crate::raster::effect_tiles(self.list, node, scale)?;
             self.effect_pixels += tiles
                 .iter()
                 .map(|t| t.pixels.width() as u64 * t.pixels.height() as u64)
@@ -389,6 +416,73 @@ impl<'a> Painter<'a> {
         c.restore_to_count(saved);
         Ok(())
     }
+    fn pdf_gradient_fill(&mut self, c: &sk::Canvas, node: &DrawNode) -> Result<()> {
+        let mut local = node.clone();
+        local.transform = kurbo::Affine::IDENTITY;
+        local.opacity = 1.;
+        local.effects.clear();
+        local.semantic = None;
+        if let DrawKind::Path { stroke, .. } = &mut local.kind {
+            *stroke = None;
+        }
+        let m = c.local_to_device_as_3x3();
+        let transform = kurbo::Affine::new([
+            m.scale_x() as f64,
+            m.skew_y() as f64,
+            m.skew_x() as f64,
+            m.scale_y() as f64,
+            0.,
+            0.,
+        ]);
+        let density = crate::portable_svg::max_scale(transform);
+        if density <= 0. {
+            return Ok(());
+        }
+        let b = local.local_bounds();
+        let b = kurbo::Rect::new(
+            (b.x0 * density + 1e-5).floor() / density,
+            (b.y0 * density + 1e-5).floor() / density,
+            (b.x1 * density - 1e-5).ceil() / density,
+            (b.y1 * density - 1e-5).ceil() / density,
+        );
+        if b.width() <= 0. || b.height() <= 0. {
+            return Ok(());
+        }
+        let (w, h) = crate::raster_dimensions(b.width(), b.height(), density * 25.4, "png")?;
+        self.effect_pixels += w as u64 * h as u64;
+        if self.effect_pixels > crate::raster::MAX_PIXELS {
+            return Err(error(
+                "PDF local fills/effects exceed the 100000000-pixel budget",
+            ));
+        }
+        let list = DisplayList {
+            nodes: vec![local],
+            ..self.list.clone()
+        };
+        let mut raster = crate::raster::PreparedRaster::new(list)?;
+        for y in (0..h).step_by(4096) {
+            for x in (0..w).step_by(4096) {
+                let tw = (w - x).min(4096);
+                let th = (h - y).min(4096);
+                let b = kurbo::Rect::new(
+                    b.x0 + x as f64 / density,
+                    b.y0 + y as f64 / density,
+                    b.x0 + (x + tw) as f64 / density,
+                    b.y0 + (y + th) as f64 / density,
+                );
+                let frame = raster.render_region(b, tw, th)?;
+                let image = rgba_image(tw, th, &frame.rgba)?;
+                c.draw_image_rect_with_sampling_options(
+                    image,
+                    None,
+                    rect(b),
+                    sk::SamplingOptions::new(sk::FilterMode::Linear, sk::MipmapMode::None),
+                    &sk::Paint::default(),
+                );
+            }
+        }
+        Ok(())
+    }
     pub fn content(
         &mut self,
         c: &sk::Canvas,
@@ -443,7 +537,30 @@ impl<'a> Painter<'a> {
                 even_odd,
             } => {
                 let p = path(p, *even_odd);
-                if let Paint::Pattern {
+                fn has_gradient(p: &Paint) -> bool {
+                    match p {
+                        Paint::Linear { .. } | Paint::Radial { .. } | Paint::Conic { .. } => true,
+                        Paint::Pattern { nodes, .. } => nodes.iter().any(
+                            |n| matches!(&n.kind,DrawKind::Path{fill,..} if has_gradient(fill)),
+                        ),
+                        _ => false,
+                    }
+                }
+                let local_pdf = match fill {
+                    Paint::Conic { .. } => true,
+                    Paint::Linear { spread, .. } => spread != "pad",
+                    Paint::Radial { spread, stops, .. } => {
+                        spread != "pad"
+                            || stops
+                                .windows(2)
+                                .any(|s| s[0].offset == s[1].offset && s[0].rgba != s[1].rgba)
+                    }
+                    Paint::Pattern { .. } => has_gradient(fill),
+                    _ => false,
+                };
+                if self.pdf && local_pdf {
+                    self.pdf_gradient_fill(c, node)?;
+                } else if let Paint::Pattern {
                     nodes, transform, ..
                 } = fill
                 {
