@@ -1,5 +1,7 @@
 # 0.7.2
 
+- Avoid same-millisecond file timestamp false positives during media preview preparation.
+
 - Complete CSS gradients and layered backgrounds, including conic/repeating gradients, color interpolation and retained background colors.
 - Add `gradient(css=...)` and `conic_gradient(...)` paint completion.
 - Share display list v2 across previews, retain v1 compatibility, and keep normal local export fallbacks silent.
