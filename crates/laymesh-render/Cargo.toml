@@ -19,9 +19,12 @@ kurbo = { version = "0.13", features = ["serde"] }
 serde.workspace = true
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "bmp", "gif", "ico", "pnm", "tga", "webp", "tiff"] }
 usvg = { version = "=0.47.0", default-features = false, features = ["text"] }
+resvg = { version = "=0.47.0", default-features = false, features = ["raster-images"] }
 tiff = { version = "=0.11.3", optional = true }
 webp = { version = "=0.3.1", default-features = false, optional = true }
 roxmltree = "0.21"
+earcutr = "0.5"
+i_overlay = "4.0"
 zip = { version = "=2.4.2", default-features = false, features = ["deflate"], optional = true }
 svgtypes = "0.16"
 skia-safe = { version = "=0.153.3", default-features = false, features = ["binary-cache", "pdf", "jpeg"], optional = true }

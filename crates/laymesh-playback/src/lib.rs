@@ -2,6 +2,13 @@
 use serde_json::json;
 use std::{cell::RefCell, collections::BTreeMap};
 use wasm_bindgen::prelude::*;
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub fn rendering_memory_stats() -> Vec<f64> {
+    laymesh_render::allocation_stats()
+        .map(|v| v as f64)
+        .to_vec()
+}
 thread_local! {
     static DRAW_RESOURCES: RefCell<BTreeMap<String, std::sync::Arc<Vec<u8>>>> = RefCell::new(BTreeMap::new());
 }
@@ -133,4 +140,58 @@ fn resolve_resources(
         }
         Ok::<(), JsValue>(())
     })
+}
+
+/// Shared object-local 3D rasterizer; the host supplies its 2D subject texture.
+#[wasm_bindgen]
+pub fn raster_surface3d(
+    mesh: &str,
+    texture: &[u8],
+    tw: u32,
+    th: u32,
+    region: &[f64],
+    width: u32,
+    height: u32,
+) -> Result<Vec<u8>, JsValue> {
+    let mesh: laymesh_render::surface3d::Mesh = serde_json::from_str(mesh).map_err(js_error)?;
+    let region: [f64; 4] = region
+        .try_into()
+        .map_err(|_| js_error("Invalid surface region"))?;
+    laymesh_render::surface3d::raster(&mesh, texture, tw, th, region, width, height)
+        .map_err(js_error)
+}
+
+#[wasm_bindgen]
+pub fn surface_texture_region(
+    mesh: &str,
+    region: &[f64],
+    density: f64,
+) -> Result<Vec<f64>, JsValue> {
+    let mesh: laymesh_render::surface3d::Mesh = serde_json::from_str(mesh).map_err(js_error)?;
+    let region: [f64; 4] = region
+        .try_into()
+        .map_err(|_| js_error("Invalid surface region"))?;
+    Ok(
+        laymesh_render::surface3d::texture_region(&mesh, region, density)
+            .map_or_else(Vec::new, |r| r.to_vec()),
+    )
+}
+
+/// Rebuild curved object geometry for the actual projected pixel density.
+#[wasm_bindgen]
+pub fn refine_surface3d(mesh: &str, density: f64) -> Result<String, JsValue> {
+    let mesh: laymesh_render::surface3d::Mesh = serde_json::from_str(mesh).map_err(js_error)?;
+    let mesh = laymesh_render::surface3d::refine(&mesh, density).map_err(js_error)?;
+    serde_json::to_string(&mesh).map_err(js_error)
+}
+#[wasm_bindgen]
+pub fn surface_material_texture(
+    texture: &[u8],
+    coverage: &[u8],
+    width: u32,
+    height: u32,
+    material_alpha: Option<f64>,
+) -> Result<Vec<u8>, JsValue> {
+    laymesh_render::surface3d::material_texture(texture, coverage, width, height, material_alpha)
+        .map_err(js_error)
 }

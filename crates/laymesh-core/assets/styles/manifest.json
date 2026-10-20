@@ -30,5 +30,13 @@
     "sha256": "e87d2ad97abe5aa05539b216b4e8207346706ecd5042f8434c0794a30821c569",
     "license": "MIT, BSD-2-Clause, BSD-3-Clause",
     "license_source": "https://github.com/gl-transitions/gl-transitions/blob/master/LICENSE"
+  },
+  {
+    "name": "effects",
+    "version": "1.0.0",
+    "source": "https://github.com/muxkin/LayMesh/blob/main/crates/laymesh-core/assets/styles/effects.css",
+    "sha256": "df40cf246479ec2790ab792b7332547605c90e844c065c522333d34979081dcc",
+    "license": "MIT",
+    "license_source": "https://github.com/muxkin/LayMesh/blob/main/LICENSE"
   }
 ]

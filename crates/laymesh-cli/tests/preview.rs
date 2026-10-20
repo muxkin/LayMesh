@@ -346,7 +346,10 @@ fn canvas_protocol_resources_survive_text_edits_without_svg_fallback() {
     assert_eq!(results[1]["protocol"], 3);
     assert_eq!(results[1]["generation"], 7);
     assert!(results[1].get("svg").is_none());
-    assert_eq!(results[1]["displayList"]["schemaVersion"], 2);
+    assert_eq!(
+        results[1]["displayList"]["schemaVersion"],
+        laymesh_render::display_list::DISPLAY_LIST_VERSION
+    );
     assert!(results[1]["inspection"]["page"].is_object());
     assert!(results[2]["error"].is_object());
     assert!(results[2].get("svg").is_none());

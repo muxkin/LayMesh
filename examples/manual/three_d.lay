@@ -1,0 +1,2 @@
+p=canvas(size=(70mm,60mm),background="#ffffff")
+p.add(rect(size=(30mm,20mm),fill="#dcad66",three_d=three_d(depth=5mm,rotation=(20deg,-30deg,0deg),bevel_top=(2mm,1mm),bevel_bottom=(1mm,0.5mm),material="metal"),effects=[soft_edge(radius=0.15mm),reflection(distance=1mm,length=0.6)]),offset=(18mm,12mm))

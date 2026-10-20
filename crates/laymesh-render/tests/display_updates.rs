@@ -152,6 +152,8 @@ fn clips_transforms_effects_and_two_accumulated_updates_remain_correct() {
     compare(&mut prepared, &scene, rect, 384, 192);
     let old = scene.clone();
     scene.nodes[0].effects.push(Effect {
+        reflection: None,
+        soft_edge: None,
         inner: false,
         blur: 0.17,
         spread: 0.03,

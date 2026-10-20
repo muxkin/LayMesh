@@ -23,7 +23,10 @@ fn effect_halo(n: &DrawNode) -> f64 {
     let own = n
         .effects
         .iter()
-        .map(|e| 4. * e.blur + e.spread.abs() + e.offset[0].abs().max(e.offset[1].abs()))
+        .map(|e| {
+            (4. * e.blur + e.spread.abs() + e.offset[0].abs().max(e.offset[1].abs()))
+                .max(2.5 * e.soft_edge.unwrap_or(0.))
+        })
         .fold(0., f64::max);
     let child = if let DrawKind::Group { children, mask, .. } = &n.kind {
         children
@@ -212,11 +215,22 @@ impl Writer<'_> {
     }
     fn layer(&mut self, node: &DrawNode, transform: Affine, inner: Option<bool>) -> Result<String> {
         if let Some(inner) = inner {
-            if node.effects.len() > 1 {
+            if node
+                .effects
+                .iter()
+                .filter(|e| e.soft_edge.is_none() && e.inner == inner)
+                .count()
+                > 1
+            {
                 let mut body = String::new();
-                for effect in node.effects.iter().filter(|e| e.inner == inner) {
+                for effect in node
+                    .effects
+                    .iter()
+                    .filter(|e| e.soft_edge.is_none() && e.inner == inner)
+                {
                     let mut single = node.clone();
-                    single.effects = vec![effect.clone()];
+                    single.effects.retain(|e| e.soft_edge.is_some());
+                    single.effects.push(effect.clone());
                     body += &self.layer(&single, transform, Some(inner))?;
                 }
                 return Ok(body);
@@ -271,6 +285,25 @@ impl Writer<'_> {
             return Ok(String::new());
         }
         let t = parent * n.transform;
+        if n.hint["surface3d"].is_object()
+            || (self.pdf && n.effects.iter().any(|e| e.soft_edge.is_some()))
+        {
+            let mut subject = n.clone();
+            subject.effects.retain(|e| e.soft_edge.is_some());
+            let mut body = String::new();
+            if n.effects.iter().any(|e| e.soft_edge.is_none() && !e.inner) {
+                body += &self.layer(n, t, Some(false))?;
+            }
+            body += &self.layer(&subject, t, None)?;
+            if n.effects.iter().any(|e| e.soft_edge.is_none() && e.inner) {
+                body += &self.layer(n, t, Some(true))?;
+            }
+            return Ok(format!(
+                "<g transform='{}' opacity='{}'>{body}</g>",
+                matrix(n.transform),
+                n.opacity
+            ));
+        }
         let body = match &n.kind {
             DrawKind::Group {
                 children,
@@ -374,7 +407,7 @@ impl Writer<'_> {
             back + &body + &front
         } else {
             let b = n.local_bounds();
-            let effects=n.effects.iter().map(|e|json!({"mode":if e.inner{"inner"}else{"outer"},"blur":e.blur,"spread":e.spread,"offset":e.offset,"color":rgb(e.rgba),"opacity":e.rgba[3],"sourcePath":e.source_path.as_ref().map(|p|p.to_svg()),"knockout":e.knockout})).collect::<Vec<_>>();
+            let effects=n.effects.iter().map(|e| if let Some(radius)=e.soft_edge {json!({"kind":"soft_edge","radius":radius})} else if let Some(r)=&e.reflection {json!({"kind":"reflection","distance":r.distance,"length":r.length,"opacity":r.opacity,"fade":r.fade,"blur":e.blur})} else {json!({"mode":if e.inner{"inner"}else{"outer"},"blur":e.blur,"spread":e.spread,"offset":e.offset,"color":rgb(e.rgba),"opacity":e.rgba[3],"sourcePath":e.source_path.as_ref().map(|p|p.to_svg()),"knockout":e.knockout})}).collect::<Vec<_>>();
             effects::apply(
                 &json!({"subjectBounds":{"x":b.x0,"y":b.y0,"width":b.width(),"height":b.height()},"effects":effects}),
                 body,

@@ -60,11 +60,15 @@ s.animate(a,name="move",duration=1s,easing="linear",fill="both")`;
      const other=structuredClone(list);other.nodes[1].opacity=.4;await r.install('b',other,id=>draw.resource_bytes(id));
      for(const [w,h]of [[800,600],[1000,450]])for(const name of ['fade','Directional','InvertedPageCurl'])for(const reverse of [false,true]){
       r.render('a',w,h,{},false);r.skia.transitions.capture({name,durationMs:100,easing:{Bezier:[0,0,1,1]},params:{direction:[1,0]}},reverse);
-      r.render('b',w,h,{},false);checkTransitions=true;
-      const result=await r.skia.transitions.play();checkTransitions=false;
+      const deferred=!!r.skia.surface.flushDrawing,displayed=deferred?canvas.getContext('2d').getImageData(0,0,w,h).data:null;
+      r.render('b',w,h,{},false,null,true,!deferred);
+      if(deferred){const after=canvas.getContext('2d').getImageData(0,0,w,h).data;if(displayed.some((v,i)=>v!==after[i]))throw Error('Target frame was displayed before transition');}
+      const previousChecks=transitionChecks;checkTransitions=true;
+      const result=await r.skia.transitions.play(false,()=>{},deferred);checkTransitions=false;
       if(result.transitionRasterSize?.[0]!==w||result.transitionRasterSize?.[1]!==h)throw Error('Transition reduced display resolution');
       if(result.transitionError)throw Error(result.transitionError);
-      if(result.transitionFrames<1)throw Error('No intermediate transition frame');checkPixels();
+      if(result.transitionFrames<1)throw Error('No intermediate transition frame');
+      if(transitionChecks-previousChecks!==result.transitionFrames+Number(!deferred))throw Error('Transition presented its terminal frame more than once');checkPixels();
      }
      r.retain(new Set(['a']));if(r.skia.transitions.effects.size)throw Error('Unused transition effects remained');
      out.push({retainedTransitionEffects:12,entryFrameMatches:true,backend:r.skia.backend,viewports:3,animationPoses:5,transitions:12,transitionPixelChecks:transitionChecks});r.dispose();

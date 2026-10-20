@@ -387,3 +387,8 @@ This map covers public functions, geometry members, LCSS properties and integrat
 | `css:background-size` | [→](style-properties.en.md#background-size) | [→](../../examples/manual/gradient-composition.lay) | [→](../../examples/manual/gradient-composition.lay) |
 | `css:background-position` | [→](style-properties.en.md#background-position) | [→](../../examples/manual/gradient-composition.lay) | [→](../../examples/manual/gradient-composition.lay) |
 | `css:background-repeat` | [→](style-properties.en.md#background-repeat) | [→](../../examples/manual/gradient-composition.lay) | [→](../../examples/manual/gradient-composition.lay) |
+| `api:reflection` | [→](art-effects.en.md#reflection) | [→](../../examples/manual/reflection.lay) | [→](../../examples/manual/three_d.lay) |
+| `api:soft_edge` | [→](art-effects.en.md#soft_edge) | [→](../../examples/manual/soft_edge.lay) | [→](../../examples/manual/three_d.lay) |
+| `api:three_d` | [→](art-effects.en.md#three_d) | [→](../../examples/manual/three_d.lay) | [→](../../examples/manual/three_d.lay) |
+| `lcss:three_d` | [→](art-effects.en.md#three_d) | [→](../../examples/manual/three_d.lay) | [→](../../examples/effects/object-3d.lay) |
+| `css:three-d` | [→](art-effects.en.md#three_d) | [→](../../examples/manual/three_d.lay) | [→](../../examples/effects/object-3d.lay) |

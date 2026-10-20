@@ -10,7 +10,7 @@ from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('native_cdp',ROOT/'scripts/smoke-browser.py')
 native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--normal-host',action='store_true',help='Use a fixture extension in a normal host so native confirmation dialogs are allowed');p.add_argument('--block-worker-resource-fetch',action='store_true',help='Return HTTP 408 for extension resource requests inside blob workers');p.add_argument('--page-transitions',action='store_true');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--normal-host',action='store_true',help='Use a fixture extension in a normal host so native confirmation dialogs are allowed');p.add_argument('--block-worker-resource-fetch',action='store_true',help='Return HTTP 408 for extension resource requests inside blob workers');p.add_argument('--page-transitions',action='store_true');p.add_argument('--object-effects',action='store_true');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup_errors=True) as temp:
  profile=Path(temp);gate=profile/'gate.json';evidence=profile/'evidence.json'
  extension=a.extension_dir.resolve()
@@ -30,6 +30,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
  transparent=profile/'透明.png';Image.new('RGBA',(20,10),(255,0,0,128)).save(transparent)
  high=profile/'16位.png';Image.new('I;16',(20,10),35000).save(high)
  env={**os.environ,'LAYMESH_PREVIEW_GATE':str(gate),'LAYMESH_PREVIEW_EVIDENCE':str(evidence),'LAYMESH_PREVIEW_BMP':str(bmp),'LAYMESH_PREVIEW_TRANSPARENT':str(transparent),'LAYMESH_PREVIEW_16BIT':str(high),'LAYMESH_PREVIEW_NORMAL_HOST':'1' if a.normal_host else ''};env.pop('ELECTRON_RUN_AS_NODE',None)
+ if a.object_effects:env['LAYMESH_PREVIEW_OBJECT_EFFECTS']='1'
  if a.page_transitions:env['LAYMESH_PREVIEW_TRANSITIONS']='1'
  command=[a.code,'--no-sandbox','--disable-gpu','--disable-updates','--ozone-platform=headless','--force-device-scale-factor=2','--remote-debugging-port='+str(port),'--remote-allow-origins=*','--user-data-dir='+str(profile/'profile'),'--extensions-dir='+str(profile/'extensions'),'--extensionDevelopmentPath='+str(extension),'--extensionTestsPath='+str(ROOT/'scripts/vscode-preview.cjs'),'--skip-welcome','--skip-release-notes','--new-window']
  if a.normal_host:
@@ -297,6 +298,15 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
      screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'academic-dense.png').write_bytes(base64.b64decode(screenshot['data']))
    evaluate("(()=>{d.defaultView.laymeshPresentation.close();return true})()");wait("!d.querySelector('.presentation')")
    phase('academic-verified')
+  if a.object_effects:
+   wait_phase('object-effects-ready');c=until(attach,'Object effects preview iframe')
+   root.call('Emulation.setDeviceMetricsOverride',{'width':1440,'height':1000,'deviceScaleFactor':2,'mobile':False})
+   wait("d.querySelector('.preview').dataset.painted==='true'")
+   evaluate("(()=>{d.querySelector('[data-action=fit]').click();return true})()")
+   until(stable_layout,'Stable object effects composition')
+   screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False});(a.output/'object-effects.png').write_bytes(base64.b64decode(screenshot['data']))
+   assert evaluate("d.querySelector('.error-location').hidden")
+   phase('object-effects-verified')
   wait_phase('complete')
   host.wait(timeout=20)
   assert host.returncode==0
@@ -304,6 +314,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   result['ui']['documents']={'page_selector':True,'formula_edit_visible':True,'reordering_preserves_page_id':True,'whole_pdf_direct_save_dialog':True,'console_errors':document_errors}
   result['ui']['page_transition_verified']=a.page_transitions
   result['ui']['worker_resource_fetch_blocked']=a.block_worker_resource_fetch
+  result['ui']['object_effects_fixture']=a.object_effects
   result['ui']['native_ffmpeg_confirmation']=a.normal_host
   if a.normal_host:result['ui']['normal_host_shutdown']={'command':'workbench.action.quit','exit_code':host.returncode}
   result['ui']['toolbar']={'single_line':True,'joined_present_button':True,'refresh':True,'page_arrows':True,'footer_step_buttons':3,'playback_visibility_toggle':False}

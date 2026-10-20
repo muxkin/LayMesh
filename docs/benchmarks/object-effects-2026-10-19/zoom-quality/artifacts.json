@@ -1,0 +1,16 @@
+{
+  "artifacts": [
+    {
+      "file": "combined-effects.zip.html",
+      "bytes": 12131411,
+      "sha256": "af0a95b30064bdf68274dccf85eff03c8bf2fe15d778a39f3d65c20522291f46"
+    },
+    {
+      "file": "effects-30-presets.zip.html",
+      "bytes": 11635333,
+      "sha256": "a2f6a62031fb37f2152d3894eff842467133b1a8b9f4459a94e00c01389236df"
+    }
+  ],
+  "runtimeSha256": "5c7ec66c0bb4baab92f9aa33688747bccdee88c55eff41c057dec39c18f5e805",
+  "published": false
+}

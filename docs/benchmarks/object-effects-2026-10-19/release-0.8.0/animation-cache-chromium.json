@@ -1,0 +1,363 @@
+{
+  "status": "passed",
+  "engine": "chromium",
+  "reference": "current-direct",
+  "result": [
+    {
+      "backend": "Skia WebGL2 (software driver)",
+      "time": 0,
+      "objects": [
+        {
+          "region": [
+            0,
+            0,
+            540,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.011748113854595336,
+            "max": 1,
+            "over8": 0
+          }
+        },
+        {
+          "region": [
+            540,
+            0,
+            960,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.029802689594356262,
+            "max": 2,
+            "over8": 0
+          }
+        }
+      ]
+    },
+    {
+      "backend": "Skia WebGL2 (software driver)",
+      "time": 0.5,
+      "objects": [
+        {
+          "region": [
+            0,
+            0,
+            540,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.021873285322359395,
+            "max": 2,
+            "over8": 0
+          }
+        },
+        {
+          "region": [
+            540,
+            0,
+            960,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.029802689594356262,
+            "max": 2,
+            "over8": 0
+          }
+        }
+      ]
+    },
+    {
+      "backend": "Skia WebGL2 (software driver)",
+      "time": 1,
+      "objects": [
+        {
+          "region": [
+            0,
+            0,
+            540,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.03271947873799726,
+            "max": 3,
+            "over8": 0
+          }
+        },
+        {
+          "region": [
+            540,
+            0,
+            960,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.029802689594356262,
+            "max": 2,
+            "over8": 0
+          }
+        }
+      ]
+    },
+    {
+      "backend": "Skia WebGL2 (software driver)",
+      "time": 4,
+      "objects": [
+        {
+          "region": [
+            0,
+            0,
+            540,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.03271947873799726,
+            "max": 3,
+            "over8": 0
+          }
+        },
+        {
+          "region": [
+            540,
+            0,
+            960,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.029802689594356262,
+            "max": 2,
+            "over8": 0
+          }
+        }
+      ]
+    },
+    {
+      "backend": "Skia WebGL2 (software driver)",
+      "device": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "scratchSamples": 4,
+      "retainedSamples": 1,
+      "cancellationResumed": true,
+      "partialRetainedBytes": 324480,
+      "preparedBytes": 1075360,
+      "settledBytes": 1075360
+    },
+    {
+      "backend": "Skia CPU",
+      "time": 0,
+      "objects": [
+        {
+          "region": [
+            0,
+            0,
+            540,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.000977366255144033,
+            "max": 1,
+            "over8": 0
+          }
+        },
+        {
+          "region": [
+            540,
+            0,
+            960,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.07919973544973545,
+            "max": 22,
+            "over8": 5.9523809523809524e-05
+          }
+        }
+      ]
+    },
+    {
+      "backend": "Skia CPU",
+      "time": 0.5,
+      "objects": [
+        {
+          "region": [
+            0,
+            0,
+            540,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.0009885116598079562,
+            "max": 1,
+            "over8": 0
+          }
+        },
+        {
+          "region": [
+            540,
+            0,
+            960,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.07919973544973545,
+            "max": 22,
+            "over8": 5.9523809523809524e-05
+          }
+        }
+      ]
+    },
+    {
+      "backend": "Skia CPU",
+      "time": 1,
+      "objects": [
+        {
+          "region": [
+            0,
+            0,
+            540,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.001337448559670782,
+            "max": 1,
+            "over8": 0
+          }
+        },
+        {
+          "region": [
+            540,
+            0,
+            960,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.07919973544973545,
+            "max": 22,
+            "over8": 5.9523809523809524e-05
+          }
+        }
+      ]
+    },
+    {
+      "backend": "Skia CPU",
+      "time": 4,
+      "objects": [
+        {
+          "region": [
+            0,
+            0,
+            540,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.001337448559670782,
+            "max": 1,
+            "over8": 0
+          }
+        },
+        {
+          "region": [
+            540,
+            0,
+            960,
+            540
+          ],
+          "boundsCorrection": {
+            "mean": 0,
+            "max": 0,
+            "over8": 0
+          },
+          "cached": {
+            "mean": 0.07919973544973545,
+            "max": 22,
+            "over8": 5.9523809523809524e-05
+          }
+        }
+      ]
+    },
+    {
+      "backend": "Skia CPU",
+      "device": "",
+      "scratchSamples": 0,
+      "retainedSamples": 1,
+      "cancellationResumed": true,
+      "preparedBytes": 1084736,
+      "settledBytes": 1084736
+    }
+  ],
+  "errors": []
+}

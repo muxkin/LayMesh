@@ -48,6 +48,21 @@ pub(crate) fn effect_bounds(node: &Json) -> Rect {
         1.
     };
     for e in node["effects"].as_array().into_iter().flatten() {
+        if e["kind"] == "soft_edge" {
+            continue;
+        }
+        if e["kind"] == "reflection" {
+            out = out.union(
+                Rect::new(
+                    b.x0,
+                    b.y1 + jnum(e, "distance", 1.),
+                    b.x1,
+                    b.y1 + jnum(e, "distance", 1.) + b.height() * jnum(e, "length", 0.5),
+                )
+                .inflate(4. * jnum(e, "blur", 0.), 4. * jnum(e, "blur", 0.)),
+            );
+            continue;
+        }
         if e["mode"] == "inner" {
             continue;
         }
@@ -57,15 +72,46 @@ pub(crate) fn effect_bounds(node: &Json) -> Rect {
     }
     out
 }
-pub(crate) fn apply(node: &Json, body: String, defs: &mut Vec<String>) -> String {
+pub(crate) fn apply(node: &Json, mut body: String, defs: &mut Vec<String>) -> String {
     if !node["effects"].as_array().is_some_and(|e| !e.is_empty()) {
         return body;
     }
     let mut back = String::new();
     let mut front = String::new();
     let bbox = local_bounds(node);
+    let radius = node["effects"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter(|e| e["kind"] == "soft_edge")
+        .map(|e| jnum(e, "radius", 1.))
+        .fold(0., f64::max);
+    if radius > 0. {
+        let id = format!("soft-edge-{}", defs.len());
+        defs.push(format!("<filter id='{id}' color-interpolation-filters='sRGB'><feMorphology in='SourceAlpha' operator='erode' radius='{}' result='mask'/><feGaussianBlur in='mask' stdDeviation='{}' result='mask'/><feComposite in='SourceGraphic' in2='mask' operator='in'/></filter>",radius/2.,radius/2.));
+        body = format!("<g filter='url(#{id})'>{body}</g>");
+    }
     for e in node["effects"].as_array().into_iter().flatten() {
+        if e["kind"] == "soft_edge" {
+            continue;
+        }
         let id = format!("effect-{}", defs.len());
+        if e["kind"] == "reflection" {
+            let y = bbox.y1 + jnum(e, "distance", 1.);
+            let height = bbox.height() * jnum(e, "length", 0.5);
+            if height <= 0. {
+                continue;
+            }
+            let opacity = jnum(e, "opacity", 0.4);
+            let end = opacity * (1. - jnum(e, "fade", 1.));
+            let blur = jnum(e, "blur", 0.);
+            defs.push(format!("<linearGradient id='{id}-fade' gradientUnits='userSpaceOnUse' x1='0' y1='{y}' x2='0' y2='{}'><stop stop-color='white' stop-opacity='{opacity}'/><stop offset='1' stop-color='white' stop-opacity='{end}'/></linearGradient><mask id='{id}-mask' maskUnits='userSpaceOnUse' x='{}' y='{y}' width='{}' height='{height}'><rect x='{}' y='{y}' width='{}' height='{height}' fill='url(#{id}-fade)'/></mask><filter id='{id}-blur' x='-100%' y='-100%' width='300%' height='300%' color-interpolation-filters='sRGB'><feGaussianBlur stdDeviation='{blur}'/></filter>",y+height,bbox.x0,bbox.width(),bbox.x0,bbox.width()));
+            back += &format!(
+                "<g data-laymesh-effect='true' filter='url(#{id}-blur)'><g mask='url(#{id}-mask)'><g transform='translate(0 {}) scale(1 -1)'>{body}</g></g></g>",
+                y + bbox.y1
+            );
+            continue;
+        }
         let inner = e["mode"] == "inner";
         let blur = jnum(e, "blur", 1.);
         let spread = jnum(e, "spread", 0.);

@@ -1,0 +1,33 @@
+# 同一对象：three_d 决定几何，effects 组合柔边、倒影、阴影与发光。
+# 试着修改 depth、rotation、material 或 effects 中的参数。
+# 多对象组合：组内每个对象独立三维，组的 rotation 是现有二维放置旋转。
+p=canvas(size=(240mm,190mm),background="#f5f7fb")
+p.add(text("Effects, combined",font_size=9mm,color="#18324d"),offset=(12mm,8mm))
+p.add(text("Editable geometry + layered decoration + independent objects",font_size=3.6mm,color="#61738c"),offset=(12mm,24mm))
+
+p.add(text("01 / Bevel + metal + reflection",font_size=4mm,color="#18324d"),offset=(14mm,39mm))
+p.add(rect(size=(51mm,29mm),border_radius=4mm,
+    fill=linear_gradient(stops=[(0,"#4ec9b0"),(1,"#23889c")]),
+    three_d=three_d(depth=5mm,rotation=(20deg,-28deg,-5deg),bevel_top=(1.5mm,1mm),bevel_bottom=(0.7mm,0.7mm),material="metal"),
+    effects=[shadow(color="#17354d",blur=1.2mm,offset=(1mm,2mm),opacity=0.3),glow(color="#6de7c4",blur=0.6mm,opacity=0.45),reflection(distance=2mm,length=0.55,opacity=0.4,blur=0.25mm)]),offset=(37mm,55mm))
+
+p.add(text("02 / Type + soft edge + glow",font_size=4mm,color="#18324d"),offset=(132mm,39mm))
+p.add(text("OB8",font_family="../../tests/fonts/DejaVuSans.ttf",font_size=20mm,text_fill="#7064ba",text_stroke_color="#44347d",text_stroke_width=0.2mm,
+    three_d=three_d(depth=3mm,rotation=(15deg,-25deg,0deg),material="plastic"),
+    effects=[soft_edge(radius=0.25mm),glow(color="#ad8bf0",blur=1mm,opacity=0.6),shadow(color="#403559",blur=0.7mm,offset=(0.7mm,1mm),opacity=0.25),reflection(distance=1mm,length=0.55,opacity=0.4)]),offset=(154mm,55mm))
+
+p.add(text("03 / Cropped image + soft mirror",font_size=4mm,color="#18324d"),offset=(14mm,110mm))
+p.add(image(src="../gallery/assets/sample.png",size=(53mm,31mm),border_radius=4mm,
+    three_d=three_d(depth=2mm,rotation=(18deg,-25deg,5deg),projection="perspective",distance=130mm),
+    effects=[soft_edge(radius=0.3mm),shadow(blur=1mm,offset=(1mm,2mm),opacity=0.3),reflection(distance=1.5mm,length=0.4,opacity=0.35,blur=0.4mm)]),crop=box(offset=(0.15,0.1),size=(0.7,0.8)),offset=(35mm,126mm))
+
+p.add(text("04 / Group of independent 3D objects",font_size=4mm,color="#18324d"),offset=(132mm,110mm))
+badge=group()
+badge.add(rect(size=(55mm,32mm),border_radius=4mm,fill="#edb85c",
+    three_d=three_d(depth=4mm,rotation=(20deg,-24deg,0deg),bevel_top=(1.3mm,1mm),material="plastic"),
+    effects=[shadow(blur=1.2mm,offset=(1mm,2mm),opacity=0.3)]))
+badge.add(text("LM",font_family="../../tests/fonts/DejaVuSans.ttf",font_size=12mm,color="#fff7e4",
+    three_d=three_d(depth=1.5mm,rotation=(20deg,-24deg,0deg),material="matte"),
+    effects=[shadow(blur=0.4mm,offset=(0.3mm,0.5mm),opacity=0.4)]),offset=(13mm,8mm))
+p.add(badge,offset=(155mm,128mm),rotation=-6deg)
+p.add(text("Edit the .lay source, adjust a parameter, and save your own editable copy.",font_size=3.4mm,color="#61738c"),offset=(12mm,180mm))

@@ -1,0 +1,11 @@
+{
+  "errors": [],
+  "checks": [
+    "30 visible presets",
+    "six family filters",
+    "source disclosure",
+    "source download",
+    "desktop and mobile layout"
+  ],
+  "status": "passed"
+}

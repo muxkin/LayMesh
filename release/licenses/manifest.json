@@ -902,6 +902,18 @@
     ]
   },
   {
+    "name": "earcutr",
+    "version": "0.5.0",
+    "license": "ISC",
+    "repository": "https://github.com/frewsxcv/earcutr/",
+    "texts": [
+      {
+        "file": "earcutr-0.5.0-LICENSE",
+        "sha256": "ac0e50e523dd0ea36f077c373833f1ae6c7ad130ea5ac6ff23bfa8d3f402145f"
+      }
+    ]
+  },
+  {
     "name": "ecb",
     "version": "0.1.2",
     "license": "MIT",
@@ -1820,6 +1832,22 @@
       },
       {
         "file": "itertools-0.13.0-LICENSE-MIT",
+        "sha256": "7576269ea71f767b99297934c0b2367532690f8c4badc695edf8e04ab6a1e545"
+      }
+    ]
+  },
+  {
+    "name": "itertools",
+    "version": "0.14.0",
+    "license": "MIT OR Apache-2.0",
+    "repository": "https://github.com/rust-itertools/itertools",
+    "texts": [
+      {
+        "file": "itertools-0.14.0-LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "file": "itertools-0.14.0-LICENSE-MIT",
         "sha256": "7576269ea71f767b99297934c0b2367532690f8c4badc695edf8e04ab6a1e545"
       }
     ]
@@ -3060,6 +3088,34 @@
     ]
   },
   {
+    "name": "resvg",
+    "version": "0.47.0",
+    "license": "Apache-2.0 OR MIT",
+    "repository": "https://github.com/linebender/resvg",
+    "texts": [
+      {
+        "file": "resvg-0.47.0-LICENSE-APACHE",
+        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+      },
+      {
+        "file": "resvg-0.47.0-LICENSE-MIT",
+        "sha256": "f5d934dc281b44e0003ee461ac740b18b6629a454decd872c774d34e4ee0b21d"
+      }
+    ]
+  },
+  {
+    "name": "rgb",
+    "version": "0.8.53",
+    "license": "MIT",
+    "repository": "https://github.com/kornelski/rust-rgb",
+    "texts": [
+      {
+        "file": "rgb-0.8.53-LICENSE",
+        "sha256": "457b464bc0fba8a3d67d2458569104f5611869f0c1563a1a12d9c51a0bca9261"
+      }
+    ]
+  },
+  {
     "name": "ring",
     "version": "0.17.14",
     "license": "Apache-2.0 AND ISC",
@@ -3898,6 +3954,18 @@
       {
         "file": "tiff-0.11.3-LICENSE",
         "sha256": "20c097d0de27e2adc179140a3d542091951a030699c7e1c78655f2a2d08d4e3e"
+      }
+    ]
+  },
+  {
+    "name": "tiny-skia",
+    "version": "0.12.0",
+    "license": "BSD-3-Clause",
+    "repository": "https://github.com/linebender/tiny-skia",
+    "texts": [
+      {
+        "file": "tiny-skia-0.12.0-LICENSE",
+        "sha256": "6d41e05f1d54fe726997cb0334ec539f1dff50600b1d5d90462ec2b392770ced"
       }
     ]
   },
@@ -5366,6 +5434,20 @@
         "file": "css-gl-transitions-LICENSE.txt",
         "sha256": "c464072d61c35f40c9e826fde36f0e569f6dcd987e8509a1ea8492542db2c930",
         "source": "https://github.com/gl-transitions/gl-transitions/blob/master/LICENSE"
+      }
+    ]
+  },
+  {
+    "name": "effects CSS",
+    "version": "1.0.0",
+    "license": "MIT",
+    "repository": "https://github.com/muxkin/LayMesh/blob/main/crates/laymesh-core/assets/styles/effects.css",
+    "asset_sha256": "df40cf246479ec2790ab792b7332547605c90e844c065c522333d34979081dcc",
+    "texts": [
+      {
+        "file": "css-effects-LICENSE.txt",
+        "sha256": "bc7458916defab222c24507c31752f95c9acb36977cd6e834d841455740c3f03",
+        "source": "https://github.com/muxkin/LayMesh/blob/main/LICENSE"
       }
     ]
   },

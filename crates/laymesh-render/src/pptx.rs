@@ -434,8 +434,31 @@ impl Writer<'_> {
                 return Ok(self.group(name, &out, start));
             }
         }
-        if !n.effects.is_empty() {
-            return self.fallback(n, parent, inherited, name, "滤镜或特效");
+        if n.effects.iter().any(|e| e.soft_edge.is_none()) {
+            // An isolated translucent composition cannot be split without changing overlaps.
+            if n.opacity != 1. {
+                return self.fallback(n, parent, inherited, name, "透明效果组合");
+            }
+            let mut out = String::new();
+            let mut subject = n.clone();
+            subject.effects.retain(|e| e.soft_edge.is_some());
+            for inner in [false, true] {
+                if inner {
+                    out += &self.node(&subject, parent, inherited, in_formula, name)?;
+                }
+                let mut layer = n.clone();
+                layer
+                    .effects
+                    .retain(|e| e.soft_edge.is_some() || e.inner == inner);
+                if layer.effects.iter().any(|e| e.soft_edge.is_none()) {
+                    layer.hint["effectsOnly"] = json!(true);
+                    out += &self.fallback(&layer, parent, inherited, name, "独立效果层")?;
+                }
+            }
+            return Ok(out);
+        }
+        if n.hint["surface3d"].is_object() || n.effects.iter().any(|e| e.soft_edge.is_some()) {
+            return self.fallback(n, parent, inherited, name, "对象级三维或柔化边缘");
         }
         if opacity != 1.
             && matches!(&n.kind, DrawKind::Path { fill, stroke: Some(_), .. } if !matches!(fill, Paint::None))
@@ -591,7 +614,9 @@ fn preserve_jpeg(value: &mut Json) {
 #[cfg(feature = "native")]
 fn normalize_caps(nodes: &mut [Json]) {
     for n in nodes {
-        if n["kind"] == "image" && n["sourceImage"].is_object() {
+        let raster_subject =
+            n["threeD"].is_object() || n["effects"].as_array().is_some_and(|e| !e.is_empty());
+        if !raster_subject && n["kind"] == "image" && n["sourceImage"].is_object() {
             let source = n["sourceImage"].clone();
             for key in ["data", "mime", "rasterKey", "sourceJpegHash", "crop"] {
                 n[key] = source[key].clone();
@@ -599,13 +624,15 @@ fn normalize_caps(nodes: &mut [Json]) {
             n["intrinsicWidth"] = source["width"].clone();
             n["intrinsicHeight"] = source["height"].clone();
         }
-        preserve_jpeg(n);
+        if !raster_subject {
+            preserve_jpeg(n);
+        }
         if n["fill"].is_object() {
             preserve_jpeg(&mut n["fill"]);
         }
         // The display list physically crops PNGs for raster/PDF edge sampling. PPTX
         // retains the original resource and maps this crop to DrawingML.
-        if n["kind"] == "image" && n["crop"].is_object() {
+        if !raster_subject && n["kind"] == "image" && n["crop"].is_object() {
             n["_pptxKeepSourceCrop"] = Json::Bool(true);
         }
         let r = &n["endpointRecipe"];

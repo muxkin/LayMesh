@@ -28,6 +28,7 @@ exports.run=async()=>{
  let source='page=canvas(size=(12,9),unit="cm",background="#ffffff")\nimport {top} from "./values.lay"\np=plot(size=(9,6),plot_area=box(offset=(1.5,1),size=(6,4)),x=axis(range=(0,10)),y=axis(range=(-1,1)))\np.line(x=[0,2,4,6,8,10],y=[0,0.6,-0.2,0.8,-0.5,0],line_color="#0072b2",line_width=1.5pt)\npage.add(p,offset=(1,1))\npage.add(rect(size=(top,0.3),fill="#d55e00"),offset=(1,8))\npage.add(text("LayMesh preview",font_size=14pt),offset=(1,0.3))'+(process.env.LAYMESH_PREVIEW_BMP?'\npage.add(image(src='+JSON.stringify(process.env.LAYMESH_PREVIEW_BMP)+'),offset=(10.5,0.3),size=(1,0.5))':'');
  if(process.env.LAYMESH_PREVIEW_TRANSPARENT)source+='\npage.add(image(src='+JSON.stringify(process.env.LAYMESH_PREVIEW_TRANSPARENT)+'),offset=(11.6,0.3),size=(0.3,0.5))';
  if(process.env.LAYMESH_PREVIEW_16BIT)source+='\npage.add(image(src='+JSON.stringify(process.env.LAYMESH_PREVIEW_16BIT)+'),offset=(10.5,1),size=(1,0.5))';
+ if(process.env.LAYMESH_PREVIEW_OBJECT_EFFECTS)source+='\npage.add(rect(size=(1cm,1cm),fill="#34a6bc",three_d=three_d(depth=3mm,rotation=(20deg,-30deg,0deg),bevel_top=(1mm,1mm)),effects=[reflection(length=0.7),soft_edge(radius=0.15mm)]),offset=(10.7cm,4cm))';
  fs.writeFileSync(file,source);fs.writeFileSync(dependency,'export top=3');
  const doc=await vscode.workspace.openTextDocument(file);await vscode.window.showTextDocument(doc);
  const extension=vscode.extensions.getExtension(require('../extensions/vscode/package.json').publisher+'.laymesh-language');
@@ -227,6 +228,12 @@ exports.run=async()=>{
  const paints=first.received.filter(m=>m.type==='painted').length;first.panel.webview.html+='\n<!-- resource ownership reload -->';
  await until(()=>first.received.filter(m=>m.type==='painted').length>paints,'Older preview reload after newer panel closes');first.panel.dispose();
  evidence.checks.push('Two concurrent previews; simple line and image resources; older webview reloads after closing the newer panel');
+ if(process.env.LAYMESH_PREVIEW_OBJECT_EFFECTS){
+  const effectDoc=await vscode.workspace.openTextDocument(path.resolve(__dirname,'../examples/effects/object-3d.lay'));await vscode.window.showTextDocument(effectDoc);await vscode.commands.executeCommand('laymesh.openPreview',effectDoc.uri);
+  await until(()=>host.received.some(m=>m.type==='painted'),'3D composition preview');
+  const list=host.messages.filter(m=>m.displayList).at(-1)?.displayList;const count=n=>(n.hint?.surface3d?1:0)+(n.kind.kind==='group'?n.kind.children.reduce((sum,c)=>sum+count(c),0):0);assert(list&&list.nodes.reduce((sum,n)=>sum+count(n),0)>=5);
+  await documentPhase('object-effects-ready','object-effects-verified');evidence.checks.push('Shared object-3d.lay composition: shape, stroked holes, Chinese, formula and cropped rounded image');host.panel.dispose();
+ }
  if(verifyFFmpegDecline)await verifyFFmpegDecline();
  // Normal hosts ask to save dirty editors on close. Only persist disposable
  // fixture buffers after all unsaved-buffer assertions have completed.

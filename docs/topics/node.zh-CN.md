@@ -37,3 +37,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 浏览器实时预览使用 prepare_render 创建可复用任务，通过 draw_job 得到绘制任务。绘制任务提供 display_list 与 resource_bytes；时间采样得到对应动画帧，CanvasKit 绘制这些指令。render 的 SVG 返回值仍可用于静态集成；不能把它误认为全部浏览器绘制能力。宿主提供资源和字体，缺失资源通过实际编译请求补齐。语言服务偏移使用 UTF-16。
 
 参见 [worker 源码](../../site/live/worker.mjs)及[动画实现](animation-internals.zh-CN.md)。
+
+## Object surfaces
+
+显示列表版本 3 携带 `hint.surface3d`、倒影与柔边参数；读取端兼容版本 1–3。共享浏览器渲染器调用 WASM 的 `surface_texture_region(mesh_json, region, density)` 选择纹理区域，再调用 `raster_surface3d(mesh_json, rgba, texture_width, texture_height, region, width, height)` 统一处理几何、遮挡和光照。内联 worker 宿主在 WASM 初始化后通过 `setSurfaceRasterizer` 注入这两个函数。升级时应同步编译器、播放、编辑器和导出运行时。同步 `RenderJob.svg()` 接口也会嵌入局部三维 PNG；交互预览使用 CanvasKit 提供二维纹理与页面合成。

@@ -1,7 +1,7 @@
 // Paths address the previous baseline. Copy only changed ancestors; unchanged
 // geometry, siblings and resource buffers retain their JavaScript identities.
 export function applyDisplayUpdate(previous, update) {
-  if (!previous || ![1,2].includes(update.schemaVersion) ||
+  if (!previous || ![1,2,3].includes(update.schemaVersion) ||
       (update.schemaVersion !== previous.schemaVersion && !update.roots) ||
       ![update.width, update.height].every(n => Number.isFinite(n) && n > 0))
     throw Error('Invalid drawing update');

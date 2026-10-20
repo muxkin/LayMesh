@@ -1,0 +1,18 @@
+// Diagnostic only: phase attribution inside an already prepared CPU frame.
+const fs=require('node:fs'),path=require('node:path'),pw=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const [base,out]=process.argv.slice(2),engine=process.env.ENGINE||'chromium',sampling=process.env.SAMPLE_MODE||'active';
+(async()=>{const b=await pw[engine].launch({headless:true});try{const p=await b.newPage({viewport:{width:3840,height:1840}});await p.goto(base+'/site/live/manifest.json');const results=[];
+for(const number of(process.env.PAGES||'1,12,17,24').split(',').map(Number)){
+const r=await p.evaluate(async({base,number,variant,sampling})=>{
+ const url=base+'/site/live/',{initializeSkia}=await import(url+'skia-renderer.mjs'),{PresentationRenderer}=await import(url+(variant||'presentation-renderer.mjs')),w=await import(url+'wasm/laymesh_wasm.js');await w.default();const ck=await(globalThis.nativePhaseSkia??=initializeSkia(url+'skia/canvaskit.wasm')),doc=await(await fetch(base+'/fixtures/pages/'+(number-1)+'.json')).json(),job=w.prepare_display_list(JSON.stringify(doc.list)),width=3840,height=1840;
+ const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;canvas.style.cssText='position:fixed;inset:0';document.body.append(canvas);const renderer=new PresentationRenderer(ck,canvas.transferControlToOffscreen(),{software:true}),s=renderer.skia;
+ await renderer.install(doc.id,doc.list,()=>{});const sample=Object.assign((t,r)=>JSON.parse(job.presentation_state(t,r)),{duration:doc.inspection.animation?.duration||0,transform:(t,r)=>JSON.parse(job.transform_state(t,r))});const prep=await renderer.prepareEntry(doc.id,width,height,0,false,sample);
+ let phase;const contexts=new WeakSet(),original=s.surface.beginNative.bind(s.surface);s.surface.beginNative=(...args)=>{if(phase)phase.planningMs=performance.now()-phase.started;const c=original(...args);if(!contexts.has(c)){contexts.add(c);for(const name of ['drawImage','clearRect','fillRect','clip','save','restore','setTransform','resetTransform']){const fn=c[name].bind(c);c[name]=(...a)=>{const at=performance.now(),result=fn(...a),ms=performance.now()-at;if(phase){phase.times[name]=(phase.times[name]||0)+ms;if(name==='drawImage')phase.draws.push({width:a[0].width,height:a[0].height,alpha:c.globalAlpha,ms,transform:Array.from(c.getTransform().toFloat64Array()),destination:a.slice(1)});}return result;};}}return c;};
+ const frames=[];
+ for(const start of(sampling==='fixed'?[.65,1,sample.duration]:[.35,.65,.85]))for(let i=0;i<(sampling==='fixed'?4:8);i++){
+  const t=sampling==='fixed'?start:start+i/60;
+  await new Promise(requestAnimationFrame);phase={time:t,iteration:i,started:performance.now(),times:{},draws:[]};const result=renderer.render(doc.id,width,height,sample(t,false),false);phase.totalMs=performance.now()-phase.started;phase.rasterMs=result.rasterMs;phase.native=!!s.nativeComposition;phase.damageFraction=s.nativeDamageFraction;frames.push(phase);phase=null;
+ }
+ const output={page:doc.id,prepareMs:prep.prepareMs,frames};renderer.dispose();job.free();canvas.remove();return output;
+},{base,number,variant:process.env.RENDERER_MODULE,sampling});results.push(r);fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify({engine,sampling,results},null,2));const rows=r.frames.filter(f=>f.iteration>0),mean=k=>rows.reduce((n,r)=>n+(k==='total'?r.totalMs:k==='planning'?r.planningMs||0:r.times[k]||0),0)/rows.length;console.log(r.page,JSON.stringify(Object.fromEntries(['total','planning','drawImage','clearRect','fillRect','clip','save','restore'].map(k=>[k,mean(k)]))));
+}}finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

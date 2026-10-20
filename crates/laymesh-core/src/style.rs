@@ -120,6 +120,7 @@ pub fn bundled_stylesheets() -> &'static [StylesheetMetadata] {
 }
 pub fn bundled_stylesheet(path: &str) -> Option<&'static str> {
     match path {
+        "@laymesh/effects.css" => Some(include_str!("../assets/styles/effects.css")),
         "@laymesh/bootstrap.css" => Some(include_str!("../assets/styles/bootstrap.css")),
         "@laymesh/open-props.css" => Some(include_str!("../assets/styles/open-props.css")),
         "@laymesh/animate.css" => Some(include_str!("../assets/styles/animate.css")),
@@ -615,7 +616,7 @@ impl Engine {
         if matches!(key, "start_head" | "end_head") {
             return crate::endpoints::css_head(s, file, l);
         }
-        if matches!(key, "effects" | "path" | "warp" | "extrude") {
+        if matches!(key, "effects" | "path" | "warp" | "extrude" | "three_d") {
             return crate::art::css_config(s, file, l, &self.unit, self.dpi);
         }
         if key == "font_family" {

@@ -9,7 +9,7 @@ use crate::{
 use kurbo::{Affine, Rect};
 use laymesh_core::Result;
 use skia_safe as sk;
-use std::{collections::BTreeMap, sync::Arc};
+use std::{cell::RefCell, collections::BTreeMap, sync::Arc};
 pub const MAX_PIXELS: u64 = 100_000_000;
 #[derive(Clone, Debug)]
 pub struct RasterFrame {
@@ -25,6 +25,8 @@ pub(crate) struct EffectTile {
 pub struct PreparedRaster {
     list: DisplayList,
     images: BTreeMap<String, sk::Image>,
+    surfaces: RefCell<BTreeMap<String, Vec<(Rect, sk::Image)>>>,
+    surface_limit: u64,
 }
 impl PreparedRaster {
     pub fn new(list: DisplayList) -> Result<Self> {
@@ -32,7 +34,12 @@ impl PreparedRaster {
             return Err(error("Unsupported drawing version"));
         }
         let images = Painter::new(&list)?.images;
-        Ok(Self { list, images })
+        Ok(Self {
+            list,
+            images,
+            surfaces: RefCell::new(BTreeMap::new()),
+            surface_limit: 256 * 1024 * 1024,
+        })
     }
     pub fn set_media_frame(
         &mut self,
@@ -41,6 +48,7 @@ impl PreparedRaster {
         height: u32,
         rgba: &[u8],
     ) -> Result<()> {
+        self.surfaces.get_mut().clear();
         self.images
             .insert(resource.into(), skia::rgba_image(width, height, rgba)?);
         Ok(())
@@ -67,11 +75,36 @@ impl PreparedRaster {
                 images.insert(id.clone(), image);
             }
         }
+        // Texture pixels depend on resources as well as serialized geometry.
+        if next.resources != self.list.resources {
+            self.surfaces.get_mut().clear();
+        } else {
+            fn keys(n: &DrawNode, out: &mut Vec<String>) {
+                if n.hint["surface3d"].is_object() {
+                    out.push(serde_json::to_string(n).unwrap() + ":");
+                }
+                if let DrawKind::Group { children, .. } = &n.kind {
+                    for c in children {
+                        keys(c, out);
+                    }
+                }
+            }
+            let mut live = vec![];
+            for n in &next.nodes {
+                keys(n, &mut live);
+            }
+            self.surfaces
+                .get_mut()
+                .retain(|key, _| live.iter().any(|prefix| key.starts_with(prefix)));
+        }
         self.images = images;
         self.list = next;
         Ok(())
     }
-    pub fn set_cache_budget(&mut self, _mib: usize) {}
+    pub fn set_cache_budget(&mut self, mib: usize) {
+        self.surface_limit = (mib.min(256) as u64) * 1024 * 1024;
+        self.surfaces.get_mut().clear();
+    }
     pub fn render_region(&mut self, r: Rect, w: u32, h: u32) -> Result<RasterFrame> {
         self.render_states(r, w, h, &BTreeMap::new())
     }
@@ -100,6 +133,7 @@ impl PreparedRaster {
                         .iter()
                         .map(|e| {
                             (4. * e.blur + e.spread + e.offset[0].abs().max(e.offset[1].abs()))
+                                .max(2.5 * e.soft_edge.unwrap_or(0.))
                                 * scale
                         })
                         .fold(0., f64::max);
@@ -121,7 +155,12 @@ impl PreparedRaster {
         c.translate((pad as f32, pad as f32));
         c.scale((w as f32 / r.width() as f32, h as f32 / r.height() as f32));
         c.translate((-r.x0 as f32, -r.y0 as f32));
-        Painter::with_images(&self.list, self.images.clone()).draw(c, states)?;
+        let mut painter = Painter::with_images(&self.list, self.images.clone());
+        painter.surface_cache = std::mem::take(&mut *self.surfaces.borrow_mut());
+        painter.surface_cache_limit = self.surface_limit;
+        let result = painter.draw(c, states);
+        *self.surfaces.borrow_mut() = painter.surface_cache;
+        result?;
         read_at(&mut surface, w, h, pad)
     }
 }
@@ -194,6 +233,9 @@ pub(crate) fn effect_tiles(
     let mut total = 0u64;
     let mut painter = Painter::new(list)?;
     for e in &node.effects {
+        if e.soft_edge.is_some() {
+            continue;
+        }
         if ![e.blur, e.spread, e.offset[0], e.offset[1]]
             .iter()
             .all(|v| v.is_finite())
@@ -202,7 +244,15 @@ pub(crate) fn effect_tiles(
             return Err(error("Invalid effect parameters"));
         }
         let pad = 4. * e.blur + e.spread.abs();
-        let b = if e.inner {
+        let b = if let Some(r) = &e.reflection {
+            Rect::new(
+                bounds.x0,
+                bounds.y1 + r.distance,
+                bounds.x1,
+                bounds.y1 + r.distance + bounds.height() * r.length,
+            )
+            .inflate(pad, pad)
+        } else if e.inner {
             bounds
         } else {
             bounds.inflate(pad, pad) + kurbo::Vec2::new(e.offset[0], e.offset[1])
@@ -215,8 +265,17 @@ pub(crate) fn effect_tiles(
                 "PDF effects exceed the 100000000-pixel budget; reduce DPI or effect size",
             ));
         }
-        let overlap =
-            ((pad + e.offset[0].abs().max(e.offset[1].abs())) * density).ceil() as u32 + 2;
+        let overlap = ((pad
+            + e.offset[0].abs().max(e.offset[1].abs())
+            + node
+                .effects
+                .iter()
+                .filter_map(|e| e.soft_edge)
+                .fold(0., f64::max)
+                * 2.5)
+            * density)
+            .ceil() as u32
+            + 2;
         if (1024u64 + 2 * overlap as u64).pow(2) > 16_000_000 {
             return Err(error(
                 "PDF blur tile exceeds the 64MB buffer budget; reduce blur or DPI",
@@ -257,4 +316,58 @@ pub(crate) fn effect_tiles(
         }
     }
     Ok(out)
+}
+
+#[cfg(test)]
+mod surface_cache_tests {
+    use super::*;
+    #[test]
+    fn retained_3d_cache_reuses_pixels_and_invalidates_only_changed_objects() {
+        use laymesh_core::{engine::Engine, model::Host};
+        let source = "p=canvas(size=(70mm,40mm))\np.add(rect(size=(15mm,15mm),fill=\"#4488aa\",three_d=three_d(rotation=(20deg,ANGLE,0deg))),offset=(10mm,10mm))\np.add(rect(size=(15mm,15mm),fill=\"#4488aa\",three_d=three_d(rotation=(20deg,30deg,0deg))),offset=(40mm,10mm))";
+        let list = |angle: &str| {
+            crate::to_display_list(
+                &Engine::new(Host::default())
+                    .compile(&source.replace("ANGLE", angle), "/cache.lay")
+                    .unwrap(),
+            )
+            .unwrap()
+        };
+        let first = list("25deg");
+        let mut raster = PreparedRaster::new(first.clone()).unwrap();
+        let region = Rect::new(0., 0., 70., 40.);
+        raster.render_region(region, 350, 200).unwrap();
+        let ids = || {
+            raster
+                .surfaces
+                .borrow()
+                .values()
+                .map(|v| v[0].1.unique_id())
+                .collect::<Vec<_>>()
+        };
+        let old = ids();
+        assert_eq!(old.len(), 2);
+        raster
+            .render_states(region, 350, 200, &BTreeMap::new())
+            .unwrap();
+        assert_eq!(ids(), old);
+        let next = list("50deg");
+        raster
+            .update(DisplayUpdate::between(&first, &next))
+            .unwrap();
+        assert_eq!(raster.surfaces.borrow().len(), 1);
+        raster.render_region(region, 350, 200).unwrap();
+        let after = raster
+            .surfaces
+            .borrow()
+            .values()
+            .map(|v| v[0].1.unique_id())
+            .collect::<Vec<_>>();
+        assert_eq!(after.iter().filter(|id| old.contains(id)).count(), 1);
+        raster.render_region(region, 700, 400).unwrap();
+        assert_eq!(raster.surfaces.borrow().len(), 4);
+        raster.set_cache_budget(0);
+        raster.render_region(region, 350, 200).unwrap();
+        assert!(raster.surfaces.borrow().is_empty());
+    }
 }

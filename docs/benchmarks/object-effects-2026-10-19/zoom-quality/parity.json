@@ -1,0 +1,174 @@
+{
+  "cases": [
+    {
+      "name": "reflection",
+      "meanDelta": 0.02287037037037037,
+      "largeFraction": 0,
+      "surfaceTextures": 0,
+      "backend": "Skia CPU",
+      "firstMs": 7.900000095367432,
+      "repeatMs": 2.299999952316284,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.028467078189300412,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "soft",
+      "meanDelta": 0.048469650205761314,
+      "largeFraction": 0,
+      "surfaceTextures": 0,
+      "backend": "Skia CPU",
+      "firstMs": 150.89999997615814,
+      "repeatMs": 111.90000009536743,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.009166666666666667,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "bevel",
+      "meanDelta": 0.02232253086419753,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 23.299999952316284,
+      "repeatMs": 5.900000095367432,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.0007741769547325103,
+        "wasmSVG": 0.09539094650205761
+      }
+    },
+    {
+      "name": "perspective",
+      "meanDelta": 0.01976337448559671,
+      "largeFraction": 0.00040123456790123454,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 14.899999976158142,
+      "repeatMs": 1.100000023841858,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "back",
+      "meanDelta": 0.0005504115226337449,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 6.100000023841858,
+      "repeatMs": 1.100000023841858,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "holes",
+      "meanDelta": 0.014585905349794238,
+      "largeFraction": 0.00005915637860082304,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 13.900000095367432,
+      "repeatMs": 1.100000023841858,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "chinese",
+      "meanDelta": 0.007626028806584362,
+      "largeFraction": 0.0000823045267489712,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 7.300000071525574,
+      "repeatMs": 0.8999999761581421,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "formula",
+      "meanDelta": 0.00654320987654321,
+      "largeFraction": 0.0000977366255144033,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 14.899999976158142,
+      "repeatMs": 2.399999976158142,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "rounded",
+      "meanDelta": 0.003611111111111111,
+      "largeFraction": 0.00004372427983539095,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 10,
+      "repeatMs": 1.100000023841858,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0,
+        "wasmSVG": null
+      }
+    }
+  ],
+  "browser": "151.0.7922.34",
+  "checks": [
+    "single-object update retains unrelated texture",
+    "nonblank canvas",
+    "repeat render cache",
+    "zoom regenerates 3D textures",
+    "native/browser pixel comparison",
+    "real file:// offline playback",
+    "shared object-3d composition in offline HTML"
+  ],
+  "errors": [],
+  "update": {
+    "before": 2,
+    "after": 2,
+    "reused": 1
+  },
+  "status": "passed"
+}

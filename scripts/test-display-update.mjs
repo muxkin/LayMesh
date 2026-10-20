@@ -17,5 +17,7 @@ const migrated=applyDisplayUpdate(list,{...update,schemaVersion:2,roots:[path],p
 assert.equal(migrated.schemaVersion,2);
 assert.deepEqual(migrated.nodes,[path]);
 assert.throws(()=>applyDisplayUpdate(list,{...update,schemaVersion:2}));
-assert.throws(()=>applyDisplayUpdate(list,{...update,schemaVersion:3,roots:[path]}));
-console.log('Display updates preserve geometry identity, immutable baselines and version-1/version-2 migration.');
+const v3=applyDisplayUpdate(migrated,{...update,schemaVersion:3,roots:[path],properties:[],structure:[]});
+assert.equal(v3.schemaVersion,3);assert.deepEqual(v3.nodes,[path]);
+assert.throws(()=>applyDisplayUpdate(list,{...update,schemaVersion:4,roots:[path],properties:[],structure:[]}));
+console.log('Display updates preserve geometry identity, immutable baselines and version-1/version-2/version-3 migration.');

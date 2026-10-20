@@ -67,3 +67,7 @@ render 返回 JSON，并非单独 SVG 字符串；资源参数是资源名到文
 `language_query` 与原生 LSP 共享依赖索引。`files_json` 中提供本地 CSS 文本及未保存内容。`definition` 单个命中仍返回一个位置；多个 CSS 定义返回位置数组。以 `filename="laymesh-library:/animate.css"` 查询 `stylesheetContent`，返回 `{uri,text,languageId:"css",readOnly:true}`；普通本地文件返回 `null`。
 
 原生 LSP 通过 `laymesh/stylesheetContent` 接受 `{uri}` 并返回同一内容。内置定义使用虚拟 URI，避免跳到不存在的磁盘路径。
+
+## Object surfaces
+
+显示列表版本 3 携带 `hint.surface3d`、倒影与柔边参数；读取端兼容版本 1–3。共享浏览器渲染器调用 WASM 的 `surface_texture_region(mesh_json, region, density)` 选择纹理区域，再调用 `raster_surface3d(mesh_json, rgba, texture_width, texture_height, region, width, height)` 统一处理几何、遮挡和光照。内联 worker 宿主在 WASM 初始化后通过 `setSurfaceRasterizer` 注入这两个函数。升级时应同步编译器、播放、编辑器和导出运行时。同步 `RenderJob.svg()` 接口也会嵌入局部三维 PNG；交互预览使用 CanvasKit 提供二维纹理与页面合成。

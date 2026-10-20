@@ -1,14 +1,14 @@
-import {initializeSkia,SkiaRenderer} from './skia-renderer.mjs';
+import {initializeSkia,SkiaRenderer,setSurfaceRasterizer} from './skia-renderer.mjs';
 import {applyDisplayUpdate} from './display-update.mjs';
 // The packaging script inlines the generated WASM module here: VS Code
 // requires workers loaded from a blob, without external module imports.
-import init,{prepare_display_list,register_render_resource,retain_render_resources} from './wasm/laymesh_wasm.js';
+import init,{prepare_display_list,register_render_resource,retain_render_resources,raster_surface3d,surface_texture_region,refine_surface3d,surface_material_texture} from './wasm/laymesh_wasm.js';
 let installedList,skia, rasterInitialized,rasterJob,rasterJobId='',rasterGeneration,rasterMemory,rasterPage,overviewReady=false,rasterChain=Promise.resolve();
 const rasterResources=new Set();
 self.onmessage=({data})=>{
  if(['install','cancel-transition'].includes(data.type))skia?.transitions.cancel();
  if(data.type==='cancel-transition')return;
- if(data.type==='init'){rasterInitialized=Promise.all([init({module_or_path:data.wasmBytes}),initializeSkia(data.skiaBytes)]).then(([exports,ck])=>{rasterMemory=exports.memory;if(data.canvas)skia=new SkiaRenderer(ck,data.canvas,{onContextChange:ready=>self.postMessage({type:'context',ready})});self.postMessage({requestId:data.requestId,type:'ready'});});rasterInitialized.catch(error=>self.postMessage({type:'error',requestId:data.requestId,error:String(error)}));return;}
+ if(data.type==='init'){rasterInitialized=Promise.all([init({module_or_path:data.wasmBytes}),initializeSkia(data.skiaBytes)]).then(([exports,ck])=>{rasterMemory=exports.memory;setSurfaceRasterizer(raster_surface3d,surface_texture_region,refine_surface3d,surface_material_texture);if(data.canvas)skia=new SkiaRenderer(ck,data.canvas,{onContextChange:ready=>self.postMessage({type:'context',ready})});self.postMessage({requestId:data.requestId,type:'ready'});});rasterInitialized.catch(error=>self.postMessage({type:'error',requestId:data.requestId,error:String(error)}));return;}
  rasterChain=rasterChain.then(async()=>{
   try{
    const beforeReady=performance.now();await rasterInitialized;

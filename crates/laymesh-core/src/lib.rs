@@ -34,7 +34,7 @@ pub mod text;
 mod unit_diagnostics;
 mod validation;
 #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
-mod wasm_allocator;
+pub mod wasm_allocator;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, Default, Serialize, Deserialize, PartialEq)]

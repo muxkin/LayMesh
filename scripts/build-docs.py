@@ -113,18 +113,19 @@ def markdown(page,text):
  def library_embed(match):
   lib=next(l for l in json.loads((ROOT/'site/style-libraries.json').read_text())['libraries'] if l['name']==match[1]);en=page['lang']=='en'
   tr=lambda zh,eng:eng if en else zh
-  default={'bootstrap':'bg-primary','open-props':'--gradient-7','animate':'animate__fadeInUp'}[lib['name']]
+  default={'bootstrap':'bg-primary','open-props':'--gradient-7','animate':'animate__fadeInUp','effects':'fx-bevel-button'}[lib['name']]
   status=[('',tr('所有状态','All statuses')),('supported',tr('可用','Supported')),('partial',tr('部分支持','Partial')),('resources',tr('需要字体等资源','Needs resources')),('unsupported',tr('不支持 / 未验证','Unsupported / unverified'))]
   kinds=[('',tr('所有类型','All kinds')),('class',tr('类','Classes')),('variable',tr('变量','Variables')),('keyframe',tr('关键帧','Keyframes'))]
   select=lambda cls,values:'<select class="'+cls+'" aria-label="'+cls+'">'+''.join('<option value="'+v+'">'+label+'</option>' for v,label in values)+'</select>'
   controls='<div class="library-filter"><label>'+tr('检索','Search')+'<input class="library-search" type="search" placeholder="'+tr('类名、变量、属性或类别','Class, variable, property or category')+'"></label>'+select('library-kind',kinds)+select('library-status',status)+'</div><p class="library-count" aria-live="polite"></p><div class="library-browser"><select class="library-items" size="9" aria-label="'+tr('库条目','Library entries')+'"></select><div class="library-detail" aria-live="polite"></div></div>'
   properties=['background-color','border-radius','box-shadow-blur','box-shadow-spread','box-shadow-offset','box-shadow-color','color','font-size','opacity','padding','animation-duration','animation-delay','animation-iteration-count']
+  if lib['name']=='effects':properties=['three-d','effects',*properties]
   controls+='<details class="library-tuning"><summary>'+tr('调参：选择属性并输入项目单位','Adjust a property using project units')+'</summary><div class="library-parameters"><label>layout_dpi<input class="library-dpi" type="number" min="1" placeholder="96"></label><label>'+tr('覆盖属性','Override property')+select('library-property',[(v,v) for v in properties])+'</label><label>'+tr('值','Value')+'<input class="library-value" placeholder="'+tr('例如 2mm、#e8590c、0.8s','e.g. 2mm, #e8590c, 0.8s')+'"></label><button type="button" class="library-apply">'+tr('应用覆盖','Apply override')+'</button></div><p>'+tr('完整源码可继续编辑。切换条目会载入该项的原始案例；恢复清除修改。动画时间定位位于预览的“更多 → 播放控制”。','Edit the full source too. Selecting an entry loads its original recipe; Restore clears edits. Seek animation time under More → Playback controls.')+'</p></details>'
   controls+='<div class="effect-controls"><button type="button" class="library-play">'+tr('播放 / 重播','Play / Replay')+'</button><button type="button" class="library-static">'+tr('完整排版','Static')+'</button></div>'
   metadata='<script type="application/json" class="library-data">'+json.dumps(lib,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c')+'</script>'
   key=f'LAYMESHBLOCK{len(placeholders)}';placeholders[key]='<section class="style-library-catalog" data-default="'+default+'">'+controls+metadata+example_module(page,'examples/libraries/catalog-'+lib['name']+'.lay')+'</section>'
   return '\n\n'+key+'\n\n'
- text=re.sub(r'<!-- style-catalog:(bootstrap|open-props|animate) -->',library_embed,text)
+ text=re.sub(r'<!-- style-catalog:(bootstrap|open-props|animate|effects) -->',library_embed,text)
 
  def embed(m):
   key=f'LAYMESHBLOCK{len(placeholders)}';placeholders[key]=example_module(page,m[2]) if m[1]=='example' else code((ROOT/m[2]).read_text(),Path(m[2]).suffix[1:],Path(m[2]).name) if m[1]=='source' else gallery(page) if m[2]=='examples' else overview(page,m[2]);return '\n\n'+key+'\n\n'
@@ -186,6 +187,8 @@ def check():
    assert text.count('<article ')==119 and '原式不被接受' in text and '正常暗色配方' in text
   elif p.relative_to(OUT).as_posix()=='gradient-gallery.html':
    assert 'docs/benchmarks/gradients-2026-10-19/gallery.html' in text
+  elif p.relative_to(OUT).as_posix().startswith('docs/benchmarks/') and (ROOT/p.relative_to(OUT)).suffix=='.html' and (ROOT/p.relative_to(OUT)).is_file():
+   assert text==(ROOT/p.relative_to(OUT)).read_text(),f'Stale standalone validation report: {p}'
   else:assert 'class="lang-switch"' in text,p
   # Inline scripts may construct markup with template expressions; validate
   # actual HTML attributes, including script src, rather than JS string data.
@@ -214,11 +217,11 @@ def check():
 
  inventory=json.loads((ROOT/'site/style-libraries.json').read_text())
  for lib in inventory['libraries']:
-  topic={'bootstrap':'style-bootstrap','open-props':'style-open-props','animate':'style-animate-library'}[lib['name']]
+  topic={'bootstrap':'style-bootstrap','open-props':'style-open-props','animate':'style-animate-library','effects':'art-effects'}[lib['name']]
   for prefix,suffix in [('','.zh-CN'),('en/','')]:
    text=(OUT/(prefix+'docs/topics/'+topic+suffix+'.html')).read_text()
    assert text.count('class="style-library-catalog"')==1
-   assert text.count('class="example-module"')==1, 'Catalog must have one live workspace'
+   assert text.count(f'data-entry="examples/libraries/catalog-{lib["name"]}.lay"')==1, 'Catalog must have one live workspace'
    embedded=re.search(r'<script type="application/json" class="library-data">(.*?)</script>',text,re.S)
    assert embedded and json.loads(embedded[1])==lib, 'Stale catalog inventory'
  live=OUT/'site/live';manifest=json.loads((live/'manifest.json').read_text())
@@ -249,6 +252,11 @@ def main():
   if source.suffix in ('.html','.json','.png'):
    target=OUT/gallery_dir/source.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
  (OUT/'gradient-gallery.html').write_text('<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=docs/benchmarks/gradients-2026-10-19/gallery.html"><title>LayMesh 渐变对照画廊</title><a href="docs/benchmarks/gradients-2026-10-19/gallery.html">打开渐变对照画廊</a></html>')
+ for folder in ['object-effects-2026-10-19','animation-resources-2026-10-19']:
+  source_dir=ROOT/'docs/benchmarks'/folder
+  for source in source_dir.rglob('*'):
+   if source.is_file() and source.suffix in ('.html','.json','.png','.csv') and not source.name.endswith('.zip.html'):
+    target=OUT/source.relative_to(ROOT);target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
  for page in PAGES:
   page['body']=body(page);page['sections']=[{'depth':int(m[1]),'id':m[2],'title':html.unescape(re.sub(r'<[^>]+>','',re.sub(r'<a class="heading-anchor".*?</a>','',m[3])))} for m in re.finditer(r'<h([23]) id="([^"]+)">(.*?)</h\1>',page['body'],re.S)]
  for lang in ['zh-CN','en']:

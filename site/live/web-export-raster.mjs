@@ -16,7 +16,7 @@ export function exportDensity(transform, dpi) {
 // Includes descendant effects when a complete object must be rasterized.
 export function exportHaloMM(node) {
   let halo = 0;
-  for (const e of node.effects) halo = Math.max(halo, 4*e.blur + Math.abs(e.spread) + Math.max(...e.offset.map(Math.abs)));
+  for (const e of node.effects) halo = Math.max(halo, 2.5*(e.softEdge||0), 4*e.blur + Math.abs(e.spread) + Math.max(...e.offset.map(Math.abs)));
   const own=halo;halo=0;
   const k = node.kind;
   if (k.kind === "group") for (const child of [...k.children, ...(k.mask ? [k.mask.node] : [])]) {

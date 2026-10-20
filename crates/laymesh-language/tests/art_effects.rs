@@ -48,3 +48,51 @@ fn artistic_parameters_complete_hover_and_validate_without_rendering() {
         );
     }
 }
+#[test]
+fn object_effects_and_3d_complete_in_source_and_lcss() {
+    for (source, expected) in [
+        ("rect(", vec!["three_d", "effects"]),
+        (
+            "three_d(",
+            vec!["bevel_top", "projection", "material", "light_direction"],
+        ),
+        ("reflection(", vec!["length", "fade", "distance"]),
+        ("soft_edge(", vec!["radius"]),
+    ] {
+        let s = service(source);
+        let options = s.completions("/art.lay", source.len());
+        for key in expected {
+            assert!(
+                options
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|v| v["label"] == key),
+                "{source}: {options}"
+            );
+        }
+    }
+    let mut s = LanguageService::new("en");
+    for (source, key) in [
+        (".a{ ", "three-d"),
+        (".a{three-d:three_d(", "bevel_top"),
+        (".a{effects:[reflection(", "fade"),
+    ] {
+        s.update("/effect.lcss", source);
+        assert!(
+            s.completions("/effect.lcss", source.len())
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|v| v["label"] == key),
+            "{source}"
+        );
+    }
+    let source = "p=canvas(stylesheet=\"@laymesh/ef";
+    s.update("/art.lay", source);
+    assert!(
+        s.completions("/art.lay", source.len())
+            .to_string()
+            .contains("@laymesh/effects.css")
+    );
+}

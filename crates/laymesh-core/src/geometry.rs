@@ -1,4 +1,4 @@
-pub use crate::geometry_recipe::resolved_path;
+pub use crate::geometry_recipe::{resolved_path, rounded_box};
 use crate::{Loc, Result, engine::Engine, model::*};
 use i_overlay::{
     core::{fill_rule::FillRule, overlay::ShapeType, overlay_rule::OverlayRule, solver::Solver},
@@ -1328,6 +1328,27 @@ impl Engine {
             .unwrap_or([0.; 4]);
         if o.kind == "text" {
             self.decorate_text(&mut n, a, l)?;
+        }
+        if let Some(config) = self.art_three_d(a, l)? {
+            if matches!(o.kind.as_str(), "group" | "plot" | "video") {
+                return Err(self.error(
+                    "E_EFFECT",
+                    "three_d applies to shapes, text, formulas and images",
+                    l,
+                ));
+            }
+            n["threeD"] = config;
+            if o.kind == "image" {
+                let radius = length(a, "border_radius", 0., &self.unit, self.dpi);
+                let fraction =
+                    a.get("border_radius").map(V::json).unwrap_or(Json::Null)["__css_fraction"]
+                        .as_f64();
+                n["threeD"]["imageRadii"] = json!(
+                    fraction
+                        .map(|f| [f * jnum(&n, "width", 0.), f * jnum(&n, "height", 0.)])
+                        .unwrap_or([radius; 2])
+                );
+            }
         }
         let effects = self.art_effects(a, l)?;
         if !effects.is_empty() {

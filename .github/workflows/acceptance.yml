@@ -103,6 +103,11 @@ jobs:
           node scripts/test-preview-player.mjs
           node scripts/test-display-update.mjs
           node scripts/test-skia-update-recovery.mjs
+          node scripts/test-presentation-scheduling.mjs
+          node scripts/test-presentation-workers.mjs
+          node scripts/test-presentation-resources.mjs
+          node scripts/test-shadow-mask.mjs
+          node scripts/test-cache-ownership.mjs
       - name: CSS animation and real presentation browser regressions
         env:
           PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-tests/node_modules/playwright
@@ -117,6 +122,10 @@ jobs:
           python scripts/serve-preview.py --bind 127.0.0.1 --port 8769 > "$RUNNER_TEMP/preview.log" 2>&1 &
           preview_pid=$!
           trap 'kill "$preview_pid"' EXIT
+          LAYMESH_TEST_BINARY=target/release/laymesh node scripts/test-object-effects.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/object-effects"
+          node scripts/test-native-presentation.cjs http://127.0.0.1:8769 "$RUNNER_TEMP/browser-results/native-composition"
+          node scripts/test-animation-cache-quality.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/animation-cache-quality"
+          node scripts/test-effects-catalog.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/effects-catalog"
           node scripts/test-gradient-gallery.cjs http://127.0.0.1:8769/gradient-gallery.html
           node scripts/test-web-export.cjs "$RUNNER_TEMP/browser-results/web-export"
           node scripts/test-presentation-warnings.cjs "$RUNNER_TEMP/browser-results/presentation-warnings"

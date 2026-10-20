@@ -1,5 +1,5 @@
-import {initializeSkia,SkiaRenderer} from './skia-renderer.mjs';
-import init, {prepare_render,prepare_document_render,prepare_presentation,register_preview_font} from './wasm/laymesh_wasm.js';
+import {initializeSkia,SkiaRenderer,setSurfaceRasterizer} from './skia-renderer.mjs';
+import init, {prepare_render,prepare_document_render,prepare_presentation,register_preview_font,raster_surface3d,surface_texture_region,refine_surface3d,surface_material_texture} from './wasm/laymesh_wasm.js';
 let initialized, manifest, base,wasmMemory,fullFonts,skia;
 const assets={}, fonts={};
 let chain=Promise.resolve(),drawJob,generation,lastPaint;
@@ -69,7 +69,7 @@ self.onmessage=({data})=>{
     manifest=await response.json();return Promise.all(manifest.fonts.map(fontBytes));
    })();
    const skiaReady=data.compilerOnly?Promise.resolve(null):(async()=>{const meta=await(await fetch(new URL('skia/manifest.json',base))).json();return initializeSkia(new URL('skia/'+meta.wasm,base).href);})();
-   const [wasm,bytes,ck]=await Promise.all([init(),fontsReady,skiaReady]);wasmMemory=wasm.memory;
+   const [wasm,bytes,ck]=await Promise.all([init(),fontsReady,skiaReady]);wasmMemory=wasm.memory;setSurfaceRasterizer(raster_surface3d,surface_texture_region,refine_surface3d,surface_material_texture);
    if(data.canvas)skia=new SkiaRenderer(ck,data.canvas,{onContextChange:ready=>self.postMessage({type:'context',ready})});
    manifest.fonts.forEach((font,i)=>{register_preview_font('/@bundled/'+font.filename,bytes[i]);self.postMessage({type:'bundled-font',family:font.family,source:'page'});});
    self.postMessage({type:'ready'});

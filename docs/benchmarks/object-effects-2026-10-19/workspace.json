@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "date": "2026-10-19",
+  "command": "cargo test --workspace --quiet",
+  "exitCode": 0,
+  "resultGroups": 92,
+  "passed": 721,
+  "failed": 0,
+  "ignored": 2,
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11)",
+  "baseCommit": "4100f885f7fa8adb5731d3824fee36f88145a9cf",
+  "scope": "working tree implementation; no release published"
+}

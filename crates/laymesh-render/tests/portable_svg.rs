@@ -66,6 +66,8 @@ fn pdf_rasterizes_only_effect_layers_at_transformed_density() {
     node.opacity = 0.6;
     for inner in [false, true] {
         node.effects.push(Effect {
+            reflection: None,
+            soft_edge: None,
             inner,
             blur: 0.2,
             spread: 0.,
@@ -108,6 +110,8 @@ fn enormous_effects_fail_before_requesting_any_pixels() {
     let mut node = path();
     node.transform = Affine::scale(1000.);
     node.effects.push(Effect {
+        reflection: None,
+        soft_edge: None,
         inner: false,
         blur: 1.,
         spread: 0.,
@@ -132,6 +136,8 @@ fn large_pdf_effects_are_independent_bounded_tiles_at_1200_dpi() {
     }
     for blur in [0.5, 2.] {
         node.effects.push(Effect {
+            reflection: None,
+            soft_edge: None,
             inner: false,
             blur,
             spread: 0.,

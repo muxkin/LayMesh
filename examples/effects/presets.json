@@ -1,0 +1,182 @@
+[
+  {
+    "name": "shadow-soft",
+    "title": "Soft shadow",
+    "source": "examples/effects/presets/shadow-soft.lay",
+    "className": "fx-shadow-soft"
+  },
+  {
+    "name": "shadow-long",
+    "title": "Long shadow",
+    "source": "examples/effects/presets/shadow-long.lay",
+    "className": "fx-shadow-long"
+  },
+  {
+    "name": "shadow-inner",
+    "title": "Inset",
+    "source": "examples/effects/presets/shadow-inner.lay",
+    "className": "fx-shadow-inner"
+  },
+  {
+    "name": "glow-neon",
+    "title": "Neon",
+    "source": "examples/effects/presets/glow-neon.lay",
+    "className": "fx-glow-neon"
+  },
+  {
+    "name": "glow-dual",
+    "title": "Dual glow",
+    "source": "examples/effects/presets/glow-dual.lay",
+    "className": "fx-glow-dual"
+  },
+  {
+    "name": "reflection-tight",
+    "title": "Tight reflection",
+    "source": "examples/effects/presets/reflection-tight.lay",
+    "className": "fx-reflection-tight"
+  },
+  {
+    "name": "reflection-full",
+    "title": "Full reflection",
+    "source": "examples/effects/presets/reflection-full.lay",
+    "className": "fx-reflection-full"
+  },
+  {
+    "name": "reflection-soft",
+    "title": "Soft reflection",
+    "source": "examples/effects/presets/reflection-soft.lay",
+    "className": "fx-reflection-soft"
+  },
+  {
+    "name": "reflection-float",
+    "title": "Floating",
+    "source": "examples/effects/presets/reflection-float.lay",
+    "className": "fx-reflection-float"
+  },
+  {
+    "name": "reflection-clear",
+    "title": "Clear reflection",
+    "source": "examples/effects/presets/reflection-clear.lay",
+    "className": "fx-reflection-clear"
+  },
+  {
+    "name": "edge-subtle",
+    "title": "Subtle edge",
+    "source": "examples/effects/presets/edge-subtle.lay",
+    "className": "fx-edge-subtle"
+  },
+  {
+    "name": "edge-soft",
+    "title": "Soft edge",
+    "source": "examples/effects/presets/edge-soft.lay",
+    "className": "fx-edge-soft"
+  },
+  {
+    "name": "edge-dream",
+    "title": "Dream",
+    "source": "examples/effects/presets/edge-dream.lay",
+    "className": "fx-edge-dream"
+  },
+  {
+    "name": "edge-reflected",
+    "title": "Soft mirror",
+    "source": "examples/effects/presets/edge-reflected.lay",
+    "className": "fx-edge-reflected"
+  },
+  {
+    "name": "edge-shadow",
+    "title": "Soft lift",
+    "source": "examples/effects/presets/edge-shadow.lay",
+    "className": "fx-edge-shadow"
+  },
+  {
+    "name": "bevel-button",
+    "title": "Raised button",
+    "source": "examples/effects/presets/bevel-button.lay",
+    "className": "fx-bevel-button"
+  },
+  {
+    "name": "bevel-frame",
+    "title": "Wide bevel",
+    "source": "examples/effects/presets/bevel-frame.lay",
+    "className": "fx-bevel-frame"
+  },
+  {
+    "name": "bevel-double",
+    "title": "Double bevel",
+    "source": "examples/effects/presets/bevel-double.lay",
+    "className": "fx-bevel-double"
+  },
+  {
+    "name": "bevel-edge",
+    "title": "Thin bevel",
+    "source": "examples/effects/presets/bevel-edge.lay",
+    "className": "fx-bevel-edge"
+  },
+  {
+    "name": "bevel-medal",
+    "title": "Medallion",
+    "source": "examples/effects/presets/bevel-medal.lay",
+    "className": "fx-bevel-medal"
+  },
+  {
+    "name": "material-flat",
+    "title": "Flat",
+    "source": "examples/effects/presets/material-flat.lay",
+    "className": "fx-material-flat"
+  },
+  {
+    "name": "material-matte",
+    "title": "Matte",
+    "source": "examples/effects/presets/material-matte.lay",
+    "className": "fx-material-matte"
+  },
+  {
+    "name": "material-plastic",
+    "title": "Plastic",
+    "source": "examples/effects/presets/material-plastic.lay",
+    "className": "fx-material-plastic"
+  },
+  {
+    "name": "material-metal",
+    "title": "Metal",
+    "source": "examples/effects/presets/material-metal.lay",
+    "className": "fx-material-metal"
+  },
+  {
+    "name": "material-warm",
+    "title": "Warm studio",
+    "source": "examples/effects/presets/material-warm.lay",
+    "className": "fx-material-warm"
+  },
+  {
+    "name": "view-isometric",
+    "title": "Isometric",
+    "source": "examples/effects/presets/view-isometric.lay",
+    "className": "fx-view-isometric"
+  },
+  {
+    "name": "view-perspective",
+    "title": "Perspective",
+    "source": "examples/effects/presets/view-perspective.lay",
+    "className": "fx-view-perspective"
+  },
+  {
+    "name": "view-back",
+    "title": "Reverse",
+    "source": "examples/effects/presets/view-back.lay",
+    "className": "fx-view-back"
+  },
+  {
+    "name": "view-tilted",
+    "title": "Tilted",
+    "source": "examples/effects/presets/view-tilted.lay",
+    "className": "fx-view-tilted"
+  },
+  {
+    "name": "view-standing",
+    "title": "Standing",
+    "source": "examples/effects/presets/view-standing.lay",
+    "className": "fx-view-standing"
+  }
+]

@@ -91,7 +91,7 @@ dependencies = [
  "bitflags",
  "cexpr",
  "clang-sys",
- "itertools",
+ "itertools 0.13.0",
  "log",
  "prettyplease",
  "proc-macro2",
@@ -509,6 +509,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cd1511a7b6a56299bd043a9c167a6d2bfb37bf84a6dfceaba651168adfb43c87"
 dependencies = [
  "dtoa",
+]
+
+[[package]]
+name = "earcutr"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "afc28d89ac6cb489f679fcf51aaa62b4667bb0fb73a30f1d4d23949069707c07"
+dependencies = [
+ "itertools 0.14.0",
+ "num-traits",
 ]
 
 [[package]]
@@ -1143,6 +1153,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1201,7 +1220,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-cli"
-version = "0.7.2"
+version = "0.8.0"
 dependencies = [
  "base64 0.22.1",
  "ctrlc",
@@ -1223,7 +1242,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-core"
-version = "0.7.2"
+version = "0.8.0"
 dependencies = [
  "base64 0.22.1",
  "color",
@@ -1261,7 +1280,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-language"
-version = "0.7.2"
+version = "0.8.0"
 dependencies = [
  "cssparser",
  "laymesh-core",
@@ -1272,7 +1291,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-playback"
-version = "0.7.2"
+version = "0.8.0"
 dependencies = [
  "laymesh-render",
  "serde_json",
@@ -1281,9 +1300,11 @@ dependencies = [
 
 [[package]]
 name = "laymesh-render"
-version = "0.7.2"
+version = "0.8.0"
 dependencies = [
  "base64 0.22.1",
+ "earcutr",
+ "i_overlay",
  "image",
  "jpeg-encoder",
  "kurbo 0.13.1",
@@ -1293,6 +1314,7 @@ dependencies = [
  "moxcms",
  "png",
  "ratex-katex-fonts",
+ "resvg",
  "roxmltree 0.21.1",
  "serde",
  "serde_json",
@@ -1307,7 +1329,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-tiff-export"
-version = "0.7.2"
+version = "0.8.0"
 dependencies = [
  "tiff",
  "wasm-bindgen",
@@ -1315,7 +1337,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-wasm"
-version = "0.7.2"
+version = "0.8.0"
 dependencies = [
  "kurbo 0.13.1",
  "laymesh-core",
@@ -1327,7 +1349,7 @@ dependencies = [
 
 [[package]]
 name = "laymesh-web-export"
-version = "0.7.2"
+version = "0.8.0"
 dependencies = [
  "laymesh-render",
  "pdf-writer",
@@ -2077,6 +2099,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "resvg"
+version = "0.47.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9be183ad6a216aa96f33e4c8033b0988b8b3ea6fd2359d19af5bac4643fd8e81"
+dependencies = [
+ "gif",
+ "image-webp",
+ "log",
+ "pico-args",
+ "rgb",
+ "svgtypes 0.16.1",
+ "tiny-skia",
+ "usvg 0.47.0",
+ "zune-jpeg",
+]
+
+[[package]]
+name = "rgb"
+version = "0.8.53"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47b34b781b31e5d73e9fbc8689c70551fd1ade9a19e3e28cfec8580a79290cc4"
+dependencies = [
+ "bytemuck",
+]
+
+[[package]]
 name = "ring"
 version = "0.17.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2611,6 +2659,21 @@ dependencies = [
  "quick-error",
  "weezl",
  "zune-jpeg",
+]
+
+[[package]]
+name = "tiny-skia"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47ffee5eaaf5527f630fb0e356b90ebdec84d5d18d937c5e440350f88c5a91ea"
+dependencies = [
+ "arrayref",
+ "arrayvec",
+ "bytemuck",
+ "cfg-if",
+ "log",
+ "png",
+ "tiny-skia-path 0.12.0",
 ]
 
 [[package]]

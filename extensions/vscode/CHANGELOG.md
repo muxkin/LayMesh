@@ -1,3 +1,12 @@
+# 0.8.0
+
+- Add object-level 3D, reflection, soft edges and 30 editable effect presets.
+- Fix rounded 3D side color stripes and stale or mixed-resolution zoom frames.
+- Prepare pages in a separate renderer Worker with GPU support and cooperative cancellation.
+- Reuse immutable content for transforms and opacity; stop repainting authored static holds.
+- Accelerate software presentation composition without reducing resolution or imposing new resource quotas.
+- Preserve older display lists and editable offline projects. Existing offline HTML files require re-export.
+
 # 0.7.2
 
 - Avoid same-millisecond file timestamp false positives during media preview preparation.

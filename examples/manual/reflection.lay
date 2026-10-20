@@ -1,0 +1,2 @@
+p=canvas(size=(70mm,60mm),background="#ffffff")
+p.add(rect(size=(30mm,16mm),fill="#3c91b5",effects=[reflection(distance=2mm,length=0.7,opacity=0.5,fade=1,blur=0.3mm)]),offset=(15mm,10mm))

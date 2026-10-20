@@ -22,6 +22,8 @@ def build(binary=None,extension_dir=None):
  skia_assets.stage(extension/'dist')
  shutil.copy2(ROOT/'site/live/display-update.mjs',extension/'dist/display-update.mjs')
  shutil.copy2(ROOT/'site/live/skia-renderer.mjs',extension/'dist/skia-renderer.mjs')
+ shutil.copy2(ROOT/'site/live/shadow-mask.mjs',extension/'dist/shadow-mask.mjs')
+ shutil.copy2(ROOT/'site/live/skia-cpu-surface.mjs',extension/'dist/skia-cpu-surface.mjs')
  (extension/'dist').mkdir(exist_ok=True);(extension/'bin').mkdir(exist_ok=True)
  # Function spellings come from the same registry as language services.
  grammar=extension/'syntaxes/laymesh.tmLanguage.json';syntax=json.loads(grammar.read_text())
@@ -52,11 +54,11 @@ def build(binary=None,extension_dir=None):
  # bindings with the renderer worker; no Node bundler or runtime is needed.
  worker_source=(source/'src/preview-worker.mjs').read_text()
  worker_source=re.sub(r'^import .*?;\n', '', worker_source, flags=re.M)
- shared='\n'.join(re.sub(r'^import .*?;\n', '', (ROOT/'site/live'/name).read_text(), flags=re.M) for name in ['display-update.mjs','presentation-transitions-data.mjs','presentation-transitions.mjs','skia-renderer.mjs'])
+ shared='\n'.join(re.sub(r'^import .*?;\n', '', (ROOT/'site/live'/name).read_text(), flags=re.M) for name in ['display-update.mjs','presentation-transitions-data.mjs','presentation-transitions.mjs','shadow-mask.mjs','skia-cpu-surface.mjs','presentation-canvas.mjs','skia-renderer.mjs'])
  worker_source=(ROOT/'vendor/canvaskit/canvaskit.js').read_text()+'\n'+shared+'\nconst init=__wbg_init;\n'+worker_source
  (extension/'dist/preview-worker.mjs').write_text((extension/'dist/wasm/laymesh_wasm.js').read_text()+'\n'+worker_source)
  # The shared presentation runtime also runs as a self-contained blob worker.
- presentation='\n'.join(re.sub(r'^import .*?;\n','',(ROOT/'site/live'/name).read_text(),flags=re.M) for name in ['presentation-resources.mjs','presentation-renderer.mjs','presentation-worker.mjs'])
+ presentation='\n'.join(re.sub(r'^import .*?;\n','',(ROOT/'site/live'/name).read_text(),flags=re.M) for name in ['presentation-resources.mjs','presentation-visual-state.mjs','presentation-renderer.mjs','presentation-worker.mjs'])
  (extension/'dist/presentation-worker.mjs').write_text((extension/'dist/wasm/laymesh_wasm.js').read_text()+'\n'+(ROOT/'vendor/canvaskit/canvaskit.js').read_text()+'\n'+shared+'\nconst init=__wbg_init;\n'+presentation)
  # A platform package contains exactly one engine, even when reusing a staging directory.
  stale=extension/'bin'/('laymesh' if binary.name=='laymesh.exe' else 'laymesh.exe')

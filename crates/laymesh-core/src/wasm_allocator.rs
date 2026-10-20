@@ -9,6 +9,31 @@ use std::alloc::{GlobalAlloc, Layout};
 use std::arch::wasm32::{memory_grow, memory_size};
 use std::ptr;
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicU64, Ordering::Relaxed};
+
+static LIVE: AtomicU64 = AtomicU64::new(0);
+static PEAK: AtomicU64 = AtomicU64::new(0);
+static ALLOCATED: AtomicU64 = AtomicU64::new(0);
+static RELEASED: AtomicU64 = AtomicU64::new(0);
+fn acquired(bytes: usize) {
+    let live = LIVE.fetch_add(bytes as u64, Relaxed) + bytes as u64;
+    PEAK.fetch_max(live, Relaxed);
+    ALLOCATED.fetch_add(bytes as u64, Relaxed);
+}
+fn released(bytes: usize) {
+    LIVE.fetch_sub(bytes as u64, Relaxed);
+    RELEASED.fetch_add(bytes as u64, Relaxed);
+}
+/// Live, peak, cumulative allocated/released requested bytes. Excludes stack,
+/// static data and allocator metadata; does not change growth or reuse policy.
+pub fn allocation_stats() -> [u64; 4] {
+    [
+        LIVE.load(Relaxed),
+        PEAK.load(Relaxed),
+        ALLOCATED.load(Relaxed),
+        RELEASED.load(Relaxed),
+    ]
+}
 
 const PAGE: usize = 65536; // WebAssembly's linear-memory page size.
 struct Memory;
@@ -65,10 +90,18 @@ static ALLOCATOR: Allocator = Allocator;
 // pointer, size and alignment to the same dlmalloc instance; no host callbacks.
 unsafe impl GlobalAlloc for Allocator {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        unsafe { HEAP.lock().unwrap().malloc(layout.size(), layout.align()) }
+        let value = unsafe { HEAP.lock().unwrap().malloc(layout.size(), layout.align()) };
+        if !value.is_null() {
+            acquired(layout.size());
+        }
+        value
     }
     unsafe fn alloc_zeroed(&self, layout: Layout) -> *mut u8 {
-        unsafe { HEAP.lock().unwrap().calloc(layout.size(), layout.align()) }
+        let value = unsafe { HEAP.lock().unwrap().calloc(layout.size(), layout.align()) };
+        if !value.is_null() {
+            acquired(layout.size());
+        }
+        value
     }
     unsafe fn dealloc(&self, value: *mut u8, layout: Layout) {
         unsafe {
@@ -76,12 +109,18 @@ unsafe impl GlobalAlloc for Allocator {
                 .unwrap()
                 .free(value, layout.size(), layout.align())
         }
+        released(layout.size());
     }
     unsafe fn realloc(&self, value: *mut u8, layout: Layout, size: usize) -> *mut u8 {
-        unsafe {
+        let next = unsafe {
             HEAP.lock()
                 .unwrap()
                 .realloc(value, layout.size(), layout.align(), size)
+        };
+        if !next.is_null() {
+            released(layout.size());
+            acquired(size);
         }
+        next
     }
 }

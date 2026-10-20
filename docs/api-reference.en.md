@@ -321,7 +321,8 @@ Required: `src`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -376,7 +377,8 @@ Required: `content / spans`.
 | `path` | text_path | 沿路径排字 / Text path configuration | — |
 | `warp` | text_warp | 字形变形 / Text warp configuration | — |
 | `extrude` | text_extrude | 二维矢量挤出 / Vector extrusion | — |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -454,10 +456,11 @@ Required: `source`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
 | `font_family` | string \| string[] | Font family, path or ordered fallback list for formula text; math_font controls mathematical symbols. | 继承 / inherit |
 | `font_weight` | integer | Font weight, 100–900 | 继承 / inherit |
 | `font_style` | "normal" \| "italic" | Normal or italic<br>`normal`: Upright font style<br>`italic`: Italic font style | 继承 / inherit |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -495,7 +498,8 @@ Required: `size`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -530,7 +534,8 @@ Required: `size`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -568,7 +573,8 @@ Returns: material
 | `end_head` | head | End head configuration; absent by default | — |
 | `start_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -612,7 +618,7 @@ Returns: material
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
 
 ### Minimal complete example
 
@@ -655,7 +661,8 @@ Required: `commands`.
 | `end_head` | head | End head configuration; absent by default | — |
 | `start_cap` | "butt" \| "round" \| "square" | Independent path endpoint cap, inheriting border_cap; internal dash caps are unaffected<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits border_cap |
 | `end_cap` | "butt" \| "round" \| "square" | Independent path endpoint cap, inheriting border_cap; internal dash caps are unaffected<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits border_cap |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -690,7 +697,8 @@ Required: `points`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -729,7 +737,8 @@ Required: `points`.
 | `end_head` | head | End head configuration; absent by default | — |
 | `start_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -770,7 +779,8 @@ Required: `radius`, `start`, `end`.
 | `end_head` | head | End head configuration; absent by default | — |
 | `start_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | Independent endpoint cap; inherits line_cap<br>`butt`: Flat cap; does not extend beyond the endpoint<br>`round`: Round cap; extends half the stroke width<br>`square`: Square cap; extends half the stroke width | inherits line_cap |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -807,7 +817,8 @@ Required: `radius`, `start`, `end`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -845,7 +856,8 @@ Required: `points`, `outer_radius`, `inner_radius`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -881,7 +893,8 @@ Required: `outer_radius`, `inner_radius`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -1025,12 +1038,13 @@ Required: `material`.
 | `end_offset` | (length, length) / canvas unit | Independent physical offset of the end, followed by the overall offset | (0, 0) |
 | `start_offset_space` | "container" \| "target" | Direction frame for the start offset; target requires a path anchor with an unambiguous tangent<br>`container`: Along the current container axes<br>`target`: Along this path anchor tangent and left normal | container |
 | `end_offset_space` | "container" \| "target" | Direction frame for the end offset; target requires a path anchor with an unambiguous tangent<br>`container`: Along the current container axes<br>`target`: Along this path anchor tangent and left normal | container |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
 | `shaft_width` | length \| (length,length) \| (number,length)[] | Shaft width: constant, start/end pair, or strictly increasing normalized shaft-arclength stops; piecewise linear interpolation | 3mm |
 | `heads` | "start" \| "end" \| "both" | Head endpoints; chevrons support one head only<br>`start`: Start head<br>`end`: End head<br>`both`: Both heads | end |
 | `head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | twice the corresponding neck width |
 | `start_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
 | `end_head_size` | (length,length) / canvas unit | Head longitudinal length and transverse width; endpoint sizes override head_size | head_size |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -1331,7 +1345,7 @@ Required: `size`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
 
 ### Minimal complete example
 
@@ -3910,7 +3924,8 @@ Returns: Reusable filled arrow material.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -3950,7 +3965,8 @@ Returns: Reusable filled arrow material.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -3991,7 +4007,8 @@ Returns: Reusable filled arrow material.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -4029,7 +4046,8 @@ Returns: Reusable filled arrow material.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -4070,7 +4088,8 @@ Returns: Reusable filled arrow material.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -4109,7 +4128,8 @@ Required: `path`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
+| `three_d` | three_d | Object-level 3D appearance | none |
 
 ### Minimal complete example
 
@@ -4228,7 +4248,7 @@ Required: `src`.
 | `border_join` | "miter" \| "round" \| "bevel" | Outline join<br>`miter`: Extend edges to a pointed join, subject to the miter limit<br>`round`: Join adjacent stroke edges with a circular arc<br>`bevel`: Cut off the corner with a straight edge | miter |
 | `border_miter_limit` | value | Maximum miter extension relative to line width | 4 |
 | `border_opacity` | value | Independent border opacity, 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | Shadow, glow, reflection and soft-edge effects | [] |
 | `poster` | string | Optional poster image path | — |
 
 ### Minimal complete example
@@ -4374,6 +4394,79 @@ d.add(page(src="second.lay"))
 
 [Concepts and common errors](topics/media.en.md#play) · [Composition source](../examples/media/deck.laydoc)
 
+## reflection
+
+Create a fading mirrored reflection of the visible subject.
+
+Returns: reflection
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `distance` | length / canvas unit | Gap below the subject | 1mm |
+| `length` | value | Reflected fraction of subject height, 0–1 | 0.5 |
+| `opacity` | value | Starting opacity, 0–1 | 0.4 |
+| `fade` | value | Fade amount, 0–1 | 1 |
+| `blur` | length / canvas unit | Gaussian blur standard deviation | 0mm |
+| `target` | "content" \| "object" | Effect target<br>`content`: content<br>`object`: object | content |
+
+### Minimal complete example
+
+```lay
+p=canvas(size=(70mm,60mm),background="#ffffff")
+p.add(rect(size=(30mm,16mm),fill="#3c91b5",effects=[reflection(distance=2mm,length=0.7,opacity=0.5,fade=1,blur=0.3mm)]),offset=(15mm,10mm))
+```
+
+[Concepts and common errors](topics/art-effects.en.md#reflection) · [Composition source](../examples/manual/three_d.lay)
+
+## soft_edge
+
+Soften the visible silhouette
+
+Returns: soft_edge
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `radius` | length / canvas unit | Inward softening width | 1mm |
+| `target` | "content" \| "object" | Effect target<br>`content`: content<br>`object`: object | content |
+
+### Minimal complete example
+
+```lay
+p=canvas(size=(70mm,60mm),background="#ffffff")
+p.add(ellipse(size=(32mm,25mm),fill="#a665ab",effects=[soft_edge(radius=2mm),shadow(blur=1mm)]),offset=(16mm,12mm))
+```
+
+[Concepts and common errors](topics/art-effects.en.md#soft_edge) · [Composition source](../examples/manual/three_d.lay)
+
+## three_d
+
+Object-level 3D appearance
+
+Returns: three_d
+
+| Parameter | Allowed type / unit | Meaning and choices | Default / inheritance |
+| --- | --- | --- | --- |
+| `depth` | length / canvas unit | Total thickness centered on the object plane | 2mm |
+| `rotation` | (angle,angle,angle) | Rotate around the center in X, Y, Z order | (0deg,0deg,0deg) |
+| `bevel_top` | (length,length) / canvas unit | Front bevel width and height | (0mm,0mm) |
+| `bevel_bottom` | (length,length) / canvas unit | Back bevel width and height | (0mm,0mm) |
+| `projection` | "orthographic" \| "perspective" | Projection<br>`orthographic`: orthographic<br>`perspective`: perspective | orthographic |
+| `distance` | length / canvas unit | Perspective camera distance from the object center | 500mm |
+| `material` | "flat" \| "matte" \| "plastic" \| "metal" | Surface material<br>`flat`: flat<br>`matte`: matte<br>`plastic`: plastic<br>`metal`: metal | matte |
+| `light_direction` | (number,number,number) | Direction toward light; right, down, toward viewer are positive | (-1,-1,2) |
+| `light_color` | color | Light color | #ffffff |
+| `intensity` | value | Nonnegative light intensity | 1 |
+| `ambient` | value | Ambient intensity, 0–1 | 0.25 |
+
+### Minimal complete example
+
+```lay
+p=canvas(size=(70mm,60mm),background="#ffffff")
+p.add(rect(size=(30mm,20mm),fill="#dcad66",three_d=three_d(depth=5mm,rotation=(20deg,-30deg,0deg),bevel_top=(2mm,1mm),bevel_bottom=(1mm,0.5mm),material="metal"),effects=[soft_edge(radius=0.15mm),reflection(distance=1mm,length=0.6)]),offset=(18mm,12mm))
+```
+
+[Concepts and common errors](topics/art-effects.en.md#three_d) · [Composition source](../examples/manual/three_d.lay)
+
 ## css-properties
 
 CSS property support is shared by the compiler, completion, hover and color editing. Unsupported CSS is recovered with one warning per file. Draft shadow longhands follow the rules in [LCSS](topics/lcss.en.md#shadow-overrides).
@@ -4424,7 +4517,7 @@ CSS property support is shared by the compiler, completion, hover and color edit
 | `text-fill` | paint / none | 字形填充 / Glyph paint; defaults to color |
 | `text-stroke-color` | color / none | 字形描边颜色 / Glyph stroke color |
 | `text-stroke-width` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 字形描边宽度 / Glyph stroke width |
-| `effects` | effect[] / none | 按顺序叠加阴影与发光 / Ordered shadow and glow effects |
+| `effects` | effect[] / none | Shadow, glow, reflection and soft-edge effects |
 | `path` | material / none | One open path material with its original curve segments preserved; source endpoints are necks and tips extend outward |
 | `warp` | text_warp / none | 字形变形 / Text warp configuration |
 | `extrude` | text_extrude / none | 二维矢量挤出 / Vector extrusion |
@@ -4465,3 +4558,4 @@ CSS property support is shared by the compiler, completion, hover and color edit
 | `background-position` | string / none | Per-layer background position |
 | `background-size` | string / none | Per-layer dimensions including auto/cover/contain |
 | `background-repeat` | string / none | Per-layer tiling: repeat/no-repeat/space/round |
+| `three-d` | three_d / none | Object-level 3D appearance |

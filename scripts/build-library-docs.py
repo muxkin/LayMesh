@@ -53,12 +53,12 @@ for lib,pinned in zip(data['libraries'],manifest):
   assert entry['name'] and entry['kind'] in ['class','variable','keyframe'] and entry['reason']
   assert entry['status'] in ['supported','partial','resources','unsupported']
   if entry['status']!='unsupported':assert entry['sample'] and entry['verified'],entry['id'];usable+=1
- default=next(e for e in lib['entries'] if e['name']=={'bootstrap':'bg-primary','open-props':'--gradient-7','animate':'animate__fadeInUp'}[lib['name']] and e['kind']==('variable' if lib['name']=='open-props' else 'class'))
+ default=next(e for e in lib['entries'] if e['name']=={'bootstrap':'bg-primary','open-props':'--gradient-7','animate':'animate__fadeInUp','effects':'fx-bevel-button'}[lib['name']] and e['kind']==('variable' if lib['name']=='open-props' else 'class'))
  source=ROOT/'examples/libraries'/f'catalog-{lib["name"]}.lay'
  if a.check:assert source.read_text()==default['sample'],f'Stale {source}'
  else:source.write_text(default['sample'])
  for language in ['zh-CN','en']:
-  topic={'bootstrap':'style-bootstrap','open-props':'style-open-props','animate':'style-animate-library'}[lib['name']]
+  topic={'bootstrap':'style-bootstrap','open-props':'style-open-props','animate':'style-animate-library','effects':'art-effects'}[lib['name']]
   assert f'<!-- style-catalog:{lib["name"]} -->' in (ROOT/'docs/topics'/f'{topic}.{language}.md').read_text()
 # Index uses the compiler parser: rebuilding verifies the full inventory, including
 # unsupported rows. CI checks the pinned source hashes and every usable recipe link.

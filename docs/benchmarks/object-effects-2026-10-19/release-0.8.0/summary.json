@@ -1,0 +1,804 @@
+{
+  "version": "0.8.0",
+  "packages": {
+    "effects-30-presets.zip.html": {
+      "sha256": "0b5d3b8572db233dd17d159c28e93ae0ec3ff9b7963367d6c0f280e23472bb57",
+      "bytes": 11279348
+    },
+    "combined-effects.zip.html": {
+      "sha256": "ede72ce112ccae7696164fd7c070b56d3bb70925a121dd80cec9b7b67beb99a4",
+      "bytes": 11767552
+    },
+    "06_OpenProps_可编辑_优化版.zip.html": {
+      "sha256": "35b62531cdb04ba900e959936eaa2b7e2934a0a0ec8876eb4b4342e8fff3db56",
+      "bytes": 40347210
+    }
+  },
+  "preservation": {
+    "input": "$INPUT/06_OpenProps_可编辑.zip.html",
+    "output": "$REPO/target/release-readiness-0.8.0/final/06_OpenProps_可编辑_优化版.zip.html",
+    "originalSha256": "5cc592dd35bc7b383c7bdb13e703eac4028be4db531486213914f4c095278219",
+    "outputSha256": "35b62531cdb04ba900e959936eaa2b7e2934a0a0ec8876eb4b4342e8fff3db56",
+    "runtimeSha256": "c810b21d9753974bc151bf7fdcd406643e52adb3cf2a445e8255c1adc6b34bef",
+    "preservedEntries": 64,
+    "dependencies": [
+      {
+        "id": "P01",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P01.lay"
+        ]
+      },
+      {
+        "id": "P02",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P02.lay"
+        ]
+      },
+      {
+        "id": "P03",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P03.lay"
+        ]
+      },
+      {
+        "id": "P04",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/examples/P04-start.lay"
+        ]
+      },
+      {
+        "id": "P05",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/examples/P05-color.lay"
+        ]
+      },
+      {
+        "id": "P06",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P06.lay"
+        ]
+      },
+      {
+        "id": "P07",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P07.lay"
+        ]
+      },
+      {
+        "id": "P08",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/examples/P08-radius.lay"
+        ]
+      },
+      {
+        "id": "P09",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P09.lay"
+        ]
+      },
+      {
+        "id": "P10",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/examples/P10-gradient.lay"
+        ]
+      },
+      {
+        "id": "P11",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P11.lay"
+        ]
+      },
+      {
+        "id": "P12",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P12.lay"
+        ]
+      },
+      {
+        "id": "P13",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P13.lay"
+        ]
+      },
+      {
+        "id": "P14",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P14.lay"
+        ]
+      },
+      {
+        "id": "P15",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P15.lay"
+        ]
+      },
+      {
+        "id": "P16",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/examples/P16-shadow.lay"
+        ]
+      },
+      {
+        "id": "P17",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P17.lay"
+        ]
+      },
+      {
+        "id": "P18",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/examples/P18-direction.lay"
+        ]
+      },
+      {
+        "id": "P19",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P19.lay"
+        ]
+      },
+      {
+        "id": "P20",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/examples/P20-depth.lay"
+        ]
+      },
+      {
+        "id": "P21",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P21.lay"
+        ]
+      },
+      {
+        "id": "P22",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P22.lay"
+        ]
+      },
+      {
+        "id": "P23",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/examples/P23-compose.lay"
+        ]
+      },
+      {
+        "id": "P24",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P24.lay"
+        ]
+      },
+      {
+        "id": "P25",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P25.lay"
+        ]
+      },
+      {
+        "id": "P26",
+        "dependencies": [
+          "/project/examples.laydoc",
+          "/project/film.lcss",
+          "/project/pages/P26.lay"
+        ]
+      }
+    ],
+    "bytes": 40347210
+  },
+  "localStages": [
+    {
+      "stage": "object-effects",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "laymesh-render",
+        "--test",
+        "object_effects"
+      ],
+      "returncode": 0,
+      "seconds": 5.30614709854126
+    },
+    {
+      "stage": "web-build",
+      "command": [
+        "python",
+        "scripts/build-web-export.py"
+      ],
+      "returncode": 0,
+      "seconds": 52.91004490852356
+    },
+    {
+      "stage": "surface-svg",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "laymesh-render",
+        "--no-default-features",
+        "--test",
+        "surface_svg"
+      ],
+      "returncode": 0,
+      "seconds": 1.47391939163208
+    },
+    {
+      "stage": "release-build",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "-p",
+        "laymesh-cli"
+      ],
+      "returncode": 0,
+      "seconds": 125.69412875175476
+    },
+    {
+      "stage": "licenses",
+      "command": [
+        "python",
+        "scripts/collect-licenses.py"
+      ],
+      "returncode": 0,
+      "seconds": 3.448713779449463
+    },
+    {
+      "stage": "library",
+      "command": [
+        "python",
+        "scripts/build-library-docs.py"
+      ],
+      "returncode": 0,
+      "seconds": 168.5785300731659
+    },
+    {
+      "stage": "library-check",
+      "command": [
+        "python",
+        "scripts/build-library-docs.py",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 0.40530943870544434
+    },
+    {
+      "stage": "media",
+      "command": [
+        "python",
+        "scripts/build-docs-media.py",
+        "--binary",
+        "target/release/laymesh",
+        "--jobs",
+        "4"
+      ],
+      "returncode": 0,
+      "seconds": 334.11833214759827
+    },
+    {
+      "stage": "docs",
+      "command": [
+        "python",
+        "scripts/build-docs.py"
+      ],
+      "returncode": 0,
+      "seconds": 37.42539715766907
+    },
+    {
+      "stage": "docs-check",
+      "command": [
+        "python",
+        "scripts/build-docs.py",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 23.157269716262817
+    },
+    {
+      "stage": "editor",
+      "command": [
+        "python",
+        "scripts/build-editors.py",
+        "--binary",
+        "target/release/laymesh"
+      ],
+      "returncode": 0,
+      "seconds": 2.605814218521118
+    }
+  ],
+  "browserStages": [
+    {
+      "stage": "presentation-scheduling",
+      "command": [
+        "node",
+        "scripts/test-presentation-scheduling.mjs"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 0.03662109375
+    },
+    {
+      "stage": "presentation-workers",
+      "command": [
+        "node",
+        "scripts/test-presentation-workers.mjs"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 0.026211261749267578
+    },
+    {
+      "stage": "presentation-resources",
+      "command": [
+        "node",
+        "scripts/test-presentation-resources.mjs"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 0.08506441116333008
+    },
+    {
+      "stage": "shadow-mask",
+      "command": [
+        "node",
+        "scripts/test-shadow-mask.mjs"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 0.0471796989440918
+    },
+    {
+      "stage": "cache-ownership",
+      "command": [
+        "node",
+        "scripts/test-cache-ownership.mjs"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 0.151503324508667
+    },
+    {
+      "stage": "presentation-frame-delivery",
+      "command": [
+        "node",
+        "scripts/test-presentation-frame-delivery.mjs"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 0.030217647552490234
+    },
+    {
+      "stage": "display-update",
+      "command": [
+        "node",
+        "scripts/test-display-update.mjs"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 0.023776531219482422
+    },
+    {
+      "stage": "preview-player",
+      "command": [
+        "node",
+        "scripts/test-preview-player.mjs"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 0.024892091751098633
+    },
+    {
+      "stage": "package-combined-effects",
+      "command": [
+        "target/release/laymesh",
+        "render",
+        "examples/effects/combined-effects.lay",
+        "-o",
+        "$REPO/target/release-readiness-0.8.0/final/combined-effects.zip.html",
+        "--html-editable",
+        "--html-embed-fonts"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 3.7217984199523926
+    },
+    {
+      "stage": "package-presets",
+      "command": [
+        "target/release/laymesh",
+        "render",
+        "examples/effects/presets.lay",
+        "-o",
+        "$REPO/target/release-readiness-0.8.0/final/effects-30-presets.zip.html",
+        "--html-editable",
+        "--html-embed-fonts"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 3.630714178085327
+    },
+    {
+      "stage": "object-cpu",
+      "command": [
+        "node",
+        "scripts/test-object-effects.cjs",
+        "http://100.64.0.6:18791/release-0.8.0/",
+        "$REPO/target/release-readiness-0.8.0/final/object-cpu"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 14.341304063796997
+    },
+    {
+      "stage": "object-gpu",
+      "command": [
+        "node",
+        "scripts/test-object-effects.cjs",
+        "http://100.64.0.6:18791/release-0.8.0/",
+        "$REPO/target/release-readiness-0.8.0/final/object-gpu"
+      ],
+      "env": {
+        "LAYMESH_BROWSER_GPU": "1",
+        "HARDWARE_GPU": "1"
+      },
+      "returncode": 0,
+      "seconds": 13.504331350326538
+    },
+    {
+      "stage": "effects-catalog",
+      "command": [
+        "node",
+        "scripts/test-effects-catalog.cjs",
+        "http://100.64.0.6:18791/release-0.8.0/",
+        "$REPO/target/release-readiness-0.8.0/final/effects-catalog"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 3.383955955505371
+    },
+    {
+      "stage": "effects-exports",
+      "command": [
+        "python",
+        "scripts/test-effects-exports.py",
+        "--binary",
+        "target/release/laymesh",
+        "--cases",
+        "$REPO/target/release-readiness-0.8.0/final/object-cpu",
+        "--output",
+        "$REPO/target/release-readiness-0.8.0/final/effects-exports"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 6.04539680480957
+    },
+    {
+      "stage": "effects-offline",
+      "command": [
+        "node",
+        "scripts/test-effects-editable.cjs",
+        "$REPO/target/release-readiness-0.8.0/final/combined-effects.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/effects-30-presets.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/effects-offline"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 73.31788730621338
+    },
+    {
+      "stage": "zoom",
+      "command": [
+        "node",
+        "scripts/test-zoom-quality.cjs",
+        "$REPO/target/release-readiness-0.8.0/final/combined-effects.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/zoom"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 423.05759716033936
+    },
+    {
+      "stage": "zoom-visible",
+      "command": [
+        "node",
+        "scripts/test-zoom-visible.cjs",
+        "$REPO/target/release-readiness-0.8.0/final/combined-effects.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/zoom-visible"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 219.2285668849945
+    },
+    {
+      "stage": "viewport-lifecycle",
+      "command": [
+        "node",
+        "scripts/test-viewport-lifecycle.cjs",
+        "$REPO/target/release-readiness-0.8.0/final/combined-effects.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/viewport-lifecycle"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 8.19996166229248
+    },
+    {
+      "stage": "native-composition",
+      "command": [
+        "node",
+        "scripts/test-native-presentation.cjs",
+        "http://100.64.0.6:18791/release-0.8.0",
+        "$REPO/target/release-readiness-0.8.0/final/native-composition"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 7.196451187133789
+    },
+    {
+      "stage": "animation-cache",
+      "command": [
+        "node",
+        "scripts/test-animation-cache-quality.cjs",
+        "http://100.64.0.6:18791/release-0.8.0",
+        "$REPO/target/release-readiness-0.8.0/final/animation-cache"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 13.764067649841309
+    },
+    {
+      "stage": "vscode-effects",
+      "command": [
+        "python",
+        "scripts/test-vscode-preview.py",
+        "--output",
+        "$REPO/target/release-readiness-0.8.0/final/vscode-effects",
+        "--block-worker-resource-fetch",
+        "--object-effects"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 22.884841203689575
+    },
+    {
+      "stage": "vscode-transitions",
+      "command": [
+        "python",
+        "scripts/test-vscode-preview.py",
+        "--output",
+        "$REPO/target/release-readiness-0.8.0/final/vscode-transitions",
+        "--block-worker-resource-fetch",
+        "--page-transitions"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 20.635931968688965
+    },
+    {
+      "stage": "export-budget",
+      "command": [
+        "python",
+        "scripts/check-web-export-budget.py"
+      ],
+      "env": {},
+      "returncode": 0,
+      "seconds": 0.04133749008178711
+    },
+    {
+      "stage": "openprops-interaction",
+      "command": [
+        "node",
+        "scripts/test-openprops-interaction.cjs",
+        "$REPO/target/release-readiness-0.8.0/final/06_OpenProps_可编辑_优化版.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/openprops-interaction"
+      ],
+      "env": {
+        "ENGINES": "chromium,firefox"
+      },
+      "returncode": 0,
+      "seconds": 77.66370630264282
+    },
+    {
+      "stage": "playback-chromium-1920-hardware",
+      "command": [
+        "node",
+        "scripts/test-openprops-performance.cjs",
+        "$REPO/target/release-readiness-0.8.0/final/06_OpenProps_可编辑_优化版.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/playback-chromium-1920-hardware"
+      ],
+      "env": {
+        "ENGINES": "chromium",
+        "WIDTH": "1920",
+        "HEIGHT": "920",
+        "ROUNDS": "2",
+        "FIRST": "1",
+        "PAGES": "26",
+        "HARDWARE_GPU": "1",
+        "FORCE_CPU": "0",
+        "PHASE_DIAGNOSTICS": "0"
+      },
+      "returncode": 0,
+      "seconds": 563.7128326892853
+    },
+    {
+      "stage": "playback-chromium-3840-hardware",
+      "command": [
+        "node",
+        "scripts/test-openprops-performance.cjs",
+        "$REPO/target/release-readiness-0.8.0/final/06_OpenProps_可编辑_优化版.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/playback-chromium-3840-hardware"
+      ],
+      "env": {
+        "ENGINES": "chromium",
+        "WIDTH": "3840",
+        "HEIGHT": "1840",
+        "ROUNDS": "2",
+        "FIRST": "1",
+        "PAGES": "26",
+        "HARDWARE_GPU": "1",
+        "FORCE_CPU": "0",
+        "PHASE_DIAGNOSTICS": "0"
+      },
+      "returncode": 0,
+      "seconds": 563.8667948246002
+    },
+    {
+      "stage": "playback-chromium-1920-default",
+      "command": [
+        "node",
+        "scripts/test-openprops-performance.cjs",
+        "$REPO/target/release-readiness-0.8.0/final/06_OpenProps_可编辑_优化版.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/playback-chromium-1920-default"
+      ],
+      "env": {
+        "ENGINES": "chromium",
+        "WIDTH": "1920",
+        "HEIGHT": "920",
+        "ROUNDS": "2",
+        "FIRST": "1",
+        "PAGES": "26",
+        "HARDWARE_GPU": "0",
+        "FORCE_CPU": "0",
+        "PHASE_DIAGNOSTICS": "0"
+      },
+      "returncode": 0,
+      "seconds": 563.9996461868286
+    },
+    {
+      "stage": "playback-chromium-3840-default",
+      "command": [
+        "node",
+        "scripts/test-openprops-performance.cjs",
+        "$REPO/target/release-readiness-0.8.0/final/06_OpenProps_可编辑_优化版.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/playback-chromium-3840-default"
+      ],
+      "env": {
+        "ENGINES": "chromium",
+        "WIDTH": "3840",
+        "HEIGHT": "1840",
+        "ROUNDS": "2",
+        "FIRST": "1",
+        "PAGES": "26",
+        "HARDWARE_GPU": "0",
+        "FORCE_CPU": "0",
+        "PHASE_DIAGNOSTICS": "0"
+      },
+      "returncode": 0,
+      "seconds": 568.4173426628113
+    },
+    {
+      "stage": "playback-firefox-1920-default",
+      "command": [
+        "node",
+        "scripts/test-openprops-performance.cjs",
+        "$REPO/target/release-readiness-0.8.0/final/06_OpenProps_可编辑_优化版.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/playback-firefox-1920-default"
+      ],
+      "env": {
+        "ENGINES": "firefox",
+        "WIDTH": "1920",
+        "HEIGHT": "920",
+        "ROUNDS": "2",
+        "FIRST": "1",
+        "PAGES": "26",
+        "HARDWARE_GPU": "0",
+        "FORCE_CPU": "0",
+        "PHASE_DIAGNOSTICS": "0"
+      },
+      "returncode": 0,
+      "seconds": 573.8218166828156
+    },
+    {
+      "stage": "playback-firefox-3840-default",
+      "command": [
+        "node",
+        "scripts/test-openprops-performance.cjs",
+        "$REPO/target/release-readiness-0.8.0/final/06_OpenProps_可编辑_优化版.zip.html",
+        "$REPO/target/release-readiness-0.8.0/final/playback-firefox-3840-default"
+      ],
+      "env": {
+        "ENGINES": "firefox",
+        "WIDTH": "3840",
+        "HEIGHT": "1840",
+        "ROUNDS": "2",
+        "FIRST": "1",
+        "PAGES": "26",
+        "HARDWARE_GPU": "0",
+        "FORCE_CPU": "0",
+        "PHASE_DIAGNOSTICS": "0"
+      },
+      "returncode": 0,
+      "seconds": 587.558126449585
+    }
+  ],
+  "interaction": [
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "status": "passed",
+      "offlineEditSaved": true,
+      "pages": 26,
+      "samples": 5,
+      "menuP95Ms": 14,
+      "exitP95Ms": 11
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "status": "passed",
+      "offlineEditSaved": true,
+      "pages": 26,
+      "samples": 5,
+      "menuP95Ms": 38,
+      "exitP95Ms": 14
+    }
+  ],
+  "historicalFullContracts": {
+    "rustPassed": 726,
+    "rustFailed": 0,
+    "rustIgnored": 2,
+    "pythonContracts": 70,
+    "historicalAssertionsVerified": 891
+  },
+  "note": "Full contracts preceded the additional low-alpha correction. All 18 affected native tests and the complete browser matrix were rerun on the final runtime; exact-commit cross-platform CI is recorded separately at publication."
+}

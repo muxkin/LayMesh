@@ -756,7 +756,7 @@ Applies to: Text and formulas.
 
 ### effects
 
-按顺序叠加阴影与发光 / Ordered shadow and glow effects
+Shadow, glow, reflection and soft-edge effects
 
 Accepted values: effect[].
 

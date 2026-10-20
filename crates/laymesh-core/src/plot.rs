@@ -1721,6 +1721,9 @@ pub fn validate_definition(e: &Engine, name: &str, a: &Args, l: Loc) -> Result<(
             | "text_path"
             | "text_warp"
             | "text_extrude"
+            | "reflection"
+            | "soft_edge"
+            | "three_d"
     ) {
         return Ok(());
     }

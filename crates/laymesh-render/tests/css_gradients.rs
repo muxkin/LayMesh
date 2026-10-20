@@ -22,7 +22,10 @@ fn all_original_recipes_use_oklab_and_explicit_srgb_without_ignored_declarations
                 scene.warnings
             );
             let list = to_display_list(&scene).unwrap();
-            assert_eq!(list.schema_version, 2);
+            assert_eq!(
+                list.schema_version,
+                laymesh_render::display_list::DISPLAY_LIST_VERSION
+            );
             let frame = render_rgba(&list, 96.).unwrap();
             assert!(frame.rgba.chunks_exact(4).any(|c| c[3] != 0));
         }

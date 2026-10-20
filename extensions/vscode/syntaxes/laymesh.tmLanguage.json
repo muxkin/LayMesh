@@ -145,7 +145,7 @@
     },
     {
       "name": "support.function",
-      "match": "\\b(?:abs|add|add_axis|animate|append|arc|arc_to|area|array|arrow|at|audio|axis|band|bar|bent|between|box|boxplot|canvas|chevron|close|cmap|cmap_names|color_scale|colorbar|colors|conic_gradient|contour|contourf|corners|cubic_to|data|dict|document|ecdf|ellipse|enumerate|errorbar|extrema|formula|fuse|get|glow|gradient|group|hatch|head|heatmap|hist|hline|hsv|image|image_fill|in_space|inflections|intersections|items|keys|legend|len|line|line_to|linear_gradient|max|min|move_to|nearest|oklch|page|palette|path|play|plot|plot_style|polygon|polyline|quad_to|radial_gradient|range|ray|rect|reversed|rgb|ring|sample|scatter|sector|shadow|span|star|step|str|table|text|text_extrude|text_path|text_warp|transition|update|uturn|values|video|violin|vline|with_side|zip)(?=\\s*\\()"
+      "match": "\\b(?:abs|add|add_axis|animate|append|arc|arc_to|area|array|arrow|at|audio|axis|band|bar|bent|between|box|boxplot|canvas|chevron|close|cmap|cmap_names|color_scale|colorbar|colors|conic_gradient|contour|contourf|corners|cubic_to|data|dict|document|ecdf|ellipse|enumerate|errorbar|extrema|formula|fuse|get|glow|gradient|group|hatch|head|heatmap|hist|hline|hsv|image|image_fill|in_space|inflections|intersections|items|keys|legend|len|line|line_to|linear_gradient|max|min|move_to|nearest|oklch|page|palette|path|play|plot|plot_style|polygon|polyline|quad_to|radial_gradient|range|ray|rect|reflection|reversed|rgb|ring|sample|scatter|sector|shadow|soft_edge|span|star|step|str|table|text|text_extrude|text_path|text_warp|three_d|transition|update|uturn|values|video|violin|vline|with_side|zip)(?=\\s*\\()"
     },
     {
       "name": "keyword.control",

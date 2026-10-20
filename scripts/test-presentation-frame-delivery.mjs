@@ -2,22 +2,24 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
+import {nextVisualChange} from '../site/live/presentation-visual-state.mjs';
 const source=fs.readFileSync(new URL('../site/live/presentation-worker.mjs',import.meta.url),'utf8')
  .replace(/^import .*;\n/gm,'').replace('export async function','async function');
 let renderer,resolveBitmap,rejectBitmap,closed=0,failNotification=false,planning=0,geometry=0;
 const frames=[];
 class Renderer {
- constructor(ck,canvas,options){renderer=this;this.options=options;this.pages=new Map();this.skip=false;this.skia={canvas,setMediaFrames(){},gl:{getContextAttributes:()=>({preserveDrawingBuffer:true})},transitions:{cancel(){},capture(){},async play(){return {};}},completeFrame:async()=>true};}
+ constructor(ck,canvas,options){renderer=this;this.options=options;this.pages=new Map();this.skip=false;this.skia={canvas,gr:{},interruptPreparationWait(){},setMediaFrames(){},gl:{getContextAttributes:()=>({preserveDrawingBuffer:true})},transitions:{cancel(){},capture(){},async play(){return {};}},completeFrame:async()=>true};}
  async install(id){this.pages.set(id,{ready:true,readySize:[10,10]});}
  async prepare(id,w,h,sample,priority,viewport,cancelled){
   sample(0,false);await new Promise(resolve=>setImmediate(resolve));
   return {cancelled:cancelled()};
  }
- evict(){} use(){} cost(){return 0;} dispose(){}
+ evict(){} use(){} cost(){return 0;} residentBytes(){return 0;} dispose(){}
  render(){this.draws=(this.draws||0)+1;if(this.skip)return {skipped:true};this.options.onPresent();return {};}
 }
-const context=vm.createContext({document:{},performance,Promise,JSON,Map,Set,Error,
- init:async()=>({memory:{buffer:{byteLength:0}}}),initializeSkia:async()=>({HEAPU8:{byteLength:0}}),
+const context=vm.createContext({document:{},performance,Promise,JSON,Map,Set,Error,nextVisualChange,
+ init:async()=>({memory:{buffer:{byteLength:0}}}),initializeSkia:async()=>({HEAPU8:{byteLength:0},ColorType:{RGBA_8888:0},AlphaType:{Premul:0},ColorSpace:{SRGB:0}}),
+ rendering_memory_stats:()=>[0,0,0,0],setSurfaceRasterizer(){},raster_surface3d(){},surface_texture_region(){},refine_surface3d(){},surface_material_texture(){},
  PresentationRenderer:Renderer,retain_render_resources(){},register_render_resource(){},
  prepare_display_list:()=>({free(){},frame_state:()=>{geometry++;return '{}';},transform_state:()=>{planning++;return '{}';}}),
  createImageBitmap:()=>new Promise((resolve,reject)=>{resolveBitmap=resolve;rejectBitmap=reject;}),
@@ -67,6 +69,8 @@ const beforeSnapshotDraws=renderer.draws,beforeSnapshotSamples=geometry;
 const snapshot=runtime({type:'snapshot'});resolveBitmap({close(){closed++;}});const transferred=await snapshot;
 assert.equal(renderer.draws,beforeSnapshotDraws,'A retained display buffer transfers without redrawing');
 assert.equal(geometry,beforeSnapshotSamples,'A retained display buffer transfers without sampling');transferred.bitmap.close();
+const rawPixels=new Uint8Array(400);renderer.skia.gr=null;renderer.skia.surface={getCanvas:()=>({readPixels:()=>rawPixels})};
+const raw=await runtime({type:'snapshot'});assert.equal(raw.rgba,rawPixels);assert.equal(raw.width,10);assert.equal(raw.height,10);assert.equal(raw.bitmap,undefined);assert.equal(renderer.draws,beforeSnapshotDraws,'CPU snapshot does not redraw');
 await runtime({type:'target',serial:8});
 await runtime({type:'background',serial:8,paused:false});
 const beforeGeometry=geometry;

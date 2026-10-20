@@ -63,6 +63,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | dlmalloc | 0.2.14 | MIT/Apache-2.0 |
 | dtoa | 1.0.11 | MIT OR Apache-2.0 |
 | dtoa-short | 0.3.5 | MPL-2.0 |
+| earcutr | 0.5.0 | ISC |
 | ecb | 0.1.2 | MIT |
 | either | 1.19.0 | MIT OR Apache-2.0 |
 | encoding_rs | 0.8.42 | (Apache-2.0 OR MIT) AND BSD-3-Clause |
@@ -126,6 +127,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | inout | 0.1.4 | MIT OR Apache-2.0 |
 | ipnet | 2.12.2 | MIT OR Apache-2.0 |
 | itertools | 0.13.0 | MIT OR Apache-2.0 |
+| itertools | 0.14.0 | MIT OR Apache-2.0 |
 | itoa | 1.0.18 | MIT OR Apache-2.0 |
 | jobserver | 0.1.35 | MIT OR Apache-2.0 |
 | jpeg-encoder | 0.7.1 | (MIT OR Apache-2.0) AND IJG |
@@ -208,6 +210,8 @@ The native executable and WebAssembly module contain the following locked Rust d
 | regex-lite | 0.1.9 | MIT OR Apache-2.0 |
 | regex-syntax | 0.8.11 | MIT OR Apache-2.0 |
 | reqwest | 0.12.28 | MIT OR Apache-2.0 |
+| resvg | 0.47.0 | Apache-2.0 OR MIT |
+| rgb | 0.8.53 | MIT |
 | ring | 0.17.14 | Apache-2.0 AND ISC |
 | roxmltree | 0.20.0 | MIT OR Apache-2.0 |
 | roxmltree | 0.21.1 | MIT OR Apache-2.0 |
@@ -263,6 +267,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | thiserror-impl | 1.0.69 | MIT OR Apache-2.0 |
 | thiserror-impl | 2.0.21 | MIT OR Apache-2.0 |
 | tiff | 0.11.3 | MIT |
+| tiny-skia | 0.12.0 | BSD-3-Clause |
 | tiny-skia-path | 0.11.4 | BSD-3-Clause |
 | tiny-skia-path | 0.12.0 | BSD-3-Clause |
 | tinystr | 0.8.4 | Unicode-3.0 |
@@ -362,6 +367,7 @@ The native executable and WebAssembly module contain the following locked Rust d
 | open-props CSS | 1.7.23 | MIT |
 | animate CSS | 4.1.1 | MIT |
 | gl-transitions CSS | 1.74.0 | MIT, BSD-2-Clause, BSD-3-Clause |
+| effects CSS | 1.0.0 | MIT |
 | jspdf | 4.2.1 | MIT |
 | svg2pdf | 2.8.1 | MIT |
 | @babel/runtime | 7.28.6 | MIT |

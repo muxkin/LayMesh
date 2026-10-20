@@ -111,7 +111,14 @@ export async function vectorSVG(
     // svg2pdf.js cannot represent SVG masks, isolated opacity groups, gradient
     // spread, or varying stop alpha correctly. Only those local objects fall
     // back to CanvasKit, at the requested physical DPI; surrounding ink stays vector.
+    if((n.hint?.surface3d || n.effects.some(e=>e.softEdge!=null)) && (!pdf || n.opacity===1)){
+      let body=await layer({...n,effects:n.effects.filter(e=>e.softEdge!=null)},t);
+      if(n.effects.some(e=>e.softEdge==null&&!e.inner))body=(await layer(n,t,false))+body;
+      if(n.effects.some(e=>e.softEdge==null&&e.inner))body+=await layer(n,t,true);
+      return `<g data-laymesh-raster="object-surface" transform="${matrix(n.transform)}" opacity="${n.opacity}">${body}</g>`;
+    }
     const reasons=[];
+    if(n.hint?.surface3d || n.effects.some(e=>e.softEdge!=null))reasons.push("对象级三维或柔化边缘");
     if(n.opacity < 1 && (k.kind === "group" || n.effects.length || (k.kind === "path" && k.stroke && k.fill.kind !== "none")))reasons.push("隔离透明组合");
     if(k.kind === "group" && k.mask)reasons.push("蒙版");
     const gradient=p=>["linear","radial","conic"].includes(p.kind)||(p.kind==="pattern"&&p.nodes.some(n=>n.kind.kind==="path"&&gradient(n.kind.fill)));
@@ -120,7 +127,7 @@ export async function vectorSVG(
       (["linear","radial"].includes(k.fill.kind)&&(k.fill.spread!=="pad"||k.fill.stops.some(s=>s.rgba[3]!==1)||!pdfShadingAccurate(k.fill.stops))) ||
       (k.fill.kind==="radial"&&k.fill.stops.some((s,i,a)=>i&&s.offset===a[i-1].offset&&s.rgba.some((v,j)=>v!==a[i-1].rgba[j])))
     )));
-    const complex=pdf && reasons.length;
+    const complex=(pdf && reasons.length) || n.hint?.surface3d || n.effects.some(e=>e.softEdge!=null);
     if (complex) {
       return `<g data-laymesh-raster="composition" transform="${matrix(n.transform)}" opacity="${n.opacity}">${await layer(n, t)}</g>`;
     }

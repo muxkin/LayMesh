@@ -1,5 +1,9 @@
 import init, {
   dimensions,
+  raster_surface3d,
+  surface_texture_region,
+  refine_surface3d,
+  surface_material_texture,
   encode_pixels,
   clear_resources,
   register_resource,
@@ -8,7 +12,7 @@ import init, {
   VectorJob,
   PdfJob,
 } from "./exporter-full/laymesh_wasm.js";
-import { initializeSkia, SkiaRenderer } from "./skia-renderer.mjs";
+import { initializeSkia, SkiaRenderer, setSurfaceRasterizer } from "./skia-renderer.mjs";
 import { exportHaloMM, exportTilePixels } from "./web-export-raster.mjs";
 let exportSkia;
 let pendingPage,sequence=0;
@@ -22,6 +26,7 @@ self.onmessage = async ({ data }) => {
   let renderer, pdfJob, pptxDocument;
   try {
     await init({ module_or_path: data.wasm });
+    setSurfaceRasterizer(raster_surface3d,surface_texture_region,refine_surface3d,surface_material_texture);
     const options = JSON.stringify(data.options),
       output = [],
       warnings = [];

@@ -1,0 +1,59 @@
+{
+  "status": "passed",
+  "results": [
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "input": "combined-effects.zip.html",
+      "sha256": "ede72ce112ccae7696164fd7c070b56d3bb70925a121dd80cec9b7b67beb99a4",
+      "offline": true,
+      "changedTextPersisted": true,
+      "errors": []
+    },
+    {
+      "engine": "chromium",
+      "version": "151.0.7922.34",
+      "input": "effects-30-presets.zip.html",
+      "sha256": "0b5d3b8572db233dd17d159c28e93ae0ec3ff9b7963367d6c0f280e23472bb57",
+      "offline": true,
+      "changedTextPersisted": true,
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "input": "combined-effects.zip.html",
+      "sha256": "ede72ce112ccae7696164fd7c070b56d3bb70925a121dd80cec9b7b67beb99a4",
+      "offline": true,
+      "changedTextPersisted": true,
+      "errors": []
+    },
+    {
+      "engine": "firefox",
+      "version": "153.0",
+      "input": "effects-30-presets.zip.html",
+      "sha256": "0b5d3b8572db233dd17d159c28e93ae0ec3ff9b7963367d6c0f280e23472bb57",
+      "offline": true,
+      "changedTextPersisted": true,
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "input": "combined-effects.zip.html",
+      "sha256": "ede72ce112ccae7696164fd7c070b56d3bb70925a121dd80cec9b7b67beb99a4",
+      "offline": true,
+      "changedTextPersisted": true,
+      "errors": []
+    },
+    {
+      "engine": "webkit",
+      "version": "26.5",
+      "input": "effects-30-presets.zip.html",
+      "sha256": "0b5d3b8572db233dd17d159c28e93ae0ec3ff9b7963367d6c0f280e23472bb57",
+      "offline": true,
+      "changedTextPersisted": true,
+      "errors": []
+    }
+  ]
+}

@@ -4,6 +4,8 @@ use kurbo::{Affine, BezPath, PathEl, Rect};
 use laymesh_core::Result;
 use skia_safe as sk;
 use std::collections::BTreeMap;
+#[path = "skia_surface.rs"]
+mod surface;
 
 pub(crate) fn matrix(a: Affine) -> sk::Matrix {
     let [a, b, c, d, e, f] = a.as_coeffs();
@@ -99,6 +101,8 @@ pub(crate) struct Painter<'a> {
     pub semantic_ids: BTreeMap<usize, i32>,
     semantic_depth: usize,
     effect_pixels: u64,
+    pub(crate) surface_cache: BTreeMap<String, Vec<(Rect, sk::Image)>>,
+    pub(crate) surface_cache_limit: u64,
 }
 impl<'a> Painter<'a> {
     pub fn new(list: &'a DisplayList) -> Result<Self> {
@@ -120,6 +124,8 @@ impl<'a> Painter<'a> {
             semantic_ids: BTreeMap::new(),
             semantic_depth: 0,
             effect_pixels: 0,
+            surface_cache: BTreeMap::new(),
+            surface_cache_limit: 256 * 1024 * 1024,
         }
     }
     #[allow(deprecated)]
@@ -292,7 +298,9 @@ impl<'a> Painter<'a> {
                 self.effect(c, node, id, states, e)?;
             }
         }
-        self.content(c, node, id, states)?;
+        if node.hint["effectsOnly"] != true {
+            self.content(c, node, id, states)?;
+        }
         if !self.pdf {
             for e in node.effects.iter().filter(|e| e.inner) {
                 self.effect(c, node, id, states, e)?;
@@ -368,6 +376,12 @@ impl<'a> Painter<'a> {
         states: &BTreeMap<String, NodeFrame>,
         e: &Effect,
     ) -> Result<()> {
+        if e.soft_edge.is_some() {
+            return Ok(());
+        }
+        if let Some(r) = &e.reflection {
+            return self.reflection(c, node, id, states, e, r);
+        }
         let spread = if e.spread != 0. {
             let radius = e.spread.abs() as f32;
             if (e.spread > 0.) == e.inner {
@@ -484,6 +498,108 @@ impl<'a> Painter<'a> {
         Ok(())
     }
     pub fn content(
+        &mut self,
+        c: &sk::Canvas,
+        node: &DrawNode,
+        id: &str,
+        states: &BTreeMap<String, NodeFrame>,
+    ) -> Result<()> {
+        let radius = node
+            .effects
+            .iter()
+            .filter_map(|e| e.soft_edge)
+            .fold(0., f64::max);
+        if radius <= 0. {
+            return self.subject(c, node, id, states);
+        }
+        if self.pdf {
+            return self.soft_subject_pdf(c, node, radius);
+        }
+        let saved = c.save();
+        c.save_layer(&sk::canvas::SaveLayerRec::default());
+        self.subject(c, node, id, states)?;
+        let erosion =
+            sk::image_filters::erode(((radius / 2.) as f32, (radius / 2.) as f32), None, None);
+        let filter = sk::image_filters::blur(
+            ((radius / 2.) as f32, (radius / 2.) as f32),
+            sk::TileMode::Decal,
+            erosion,
+            None,
+        );
+        let mut p = sk::Paint::default();
+        p.set_blend_mode(sk::BlendMode::DstIn)
+            .set_image_filter(filter);
+        c.save_layer(&sk::canvas::SaveLayerRec::default().paint(&p));
+        self.subject(c, node, id, states)?;
+        c.restore_to_count(saved);
+        Ok(())
+    }
+    fn subject(
+        &mut self,
+        c: &sk::Canvas,
+        node: &DrawNode,
+        id: &str,
+        states: &BTreeMap<String, NodeFrame>,
+    ) -> Result<()> {
+        if node.hint["surface3d"].is_object() {
+            return self.surface3d(c, node, id, states);
+        }
+        self.raw_content(c, node, id, states)
+    }
+    #[allow(deprecated)]
+    fn reflection(
+        &mut self,
+        c: &sk::Canvas,
+        node: &DrawNode,
+        id: &str,
+        states: &BTreeMap<String, NodeFrame>,
+        e: &Effect,
+        r: &Reflection,
+    ) -> Result<()> {
+        let b = node.local_bounds();
+        let height = b.height() * r.length;
+        if height <= 0. || r.opacity <= 0. {
+            return Ok(());
+        }
+        let y = b.y1 + r.distance;
+        let saved = c.save();
+        let mut blur = sk::Paint::default();
+        blur.set_image_filter(sk::image_filters::blur(
+            (e.blur as f32, e.blur as f32),
+            sk::TileMode::Decal,
+            None,
+            None,
+        ));
+        c.save_layer(&sk::canvas::SaveLayerRec::default().paint(&blur));
+        c.clip_rect(
+            sk::Rect::new(b.x0 as f32, y as f32, b.x1 as f32, (y + height) as f32),
+            None,
+            false,
+        );
+        c.save();
+        c.translate((0., (y + b.y1) as f32));
+        c.scale((1., -1.));
+        self.content(c, node, id, states)?;
+        c.restore();
+        let colors = [
+            sk::Color::from_argb((r.opacity * 255.) as u8, 255, 255, 255),
+            sk::Color::from_argb((r.opacity * (1. - r.fade) * 255.) as u8, 255, 255, 255),
+        ];
+        let shader = sk::gradient_shader::linear(
+            ((b.x0 as f32, y as f32), (b.x0 as f32, (y + height) as f32)),
+            &colors[..],
+            None,
+            sk::TileMode::Clamp,
+            None,
+            None,
+        );
+        let mut mask = sk::Paint::default();
+        mask.set_shader(shader).set_blend_mode(sk::BlendMode::DstIn);
+        c.draw_paint(&mask);
+        c.restore_to_count(saved);
+        Ok(())
+    }
+    fn raw_content(
         &mut self,
         c: &sk::Canvas,
         node: &DrawNode,

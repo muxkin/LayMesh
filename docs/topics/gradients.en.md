@@ -38,7 +38,7 @@ The first image is on top; the color is below all images. Image, position, size 
 
 ## Preview and export
 
-Native previews, VS Code, the website and offline HTML use Skia gradient shaders. Display list version 2 adds conic paints; updated readers still accept version 1, and changing versions replaces the incremental baseline.
+Native previews, VS Code, the website and offline HTML use Skia gradient shaders. Display-list version 2 introduced conic paints. The current version is 3 (object effects); readers still accept versions 1 and 2, and changing versions replaces the incremental baseline.
 
 SVG/PDF/PPTX preserve representable vectors. Unsupported fills are rasterized locally at the selected export DPI; ordinary text and outlines retain their existing output paths. Normal fallback is silent. Raster regions are tiled under the existing memory budget; impossible dimensions and failed output remain errors. Technical raster details are kept in export jobs and PPTX object names rather than per-object warnings.
 

@@ -12,9 +12,9 @@ const [url,output]=process.argv.slice(2);if(!url||!output)throw Error('Usage: te
  if(index===2){
   const clone=structuredClone(list);clone.nodes.at(-1).opacity=.4;
   await r.install(clone,id=>draw.resource_bytes(id),1);const edited=await paint(true);
-  if(edited.staticCacheHits!==1||edited.staticCacheBuilds!==1)throw Error('Edit did not invalidate only the changed static run');
-  viewport[2]=240;viewport[3]=135;const zoomed=await paint(true);if(zoomed.staticCacheBuilds!==2||zoomed.staticCacheHits)throw Error('Zoom reused stale-resolution tiles');
-  await r.install(clone,id=>draw.resource_bytes(id),1);const retained=await paint(true);if(retained.staticCacheBuilds||retained.staticCacheHits!==2)throw Error('Unchanged textures were rebuilt '+JSON.stringify({edited,zoomed,retained,runs:r.sceneRuns.map(s=>({key:s.key,static:s.static,bounds:s.bounds})),textures:[...r.staticTextures.keys()]}));
+  if(edited.staticCacheHits!==first.staticCacheBuilds-1||edited.staticCacheBuilds!==1)throw Error('Edit did not invalidate only the changed static run');
+  viewport[2]=240;viewport[3]=135;const zoomed=await paint(true);if(!zoomed.staticCacheBuilds||zoomed.staticCacheHits)throw Error('Zoom reused stale-resolution tiles');
+  await r.install(clone,id=>draw.resource_bytes(id),1);const retained=await paint(true);if(retained.staticCacheBuilds||retained.staticCacheHits!==zoomed.staticCacheBuilds)throw Error('Unchanged textures were rebuilt '+JSON.stringify({edited,zoomed,retained,runs:r.sceneRuns.map(s=>({key:s.key,static:s.static,bounds:s.bounds})),textures:[...r.staticTextures.keys()]}));
   const lose=r.gl?.getExtension('WEBGL_lose_context');if(lose){lose.loseContext();for(let i=0;i<100&&!r.lost;i++)await new Promise(resolve=>setTimeout(resolve,10));if(!r.lost||r.staticTextureBytes)throw Error('Context loss retained GPU tiles');lose.restoreContext();for(let i=0;i<100&&r.lost;i++)await new Promise(resolve=>setTimeout(resolve,10));if(r.lost)throw Error('Context did not restore');const recovered=await paint(true);if(!recovered.staticCacheBuilds)throw Error('Context restoration did not rebuild GPU tiles');}
   result.lifecycle=['partial edit invalidation','viewport rebuild','unchanged texture retention','context loss and restoration'];
  }

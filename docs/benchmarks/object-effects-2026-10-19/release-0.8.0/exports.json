@@ -1,0 +1,462 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "name": "back",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 1,
+        "groups": 0,
+        "pictures": 1,
+        "media": [
+          "ppt/media/image1.png"
+        ],
+        "sha256": "b4aef64f3cf92923f54a9c90f27352637b75bc195283762c9caa943ed0f31a8e",
+        "local_picture_sizes_emu": [
+          [
+            948000,
+            660000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 1,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.48217,
+      "pptx_mean_rgb_delta": 0.35318
+    },
+    {
+      "name": "bevel",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 1,
+        "groups": 0,
+        "pictures": 2,
+        "media": [
+          "ppt/media/image1.png",
+          "ppt/media/image2.png"
+        ],
+        "sha256": "081a87104a1a5268dad94c4180a01eb9207ebbd49e14331f9972d18a5b62f2ee",
+        "local_picture_sizes_emu": [
+          [
+            1176000,
+            888000
+          ],
+          [
+            948000,
+            648000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 2,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.30977,
+      "pptx_mean_rgb_delta": 0.38423
+    },
+    {
+      "name": "chinese",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 1,
+        "groups": 0,
+        "pictures": 1,
+        "media": [
+          "ppt/media/image1.png"
+        ],
+        "sha256": "411c4077f28a95b639693dd634e0ec75c6611c529f7be13d8358e445545260f5",
+        "local_picture_sizes_emu": [
+          [
+            612000,
+            342000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 1,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.50657,
+      "pptx_mean_rgb_delta": 0.53151
+    },
+    {
+      "name": "curved_color",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 1,
+        "groups": 0,
+        "pictures": 1,
+        "media": [
+          "ppt/media/image1.png"
+        ],
+        "sha256": "3e0c897335b765d466a66e995f62c5ba19fe333fb0a332028bac1fb5a92ae4d0",
+        "local_picture_sizes_emu": [
+          [
+            1260000,
+            816000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 1,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.41088,
+      "pptx_mean_rgb_delta": 0.63794
+    },
+    {
+      "name": "curved_color_alpha",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 1,
+        "groups": 0,
+        "pictures": 1,
+        "media": [
+          "ppt/media/image1.png"
+        ],
+        "sha256": "e27d7ec0e22be69d6b0b52228c685fa56ba26ec004abcdc25abdb7a64f104ac2",
+        "local_picture_sizes_emu": [
+          [
+            1260000,
+            816000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 1,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.04211,
+      "pptx_mean_rgb_delta": 0.06939
+    },
+    {
+      "name": "curved_gradient",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 1,
+        "groups": 0,
+        "pictures": 1,
+        "media": [
+          "ppt/media/image1.png"
+        ],
+        "sha256": "dc474c786783862d5ea70957b87ede99b64febfadeb072211e26b442ddc74c68",
+        "local_picture_sizes_emu": [
+          [
+            1206000,
+            870000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 1,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.58933,
+      "pptx_mean_rgb_delta": 0.74736
+    },
+    {
+      "name": "formula",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 1,
+        "groups": 0,
+        "pictures": 1,
+        "media": [
+          "ppt/media/image1.png"
+        ],
+        "sha256": "de153f0b3499b115ba8455ecd6b7a6821b3d63a32cd4bdbe3fc261146d7d6cd1",
+        "local_picture_sizes_emu": [
+          [
+            426000,
+            438000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 1,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.30321,
+      "pptx_mean_rgb_delta": 0.49515
+    },
+    {
+      "name": "holes",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 1,
+        "groups": 0,
+        "pictures": 1,
+        "media": [
+          "ppt/media/image1.png"
+        ],
+        "sha256": "b42473dc166ac170421543e7d884c42283c98881d3667700105974284d178536",
+        "local_picture_sizes_emu": [
+          [
+            612000,
+            270000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 1,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.8782,
+      "pptx_mean_rgb_delta": 0.91953
+    },
+    {
+      "name": "perspective",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 1,
+        "groups": 0,
+        "pictures": 1,
+        "media": [
+          "ppt/media/image1.png"
+        ],
+        "sha256": "d4f5290e6d1214dce3d50be70d3aa77ca1e12e02cfd6234438ac536c98948b87",
+        "local_picture_sizes_emu": [
+          [
+            846000,
+            654000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 1,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.44861,
+      "pptx_mean_rgb_delta": 0.3342
+    },
+    {
+      "name": "reflection",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 2,
+        "groups": 0,
+        "pictures": 1,
+        "media": [
+          "ppt/media/image1.png"
+        ],
+        "sha256": "9af6c06f2787de71fa3cc1ef2b9e90e878beae5f4245421c7dad03b6f87fa225",
+        "local_picture_sizes_emu": [
+          [
+            960000,
+            1026000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 1,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.09445,
+      "pptx_mean_rgb_delta": 0.09206
+    },
+    {
+      "name": "rounded",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 2,
+        "groups": 1,
+        "pictures": 1,
+        "media": [
+          "ppt/media/image1.png"
+        ],
+        "sha256": "4b6cb01150e401aa3f8a98898c0bf0f32fc13dd0a33079b5678457925d721d30",
+        "local_picture_sizes_emu": [
+          [
+            852000,
+            708000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 1,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.65436,
+      "pptx_mean_rgb_delta": 0.56738
+    },
+    {
+      "name": "soft",
+      "pptx": {
+        "size_emu": [
+          2160000,
+          1620000
+        ],
+        "texts": [],
+        "text_box_contents": [],
+        "text_boxes": 0,
+        "shapes": 1,
+        "groups": 0,
+        "pictures": 2,
+        "media": [
+          "ppt/media/image1.png",
+          "ppt/media/image2.png"
+        ],
+        "sha256": "db96503940ea9cf7a0d551d6d948901da530a5b9a46fb50d95f748a441383eab",
+        "local_picture_sizes_emu": [
+          [
+            1188000,
+            1332000
+          ],
+          [
+            900000,
+            720000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 2,
+        "text_boxes": 0
+      },
+      "pdf_mean_rgb_delta": 0.30502,
+      "pptx_mean_rgb_delta": 0.27913
+    },
+    {
+      "name": "object-3d",
+      "pptx": {
+        "size_emu": [
+          6120000,
+          4320000
+        ],
+        "texts": [
+          "Shape, type & image",
+          "Shared geometry · local depth · editable source",
+          "Bevel / top and bottom",
+          "Glyph holes / stroke / reflection",
+          "Formula",
+          "Chinese",
+          "Cropped texture / rounded rim"
+        ],
+        "text_box_contents": [
+          "Shape, type & image",
+          "Shared geometry · local depth · editable source",
+          "Bevel / top and bottom",
+          "Glyph holes / stroke / reflection",
+          "Formula",
+          "Chinese",
+          "Cropped texture / rounded rim"
+        ],
+        "text_boxes": 7,
+        "shapes": 9,
+        "groups": 1,
+        "pictures": 6,
+        "media": [
+          "ppt/media/image1.png",
+          "ppt/media/image2.png",
+          "ppt/media/image3.png",
+          "ppt/media/image4.png",
+          "ppt/media/image5.png",
+          "ppt/media/image6.png"
+        ],
+        "sha256": "21ee69bd8721fc4dd0378b38578ba1a64baf01de6db2d25217859c18ea458081",
+        "local_picture_sizes_emu": [
+          [
+            1236000,
+            732000
+          ],
+          [
+            1014000,
+            732000
+          ],
+          [
+            1014000,
+            438000
+          ],
+          [
+            444000,
+            462000
+          ],
+          [
+            666000,
+            372000
+          ],
+          [
+            1260000,
+            942000
+          ]
+        ]
+      },
+      "roundtrip": {
+        "pictures": 6,
+        "text_boxes": 7
+      },
+      "pdf_mean_rgb_delta": 1.20938,
+      "pptx_mean_rgb_delta": 1.12171
+    }
+  ],
+  "powerpoint": "not tested: no PowerPoint installation",
+  "libreoffice": "LibreOffice 25.2.3.2 520(Build:2)",
+  "atomic_failure_preserves_destination": true
+}

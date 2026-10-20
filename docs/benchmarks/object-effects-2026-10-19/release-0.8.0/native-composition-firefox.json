@@ -1,0 +1,138 @@
+{
+  "status": "passed",
+  "engine": "firefox",
+  "result": {
+    "checks": [
+      {
+        "label": "rotation-opacity-0-0",
+        "max": 6,
+        "mean": 0.02469441731770833,
+        "overLimit": 4.2317708333333335e-05
+      },
+      {
+        "label": "rotation-opacity-0-0.23",
+        "max": 26,
+        "mean": 0.23549357096354168,
+        "overLimit": 1.220703125e-05
+      },
+      {
+        "label": "rotation-opacity-0-3.141592653589793",
+        "max": 6,
+        "mean": 0.095972900390625,
+        "overLimit": 8.951822916666667e-06
+      },
+      {
+        "label": "rotation-opacity-0.3-0",
+        "max": 11,
+        "mean": 0.07738240559895833,
+        "overLimit": 0.000118408203125
+      },
+      {
+        "label": "rotation-opacity-0.3-0.23",
+        "max": 56,
+        "mean": 0.2625606282552083,
+        "overLimit": 6.632486979166667e-05
+      },
+      {
+        "label": "rotation-opacity-0.3-3.141592653589793",
+        "max": 9,
+        "mean": 0.13579142252604168,
+        "overLimit": 6.510416666666667e-05
+      },
+      {
+        "label": "rotation-opacity-0.7-0",
+        "max": 18,
+        "mean": 0.16017862955729167,
+        "overLimit": 0.0003080240885416667
+      },
+      {
+        "label": "rotation-opacity-0.7-0.23",
+        "max": 91,
+        "mean": 0.13299357096354167,
+        "overLimit": 0.00016805013020833334
+      },
+      {
+        "label": "rotation-opacity-0.7-3.141592653589793",
+        "max": 17,
+        "mean": 0.05818155924479167,
+        "overLimit": 0.000159912109375
+      },
+      {
+        "label": "rotation-opacity-1-0",
+        "max": 25,
+        "mean": 0.19728434244791668,
+        "overLimit": 0.000533447265625
+      },
+      {
+        "label": "rotation-opacity-1-0.23",
+        "max": 64,
+        "mean": 0.1740380859375,
+        "overLimit": 0.0008634440104166667
+      },
+      {
+        "label": "rotation-opacity-1-3.141592653589793",
+        "max": 21,
+        "mean": 0.10562296549479167,
+        "overLimit": 0.0006095377604166666
+      },
+      {
+        "label": "deferred-endpoint",
+        "max": 0,
+        "mean": 0,
+        "overLimit": 0
+      },
+      {
+        "label": "nested-clip-fallback",
+        "max": 10,
+        "mean": 0.044527994791666664,
+        "overLimit": 0.0003206380208333333
+      },
+      {
+        "label": "fade-0",
+        "max": 0
+      },
+      {
+        "label": "fade-0.01",
+        "max": 3
+      },
+      {
+        "label": "fade-0.25",
+        "max": 2
+      },
+      {
+        "label": "fade-0.5",
+        "max": 2
+      },
+      {
+        "label": "fade-0.75",
+        "max": 2
+      },
+      {
+        "label": "fade-0.99",
+        "max": 2
+      },
+      {
+        "label": "fade-1",
+        "max": 0
+      },
+      {
+        "label": "opaque-fade-0.01",
+        "alpha": 255
+      },
+      {
+        "label": "opaque-fade-0.5",
+        "alpha": 255
+      },
+      {
+        "label": "opaque-fade-0.99",
+        "alpha": 255
+      }
+    ],
+    "resource": {
+      "bitmapBytes": 0,
+      "allocations": 5737584,
+      "promotions": 2,
+      "demotions": 2
+    }
+  }
+}

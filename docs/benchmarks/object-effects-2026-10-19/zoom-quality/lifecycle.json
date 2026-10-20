@@ -1,0 +1,32 @@
+{
+  "checks": [
+    {
+      "fallback": false,
+      "liveDpr": [
+        1.25,
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "fallback": false,
+      "frozenResume": true
+    },
+    "render failure retained previous coherent frame; next draw recovered",
+    {
+      "fallback": true,
+      "liveDpr": [
+        1.25,
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "fallback": true,
+      "frozenResume": true
+    }
+  ],
+  "status": "passed"
+}

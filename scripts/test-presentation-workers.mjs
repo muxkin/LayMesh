@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {PresentationWorkers} from '../site/live/presentation-workers.mjs';
-const canvas=()=>({style:{},classList:{add(){},remove(){},toggle(){}},cloneNode:canvas,after(){},remove(){this.removed=true;},transferControlToOffscreen:()=>({})});
+const canvas=()=>({style:{},classList:{add(){},remove(){},toggle(){}},cloneNode:canvas,after(){},before(){},remove(){this.removed=true;},transferControlToOffscreen:()=>({})});
 const workers=[];let release,started;
 const entered=new Promise(resolve=>started=resolve),blocked=new Promise(resolve=>release=resolve);
 class Worker {
@@ -13,22 +13,23 @@ class Worker {
    if(data.type==='load')this.pages.add(data.page.id);
    if(data.type==='retain')this.pages=new Set([...this.pages].filter(id=>data.pages.includes(id)));
    if(data.type==='activate'){
-    if(data.previousFrame){assert.equal(transfer[0],data.previousFrame.bitmap);data.previousFrame.bitmap.close();}
+    if(data.previousFrame){assert.equal(transfer[0],data.previousFrame.bitmap||data.previousFrame.rgba.buffer);data.previousFrame.bitmap?.close();}
     this.onmessage({data:{type:'navigation-visible',pageId:data.pageId,serial:data.serial}});
    }
-   const bitmap=data.type==='snapshot'?{close(){this.closed=true;}}:undefined;
-   this.onmessage({data:{type:'done',id:data.id,bitmap,resident:[...this.pages],readyResident:[],entryFrames:[]}});
+   const bitmap=data.type==='snapshot'&&!this.rawSnapshot?{close(){this.closed=true;}}:undefined,rgba=data.type==='snapshot'&&this.rawSnapshot?new Uint8Array(4):undefined;
+   this.onmessage({data:{type:'done',id:data.id,bitmap,rgba,...(data.type==='paint'?this.paintResult:{}),resident:[...this.pages],readyResident:[],entryFrames:[]}});
   });
  }
  terminate(){this.closed=true;}
 }
-const view={canvas:canvas()},pool=new PresentationWorkers(view,()=>new Worker());
+const view={canvas:canvas(),clock:{running:true}},pool=new PresentationWorkers(view,()=>new Worker());
 await pool.run({type:'init'},[]);assert.equal(workers[0].messages.find(m=>m.type==='init').preserveDrawingBuffer,true,'Keep displayed pixels available for navigation');assert.equal(workers.length,1,'The first page never waits for a second runtime');
 pool.postMessage({type:'target',serial:1});
 await pool.run({type:'load',serial:1,priority:true,page:{id:'a',list:{nodes:[]}}},[]);
 await pool.run({type:'activate',serial:1,pageId:'a'},[]);
 const background=pool.run({type:'load',serial:1,page:{id:'b',list:{nodes:[]}}},[]);
 await entered;
+assert.equal(workers[1].messages.find(m=>m.type==='load').offscreenPreparation,true,'Hidden preparation does not allocate a presentation-size framebuffer');
 const frame=await pool.run({type:'paint',serial:1,pageId:'a'},[]);
 assert.equal(frame.renderer,0,'Animation completes while background preparation is still blocked');
 pool.postMessage({type:'background',serial:1,paused:true});
@@ -37,6 +38,7 @@ release();await background;
 pool.postMessage({type:'target',serial:2});
 await pool.run({type:'activate',serial:2,pageId:'b',transition:{reverse:false}},[]);
 assert.equal(pool.active,pool.renderers[1]);assert.equal(view.canvas,pool.renderers[1].canvas);
+assert(workers[0].messages.some(m=>m.type==='background'&&m.hidden===true),'After handoff the old display framebuffer can be released');
 assert.equal(workers[1].messages.filter(m=>m.type==='load'&&m.page.id==='b').length,1,'Handoff does not reinstall prepared geometry');
 assert(workers[1].messages.find(m=>m.type==='activate').previousFrame.bitmap.closed,'The transferred transition bitmap is released');
 await pool.run({type:'load',serial:2,page:{id:'c',list:{nodes:[]}}},[]);
@@ -44,6 +46,14 @@ assert.equal(pool.owners.get('c'),pool.renderers[0],'The former display worker b
 const before=workers[1].messages.length;
 assert((await pool.run({type:'prepare',serial:2,pageId:'b'},[])).deferred);
 assert.equal(workers[1].messages.length,before,'Background work never enters the active renderer queue');
+workers[1].paintResult={rasterMs:500,visualUntil:0};await pool.run({type:'paint',serial:2,pageId:'b',time:0},[]);assert(workers[0].messages.at(-1).delayMs>400);
+workers[1].paintResult={unchanged:true,visualUntil:20};await pool.run({type:'paint',serial:2,pageId:'b',time:1},[]);assert.equal(workers[0].messages.at(-1).delayMs,0,'Static holds release the previous expensive-frame throttle');
+view.media={running:true};await pool.run({type:'paint',serial:2,pageId:'b',time:2},[]);assert(workers[0].messages.at(-1).delayMs>400,'Live media still needs the foreground budget');view.media=null;
 await pool.run({type:'retain',pages:['b','c']},[]);assert(!pool.owners.has('a'));
-pool.terminate();assert(workers.every(w=>w.closed));assert.equal(pool.owners.size,0);
+workers[1].rawSnapshot=true;pool.postMessage({type:'target',serial:3});await pool.run({type:'activate',serial:3,pageId:'c',transition:{reverse:false}},[]);assert(workers[0].messages.find(m=>m.type==='activate'&&m.pageId==='c').previousFrame.rgba.byteLength===4,'CPU handoff transfers raw pixels, without an ImageBitmap round trip');
+assert(pool.suspend(4));assert(workers.every(w=>w.messages.at(-1).hidden&&w.messages.at(-1).paused));
+view.canvas=canvas();assert((await pool.run({type:'init'},[])).runtimeReused);
+assert.equal(view.canvas,pool.active.canvas);assert.equal(pool.owners.size,2);
+assert(workers.every(w=>w.messages.filter(m=>m.type==='init').length===1),'Reopening reuses module heaps and content without another initialization');
+await pool.terminate();assert(workers.every(w=>w.closed));assert(workers.every(w=>w.messages.some(m=>m.type==='dispose')),'Closing releases native renderer resources before terminating workers');assert.equal(pool.owners.size,0);
 console.log('Independent animation/preparation, retained-page handoff, bitmap ownership, pruning and shutdown passed.');

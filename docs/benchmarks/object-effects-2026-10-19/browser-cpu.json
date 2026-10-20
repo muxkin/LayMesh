@@ -1,0 +1,174 @@
+{
+  "cases": [
+    {
+      "name": "reflection",
+      "meanDelta": 0.02287037037037037,
+      "largeFraction": 0,
+      "surfaceTextures": 0,
+      "backend": "Skia CPU",
+      "firstMs": 16.30000001192093,
+      "repeatMs": 8.900000035762787,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.028467078189300412,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "soft",
+      "meanDelta": 0.048438786008230456,
+      "largeFraction": 0,
+      "surfaceTextures": 0,
+      "backend": "Skia CPU",
+      "firstMs": 503.4000000357628,
+      "repeatMs": 446.89999997615814,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.009166666666666667,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "bevel",
+      "meanDelta": 0.028675411522633743,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 53.5,
+      "repeatMs": 9.699999988079071,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.006772119341563786,
+        "wasmSVG": 0.6965920781893004
+      }
+    },
+    {
+      "name": "perspective",
+      "meanDelta": 0.00591820987654321,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 33.10000002384186,
+      "repeatMs": 0.8999999761581421,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.00018261316872427984,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "back",
+      "meanDelta": 0.001736111111111111,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 38.30000001192093,
+      "repeatMs": 1.199999988079071,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 1.54320987654321e-05,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "holes",
+      "meanDelta": 0.009398148148148149,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 13.5,
+      "repeatMs": 0.30000001192092896,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.00021347736625514403,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "chinese",
+      "meanDelta": 0.005532407407407408,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 8.700000047683716,
+      "repeatMs": 0.5,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 7.973251028806585e-05,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "formula",
+      "meanDelta": 0.003919753086419753,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 8.5,
+      "repeatMs": 0.40000003576278687,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 8.23045267489712e-05,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "rounded",
+      "meanDelta": 0.0027109053497942387,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia CPU",
+      "firstMs": 41,
+      "repeatMs": 1,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 5.1440329218106995e-05,
+        "wasmSVG": null
+      }
+    }
+  ],
+  "browser": "151.0.7922.34",
+  "checks": [
+    "single-object update retains unrelated texture",
+    "nonblank canvas",
+    "repeat render cache",
+    "zoom regenerates 3D textures",
+    "native/browser pixel comparison",
+    "real file:// offline playback",
+    "shared object-3d composition in offline HTML"
+  ],
+  "errors": [],
+  "update": {
+    "before": 2,
+    "after": 2,
+    "reused": 1
+  },
+  "status": "passed"
+}

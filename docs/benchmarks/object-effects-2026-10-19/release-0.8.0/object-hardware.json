@@ -1,0 +1,247 @@
+{
+  "cases": [
+    {
+      "name": "reflection",
+      "meanDelta": 0.0274022633744856,
+      "largeFraction": 0,
+      "surfaceTextures": 0,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 90.30000000447035,
+      "repeatMs": 0.5,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.0364917695473251,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "soft",
+      "meanDelta": 0.1379320987654321,
+      "largeFraction": 0,
+      "surfaceTextures": 0,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 29.600000001490116,
+      "repeatMs": 1.6999999955296516,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.14103909465020575,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "bevel",
+      "meanDelta": 0.04167695473251029,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 25,
+      "repeatMs": 1.1000000014901161,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.007780349794238683,
+        "wasmSVG": 0.1319161522633745
+      }
+    },
+    {
+      "name": "perspective",
+      "meanDelta": 0.0009799382716049383,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 17.200000002980232,
+      "repeatMs": 0.6000000014901161,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.002381687242798354,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "curved_gradient",
+      "meanDelta": 0.00125,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 16.19999999552965,
+      "repeatMs": 0.5,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.002404835390946502,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "curved_color",
+      "meanDelta": 0.0001234567901234568,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 9.800000004470348,
+      "repeatMs": 0.5,
+      "colorCheck": {
+        "interiorPixels": 24502,
+        "alpha": 255,
+        "maxPremultipliedChannelError": 0
+      },
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "back",
+      "meanDelta": 0.0008127572016460906,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 8.600000001490116,
+      "repeatMs": 0.30000000447034836,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.002170781893004115,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "curved_color_alpha",
+      "meanDelta": 0.006347736625514403,
+      "largeFraction": 0.00038580246913580245,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 12.700000002980232,
+      "repeatMs": 0.5,
+      "colorCheck": {
+        "interiorPixels": 24502,
+        "alpha": 26,
+        "maxPremultipliedChannelError": 0.3058823529411765
+      },
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "holes",
+      "meanDelta": 0.010138888888888888,
+      "largeFraction": 1.54320987654321e-05,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 15.5,
+      "repeatMs": 0.8999999985098839,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.002433127572016461,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "chinese",
+      "meanDelta": 0.0016332304526748972,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 10.400000005960464,
+      "repeatMs": 0.5,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.0024588477366255146,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "formula",
+      "meanDelta": 0.003045267489711934,
+      "largeFraction": 3.3436213991769545e-05,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 16.69999999552965,
+      "repeatMs": 1.3999999985098839,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.0027340534979423867,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "rounded",
+      "meanDelta": 0.0014300411522633744,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2",
+      "device": "ANGLE (AMD, Vulkan 1.4.305 (AMD Radeon Graphics (RADV PHOENIX) (0x00001900)), radv)",
+      "firstMs": 11.599999994039536,
+      "repeatMs": 0.5,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.0030992798353909464,
+        "wasmSVG": null
+      }
+    }
+  ],
+  "browser": "151.0.7922.34",
+  "checks": [
+    "single-object update retains unrelated texture",
+    "nonblank canvas",
+    "repeat render cache",
+    "zoom regenerates 3D textures",
+    "native/browser pixel comparison",
+    "real file:// offline playback",
+    "shared object-3d composition in offline HTML"
+  ],
+  "errors": [],
+  "update": {
+    "before": 2,
+    "after": 2,
+    "reused": 1
+  },
+  "status": "passed"
+}

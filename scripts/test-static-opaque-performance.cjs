@@ -1,0 +1,19 @@
+// CPU-only coverage proof versus the frozen pre-optimization renderer.
+// Preparation and pixel comparison are outside counterbalanced warm timings.
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const pw=require(process.env.PLAYWRIGHT_MODULE||'playwright'),[base,out]=process.argv.slice(2);
+(async()=>{const browser=await pw.firefox.launch({headless:true});try{
+ const page=await browser.newPage();await page.goto(base+'/site/live/manifest.json');
+ const result=await page.evaluate(async base=>{
+  const root=base+'/site/live/',before=await import(root+'skia-renderer-v22.mjs'),after=await import(root+'skia-renderer-v23.mjs'),wasm=await import(root+'wasm/laymesh_wasm.js');await wasm.default();
+  const ck=await before.initializeSkia(root+'skia/canvaskit.wasm'),d=await(await fetch(base+'/fixtures/pages/1.json')).json(),job=wasm.prepare_display_list(JSON.stringify(d.list)),width=3840,height=1840,scale=Math.min(width/d.list.width,height/d.list.height),dx=(width/scale-d.list.width)/2,dy=(height/scale-d.list.height)/2,view=[-dx,-dy,d.list.width+dx,d.list.height+dy],states=JSON.parse(job.presentation_state(0,false)),rs=[],preparation=[];
+  for(const module of [before,after]){
+   const r=new module.SkiaRenderer(ck,new OffscreenCanvas(width,height),{software:true,premultipliedRaster:true,clipToPage:true});rs.push(r);await r.install(d.list,()=>{throw Error('Unexpected image resource');},1);r.ensureSurface(width,height);r.preparationTileSize=256;const start=performance.now();const work=r.sceneTasks(view,width,height,states);const fixedGrid=function*(){for(;;){r.preparationTileSize=256;const step=work.next();if(step.done)return;yield step.value;}};await r.prepareTasks(fixedGrid());r.render(view,width,height,states,1,false,true,true);preparation.push(performance.now()-start);
+  }
+  const timings=[];for(let round=0;round<12;round++)for(const variant of round%2?[1,0]:[0,1]){const result=rs[variant].render(view,width,height,states,1,false,true,true);timings.push({round,variant,rasterMs:result.rasterMs,stats:result.resourceStats,staticBuilds:result.staticCacheBuilds,layerBuilds:result.layerCacheBuilds});}
+  const pixels=rs.map(r=>r.readPixels());let max=0,sum=0,worst;for(let i=0;i<pixels[0].length;i++){const delta=Math.abs(pixels[0][i]-pixels[1][i]);if(delta>max){max=delta;const k=i-i%4;worst={x:k/4%width,y:Math.floor(k/4/width),before:[...pixels[0].slice(k,k+4)],after:[...pixels[1].slice(k,k+4)]};}sum+=delta;}if(worst){worst.tiles=[];for(const [key,entry]of rs[1].staticTextures)for(const tile of entry.tiles)if(tile.x<=worst.x&&worst.x<tile.x+tile.w&&tile.y<=worst.y&&worst.y<tile.y+tile.h){const q=tile.image.readPixels(worst.x-tile.x+2,worst.y-tile.y+2,{width:1,height:1,colorType:ck.ColorType.RGBA_8888,alphaType:ck.AlphaType.Premul,colorSpace:ck.ColorSpace.SRGB});worst.tiles.push({key,opaque:tile.opaque,x:tile.x,y:tile.y,w:tile.w,h:tile.h,pixel:[...q]});}}
+  const coverageReleased=rs[1].cacheCoverageBuffer===null;rs.forEach(r=>r.dispose());job.free();return {width,height,preparation,timings,worst,maxPixelDifference:max,meanPixelDifference:sum/pixels[0].length,coverageReleased};
+ },base);
+ fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(result,null,2));assert.equal(result.maxPixelDifference,0);assert(result.coverageReleased);assert(result.timings.some(t=>t.variant===1&&t.stats.opaqueStaticCopies>0));assert(result.timings.every(t=>t.staticBuilds===0&&t.layerBuilds===0));
+ const average=variant=>{const t=result.timings.filter(t=>t.variant===variant&&t.round>1);return t.reduce((s,t)=>s+t.rasterMs,0)/t.length;};console.log(JSON.stringify({beforeMs:average(0),afterMs:average(1),pixelDifference:result.maxPixelDifference,copies:result.timings.find(t=>t.variant===1).stats.opaqueStaticCopies,preparation:result.preparation}));
+ }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

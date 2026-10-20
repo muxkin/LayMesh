@@ -142,6 +142,7 @@ fn paint_independent(o: &Object, args: &Args) -> bool {
             matches!(
                 key.as_str(),
                 "effects"
+                    | "three_d"
                     | "filter"
                     | "__css_box_shadows"
                     | "head"
@@ -165,6 +166,7 @@ fn repaint(node: &mut J, engine: &Engine, o: &Object, args: &Args) -> Option<usi
                     | "border_radius"
                     | "padding"
                     | "effects"
+                    | "three_d"
                     | "filter"
                     | "__css_box_shadows"
             )

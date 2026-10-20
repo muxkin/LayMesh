@@ -1,0 +1,173 @@
+{
+  "cases": [
+    {
+      "name": "reflection",
+      "meanDelta": 0.0225,
+      "largeFraction": 0,
+      "surfaceTextures": 0,
+      "backend": "Skia WebGL2 (software driver)",
+      "firstMs": 56.80000001192093,
+      "repeatMs": 0.6000000238418579,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.028467078189300412,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "soft",
+      "meanDelta": 0.13756172839506173,
+      "largeFraction": 0,
+      "surfaceTextures": 0,
+      "backend": "Skia WebGL2 (software driver)",
+      "firstMs": 39,
+      "repeatMs": 1.4000000357627869,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.009166666666666667,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "bevel",
+      "meanDelta": 0.03775720164609053,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2 (software driver)",
+      "firstMs": 56,
+      "repeatMs": 0.699999988079071,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.006772119341563786,
+        "wasmSVG": 0.6965920781893004
+      }
+    },
+    {
+      "name": "perspective",
+      "meanDelta": 0.00591820987654321,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2 (software driver)",
+      "firstMs": 37.5,
+      "repeatMs": 0.5,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.00018261316872427984,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "back",
+      "meanDelta": 0.001736111111111111,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2 (software driver)",
+      "firstMs": 40.69999998807907,
+      "repeatMs": 0.3999999761581421,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 1.54320987654321e-05,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "holes",
+      "meanDelta": 0.009398148148148149,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2 (software driver)",
+      "firstMs": 16,
+      "repeatMs": 0.30000001192092896,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 0.00021347736625514403,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "chinese",
+      "meanDelta": 0.005532407407407408,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2 (software driver)",
+      "firstMs": 11.5,
+      "repeatMs": 0.30000001192092896,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 7.973251028806585e-05,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "formula",
+      "meanDelta": 0.003919753086419753,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2 (software driver)",
+      "firstMs": 10.300000011920929,
+      "repeatMs": 0.5,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 8.23045267489712e-05,
+        "wasmSVG": null
+      }
+    },
+    {
+      "name": "rounded",
+      "meanDelta": 0.0027109053497942387,
+      "largeFraction": 0,
+      "surfaceTextures": 1,
+      "backend": "Skia WebGL2 (software driver)",
+      "firstMs": 43,
+      "repeatMs": 0.19999998807907104,
+      "zoom": {
+        "width": 720,
+        "newTextures": true
+      },
+      "vector": {
+        "nativeSVG": 5.1440329218106995e-05,
+        "wasmSVG": null
+      }
+    }
+  ],
+  "browser": "151.0.7922.34",
+  "checks": [
+    "single-object update retains unrelated texture",
+    "nonblank canvas",
+    "repeat render cache",
+    "zoom regenerates 3D textures",
+    "native/browser pixel comparison",
+    "real file:// offline playback"
+  ],
+  "errors": [],
+  "update": {
+    "before": 2,
+    "after": 2,
+    "reused": 1
+  },
+  "status": "passed"
+}

@@ -7,7 +7,7 @@ export async function layerPlan(skia,width,height,sample,cancelled=()=>false){
  const scale=Math.min(width/skia.list.width,height/skia.list.height),root=[scale,0,0,0,scale,0,0,0,1],layers=new Map(),unrecorded=new Set();let probes=0;
  const visit=(nodes,states,parent,prefix='')=>nodes.forEach((node,i)=>{
   const id=prefix+i,p=skia.prepare(node),state=states[id],world=multiply(parent,state?.matrix||p.matrix);
-  if(skia.animatedNames.has(node.name)&&!p.dynamicChildren&&node.kind.kind==='group'&&p.cost>=128){
+  if(skia.animatedNames.has(node.name)&&!p.dynamicChildren&&(skia.nativeComposition||p.hasEffects||node.kind.kind==='group'&&p.cost>=128)){
    if(!p.picture){unrecorded.add(p.uid);return;}
    const density=projectedDensity(world,p.bounds),old=layers.get(p.uid);
    if(Number.isFinite(density)&&density>0&&(!old||density>old.density))layers.set(p.uid,{p,density});

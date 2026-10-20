@@ -544,9 +544,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "positional": [
@@ -930,9 +938,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "positional": [
@@ -1320,8 +1336,8 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
         },
         {
@@ -1361,6 +1377,14 @@
               "en": "Italic font style"
             }
           }
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "positional": [
@@ -1592,9 +1616,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ]
     },
@@ -1791,9 +1823,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "returns": {
@@ -2065,9 +2105,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "returns": {
@@ -2326,8 +2374,8 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
         }
       ],
@@ -2595,9 +2643,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "returns": {
@@ -2796,9 +2852,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "returns": {
@@ -3064,9 +3128,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "returns": {
@@ -3348,9 +3420,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "returns": {
@@ -3565,9 +3645,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "returns": {
@@ -3791,9 +3879,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "returns": {
@@ -4001,9 +4097,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "returns": {
@@ -4841,8 +4945,8 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
         },
         {
@@ -4903,6 +5007,14 @@
           "description": "头部的纵向长度与横向宽度；两端参数覆盖 head_size",
           "descriptionEn": "Head longitudinal length and transverse width; endpoint sizes override head_size",
           "default": "head_size"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "positional": [
@@ -5894,8 +6006,8 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
         }
       ]
@@ -16164,9 +16276,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ]
     },
@@ -16429,9 +16549,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "namespaceConstructor": true
@@ -16689,9 +16817,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "namespaceConstructor": true
@@ -16949,9 +17085,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "namespaceConstructor": true
@@ -17230,9 +17374,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "namespaceConstructor": true
@@ -17483,9 +17635,17 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
+        },
+        {
+          "name": "three_d",
+          "type": "three_d",
+          "unit": "none",
+          "description": "对象级三维外观",
+          "descriptionEn": "Object-level 3D appearance",
+          "default": "none"
         }
       ],
       "namespaceConstructor": true
@@ -17879,8 +18039,8 @@
           "name": "effects",
           "type": "effect[]",
           "unit": "none",
-          "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-          "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+          "description": "阴影、发光、倒影与柔边效果",
+          "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
           "default": "[]"
         },
         {
@@ -18206,6 +18366,268 @@
       "positional": [
         "target"
       ]
+    },
+    {
+      "name": "reflection",
+      "category": "effects",
+      "description": "根据可见主体生成可调间距、长度、渐隐及模糊的倒影。",
+      "descriptionEn": "Create a fading mirrored reflection of the visible subject.",
+      "returns": {
+        "zh": "reflection",
+        "en": "reflection"
+      },
+      "parameters": [
+        {
+          "name": "distance",
+          "type": "length",
+          "unit": "geometry",
+          "description": "与主体的间距",
+          "descriptionEn": "Gap below the subject",
+          "default": "1mm"
+        },
+        {
+          "name": "length",
+          "type": "value",
+          "unit": "none",
+          "description": "倒影高度占主体高度的比例，0–1",
+          "descriptionEn": "Reflected fraction of subject height, 0–1",
+          "default": "0.5"
+        },
+        {
+          "name": "opacity",
+          "type": "value",
+          "unit": "none",
+          "description": "起始不透明度，0–1",
+          "descriptionEn": "Starting opacity, 0–1",
+          "default": "0.4"
+        },
+        {
+          "name": "fade",
+          "type": "value",
+          "unit": "none",
+          "description": "渐隐程度，0–1",
+          "descriptionEn": "Fade amount, 0–1",
+          "default": "1"
+        },
+        {
+          "name": "blur",
+          "type": "length",
+          "unit": "geometry",
+          "description": "高斯模糊标准差",
+          "descriptionEn": "Gaussian blur standard deviation",
+          "default": "0mm"
+        },
+        {
+          "name": "target",
+          "type": "enum",
+          "unit": "none",
+          "description": "作用对象",
+          "descriptionEn": "Effect target",
+          "default": "content",
+          "values": [
+            "content",
+            "object"
+          ],
+          "valueDescriptions": {
+            "content": {
+              "zh": "content",
+              "en": "content"
+            },
+            "object": {
+              "zh": "object",
+              "en": "object"
+            }
+          }
+        }
+      ],
+      "positional": [],
+      "required": []
+    },
+    {
+      "name": "soft_edge",
+      "category": "effects",
+      "description": "柔化可见轮廓",
+      "descriptionEn": "Soften the visible silhouette",
+      "returns": {
+        "zh": "soft_edge",
+        "en": "soft_edge"
+      },
+      "parameters": [
+        {
+          "name": "radius",
+          "type": "length",
+          "unit": "geometry",
+          "description": "向内柔化的宽度",
+          "descriptionEn": "Inward softening width",
+          "default": "1mm"
+        },
+        {
+          "name": "target",
+          "type": "enum",
+          "unit": "none",
+          "description": "作用对象",
+          "descriptionEn": "Effect target",
+          "default": "content",
+          "values": [
+            "content",
+            "object"
+          ],
+          "valueDescriptions": {
+            "content": {
+              "zh": "content",
+              "en": "content"
+            },
+            "object": {
+              "zh": "object",
+              "en": "object"
+            }
+          }
+        }
+      ],
+      "positional": [],
+      "required": []
+    },
+    {
+      "name": "three_d",
+      "category": "effects",
+      "description": "对象级三维外观",
+      "descriptionEn": "Object-level 3D appearance",
+      "returns": {
+        "zh": "three_d",
+        "en": "three_d"
+      },
+      "parameters": [
+        {
+          "name": "depth",
+          "type": "length",
+          "unit": "geometry",
+          "description": "以对象平面为中面的总厚度",
+          "descriptionEn": "Total thickness centered on the object plane",
+          "default": "2mm"
+        },
+        {
+          "name": "rotation",
+          "type": "(angle,angle,angle)",
+          "unit": "none",
+          "description": "绕中心依次旋转 X、Y、Z",
+          "descriptionEn": "Rotate around the center in X, Y, Z order",
+          "default": "(0deg,0deg,0deg)"
+        },
+        {
+          "name": "bevel_top",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "正面斜面的宽度、高度",
+          "descriptionEn": "Front bevel width and height",
+          "default": "(0mm,0mm)"
+        },
+        {
+          "name": "bevel_bottom",
+          "type": "(length,length)",
+          "unit": "geometry",
+          "description": "背面斜面的宽度、高度",
+          "descriptionEn": "Back bevel width and height",
+          "default": "(0mm,0mm)"
+        },
+        {
+          "name": "projection",
+          "type": "enum",
+          "unit": "none",
+          "description": "投影方式",
+          "descriptionEn": "Projection",
+          "default": "orthographic",
+          "values": [
+            "orthographic",
+            "perspective"
+          ],
+          "valueDescriptions": {
+            "orthographic": {
+              "zh": "orthographic",
+              "en": "orthographic"
+            },
+            "perspective": {
+              "zh": "perspective",
+              "en": "perspective"
+            }
+          },
+          "quotedValues": true
+        },
+        {
+          "name": "distance",
+          "type": "length",
+          "unit": "geometry",
+          "description": "透视相机到对象中心的距离",
+          "descriptionEn": "Perspective camera distance from the object center",
+          "default": "500mm"
+        },
+        {
+          "name": "material",
+          "type": "enum",
+          "unit": "none",
+          "description": "表面材质",
+          "descriptionEn": "Surface material",
+          "default": "matte",
+          "values": [
+            "flat",
+            "matte",
+            "plastic",
+            "metal"
+          ],
+          "valueDescriptions": {
+            "flat": {
+              "zh": "flat",
+              "en": "flat"
+            },
+            "matte": {
+              "zh": "matte",
+              "en": "matte"
+            },
+            "plastic": {
+              "zh": "plastic",
+              "en": "plastic"
+            },
+            "metal": {
+              "zh": "metal",
+              "en": "metal"
+            }
+          },
+          "quotedValues": true
+        },
+        {
+          "name": "light_direction",
+          "type": "(number,number,number)",
+          "unit": "none",
+          "description": "指向灯光的方向；右、下、朝向观察者为正",
+          "descriptionEn": "Direction toward light; right, down, toward viewer are positive",
+          "default": "(-1,-1,2)"
+        },
+        {
+          "name": "light_color",
+          "type": "color",
+          "unit": "none",
+          "description": "灯光颜色",
+          "descriptionEn": "Light color",
+          "default": "#ffffff"
+        },
+        {
+          "name": "intensity",
+          "type": "value",
+          "unit": "none",
+          "description": "非负灯光强度",
+          "descriptionEn": "Nonnegative light intensity",
+          "default": "1"
+        },
+        {
+          "name": "ambient",
+          "type": "value",
+          "unit": "none",
+          "description": "环境光强度，0–1",
+          "descriptionEn": "Ambient intensity, 0–1",
+          "default": "0.25"
+        }
+      ],
+      "positional": [],
+      "required": []
     }
   ],
   "styleProperties": [
@@ -18261,7 +18683,8 @@
     "heads",
     "head_size",
     "start_head_size",
-    "end_head_size"
+    "end_head_size",
+    "three_d"
   ],
   "geometryTypes": {
     "instance": {
@@ -19687,8 +20110,8 @@
       "name": "effects",
       "type": "effect[]",
       "unit": "none",
-      "description": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
-      "descriptionEn": "按顺序叠加阴影与发光 / Ordered shadow and glow effects",
+      "description": "阴影、发光、倒影与柔边效果",
+      "descriptionEn": "Shadow, glow, reflection and soft-edge effects",
       "default": "[]"
     },
     {
@@ -20035,6 +20458,14 @@
       "descriptionEn": "Per-layer tiling: repeat/no-repeat/space/round",
       "unit": "none",
       "default": "repeat"
+    },
+    {
+      "name": "three-d",
+      "type": "three_d",
+      "unit": "none",
+      "description": "对象级三维外观",
+      "descriptionEn": "Object-level 3D appearance",
+      "default": "none"
     }
   ]
 }

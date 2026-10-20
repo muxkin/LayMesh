@@ -1,6 +1,8 @@
 //! Shared drawing commands, Skia rasterization, SkPDF and
 //! DrawingML exports. The SVG serializer serves file exports and explicit
 //! compatibility calls; SVG imports pass through a separate adapter.
+#[cfg(target_arch = "wasm32")]
+pub use laymesh_core::wasm_allocator::allocation_stats;
 pub mod animation;
 pub mod display_list;
 pub mod display_update;
@@ -8,6 +10,9 @@ mod effects;
 mod export_geometry;
 #[cfg(not(feature = "native"))]
 mod gradient_raster;
+pub mod surface3d;
+#[cfg(not(feature = "native"))]
+mod surface_svg;
 pub use export_geometry::{export_format, raster_dimensions};
 #[cfg(feature = "native")]
 pub mod raster;
@@ -877,6 +882,47 @@ fn used_fonts(scene: &Scene) -> std::collections::BTreeMap<String, (u16, bool)> 
 }
 /// Render a portable SVG containing only the user fonts that the scene actually uses.
 pub fn render_svg(scene: &Scene) -> Result<String> {
+    fn enhanced(n: &Json) -> bool {
+        n["threeD"].is_object()
+            || n["effects"]
+                .as_array()
+                .is_some_and(|e| e.iter().any(|e| e["kind"] == "soft_edge"))
+            || n["children"]
+                .as_array()
+                .is_some_and(|c| c.iter().any(enhanced))
+    }
+    #[cfg(feature = "native")]
+    if scene.nodes.iter().any(|n| enhanced(n)) {
+        let list = to_display_list(scene)?;
+        return portable_svg::render_with_mode(
+            &list,
+            scene.export_dpi,
+            Some(&mut |node, rect, w, h, inner| {
+                let mut local = node.clone();
+                if let Some(inner) = inner {
+                    local
+                        .effects
+                        .retain(|e| e.soft_edge.is_some() || e.inner == inner);
+                    local.hint["effectsOnly"] = json!(true);
+                }
+                let mut tile = list.clone();
+                tile.nodes = vec![local];
+                let frame = raster::render_region(&tile, rect, w, h)?;
+                let image = image::RgbaImage::from_raw(w, h, frame.rgba)
+                    .ok_or_else(|| error("Invalid object raster"))?;
+                let mut png = std::io::Cursor::new(Vec::new());
+                image::DynamicImage::ImageRgba8(image)
+                    .write_to(&mut png, image::ImageFormat::Png)
+                    .map_err(|e| error(e.to_string()))?;
+                Ok(png.into_inner())
+            }),
+            false,
+        );
+    }
+    #[cfg(not(feature = "native"))]
+    if scene.nodes.iter().any(|n| enhanced(n)) {
+        return surface_svg::render(to_display_list(scene)?, scene.export_dpi);
+    }
     svg(scene, true)
 }
 fn svg(scene: &Scene, embed_fonts: bool) -> Result<String> {

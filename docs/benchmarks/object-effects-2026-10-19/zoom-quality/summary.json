@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "rust": {
+    "passed": 725,
+    "failed": 0,
+    "ignored": 2
+  },
+  "zoomStates": 96,
+  "visibleCornerStates": 24,
+  "staleCommits": 0,
+  "patchworkFrames": 0,
+  "zoomCompiles": 0,
+  "discardedObsoleteFrames": 27,
+  "peaks": {
+    "surfaceWorkingPeakBytes": 56352384,
+    "surfaceTextureBytes": 22295936,
+    "wasmMemoryBytes": 75497472,
+    "skiaMemoryBytes": 193331200
+  },
+  "processTreeRssPeakBytes": 2802458624,
+  "engines": {
+    "chromium": {
+      "maxVisibleSettleMs": 2161,
+      "medianVisibleSettleMs": 681.5,
+      "maxColdWarmMean": 0,
+      "maxColdWarmChannelDelta": 0
+    },
+    "firefox": {
+      "maxVisibleSettleMs": 21737,
+      "medianVisibleSettleMs": 5050.5,
+      "maxColdWarmMean": 0,
+      "maxColdWarmChannelDelta": 0
+    },
+    "webkit": {
+      "maxVisibleSettleMs": 3280,
+      "medianVisibleSettleMs": 971.5,
+      "maxColdWarmMean": 0,
+      "maxColdWarmChannelDelta": 0
+    }
+  }
+}

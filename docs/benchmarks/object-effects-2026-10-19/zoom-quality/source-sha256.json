@@ -1,0 +1,17 @@
+{
+  "crates/laymesh-render/src/surface3d.rs": "a1bbfb4382a548b5c2846efa29db753c9c62bacf831985b14d0dc31d20cd2849",
+  "crates/laymesh-render/src/skia_surface.rs": "924bfdddebd32b5387e017bee5756e925eb41ccb63485cc4ebcd5b4edddd8f21",
+  "crates/laymesh-render/src/surface_svg.rs": "4e61bb7fe0ad51adac881bfe07df71d634325b506fe24d28c38d03a85fd689f2",
+  "crates/laymesh-render/tests/object_effects.rs": "68d66e0e2b4438e2de7bc86a6467d77ffccf0dc1fb623c00adfe5e3a8d9bd158",
+  "crates/laymesh-wasm/src/lib.rs": "ebcf2dff21b2c1894d878628c8391a5462b748aac80a7c116a9db993702b6f22",
+  "crates/laymesh-playback/src/lib.rs": "6a570a31d575378f4142f82c4ad0f5bf379d129a71cc24f5010d3562b6925cb7",
+  "crates/laymesh-web-export/src/lib.rs": "2eafd364662bbd73950392dd706966a4e21067d4cffd29c21cb0266685dce7fc",
+  "site/live/web-player.mjs": "0d272c490db5867c4a4c9389e84e8067903ddef9353787d01ebc05aa79351ace",
+  "site/live/web-viewport.mjs": "23160013723c96b8cc736d49f55b3e4102abfbcb01deeedeebdd7c0dc9164e29",
+  "site/live/presentation-worker.mjs": "77db92ab6a3b80a2014a16c202a89bdc3a2de3cd069a6c143423c8eb4ff1c34d",
+  "site/live/skia-renderer.mjs": "c7c90200632e5961e93ac6542f1f19770f6e24c11556c2a72ecd730942107b47",
+  "scripts/test-zoom-quality.cjs": "0af1919bf8e0dc7ffb9276c033dc167506ca2bcbcc4a5258490a5ba274dcc8dd",
+  "scripts/test-zoom-visible.cjs": "96e66bab6afb6928cd68cc1df82d73dac3c94b7bc3a290fb525ebf58d7fba74e",
+  "scripts/test-viewport-lifecycle.cjs": "dc02dce4aa1acb80993f5950cc31ed3ba7b289b0d0b0d556f599af46706decbe",
+  "scripts/test-effects-editable.cjs": "59a124d839cf23cd205e8effcff3a715c7ac207d5c3bb66911234914def76ecd"
+}

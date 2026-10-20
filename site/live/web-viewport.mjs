@@ -118,16 +118,16 @@ export class WebViewport {
       width: (p.viewport[2] - p.viewport[0]) * scale + "px",
       height: (p.viewport[3] - p.viewport[1]) * scale + "px",
     });
-    if (!this.overview.hidden) {
-      Object.assign(this.overview.style, {
-        width: this.page.width * scale + "px",
-        height: this.page.height * scale + "px",
-      });
-      const c = p.viewport.map(
-        (x, i) => (100 * x) / (i % 2 ? this.page.height : this.page.width),
-      );
-      this.overview.style.clipPath = `polygon(evenodd,0% 0%,100% 0%,100% 100%,0% 100%,0% 0%,${c[0]}% ${c[1]}%,${c[2]}% ${c[1]}%,${c[2]}% ${c[3]}%,${c[0]}% ${c[3]}%,${c[0]}% ${c[1]}%)`;
-    }
+    // One coherent placeholder, never a low-resolution patchwork around a
+    // sharp rectangle. A completed viewport replaces it in the same commit.
+    const visible = this.request(0)?.viewport;
+    const covers = visible?.every((v, i) => i < 2 ? v >= p.viewport[i] - 1e-9 : v <= p.viewport[i] + 1e-9);
+    const overview = !covers && p.time === null && this.overviewID === p.id && this.overviewVersion === p.contentVersion;
+    this.overview.hidden = !overview;
+    this.canvas.style.visibility = overview ? "hidden" : "";
+    if (overview) Object.assign(this.overview.style, {
+      width: this.page.width * scale + "px", height: this.page.height * scale + "px", clipPath: "none",
+    });
   }
   request(padding = 96) {
     const r = this.rect(),
@@ -144,13 +144,22 @@ export class WebViewport {
     ];
     if (area[2] <= area[0] || area[3] <= area[1]) return null;
     const dpr = devicePixelRatio || 1;
+    const key = JSON.stringify([this.getPage()?.id, p.width, p.height, r.left, r.top, s, dpr, w, h]);
+    if (key !== this.revisionKey) { this.revisionKey = key; this.revision = (this.revision || 0) + 1; }
     return {
+      viewRevision: this.revision,
       viewport: area,
       width: Math.max(1, Math.ceil((area[2] - area[0]) * s * dpr)),
       height: Math.max(1, Math.ceil((area[3] - area[1]) * s * dpr)),
       scale: s,
       dpr,
     };
+  }
+  matches(request) {
+    const current = this.request();
+    return !!current && request?.viewRevision === current.viewRevision &&
+      request.width === current.width && request.height === current.height && request.dpr === current.dpr &&
+      request.scale === current.scale && request.viewport.every((v, i) => Math.abs(v - current.viewport[i]) < 1e-9);
   }
   covered(time, id) {
     const r = this.request(0),
@@ -195,13 +204,14 @@ export class WebViewport {
           this.overview.height,
         );
       this.overviewID = id;
+      this.overviewVersion = request.contentVersion;
     }
-    this.overview.hidden = time !== null || this.overviewID !== id;
     this.position();
   }
   reset() {
     this.presented = null;
     this.overview.hidden = true;
+    this.canvas.style.visibility = "";
   }
   coordinates(clientX, clientY) {
     const box = this.scroll.getBoundingClientRect();

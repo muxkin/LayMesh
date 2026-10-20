@@ -37,3 +37,7 @@ Put this in a Cargo binary depending on laymesh-core and laymesh-render from thi
 Browser live preview uses prepare_render for a reusable job and draw_job for drawing. Drawing jobs expose display_list and resource_bytes; time sampling produces animation frames, rendered by CanvasKit. The SVG return from render remains available for static integration. Hosts register resources and fonts and satisfy compiler resource requests. Language-service offsets use UTF-16.
 
 See the [worker source](../../site/live/worker.mjs) and [animation implementation](animation-internals.en.md).
+
+## Object surfaces
+
+Display-list version 3 carries `hint.surface3d`, reflection and soft-edge parameters; readers accept versions 1–3. The shared browser renderer calls WASM `surface_texture_region(mesh_json, region, density)` to choose each source texture tile and `raster_surface3d(mesh_json, rgba, texture_width, texture_height, region, width, height)` for geometry, visibility and lighting. Hosts with inlined workers inject both functions through `setSurfaceRasterizer` after WASM initialization. Keep compiler, playback, editor and export runtimes together when upgrading. The synchronous `RenderJob.svg()` API also embeds local 3D PNGs; interactive previews use CanvasKit for 2D texturing and composition.

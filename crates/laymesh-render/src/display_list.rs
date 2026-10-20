@@ -5,9 +5,9 @@ use laymesh_core::{model::FontAsset, text::PositionedGlyph};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-pub const DISPLAY_LIST_VERSION: u32 = 2;
+pub const DISPLAY_LIST_VERSION: u32 = 3;
 pub fn supported_version(version: u32) -> bool {
-    matches!(version, 1 | 2)
+    matches!(version, 1 | 2 | 3)
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -137,8 +137,12 @@ pub struct Stroke {
     pub dash: Vec<f64>,
     pub offset: f64,
 }
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Default)]
 pub struct Effect {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reflection: Option<Reflection>,
+    #[serde(default, rename = "softEdge")]
+    pub soft_edge: Option<f64>,
     pub inner: bool,
     pub blur: f64,
     pub spread: f64,
@@ -149,6 +153,13 @@ pub struct Effect {
     pub source_path: Option<BezPath>,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub knockout: bool,
+}
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Reflection {
+    pub distance: f64,
+    pub length: f64,
+    pub opacity: f64,
+    pub fade: f64,
 }
 pub(crate) fn rgba(s: &str) -> Result<[f64; 4]> {
     if s == "none" {
@@ -188,6 +199,19 @@ impl DrawNode {
         })
     }
     pub fn local_bounds(&self) -> Rect {
+        if let Some(b) = self.hint["surface3d"]["bounds"].as_array() {
+            if b.len() == 4 {
+                return Rect::new(
+                    b[0].as_f64().unwrap_or(0.),
+                    b[1].as_f64().unwrap_or(0.),
+                    b[2].as_f64().unwrap_or(0.),
+                    b[3].as_f64().unwrap_or(0.),
+                );
+            }
+        }
+        self.source_bounds()
+    }
+    pub fn source_bounds(&self) -> Rect {
         match &self.kind {
             DrawKind::Group { children, clip, .. } => {
                 let mut b = children
@@ -220,6 +244,22 @@ impl DrawNode {
         let b = self.local_bounds();
         let mut result = b;
         for e in &self.effects {
+            if let Some(r) = &e.reflection {
+                let pad = 4. * e.blur;
+                result = result.union(
+                    Rect::new(
+                        b.x0,
+                        b.y1 + r.distance,
+                        b.x1,
+                        b.y1 + r.distance + b.height() * r.length,
+                    )
+                    .inflate(pad, pad),
+                );
+                continue;
+            }
+            if e.soft_edge.is_some() {
+                continue;
+            }
             if !e.inner {
                 let pad = 4. * e.blur + e.spread.abs();
                 result =
@@ -800,11 +840,30 @@ impl Builder<'_> {
             image
         };
         result.transform = tr * result.transform;
-        if fit == "cover" || c.is_object() {
+        let radii = pair(&n["threeD"]["imageRadii"], [0.; 2]);
+        if fit == "cover" || c.is_object() || radii.iter().any(|r| *r > 0.) {
+            let visible = Rect::new(
+                ((w - cw * sx) / 2.).max(0.),
+                ((h - ch * sy) / 2.).max(0.),
+                ((w + cw * sx) / 2.).min(w),
+                ((h + ch * sy) / 2.).min(h),
+            );
+            let clip = if radii.iter().any(|r| *r > 0.) {
+                Affine::translate((visible.x0, visible.y0))
+                    * laymesh_core::geometry::rounded_box(
+                        visible.width(),
+                        visible.height(),
+                        radii,
+                        0.,
+                        0.001,
+                    )
+            } else {
+                Rect::new(0., 0., w, h).to_path(0.001)
+            };
             result = DrawNode::new(DrawKind::Group {
                 children: vec![result],
                 clip: Some(Clip {
-                    path: Rect::new(0., 0., w, h).to_path(0.001),
+                    path: clip,
                     even_odd: false,
                 }),
                 mask: None,
@@ -1079,6 +1138,9 @@ impl Builder<'_> {
             }
             kind => return Err(error(format!("未知绘制对象：{kind}"))),
         };
+        if n["threeD"].is_object() && result.transform != Affine::IDENTITY {
+            result = DrawNode::group(vec![result]);
+        }
         result.transform = laymesh_core::geometry::node_transform(n) * result.transform;
         result.opacity *= jnum(n, "opacity", 1.);
         result.name = jstr(n, "id", "").into();
@@ -1182,6 +1244,21 @@ impl Builder<'_> {
                 let mut color = rgba(jstr(e, "color", "#000000"))?;
                 color[3] *= jnum(e, "opacity", 0.5);
                 Ok(Effect {
+                    reflection: if e["kind"] == "reflection" {
+                        Some(Reflection {
+                            distance: jnum(e, "distance", 1.),
+                            length: jnum(e, "length", 0.5),
+                            opacity: jnum(e, "opacity", 0.4),
+                            fade: jnum(e, "fade", 1.),
+                        })
+                    } else {
+                        None
+                    },
+                    soft_edge: if e["kind"] == "soft_edge" {
+                        Some(jnum(e, "radius", 1.))
+                    } else {
+                        None
+                    },
                     inner: e["mode"] == "inner",
                     blur: jnum(e, "blur", 1.),
                     spread: jnum(e, "spread", 0.),
@@ -1201,6 +1278,11 @@ impl Builder<'_> {
                 result.hint = json!({});
             }
             result.hint["_identity"] = identity.clone();
+        }
+        if n["threeD"].is_object() {
+            result.hint["surface3d"] =
+                serde_json::to_value(crate::surface3d::prepare(&result, &n["threeD"])?)
+                    .map_err(|e| error(e.to_string()))?;
         }
         Ok(result)
     }

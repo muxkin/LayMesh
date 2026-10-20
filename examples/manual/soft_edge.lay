@@ -1,0 +1,2 @@
+p=canvas(size=(70mm,60mm),background="#ffffff")
+p.add(ellipse(size=(32mm,25mm),fill="#a665ab",effects=[soft_edge(radius=2mm),shadow(blur=1mm)]),offset=(16mm,12mm))

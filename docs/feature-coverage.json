@@ -2761,6 +2761,41 @@
       "anchor": "background-repeat",
       "minimal": "examples/manual/gradient-composition.lay",
       "composition": "examples/manual/gradient-composition.lay"
+    },
+    "api:reflection": {
+      "topic": "art-effects",
+      "anchor": "reflection",
+      "reference": "reflection",
+      "minimal": "examples/manual/reflection.lay",
+      "composition": "examples/manual/three_d.lay"
+    },
+    "api:soft_edge": {
+      "topic": "art-effects",
+      "anchor": "soft_edge",
+      "reference": "soft_edge",
+      "minimal": "examples/manual/soft_edge.lay",
+      "composition": "examples/manual/three_d.lay"
+    },
+    "api:three_d": {
+      "topic": "art-effects",
+      "anchor": "three_d",
+      "reference": "three_d",
+      "minimal": "examples/manual/three_d.lay",
+      "composition": "examples/manual/three_d.lay"
+    },
+    "lcss:three_d": {
+      "topic": "art-effects",
+      "anchor": "three_d",
+      "reference": "three_d",
+      "minimal": "examples/manual/three_d.lay",
+      "composition": "examples/effects/object-3d.lay"
+    },
+    "css:three-d": {
+      "topic": "art-effects",
+      "anchor": "three_d",
+      "reference": "three_d",
+      "minimal": "examples/manual/three_d.lay",
+      "composition": "examples/effects/object-3d.lay"
     }
   }
 }

@@ -317,7 +317,7 @@ fn arc_bounds(arc: kurbo::Arc) -> kurbo::Rect {
 }
 
 /// Uniform CSS percentages use each box axis, producing elliptical corners.
-pub(crate) fn rounded_box(w: f64, h: f64, radii: [f64; 2], inset: f64, tolerance: f64) -> BezPath {
+pub fn rounded_box(w: f64, h: f64, radii: [f64; 2], inset: f64, tolerance: f64) -> BezPath {
     let (width, height) = ((w - 2. * inset).max(0.), (h - 2. * inset).max(0.));
     let (rx, ry) = (
         (radii[0] - inset).max(0.).min(width / 2.),

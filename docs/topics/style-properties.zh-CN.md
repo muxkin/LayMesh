@@ -756,7 +756,7 @@ normal、italic 或 oblique；oblique 当前按 italic 处理。
 
 ### effects
 
-按顺序叠加阴影与发光 / Ordered shadow and glow effects
+阴影、发光、倒影与柔边效果
 
 合法值：effect[].
 

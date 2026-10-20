@@ -67,3 +67,7 @@ See the [worker source](../../site/live/worker.mjs) and [animation implementatio
 `language_query` shares the native LSP index. Include local CSS texts in `files_json`, including unsaved dependencies. A `definition` result remains a location for a single hit; multiple CSS definitions return an array. `stylesheetContent` with `filename="laymesh-library:/animate.css"` returns `{uri,text,languageId:"css",readOnly:true}`; ordinary local files return `null`.
 
 The native LSP exposes the same source through `laymesh/stylesheetContent` with `{uri}`. Bundled definitions use the virtual URI rather than a nonexistent disk path.
+
+## Object surfaces
+
+Display-list version 3 carries `hint.surface3d`, reflection and soft-edge parameters; readers accept versions 1–3. The shared browser renderer calls WASM `surface_texture_region(mesh_json, region, density)` to choose each source texture tile and `raster_surface3d(mesh_json, rgba, texture_width, texture_height, region, width, height)` for geometry, visibility and lighting. Hosts with inlined workers inject both functions through `setSurfaceRasterizer` after WASM initialization. Keep compiler, playback, editor and export runtimes together when upgrading. The synchronous `RenderJob.svg()` API also embeds local 3D PNGs; interactive previews use CanvasKit for 2D texturing and composition.

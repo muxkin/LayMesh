@@ -322,7 +322,8 @@ page.add(text("Physical page",font_size=12pt),offset=(5mm,5mm))
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -377,7 +378,8 @@ page.add(image(src="../assets/photo.png"),size=(55mm,auto),offset=(8mm,8mm))
 | `path` | text_path | 沿路径排字 / Text path configuration | — |
 | `warp` | text_warp | 字形变形 / Text warp configuration | — |
 | `extrude` | text_extrude | 二维矢量挤出 / Vector extrusion | — |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -455,10 +457,11 @@ page.add(text(spans=[span("Red ",color="#e36b70"),span("bold",font_weight=700)],
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
 | `font_family` | string \| string[] | 公式中的文本字体名称、路径或有序回退列表；数学符号由 math_font 控制。 | 继承 / inherit |
 | `font_weight` | integer | 字体字重，100–900 | 继承 / inherit |
 | `font_style` | "normal" \| "italic" | 正体或斜体<br>`normal`: 正常字形<br>`italic`: 斜体字形 | 继承 / inherit |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -496,7 +499,8 @@ page.add(formula(r"E=mc^2",style=display,font_size=16pt,math_font=ratex_katex),o
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -531,7 +535,8 @@ page.add(rect(size=(40mm,25mm),border_radius=7mm,fill="#e6f2f3",border_color="#0
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -569,7 +574,8 @@ page.add(ellipse(size=(45mm,25mm),fill="#e6f2f3",border_color="#087f8c",border_w
 | `end_head` | head | 结束端头部配置，默认无 | — |
 | `start_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -613,7 +619,7 @@ page.add(wire,start=a.middle_right,end=b.middle_left,start_offset=(2mm,0mm),end_
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
 
 ### 最小完整示例
 
@@ -656,7 +662,8 @@ page.add(g,offset=(55mm,38mm),rotation=15deg)
 | `end_head` | head | 结束端头部配置，默认无 | — |
 | `start_cap` | "butt" \| "round" \| "square" | 路径独立端帽，默认继承 border_cap；虚线内部端帽不受此项影响<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 border_cap |
 | `end_cap` | "butt" \| "round" \| "square" | 路径独立端帽，默认继承 border_cap；虚线内部端帽不受此项影响<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 border_cap |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -691,7 +698,8 @@ page.add(path(commands=[move_to(0mm,20mm),quad_to(20mm,0mm,40mm,20mm),line_to(40
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -730,7 +738,8 @@ page.add(polygon(points=[(0mm,0mm),(40mm,0mm),(30mm,30mm)],fill="#e6f2f3"),offse
 | `end_head` | head | 结束端头部配置，默认无 | — |
 | `start_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -771,7 +780,8 @@ page.add(polyline(points=[(0mm,20mm),(20mm,0mm),(45mm,20mm)],line_color="#087f8c
 | `end_head` | head | 结束端头部配置，默认无 | — |
 | `start_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
 | `end_cap` | "butt" \| "round" \| "square" | 独立端帽，默认继承 line_cap<br>`butt`: 平端帽，不向端点外延伸<br>`round`: 圆端帽，向外延伸半个线宽<br>`square`: 方端帽，向外延伸半个线宽 | 继承 line_cap |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -808,7 +818,8 @@ page.add(arc(radius=20mm,start=0deg,end=120deg,line_width=1mm,end_head=head(shap
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -846,7 +857,8 @@ page.add(sector(radius=20mm,start=0deg,end=120deg,fill="#087f8c"),offset=(15mm,1
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -882,7 +894,8 @@ page.add(star(points=5,outer_radius=20mm,inner_radius=9mm,fill="#e6f2f3",border_
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -1026,12 +1039,13 @@ page.add(ellipse(size=(2mm,2mm),fill="#e36b70"),anchor=center,target=chart.axis(
 | `end_offset` | (length, length) / 画布单位 | 连接终点的独立物理偏移，随后叠加整体 offset | (0, 0) |
 | `start_offset_space` | "container" \| "target" | 起点偏移的方向；target 需要路径锚点及明确切线方向<br>`container`: 沿当前容器的横纵方向<br>`target`: 沿对应路径锚点的切线与左法线 | container |
 | `end_offset_space` | "container" \| "target" | 终点偏移的方向；target 需要路径锚点及明确切线方向<br>`container`: 沿当前容器的横纵方向<br>`target`: 沿对应路径锚点的切线与左法线 | container |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
 | `shaft_width` | length \| (length,length) \| (number,length)[] | 箭身宽度：等宽、首尾宽度对或按箭身弧长 0–1 递增的控制点；分段线性插值 | 3mm |
 | `heads` | "start" \| "end" \| "both" | 头部所在端；燕尾只支持单头<br>`start`: 起点头部<br>`end`: 终点头部<br>`both`: 双头 | end |
 | `head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | twice the corresponding neck width |
 | `start_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
 | `end_head_size` | (length,length) / 画布单位 | 头部的纵向长度与横向宽度；两端参数覆盖 head_size | head_size |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -1332,7 +1346,7 @@ page.add(p,offset=(7mm,6mm))
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
 
 ### 最小完整示例
 
@@ -3911,7 +3925,8 @@ page.add(text("PERSPECTIVE",font_family=font,font_size=26pt,font_weight=700,warp
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -3951,7 +3966,8 @@ centerline_length = a.centerline.length
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -3992,7 +4008,8 @@ page.add(arrow.arc(radius=-45mm,fill="#5273c5"),start=(75mm,60mm),end=(135mm,60m
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -4030,7 +4047,8 @@ page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerlin
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -4071,7 +4089,8 @@ page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerlin
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -4110,7 +4129,8 @@ page.add(ellipse(size=(1mm,1mm),fill="#ee784b"),anchor=center,target=a.centerlin
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
+| `three_d` | three_d | 对象级三维外观 | none |
 
 ### 最小完整示例
 
@@ -4229,7 +4249,7 @@ s4.animate(title, class="animate__animated animate__pulse", duration=600ms)
 | `border_join` | "miter" \| "round" \| "bevel" | 轮廓交点形状<br>`miter`: 延长边缘形成尖角，受尖角限制约束<br>`round`: 以圆弧连接相邻描边边缘<br>`bevel`: 以平边截去连接尖角 | miter |
 | `border_miter_limit` | value | 尖角的最大延伸与线宽之比 | 4 |
 | `border_opacity` | value | 边框独立透明度 0–1 | 1 |
-| `effects` | effect[] | 按顺序叠加阴影与发光 / Ordered shadow and glow effects | [] |
+| `effects` | effect[] | 阴影、发光、倒影与柔边效果 | [] |
 | `poster` | string | 可选封面图片路径 | — |
 
 ### 最小完整示例
@@ -4375,6 +4395,79 @@ d.add(page(src="second.lay"))
 
 [概念与常见错误](media.zh-CN.md#play) · [组合源码](../../examples/media/deck.laydoc)
 
+## reflection
+
+根据可见主体生成可调间距、长度、渐隐及模糊的倒影。
+
+返回：reflection
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `distance` | length / 画布单位 | 与主体的间距 | 1mm |
+| `length` | value | 倒影高度占主体高度的比例，0–1 | 0.5 |
+| `opacity` | value | 起始不透明度，0–1 | 0.4 |
+| `fade` | value | 渐隐程度，0–1 | 1 |
+| `blur` | length / 画布单位 | 高斯模糊标准差 | 0mm |
+| `target` | "content" \| "object" | 作用对象<br>`content`: content<br>`object`: object | content |
+
+### 最小完整示例
+
+```lay
+p=canvas(size=(70mm,60mm),background="#ffffff")
+p.add(rect(size=(30mm,16mm),fill="#3c91b5",effects=[reflection(distance=2mm,length=0.7,opacity=0.5,fade=1,blur=0.3mm)]),offset=(15mm,10mm))
+```
+
+[概念与常见错误](art-effects.zh-CN.md#reflection) · [组合源码](../../examples/manual/three_d.lay)
+
+## soft_edge
+
+柔化可见轮廓
+
+返回：soft_edge
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `radius` | length / 画布单位 | 向内柔化的宽度 | 1mm |
+| `target` | "content" \| "object" | 作用对象<br>`content`: content<br>`object`: object | content |
+
+### 最小完整示例
+
+```lay
+p=canvas(size=(70mm,60mm),background="#ffffff")
+p.add(ellipse(size=(32mm,25mm),fill="#a665ab",effects=[soft_edge(radius=2mm),shadow(blur=1mm)]),offset=(16mm,12mm))
+```
+
+[概念与常见错误](art-effects.zh-CN.md#soft_edge) · [组合源码](../../examples/manual/three_d.lay)
+
+## three_d
+
+对象级三维外观
+
+返回：three_d
+
+| 参数 | 允许类型 / 单位 | 含义与逐项选值 | 默认 / 继承 |
+| --- | --- | --- | --- |
+| `depth` | length / 画布单位 | 以对象平面为中面的总厚度 | 2mm |
+| `rotation` | (angle,angle,angle) | 绕中心依次旋转 X、Y、Z | (0deg,0deg,0deg) |
+| `bevel_top` | (length,length) / 画布单位 | 正面斜面的宽度、高度 | (0mm,0mm) |
+| `bevel_bottom` | (length,length) / 画布单位 | 背面斜面的宽度、高度 | (0mm,0mm) |
+| `projection` | "orthographic" \| "perspective" | 投影方式<br>`orthographic`: orthographic<br>`perspective`: perspective | orthographic |
+| `distance` | length / 画布单位 | 透视相机到对象中心的距离 | 500mm |
+| `material` | "flat" \| "matte" \| "plastic" \| "metal" | 表面材质<br>`flat`: flat<br>`matte`: matte<br>`plastic`: plastic<br>`metal`: metal | matte |
+| `light_direction` | (number,number,number) | 指向灯光的方向；右、下、朝向观察者为正 | (-1,-1,2) |
+| `light_color` | color | 灯光颜色 | #ffffff |
+| `intensity` | value | 非负灯光强度 | 1 |
+| `ambient` | value | 环境光强度，0–1 | 0.25 |
+
+### 最小完整示例
+
+```lay
+p=canvas(size=(70mm,60mm),background="#ffffff")
+p.add(rect(size=(30mm,20mm),fill="#dcad66",three_d=three_d(depth=5mm,rotation=(20deg,-30deg,0deg),bevel_top=(2mm,1mm),bevel_bottom=(1mm,0.5mm),material="metal"),effects=[soft_edge(radius=0.15mm),reflection(distance=1mm,length=0.6)]),offset=(18mm,12mm))
+```
+
+[概念与常见错误](art-effects.zh-CN.md#three_d) · [组合源码](../../examples/manual/three_d.lay)
+
 ## css-properties
 
 CSS 属性支持由编译器、补全、悬停与颜色编辑共享。不支持的 CSS 会恢复解析，每文件集中提示一次。草案阴影分项规则见 [LCSS](lcss.zh-CN.md#shadow-overrides)。
@@ -4425,7 +4518,7 @@ CSS 属性支持由编译器、补全、悬停与颜色编辑共享。不支持�
 | `text-fill` | paint / none | 字形填充 / Glyph paint; defaults to color |
 | `text-stroke-color` | color / none | 字形描边颜色 / Glyph stroke color |
 | `text-stroke-width` | length / explicit mm/cm/in/inch/pt/px or CSS relative units; px uses layout_dpi | 字形描边宽度 / Glyph stroke width |
-| `effects` | effect[] / none | 按顺序叠加阴影与发光 / Ordered shadow and glow effects |
+| `effects` | effect[] / none | 阴影、发光、倒影与柔边效果 |
 | `path` | material / none | 单条开放路径素材，保留原始曲线段；原路径端点为颈部，箭尖向外延伸 |
 | `warp` | text_warp / none | 字形变形 / Text warp configuration |
 | `extrude` | text_extrude / none | 二维矢量挤出 / Vector extrusion |
@@ -4466,6 +4559,7 @@ CSS 属性支持由编译器、补全、悬停与颜色编辑共享。不支持�
 | `background-position` | string / none | 逐层背景位置 |
 | `background-size` | string / none | 逐层背景尺寸，支持 auto/cover/contain |
 | `background-repeat` | string / none | 逐层平铺，支持 repeat/no-repeat/space/round |
+| `three-d` | three_d / none | 对象级三维外观 |
 
 ## 几何视图类型
 

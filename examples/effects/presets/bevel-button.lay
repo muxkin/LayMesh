@@ -1,0 +1,3 @@
+p=canvas(size=(72mm,60mm),background="#f5f7fb",stylesheet="@laymesh/effects.css")
+p.add(text("Raised button",font_size=4mm,color="#18324d"),offset=(8mm,6mm))
+p.add(rect(size=(28mm,15mm),class="fx-bevel-button"),offset=(20mm,20mm))

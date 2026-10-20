@@ -123,11 +123,11 @@ self.onmessage = async ({ data }) => {
               const density=exportDensity(t,dpi);
               const key=JSON.stringify([node,density,effectsOnly],(k,v)=>k==="name"?undefined:v);
               if(layerCache.has(key))return layerCache.get(key);
-              const variants=effectsOnly===null?[node]:node.effects.filter(e=>e.inner===effectsOnly).map(e=>({...node,effects:[e]}));
+              const variants=effectsOnly===null?[node]:node.effects.filter(e=>e.softEdge==null&&e.inner===effectsOnly).map(e=>({...node,effects:[e,...node.effects.filter(s=>s.softEdge!=null)]}));
               const fragments=[];
               for(const variant of variants) {
-                const tiles=[],color=effectsOnly===null?null:variant.effects[0].rgba;
-                await rasterExportTiles({renderer,list,resources:page.resources,node:variant,density,effectsOnly,
+                const tiles=[],color=effectsOnly===null||variant.effects[0].reflection?null:variant.effects[0].rgba;
+                await rasterExportTiles({renderer,list,resources:page.resources,node:variant,density,effectsOnly,alphaOnly:!!color,
                 consume:async tile=>{
                   metrics.tiles++;metrics.peakTileRGBABytes=Math.max(metrics.peakTileRGBABytes,tile.surfaceBytes);
                   metrics.renderMs+=tile.renderMs;metrics.readbackMs+=tile.readbackMs;

@@ -10,6 +10,13 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub fn rendering_memory_stats() -> Vec<f64> {
+    laymesh_core::wasm_allocator::allocation_stats()
+        .map(|v| v as f64)
+        .to_vec()
+}
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace=performance,js_name=now)]
@@ -139,7 +146,7 @@ impl DrawJob {
 #[wasm_bindgen]
 pub fn prepare_display_list(json: &str) -> Result<DrawJob, JsValue> {
     let mut list: laymesh_render::DisplayList = serde_json::from_str(json).map_err(js_error)?;
-    if list.schema_version != laymesh_render::display_list::DISPLAY_LIST_VERSION {
+    if !laymesh_render::display_list::supported_version(list.schema_version) {
         return Err(js_error("Unsupported display list version"));
     }
     resolve_resources(&mut list.resources)?;
@@ -716,4 +723,58 @@ impl CompileSession {
 #[wasm_bindgen]
 pub fn remove_preview_asset(path: &str) {
     PREVIEW_ASSETS.with(|files| files.borrow_mut().remove(path));
+}
+
+/// Shared object-local 3D rasterizer; the host supplies its 2D subject texture.
+#[wasm_bindgen]
+pub fn raster_surface3d(
+    mesh: &str,
+    texture: &[u8],
+    tw: u32,
+    th: u32,
+    region: &[f64],
+    width: u32,
+    height: u32,
+) -> Result<Vec<u8>, JsValue> {
+    let mesh: laymesh_render::surface3d::Mesh = serde_json::from_str(mesh).map_err(js_error)?;
+    let region: [f64; 4] = region
+        .try_into()
+        .map_err(|_| js_error("Invalid surface region"))?;
+    laymesh_render::surface3d::raster(&mesh, texture, tw, th, region, width, height)
+        .map_err(js_error)
+}
+
+#[wasm_bindgen]
+pub fn surface_texture_region(
+    mesh: &str,
+    region: &[f64],
+    density: f64,
+) -> Result<Vec<f64>, JsValue> {
+    let mesh: laymesh_render::surface3d::Mesh = serde_json::from_str(mesh).map_err(js_error)?;
+    let region: [f64; 4] = region
+        .try_into()
+        .map_err(|_| js_error("Invalid surface region"))?;
+    Ok(
+        laymesh_render::surface3d::texture_region(&mesh, region, density)
+            .map_or_else(Vec::new, |r| r.to_vec()),
+    )
+}
+
+/// Rebuild curved object geometry for the actual projected pixel density.
+#[wasm_bindgen]
+pub fn refine_surface3d(mesh: &str, density: f64) -> Result<String, JsValue> {
+    let mesh: laymesh_render::surface3d::Mesh = serde_json::from_str(mesh).map_err(js_error)?;
+    let mesh = laymesh_render::surface3d::refine(&mesh, density).map_err(js_error)?;
+    serde_json::to_string(&mesh).map_err(js_error)
+}
+#[wasm_bindgen]
+pub fn surface_material_texture(
+    texture: &[u8],
+    coverage: &[u8],
+    width: u32,
+    height: u32,
+    material_alpha: Option<f64>,
+) -> Result<Vec<u8>, JsValue> {
+    laymesh_render::surface3d::material_texture(texture, coverage, width, height, material_alpha)
+        .map_err(js_error)
 }

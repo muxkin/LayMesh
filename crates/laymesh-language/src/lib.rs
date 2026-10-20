@@ -270,7 +270,7 @@ fn builtin(name: &str, en: bool) -> Option<J> {
             names.push(n)
         }
     }
-    let ps:Vec<J>=names.iter().map(|n|{let p=e["parameters"].as_array().unwrap().iter().find(|p|p["name"]==*n).cloned().or_else(||entries().iter().flat_map(|a|a["parameters"].as_array().unwrap()).find(|p|p["name"]==*n).cloned()).unwrap_or(json!({"name":n,"type":"material","description":"需要放置的素材。","descriptionEn":"Material to place."}));let positional=strs(&e["positional"]).contains(n);let named=e["parameters"].as_array().unwrap().iter().any(|p|p["name"]==*n);json!({"name":n,"type":parameter_type(&p),"description":desc(&p,en),"unit":p["unit"],"example":p["example"],"documentation":parameter_doc(&p,en,name),"default":p["default"],"required":strs(&e["required"]).contains(n),"kind":if positional{if named{"either"}else{"positional"}}else{"named"},"label":[0,0]})}).collect();
+    let ps:Vec<J>=names.iter().map(|n|{let p=e["parameters"].as_array().unwrap().iter().find(|p|p["name"]==*n).cloned().or_else(||if n=="material"{None}else{entries().iter().flat_map(|a|a["parameters"].as_array().unwrap()).find(|p|p["name"]==*n).cloned()}).unwrap_or(json!({"name":n,"type":"material","description":"需要放置的素材。","descriptionEn":"Material to place."}));let positional=strs(&e["positional"]).contains(n);let named=e["parameters"].as_array().unwrap().iter().any(|p|p["name"]==*n);json!({"name":n,"type":parameter_type(&p),"description":desc(&p,en),"unit":p["unit"],"example":p["example"],"documentation":parameter_doc(&p,en,name),"default":p["default"],"required":strs(&e["required"]).contains(n),"kind":if positional{if named{"either"}else{"positional"}}else{"named"},"label":[0,0]})}).collect();
     Some(
         json!({"name":name,"summary":desc(&e,en),"returns":e["returns"][if en{"en"}else{"zh"}],"documentation":format!("{}\n\n{}",desc(&e,en),link(name,en)),"parameters":ps}),
     )
@@ -1191,9 +1191,10 @@ impl LanguageService {
                     }
                     let key = cap[1].replace('-', "_");
                     // Effect literals use the same constructor metadata as .lay.
-                    if let Some(call) = Regex::new(r"(shadow|glow)\([^)]*$")
-                        .unwrap()
-                        .captures(&cap[2])
+                    if let Some(call) =
+                        Regex::new(r"(shadow|glow|reflection|soft_edge|three_d)\([^)]*$")
+                            .unwrap()
+                            .captures(&cap[2])
                     {
                         let mut options = vec![];
                         if let Some(entry) = entries().iter().find(|a| a["name"] == &call[1]) {
@@ -1219,7 +1220,13 @@ impl LanguageService {
                     let mut values = p.map(|p| strs(&p["values"])).unwrap_or_default();
                     values.push("var()".into());
                     if key == "effects" {
-                        values.extend(["[shadow()]", "[glow()]"].map(str::to_string));
+                        values.extend(
+                            ["[shadow()]", "[glow()]", "[reflection()]", "[soft_edge()]"]
+                                .map(str::to_string),
+                        );
+                    }
+                    if key == "three_d" {
+                        values.push("three_d()".into());
                     }
                     if key.starts_with("box_shadow") || key == "text_shadow" || key == "filter" {
                         values.extend(
@@ -2022,7 +2029,7 @@ fn diagnostics(service: &LanguageService, uri: &str) -> J {
                                     v.loc.offset,
                                     v.loc.offset + 1,
                                     "E_EFFECT",
-                                    "effects requires a list of shadow(...) or glow(...)".into(),
+                                    "effects requires a list of shadow(...), glow(...), reflection(...) or soft_edge(...)".into(),
                                     None,
                                 );
                             }

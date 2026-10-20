@@ -232,13 +232,78 @@ impl Engine {
                 return Err(self.error("E_LIMIT", "at most 32 effects", l));
             }
             for v in vs {
-                if config(v, "shadow").is_none() && config(v, "glow").is_none() {
+                if !["shadow", "glow", "reflection", "soft_edge"]
+                    .iter()
+                    .any(|k| config(v, k).is_some())
+                {
                     return Err(self.error(
                         "E_EFFECT",
-                        "effects accepts shadow(...) and glow(...) only",
+                        "effects accepts shadow(...), glow(...), reflection(...) and soft_edge(...)",
                         l,
                     ));
                 }
+            }
+        }
+        if let Some(v) = a.get("three_d") {
+            if config(v, "three_d").is_none() {
+                return Err(self.error("E_EFFECT", "three_d requires three_d(...)", l));
+            }
+        }
+        if matches!(name, "reflection" | "soft_edge" | "three_d") {
+            for key in ["distance", "radius", "depth"] {
+                if let Some(v) = a.get(key) {
+                    if self.len(v, l)? < 0.
+                        || (name == "three_d" && key == "distance" && self.len(v, l)? == 0.)
+                    {
+                        return Err(self.error("E_EFFECT", format!("Invalid {key}"), l));
+                    }
+                }
+            }
+            for key in ["length", "opacity", "fade", "ambient", "intensity"] {
+                if let Some(v) = a.get(key) {
+                    if !matches!(v.value(), V::Number(n,u) if u.is_empty() && n.is_finite() && *n >= 0. && (key == "intensity" || *n <= 1.))
+                    {
+                        return Err(self.error("E_EFFECT", format!("Invalid {key}"), l));
+                    }
+                }
+            }
+        }
+        if name == "three_d" {
+            for key in ["rotation", "light_direction"] {
+                if let Some(v) = a.get(key) {
+                    let vs = v.list();
+                    if vs.len()!=3 || vs.iter().any(|v| !matches!(v.value(), V::Number(n,u) if n.is_finite() && (u.is_empty() || (key=="rotation" && (u=="deg" || u=="rad"))))) {
+                        return Err(self.error("E_EFFECT",format!("{key} requires three finite components"),l));
+                    }
+                    if key == "light_direction"
+                        && vs
+                            .iter()
+                            .all(|v| matches!(v.value(),V::Number(n,_) if *n==0.))
+                    {
+                        return Err(self.error("E_EFFECT", "light_direction must be nonzero", l));
+                    }
+                }
+            }
+            let mut heights = 0.;
+            for key in ["bevel_top", "bevel_bottom"] {
+                if let Some(v) = a.get(key) {
+                    let vs = v.list();
+                    if vs.len() != 2 {
+                        return Err(self.error("E_EFFECT", "bevel requires (width,height)", l));
+                    }
+                    let (w, h) = (self.len(&vs[0], l)?, self.len(&vs[1], l)?);
+                    if w < 0. || h < 0. || (w == 0.) != (h == 0.) {
+                        return Err(self.error(
+                            "E_EFFECT",
+                            "bevel width and height must both be positive or both zero",
+                            l,
+                        ));
+                    }
+                    heights += h;
+                }
+            }
+            if heights > length(a, "depth", 2., &self.unit, self.dpi) {
+                return Err(self.error("E_EFFECT", "bevel heights exceed extrusion depth", l));
             }
         }
         if name == "text" {
@@ -263,12 +328,34 @@ impl Engine {
     pub(crate) fn art_effects(&self, a: &Args, l: Loc) -> Result<Vec<Json>> {
         self.validate_art("material", a, l)?;
         array(a,"effects").iter().map(|v|{let o=v.object().unwrap();let o=o.borrow();let args=&o.args;
-       self.validate_definition_readonly_effect(args,l)?;
+       self.validate_art(&o.kind,args,l)?;
+       if o.kind == "reflection" {
+           return Ok(json!({"kind":"reflection","distance":length(args,"distance",1.,&self.unit,self.dpi),"length":num(args,"length",0.5),"opacity":num(args,"opacity",0.4),"fade":num(args,"fade",1.),"blur":length(args,"blur",0.,&self.unit,self.dpi),"target":string(args,"target","content")}));
+       }
+       if o.kind == "soft_edge" {
+           return Ok(json!({"kind":"soft_edge","radius":length(args,"radius",1.,&self.unit,self.dpi),"target":string(args,"target","content")}));
+       }
        Ok(json!({"kind":o.kind,"color":string(args,"color",if o.kind=="glow"{"#ffffff"}else{"#000000"}),"opacity":num(args,"opacity",if o.kind=="glow"{1.}else{0.5}),"blur":length(args,"blur",1.,&self.unit,self.dpi),"spread":length(args,"spread",0.,&self.unit,self.dpi),"offset":pair(args,"offset",if o.kind=="shadow"{[1.,1.]}else{[0.,0.]},&self.unit,self.dpi),"mode":string(args,"mode","outer"),"target":string(args,"target","content")}))
     }).collect()
     }
-    fn validate_definition_readonly_effect(&self, a: &Args, l: Loc) -> Result<()> {
-        self.validate_art("effect", a, l)
+    pub(crate) fn art_three_d(&self, a: &Args, l: Loc) -> Result<Option<Json>> {
+        let Some(v) = a.get("three_d") else {
+            return Ok(None);
+        };
+        let cfg = config(v, "three_d")
+            .ok_or_else(|| self.error("E_EFFECT", "three_d requires three_d(...)", l))?;
+        self.validate_art("three_d", &cfg, l)?;
+        let vector = |key: &str, default: [f64; 3]| -> [f64; 3] {
+            let v = array(&cfg, key);
+            std::array::from_fn(|i| match v.get(i).map(V::value) {
+                Some(V::Number(n, u)) if key == "rotation" && u != "rad" => n.to_radians(),
+                Some(V::Number(n, _)) => *n,
+                _ => default[i],
+            })
+        };
+        Ok(Some(
+            json!({"depth":length(&cfg,"depth",2.,&self.unit,self.dpi),"rotation":vector("rotation",[0.;3]),"bevelTop":pair(&cfg,"bevel_top",[0.;2],&self.unit,self.dpi),"bevelBottom":pair(&cfg,"bevel_bottom",[0.;2],&self.unit,self.dpi),"projection":string(&cfg,"projection","orthographic"),"distance":length(&cfg,"distance",500.,&self.unit,self.dpi),"material":string(&cfg,"material","matte"),"lightDirection":vector("light_direction",[-1.,-1.,2.]),"lightColor":string(&cfg,"light_color","#ffffff"),"intensity":num(&cfg,"intensity",1.),"ambient":num(&cfg,"ambient",0.25)}),
+        ))
     }
     pub(crate) fn decorate_text(&mut self, n: &mut Json, a: &Args, l: Loc) -> Result<()> {
         let active = [
@@ -706,6 +793,9 @@ pub(crate) fn css_config(s: &str, file: &str, l: Loc, unit: &str, dpi: f64) -> R
                         "text_path",
                         "text_warp",
                         "text_extrude",
+                        "reflection",
+                        "soft_edge",
+                        "three_d",
                         "path",
                         "line",
                         "polyline",
@@ -746,8 +836,9 @@ pub(crate) fn css_config(s: &str, file: &str, l: Loc, unit: &str, dpi: f64) -> R
 
 /// Conservative decorated occupancy; regular layout and anchor dimensions stay unchanged.
 pub(crate) fn decorated_bounds(n: &Json) -> Option<Rect> {
-    let active =
-        n.get("artText").is_some() || n["effects"].as_array().is_some_and(|a| !a.is_empty());
+    let active = n["threeD"].is_object()
+        || n.get("artText").is_some()
+        || n["effects"].as_array().is_some_and(|a| !a.is_empty());
     let mut b = if let Some(s) = n.get("subjectBounds") {
         Rect::new(
             jnum(s, "x", 0.),
@@ -781,9 +872,56 @@ pub(crate) fn decorated_bounds(n: &Json) -> Option<Rect> {
     } else {
         1.
     };
+    if n["threeD"].is_object() {
+        let cfg = &n["threeD"];
+        let center = b.center();
+        let depth = jnum(cfg, "depth", 2.);
+        let mut projected = None::<Rect>;
+        for x in [b.x0, b.x1] {
+            for y in [b.y0, b.y1] {
+                for z in [-depth / 2., depth / 2.] {
+                    let mut p = [x - center.x, y - center.y, z];
+                    let (sn, cs) = jnum_index(&cfg["rotation"], 0).sin_cos();
+                    p = [p[0], p[1] * cs - p[2] * sn, p[1] * sn + p[2] * cs];
+                    let (sn, cs) = jnum_index(&cfg["rotation"], 1).sin_cos();
+                    p = [p[0] * cs + p[2] * sn, p[1], -p[0] * sn + p[2] * cs];
+                    let (sn, cs) = jnum_index(&cfg["rotation"], 2).sin_cos();
+                    p = [p[0] * cs - p[1] * sn, p[0] * sn + p[1] * cs, p[2]];
+                    let w = if cfg["projection"] == "perspective" {
+                        1. - p[2] / jnum(cfg, "distance", 500.)
+                    } else {
+                        1.
+                    };
+                    if w > 0.01 {
+                        let q = Point::new(p[0] / w + center.x, p[1] / w + center.y);
+                        let r = Rect::from_points(q, q);
+                        projected = Some(projected.map_or(r, |b| b.union(r)));
+                    }
+                }
+            }
+        }
+        if let Some(p) = projected {
+            b = p;
+        }
+    }
     let subject = b;
     for e in n["effects"].as_array().into_iter().flatten() {
-        if e["mode"] == "inner" {
+        if e["mode"] == "inner" || e["kind"] == "soft_edge" {
+            continue;
+        }
+        if e["kind"] == "reflection" {
+            let pad = 4. * jnum(e, "blur", 0.);
+            b = b.union(
+                Rect::new(
+                    subject.x0,
+                    subject.y1 + jnum(e, "distance", 1.) * sy,
+                    subject.x1,
+                    subject.y1
+                        + jnum(e, "distance", 1.) * sy
+                        + subject.height() * jnum(e, "length", 0.5),
+                )
+                .inflate(pad * sx, pad * sy),
+            );
             continue;
         }
         let pad = 4. * jnum(e, "blur", 1.) + jnum(e, "spread", 0.).abs();
@@ -793,4 +931,8 @@ pub(crate) fn decorated_bounds(n: &Json) -> Option<Rect> {
         b = b.union(subject.inflate(pad * sx, pad * sy) + kurbo::Vec2::new(dx * sx, dy * sy));
     }
     any.then(|| crate::geometry::node_transform(n).transform_rect_bbox(b))
+}
+
+fn jnum_index(v: &Json, i: usize) -> f64 {
+    v[i].as_f64().unwrap_or(0.)
 }

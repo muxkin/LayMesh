@@ -10,7 +10,7 @@
     "version": 3,
     "engine": "rust-skia-ratex"
   },
-  "engine": "996b1d997fc9c03ec496676c1a88adc09928bd6367af1ce3275caba435a0b5f2",
+  "engine": "7255100f711b1df48999fcc143c05e6f70f645cc9342b0fad932acc7a6de37ff",
   "items": {
     "examples/gallery/images/png.lay": {
       "fingerprint": "a70af5c46afeb2c3544125c9a6ce75c01033e1a34d3ebdf00779bef43770d8e8",
@@ -2385,6 +2385,34 @@
         }
       ]
     },
+    "examples/effects/combined-effects.lay": {
+      "fingerprint": "46be6a8495add73ea5d601ba92108c07fda79be054efb25bbde8addf99543cf7",
+      "dependencies": [
+        "examples/effects/combined-effects.lay",
+        "examples/gallery/assets/sample.png",
+        "tests/fonts/DejaVuSans.ttf"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-combined-effects-960.webp",
+          "width": 960,
+          "height": 760,
+          "sha256": "d34c578e8f4ac8cc52d98f85db240f89200fe5f6994639bd105f14975b151cd1"
+        },
+        {
+          "file": "site/media/effects-combined-effects-1920.webp",
+          "width": 1920,
+          "height": 1520,
+          "sha256": "762e521a5cf0e555c68973e15dc870e36aa119a33dbb53196bbb8d40e4f14016"
+        },
+        {
+          "file": "site/media/effects-combined-effects-3840.webp",
+          "width": 3840,
+          "height": 3040,
+          "sha256": "1957bd28c1f5a00018f370c378f05ce56c5fdfe204aee0a3614fc6f9663915f7"
+        }
+      ]
+    },
     "examples/effects/images-groups.lay": {
       "fingerprint": "b8df1899c24489a54785f62c61574aa3e1b0ce9df8f762f7fe72bdbfe1485518",
       "dependencies": [
@@ -2409,6 +2437,841 @@
           "width": 3840,
           "height": 1920,
           "sha256": "a2b7e5fc651ceabf21f0ec9b63c13077268cbb4d851c35b4f92073ba708d8f02"
+        }
+      ]
+    },
+    "examples/effects/object-3d.lay": {
+      "fingerprint": "7022c39b7be1a6500b49f38449f903a16cc2a624c1a58ccdf1bd2bf0c2cca759",
+      "dependencies": [
+        "examples/effects/object-3d.lay",
+        "examples/gallery/assets/sample.png",
+        "tests/fonts/DejaVuSans.ttf",
+        "tests/fonts/text/CJK-Regular.otf"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-object-3d-960.webp",
+          "width": 960,
+          "height": 678,
+          "sha256": "cfaba3da4ed8e232a00b3ffb5bac47db2d73fd319a70c6fd148fe0dc0563448f"
+        },
+        {
+          "file": "site/media/effects-object-3d-1920.webp",
+          "width": 1920,
+          "height": 1356,
+          "sha256": "9c947ed515b95874cdc20b77c15623837ba3107394b4bfefb6d2df116a7c0d59"
+        },
+        {
+          "file": "site/media/effects-object-3d-3840.webp",
+          "width": 3840,
+          "height": 2711,
+          "sha256": "54f0732c1232be6e6185bc56f3be6bc1dd5cf2961520f8e7489c36b033a6e4eb"
+        }
+      ]
+    },
+    "examples/effects/presets/bevel-button.lay": {
+      "fingerprint": "8e214bd891a676f6bedfb0e097da22356677b56ac243e022e840d415fb874a8a",
+      "dependencies": [
+        "examples/effects/presets/bevel-button.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-bevel-button-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "4a4fa23402689e068e8fe56be7035d4d7ccce9e7343c192342d27bdd58fe84e8"
+        },
+        {
+          "file": "site/media/effects-presets-bevel-button-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "504bd5a8d6ceb1b030128360bc54dacd147399b11380eeaf4d628e757e3fb245"
+        },
+        {
+          "file": "site/media/effects-presets-bevel-button-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "216274f4b578ed53a9285cd9f218882fccbade23d2621cca261bfc4435aeb4bc"
+        }
+      ]
+    },
+    "examples/effects/presets/bevel-double.lay": {
+      "fingerprint": "2c44b85f5e5dfade05f2ba353bd6b056c2e9a51c4027962adb17e4bf2524c7cf",
+      "dependencies": [
+        "examples/effects/presets/bevel-double.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-bevel-double-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "0f0a34e9b700580a5f8d0c9dd908b802d031adaab32b96f3cfe590c660f24af1"
+        },
+        {
+          "file": "site/media/effects-presets-bevel-double-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "58fe6c31394f7d43e2b4fef4709cb0b422631e65571158f8df5330ce0d3b9f17"
+        },
+        {
+          "file": "site/media/effects-presets-bevel-double-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "0a15cf1d53c1ab307583c2db93ef720cd001124afd2573d0f039f3da9282686b"
+        }
+      ]
+    },
+    "examples/effects/presets/bevel-edge.lay": {
+      "fingerprint": "eb953ab490088f546640a9909430d313ce1e5d01fabdd98f6b6bceb64f0738cb",
+      "dependencies": [
+        "examples/effects/presets/bevel-edge.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-bevel-edge-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "64079bb345ee7397ac38372b1208b1f3531419c7b629f4d5bd2b738c8d1de972"
+        },
+        {
+          "file": "site/media/effects-presets-bevel-edge-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "e33080fb09b8ecb1fbdc2e26223575683d2e53a9c31d7392848f3fffea2f35fd"
+        },
+        {
+          "file": "site/media/effects-presets-bevel-edge-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "c2ed7abcdda5c4a24d416680c844c33c7c8ca28a33bc794f3ad7e13f491f7ee4"
+        }
+      ]
+    },
+    "examples/effects/presets/bevel-frame.lay": {
+      "fingerprint": "0596497416da180dd6f245f10b33d87e03b0b5a2e0548c8975989183a745eb42",
+      "dependencies": [
+        "examples/effects/presets/bevel-frame.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-bevel-frame-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "44dd44deae59c817967fb3429994a0c8e75660e4feecd56d736c5e87c6575661"
+        },
+        {
+          "file": "site/media/effects-presets-bevel-frame-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "aa351d1caf203dc044abd0132b566abb22da014c8103f62f19ed85250167cd25"
+        },
+        {
+          "file": "site/media/effects-presets-bevel-frame-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "99d5726f335ba9a32044d9ed7a3eba3232147b7a992bac982e606bf4f5d27072"
+        }
+      ]
+    },
+    "examples/effects/presets/bevel-medal.lay": {
+      "fingerprint": "8f9a61e3857b3749aef4b2d40c3fec7ae0c82208076c73482b3f4c31f14b288a",
+      "dependencies": [
+        "examples/effects/presets/bevel-medal.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-bevel-medal-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "9818ad1ea09e90b213046cb935c6a234ef53f6fdb8f51cd11c9fbcc7999eab26"
+        },
+        {
+          "file": "site/media/effects-presets-bevel-medal-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "049069edece79cfc728beef5a7368ca67e2a94fd3d44344fa34179e4dccd33fa"
+        },
+        {
+          "file": "site/media/effects-presets-bevel-medal-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "5c5ade557c15c59de6279d81794e1b45df6a6af91d4058adb9f648daff8a2b7d"
+        }
+      ]
+    },
+    "examples/effects/presets/edge-dream.lay": {
+      "fingerprint": "8efb2c9a9767883894e2893ac62c8bddda329616019bb474630931e6005b24e3",
+      "dependencies": [
+        "examples/effects/presets/edge-dream.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-edge-dream-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "1ec9cd323e955551d5122a728a475d8f20e7d5809f48f10a1e568180103c0344"
+        },
+        {
+          "file": "site/media/effects-presets-edge-dream-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "7ecfe8ab01ec077b25e2f1ba73f0e804855ba5b0a6aeedfc2fd43d6f41f686ce"
+        },
+        {
+          "file": "site/media/effects-presets-edge-dream-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "e6bfb50565b93b046add8422bd1c89511892fdc92953ed4510f459241a73caa9"
+        }
+      ]
+    },
+    "examples/effects/presets/edge-reflected.lay": {
+      "fingerprint": "b16f88a9bb516870404e537e577d76de4a1f8dd2d615f1598cd5659ecfcc3b43",
+      "dependencies": [
+        "examples/effects/presets/edge-reflected.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-edge-reflected-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "52a7ec7f92930b1ffb4226e31dadae87eb0cf902407a9559b2d22ec5bedd72ce"
+        },
+        {
+          "file": "site/media/effects-presets-edge-reflected-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "f09f47f8d001e4302ef919cf7ab543709ded4d175c52acd96311c19ef1b80182"
+        },
+        {
+          "file": "site/media/effects-presets-edge-reflected-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "2f406665b3c0765e0169276e031d918d9a43dff2213fed6dc3114a3ed7912b4a"
+        }
+      ]
+    },
+    "examples/effects/presets/edge-shadow.lay": {
+      "fingerprint": "eca85be193b4aebf95e3d8ba905e1a5b1bfcd40909ad29c4732e05e9b51f74fb",
+      "dependencies": [
+        "examples/effects/presets/edge-shadow.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-edge-shadow-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "e2fd452115e4a205331b1f103c31512a1cceeb3da73e4dd2560b1615775718cc"
+        },
+        {
+          "file": "site/media/effects-presets-edge-shadow-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "ab0e81c4cb98343fff3fab2adbbfff026c1c35ebe59575657a7986c5c010fefd"
+        },
+        {
+          "file": "site/media/effects-presets-edge-shadow-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "3943fbe4bd0586790db4a7bf14b9279cda0ac1ee594db22708ef9e40422605fe"
+        }
+      ]
+    },
+    "examples/effects/presets/edge-soft.lay": {
+      "fingerprint": "297270bb90f42f53adea4c8ad897862c9679950e325482e6712568d42e99da6d",
+      "dependencies": [
+        "examples/effects/presets/edge-soft.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-edge-soft-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "8121ed1f1574a08778586acc657b61bca12eb19bc82d84d78eec9067345acb5f"
+        },
+        {
+          "file": "site/media/effects-presets-edge-soft-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "a369d6089f269c8a26c62f29c2d16fc44738179e3639439c1c84e77a446f753d"
+        },
+        {
+          "file": "site/media/effects-presets-edge-soft-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "2a17f4241c0c446025ac911905ce631312b0040b6daf3e5d4fbde5f36dc1dc8e"
+        }
+      ]
+    },
+    "examples/effects/presets/edge-subtle.lay": {
+      "fingerprint": "3cd9e62765f0fb3ebb4a5c625f36f20f89ff2ac7505e9a0f99a637e9f66ee294",
+      "dependencies": [
+        "examples/effects/presets/edge-subtle.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-edge-subtle-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "9655196591aa03bdadc04870c5c700a7d854caa97e7c86c8247c6ac678296c5c"
+        },
+        {
+          "file": "site/media/effects-presets-edge-subtle-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "85c157af3d4142a0148ced6951188eb38525ca4abadfe0da12256bde68041af1"
+        },
+        {
+          "file": "site/media/effects-presets-edge-subtle-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "f79689b454610fb7426eba2a9dade7118e9a05de80f837bdf1db0c89c98be0df"
+        }
+      ]
+    },
+    "examples/effects/presets/glow-dual.lay": {
+      "fingerprint": "4b5da71dc5d625e54a831ec3520765482f335bbfcdb8d1071ffbc696f9b77a2f",
+      "dependencies": [
+        "examples/effects/presets/glow-dual.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-glow-dual-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "1726af755a52c220e6fc93dde9bac047b54476c845252c7af0fe519419df4955"
+        },
+        {
+          "file": "site/media/effects-presets-glow-dual-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "0de2980884ab85d204020cd46f1fea5492c8b135314e05805d73307aeb898dc1"
+        },
+        {
+          "file": "site/media/effects-presets-glow-dual-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "1a2b4d3baab6495da9e6e5e2d17dec2947328d2345bd876e63c853763f953111"
+        }
+      ]
+    },
+    "examples/effects/presets/glow-neon.lay": {
+      "fingerprint": "5653259b7266961926b427f0ec2561719014e87c835fad7f26fcec6c762e4a93",
+      "dependencies": [
+        "examples/effects/presets/glow-neon.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-glow-neon-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "cf8fcc952b4f0ea84c869ff47b130dbc16cd4a05b16e3033c07728d1e24c8893"
+        },
+        {
+          "file": "site/media/effects-presets-glow-neon-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "29a1d9ba4d29a346b6059ae14fd8010741aa356a81c9cc080681f3038b8a75a6"
+        },
+        {
+          "file": "site/media/effects-presets-glow-neon-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "5f37b94bb60e5f4aaccda7cab900515ee73007d30fd145c266055ff0e2bff648"
+        }
+      ]
+    },
+    "examples/effects/presets/material-flat.lay": {
+      "fingerprint": "9955e20cf94345b827ff2df9dedc9c5ba2ad06286023b7334e040848e3fe375b",
+      "dependencies": [
+        "examples/effects/presets/material-flat.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-material-flat-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "0a1dcbe36f6f4e0a64f6088dd2690e48bc322b274142c6063ea78b2fd30e3e29"
+        },
+        {
+          "file": "site/media/effects-presets-material-flat-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "6d31042cc6bfebc736a93befa497f363aecc938599adcd0595de71daa9ca0bb9"
+        },
+        {
+          "file": "site/media/effects-presets-material-flat-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "d1f9c1d83d354623673097204ba195d1d17ff05d5ed265b46d34fd502f9475b3"
+        }
+      ]
+    },
+    "examples/effects/presets/material-matte.lay": {
+      "fingerprint": "8c1de9328391b06582300616f4d766671838f5884daa70d9bb908d0dfa479ed5",
+      "dependencies": [
+        "examples/effects/presets/material-matte.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-material-matte-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "518f8fbdeae56822df987c6007caa0d8abfea032517861be5dae9bd1e30773b2"
+        },
+        {
+          "file": "site/media/effects-presets-material-matte-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "2a8537a78f91b1a30508580c0ebc8b016b8a7c854efb205f5b95d91173c6c3aa"
+        },
+        {
+          "file": "site/media/effects-presets-material-matte-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "44f67aa734da4fa57b27b857c0845d2730a0c9501e0ad13cee3f68c04d7688d8"
+        }
+      ]
+    },
+    "examples/effects/presets/material-metal.lay": {
+      "fingerprint": "4c4a06248dd27aede7b41c1ee2ba447e9df954b1b5cfd322f32a3d730416aead",
+      "dependencies": [
+        "examples/effects/presets/material-metal.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-material-metal-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "0b195e56df8d3cc18afa7dc082c52deba1ba02f090de8a228a6e5364b63573cb"
+        },
+        {
+          "file": "site/media/effects-presets-material-metal-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "1dc9a8582c3ff233142e1fac8f2188dd24902bc31d150ce54ad90f000e77a9eb"
+        },
+        {
+          "file": "site/media/effects-presets-material-metal-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "07d9b2822c52b1d4037ee14aa3c0efa2aa189ba4270e1d2447bb11dc56f7b845"
+        }
+      ]
+    },
+    "examples/effects/presets/material-plastic.lay": {
+      "fingerprint": "2ca6861feef6d37d7a7206c203129d173ab3defc68de68b531a35326a5ae0692",
+      "dependencies": [
+        "examples/effects/presets/material-plastic.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-material-plastic-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "4ba7db05a4bc3108ec5ce427c94fb981734eca6ca734d9677da1a04340eb6a95"
+        },
+        {
+          "file": "site/media/effects-presets-material-plastic-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "fe7abada2500766278c48220944430db637b2b77e3dc43fb13fc3113407b89c0"
+        },
+        {
+          "file": "site/media/effects-presets-material-plastic-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "635a15dcb43e49e8c1e3c05e58a52a109de52fb84e6a61adfb2044dde132698a"
+        }
+      ]
+    },
+    "examples/effects/presets/material-warm.lay": {
+      "fingerprint": "73dc5049b9fc943ed16024cd167df5c0ea71cdb4d33c669979a0d92624d0eeba",
+      "dependencies": [
+        "examples/effects/presets/material-warm.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-material-warm-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "4118947c4d2c9b5a20609bf5947c3aa2a575bae4c4ef9cdacd243baf1eea7843"
+        },
+        {
+          "file": "site/media/effects-presets-material-warm-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "2ff5adfe99438a8fd5fcdacc8b13ddb502c3dfb52539f24159fb63032e0b2481"
+        },
+        {
+          "file": "site/media/effects-presets-material-warm-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "a4838fd81d0c63919b20244031f13a4c5d9eae91795c896bf123e2f5e23d4f41"
+        }
+      ]
+    },
+    "examples/effects/presets/reflection-clear.lay": {
+      "fingerprint": "a58111f2794a8d4ec99dc45e5e8423ef67eb2015b4bf9be0294e53c03cc619f6",
+      "dependencies": [
+        "examples/effects/presets/reflection-clear.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-reflection-clear-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "d59aca53937974bfa5bbfb29b1085e059765380c321fcd329ce50c65a321162d"
+        },
+        {
+          "file": "site/media/effects-presets-reflection-clear-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "eef55109ee762e5cca61a2f6e1e5520bb35d7658a9490aea3ada851967c024bd"
+        },
+        {
+          "file": "site/media/effects-presets-reflection-clear-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "5f30de1a9f286499caf63545f8d360509848e66a3a0a0254617f58c2a43a198e"
+        }
+      ]
+    },
+    "examples/effects/presets/reflection-float.lay": {
+      "fingerprint": "9c0c30f79d24425cd7f90de9948eae36643d2ef8389e3c3f436b86a36092db7f",
+      "dependencies": [
+        "examples/effects/presets/reflection-float.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-reflection-float-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "da5d474bc43e5581cc697a1f396a83d3db2f562828d3af5422d29b0f1a253145"
+        },
+        {
+          "file": "site/media/effects-presets-reflection-float-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "4a5eedf999580327484a25976e85a61d5317c5ead2eaf037cee3b897a71a62ef"
+        },
+        {
+          "file": "site/media/effects-presets-reflection-float-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "bf9ceab3a405b3db7545bcb750501910d6f88e55144694c752175a89b20c9fe6"
+        }
+      ]
+    },
+    "examples/effects/presets/reflection-full.lay": {
+      "fingerprint": "6d4a7b8149b4ebf104af0c0b1528fff9dec6a8b35ec0c70c163e9a14d2db4b60",
+      "dependencies": [
+        "examples/effects/presets/reflection-full.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-reflection-full-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "a15aa3959dd6b36b2c132154b4fa21b5ef0a2e2318acb6736923dc857c8fb8b6"
+        },
+        {
+          "file": "site/media/effects-presets-reflection-full-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "5022f037406c278dfae3c6e4da2708ba5ddf8edd13f602e00cd21d4d101ab8c6"
+        },
+        {
+          "file": "site/media/effects-presets-reflection-full-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "bce403d997bc32f195c6991fc23b122a99916bc2c774548423055258a0fee9f0"
+        }
+      ]
+    },
+    "examples/effects/presets/reflection-soft.lay": {
+      "fingerprint": "36a441d1d3c18fa7ad0330e20933cfbcf7cb1a7c7ad8d8900c55b8c0c2360723",
+      "dependencies": [
+        "examples/effects/presets/reflection-soft.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-reflection-soft-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "cc465b0631356a6c4c9eedf6b3cddff9ef454b4b288a52bc5de2298e70ab5c66"
+        },
+        {
+          "file": "site/media/effects-presets-reflection-soft-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "532741b4a1bd10abdd69a2437b24162364467b2eb3a557e47ebc7277b00cc139"
+        },
+        {
+          "file": "site/media/effects-presets-reflection-soft-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "8bc72a74730ea572f7ce0ba6632be298323f87a3ef23733fe58bbbed18e2b0d2"
+        }
+      ]
+    },
+    "examples/effects/presets/reflection-tight.lay": {
+      "fingerprint": "4690666215516ca1cbdc11adf12aa78c597b0b09eb6a58ef5b9375cf4dc82dee",
+      "dependencies": [
+        "examples/effects/presets/reflection-tight.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-reflection-tight-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "62ca9acb23730d34d8629e2b9dd9f30a0d657b7b328feea34fe638ac1973c7dd"
+        },
+        {
+          "file": "site/media/effects-presets-reflection-tight-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "4f6a698b79c9c25d68d2ee913d1647cee1b601f9cdb4c468b279cb444c82880f"
+        },
+        {
+          "file": "site/media/effects-presets-reflection-tight-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "e077c2424cdc5ec748758e7271ffcc07d9fd5eab8301c2b6b476e3c2a4b628f5"
+        }
+      ]
+    },
+    "examples/effects/presets/shadow-inner.lay": {
+      "fingerprint": "4a22187739932d661e48a47172fc3871f33888a1bbd6226ce0f872b8d0e502d6",
+      "dependencies": [
+        "examples/effects/presets/shadow-inner.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-shadow-inner-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "f179c48f0572e8e2cc765b1003d45bc8a35cad06d6df86c3f70645ef2c3410b6"
+        },
+        {
+          "file": "site/media/effects-presets-shadow-inner-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "8c34876d4ee67d981266a6d67cd4edce97c58d2bcaf34090f2972122f517e16d"
+        },
+        {
+          "file": "site/media/effects-presets-shadow-inner-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "d9324f2cfc3aba9cc8ece454f44fb2dba658a09c4d3ad54d810e66aa94311dd9"
+        }
+      ]
+    },
+    "examples/effects/presets/shadow-long.lay": {
+      "fingerprint": "13d0adf3fcbdadcaa29df37b391962c5882ac0a7ef3b4294ce3064824015d817",
+      "dependencies": [
+        "examples/effects/presets/shadow-long.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-shadow-long-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "b60d605c9e12ae3ba873c4a2203a1d3668df9648042c3198c8214d504161c034"
+        },
+        {
+          "file": "site/media/effects-presets-shadow-long-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "bb19185fa15968fc0310aa5109043789c669a2abfd17100c40e8bcf8092bc031"
+        },
+        {
+          "file": "site/media/effects-presets-shadow-long-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "4223ae639b5317cd02d77a5fbdd6301717f9c4da89a45be588856f350397d41e"
+        }
+      ]
+    },
+    "examples/effects/presets/shadow-soft.lay": {
+      "fingerprint": "365e7360c353bbd3bfefa6891564d9debc68bf37a48075e148f0c56044407ca8",
+      "dependencies": [
+        "examples/effects/presets/shadow-soft.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-shadow-soft-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "837bc2f2e159f0b46aea1c704153e48b382ada946341f723fcadccb8e4c262e6"
+        },
+        {
+          "file": "site/media/effects-presets-shadow-soft-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "4eb641f4cbc08b64dd1e56b9305cc7ba3f6fd78007451fdfb5f170bbe8308c21"
+        },
+        {
+          "file": "site/media/effects-presets-shadow-soft-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "d126d49dfad506ba694ec81cd2177985616ccb0de002ff50b4c993a10ba09cbf"
+        }
+      ]
+    },
+    "examples/effects/presets/view-back.lay": {
+      "fingerprint": "090cc712d87cc9af8d3435fb499cef51dcb3619a483b35c9bf510d2553cd69d9",
+      "dependencies": [
+        "examples/effects/presets/view-back.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-view-back-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "d1769321c59653e04be6ae74f8662253630faf815e3509f9b281073d6ea558a7"
+        },
+        {
+          "file": "site/media/effects-presets-view-back-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "c8f28bfa8aa8c14d93c7b44a1aca0d7595ccdab5304964e4afb897abfac67e66"
+        },
+        {
+          "file": "site/media/effects-presets-view-back-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "d7bfbbe3dfa98438d893069447d5c8782c0d1fab87047564b33d7d16b7062cf7"
+        }
+      ]
+    },
+    "examples/effects/presets/view-isometric.lay": {
+      "fingerprint": "7d51a216bc5ff8804cacfe438c98b79411618fe92345b82ab0ab0d8980838d85",
+      "dependencies": [
+        "examples/effects/presets/view-isometric.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-view-isometric-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "5149d74c073adc3523fcd09230bb78f0a6d063e12413ead43d61c626a7b50489"
+        },
+        {
+          "file": "site/media/effects-presets-view-isometric-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "4af4b3a74d5cd426ed4fc04e11e3be182e81d91bdc78ad6e413e221adf99b54b"
+        },
+        {
+          "file": "site/media/effects-presets-view-isometric-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "f8ebf1076d974761478c970b366d067d67649f7ba32ac71f97814bd8e95751b6"
+        }
+      ]
+    },
+    "examples/effects/presets/view-perspective.lay": {
+      "fingerprint": "d99109f211f450bf51bc001a955d877adcbc6d7742c8e09e469d68957767e8e9",
+      "dependencies": [
+        "examples/effects/presets/view-perspective.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-view-perspective-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "ca7cd5fe62f7113cfd66cd109dea5c07933a632825cb4e4cacc8db08998f69c0"
+        },
+        {
+          "file": "site/media/effects-presets-view-perspective-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "c7c6c10efad03982c8f90262d009e1eb050f9e3d0c2c829c7a58db1d7c517a50"
+        },
+        {
+          "file": "site/media/effects-presets-view-perspective-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "13195cd946a56c7e25b60dc435a7d5f50f1ff5ae60060aa9a11db70866862378"
+        }
+      ]
+    },
+    "examples/effects/presets/view-standing.lay": {
+      "fingerprint": "769a9ecb03c6e224cf2e1385d9e6303e9cdce2e589c7727fe232adc1087509c4",
+      "dependencies": [
+        "examples/effects/presets/view-standing.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-view-standing-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "4d06a2d07f3b29d2683b1d79e1f6593bf38df2ab73400e3557f1e1ae9e9bc4c7"
+        },
+        {
+          "file": "site/media/effects-presets-view-standing-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "208db285e1523c6bbdd842e3cc07fbe21626502453f85933b130989184987e2d"
+        },
+        {
+          "file": "site/media/effects-presets-view-standing-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "71e691a1b01ca75daaf723b4a10a8b337c7648ad755f7f4e951aff694b10755f"
+        }
+      ]
+    },
+    "examples/effects/presets/view-tilted.lay": {
+      "fingerprint": "179508a4ab3ffd1b2f8924863d1a864418aaa50d365743e9fb3727c4800ec4fb",
+      "dependencies": [
+        "examples/effects/presets/view-tilted.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-view-tilted-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "49cfcec589a2caf8b2a83659e902c1849544d41196e31af74a509af87b4dea10"
+        },
+        {
+          "file": "site/media/effects-presets-view-tilted-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "9e4058a638d8a73460b73cde752d8b09621e28dc5978575a74cd25f3caa65ae4"
+        },
+        {
+          "file": "site/media/effects-presets-view-tilted-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "a54be03258b773d7f006662fc65730ddaacd93058d17eeee35dba1ba61c2f0d7"
+        }
+      ]
+    },
+    "examples/effects/presets.lay": {
+      "fingerprint": "7a0f00e31c8b259193bde9fece00fcba3d334b9d9bdaca3ce2aaadea8940524f",
+      "dependencies": [
+        "examples/effects/presets.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/effects-presets-960.webp",
+          "width": 960,
+          "height": 800,
+          "sha256": "e366b777f1dfcf91b7de6fbda5fce09796bc27219b57d194fff65b36004f7109"
+        },
+        {
+          "file": "site/media/effects-presets-1920.webp",
+          "width": 1920,
+          "height": 1600,
+          "sha256": "4167b46d032fbda719862249ae6928c6f67a46d4dbdd36882abb8f4e3ade265f"
+        },
+        {
+          "file": "site/media/effects-presets-3840.webp",
+          "width": 3840,
+          "height": 3200,
+          "sha256": "0763fa46ecd9da3952ce809c948bd89b0f7fec0fa7c5290b88dff5f433181a0e"
         }
       ]
     },
@@ -2777,6 +3640,32 @@
           "width": 3840,
           "height": 3840,
           "sha256": "46989c014cdad1e6dd7de8fb467b624b3b7ddf2a30f44e9206e3f6726970b92e"
+        }
+      ]
+    },
+    "examples/libraries/catalog-effects.lay": {
+      "fingerprint": "1f654e5d5bcce0c6542a92f43bc61b607d8822601dda7b8d479aa437b7117688",
+      "dependencies": [
+        "examples/libraries/catalog-effects.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/libraries-catalog-effects-960.webp",
+          "width": 960,
+          "height": 960,
+          "sha256": "4182741914681f13ee8a0865a311c8bcc375cacfad60787ca404c40754d00ff6"
+        },
+        {
+          "file": "site/media/libraries-catalog-effects-1920.webp",
+          "width": 1920,
+          "height": 1920,
+          "sha256": "30255fe5187d697f2268d47ecfb2fc3413cb6b009e534f132bbb264357933a52"
+        },
+        {
+          "file": "site/media/libraries-catalog-effects-3840.webp",
+          "width": 3840,
+          "height": 3840,
+          "sha256": "d714919bfe833d2566d554e9b022917f92fc8b17a43305322626cb584717cbfd"
         }
       ]
     },
@@ -5316,6 +6205,32 @@
         }
       ]
     },
+    "examples/manual/reflection.lay": {
+      "fingerprint": "97b9f0e04c1eeee0d4422715017a954e0fd8deab0ed0f799ed04cdcac26703e3",
+      "dependencies": [
+        "examples/manual/reflection.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-reflection-960.webp",
+          "width": 960,
+          "height": 823,
+          "sha256": "9322e29367e6071370d44b52379a1d3094e6170f2abe55a6c8edd19799ad6f2f"
+        },
+        {
+          "file": "site/media/manual-reflection-1920.webp",
+          "width": 1920,
+          "height": 1646,
+          "sha256": "1888613ba55caff41312cfdc9c64a174608901673b723564fb92413ea8ccc321"
+        },
+        {
+          "file": "site/media/manual-reflection-3840.webp",
+          "width": 3840,
+          "height": 3291,
+          "sha256": "6024e97b6d8e8a374ca8e5de727aa7bcaa5fa7dce76161266c53e80562ae728a"
+        }
+      ]
+    },
     "examples/manual/rgb.lay": {
       "fingerprint": "7f724e0d742c728e799ef185385d341c7114db9f35e0c30ee90d1b399c3340d6",
       "dependencies": [
@@ -5391,6 +6306,32 @@
           "width": 3840,
           "height": 2880,
           "sha256": "12fd4d823364e11cd9e25ab4e1fa8e6e27adc0f1801906f17c60c93fe8934204"
+        }
+      ]
+    },
+    "examples/manual/soft_edge.lay": {
+      "fingerprint": "8c853e383c76d681698a1bb01e4698e0dcc8cf752c28f490528984a0c326cdd0",
+      "dependencies": [
+        "examples/manual/soft_edge.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-soft_edge-960.webp",
+          "width": 960,
+          "height": 823,
+          "sha256": "9eb171e32ef5576b205fc55a45041fe1c4eddbe932e16a66d508664a90cbcbac"
+        },
+        {
+          "file": "site/media/manual-soft_edge-1920.webp",
+          "width": 1920,
+          "height": 1646,
+          "sha256": "6b67ab6070b2eee2028c1964b587d52330d9dffb14abce6092f5fe82a92b54c3"
+        },
+        {
+          "file": "site/media/manual-soft_edge-3840.webp",
+          "width": 3840,
+          "height": 3291,
+          "sha256": "a2f22895d2312ac4b75095fdc0c42b72c12410a9849dff5e1189ca0eb7048725"
         }
       ]
     },
@@ -5549,6 +6490,32 @@
           "width": 3840,
           "height": 2880,
           "sha256": "3d49f4b779ad0249812dd634c02c482e82afcbd58bc088b5d7a00663ba168716"
+        }
+      ]
+    },
+    "examples/manual/three_d.lay": {
+      "fingerprint": "2d84111f9949a395a46d0b7264316e0941eba66ceca738b947e470f81e43cff5",
+      "dependencies": [
+        "examples/manual/three_d.lay"
+      ],
+      "variants": [
+        {
+          "file": "site/media/manual-three_d-960.webp",
+          "width": 960,
+          "height": 823,
+          "sha256": "ff0712111cd56d8daf49d94671885fd74f04a0b8ff3dc0edbbcbbab80a87cf14"
+        },
+        {
+          "file": "site/media/manual-three_d-1920.webp",
+          "width": 1920,
+          "height": 1646,
+          "sha256": "17f4e519ab796035646810f35b5c7454c623e65f3cd7590199f822aed15b3963"
+        },
+        {
+          "file": "site/media/manual-three_d-3840.webp",
+          "width": 3840,
+          "height": 3291,
+          "sha256": "af5e81d43e3e4b3c031f1e7fdc44f8523fdf92c4c1bf30136528a6d7c8e7a1b3"
         }
       ]
     },
@@ -6492,6 +7459,20 @@
         }
       ]
     },
+    "docs/benchmarks/object-effects-2026-10-19/composition.png": {
+      "fingerprint": "04792bc07503c140a869f5fb8d403da60e1d8ba568b4267455df3e40d114e82d",
+      "dependencies": [
+        "docs/benchmarks/object-effects-2026-10-19/composition.png"
+      ],
+      "variants": [
+        {
+          "file": "site/media/docs-benchmarks-object-effects-2026-10-19-composition-803.webp",
+          "width": 803,
+          "height": 567,
+          "sha256": "bb76de5e942237663e29c4be3d6f944d400890385bbb84816cc61811aab17d41"
+        }
+      ]
+    },
     "docs/benchmarks/gradients-2026-10-19/open-props.png": {
       "fingerprint": "e7ec218dcf507b58bfc10f40bf56fdf9d2a1a035b90963203340a0f998ea8f10",
       "dependencies": [
@@ -6509,6 +7490,74 @@
           "width": 964,
           "height": 1020,
           "sha256": "491a00889d062e5a5a56b44e4d269e6814fe97e0fd5d878636904d7be062a834"
+        }
+      ]
+    },
+    "docs/benchmarks/object-effects-2026-10-19/release-0.8.0/side-before.png": {
+      "fingerprint": "21daf2fe83b0d176a4fd005028b92e0ac5dc1496c6a01bf3e65b92fca9bc9294",
+      "dependencies": [
+        "docs/benchmarks/object-effects-2026-10-19/release-0.8.0/side-before.png"
+      ],
+      "variants": [
+        {
+          "file": "site/media/docs-benchmarks-object-effects-2026-10-19-release-0.8.0-side-before-960.webp",
+          "width": 960,
+          "height": 731,
+          "sha256": "934d4408ba224ac82fd375d44f899380604545cd862a142432ee648283bc81f1"
+        },
+        {
+          "file": "site/media/docs-benchmarks-object-effects-2026-10-19-release-0.8.0-side-before-1583.webp",
+          "width": 1583,
+          "height": 1205,
+          "sha256": "aed046fc6708edaf8d26c5a53ccbd7718911dfb49376cc9220d350c83f3b9661"
+        }
+      ]
+    },
+    "docs/benchmarks/object-effects-2026-10-19/release-0.8.0/side-after.png": {
+      "fingerprint": "c4498d4ffbdd184364a3973093394e16d26d9e5de8135f66da5642f365adf1de",
+      "dependencies": [
+        "docs/benchmarks/object-effects-2026-10-19/release-0.8.0/side-after.png"
+      ],
+      "variants": [
+        {
+          "file": "site/media/docs-benchmarks-object-effects-2026-10-19-release-0.8.0-side-after-960.webp",
+          "width": 960,
+          "height": 731,
+          "sha256": "d0ac6e8309467c47bb593775c90cdc4ab7c50663c228282f3526673400a0f21a"
+        },
+        {
+          "file": "site/media/docs-benchmarks-object-effects-2026-10-19-release-0.8.0-side-after-1583.webp",
+          "width": 1583,
+          "height": 1205,
+          "sha256": "c4fc751a53ad216983f0746fd01d790371dc7040988b4d089ea9d1fb40bed3a8"
+        }
+      ]
+    },
+    "docs/benchmarks/object-effects-2026-10-19/zoom-quality/before-377.png": {
+      "fingerprint": "e2a5fcf2821c8c739a909c44436c90d204a7c20890df73ef4fb924ecf9a0ea4c",
+      "dependencies": [
+        "docs/benchmarks/object-effects-2026-10-19/zoom-quality/before-377.png"
+      ],
+      "variants": [
+        {
+          "file": "site/media/docs-benchmarks-object-effects-2026-10-19-zoom-quality-before-377-711.webp",
+          "width": 711,
+          "height": 815,
+          "sha256": "bad37ea296aa86f08bafb390b59b7a5e7e8468e795c6e3e53695941f9da3d2de"
+        }
+      ]
+    },
+    "docs/benchmarks/object-effects-2026-10-19/zoom-quality/after-377.png": {
+      "fingerprint": "706abf41547550a3ba7091dc5e2a42409c661127584770676f3f9722d5857a8c",
+      "dependencies": [
+        "docs/benchmarks/object-effects-2026-10-19/zoom-quality/after-377.png"
+      ],
+      "variants": [
+        {
+          "file": "site/media/docs-benchmarks-object-effects-2026-10-19-zoom-quality-after-377-711.webp",
+          "width": 711,
+          "height": 815,
+          "sha256": "ff90734f4ec3c5eecaac57c18184d5def2f43a37dfbca504270697a1cbd278a3"
         }
       ]
     }

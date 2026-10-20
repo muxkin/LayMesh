@@ -107,6 +107,7 @@ export async function mountWebPlayer({
     mainQueue = Promise.resolve(),
     serial = 0,
     painting = false,
+    renderFailed = false,
     viewStatic = true,
     requestedPaint = null,
     paintPromise = Promise.resolve(),
@@ -262,7 +263,8 @@ export async function mountWebPlayer({
   async function call(data, transfer = []) {
     if (runtime) {
       if (data.type === "target") return runtime(data);
-      const q = mainQueue.then(() => runtime(data));
+      const q = mainQueue.then(() => (data.type === "paint" || data.type === "activate") &&
+        data.viewRevision != null && !preview.matches(data) ? {type:"stale"} : runtime(data));
       mainQueue = q.catch(() => {});
       return q;
     }
@@ -322,10 +324,14 @@ export async function mountWebPlayer({
             ...(exporter ? ["fflate.mjs", "web-archive.mjs", "web-export-raster.mjs"] : []),
             "display-update.mjs",
             "skia/canvaskit.mjs",
+            "skia-cpu-surface.mjs",
             "presentation-transitions-data.mjs",
             "presentation-transitions.mjs",
+            "shadow-mask.mjs",
+            "presentation-canvas.mjs",
             "skia-renderer.mjs",
             "presentation-resources.mjs",
+            "presentation-visual-state.mjs",
             "presentation-renderer.mjs",
             ...(exporter && !fullExporter
               ? [
@@ -380,7 +386,7 @@ export async function mountWebPlayer({
       worker.onmessage = ({ data }) => {
         if (data.type === "frame") {
           try {
-            if (!closed && data.serial === serial && data.sequence > frameSequence) {
+            if (!closed && data.serial === serial && data.sequence > frameSequence && preview.matches(data.frameRequest)) {
               frameSequence = data.sequence;
               const bitmap = data.bitmap;
               if (canvas.width !== bitmap.width) canvas.width = bitmap.width;
@@ -388,7 +394,10 @@ export async function mountWebPlayer({
               const context = canvas.getContext("2d");
               context.clearRect(0, 0, canvas.width, canvas.height);
               context.drawImage(bitmap, 0, 0);
-            }
+              preview.present(data.frameRequest, data.time, data.pageId);
+              metrics.framesCommitted = (metrics.framesCommitted || 0) + 1;
+              metrics.lastCommitted = { ...data.frameRequest, requestId:data.requestId, pageId:data.pageId };
+            } else metrics.discardedFrames = (metrics.discardedFrames || 0) + 1;
           } finally { data.bitmap.close(); }
           return;
         }
@@ -430,7 +439,16 @@ export async function mountWebPlayer({
     const { createPresentationRuntime } = await import(
       moduleURL("runtime/presentation-worker.mjs")
     );
-    runtime = await createPresentationRuntime({ ...init, canvas }, (data) => {
+    const back = document.createElement("canvas");
+    runtime = await createPresentationRuntime({ ...init, canvas:back, onPresent(data) {
+      if (closed || data.serial !== serial || !preview.matches(data.frameRequest)) { metrics.discardedFrames=(metrics.discardedFrames||0)+1; return; }
+      if(canvas.width!==back.width)canvas.width=back.width;
+      if(canvas.height!==back.height)canvas.height=back.height;
+      const context=canvas.getContext("2d");context.clearRect(0,0,canvas.width,canvas.height);context.drawImage(back,0,0);
+      preview.present(data.frameRequest,data.time,data.pageId);
+      metrics.framesCommitted=(metrics.framesCommitted||0)+1;
+      metrics.lastCommitted={...data.frameRequest,requestId:data.requestId,pageId:data.pageId};
+    } }, (data) => {
       if (data.type !== "context") return;
       clock.running = false;
       if (data.ready) {
@@ -550,17 +568,10 @@ export async function mountWebPlayer({
         reduced: reduced.matches,
         ...drawSize,
       });
-      if (current !== serial || frame.type === "stale") return;
-      preview.present(
-        drawSize,
-        viewStatic || clock.staticPage ? null : clock.time,
-        p.id,
-      );
+      if (current !== serial) return;
+      if (frame.type === "stale" || !preview.matches(drawSize)) continue;
       frame.presentationConfirmed = frame.presentationConfirmed && await waitForPresentation();
       if (current !== serial) return;
-      // The overview also reads the placeholder canvas. Copy after the owning
-      // window has received its bitmap, rather than caching a transient blank.
-      preview.present(drawSize, viewStatic || clock.staticPage ? null : clock.time, p.id);
       } while (preview.request(0) && !preview.covered(viewStatic || clock.staticPage ? null : clock.time, p.id));
       metrics.pageInstalls =
         (metrics.pageInstalls || 0) + (installed.installed ? 1 : 0);
@@ -581,6 +592,7 @@ export async function mountWebPlayer({
         residentCacheBytes: frame.residentCacheBytes,
         preserveDrawingBuffer: frame.preserveDrawingBuffer,
       });
+      Object.assign(metrics,Object.fromEntries(Object.entries(frame).filter(([k])=>/^(surface|wasmMemoryBytes|skiaMemoryBytes)/.test(k))));
       root.dataset.painted = "true";
       if (!dirty) {
         status("可以播放");
@@ -640,15 +652,22 @@ export async function mountWebPlayer({
           },mediaFrames.map(f=>f.bitmap));
           media.states=frame.mediaStates||{};
           if (current === serial) {
-            if (frame.skipped || frame.type === "stale") continue;
-            preview.present(drawSize, drawTime, pages[index].id);
+            if (frame.skipped || frame.type === "stale" || !preview.matches(drawSize)) {
+              requestedPaint = viewStatic;
+              continue;
+            }
             if (!clock.running) {
               frame.presentationConfirmed = frame.presentationConfirmed && await waitForPresentation();
               if (current !== serial) continue;
-              preview.present(drawSize, drawTime, pages[index].id);
             }
-            root.dataset.painted = String(drawTime !== null || preview.covered(drawTime, pages[index].id));
+            const complete = preview.covered(drawTime, pages[index].id);
+            root.dataset.painted = String(complete);
+            if (!complete) requestedPaint = viewStatic;
+            if (complete && renderFailed && (previewCompiler ? previewCompiler.currentReady : !dirty)) {
+              renderFailed=false;delete root.dataset.error;status(editor ? "可以编辑" : "可以播放");
+            }
             metrics.frames++;
+            Object.assign(metrics,Object.fromEntries(Object.entries(frame).filter(([k])=>/^(surface|wasmMemoryBytes|skiaMemoryBytes)/.test(k))));
             Object.assign(metrics, {
               sampleMs: frame.sampleMs,
               rasterMs: frame.rasterMs,
@@ -659,6 +678,7 @@ export async function mountWebPlayer({
           }
         }
       } catch (error) {
+        renderFailed=true;metrics.lastRenderError={message:error.message||String(error),viewRevision:preview.request()?.viewRevision};
         fail(error);
       } finally {
         painting = false;
@@ -669,6 +689,9 @@ export async function mountWebPlayer({
   }
   function tick(now) {
     if (closed) return;
+    // Some browsers/display emulation change DPR without firing resize or a
+    // resolution media-query event. The existing frame clock closes that gap.
+    if ((devicePixelRatio || 1) !== observedDpr) densityChanged();
     const seconds = Math.max(0, (now - last) / 1000);
     last = now;
     if(!busy&&!(previewCompiler ? !previewCompiler.currentReady : dirty))media.tick(seconds,clock);
@@ -771,7 +794,7 @@ export async function mountWebPlayer({
     };
     if (p.canvas.transferControlToOffscreen && typeof Worker !== "undefined")
       try {
-        p.worker = new PresentationWorkers(p, () => makeWorker("presentation-worker.mjs", true));
+        p.worker = (p.parkedWorker&&!p.parkedWorker.closed?p.parkedWorker:null) || new PresentationWorkers(p, () => makeWorker("presentation-worker.mjs", true));p.parkedWorker=null;
         p.worker.onmessage = ({ data }) => notify(data);
         p.worker.onerror = (e) => {
           for (const c of p.calls.values()) {
@@ -822,6 +845,7 @@ export async function mountWebPlayer({
     onEnter() {
       previewSnapshot = {
         index,
+        page: pages[index],
         viewStatic,
         time: clock.time,
         active: clock.active,
@@ -846,8 +870,7 @@ export async function mountWebPlayer({
         completed: snapshot.completed,
         running: false,
       });
-      go(snapshot.index, true)
-        .then(() => {
+      const restore = (repaint=true) => {
           if (closed || presentation.opened) return;
           Object.assign(clock, {
             time: Math.min(clock.duration, snapshot.time),
@@ -858,9 +881,12 @@ export async function mountWebPlayer({
           if(!document.hidden)media.restore(snapshot.mediaSnapshot);
           last = performance.now();
           sync();
-          paint(viewStatic);
-        })
-        .catch(fail);
+          if(repaint)paint(viewStatic);
+      };
+      updateView();
+      if(!busy&&!dirty&&index===snapshot.index&&pages[index]===snapshot.page&&preview.covered(viewStatic||clock.staticPage?null:snapshot.time,pages[index].id)){
+        metrics.previewRestores=(metrics.previewRestores||0)+1;restore(false);
+      }else go(snapshot.index, true).then(()=>restore()).catch(fail);
     },
   });
   const rendererRuntime=async()=>({wasmBytes:bytes("runtime/wasm/laymesh.wasm").slice().buffer,skiaBytes:bytes("runtime/skia/canvaskit.wasm").slice().buffer});
@@ -903,12 +929,20 @@ export async function mountWebPlayer({
   );
   viewportObserver.observe(stage);
   window.addEventListener("resize", refreshViewport);
+  let densityQuery, observedDpr = devicePixelRatio || 1;
+  function watchDensity() {
+    densityQuery?.removeEventListener("change", densityChanged);
+    densityQuery = matchMedia(`(resolution: ${devicePixelRatio || 1}dppx)`);
+    densityQuery.addEventListener("change", densityChanged, {once:true});
+  }
+  function densityChanged() { observedDpr = devicePixelRatio || 1; watchDensity(); refreshViewport(); }
+  watchDensity();
   reduced.addEventListener("change", refreshViewport);
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
       clock.running = false;
       sync();
-    }
+    } else refreshViewport();
   });
   let workspace, editor, compilerPool, compilerModule;
   let previewResidents=new Set();
@@ -1132,7 +1166,7 @@ export async function mountWebPlayer({
       presentation.sync();
       const action = (name, id) => ({
         name,
-        disabled: !presentation.ready || presentation.switching,
+        disabled: !["fullscreen","menu","pages"].includes(id)&&(!presentation.ready || presentation.switching),
         run: () => {
           if (id === "pause") presentation.clock.running = paused.resume;
           paused.resume = false;
@@ -1519,7 +1553,7 @@ export async function mountWebPlayer({
       timeOrigin:performance.timeOrigin,totals:previewCompiler?.totals,firstEdit:previewCompiler?.firstEdit,currentEdit:previewCompiler?.trace,
       pages:previewCompiler?.records.map(r=>({id:r.key,ready:r.valid,error:r.error?.message,baseline:r.value?.listId || r.value?.id})),
       compilerWorkers:compilerPool?.clients.size || 0,compilerMemoryBytes:compilerPool?.memoryBytes || 0,
-      preview:{editToPreviewMs:metrics.editToPreviewMs,version:metrics.previewVersion},presentation: {...presentation.metrics}}; },
+      preview:{editToPreviewMs:metrics.editToPreviewMs,version:metrics.previewVersion,lastRenderError:metrics.lastRenderError},presentation: {...presentation.metrics}}; },
     get editor() {
       return editor;
     },
@@ -1532,6 +1566,7 @@ export async function mountWebPlayer({
       disposeExport();
       clearTimeout(resizeTimer);
       viewportObserver.disconnect();
+      densityQuery?.removeEventListener("change",densityChanged);
       preview.dispose();
       clearTimeout(viewPaintTimer);
       for (const url of workerURLs) URL.revokeObjectURL(url);

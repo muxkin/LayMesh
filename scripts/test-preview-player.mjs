@@ -18,3 +18,16 @@ player.update(animation);assert.equal(player.restorePage({end:false,automatic:fa
 player.update(animation);player.restorePage({end:true,automatic:false});assert.equal(player.clock.time,3);assert.equal(player.clock.completed,3);assert.equal(player.running,false);
 player.update({...animation,steps:animation.steps.map(s=>({...s,trigger:'click'}))});assert.equal(player.restorePage({end:false,automatic:false}),false);assert.equal(player.clock.active,-1);player.navigate('next');assert.equal(player.running,true);
 player.action('static');player.seek(.2);assert.equal(player.time,.2);assert.equal(player.running,false);player.reduced=true;player.seek(0);assert.deepEqual(player.clock.steps,animation.reducedSteps);assert.equal(player.clock.duration,animation.reducedDuration);player.action('static');assert.equal(pending.size,0);console.log('Preview waits for input, shares step/hold/automatic boundaries, rewinds and restores static; page continuation and backward end state passed.');
+const {nextVisualChange}=await import('../site/live/presentation-visual-state.mjs');
+const visualAnimation={normal:{steps:[{start:0,duration:12,clips:[{delay:.2,duration:1.5,iterations:1,tracks:[{}]}]}]},reduced:{steps:[]}};
+assert.equal(nextVisualChange(visualAnimation,.1),.2);
+assert.equal(nextVisualChange(visualAnimation,.5),.5);
+assert.equal(nextVisualChange(visualAnimation,3),12,'Hold keeps authored duration without repainting');
+assert.equal(nextVisualChange(visualAnimation,12),Infinity);
+assert.equal(nextVisualChange(visualAnimation,null),Infinity);
+assert.equal(nextVisualChange(visualAnimation,1,true),Infinity);
+visualAnimation.normal.steps[0].clips[0].iterations=null;
+assert.equal(nextVisualChange(visualAnimation,5),5,'Infinite iterations must keep painting');
+visualAnimation.normal.steps[0].clips[0].paused=true;
+assert.equal(nextVisualChange(visualAnimation,5),12,'Paused clips do not change during the hold');
+console.log('Visual change intervals preserve delay, hold, reduced, infinite and paused visualAnimation semantics.');
