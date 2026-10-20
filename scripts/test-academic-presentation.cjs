@@ -9,7 +9,25 @@ try{
  await p.goto(url);await p.waitForFunction(()=>!!(window.presentation?.deck||window.laymeshPresentation?.deck));await p.evaluate(()=>window.show=window.presentation||window.laymeshPresentation);
  assert.equal(await p.evaluate(()=>show.deck.pages.length),32);await p.locator('[data-action=present]').click();await p.waitForFunction(()=>show.ready);await p.evaluate(()=>show.preload);
  const before=await p.evaluate(()=>qa.compiles);const wheel=async dy=>{await p.mouse.move(100,200);await p.mouse.wheel(0,dy);};
- await wheel(120);await p.waitForFunction(()=>show.clock.running);await wheel(120);await wheel(120);assert.equal(await p.evaluate(()=>show.clock.completed),0,'one wheel burst cannot finish a step');
+ // Browser protocol round trips can separate mouse.wheel calls by more than
+ // the 180 ms gesture boundary. Follow one real wheel event with its tail in
+ // the same browser turn, and inspect the state before natural animation time
+ // can advance. Timed inertia and separate gestures are covered by the unit
+ // wheel test; backward navigation and menu scrolling below use real input.
+ await p.evaluate(()=>{
+  const input=show.wheelInput,consume=input.consume,decisions=[];
+  input.consume=function(...args){const direction=consume.apply(this,args);decisions.push(direction);return direction;};
+  show.root.addEventListener('wheel',event=>queueMicrotask(()=>{
+   try{
+    for(let i=0;i<2;i++)show.canvas.dispatchEvent(new WheelEvent('wheel',{deltaY:event.deltaY,bubbles:true,cancelable:true}));
+    qa.wheelBurst={decisions,completed:show.clock.completed,running:show.clock.running};
+   }finally{input.consume=consume;}
+  }),{once:true});
+ });
+ await wheel(120);await p.waitForFunction(()=>qa.wheelBurst);
+ const burst=await p.evaluate(()=>qa.wheelBurst);
+ assert.deepEqual(burst.decisions,[1,0,0],'one wheel burst accepts exactly one navigation action');
+ assert.equal(burst.completed,0,'one wheel burst cannot finish a step');assert(burst.running,'the accepted wheel event starts the animation');
  await p.waitForTimeout(220);await wheel(-120);await p.waitForFunction(()=>!show.clock.running&&show.clock.time===0);
  await p.mouse.wheel(180,0);assert.equal(await p.evaluate(()=>show.clock.time),0);
  await p.locator('.presentation-canvas').click({button:'right',position:{x:700,y:350}});await p.getByRole('menuitem',{name:'跳到页面…',exact:true}).click();
