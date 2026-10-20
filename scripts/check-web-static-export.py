@@ -23,7 +23,10 @@ for run in json.loads((out/'results.json').read_text()):
    assert used==set(notices['texts']),'Unused or missing license texts'
    assert any(p['name']=='svg2pdf' for p in notices['packages'])
    assert any(n.startswith('runtime/exporter-full/') for n in z.namelist()) == (mode=='editable')
-   assert not any(p['name']=='resvg' or p['name'].startswith('Linux static') for p in notices['packages'])
+   # Object 3D's portable SVG path now uses resvg in the WASM exporter.
+   # Its license must survive both editable and playback package trimming.
+   assert any(p['name']=='resvg' for p in notices['packages'])
+   assert not any(p['name'].startswith('Linux static') for p in notices['packages'])
    assert not any(p.startswith('runtime/vendor/') and p.endswith('/LICENSE') for p in z.namelist()),'Licenses are already in the shared inventory'
  with zipfile.ZipFile(file('playback-again.zip.html')) as z:
   assert not any(n.startswith('runtime/exporter-full/') or n.endswith('web-full-export-worker.mjs') for n in z.namelist())
