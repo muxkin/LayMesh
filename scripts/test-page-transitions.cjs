@@ -16,6 +16,7 @@ const root=path.resolve(__dirname,'..'),out=path.resolve(process.argv[2]||'/tmp/
     const browser=await engines[engine].launch({headless:true});try{
       const page=await browser.newPage({viewport:{width:1280,height:800}}),errors=[],requests=[];
       page.on('pageerror',e=>errors.push(String(e)));page.on('request',r=>{if(/^https?:/.test(r.url()))requests.push(r.url());});page.setDefaultTimeout(60000);
+      await page.addInitScript(()=>{const match=window.matchMedia.bind(window);window.__motionQueries=[];window.matchMedia=query=>{const result=match(query);if(query==='(prefers-reduced-motion: reduce)')__motionQueries.push(result);return result;};});
       await page.goto('file://'+out+'/demo.html');await page.waitForFunction(()=>window.__LAYMESH_WEB&&document.querySelector('#app').dataset.painted==='true');
       assert.ok(!await page.evaluate(()=>__LAYMESH_WEB.metrics.transitionName),'First display is static');
       const select=async(n)=>{await page.locator('#page').selectOption(String(n));await page.waitForFunction(n=>document.querySelector('#app').dataset.painted==='true'&&__LAYMESH_WEB.metrics.pageId===__LAYMESH_WEB.pages[n].id,n);return page.evaluate(()=>({...__LAYMESH_WEB.metrics}));};
@@ -27,7 +28,11 @@ const root=path.resolve(__dirname,'..'),out=path.resolve(process.argv[2]||'/tmp/
       const warm=(await select(3)).skiaMemoryBytes;
       for(let n=0;n<12;n++)await select(n%2?3:2);
       m=await select(2);assert.ok(m.skiaMemoryBytes<=warm+32*1048576,'Repeated navigation keeps memory bounded');
-      await page.emulateMedia({reducedMotion:'reduce'});await page.waitForFunction(()=>matchMedia('(prefers-reduced-motion: reduce)').matches);m=await select(1);assert.ok(!m.transitionFrames,'Reduced motion renders no intermediate effect frames '+JSON.stringify(m));await page.emulateMedia({reducedMotion:'no-preference'});
+      // WebKit can update a new query before the player's existing query lists.
+      // Observe the actual lists returned to the runtime, without replacing
+      // their state or dispatching synthetic changes, before testing navigation.
+      const motion=async value=>{await page.emulateMedia({reducedMotion:value?'reduce':'no-preference'});await page.waitForFunction(value=>__motionQueries.length>0&&__motionQueries.every(query=>query.matches===value),value);};
+      await motion(true);m=await select(1);assert.ok(!m.transitionFrames,'Reduced motion renders no intermediate effect frames '+JSON.stringify(m));await motion(false);
       console.log(engine+' preview checks passed');
       await page.evaluate(async()=>{const p=__LAYMESH_WEB.presentation;p.fullscreen=false;await p.open();});await page.waitForFunction(()=>__LAYMESH_WEB.presentation.ready);
       assert.equal(await page.evaluate(()=>__LAYMESH_WEB.presentation.index),1,'Presentation starts at the current preview page');
