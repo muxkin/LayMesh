@@ -37,11 +37,17 @@ fs.mkdirSync(out, { recursive: true });
       await p.waitForFunction(() => window.__LAYMESH_WEB?.editor && document.querySelector('#app').dataset.painted==='true');
       assert.equal(await p.title(),'Incremental preview');
       const done = async () => {try{await p.waitForFunction(() => document.querySelector('#app').dataset.documentState==='ready',null,{timeout:30000});}catch(error){error.message+='\n'+JSON.stringify(await p.evaluate(()=>({state:{...document.querySelector('#app').dataset},records:__LAYMESH_WEB.previewCompiler.records.map(r=>({key:r.key,valid:r.valid,error:String(r.error||'')}))})));throw error;}};
-      const edit = async (file, source) => p.evaluate(async ({file,source}) => {
+      const edit = async (file, source, targetPage) => p.evaluate(async ({file,source,targetPage}) => {
         const w=__LAYMESH_WEB; await w.workspace.open('/project/'+file);
         const v=w.editor.views.get('/project/'+file).view;
         v.dispatch({changes:{from:0,to:v.state.doc.length,insert:source}});
-      }, {file,source});
+        if(targetPage!==undefined){
+          const select=document.querySelector('#page');
+          if(select.disabled)throw Error('Page selection must stay available while compiling');
+          select.value=String(targetPage);
+          select.dispatchEvent(new Event('change',{bubbles:true}));
+        }
+      }, {file,source,targetPage});
       const source = file => p.evaluate(file => __LAYMESH_WEB.editor.files['/project/'+file],file);
       assert.equal(await p.evaluate(()=>__LAYMESH_WEB.previewCompiler.records.filter(r=>r.dependencies).length),3,'The exported archive must restore all dependency indexes before its first edit');
       await p.evaluate(() => {const c=__LAYMESH_WEB.previewCompiler,compile=c.compile.bind(c);window.compileRequests=[];c.compile=async (data,...rest)=>{compileRequests.push({page:data.targetPageId,version:data.version});const r=await compile(data,...rest);if(window.holdResult){window.holdResult=false;await new Promise(resolve=>window.releaseResult=resolve);}return r;};});
@@ -71,8 +77,10 @@ fs.mkdirSync(out, { recursive: true });
       const imageIDs=await p.evaluate(()=>__LAYMESH_WEB.pages.map(p=>p.id));
       assert.notEqual(imageIDs[0],ids2[0]);assert.equal(imageIDs[1],ids2[1]);assert.equal(imageIDs[2],ids2[2]);
       await p.evaluate(()=>compileRequests.length=0);
-      await edit('theme.lcss',theme.replace('#e04020','#20a040'));
-      await p.locator('#page').selectOption('2');await done();
+      // Select the new target before the 30 ms compile debounce can expire.
+      // Separate browser protocol calls may let the previous page start first;
+      // an already-running valid job is deliberately allowed to finish.
+      await edit('theme.lcss',theme.replace('#e04020','#20a040'),2);await done();
       assert.equal(await p.evaluate(()=>compileRequests[0].page),'c');
       assert.equal(await p.evaluate(()=>compileRequests.length),3);
       await p.evaluate(()=>{compileRequests.length=0;window.holdResult=true;});
