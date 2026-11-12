@@ -460,7 +460,7 @@ impl Engine {
             StmtKind::Expr(e) => {
                 if !matches!(&e.kind, ExprKind::Call(parts, _) if
                     (parts.len() == 1 && matches!(parts[0].as_str(), "add" | "canvas")
-                        && !matches!(Environment::get(scope, &parts[0]), Some(V::Function { .. })))
+                        && !Self::has_authored_function(scope, &parts[0]))
                     || (parts.len() == 2 && (matches!(parts[1].as_str(), "add" | "fuse" | "animate" | "play")
                         || Environment::get(scope, &parts[0]).and_then(|v| v.object()).is_some_and(|o| o.borrow().kind == "plot"))))
                 {
@@ -627,7 +627,7 @@ impl Engine {
         // directly in any enclosing construction transaction.
         if matches!(&e.kind, ExprKind::Call(parts, _) if
             (parts.len() == 1 && parts[0] == "add"
-                && !matches!(Environment::get(s, "add"), Some(V::Function { .. })))
+                && !Self::has_authored_function(s, "add"))
             || (parts.len() == 2 && matches!(parts[1].as_str(), "add" | "fuse" | "animate" | "step")))
         {
             self.query_path.push(e.site);
@@ -659,18 +659,8 @@ impl Engine {
         // Drop the larger expression dispatch frame before entering user code.
         match &e.kind {
             ExprKind::Call(parts, args) => {
-                if parts.len() == 1
-                    && parts[0] == "add"
-                    && self.canvas.is_none()
-                    && !self.document_mode
-                    && !matches!(Environment::get(s, "add"), Some(V::Function { .. }))
-                {
-                    // Establish layout DPI and the CSS viewport before evaluating the material.
-                    let args = Args::from([
-                        ("size".into(), V::List(vec![V::num(160.), V::num(90.)])),
-                        ("layout_dpi".into(), V::num(300.)),
-                    ]);
-                    self.call_builtin(&["canvas".into()], vec![], args, s, e.loc)?;
+                if parts.len() == 1 && parts[0] == "add" && self.canvas.is_none() {
+                    self.ensure_implicit_canvas(s, e.loc)?;
                 }
                 let (pos, named) = self.eval_call_arguments(args, s, e.loc)?;
                 self.call(parts, pos, named, s, e.loc)
@@ -678,6 +668,23 @@ impl Engine {
             ExprKind::Binary(op, a, b) => self.eval_binary(op, a, b, s, e.loc),
             _ => self.eval_other(e, s),
         }
+    }
+    #[inline(never)]
+    fn has_authored_function(scope: &Scope, name: &str) -> bool {
+        matches!(Environment::get(scope, name), Some(V::Function { .. }))
+    }
+    #[inline(never)]
+    fn ensure_implicit_canvas(&mut self, s: &Scope, loc: Loc) -> Result<()> {
+        if self.document_mode || Self::has_authored_function(s, "add") {
+            return Ok(());
+        }
+        // Establish layout DPI and the CSS viewport before evaluating the material.
+        let args = Args::from([
+            ("size".into(), V::List(vec![V::num(160.), V::num(90.)])),
+            ("layout_dpi".into(), V::num(300.)),
+        ]);
+        self.call_builtin(&["canvas".into()], vec![], args, s, loc)?;
+        Ok(())
     }
     #[inline(never)]
     fn eval_binary(&mut self, op: &str, a: &Expr, b: &Expr, s: &Scope, l: Loc) -> Result<V> {

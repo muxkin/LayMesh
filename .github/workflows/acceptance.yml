@@ -28,7 +28,7 @@ jobs:
       - run: python -m pip install -e './python' pillow
       - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
       - run: python scripts/build-web-export.py
-      - run: python scripts/test-contracts.py
+      - run: python -u scripts/test-contracts.py
       - run: cargo build --locked --release -p laymesh-cli
       - run: python -m pip install -e './python' pillow
       - run: python -m unittest discover -s python/tests -v
@@ -127,7 +127,7 @@ jobs:
           node scripts/test-animation-cache-quality.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/animation-cache-quality"
           node scripts/test-effects-catalog.cjs http://127.0.0.1:8769/ "$RUNNER_TEMP/browser-results/effects-catalog"
           node scripts/test-gradient-gallery.cjs http://127.0.0.1:8769/gradient-gallery.html
-          node scripts/test-web-export.cjs "$RUNNER_TEMP/browser-results/web-export"
+          DEBUG=pw:browser node scripts/test-web-export.cjs "$RUNNER_TEMP/browser-results/web-export"
           node scripts/test-presentation-warnings.cjs "$RUNNER_TEMP/browser-results/presentation-warnings"
           node scripts/test-web-static-export.cjs "$RUNNER_TEMP/browser-results/static-export"
           python scripts/check-web-static-export.py "$RUNNER_TEMP/browser-results/static-export"
