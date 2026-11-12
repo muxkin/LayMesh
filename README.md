@@ -25,6 +25,8 @@ p.legend(position="top_left")
 page.add(p, offset=(5mm,5mm))
 ~~~
 
+当前源码构建也支持直接写 `add(p, offset=(5mm,5mm))`。画布可以用独立的 `canvas(...)` 声明。省略画布声明时，第一次 `add(...)` 会创建 160 × 90 mm 的透明画布，布局 DPI 为 300。
+
 尺寸和位置默认 mm，字号和线宽默认 pt。显式单位包括 mm/cm/in/inch/pt/px；布局 px 使用 canvas.layout_dpi，导出 DPI 独立控制栅格密度。详见[单位与尺寸](docs/topics/units.zh-CN.md)。
 
 ## CLI、Python 与 Notebook

@@ -25,6 +25,8 @@ p.legend(position="top_left")
 page.add(p, offset=(5mm,5mm))
 ~~~
 
+The current source build also supports `add(p, offset=(5mm,5mm))` and a standalone `canvas(...)` declaration. If you omit the declaration, the first `add(...)` creates a transparent 160 × 90 mm canvas with a layout DPI of 300.
+
 Geometry defaults to mm, typography and strokes to pt. Explicit lengths accept mm/cm/in/inch/pt/px. Layout px uses canvas.layout_dpi; export DPI independently controls raster density. See [Units](docs/topics/units.en.md).
 
 ## CLI, Python and Notebook

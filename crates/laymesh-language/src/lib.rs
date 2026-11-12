@@ -406,6 +406,9 @@ fn expression_type(e: &Expr, lookup: &impl Fn(&str) -> Option<String>) -> Option
                 return Some(ps.join("."));
             }
             if ps.len() == 1 {
+                if ps[0] == "add" && lookup("add").is_none() {
+                    return Some("instance".into());
+                }
                 return Some(
                     entry(&ps[0])
                         .and_then(|a| a["returnType"].as_str().map(str::to_string))

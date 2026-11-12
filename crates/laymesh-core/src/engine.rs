@@ -224,7 +224,7 @@ impl Engine {
         let c = self.canvas.clone().ok_or_else(|| {
             self.error(
                 "E_CANVAS",
-                "入口文件需要一个 canvas",
+                "入口文件需要声明 canvas(...) 或使用 add(...) 放置素材",
                 Loc {
                     line: 1,
                     column: 1,
@@ -458,11 +458,15 @@ impl Engine {
             StmtKind::Bind(..) | StmtKind::Return(..) | StmtKind::If(..) => unreachable!(),
             StmtKind::SetIndex(target, value) => self.set_index(target, value, scope, stmt.loc)?,
             StmtKind::Expr(e) => {
-                if !matches!(&e.kind,ExprKind::Call(parts,_) if parts.len()==2 && (matches!(parts[1].as_str(),"add"|"fuse"|"animate"|"play") || Environment::get(scope,&parts[0]).and_then(|v|v.object()).is_some_and(|o|o.borrow().kind=="plot")))
+                if !matches!(&e.kind, ExprKind::Call(parts, _) if
+                    (parts.len() == 1 && matches!(parts[0].as_str(), "add" | "canvas")
+                        && !matches!(Environment::get(scope, &parts[0]), Some(V::Function { .. })))
+                    || (parts.len() == 2 && (matches!(parts[1].as_str(), "add" | "fuse" | "animate" | "play")
+                        || Environment::get(scope, &parts[0]).and_then(|v| v.object()).is_some_and(|o| o.borrow().kind == "plot"))))
                 {
                     return Err(self.error(
                         "E_STATEMENT",
-                        "独立语句只能调用容器的 add/fuse/animate/play",
+                        "独立语句可调用 canvas、add 或容器方法",
                         stmt.loc,
                     ));
                 }
@@ -621,7 +625,10 @@ impl Engine {
         // Container mutations cannot be replayed as pure queries. Preserve
         // their call path for child identities, while recording child reads
         // directly in any enclosing construction transaction.
-        if matches!(&e.kind,ExprKind::Call(parts,_) if parts.len()==2&&matches!(parts[1].as_str(),"add"|"fuse"|"animate"|"step"))
+        if matches!(&e.kind, ExprKind::Call(parts, _) if
+            (parts.len() == 1 && parts[0] == "add"
+                && !matches!(Environment::get(s, "add"), Some(V::Function { .. })))
+            || (parts.len() == 2 && matches!(parts[1].as_str(), "add" | "fuse" | "animate" | "step")))
         {
             self.query_path.push(e.site);
             let result = self.eval_uncached(e, s);
@@ -652,6 +659,19 @@ impl Engine {
         // Drop the larger expression dispatch frame before entering user code.
         match &e.kind {
             ExprKind::Call(parts, args) => {
+                if parts.len() == 1
+                    && parts[0] == "add"
+                    && self.canvas.is_none()
+                    && !self.document_mode
+                    && !matches!(Environment::get(s, "add"), Some(V::Function { .. }))
+                {
+                    // Establish layout DPI and the CSS viewport before evaluating the material.
+                    let args = Args::from([
+                        ("size".into(), V::List(vec![V::num(160.), V::num(90.)])),
+                        ("layout_dpi".into(), V::num(300.)),
+                    ]);
+                    self.call_builtin(&["canvas".into()], vec![], args, s, e.loc)?;
+                }
                 let (pos, named) = self.eval_call_arguments(args, s, e.loc)?;
                 self.call(parts, pos, named, s, e.loc)
             }
@@ -1276,6 +1296,13 @@ impl Engine {
         if let Some(result) = self.collection_builtin(name, &pos, a.clone(), l) {
             return result;
         }
+        if name == "add" {
+            let owner = self
+                .canvas
+                .clone()
+                .ok_or_else(|| self.error("E_DOCUMENT", "add(...) 只能用于独立 .lay 页面", l))?;
+            return self.add(owner, pos, a, l);
+        }
         if name == "arrow"
             && a.keys()
                 .any(|k| crate::migration::legacy_arrow_parameter(k))
@@ -1777,5 +1804,57 @@ mod preview_image_tests {
             .insert("/image.png".into(), png([0, 0, 255]));
         let scene = compile_source(source, "/main.lay", engine.host.clone()).unwrap();
         assert_ne!(scene.nodes[0]["rasterKey"], first["rasterKey"]);
+    }
+}
+
+#[cfg(test)]
+mod canvas_shorthand_tests {
+    use super::*;
+
+    #[test]
+    fn shorthand_matches_explicit_canvas_placement() {
+        let placements = r##"
+first = add(rect(size=(40mm, 24mm), fill="#2563eb"), offset=(10mm, 10mm))
+add(rect(size=(96px, 20mm)), target=first.bottom_right)
+"##;
+        let explicit = format!(
+            "page = canvas(size=(160mm, 90mm), layout_dpi=300)\n{}",
+            placements.replace("add(", "page.add(")
+        );
+        let explicit = compile_source(&explicit, "/main.lay", Host::default()).unwrap();
+
+        assert_eq!([explicit.width, explicit.height], [160., 90.]);
+        assert_eq!(explicit.layout_dpi, 300.);
+
+        let mut session = crate::session::CompileSession::new(false);
+        for header in ["", "canvas(size=(160mm, 90mm), layout_dpi=300)\n", ""] {
+            let scene = session
+                .evaluate(&format!("{header}{placements}"), "/main.lay", None)
+                .unwrap();
+            assert_eq!(
+                [scene.width, scene.height],
+                [explicit.width, explicit.height]
+            );
+            assert_eq!(scene.layout_dpi, explicit.layout_dpi);
+            assert_eq!(scene.background, explicit.background);
+            assert_eq!(scene.nodes.len(), explicit.nodes.len());
+            for (actual, expected) in scene.nodes.iter().zip(&explicit.nodes) {
+                let mut actual = actual.as_ref().clone();
+                actual.as_object_mut().unwrap().remove("_identity");
+                assert_eq!(&actual, expected.as_ref());
+            }
+        }
+    }
+
+    #[test]
+    fn add_does_not_shadow_an_authored_function() {
+        let source = r#"
+function add(x) { return x + 1 }
+width = add(29)
+page = canvas(size=(width, 20))
+page.add(rect(size=(10, 10)))
+"#;
+        let scene = compile_source(source, "/main.lay", Host::default()).unwrap();
+        assert_eq!(scene.width, 30.);
     }
 }

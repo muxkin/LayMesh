@@ -4,20 +4,26 @@ This page documents the **executable syntax** of the current Rust engine. Read a
 
 ## 1. Files, values, and units
 
-An entry `.lay` file must define exactly one `canvas(...)`. Constructors return reusable **material definitions**; `page.add(...)` returns a **placed instance**. Only instances have page anchors. Strings support single/double quotes and triple-quoted forms; formulas often use raw `r"..."` strings to preserve backslashes. `#` begins a line comment. Calls use parentheses and commas; indentation does not affect meaning.
+An entry `.lay` file can place material directly with `add(...)`. If no canvas has been declared, the first call creates a transparent 160 × 90 mm canvas with mm units and a layout DPI of 300. Constructors return reusable **material definitions**. Both `add(...)` and `page.add(...)` return a **placed instance**. Only instances have page anchors. Strings support single/double quotes and triple-quoted forms; formulas often use raw `r"..."` strings to preserve backslashes. `#` begins a line comment. Calls use parentheses and commas; indentation does not affect meaning.
 
 | Syntax | Meaning |
 | --- | --- |
 | `12`, `true`, `false`, `"Title"` | Scalar, boolean, and string values |
 | `12 mm`, `1.2 cm`, `0.5 in`, `10 pt` | Lengths, stored internally as mm |
-| `16 px` | Length converted using canvas `layout_dpi`, default 96 |
+| `16 px` | Length converted using canvas `layout_dpi` |
 | `45 deg`, or `45` on placement | Degrees of rotation |
 | `(x, y)`, `[a, b]`, `items[0]` | Tuples, lists, and zero-based indexing |
 | `+ - * /`, comparisons, `and or not` | Unit-aware arithmetic and boolean expressions; `and/or` short-circuit |
 
-Lengths of the same type can be added or subtracted. Multiplying or dividing by a scalar preserves a length; dividing two lengths produces a scalar. Incompatible types, division by zero, and out-of-range values are errors. `px` requires a canvas `layout_dpi`. **PNG export `--dpi` is independent of layout `layout_dpi`.**
+Lengths of the same type can be added or subtracted. Multiplying or dividing by a scalar preserves a length; dividing two lengths produces a scalar. Incompatible types, division by zero, and out-of-range values are errors. `px` uses the canvas `layout_dpi`. If you define a material using `px` before the first `add(...)`, declare the canvas before the material. **PNG export `--dpi` is independent of layout `layout_dpi`.**
+
+```lay
+add(rect(size=(40mm, 24mm), fill="#2563eb"), offset=(10mm, 10mm))
+```
 
 ### Canvas: `canvas`
+
+To set the page size, background, or layout DPI, call `canvas(...)` once before the first placement. Use a standalone call such as `canvas(size=(180mm, 120mm))`, or assign the canvas to a name as shown below to call its methods.
 
 ```lay
 page = canvas(name="Figure 1", size=(180 mm, 120 mm),
@@ -106,7 +112,7 @@ second = page.add(photo,size=(40 mm, auto), anchor=top_left,
                   target=first.top_right, offset=(4 mm, 0 mm))
 ```
 
-`canvas.add(material, ...)` and `group.add(material, ...)` return placements. An unused result can be written as a bare `page.add(...)` statement. Common settings are `anchor` (default `top_left`), `target` (the current container's top-left by default), `offset=(0 mm,0 mm)`, `rotation=0`, and `opacity=1`. Later calls draw over earlier ones. Nine anchors are `top_left/top_center/top_right`, `middle_left/center/middle_right`, and `bottom_left/bottom_center/bottom_right`. These anchors use the rotated axis-aligned bounding box. A target must already exist in the same canvas or group. Within a group, `group.top_left` is its local origin.
+`canvas.add(material, ...)` and `group.add(material, ...)` return placements. In a `.lay` page, `add(material, ...)` places material on the canvas. Assign the result when you need to reference the instance later. Common settings are `anchor` (default `top_left`), `target` (the current container's top-left by default), `offset=(0 mm,0 mm)`, `rotation=0`, and `opacity=1`. Later calls draw over earlier ones. Nine anchors are `top_left/top_center/top_right`, `middle_left/center/middle_right`, and `bottom_left/bottom_center/bottom_right`. These anchors use the rotated axis-aligned bounding box. A target must already exist in the same canvas or group. Within a group, `group.top_left` is its local origin.
 
 Explicit `instance.bounds/path/ink` views support indexed candidate queries, `self` source selectors, arc-length and parameter points, tangent-frame offsets and chart components. See [geometric anchors and path locations](topics/anchors.en.md).
 

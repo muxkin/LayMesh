@@ -4,20 +4,26 @@
 
 ## 1. 文件、值和单位
 
-入口 `.lay` 文件必须定义且只能定义一个 `canvas(...)`。构造器返回可复用的**素材定义**，`page.add(...)` 返回一个**放置实例**。只有实例才有页面锚点。字符串支持单、双、三引号，以及 r/f/rf 前缀；普通文字中的 `$…$` 自动渲染公式。`#` 开始行注释；调用使用括号和逗号，缩进不影响语义。
+入口 `.lay` 文件可以直接用 `add(...)` 放置素材。首次调用时若尚未声明画布，会创建 160 × 90 mm 的透明画布，使用 mm，布局 DPI 为 300。构造器返回可复用的**素材定义**，`add(...)` 和 `page.add(...)` 都返回一个**放置实例**。只有实例才有页面锚点。字符串支持单、双、三引号，以及 r/f/rf 前缀；普通文字中的 `$…$` 自动渲染公式。`#` 开始行注释；调用使用括号和逗号，缩进不影响语义。
 
 | 写法 | 含义 |
 | --- | --- |
 | `12`、`true`、`false`、`"标题"` | 标量、布尔和字符串 |
 | `12 mm`、`1.2 cm`、`0.5 in`、`10 pt` | 长度；内部统一用 mm |
-| `16 px` | 长度；用画布 `layout_dpi` 换算，默认 96 |
+| `16 px` | 长度；用画布 `layout_dpi` 换算 |
 | `45 deg` 或放置时 `45` | 角度，单位为度 |
 | `(x, y)`、`[a, b]`、`items[0]` | 元组、列表、从零开始的索引 |
 | `+ - * /`、比较、`and or not` | 带单位运算和布尔表达式；`and/or` 短路 |
 
-同类长度可相加减；长度乘除标量仍是长度；长度除长度得到标量。不同类型相加、除零和超出范围的值会报错。`px` 须在画布建立 `layout_dpi` 后使用。**PNG 的输出 `--dpi` 与布局 `layout_dpi` 各自独立**。
+同类长度可相加减；长度乘除标量仍是长度；长度除长度得到标量。不同类型相加、除零和超出范围的值会报错。`px` 使用画布的 `layout_dpi`。如果在首次 `add(...)` 前定义含 `px` 的素材，请先声明画布。**PNG 的输出 `--dpi` 与布局 `layout_dpi` 各自独立**。
+
+```lay
+add(rect(size=(40mm, 24mm), fill="#2563eb"), offset=(10mm, 10mm))
+```
 
 ### 画布 `canvas`
+
+需要指定页面尺寸、背景或布局 DPI 时，在第一次放置前调用一次 `canvas(...)`。可以独立写 `canvas(size=(180mm, 120mm))`，也可以像下面这样给画布命名，以便调用画布方法。
 
 ```text
 page = canvas(name="Figure 1", size=(180 mm, 120 mm),
@@ -106,7 +112,7 @@ second = page.add(photo,size=(40 mm, auto), anchor=top_left,
                   target=first.top_right, offset=(4 mm, 0 mm))
 ```
 
-`canvas.add(material, ...)` 与 `group.add(material, ...)` 的第一个参数是素材定义，返回实例。无需引用的实例可以直接写 `page.add(...)`。通用选项为 `anchor`（默认 `top_left`）、`target`（默认当前容器的左上角）、`offset=(0 mm,0 mm)`、`rotation=0` 和 `opacity=1`。`add` 顺序即从后到前的绘制顺序。九个锚点是 `top_left/top_center/top_right`、`middle_left/center/middle_right`、`bottom_left/bottom_center/bottom_right`，旋转后按轴对齐外接框求值。目标必须位于同一画布或组中且此前已经放置。组自身只提供 `group.top_left` 作为组内定位原点。
+`canvas.add(material, ...)` 与 `group.add(material, ...)` 的第一个参数是素材定义，返回实例。`.lay` 页面也可以用 `add(material, ...)` 直接放到画布上。无需引用的实例可以省略赋值。通用选项为 `anchor`（默认 `top_left`）、`target`（默认当前容器的左上角）、`offset=(0 mm,0 mm)`、`rotation=0` 和 `opacity=1`。`add` 顺序即从后到前的绘制顺序。九个锚点是 `top_left/top_center/top_right`、`middle_left/center/middle_right`、`bottom_left/bottom_center/bottom_right`，旋转后按轴对齐外接框求值。目标必须位于同一画布或组中且此前已经放置。组自身只提供 `group.top_left` 作为组内定位原点。
 
 显式几何视图包括 `instance.bounds/path/ink`；形状箭头另提供 `instance.centerline`，其 `.length` 返回弧长，`.at(...)` 支持取点与切线。候选查询必须索引；`self` 自身选择器、弧长与参数取点、切线法线偏移和图表内部部件遵循统一定位规则。详见[几何锚点与路径定位](topics/anchors.zh-CN.md)。
 

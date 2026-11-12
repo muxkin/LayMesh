@@ -1,3 +1,8 @@
+# 0.8.1
+
+- Place material with top-level `add(...)` and declare a canvas without assigning it.
+- Default to a transparent 160 × 90 mm canvas with a layout DPI of 300 when the canvas is omitted.
+
 # 0.8.0
 
 - Add object-level 3D, reflection, soft edges and 30 editable effect presets.

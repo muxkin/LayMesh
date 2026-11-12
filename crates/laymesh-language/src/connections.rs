@@ -134,7 +134,12 @@ pub(super) fn diagnostics(service: &LanguageService, uri: &str, stmts: &[Stmt]) 
     fn expression(service: &LanguageService, uri: &str, expr: &Expr, out: &mut Vec<Value>) {
         match &expr.kind {
             ExprKind::Call(parts, args) => {
-                if parts.len() > 1 && parts.last().is_some_and(|p| p == "add") {
+                if parts.last().is_some_and(|p| p == "add")
+                    && (parts.len() > 1
+                        || service
+                            .resolve(uri, "add", expr.loc.offset, &mut BTreeSet::new())
+                            .is_none())
+                {
                     check(service, uri, expr, args, out);
                 }
                 for (_, arg) in args {
