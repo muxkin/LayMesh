@@ -203,6 +203,155 @@ fn acknowledged_display_updates_and_unknown_baselines_use_lossless_cpu_commands(
 }
 
 #[test]
+fn object_sources_follow_authored_placements_across_cached_document_updates() {
+    use laymesh_render::{
+        DisplayList,
+        display_list::{DrawKind, DrawNode},
+        display_update::DisplayUpdate,
+    };
+    use std::io::{BufRead, BufReader};
+
+    fn key(node: &DrawNode) -> String {
+        node.hint["_identity"]
+            .as_str()
+            .map(|id| format!("id:{id}"))
+            .unwrap_or_else(|| format!("name:{}", node.name))
+    }
+
+    fn find<'a>(node: &'a DrawNode, name: &str) -> Option<&'a DrawNode> {
+        if node.name == name {
+            return Some(node);
+        }
+        if let DrawKind::Group { children, .. } = &node.kind {
+            return children.iter().find_map(|child| find(child, name));
+        }
+        None
+    }
+
+    let root = std::env::temp_dir()
+        .join(format!("laymesh-object-sources-{}", std::process::id()))
+        .to_string_lossy()
+        .replace('\\', "/");
+    let document_file = format!("{root}/main.laydoc");
+    let page_file = format!("{root}/page.lay");
+    let component_file = format!("{root}/component.lay");
+    let document = "d=document()\nd.add(page(src=\"page.lay\",id=\"test\"))";
+    let page = r##"import {card} from "./component.lay"
+style { group.accent { color:blue; } }
+p=canvas(size=(70,35))
+material=card()
+first=p.add(material,class="accent")
+second=p.add(material,offset=(20,0))
+a=p.add(rect(size=(6,6),fill="#a00"),offset=(2,20))
+b=p.add(rect(size=(6,6),fill="#a00"),offset=(14,20))
+joined=p.fuse(a,b,points=(a.middle_right,b.middle_left),bridge_width=2,fill="#a00")
+"##;
+    let prefix = "  sample=\"样😀\" detail=";
+    let component = format!(
+        "export function card() {{\n  item=group()\n{prefix}item.add(rect(size=(8,6),fill=\"#00f\"))\n  return item\n}}\n"
+    );
+    let column = prefix.encode_utf16().count() + 1;
+
+    let mut process = Command::new(env!("CARGO_BIN_EXE_laymesh"))
+        .args(["preview", "--stdio"])
+        .env("LAYMESH_NO_SYSTEM_FONTS", "1")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let mut input = process.stdin.take().unwrap();
+    let mut output = BufReader::new(process.stdout.take().unwrap());
+    let mut read = || {
+        let mut line = String::new();
+        output.read_line(&mut line).unwrap();
+        serde_json::from_str::<Value>(&line).unwrap()
+    };
+    assert!(
+        read()["capabilities"]
+            .as_array()
+            .unwrap()
+            .contains(&json!("object-selection-v1"))
+    );
+    let mut request = |selection, version, changes, baseline| {
+        let payload = json!({
+            "id":version,"generation":version,"protocol":3,"file":document_file,
+            "resource_dir":root,"page_id":"test","object_selection":selection,
+            "incremental_session":"incremental-session-v1","sourceVersion":version,
+            "changes":changes,"display_list_updates":true,"known_display_list":baseline
+        });
+        writeln!(input, "{payload}").unwrap();
+        input.flush().unwrap();
+        let result = read();
+        assert!(result.get("error").is_none(), "{result}");
+        result
+    };
+
+    let first = request(
+        false,
+        1,
+        json!({document_file.clone():document,page_file.clone():page,component_file.clone():component}),
+        Value::Null,
+    );
+    assert!(first.get("objectSources").is_none());
+    let mut drawing: DisplayList = serde_json::from_value(first["displayList"].clone()).unwrap();
+    let before = drawing.clone();
+    let warmed = request(true, 2, json!({}), first["displayListId"].clone());
+    let shifted = request(
+        true,
+        3,
+        json!({page_file.clone():format!("# comment\n{page}"),component_file.clone():format!("# comment\n{component}")}),
+        warmed["displayListId"].clone(),
+    );
+    for (result, shift) in [(&warmed, 0), (&shifted, 1)] {
+        assert!(
+            result["pageDependencies"]
+                .as_array()
+                .unwrap()
+                .contains(&json!(component_file))
+        );
+        let update: DisplayUpdate =
+            serde_json::from_value(result["displayListUpdate"]["update"].clone()).unwrap();
+        update.apply(&mut drawing).unwrap();
+        assert_eq!(drawing, before);
+        let first = drawing.nodes.iter().find(|n| n.name == "first").unwrap();
+        let second = drawing.nodes.iter().find(|n| n.name == "second").unwrap();
+        let joined = drawing.nodes.iter().find(|n| n.name == "joined").unwrap();
+        assert_ne!(key(first), key(second));
+        let sources = &result["objectSources"];
+        assert_eq!(sources.as_object().unwrap().len(), 4, "{sources}");
+        for (node, line) in [(first, 5), (second, 6), (joined, 9)] {
+            assert_eq!(
+                sources[key(node)],
+                json!({"file":page_file,"line":line+shift,"column":node.name.len()+2})
+            );
+        }
+        for node in [first, second] {
+            let detail = find(node, "detail").unwrap();
+            assert_eq!(
+                sources[key(detail)],
+                json!({"file":component_file,"line":3+shift,"column":column})
+            );
+        }
+    }
+    drop(input);
+    assert!(process.wait().unwrap().success());
+
+    let legacy = preview(&[json!({
+        "protocol":3,"file":document_file,"resource_dir":root,"source":document,"page_id":"test",
+        "object_selection":true,"overlays":{page_file.clone():page,component_file.clone():component}
+    })]);
+    assert_eq!(
+        legacy[1]["objectSources"]["name:detail"],
+        json!({"file":component_file,"line":3,"column":column})
+    );
+    assert_eq!(
+        legacy[1]["objectSources"]["name:joined"],
+        json!({"file":page_file,"line":9,"column":8})
+    );
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
 fn preview_units_overlays_failed_dependencies_and_recovery() {
     let root = std::env::temp_dir()
         .join(format!("laymesh-preview-overlays-{}", std::process::id()))

@@ -94,6 +94,8 @@ Open a saved `.lay` file and click the preview icon in the editor title, use **L
 
 Preview updates are scheduled 30 ms after the last edit by default, including unsaved imported modules, stylesheets and text data. Explicit debounce settings continue to take precedence. Changes to loaded local images, fonts and data also refresh the figure. A compilation error retains the last successful figure, marks it stale, and offers a source-location button. Language help continues independently.
 
+In static preview, click an object to show a highlight box and its name. Click the same spot again to cycle through overlapping objects. Right-click the selected spot to jump to the selected instance's placement in the source. Click blank space to clear the selection.
+
 The top and left rulers and canvas X/Y values follow `canvas(unit=...)`: `mm`, `cm`, `in`/`inch`, `pt`, or `px`. Pixels use `layout_dpi`, independently of raster export DPI. The origin is the canvas top left; X increases right and Y increases down. Explicit units mixed in the source do not change the preview's display unit.
 
 Move the mouse over the figure to see canvas coordinates. Inside a plot, the bottom bar also displays every named data axis, including log, symlog, reversed and broken axes; a break gap shows `—` for that axis. Rotated/nested plots and insets retain their own coordinates. Polar plots display θ/r in their configured angle units; the center has no unique angle. Radar charts display a dimension value only within six screen pixels of its spoke, and only canvas coordinates at the center.

@@ -54,6 +54,7 @@ class PreviewWorker {
   if((job.source?.includes('@laymesh/')||Object.values(job.overlays||{}).some(s=>s.includes('@laymesh/')))&&!this.capabilities.includes('bundled-stylesheets-v1')){clearTimeout(this.renderTimer);this.active=null;job.done({error:messageError('The configured LayMesh engine lacks bundled stylesheets. Update laymesh.executable or use the engine bundled with the current extension.','配置的 LayMesh 引擎不支持内置样式库，请更新 laymesh.executable 或使用当前扩展内置引擎。')});this.pump();return;}
   if(request.protocol===3&&this.capabilities.includes('display-list-gzip-v3'))request.compressed_display_list=true;
   if(!request.presentation_revision&&request.protocol===3&&this.capabilities.includes('display-list-updates-v3'))request.display_list_updates=true;
+  if(!this.capabilities.includes('object-selection-v1'))delete request.object_selection;
   const payload={...request,id:this.active.id,file:job.file,source:job.source,overlays:job.overlays};
   if(this.capabilities.includes('incremental-session-v1')&&!['export','animate','defaults'].includes(request.type)){
    const files={...job.overlays,[job.file]:job.source},changes={};
@@ -234,22 +235,40 @@ function activatePreview(context,binary,output){
    if(state.disposed||generation!==state.generation)return;
    const overlays={};for(const doc of vscode.workspace.textDocuments)if(doc.uri.scheme==='file'&&doc.isDirty)overlays[keyOf(doc.uri)]=doc.getText();
    state.dirty=false;state.pending=true;post(state,{type:'status',status:'rendering'});
-   worker.enqueue({file:state.file,source:doc.getText(),overlays,request:{protocol:3,generation,page_id:state.pageId,resource_dir:worker.resourceDir,known_resources:[...state.resources.keys()],known_display_list:state.history.length?state.displayListId:undefined,...editorDefaults(state.uri)},timeout:config().get('renderTimeoutMs',30000),done:result=>{
+   worker.enqueue({file:state.file,source:doc.getText(),overlays,request:{protocol:3,object_selection:true,generation,page_id:state.pageId,resource_dir:worker.resourceDir,known_resources:[...state.resources.keys()],known_display_list:state.history.length?state.displayListId:undefined,...editorDefaults(state.uri)},timeout:config().get('renderTimeoutMs',30000),done:result=>{
     if(state.disposed||generation!==state.generation)return;
     if(result.document)state.documentPages=result.document.pages;watch(state,result.dependencies||[],!!result.error);
     if(result.document?.pageId)state.pageId=result.document.pageId;
     try{
      if(!result.error){if(result.protocol!==3||(!result.displayList&&!result.displayListCompressed&&!result.displayListUpdate))throw new Error('Expected drawing protocol 3');for(const item of result.resources||[])resource(state,item);result.resources=Object.entries(result.drawingResources||result.displayList.resources).map(([id,meta])=>{const uri=state.resources.get(id);if(!uri)throw Error('Missing drawing resource');return {id,...meta,data:undefined,uri};});}
      if(result.displayListCompressed){const bytes=Buffer.from(result.displayListCompressed.data,'base64');result.displayListCompressed.data=new Uint8Array(bytes.buffer,bytes.byteOffset,bytes.byteLength);}
-     const frame={type:'result',...result,generation};state.pending=false;state.last=frame;
+     const {objectSources,...drawing}=result;
+     const frame={type:'result',...drawing,generation,objectKeys:Object.keys(objectSources||{})};
+     state.pending=false;state.last=frame;
      if(result.displayList||result.displayListCompressed||result.displayListUpdate){
-      state.lastSuccess=frame;
       state.history=[retainPreviewFrame(state.history[0],frame,applyDisplayUpdate)];
+      state.lastSuccess=frame;
+      state.objectSources=objectSources;
       for(const id of state.resources.keys())if(!Object.hasOwn(state.history[0].displayList.resources,id))state.resources.delete(id);
      }post(state,frame);
     }catch(error){state.pending=false;post(state,{type:'result',error:messageError(error.message)});}
    }});
   }catch(error){if(!state.disposed&&generation===state.generation){state.last={type:'result',error:messageError(error.message)};post(state,state.last);}}
+ }
+ async function openObjectSource(state,{generation,key}){
+  const frame=state.lastSuccess;
+  // The webview supplies a key only; file and position come from the painted build.
+  const current=()=>frame&&frame===state.lastSuccess&&frame===state.last&&generation===frame.generation&&generation===state.paintedObjectGeneration&&!state.dirty&&!state.pending&&!state.disposed&&!composing(state);
+  if(!current()||typeof key!=='string'||!state.objectSources||!Object.hasOwn(state.objectSources,key))return;
+  const {file,line,column}=state.objectSources[key];
+  const uri=vscode.Uri.file(file),source=keyOf(uri);
+  if(source!==state.file&&!state.previewDependencies?.has(source))return;
+  try{
+   const doc=await vscode.workspace.openTextDocument(uri);
+   if(!current())return;
+   const position=doc.validatePosition(new vscode.Position(line-1,column-1));
+   await vscode.window.showTextDocument(doc,{viewColumn:vscode.ViewColumn.One,selection:new vscode.Range(position,position)});
+  }catch(error){vscode.window.showErrorMessage(error.message);}
  }
  async function open(uri){
   uri=uri?.scheme?uri:vscode.window.activeTextEditor?.document.uri;
@@ -262,7 +281,7 @@ function activatePreview(context,binary,output){
   const asset=name=>panel.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri,'dist',name));
   panel.webview.html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${panel.webview.cspSource} blob: data:; font-src ${panel.webview.cspSource} data:; media-src ${panel.webview.cspSource} blob:; script-src ${panel.webview.cspSource} 'wasm-unsafe-eval'; connect-src ${panel.webview.cspSource} blob:; worker-src blob:; style-src ${panel.webview.cspSource} 'unsafe-inline';"><link rel="stylesheet" href="${asset('preview.css')}"><link rel="stylesheet" href="${asset('presentation.css')}"></head><body><script type="module" src="${asset('preview-webview.mjs')}"></script></body></html>`;
   panel.webview.onDidReceiveMessage(async message=>{
-   if(message?.type==='ready'){state.displayListId=undefined;post(state,{type:'initial',locale:locale(),showRulers:config().get('showRulers',true)});
+   if(message?.type==='ready'){state.displayListId=undefined;state.paintedObjectGeneration=undefined;post(state,{type:'initial',locale:locale(),showRulers:config().get('showRulers',true)});
     if(state.history.length&&state.lastSuccess)post(state,{...state.lastSuccess,displayListReplay:state.history});
     if(state.last?.error)post(state,state.last);
     if(state.dirty||!state.history.length)invalidate(state,true);
@@ -279,12 +298,16 @@ function activatePreview(context,binary,output){
    else if(message?.type==='deck-pin'){state.deckPinned=true;}
    else if(message?.type==='deck-release'){state.deckPinned=false;if(state.deckStale&&!state.deckBrowserPinned){state.deckStale=false;state.deck?.dispose();state.deck=null;post(state,{type:'deck-invalidated'});}}
    else if(message?.type==='deck-browser'){try{const url=new URL(await state.deck.browser());if(message.startPageId)url.searchParams.set("page",message.startPageId);if(message.presenter)url.searchParams.set("presenter","1");state.deckBrowserPinned=true;await vscode.env.openExternal(vscode.Uri.parse(url.href));}catch(e){post(state,{type:'deck-browser-error',error:e.message});}}
-   else if(message?.type==='painted'&&message.generation===state.generation){state.displayListId=message.displayListId;}
+   else if(message?.type==='painted'){
+    if(message.generation===state.generation)state.displayListId=message.displayListId;
+    if(message.generation===state.lastSuccess?.generation)state.paintedObjectGeneration=message.generation;
+   }
    else if(message?.type==='request-full'){state.displayListId=undefined;invalidate(state,true);}
    else if(message?.type==='refresh')invalidate(state,true);
    else if(message?.type==='export')await exportFigure(state.uri,undefined,state.pageId);
    else if(message?.type==='select-page'&&state.last?.document?.pages.some(page=>page.id===message.pageId)){state.pageId=message.pageId;state.displayListId=undefined;invalidate(state,true);}
    else if(message?.type==='open-page'){const page=state.last?.document?.pages.find(page=>page.id===state.pageId);if(page){const doc=await vscode.workspace.openTextDocument(vscode.Uri.file(page.src));await vscode.window.showTextDocument(doc,{viewColumn:vscode.ViewColumn.One});}}
+   else if(message?.type==='open-object-source')await openObjectSource(state,message);
    else if(message?.type==='export-document'){const destination=await vscode.window.showSaveDialog({defaultUri:vscode.Uri.file(state.file.replace(/\.laydoc$/,'.pdf')),filters:{PDF:['pdf']}});if(destination)await exportFigure(state.uri,{output:destination,documentAll:true});}
    else if(message?.type==='source'&&state.last?.error){const error=state.last.error,file=error.file||state.file;
     if(file!==state.file&&!state.dependencies.has(file))return;

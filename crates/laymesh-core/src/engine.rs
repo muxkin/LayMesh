@@ -310,7 +310,7 @@ impl Engine {
             animation = Some(a);
         }
         crate::asset_cache::retain_nodes(&nodes);
-        Ok(Scene {
+        let scene = Scene {
             speaker_notes: self.speaker_notes.clone(),
             media: self.media.clone(),
             page_transition: if let Some(spec) = &self.page_transition_override {
@@ -338,7 +338,62 @@ impl Engine {
                 .collect(),
             fonts: self.fonts.assets.clone(),
             font_requests: self.fonts.requests.values().cloned().collect(),
-        })
+        };
+        if let Some(sources) = &self.host.object_sources {
+            *sources.borrow_mut() = self.collect_object_sources(&scene);
+        }
+        Ok(scene)
+    }
+    fn collect_object_sources(&self, scene: &Scene) -> ObjectSources {
+        fn key(node: &Json) -> Option<String> {
+            if let Some(identity) = node["_identity"].as_str() {
+                Some(format!("id:{identity}"))
+            } else {
+                node["id"].as_str().map(|name| format!("name:{name}"))
+            }
+        }
+        fn collect_visible_keys(node: &Json, keys: &mut BTreeSet<String>) {
+            if let Some(key) = key(node) {
+                keys.insert(key);
+            }
+            // Plot internals are generated drawing geometry. Only the placed
+            // plot and any containing authored group have source locations.
+            if node.get("plotBounds").is_none() {
+                for child in node["children"].as_array().into_iter().flatten() {
+                    collect_visible_keys(child, keys);
+                }
+            }
+        }
+        let mut keys = BTreeSet::new();
+        for node in &scene.nodes {
+            collect_visible_keys(node, &mut keys);
+        }
+        let mut sources = ObjectSources::new();
+        // Group layout may replay an instance with the same key. Its original
+        // authored instance has the lower serial and carries the source site.
+        for object in self.objects.values() {
+            let object = object.borrow();
+            if object.kind != "instance" || object.loc.line == 0 {
+                continue;
+            }
+            let Some(key) = object.node.as_deref().and_then(key) else {
+                continue;
+            };
+            if keys.remove(&key) {
+                sources.insert(
+                    key,
+                    ObjectSource {
+                        file: object.file.clone(),
+                        line: object.loc.line,
+                        column: object.loc.column,
+                    },
+                );
+            }
+            if keys.is_empty() {
+                break;
+            }
+        }
+        sources
     }
     fn module(&mut self, path: &str, l: Loc) -> Result<Scope> {
         if self.loading.contains(path) {

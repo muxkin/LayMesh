@@ -143,6 +143,8 @@ Rulers and canvas X/Y follow `canvas(unit=...)`; px uses `layout_dpi`. Hovering 
 
 Ctrl/Command + wheel zooms about the pointer; Space + drag or middle drag pans. The toolbar offers refresh, fit, 100%, zoom and rulers. 100% uses layout pixels. Errors retain the last figure and mark it stale; click the error to open its source location. Configure `laymesh.preview.debounceMs`, `laymesh.preview.renderTimeoutMs`, and `laymesh.preview.showRulers` for refresh delay, timeout and default rulers.
 
+In static preview, click an object to show a highlight box and its name. Click the same spot repeatedly to cycle through overlapping objects from front to back. Click blank space to clear the selection. Right-click the selected spot to open the code that places the selected instance. Source navigation becomes available once the updated figure is visible.
+
 Run **LayMesh: Set Preview Delay** to enter an integer from 0 to 5000 ms (default 30; 0 disables debounce). It saves to workspace settings when a workspace is open, otherwise user settings, and applies immediately.
 
 Run **LayMesh: Export Figure** from a `.lay` editor or click **Export** in preview, then choose the format and destination to export directly. Images default to 1200 DPI and TIFF to LZW; change parameters in `laymesh.export.*` settings. Unsaved entry and opened imported buffers are used; remote windows save on the extension host. [Export formats and encoding options](export.en.md)

@@ -10,7 +10,7 @@ from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('native_cdp',ROOT/'scripts/smoke-browser.py')
 native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--normal-host',action='store_true',help='Use a fixture extension in a normal host so native confirmation dialogs are allowed');p.add_argument('--block-worker-resource-fetch',action='store_true',help='Return HTTP 408 for extension resource requests inside blob workers');p.add_argument('--page-transitions',action='store_true');p.add_argument('--object-effects',action='store_true');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--normal-host',action='store_true',help='Use a fixture extension in a normal host so native confirmation dialogs are allowed');p.add_argument('--block-worker-resource-fetch',action='store_true',help='Return HTTP 408 for extension resource requests inside blob workers');p.add_argument('--page-transitions',action='store_true');p.add_argument('--object-effects',action='store_true');p.add_argument('--object-selection',action='store_true',help='Run the overlapping-object selection and source navigation regression');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup_errors=True) as temp:
  profile=Path(temp);gate=profile/'gate.json';evidence=profile/'evidence.json'
  extension=a.extension_dir.resolve()
@@ -31,6 +31,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
  high=profile/'16位.png';Image.new('I;16',(20,10),35000).save(high)
  env={**os.environ,'LAYMESH_PREVIEW_GATE':str(gate),'LAYMESH_PREVIEW_EVIDENCE':str(evidence),'LAYMESH_PREVIEW_BMP':str(bmp),'LAYMESH_PREVIEW_TRANSPARENT':str(transparent),'LAYMESH_PREVIEW_16BIT':str(high),'LAYMESH_PREVIEW_NORMAL_HOST':'1' if a.normal_host else ''};env.pop('ELECTRON_RUN_AS_NODE',None)
  if a.object_effects:env['LAYMESH_PREVIEW_OBJECT_EFFECTS']='1'
+ if a.object_selection:env['LAYMESH_PREVIEW_OBJECT_SELECTION']='1'
  if a.page_transitions:env['LAYMESH_PREVIEW_TRANSITIONS']='1'
  command=[a.code,'--no-sandbox','--disable-gpu','--disable-updates','--ozone-platform=headless','--force-device-scale-factor=2','--remote-debugging-port='+str(port),'--remote-allow-origins=*','--user-data-dir='+str(profile/'profile'),'--extensions-dir='+str(profile/'extensions'),'--extensionDevelopmentPath='+str(extension),'--extensionTestsPath='+str(ROOT/'scripts/vscode-preview.cjs'),'--skip-welcome','--skip-release-notes','--new-window']
  if a.normal_host:
@@ -42,8 +43,8 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
  try:
   opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
   def targets():return json.load(opener.open(f'http://127.0.0.1:{port}/json/list'))
-  def until(fn,label):
-   deadline=time.monotonic()+35
+  def until(fn,label,timeout=35):
+   deadline=time.monotonic()+timeout
    while time.monotonic()<deadline:
     try:
      value=fn()
@@ -61,7 +62,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
      if c.evaluate("!!document.querySelector('iframe')?.contentDocument?.querySelector('.preview')"):return c
   c=until(attach,'Real preview iframe');c.call('Log.enable')
   def evaluate(expression):return c.evaluate("(()=>{const d=document.querySelector('iframe').contentDocument;return ("+expression+");})()")
-  def wait(expression):return until(lambda:evaluate(expression),expression)
+  def wait(expression,timeout=35):return until(lambda:evaluate(expression),expression,timeout)
   def phase(value):gate.write_text(json.dumps({'phase':value}))
   def wait_phase(value):
    def check():
@@ -69,6 +70,91 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
     if status.get('phase')=='failed':raise RuntimeError(status.get('error','Fixture failed'))
     return status.get('phase')==value
    return until(check,'Gate '+value)
+  def screen_point(fx,fy):
+   outer=root.evaluate("document.querySelector('iframe').getBoundingClientRect().toJSON()")
+   figure=evaluate("d.querySelector('.figure').getBoundingClientRect().toJSON()")
+   return {'x':outer['x']+figure['x']+figure['width']*fx,'y':outer['y']+figure['y']+figure['height']*fy}
+  last_layout=None;stable_frames=0
+  def stable_layout():
+   global last_layout,stable_frames
+   geometry=root.evaluate("document.querySelector('iframe').getBoundingClientRect().toJSON()")
+   geometry['figure']=evaluate("d.querySelector('.figure').getBoundingClientRect().toJSON()")
+   stable_frames=stable_frames+1 if geometry==last_layout else 0;last_layout=geometry
+   return stable_frames>=5
+  if a.object_selection:
+   root.call('Page.bringToFront')
+   def mouse(kind,point,button='left'):
+    buttons={'left':1,'right':2}[button] if kind=='mousePressed' else 0
+    root.call('Input.dispatchMouseEvent',{'type':kind,'button':button,'buttons':buttons,'clickCount':1,**point})
+   def click(point,button='left'):
+    mouse('mousePressed',point,button)
+    mouse('mouseReleased',point,button)
+   def selected(name):
+    expected=json.dumps(name)
+    return wait(f"""(()=>{{
+     const box=d.querySelector('.object-selection'),label=box.querySelector('.object-selection-name');
+     const outline=box.querySelector('.object-selection-outline').getBoundingClientRect();
+     return !box.hidden&&outline.width>0&&outline.height>0&&label.textContent.trim()==={expected}&&box.dataset.key;
+    }})()""",10)
+   def select_at(fx,fy,name):
+    click(screen_point(fx,fy))
+    return selected(name)
+   def blank():
+    wait("d.querySelector('.object-selection').hidden")
+   wait_phase('object-selection-ready')
+   until(stable_layout,'Stable layered preview layout')
+   wait("d.querySelector('.preview').dataset.painted==='true'")
+   evaluate("""(()=>{
+    const events=d.defaultView.previewEvents=[];
+    for(const type of ['pointerdown','pointerup','click','contextmenu']){
+     d.addEventListener(type,e=>{
+      events.push({type,target:e.target.className,x:e.clientX,y:e.clientY,button:e.button,detail:e.detail});
+      if(events.length>16)events.shift();
+     },true);
+    }
+    return true;
+   })()""")
+   point=screen_point(.45,33/74)
+   click(point);front=selected('front')
+   click({**point,'x':point['x']+2});middle=selected('middle')
+   screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False})
+   (a.output/'covered-object-selection.png').write_bytes(base64.b64decode(screenshot['data']))
+   click(point);back=selected('back')
+   assert len({front,middle,back})==3,(front,middle,back)
+   click(point);assert selected('front')==front
+   assert select_at(.82,33/74,'back')==back
+   click(screen_point(.04,65/74));blank()
+
+   before=evaluate("d.querySelector('.figure').getBoundingClientRect().toJSON()")
+   root.call('Input.dispatchMouseEvent',{'type':'mouseWheel','deltaY':-100,'deltaX':0,'modifiers':2,**point})
+   wait(f"d.querySelector('.figure').getBoundingClientRect().width>{before['width']}+5")
+   point=screen_point(.45,33/74)
+   before=evaluate("d.querySelector('.figure').getBoundingClientRect().toJSON()")
+   root.call('Input.dispatchKeyEvent',{'type':'keyDown','key':' ','code':'Space','windowsVirtualKeyCode':32})
+   mouse('mousePressed',point)
+   moved={'x':point['x']+34,'y':point['y']+18}
+   root.call('Input.dispatchMouseEvent',{'type':'mouseMoved','button':'left','buttons':1,**moved})
+   mouse('mouseReleased',moved)
+   root.call('Input.dispatchKeyEvent',{'type':'keyUp','key':' ','code':'Space','windowsVirtualKeyCode':32})
+   wait(f"Math.abs(d.querySelector('.figure').getBoundingClientRect().x-({before['x']}+34))<1")
+   blank()
+   select_at(.45,33/74,'front');select_at(.45,33/74,'middle')
+   click(screen_point(.45,33/74),'right')
+
+   wait_phase('object-selection-source-moved')
+   stable_frames=0
+   until(stable_layout,'Stable preview layout after source navigation')
+   wait("d.querySelector('.preview').dataset.painted==='true'")
+   blank()
+   select_at(.45,33/74,'front');select_at(.45,33/74,'middle')
+   click(screen_point(.45,33/74),'right')
+   wait_phase('complete')
+   host.wait(timeout=20)
+   assert host.returncode==0
+   result=json.loads(evidence.read_text())
+   (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+   print(json.dumps(result,ensure_ascii=False))
+   raise SystemExit(0)
   def toolbar_layout():
    layout=evaluate("(()=>{const r=e=>e.getBoundingClientRect().toJSON(),t=d.querySelector('.toolbar'),g=d.querySelector('.present-group');return {toolbar:r(t),present:r(g),buttons:[...g.querySelectorAll('button,summary')].slice(0,2).map(r),visible:[...t.children].filter(e=>e.getBoundingClientRect().width).map(r)}})()")
    t=layout['toolbar'];assert all(b['top']>=t['top'] and b['bottom']<=t['bottom'] and b['right']<=t['right']+1 for b in layout['visible']),layout
@@ -94,13 +180,6 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   until(lambda:root.evaluate("!!document.querySelector('.quick-input-widget input')?.value.endsWith('.tif')"),'Direct TIFF save dialog')
   assert 'DPI' not in quick_text() and 'PackBits' not in quick_text(),quick_text()
   key('Escape',27)
-  last_layout=None;stable_frames=0
-  def stable_layout():
-   global last_layout,stable_frames
-   geometry=root.evaluate("document.querySelector('iframe').getBoundingClientRect().toJSON()")
-   geometry['figure']=evaluate("d.querySelector('.figure').getBoundingClientRect().toJSON()")
-   stable_frames=stable_frames+1 if geometry==last_layout else 0;last_layout=geometry
-   return stable_frames>=5
   until(stable_layout,'Stable native layout')
   # Sample the rendered page screenshot; external full-resolution resources cannot
   # be drawn into a canvas without changing webview origin security.
@@ -117,10 +196,6 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
   assert all(abs(a-b)<=4 for a,b in zip(transparent_pixel,[255,127,127,255])),transparent_pixel
   assert all(abs(a-b)<=2 for a,b in zip(high_pixel,[136,136,136,255])),high_pixel
   phase('mouse-start');wait_phase('mouse-ready')
-  def screen_point(fx,fy):
-   outer=root.evaluate("document.querySelector('iframe').getBoundingClientRect().toJSON()")
-   figure=evaluate("d.querySelector('.figure').getBoundingClientRect().toJSON()")
-   return {'x':outer['x']+figure['x']+figure['width']*fx,'y':outer['y']+figure['y']+figure['height']*fy}
   def move(fx,fy):root.call('Input.dispatchMouseEvent',{'type':'mouseMoved',**screen_point(fx,fy)})
   def wait_readout():
    return wait("(()=>{const t=d.querySelector('.coordinates').textContent,m=/X=([0-9.]+) cm\\s+Y=([0-9.]+) cm/.exec(t),r=d.querySelector('.figure').getBoundingClientRect();return m&&Math.abs(Number(m[1])-5.5)*r.width/12<=0.8&&Math.abs(Number(m[2])-4)*r.height/9<=0.8&&t})()")

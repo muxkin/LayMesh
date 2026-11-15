@@ -1,5 +1,8 @@
 //! Persistent foreground compiler with versioned external preview resources.
-use laymesh_core::{engine::compile_source, model::Host};
+use laymesh_core::{
+    engine::compile_source,
+    model::{Host, ObjectSources},
+};
 use laymesh_render::{config, preview_assets};
 use serde_json::{Value, json};
 use std::{
@@ -76,7 +79,7 @@ pub fn serve() -> io::Result<()> {
         }
     });
     sender
-        .send(json!({"type":"ready","protocol":1,"capabilities":["media-v1","web-export-v1","animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","incremental-session-v1","incremental-document-v1","defaults"]}))
+        .send(json!({"type":"ready","protocol":1,"capabilities":["media-v1","web-export-v1","animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","incremental-session-v1","incremental-document-v1","object-selection-v1","defaults"]}))
         .unwrap();
     for (input_revision, line) in requests {
         let request: Value = match serde_json::from_str(&line?) {
@@ -96,6 +99,7 @@ pub fn serve() -> io::Result<()> {
         let dependencies = Rc::new(RefCell::new(BTreeSet::new()));
         let mut document_metadata = None;
         let mut document_dependencies = BTreeSet::new();
+        let mut object_sources = None;
         let result = (|| -> Result<Value, Box<dyn std::error::Error>> {
             if !Path::new(file).is_absolute()
                 || !(file.ends_with(".lay") || file.ends_with(".laydoc"))
@@ -151,6 +155,18 @@ pub fn serve() -> io::Result<()> {
                 return Err("Unsupported preview protocol".into());
             }
             let resources = protocol >= 2 && request["type"] != "export";
+            if protocol == 3
+                && request["object_selection"] == true
+                && !matches!(
+                    request["type"].as_str(),
+                    Some("export" | "animate" | "plan")
+                )
+            {
+                object_sources = Some(Rc::new(RefCell::new(ObjectSources::new())));
+                if incremental {
+                    compiler.set_object_sources(object_sources.clone());
+                }
+            }
             laymesh_core::asset_cache::preview_mode(
                 resources
                     || (request["type"] == "export"
@@ -161,6 +177,7 @@ pub fn serve() -> io::Result<()> {
             let mut host = Host {
                 native: true,
                 dependencies: Some(dependencies.clone()),
+                object_sources: object_sources.clone(),
                 ..super::documents::configured_host(defaults.clone(), Path::new(file).to_path_buf())
             };
             dependencies.borrow_mut().insert(file.into());
@@ -463,9 +480,15 @@ pub fn serve() -> io::Result<()> {
             json!({"error":error})
         });
         if incremental {
+            compiler.set_object_sources(None);
             result["appliedSourceVersion"] = json!(compiler.revision());
             result["sourceVersion"] = request["sourceVersion"].clone();
             result["compileMetrics"] = serde_json::to_value(compiler.metrics()).unwrap();
+        }
+        if result.get("error").is_none()
+            && let Some(sources) = object_sources
+        {
+            result["objectSources"] = json!(std::mem::take(&mut *sources.borrow_mut()));
         }
         result["id"] = request["id"].clone();
         if let Some(document) = document_metadata {

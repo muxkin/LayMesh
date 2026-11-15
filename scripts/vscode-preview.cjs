@@ -49,6 +49,67 @@ exports.run=async()=>{
  await vscode.workspace.getConfiguration('workbench').update('colorTheme','VS Code Dark',vscode.ConfigurationTarget.Global);
  await until(()=>vscode.window.activeColorTheme.kind===vscode.ColorThemeKind.Dark,'Dark theme');
  await vscode.commands.executeCommand('workbench.action.closeAuxiliaryBar');
+ if(process.env.LAYMESH_PREVIEW_OBJECT_SELECTION){
+  const selectionFile=path.join(directory,'layered.lay');
+  const selectionSource=[
+   'p=canvas(size=(100mm,74mm),background="#fff")',
+   'back=p.add(rect(size=(75mm,52mm),fill="#157656"),offset=(12mm,12mm))',
+   'middle=p.add(rect(size=(35mm,25mm),fill="#ec972a"),offset=(29mm,21mm))',
+   'front=p.add(rect(size=(55mm,39mm),fill="#2b4d90"),offset=(22mm,16mm))',
+  ].join('\n');
+  fs.writeFileSync(selectionFile,selectionSource);
+  const selectionDoc=await vscode.workspace.openTextDocument(selectionFile);
+  await vscode.window.showTextDocument(selectionDoc,{viewColumn:vscode.ViewColumn.One});
+  await vscode.commands.executeCommand('laymesh.openPreview',selectionDoc.uri);
+  const tell=phase=>fs.writeFileSync(gate,JSON.stringify({phase}));
+  const paints=()=>host.received.filter(m=>m.type==='painted');
+  const renders=()=>host.messages.filter(m=>m.type==='result'&&m.displayList);
+  const jumps=()=>host.received.filter(m=>m.type==='open-object-source');
+  const editorAt=(line)=>vscode.window.activeTextEditor?.document===selectionDoc&&vscode.window.activeTextEditor.selection.active.line===line;
+  const awaitJump=async(count,line,label)=>{
+   try{await until(()=>jumps().length===count&&editorAt(line),label,240);}
+   catch(error){
+    const editor=vscode.window.activeTextEditor;
+    const detail={jumps:jumps().slice(-4),painted:paints().slice(-4).map(m=>m.generation),editor:editor?.document===selectionDoc,activeLine:editor?.selection.active.line,visible:host.panel.visible};
+    const message=error.message+' '+JSON.stringify(detail);
+    fs.writeFileSync(gate,JSON.stringify({phase:'failed',error:message}));
+    await pause(3000);
+    throw Error(message);
+   }
+  };
+  await until(()=>paints().length,'Initial overlap fixture preview');
+  const initial=paints().at(-1).generation,renderCount=renders().length,version=selectionDoc.version;
+  tell('object-selection-ready');
+  await awaitJump(1,2,'Right-click opens the covered instance');
+  assert.equal(jumps()[0].generation,initial);
+  assert.equal(selectionDoc.version,version,'Preview selection cannot edit source');
+  assert.equal(renders().length,renderCount,'Selection, pan and zoom must not trigger source compilation');
+  assert(selectionDoc.lineAt(2).text.startsWith('middle=p.add('));
+  evidence.checks.push('Trusted mouse input selects front, covered middle and back in paint order, wraps, resets, highlights, pans and zooms without compiling, then jumps to the selected placement');
+
+  await replace(selectionDoc,'# Move source positions without changing the drawing\n\n'+selectionSource);
+  const sourceEditor=vscode.window.activeTextEditor;
+  assert.equal(sourceEditor?.document,selectionDoc);
+  sourceEditor.selection=new vscode.Selection(0,0,0,0);
+  host.panel.reveal(host.panel.viewColumn);
+  await until(()=>paints().some(m=>m.generation>initial),'Preview with updated positions');
+  const changed=paints().at(-1).generation,updatedRenderCount=renders().length;
+  tell('object-selection-source-moved');
+  await awaitJump(2,4,'Right-click follows edited line numbers');
+  assert.equal(jumps()[1].generation,changed);
+  assert.equal(renders().length,updatedRenderCount);
+  assert.equal(selectionDoc.isDirty,true);
+  assert.equal(fs.readFileSync(selectionFile,'utf8'),selectionSource);
+  evidence.checks.push('Right-click follows the unsaved placement after a source-only line shift');
+
+  host.panel.dispose();
+  if(process.env.LAYMESH_PREVIEW_NORMAL_HOST)await selectionDoc.save();
+  await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+  fs.writeFileSync(process.env.LAYMESH_PREVIEW_EVIDENCE,JSON.stringify(evidence,null,2));
+  tell('complete');
+  fs.rmSync(directory,{recursive:true,force:true});
+  return;
+ }
  const math=await import(pathToFileURL(path.join(extension.extensionPath,'dist/preview-math.mjs')).href);
  assert.equal(math.formatData(5),'5.00000');assert.equal(math.formatData(null),'—');
  const close=(a,b)=>assert(Math.abs(a-b)<1e-8,`${a} != ${b}`);

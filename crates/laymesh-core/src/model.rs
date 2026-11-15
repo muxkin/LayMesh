@@ -372,6 +372,15 @@ pub fn resolve(file: &str, relative: &str) -> String {
     path
 }
 
+#[derive(Debug, Serialize)]
+pub struct ObjectSource {
+    pub file: String,
+    /// One-based line and UTF-16 column in the authored placement.
+    pub line: usize,
+    pub column: usize,
+}
+pub type ObjectSources = BTreeMap<String, ObjectSource>;
+
 #[derive(Clone, Default)]
 pub struct Host {
     pub files: BTreeMap<String, Vec<u8>>,
@@ -384,6 +393,8 @@ pub struct Host {
     /// Optional preview resource journal, shared by cloned hosts. Failed reads
     /// are included so creating a missing resource can refresh the preview.
     pub dependencies: Option<Rc<RefCell<BTreeSet<String>>>>,
+    /// Optional editor metadata, kept separate from the scene and drawing cache.
+    pub object_sources: Option<Rc<RefCell<ObjectSources>>>,
 }
 impl Host {
     pub fn bytes(&self, path: &str) -> Option<&[u8]> {

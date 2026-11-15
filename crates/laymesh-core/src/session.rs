@@ -3,7 +3,7 @@
 use crate::{
     Diagnostic, Loc, Result,
     engine::Engine,
-    model::{Host, Scene},
+    model::{Host, ObjectSources, Scene},
     parser::{self, Expr, ExprKind, Stmt, StmtKind},
 };
 use serde::Serialize;
@@ -338,6 +338,9 @@ impl CompileSession {
         dependencies: Option<Rc<RefCell<std::collections::BTreeSet<String>>>>,
     ) {
         self.host.dependencies = dependencies;
+    }
+    pub fn set_object_sources(&mut self, sources: Option<Rc<RefCell<ObjectSources>>>) {
+        self.host.object_sources = sources;
     }
     pub fn source(&self, file: &str) -> Result<String> {
         let bytes = self.host.read(file, file, Loc::default())?;
