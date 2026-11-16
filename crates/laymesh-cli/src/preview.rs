@@ -356,6 +356,12 @@ pub fn serve() -> io::Result<()> {
                 }
                 std::fs::create_dir_all(directory)?;
                 if protocol == 3 {
+                    let object_selection = object_sources.is_some();
+                    drawing_key.push_str(if object_selection {
+                        "\nselection"
+                    } else {
+                        "\nrender"
+                    });
                     if incremental {
                         drawing_key.push_str(&format!(
                             "\n{}\n{}",
@@ -371,13 +377,15 @@ pub fn serve() -> io::Result<()> {
                         && previous_file == &drawing_key
                         && request["known_display_list"].as_str() == Some(base)
                     {
-                        let (update, mut resources) = preview_assets::display_update_frame(
-                            &scene,
-                            previous_scene,
-                            previous,
-                            directory,
-                            &settings,
-                        )?;
+                        let (update, mut resources) =
+                            preview_assets::display_update_frame_with_selection(
+                                &scene,
+                                previous_scene,
+                                previous,
+                                directory,
+                                &settings,
+                                object_selection,
+                            )?;
                         if let Some(known) = request["known_resources"].as_array() {
                             resources.retain(|item| !known.contains(&item["id"]));
                         }
@@ -392,8 +400,12 @@ pub fn serve() -> io::Result<()> {
                         compressed_cache = None;
                         return Ok(result);
                     }
-                    let (list, mut resources) =
-                        preview_assets::display_frame(&scene, directory, &settings)?;
+                    let (list, mut resources) = preview_assets::display_frame_with_selection(
+                        &scene,
+                        directory,
+                        &settings,
+                        object_selection,
+                    )?;
                     if let Some(known) = request["known_resources"].as_array() {
                         resources.retain(|item| !known.contains(&item["id"]));
                     }

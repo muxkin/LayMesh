@@ -56,6 +56,8 @@ exports.run=async()=>{
    'back=p.add(rect(size=(75mm,52mm),fill="#157656"),offset=(12mm,12mm))',
    'middle=p.add(rect(size=(35mm,25mm),fill="#ec972a"),offset=(29mm,21mm))',
    'front=p.add(rect(size=(55mm,39mm),fill="#2b4d90"),offset=(22mm,16mm))',
+   'rotated=p.add(rect(size=(12mm,6mm),fill="#7c4fa7"),offset=(15mm,67mm),anchor=center,rotation=30deg)',
+   'flat=p.add(line(line_width=0.8mm,line_color="#7c4fa7"),start=(35mm,68mm),end=(64mm,68mm))',
   ].join('\n');
   fs.writeFileSync(selectionFile,selectionSource);
   const selectionDoc=await vscode.workspace.openTextDocument(selectionFile);

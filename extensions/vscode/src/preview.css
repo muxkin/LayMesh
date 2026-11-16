@@ -11,6 +11,13 @@ button{font:inherit;color:inherit;background:var(--vscode-button-secondaryBackgr
 .object-selection[hidden]{display:none}
 .object-selection-outline{position:absolute;box-shadow:inset 0 0 0 2px var(--cursor-ink),0 0 0 1px var(--vscode-editor-background,#1e1e1e)}
 .object-selection-name{position:absolute;padding:2px 6px;border:1px solid var(--cursor-ink);border-radius:3px;background:var(--vscode-editorWidget-background,#252526);color:var(--vscode-editor-foreground,#dedede);font:11px/16px var(--vscode-editor-font-family,monospace);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.object-anchors,.object-anchor-tooltip{pointer-events:none}
+.object-anchor{position:absolute;z-index:1;width:8px;height:8px;transform:translate(-50%,-50%);border:1px solid #162434;border-radius:50%;background:#f6fbff;box-shadow:0 0 0 1px var(--cursor-ink)}
+.object-anchor[data-anchor^='plot_']{border-radius:1px}
+.object-anchor[data-anchor='start'],.object-anchor[data-anchor='end']{border-radius:1px;transform:translate(-50%,-50%) rotate(45deg)}
+.object-anchor.is-hovered{z-index:2;background:#63b5ff;box-shadow:0 0 0 1px #f6fbff,0 0 0 3px var(--cursor-ink)}
+.object-anchor-tooltip{position:absolute;z-index:3;display:flex;flex-wrap:wrap;gap:2px 9px;width:max-content;max-width:min(280px,calc(100% - 8px));padding:4px 7px;border:1px solid var(--cursor-ink);border-radius:4px;background:var(--vscode-editorHoverWidget-background,#252526);color:var(--vscode-editorHoverWidget-foreground,#dedede);box-shadow:0 3px 12px #0004;font:12px/17px var(--vscode-editor-font-family,monospace)}
+.object-anchor-tooltip[hidden]{display:none}.object-anchor-tooltip code{font:inherit;overflow-wrap:anywhere}
 .coordinates{flex:none;min-height:32px;padding:8px;border-top:1px solid var(--vscode-panel-border,#5555);font:11px var(--vscode-editor-font-family,monospace);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;max-height:25vh;overflow:auto}
 .errors{flex:none;max-height:25vh;overflow:auto}.error-location{display:block;text-align:left;width:100%;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--vscode-errorForeground,#f48771);background:transparent;border-radius:0}.error-location[hidden]{display:none}.warnings:empty{display:none}.warnings{white-space:pre-wrap;color:var(--vscode-editorWarning-foreground,#cca700);padding:5px 8px;font-size:11px}
 @media(max-width:320px){.toolbar{gap:3px;padding:5px}.toolbar button{padding:3px 5px}.status{width:100%;margin:2px 0 0}}

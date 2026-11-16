@@ -5,6 +5,7 @@ Uses the repository's native Electron CDP harness; no npm packages or standalone
 web server. Evidence and screenshots are written only to the requested directory.
 """
 import argparse, base64, importlib.util, json, os, shutil, signal, socket, subprocess, tempfile, time, urllib.request
+from math import cos, radians, sin
 from pathlib import Path
 from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
@@ -100,7 +101,35 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
     click(screen_point(fx,fy))
     return selected(name)
    def blank():
-    wait("d.querySelector('.object-selection').hidden")
+    wait("d.querySelector('.object-selection').hidden&&d.querySelector('.object-anchor-tooltip').hidden")
+   def check_anchors(x0,y0,x1,y1):
+    names=[['top_left','top_center','top_right'],['middle_left','center','middle_right'],['bottom_left','bottom_center','bottom_right']]
+    xs=[x0,(x0+x1)/2,x1];ys=[y0,(y0+y1)/2,y1]
+    expected={name:(x,y) for row,y in zip(names,ys) for name,x in zip(row,xs)}
+    layout=wait("""(()=>{
+     const figure=d.querySelector('.figure').getBoundingClientRect().toJSON();
+     const markers=[...d.querySelectorAll('.object-anchor')].map(marker=>{
+      const r=marker.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+      return {name:marker.dataset.anchor,x,y,visible:r.width>0&&r.height>0,
+       transparent:!d.elementFromPoint(x,y)?.closest('.object-anchor,.object-anchor-tooltip')};
+     });
+     return markers.length===9&&markers.every(m=>m.visible)&&{figure,markers};
+    })()""",10)
+    assert {marker['name'] for marker in layout['markers']}==set(expected),layout
+    figure=layout['figure']
+    for marker in layout['markers']:
+     x,y=expected[marker['name']]
+     assert marker['transparent'] and abs(marker['x']-figure['x']-x*figure['width']/100)<=1 and abs(marker['y']-figure['y']-y*figure['height']/74)<=1,(marker,figure,(x,y))
+   def hover_anchor(x,y,*names):
+    point=screen_point(x/100,y/74)
+    root.call('Input.dispatchMouseEvent',{'type':'mouseMoved',**point})
+    expected=json.dumps(sorted(names))
+    wait(f"""(()=>{{
+     const tooltip=d.querySelector('.object-anchor-tooltip');
+     const names=[...tooltip.querySelectorAll('code')].map(label=>label.textContent.trim());
+     return !tooltip.hidden&&JSON.stringify(names.sort())===JSON.stringify({expected});
+    }})()""",10)
+    return point
    wait_phase('object-selection-ready')
    until(stable_layout,'Stable layered preview layout')
    wait("d.querySelector('.preview').dataset.painted==='true'")
@@ -114,9 +143,13 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
     }
     return true;
    })()""")
-   point=screen_point(.45,33/74)
+   center=(.465,33.5/74)
+   point=screen_point(*center)
    click(point);front=selected('front')
    click({**point,'x':point['x']+2});middle=selected('middle')
+   check_anchors(29,21,64,46)
+   hover_anchor(29,21,'top_left')
+   hover_anchor(46.5,33.5,'center')
    screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False})
    (a.output/'covered-object-selection.png').write_bytes(base64.b64decode(screenshot['data']))
    click(point);back=selected('back')
@@ -124,11 +157,22 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
    click(point);assert selected('front')==front
    assert select_at(.82,33/74,'back')==back
    click(screen_point(.04,65/74));blank()
+   select_at(.15,67/74,'rotated')
+   angle=radians(30)
+   half_width=6*cos(angle)+3*sin(angle);half_height=6*sin(angle)+3*cos(angle)
+   check_anchors(15-half_width,67-half_height,15+half_width,67+half_height)
+   click(screen_point(.04,65/74));blank()
+   select_at(.495,68/74,'flat')
+   hover_anchor(35,68,'start','top_left','middle_left','bottom_left')
+   click(screen_point(.04,65/74));blank()
 
+   select_at(*center,'front');select_at(*center,'middle')
    before=evaluate("d.querySelector('.figure').getBoundingClientRect().toJSON()")
    root.call('Input.dispatchMouseEvent',{'type':'mouseWheel','deltaY':-100,'deltaX':0,'modifiers':2,**point})
    wait(f"d.querySelector('.figure').getBoundingClientRect().width>{before['width']}+5")
-   point=screen_point(.45,33/74)
+   assert selected('middle')==middle
+   check_anchors(29,21,64,46)
+   point=screen_point(*center)
    before=evaluate("d.querySelector('.figure').getBoundingClientRect().toJSON()")
    root.call('Input.dispatchKeyEvent',{'type':'keyDown','key':' ','code':'Space','windowsVirtualKeyCode':32})
    mouse('mousePressed',point)
@@ -137,21 +181,24 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
    mouse('mouseReleased',moved)
    root.call('Input.dispatchKeyEvent',{'type':'keyUp','key':' ','code':'Space','windowsVirtualKeyCode':32})
    wait(f"Math.abs(d.querySelector('.figure').getBoundingClientRect().x-({before['x']}+34))<1")
-   blank()
-   select_at(.45,33/74,'front');select_at(.45,33/74,'middle')
-   click(screen_point(.45,33/74),'right')
+   assert selected('middle')==middle
+   check_anchors(29,21,64,46)
+   assert select_at(.82,33/74,'back')==back
+   select_at(*center,'front');select_at(*center,'middle')
+   click(hover_anchor(46.5,33.5,'center'),'right')
 
    wait_phase('object-selection-source-moved')
    stable_frames=0
    until(stable_layout,'Stable preview layout after source navigation')
    wait("d.querySelector('.preview').dataset.painted==='true'")
    blank()
-   select_at(.45,33/74,'front');select_at(.45,33/74,'middle')
-   click(screen_point(.45,33/74),'right')
+   select_at(*center,'front');select_at(*center,'middle')
+   click(screen_point(*center),'right')
    wait_phase('complete')
    host.wait(timeout=20)
    assert host.returncode==0
    result=json.loads(evidence.read_text())
+   result['checks'].append('Nine source-named anchors agree with rectangular and rotated bounds; hover shows single or coincident anchor names; markers stay aligned after pan and zoom and do not intercept clicks or source navigation')
    (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
    print(json.dumps(result,ensure_ascii=False))
    raise SystemExit(0)

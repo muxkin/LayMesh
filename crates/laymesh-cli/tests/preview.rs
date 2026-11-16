@@ -228,6 +228,24 @@ fn object_sources_follow_authored_placements_across_cached_document_updates() {
         None
     }
 
+    fn strip_anchor_hints(node: &mut DrawNode) {
+        if let Some(hints) = node.hint.as_object_mut() {
+            for key in [
+                "anchorSize",
+                "anchorIntrinsicInverse",
+                "anchorEndpoints",
+                "anchorPlot",
+            ] {
+                hints.remove(key);
+            }
+        }
+        if let DrawKind::Group { children, .. } = &mut node.kind {
+            for child in children {
+                strip_anchor_hints(child);
+            }
+        }
+    }
+
     let root = std::env::temp_dir()
         .join(format!("laymesh-object-sources-{}", std::process::id()))
         .to_string_lossy()
@@ -293,9 +311,14 @@ joined=p.fuse(a,b,points=(a.middle_right,b.middle_left),bridge_width=2,fill="#a0
         Value::Null,
     );
     assert!(first.get("objectSources").is_none());
-    let mut drawing: DisplayList = serde_json::from_value(first["displayList"].clone()).unwrap();
-    let before = drawing.clone();
+    let unannotated: DisplayList = serde_json::from_value(first["displayList"].clone()).unwrap();
     let warmed = request(true, 2, json!({}), first["displayListId"].clone());
+    assert!(warmed.get("displayListUpdate").is_none());
+    let mut drawing: DisplayList = serde_json::from_value(warmed["displayList"].clone()).unwrap();
+    let before = drawing.clone();
+    let mut rendered = drawing.clone();
+    rendered.nodes.iter_mut().for_each(strip_anchor_hints);
+    assert_eq!(rendered, unannotated);
     let shifted = request(
         true,
         3,
@@ -309,9 +332,11 @@ joined=p.fuse(a,b,points=(a.middle_right,b.middle_left),bridge_width=2,fill="#a0
                 .unwrap()
                 .contains(&json!(component_file))
         );
-        let update: DisplayUpdate =
-            serde_json::from_value(result["displayListUpdate"]["update"].clone()).unwrap();
-        update.apply(&mut drawing).unwrap();
+        if shift > 0 {
+            let update: DisplayUpdate =
+                serde_json::from_value(result["displayListUpdate"]["update"].clone()).unwrap();
+            update.apply(&mut drawing).unwrap();
+        }
         assert_eq!(drawing, before);
         let first = drawing.nodes.iter().find(|n| n.name == "first").unwrap();
         let second = drawing.nodes.iter().find(|n| n.name == "second").unwrap();
@@ -327,12 +352,17 @@ joined=p.fuse(a,b,points=(a.middle_right,b.middle_left),bridge_width=2,fill="#a0
         }
         for node in [first, second] {
             let detail = find(node, "detail").unwrap();
+            assert_eq!(detail.hint["anchorSize"], json!([8., 6.]));
             assert_eq!(
                 sources[key(detail)],
                 json!({"file":component_file,"line":3+shift,"column":column})
             );
         }
     }
+    let disabled = request(false, 4, json!({}), shifted["displayListId"].clone());
+    assert!(disabled.get("objectSources").is_none());
+    assert!(disabled.get("displayListUpdate").is_none());
+    assert_eq!(disabled["displayList"], first["displayList"]);
     drop(input);
     assert!(process.wait().unwrap().success());
 
@@ -348,6 +378,37 @@ joined=p.fuse(a,b,points=(a.middle_right,b.middle_left),bridge_width=2,fill="#a0
         legacy[1]["objectSources"]["name:joined"],
         json!({"file":page_file,"line":9,"column":8})
     );
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn object_selection_preview_exposes_layout_endpoints_and_plot_geometry() {
+    let root = std::env::temp_dir().join(format!("laymesh-anchor-geometry-{}", std::process::id()));
+    let source = r##"page=canvas(size=(100mm,80mm))
+curve=page.add(path(commands=[move_to(0mm,0mm),line_to(10mm,5mm),line_to(1mm,9mm),close()],fill="#f00"),size=(20mm,27mm),rotation=37deg,offset=(5mm,4mm))
+leader=page.add(line(length=12mm,angle=0deg),rotation=90deg,offset=(28mm,18mm))
+template=plot(size=(45mm,35mm),plot_area=box(offset=(9mm,8mm),size=(27mm,18mm)),x=axis(range=(0,10)),y=axis(range=(0,1)))
+template.line(x=[0,4,10],y=[0,1,0])
+chart=page.add(template,offset=(50mm,25mm),rotation=23deg)
+"##;
+    let response = preview(&[json!({
+        "protocol":3,"object_selection":true,"file":root.join("main.lay"),
+        "resource_dir":root,"source":source
+    })]);
+    let frame = &response[1];
+    assert!(frame.get("error").is_none(), "{frame}");
+    let nodes = frame["displayList"]["nodes"].as_array().unwrap();
+    let hints = |name| &nodes.iter().find(|node| node["name"] == name).unwrap()["hint"];
+    assert_eq!(hints("curve")["anchorSize"], json!([20., 27.]));
+    assert_eq!(
+        hints("curve")["anchorIntrinsicInverse"],
+        json!([0.5, 0., 0., 1. / 3., 0., 0.])
+    );
+    assert_eq!(
+        hints("leader")["anchorEndpoints"],
+        json!([[0., 0.], [12., 0.]])
+    );
+    assert_eq!(hints("chart")["anchorPlot"], json!([9., 8., 36., 26.]));
     std::fs::remove_dir_all(root).unwrap();
 }
 

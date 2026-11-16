@@ -312,9 +312,25 @@ pub(crate) fn solid(s: &str) -> Result<Paint> {
         Ok(Paint::Solid { rgba: rgba(s)? })
     }
 }
+#[derive(Clone, Copy)]
+enum DrawProfile {
+    Portable,
+    Preview { object_selection: bool },
+}
+impl DrawProfile {
+    fn is_preview(self) -> bool {
+        !matches!(self, Self::Portable)
+    }
+    fn includes_anchor_hints(self) -> bool {
+        match self {
+            Self::Portable => false,
+            Self::Preview { object_selection } => object_selection,
+        }
+    }
+}
 struct Builder<'a> {
     scene: &'a Scene,
-    preview: bool,
+    profile: DrawProfile,
     resources: BTreeMap<String, Resource>,
     font_resources: BTreeMap<String, String>,
 }
@@ -755,7 +771,7 @@ impl Builder<'_> {
         // Native previews already own normalized source pixels. Keep their
         // content key until preview_assets encodes the configured derivative;
         // a PNG encode/decode round trip here only duplicates that work.
-        let cached_pixels = if self.preview && mime != "image/svg+xml" {
+        let cached_pixels = if self.profile.is_preview() && mime != "image/svg+xml" {
             n["rasterKey"]
                 .as_str()
                 .filter(|key| laymesh_core::asset_cache::pixels(key).is_some())
@@ -1141,6 +1157,7 @@ impl Builder<'_> {
         if n["threeD"].is_object() && result.transform != Affine::IDENTITY {
             result = DrawNode::group(vec![result]);
         }
+        let intrinsic_transform = result.transform;
         result.transform = laymesh_core::geometry::node_transform(n) * result.transform;
         result.opacity *= jnum(n, "opacity", 1.);
         result.name = jstr(n, "id", "").into();
@@ -1284,6 +1301,34 @@ impl Builder<'_> {
                 serde_json::to_value(crate::surface3d::prepare(&result, &n["threeD"])?)
                     .map_err(|e| error(e.to_string()))?;
         }
+        if self.profile.includes_anchor_hints() && !result.name.is_empty() {
+            // Keep anchor hints local so translation-only updates can retain them.
+            // The preview can undo a path's intrinsic drawing transform to recover
+            // the unscaled layout coordinates used by Lay's anchor expressions.
+            result.hint["anchorSize"] = json!([w, h]);
+            if intrinsic_transform != Affine::IDENTITY
+                && intrinsic_transform.determinant().abs() > 1e-30
+            {
+                result.hint["anchorIntrinsicInverse"] =
+                    json!(intrinsic_transform.inverse().as_coeffs());
+            }
+            if n["endpoints"].is_array() {
+                result.hint["anchorEndpoints"] = n["endpoints"].clone();
+            }
+            let plot = &n["plotBounds"];
+            if plot.is_object() {
+                let sx = w / jnum(n, "contentWidth", w).max(1e-12);
+                let sy = h / jnum(n, "contentHeight", h).max(1e-12);
+                let x = jnum(plot, "x", 0.);
+                let y = jnum(plot, "y", 0.);
+                result.hint["anchorPlot"] = json!([
+                    x * sx,
+                    y * sy,
+                    (x + jnum(plot, "width", 0.)) * sx,
+                    (y + jnum(plot, "height", 0.)) * sy,
+                ]);
+            }
+        }
         Ok(result)
     }
 }
@@ -1358,14 +1403,14 @@ impl ttf_parser::OutlineBuilder for OutlinePath {
     }
 }
 pub fn to_display_list(scene: &Scene) -> Result<DisplayList> {
-    build(scene, false)
+    build(scene, DrawProfile::Portable)
 }
 #[cfg(feature = "native")]
-pub(crate) fn preview_display_list(scene: &Scene) -> Result<DisplayList> {
-    build(scene, true)
+pub(crate) fn preview_display_list(scene: &Scene, object_selection: bool) -> Result<DisplayList> {
+    build(scene, DrawProfile::Preview { object_selection })
 }
-fn build(scene: &Scene, preview: bool) -> Result<DisplayList> {
-    build_reusing(scene, preview, None, false)
+fn build(scene: &Scene, profile: DrawProfile) -> Result<DisplayList> {
+    build_reusing(scene, profile, None, false)
 }
 /// Reuse completed lowering for unchanged scene contributions. Font buffers
 /// already in the baseline also retain their resource identity without hashing
@@ -1377,7 +1422,12 @@ pub fn to_display_list_reusing(
     previous: &DisplayList,
     outlined: bool,
 ) -> Result<DisplayList> {
-    build_reusing(scene, false, Some((previous_scene, previous)), outlined)
+    build_reusing(
+        scene,
+        DrawProfile::Portable,
+        Some((previous_scene, previous)),
+        outlined,
+    )
 }
 /// Produce a patch from borrowed retained commands, without copying the
 /// unchanged paths and geometry hints into a temporary whole-page list.
@@ -1387,8 +1437,12 @@ pub fn display_update_reusing(
     previous: &DisplayList,
     outlined: bool,
 ) -> Result<crate::display_update::DisplayUpdate> {
-    let (header, nodes, translations) =
-        lower_reusing(scene, false, Some((previous_scene, previous)), outlined)?;
+    let (header, nodes, translations) = lower_reusing(
+        scene,
+        DrawProfile::Portable,
+        Some((previous_scene, previous)),
+        outlined,
+    )?;
     let nodes: Vec<_> = nodes.iter().map(|n| n.as_ref()).collect();
     let mut update =
         crate::display_update::DisplayUpdate::between_retained(previous, &header, &nodes);
@@ -1400,8 +1454,20 @@ pub fn preview_display_update_reusing(
     previous_scene: &Scene,
     previous: &DisplayList,
 ) -> Result<crate::display_update::DisplayUpdate> {
-    let (header, nodes, translations) =
-        lower_reusing(scene, true, Some((previous_scene, previous)), false)?;
+    preview_display_update_with_selection(scene, previous_scene, previous, false)
+}
+pub(crate) fn preview_display_update_with_selection(
+    scene: &Scene,
+    previous_scene: &Scene,
+    previous: &DisplayList,
+    object_selection: bool,
+) -> Result<crate::display_update::DisplayUpdate> {
+    let (header, nodes, translations) = lower_reusing(
+        scene,
+        DrawProfile::Preview { object_selection },
+        Some((previous_scene, previous)),
+        false,
+    )?;
     let nodes: Vec<_> = nodes.iter().map(|n| n.as_ref()).collect();
     let mut update =
         crate::display_update::DisplayUpdate::between_retained(previous, &header, &nodes);
@@ -1410,11 +1476,11 @@ pub fn preview_display_update_reusing(
 }
 fn build_reusing(
     scene: &Scene,
-    preview: bool,
+    profile: DrawProfile,
     previous: Option<(&Scene, &DisplayList)>,
     outlined: bool,
 ) -> Result<DisplayList> {
-    let (mut list, nodes, translations) = lower_reusing(scene, preview, previous, outlined)?;
+    let (mut list, nodes, translations) = lower_reusing(scene, profile, previous, outlined)?;
     list.nodes = nodes
         .into_iter()
         .map(std::borrow::Cow::into_owned)
@@ -1424,7 +1490,7 @@ fn build_reusing(
 }
 fn lower_reusing<'a>(
     scene: &Scene,
-    preview: bool,
+    profile: DrawProfile,
     previous: Option<(&Scene, &'a DisplayList)>,
     outlined: bool,
 ) -> Result<(
@@ -1442,7 +1508,7 @@ fn lower_reusing<'a>(
     }
     let mut b = Builder {
         scene,
-        preview,
+        profile,
         resources: BTreeMap::new(),
         font_resources: BTreeMap::new(),
     };

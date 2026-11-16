@@ -179,9 +179,25 @@ pub fn display_update_frame(
     directory: &Path,
     settings: &PreviewSettings,
 ) -> Result<(crate::display_update::DisplayUpdate, Vec<Json>)> {
+    display_update_frame_with_selection(scene, previous_scene, previous, directory, settings, false)
+}
+
+/// The acknowledged baseline must use the same object selection mode.
+pub fn display_update_frame_with_selection(
+    scene: &Scene,
+    previous_scene: &Scene,
+    previous: &DisplayList,
+    directory: &Path,
+    settings: &PreviewSettings,
+    object_selection: bool,
+) -> Result<(crate::display_update::DisplayUpdate, Vec<Json>)> {
     use crate::display_update::ChildSource;
-    let mut update =
-        crate::display_list::preview_display_update_reusing(scene, previous_scene, previous)?;
+    let mut update = crate::display_list::preview_display_update_with_selection(
+        scene,
+        previous_scene,
+        previous,
+        object_selection,
+    )?;
     let (resources, ids) = if let Some(values) = &mut update.resources {
         externalize_resources(values, directory, settings)?
     } else {
@@ -238,7 +254,16 @@ pub fn display_frame(
     directory: &Path,
     settings: &PreviewSettings,
 ) -> Result<(DisplayList, Vec<Json>)> {
-    let mut list = crate::display_list::preview_display_list(scene)?;
+    display_frame_with_selection(scene, directory, settings, false)
+}
+
+pub fn display_frame_with_selection(
+    scene: &Scene,
+    directory: &Path,
+    settings: &PreviewSettings,
+    object_selection: bool,
+) -> Result<(DisplayList, Vec<Json>)> {
+    let mut list = crate::display_list::preview_display_list(scene, object_selection)?;
     let (resources, ids) = externalize_resources(&mut list.resources, directory, settings)?;
     remap_node_resources(&mut list.nodes, &ids);
     Ok((list, resources))

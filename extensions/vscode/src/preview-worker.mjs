@@ -18,6 +18,35 @@ function selectionBoundsTransform(bounds,transform){
  return [Math.min(a*x0,a*x1)+Math.min(c*y0,c*y1)+e,Math.min(b*x0,b*x1)+Math.min(d*y0,d*y1)+f,
   Math.max(a*x0,a*x1)+Math.max(c*y0,c*y1)+e,Math.max(b*x0,b*x1)+Math.max(d*y0,d*y1)+f];
 }
+const selectionAnchorNames=[
+ 'top_left','top_center','top_right','middle_left','center','middle_right',
+ 'bottom_left','bottom_center','bottom_right',
+];
+function selectionProjectAnchor(name,x,y,transform){
+ const [a,b,c,d,e,f]=transform;
+ return {name,x:a*x+c*y+e,y:b*x+d*y+f};
+}
+function selectionBoxAnchors(bounds,transform,prefix=''){
+ const [x0,y0,x1,y1]=bounds;
+ const xs=[x0,(x0+x1)/2,x1],ys=[y0,(y0+y1)/2,y1];
+ return selectionAnchorNames.map((name,index)=>
+  selectionProjectAnchor(prefix+name,xs[index%3],ys[Math.floor(index/3)],transform));
+}
+function selectionAnchors(node,parent){
+ const {anchorSize,anchorIntrinsicInverse,anchorEndpoints,anchorPlot}=node.hint||{};
+ if(!anchorSize)return [];
+ const [width,height]=anchorSize;
+ const layout=anchorIntrinsicInverse?selectionTransform(node.transform,anchorIntrinsicInverse):node.transform;
+ // Standard anchors follow the layout bounding box in the immediate container.
+ const anchors=selectionBoxAnchors(selectionBoundsTransform([0,0,width,height],layout),parent);
+ const toPage=selectionTransform(parent,layout);
+ if(anchorEndpoints){
+  const [[startX,startY],[endX,endY]]=anchorEndpoints;
+  anchors.push(selectionProjectAnchor('start',startX,startY,toPage),selectionProjectAnchor('end',endX,endY,toPage));
+ }
+ if(anchorPlot)anchors.push(...selectionBoxAnchors(anchorPlot,toPage,'plot_'));
+ return anchors;
+}
 function selectionUnion(a,b){return !a?b:!b?a:[Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[2],b[2]),Math.max(a[3],b[3])];}
 function selectionIntersect(a,b){
  if(!a||!b)return null;
@@ -130,7 +159,7 @@ function previewObjectHits(point,scale){
    const key=identity?`id:${identity}`:`name:${name}`;
    if(selectableKeys.has(key)){
     const outline=selectionIntersect(selectionBoundsTransform(bounds,transform),clip);
-    if(outline)hits.push({key,name,kind:node.hint.kind||node.hint.logicalKind,bounds:outline});
+    if(outline)hits.push({key,name,kind:node.hint.kind||node.hint.logicalKind,bounds:outline,anchors:selectionAnchors(node,parent)});
    }
   }
   return hit;

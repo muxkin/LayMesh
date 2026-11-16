@@ -70,8 +70,13 @@ startWorker().catch(()=>{});
 const vertical=el('div','crosshair vertical',viewport),horizontal=el('div','crosshair horizontal',viewport);
 vertical.hidden=horizontal.hidden=true;
 const objectSelection=el('div','object-selection',viewport),objectOutline=el('div','object-selection-outline',objectSelection),objectName=el('output','object-selection-name',objectSelection);
+const objectAnchors=el('div','object-anchors',objectSelection),anchorTooltip=el('div','object-anchor-tooltip',objectSelection);
+let anchorMarkers=[],hoveredAnchors=[],tooltipAnchor,tooltipLayout;
 objectSelection.hidden=true;
 objectName.setAttribute('aria-live','polite');
+objectAnchors.setAttribute('aria-hidden','true');
+anchorTooltip.setAttribute('role','tooltip');
+anchorTooltip.hidden=true;
 const footer=el('footer','preview-footer',root),diagnosticMenu=el('details','diagnostic-menu',footer),diagnosticSummary=el('summary','',diagnosticMenu);diagnosticSummary.textContent='诊断';footer.append(status,details);
 const errors=el('div','errors',diagnosticMenu),errorHeading=el('div','diagnostic-heading',errors),errorTitle=el('strong','',errorHeading),closeError=el('button','',errorHeading),errorNote=el('p','diagnostic-note',errors),errorButton=el('button','error-location',errors),warnings=el('div','warnings',errors),readout=el('output','coordinates',footer);
 iconLabel(closeError,'close');closeError.onclick=()=>diagnosticMenu.open=false;const sourceError=el('button','source-diagnostics',errors);sourceError.onclick=()=>bridge.postMessage({type:'source'});errorButton.type='button';errorButton.hidden=true;const copyError=el('button','copy-diagnostics',errors,'复制');copyError.onclick=()=>{const field=el('textarea','',errors);field.value=[errorButton.textContent,warnings.textContent].filter(Boolean).join('\n');field.select();document.execCommand('copy');field.remove();};
@@ -87,6 +92,7 @@ function labels(){
  iconLabel(buttons.refresh,'replay',text('刷新','Refresh'));iconLabel(buttons.export,'export',text('导出','Export'));iconLabel(previousPage,'previous');iconLabel(nextPage,'next');previousPage.setAttribute('aria-label',text('上一页','Previous page'));nextPage.setAttribute('aria-label',text('下一页','Next page'));motionMenu.querySelector('summary').textContent=text('播放设置','Playback settings');if(typeof moreSummary!=='undefined')moreSummary.setAttribute('aria-label',text('更多','More'));syncPlaybackButtons();
  viewport.setAttribute('aria-label',text('图形预览；Ctrl 加滚轮缩放，空格加拖动平移','Figure preview; Ctrl/Command + wheel to zoom, Space + drag to pan'));
  image.alt=text('LayMesh 图形预览','LayMesh figure preview');
+ labelAnchorTooltip();
  hr.setAttribute('aria-label',text('水平标尺','Horizontal ruler'));vr.setAttribute('aria-label',text('垂直标尺','Vertical ruler'));
  errorButton.title=text('跳转到源码','Go to source');
  buttons.rulers.setAttribute('aria-pressed',String(view.rulers));
@@ -120,7 +126,10 @@ function clearObjectSelection(){
  resetObjectSelection();
 }
 function resetObjectSelection(){
- if(selectedObject){objectSelection.hidden=true;delete objectSelection.dataset.key;objectName.textContent='';}
+ if(selectedObject){
+  objectSelection.hidden=true;delete objectSelection.dataset.key;objectName.textContent='';
+  setObjectAnchors([]);
+ }
  selectedObject=objectCycle=objectLayout=null;
 }
 function invalidateObjectSelection(){
@@ -131,6 +140,65 @@ function objectSelectionReady(){
  return objectGeneration!==null&&objectGeneration===drawGeneration&&player.time===null&&
   root.dataset.state==='success'&&!presentation.opened;
 }
+function setObjectAnchors(anchors){
+ hideAnchorTooltip();
+ const markers=document.createDocumentFragment();
+ anchorMarkers=anchors.map(anchor=>{
+  const marker=el('span','object-anchor',markers);
+  marker.dataset.anchor=anchor.name;
+  return {...anchor,marker};
+ });
+ objectAnchors.replaceChildren(markers);
+}
+function labelAnchorTooltip(){
+ if(hoveredAnchors.length)anchorTooltip.setAttribute('aria-label',
+  `${text('锚点','Anchor')} ${hoveredAnchors.map(anchor=>anchor.name).join(', ')}`);
+}
+function hideAnchorTooltip(){
+ if(anchorTooltip.hidden)return;
+ for(const anchor of hoveredAnchors)anchor.marker.classList.remove('is-hovered');
+ anchorTooltip.hidden=true;
+ objectName.style.visibility='';
+ hoveredAnchors=[];
+ tooltipAnchor=tooltipLayout=null;
+}
+function hoverObjectAnchor(x,y){
+ if(drag||objectSelection.hidden)return hideAnchorTooltip();
+ const [, , ,width,height]=objectLayout;
+ if(x<0||x>width||y<0||y>height)return hideAnchorTooltip();
+ let nearest,distance=9;
+ for(const anchor of anchorMarkers){
+  if(!anchor.inView)continue;
+  const delta=Math.hypot(anchor.left-x,anchor.top-y);
+  if(delta<distance){nearest=anchor;distance=delta;}
+ }
+ if(!nearest)return hideAnchorTooltip();
+ const matches=anchorMarkers.filter(anchor=>anchor.inView&&
+  Math.hypot(anchor.left-nearest.left,anchor.top-nearest.top)<9);
+ const namesChanged=matches.length!==hoveredAnchors.length||matches.some((anchor,i)=>anchor!==hoveredAnchors[i]);
+ if(namesChanged){
+  for(const anchor of hoveredAnchors)anchor.marker.classList.remove('is-hovered');
+  hoveredAnchors=matches;
+  for(const anchor of matches)anchor.marker.classList.add('is-hovered');
+  anchorTooltip.replaceChildren(...matches.map(anchor=>el('code','',null,anchor.name)));
+  anchorTooltip.hidden=false;
+  labelAnchorTooltip();
+ }
+ if(!namesChanged&&nearest===tooltipAnchor&&objectLayout===tooltipLayout)return;
+ tooltipAnchor=nearest;tooltipLayout=objectLayout;
+ const gap=12,padding=4;
+ const tipWidth=anchorTooltip.offsetWidth,tipHeight=anchorTooltip.offsetHeight;
+ const left=Math.max(padding,Math.min(width-tipWidth-padding,
+  nearest.left+gap+tipWidth<=width-padding?nearest.left+gap:nearest.left-gap-tipWidth));
+ const top=Math.max(padding,Math.min(height-tipHeight-padding,
+  nearest.top+gap+tipHeight<=height-padding?nearest.top+gap:nearest.top-gap-tipHeight));
+ anchorTooltip.style.left=`${left}px`;
+ anchorTooltip.style.top=`${top}px`;
+ const nameLeft=objectName.offsetLeft,nameTop=objectName.offsetTop;
+ const overlapsName=left<nameLeft+objectName.offsetWidth&&left+tipWidth>nameLeft&&
+  top<nameTop+objectName.offsetHeight&&top+tipHeight>nameTop;
+ objectName.style.visibility=overlapsName?'hidden':'';
+}
 function placeObjectSelection(r){
  if(!selectedObject)return;
  const scale=view.scale,layout=[r.left,r.top,scale,viewport.clientWidth,viewport.clientHeight];
@@ -138,7 +206,18 @@ function placeObjectSelection(r){
  objectLayout=layout;
  const [x0,y0,x1,y1]=selectedObject.bounds,[x,y]=selectedObject.point;
  const left=r.left+x0*scale,top=r.top+y0*scale,right=r.left+x1*scale,bottom=r.top+y1*scale;
- objectSelection.hidden=right<0||bottom<0||left>layout[3]||top>layout[4];
+ const [, , ,width,height]=layout;
+ const outlineInView=right>=0&&bottom>=0&&left<=width&&top<=height;
+ for(const anchor of anchorMarkers){
+  anchor.left=r.left+anchor.x*scale;
+  anchor.top=r.top+anchor.y*scale;
+  anchor.inView=anchor.left>=0&&anchor.left<=width&&anchor.top>=0&&anchor.top<=height;
+  anchor.marker.hidden=!anchor.inView;
+  anchor.marker.style.left=`${anchor.left}px`;
+  anchor.marker.style.top=`${anchor.top}px`;
+ }
+ objectSelection.hidden=!outlineInView&&!anchorMarkers.some(anchor=>anchor.inView);
+ objectName.hidden=!outlineInView;
  Object.assign(objectOutline.style,{left:`${left}px`,top:`${top}px`,width:`${Math.max(2,right-left)}px`,height:`${Math.max(2,bottom-top)}px`});
  const labelLeft=Math.max(4,Math.min(layout[3]-76,r.left+x*scale+9));
  const labelTop=Math.max(4,Math.min(layout[4]-25,r.top+y*scale-25));
@@ -166,8 +245,13 @@ async function selectObjectAt(event){
   const {key,name,kind}=selectedObject;
   objectSelection.dataset.key=key;
   objectName.textContent=name&&!/^instance-\d+$/.test(name)?name:kind||name;
+  setObjectAnchors(selectedObject.anchors||[]);
   objectLayout=null;
   placeObjectSelection(rect());
+  if(anchorMarkers.length&&lastPointer){
+   const box=viewport.getBoundingClientRect();
+   hoverObjectAnchor(lastPointer.x-box.left,lastPointer.y-box.top);
+  }
  }catch{
   // A canceled selection must not interrupt the preview.
  }
@@ -186,8 +270,9 @@ function drawRuler(canvas,axis,r){
  drawPreviewRuler(canvas,axis,{length:axis==='x'?viewport.clientWidth:viewport.clientHeight,start:axis==='x'?r.left:r.top,scale:view.scale,page,ink:style.getPropertyValue('--ruler-ink').trim(),font:'10px '+style.fontFamily,pointer:p?(axis==='x'?lastPointer.x-bounds.left:lastPointer.y-bounds.top):null});
 }
 function cursor(r){
- if(!lastPointer||!page){readout.textContent='';vertical.hidden=horizontal.hidden=true;return;}
+ if(!lastPointer||!page){hideAnchorTooltip();readout.textContent='';vertical.hidden=horizontal.hidden=true;return;}
  const bounds=viewport.getBoundingClientRect(),x=lastPointer.x-bounds.left,y=lastPointer.y-bounds.top,p=canvasAt(page,r,x,y);
+ if(anchorMarkers.length)hoverObjectAnchor(x,y);
  if(!p||x<0||y<0||x>viewport.clientWidth||y>viewport.clientHeight){readout.textContent='';vertical.hidden=horizontal.hidden=true;return;}
  vertical.hidden=horizontal.hidden=false;vertical.style.left=x+'px';horizontal.style.top=y+'px';
  const unit=page.unit||'mm';let label=`${text('画布','Canvas')}: X=${p.display[0].toFixed(3)} ${unit}  Y=${p.display[1].toFixed(3)} ${unit}`;
