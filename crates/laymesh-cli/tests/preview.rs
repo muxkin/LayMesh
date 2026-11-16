@@ -235,6 +235,7 @@ fn object_sources_follow_authored_placements_across_cached_document_updates() {
                 "anchorIntrinsicInverse",
                 "anchorEndpoints",
                 "anchorPlot",
+                "anchorGeometry",
             ] {
                 hints.remove(key);
             }
@@ -405,10 +406,88 @@ chart=page.add(template,offset=(50mm,25mm),rotation=23deg)
         json!([0.5, 0., 0., 1. / 3., 0., 0.])
     );
     assert_eq!(
+        hints("curve")["anchorGeometry"]["path"],
+        json!([[[[0., 0.], [20., 15.], [2., 27.]], [], [0., 0.]]])
+    );
+    assert_eq!(
         hints("leader")["anchorEndpoints"],
         json!([[0., 0.], [12., 0.]])
     );
     assert_eq!(hints("chart")["anchorPlot"], json!([9., 8., 36., 26.]));
+    let chart = nodes.iter().find(|node| node["name"] == "chart").unwrap();
+    assert!(!chart.to_string().contains("anchorGeometry"));
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn object_selection_preview_exposes_authored_path_and_centerline_points() {
+    let root = std::env::temp_dir().join(format!("laymesh-path-anchors-{}", std::process::id()));
+    let source = r##"page=canvas(size=(120mm,102mm))
+curve=path(commands=[move_to(0,15),cubic_to(12,15,16,0,28,0),cubic_to(40,0,44,15,56,15)])
+arrow=page.add(arrow.path(path=curve,heads=both,head_size=(5mm,7mm),shaft_width=2.8mm),start=(18mm,75mm),end=(102mm,75mm))
+compound=page.add(path(commands=[move_to(0,0),quad_to(3,4,6,0),arc_to(rx=3,ry=3,x=12,y=0,sweep=true),move_to(18,0),line_to(22,2),close()],border_color="#f00"))
+"##;
+    let response = preview(&[json!({
+        "protocol":3,"object_selection":true,"file":root.join("main.lay"),
+        "resource_dir":root,"source":source
+    })]);
+    let frame = &response[1];
+    assert!(frame.get("error").is_none(), "{frame}");
+    let nodes = frame["displayList"]["nodes"].as_array().unwrap();
+    let find = |name| nodes.iter().find(|node| node["name"] == name).unwrap();
+
+    let arrow = find("arrow");
+    let geometry = &arrow["hint"]["anchorGeometry"];
+    assert!(geometry.get("path").is_none());
+    let centerline = &geometry["centerline"][0];
+    let transform = kurbo::Affine::new(std::array::from_fn(|i| {
+        arrow["transform"][i].as_f64().unwrap()
+    }));
+    let intrinsic_inverse = &arrow["hint"]["anchorIntrinsicInverse"];
+    let to_page = if intrinsic_inverse.is_array() {
+        transform
+            * kurbo::Affine::new(std::array::from_fn(|i| {
+                intrinsic_inverse[i].as_f64().unwrap()
+            }))
+    } else {
+        transform
+    };
+    let at = |point: &Value, expected: kurbo::Point| {
+        let point =
+            to_page * kurbo::Point::new(point[0].as_f64().unwrap(), point[1].as_f64().unwrap());
+        assert!(point.distance(expected) < 1e-8, "{point:?} != {expected:?}");
+    };
+    let scale = 74. / 56.;
+    at(&centerline[0][0], kurbo::Point::new(18., 75.));
+    at(&centerline[0][1], kurbo::Point::new(23., 75.));
+    at(&centerline[0][2], kurbo::Point::new(60., 75. - 15. * scale));
+    at(&centerline[0][3], kurbo::Point::new(97., 75.));
+    at(&centerline[2], kurbo::Point::new(102., 75.));
+    assert_eq!(centerline[0].as_array().unwrap().len(), 5);
+    assert_eq!(centerline[1].as_array().unwrap().len(), 2);
+    assert_eq!(centerline[1][0][0], 1);
+    assert_eq!(centerline[1][1][0], 2);
+    at(
+        &centerline[1][0][1][0],
+        kurbo::Point::new(23. + 12. * scale, 75.),
+    );
+    at(
+        &centerline[1][1][1][0],
+        kurbo::Point::new(23. + 40. * scale, 75. - 15. * scale),
+    );
+
+    let compound = find("compound")["hint"]["anchorGeometry"]["path"]
+        .as_array()
+        .unwrap();
+    assert_eq!(compound.len(), 2);
+    assert_eq!(compound[0][0].as_array().unwrap().len(), 3);
+    assert_eq!(compound[0][1].as_array().unwrap().len(), 1);
+    assert_eq!(compound[0][1][0][0], 0);
+    assert_eq!(compound[0][1][0][1].as_array().unwrap().len(), 1);
+    assert_eq!(compound[0][0][2], compound[0][2]);
+    assert_eq!(compound[1][0].as_array().unwrap().len(), 2);
+    assert_eq!(compound[1][1], json!([]));
+    assert_eq!(compound[1][0][0], compound[1][2]);
     std::fs::remove_dir_all(root).unwrap();
 }
 

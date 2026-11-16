@@ -961,10 +961,10 @@ impl Builder<'_> {
                 result.transform = Affine::translate((jnum(n, "x", 0.), jnum(n, "y", 0.)));
                 Ok(result)
             }
-            _ => self.node(n, parent),
+            _ => self.node(n, parent, false),
         }
     }
-    fn node(&mut self, n: &Json, parent: Affine) -> Result<DrawNode> {
+    fn node(&mut self, n: &Json, parent: Affine, path_anchors: bool) -> Result<DrawNode> {
         let transform = parent * laymesh_core::geometry::node_transform(n);
         let w = jnum(n, "width", 0.);
         let h = jnum(n, "height", 0.);
@@ -1003,8 +1003,10 @@ impl Builder<'_> {
                     None
                 };
                 let mut children = Vec::new();
+                // The chart's generated curves and decorations have no individual source anchors.
+                let child_path_anchors = path_anchors && n.get("plotBounds").is_none();
                 for child in n["children"].as_array().into_iter().flatten() {
-                    children.push(self.node(child, transform * scale)?);
+                    children.push(self.node(child, transform * scale, child_path_anchors)?);
                 }
                 let mut content = DrawNode::new(DrawKind::Group {
                     children,
@@ -1315,6 +1317,13 @@ impl Builder<'_> {
             if n["endpoints"].is_array() {
                 result.hint["anchorEndpoints"] = n["endpoints"].clone();
             }
+            if path_anchors
+                && n["__css_shadow_layer"] != true
+                && n["__css_duplicate_path"] != true
+                && let Some(geometry) = laymesh_core::geometry_query::preview_path_anchors(n)
+            {
+                result.hint["anchorGeometry"] = geometry;
+            }
             let plot = &n["plotBounds"];
             if plot.is_object() {
                 let sx = w / jnum(n, "contentWidth", w).max(1e-12);
@@ -1579,7 +1588,7 @@ fn lower_reusing<'a>(
                 continue;
             }
         }
-        let mut node = b.node(n, Affine::IDENTITY)?;
+        let mut node = b.node(n, Affine::IDENTITY, profile.includes_anchor_hints())?;
         if outlined {
             outline_nodes(std::slice::from_mut(&mut node));
         }

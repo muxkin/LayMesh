@@ -108,7 +108,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
     expected={name:(x,y) for row,y in zip(names,ys) for name,x in zip(row,xs)}
     layout=wait("""(()=>{
      const figure=d.querySelector('.figure').getBoundingClientRect().toJSON();
-     const markers=[...d.querySelectorAll('.object-anchor')].map(marker=>{
+     const markers=[...d.querySelectorAll('.object-anchor:not([data-anchor-kind])')].map(marker=>{
       const r=marker.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
       return {name:marker.dataset.anchor,x,y,visible:r.width>0&&r.height>0,
        transparent:!d.elementFromPoint(x,y)?.closest('.object-anchor,.object-anchor-tooltip')};
@@ -120,14 +120,15 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
     for marker in layout['markers']:
      x,y=expected[marker['name']]
      assert marker['transparent'] and abs(marker['x']-figure['x']-x*figure['width']/100)<=1 and abs(marker['y']-figure['y']-y*figure['height']/74)<=1,(marker,figure,(x,y))
-   def hover_anchor(x,y,*names):
+   def hover_anchor(x,y,*names,includes=False):
     point=screen_point(x/100,y/74)
     root.call('Input.dispatchMouseEvent',{'type':'mouseMoved',**point})
     expected=json.dumps(sorted(names))
     wait(f"""(()=>{{
      const tooltip=d.querySelector('.object-anchor-tooltip');
      const names=[...tooltip.querySelectorAll('code')].map(label=>label.textContent.trim());
-     return !tooltip.hidden&&JSON.stringify(names.sort())===JSON.stringify({expected});
+     const matches={expected}.every(name=>names.includes(name));
+     return !tooltip.hidden&&matches&&({str(includes).lower()}||names.length==={len(names)});
     }})()""",10)
     return point
    wait_phase('object-selection-ready')
@@ -148,7 +149,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
    click(point);front=selected('front')
    click({**point,'x':point['x']+2});middle=selected('middle')
    check_anchors(29,21,64,46)
-   hover_anchor(29,21,'top_left')
+   hover_anchor(29,21,'top_left',includes=True)
    hover_anchor(46.5,33.5,'center')
    screenshot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False})
    (a.output/'covered-object-selection.png').write_bytes(base64.b64decode(screenshot['data']))
@@ -163,7 +164,11 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
    check_anchors(15-half_width,67-half_height,15+half_width,67+half_height)
    click(screen_point(.04,65/74));blank()
    select_at(.495,68/74,'flat')
-   hover_anchor(35,68,'start','top_left','middle_left','bottom_left')
+   hover_anchor(35,68,'start','top_left','middle_left','bottom_left',includes=True)
+   click(screen_point(.04,65/74));blank()
+   select_at(.79,3/74,'curved')
+   hover_anchor(79,3,'centerline.nodes[2]',includes=True)
+   hover_anchor(71,10,'centerline.segments[1].controls[0]',includes=True)
    click(screen_point(.04,65/74));blank()
 
    select_at(*center,'front');select_at(*center,'middle')
@@ -199,6 +204,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
    assert host.returncode==0
    result=json.loads(evidence.read_text())
    result['checks'].append('Nine source-named anchors agree with rectangular and rotated bounds; hover shows single or coincident anchor names; markers stay aligned after pan and zoom and do not intercept clicks or source navigation')
+   result['checks'].append('The two-cubic arrow exposes its centerline junction and authored Bézier handle at their layout coordinates')
    (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
    print(json.dumps(result,ensure_ascii=False))
    raise SystemExit(0)

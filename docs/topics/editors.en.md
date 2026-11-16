@@ -147,6 +147,8 @@ In static preview, click an object to show a highlight box and its name. Click t
 
 The preview marks the selected object's built-in named anchors, including the nine layout anchors, `start` and `end` on lines and arrows, and `plot_*` anchors on charts. Hover over a marker to see the names used in source. When anchors coincide, the tooltip lists their names together.
 
+For paths and shape arrows, it also shows path endpoints, junctions, and Bézier control points, such as `path.nodes[1]` and `centerline.segments[1].controls[0]`.
+
 Run **LayMesh: Set Preview Delay** to enter an integer from 0 to 5000 ms (default 30; 0 disables debounce). It saves to workspace settings when a workspace is open, otherwise user settings, and applies immediately.
 
 Run **LayMesh: Export Figure** from a `.lay` editor or click **Export** in preview, then choose the format and destination to export directly. Images default to 1200 DPI and TIFF to LZW; change parameters in `laymesh.export.*` settings. Unsaved entry and opened imported buffers are used; remote windows save on the extension host. [Export formats and encoding options](export.en.md)

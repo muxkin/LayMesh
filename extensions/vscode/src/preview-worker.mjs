@@ -32,8 +32,27 @@ function selectionBoxAnchors(bounds,transform,prefix=''){
  return selectionAnchorNames.map((name,index)=>
   selectionProjectAnchor(prefix+name,xs[index%3],ys[Math.floor(index/3)],transform));
 }
+function appendSelectionPathAnchors(anchors,geometry,transform){
+ for(const [view,routes] of Object.entries(geometry)){
+  for(const [routeIndex,[nodes,controls,end]] of routes.entries()){
+   // Lay requires a subpath selector only when a path has more than one route.
+   const prefix=routes.length===1?view:`${view}.subpaths[${routeIndex}]`;
+   const append=(member,[x,y],kind)=>{
+    anchors.push({...selectionProjectAnchor(`${prefix}.${member}`,x,y,transform),kind});
+   };
+   append('start',nodes[0],'path-endpoint');
+   append('end',end,'path-endpoint');
+   for(const [nodeIndex,point] of nodes.entries())append(`nodes[${nodeIndex}]`,point,'path-node');
+   for(const [segmentIndex,points] of controls){
+    for(const [controlIndex,point] of points.entries()){
+     append(`segments[${segmentIndex}].controls[${controlIndex}]`,point,'path-control');
+    }
+   }
+  }
+ }
+}
 function selectionAnchors(node,parent){
- const {anchorSize,anchorIntrinsicInverse,anchorEndpoints,anchorPlot}=node.hint||{};
+ const {anchorSize,anchorIntrinsicInverse,anchorEndpoints,anchorPlot,anchorGeometry}=node.hint||{};
  if(!anchorSize)return [];
  const [width,height]=anchorSize;
  const layout=anchorIntrinsicInverse?selectionTransform(node.transform,anchorIntrinsicInverse):node.transform;
@@ -45,6 +64,7 @@ function selectionAnchors(node,parent){
   anchors.push(selectionProjectAnchor('start',startX,startY,toPage),selectionProjectAnchor('end',endX,endY,toPage));
  }
  if(anchorPlot)anchors.push(...selectionBoxAnchors(anchorPlot,toPage,'plot_'));
+ if(anchorGeometry)appendSelectionPathAnchors(anchors,anchorGeometry,toPage);
  return anchors;
 }
 function selectionUnion(a,b){return !a?b:!b?a:[Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[2],b[2]),Math.max(a[3],b[3])];}

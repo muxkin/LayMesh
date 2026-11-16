@@ -138,30 +138,31 @@ impl Query {
         Self { instance, steps }
     }
 }
-fn node_frame(n: &Json) -> Affine {
-    let mut tr = crate::geometry::node_transform(n);
+fn geometry_scale(n: &Json) -> Affine {
     if n["kind"] == "group" {
-        tr = tr
-            * Affine::scale_non_uniform(
-                jnum(n, "width", 1.) / jnum(n, "contentWidth", jnum(n, "width", 1.)).max(1e-12),
-                jnum(n, "height", 1.) / jnum(n, "contentHeight", jnum(n, "height", 1.)).max(1e-12),
-            );
+        Affine::scale_non_uniform(
+            jnum(n, "width", 1.) / jnum(n, "contentWidth", jnum(n, "width", 1.)).max(1e-12),
+            jnum(n, "height", 1.) / jnum(n, "contentHeight", jnum(n, "height", 1.)).max(1e-12),
+        )
     } else if jnum(n, "intrinsicWidth", 0.) > 0. || jnum(n, "intrinsicHeight", 0.) > 0. {
-        tr = tr
-            * Affine::scale_non_uniform(
-                if jnum(n, "intrinsicWidth", 0.) > 0. {
-                    jnum(n, "width", 1.) / jnum(n, "intrinsicWidth", 1.)
-                } else {
-                    1.
-                },
-                if jnum(n, "intrinsicHeight", 0.) > 0. {
-                    jnum(n, "height", 1.) / jnum(n, "intrinsicHeight", 1.)
-                } else {
-                    1.
-                },
-            );
+        Affine::scale_non_uniform(
+            if jnum(n, "intrinsicWidth", 0.) > 0. {
+                jnum(n, "width", 1.) / jnum(n, "intrinsicWidth", 1.)
+            } else {
+                1.
+            },
+            if jnum(n, "intrinsicHeight", 0.) > 0. {
+                jnum(n, "height", 1.) / jnum(n, "intrinsicHeight", 1.)
+            } else {
+                1.
+            },
+        )
+    } else {
+        Affine::IDENTITY
     }
-    tr
+}
+fn node_frame(n: &Json) -> Affine {
+    crate::geometry::node_transform(n) * geometry_scale(n)
 }
 fn rectangle_node(b: Rect) -> Json {
     let mut n = base("rect", b.width(), b.height());
@@ -169,9 +170,10 @@ fn rectangle_node(b: Rect) -> Json {
     n["y"] = json!(b.y0);
     n
 }
-fn paths(node: &NodeView, e: &Engine, l: Loc) -> Result<Paths> {
-    let n = &node.node;
-    let tr = node.transform * node_frame(n);
+fn path_routes(
+    n: &Json,
+    tr: Affine,
+) -> std::result::Result<Vec<Route>, (&'static str, &'static str)> {
     let recipe = &n["geometryRecipe"];
     let kind = jstr(recipe, "kind", "");
     let mut routes = vec![];
@@ -180,17 +182,7 @@ fn paths(node: &NodeView, e: &Engine, l: Loc) -> Result<Paths> {
             if child["__css_shadow_layer"] == true || child["__css_duplicate_path"] == true {
                 continue;
             }
-            routes.extend(
-                paths(
-                    &NodeView {
-                        node: child.clone(),
-                        transform: tr,
-                    },
-                    e,
-                    l,
-                )?
-                .routes,
-            );
+            routes.extend(path_routes(child, tr * node_frame(child))?);
         }
     } else if kind == "rect" {
         let (w, h) = (jnum(recipe, "width", 0.), jnum(recipe, "height", 0.));
@@ -346,7 +338,7 @@ fn paths(node: &NodeView, e: &Engine, l: Loc) -> Result<Paths> {
                     p = start;
                     continue;
                 }
-                _ => return Err(e.error("E_PATH", "无效几何路径", l)),
+                _ => return Err(("E_PATH", "无效几何路径")),
             };
             r.segments.push(Segment {
                 curve,
@@ -424,8 +416,14 @@ fn paths(node: &NodeView, e: &Engine, l: Loc) -> Result<Paths> {
     } else if let Ok(p) = BezPath::from_svg(jstr(n, "d", "")) {
         routes = qp::from_bez(&p, tr);
     } else {
-        return Err(e.error("E_GEOMETRY", "path 仅适用于矢量几何", l));
+        return Err(("E_GEOMETRY", "path 仅适用于矢量几何"));
     }
+    Ok(routes)
+}
+fn paths(node: &NodeView, e: &Engine, l: Loc) -> Result<Paths> {
+    let tr = node.transform * node_frame(&node.node);
+    let routes =
+        path_routes(&node.node, tr).map_err(|(code, message)| e.error(code, message, l))?;
     Ok(Paths {
         identity: String::new(),
         routes,
@@ -433,6 +431,62 @@ fn paths(node: &NodeView, e: &Engine, l: Loc) -> Result<Paths> {
         local: false,
     })
 }
+fn arrow_centerline(n: &Json, frame: Affine) -> Option<(Route, Affine)> {
+    let recipe = &n["geometryRecipe"];
+    if recipe["kind"] != "arrow" {
+        return None;
+    }
+    let origin = &recipe["origin"];
+    let tr = frame * Affine::translate((-origin[0].as_f64()?, -origin[1].as_f64()?));
+    Some((crate::arrows::recipe_route(recipe, tr), tr))
+}
+
+/// The intrinsic, individually addressable geometry points on a preview object.
+/// Positions are in its layout-local frame, before its placement and rotation.
+pub fn preview_path_anchors(node: &Json) -> Option<Json> {
+    let recipe = &node["geometryRecipe"];
+    let kind = jstr(recipe, "kind", "");
+    let (selector, routes) = if kind == "arrow" {
+        (
+            "centerline",
+            vec![arrow_centerline(node, geometry_scale(node))?.0],
+        )
+    } else if node["endpoints"].is_array()
+        || matches!(
+            kind,
+            "path" | "rect" | "ellipse" | "ring" | "arc" | "sector"
+        )
+        || (node["kind"] == "path" && kind.is_empty())
+    {
+        ("path", path_routes(node, geometry_scale(node)).ok()?)
+    } else {
+        return None;
+    };
+
+    let xy = |p: Point| [p.x, p.y];
+    let routes: Vec<_> = routes
+        .into_iter()
+        .filter_map(|route| {
+            let end = xy(route.segments.last()?.point(1.));
+            let mut nodes: Vec<_> = route.segments.iter().map(|s| xy(s.point(0.))).collect();
+            if !route.closed {
+                nodes.push(end);
+            }
+            let controls: Vec<_> = route
+                .segments
+                .iter()
+                .enumerate()
+                .filter_map(|(index, s)| {
+                    let controls: Vec<_> = s.controls().into_iter().map(xy).collect();
+                    (!controls.is_empty()).then_some((index, controls))
+                })
+                .collect();
+            Some((nodes, controls, end))
+        })
+        .collect();
+    (!routes.is_empty()).then(|| json!({(selector):routes}))
+}
+
 pub(crate) fn material_paths(node: &Json, e: &Engine, l: Loc) -> Result<Paths> {
     paths(
         &NodeView {
@@ -815,21 +869,15 @@ impl Engine {
                         segment: None,
                     })),
                     "centerline" => {
-                        let recipe = &n.node["geometryRecipe"];
-                        if recipe["kind"] != "arrow" {
-                            return Err(self.error("E_GEOMETRY", "centerline 需要形状箭头实例", l));
-                        }
-                        let origin = &recipe["origin"];
-                        let tr = n.transform
-                            * node_frame(&n.node)
-                            * Affine::translate((
-                                -origin[0].as_f64().unwrap(),
-                                -origin[1].as_f64().unwrap(),
-                            ));
+                        let (route, tr) =
+                            arrow_centerline(&n.node, n.transform * node_frame(&n.node))
+                                .ok_or_else(|| {
+                                    self.error("E_GEOMETRY", "centerline 需要形状箭头实例", l)
+                                })?;
                         Ok(Geometry::Path(PathView {
                             paths: Rc::new(Paths {
                                 identity: String::new(),
-                                routes: vec![crate::arrows::recipe_route(recipe, tr)],
+                                routes: vec![route],
                                 frame: tr,
                                 local: false,
                             }),

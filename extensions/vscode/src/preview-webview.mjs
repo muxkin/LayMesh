@@ -146,6 +146,7 @@ function setObjectAnchors(anchors){
  anchorMarkers=anchors.map(anchor=>{
   const marker=el('span','object-anchor',markers);
   marker.dataset.anchor=anchor.name;
+  if(anchor.kind)marker.dataset.anchorKind=anchor.kind;
   return {...anchor,marker};
  });
  objectAnchors.replaceChildren(markers);
@@ -162,19 +163,24 @@ function hideAnchorTooltip(){
  hoveredAnchors=[];
  tooltipAnchor=tooltipLayout=null;
 }
+const anchorHoverRadiusSquared=9*9;
+function anchorDistanceSquared(anchor,x,y){
+ const dx=anchor.left-x,dy=anchor.top-y;
+ return dx*dx+dy*dy;
+}
 function hoverObjectAnchor(x,y){
  if(drag||objectSelection.hidden)return hideAnchorTooltip();
  const [, , ,width,height]=objectLayout;
  if(x<0||x>width||y<0||y>height)return hideAnchorTooltip();
- let nearest,distance=9;
+ let nearest,distance=anchorHoverRadiusSquared;
  for(const anchor of anchorMarkers){
   if(!anchor.inView)continue;
-  const delta=Math.hypot(anchor.left-x,anchor.top-y);
+  const delta=anchorDistanceSquared(anchor,x,y);
   if(delta<distance){nearest=anchor;distance=delta;}
  }
  if(!nearest)return hideAnchorTooltip();
  const matches=anchorMarkers.filter(anchor=>anchor.inView&&
-  Math.hypot(anchor.left-nearest.left,anchor.top-nearest.top)<9);
+  anchorDistanceSquared(anchor,nearest.left,nearest.top)<anchorHoverRadiusSquared);
  const namesChanged=matches.length!==hoveredAnchors.length||matches.some((anchor,i)=>anchor!==hoveredAnchors[i]);
  if(namesChanged){
   for(const anchor of hoveredAnchors)anchor.marker.classList.remove('is-hovered');

@@ -14,8 +14,11 @@ button{font:inherit;color:inherit;background:var(--vscode-button-secondaryBackgr
 .object-anchors,.object-anchor-tooltip{pointer-events:none}
 .object-anchor{position:absolute;z-index:1;width:8px;height:8px;transform:translate(-50%,-50%);border:1px solid #162434;border-radius:50%;background:#f6fbff;box-shadow:0 0 0 1px var(--cursor-ink)}
 .object-anchor[data-anchor^='plot_']{border-radius:1px}
-.object-anchor[data-anchor='start'],.object-anchor[data-anchor='end']{border-radius:1px;transform:translate(-50%,-50%) rotate(45deg)}
+.object-anchor[data-anchor='start'],.object-anchor[data-anchor='end'],.object-anchor[data-anchor-kind='path-endpoint']{border-radius:1px;transform:translate(-50%,-50%) rotate(45deg)}
+.object-anchor[data-anchor-kind='path-node'],.object-anchor[data-anchor-kind='path-endpoint']{border-radius:1px;border-color:#a8d9ff;background:#172a3a;box-shadow:0 0 0 1px #1d3a54}
+.object-anchor[data-anchor-kind='path-control']{width:7px;height:7px;border-color:#ffd492;background:#3e2b1d;box-shadow:0 0 0 1px #6b492b}
 .object-anchor.is-hovered{z-index:2;background:#63b5ff;box-shadow:0 0 0 1px #f6fbff,0 0 0 3px var(--cursor-ink)}
+.object-anchor[data-anchor-kind='path-control'].is-hovered{background:#ffd492;box-shadow:0 0 0 1px #fff5df,0 0 0 3px #a17442}
 .object-anchor-tooltip{position:absolute;z-index:3;display:flex;flex-wrap:wrap;gap:2px 9px;width:max-content;max-width:min(280px,calc(100% - 8px));padding:4px 7px;border:1px solid var(--cursor-ink);border-radius:4px;background:var(--vscode-editorHoverWidget-background,#252526);color:var(--vscode-editorHoverWidget-foreground,#dedede);box-shadow:0 3px 12px #0004;font:12px/17px var(--vscode-editor-font-family,monospace)}
 .object-anchor-tooltip[hidden]{display:none}.object-anchor-tooltip code{font:inherit;overflow-wrap:anywhere}
 .coordinates{flex:none;min-height:32px;padding:8px;border-top:1px solid var(--vscode-panel-border,#5555);font:11px var(--vscode-editor-font-family,monospace);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;max-height:25vh;overflow:auto}
