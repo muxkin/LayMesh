@@ -149,6 +149,8 @@ The preview marks the selected object's built-in named anchors, including the ni
 
 For paths and shape arrows, it also shows path endpoints, junctions, and Bézier control points, such as `path.nodes[1]` and `centerline.segments[1].controls[0]`.
 
+Vector objects also show the nine points for `path.bounds`, `ink.bounds`, and `centerline.bounds` where applicable. Cartesian charts show axis `min` and `max`, spine segment endpoints, bounding boxes for axes and labels, visible tick-label centers, and exponent label anchors when present. Hover text uses source names such as `axes["x"].ticks[0].bounds.center`.
+
 Run **LayMesh: Set Preview Delay** to enter an integer from 0 to 5000 ms (default 30; 0 disables debounce). It saves to workspace settings when a workspace is open, otherwise user settings, and applies immediately.
 
 Run **LayMesh: Export Figure** from a `.lay` editor or click **Export** in preview, then choose the format and destination to export directly. Images default to 1200 DPI and TIFF to LZW; change parameters in `laymesh.export.*` settings. Unsaved entry and opened imported buffers are used; remote windows save on the extension host. [Export formats and encoding options](export.en.md)

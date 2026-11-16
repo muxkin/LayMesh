@@ -1,13 +1,14 @@
 //! Persistent foreground compiler with versioned external preview resources.
 use laymesh_core::{
     engine::compile_source,
-    model::{Host, ObjectSources},
+    geometry_query::preview_geometry_bounds,
+    model::{Host, ObjectSources, Scene},
 };
 use laymesh_render::{config, preview_assets};
 use serde_json::{Value, json};
 use std::{
     cell::RefCell,
-    collections::BTreeSet,
+    collections::{BTreeMap, BTreeSet},
     io::{self, BufRead, Write},
     path::Path,
     rc::Rc,
@@ -17,6 +18,28 @@ use std::{
         mpsc,
     },
 };
+
+fn selected_object<'a>(nodes: impl Iterator<Item = &'a Value>, path: &[&str]) -> Option<&'a Value> {
+    let (key, rest) = path.split_first()?;
+    nodes
+        .filter(|node| {
+            if let Some(identity) = node["_identity"].as_str() {
+                key.strip_prefix("id:") == Some(identity)
+            } else {
+                node["id"]
+                    .as_str()
+                    .is_some_and(|name| key.strip_prefix("name:") == Some(name))
+            }
+        })
+        .find_map(|node| {
+            if rest.is_empty() {
+                Some(node)
+            } else {
+                selected_object(node["children"].as_array()?.iter(), rest)
+            }
+        })
+}
+
 pub fn serve() -> io::Result<()> {
     let mut presentation_plan: Option<(
         String,
@@ -27,7 +50,10 @@ pub fn serve() -> io::Result<()> {
     // One bounded baseline. A different panel, restart, or unacknowledged
     // generation receives a full CPU display list instead of an unsafe patch.
     let mut retained_list: Option<(String, String, laymesh_render::DisplayList)> = None;
-    let mut retained_scene: Option<Arc<laymesh_core::model::Scene>> = None;
+    let mut retained_scene: Option<Arc<Scene>> = None;
+    // Bounds queries are tied to the currently displayed frame of each open
+    // preview. Reuse its scene rather than running the compiler on a click.
+    let mut object_bounds_frames = BTreeMap::<String, (String, Arc<Scene>)>::new();
     let session = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
@@ -49,7 +75,13 @@ pub fn serve() -> io::Result<()> {
                     }
                     if !matches!(
                         value["type"].as_str(),
-                        Some("export" | "animate" | "defaults")
+                        Some(
+                            "export"
+                                | "animate"
+                                | "defaults"
+                                | "object-bounds"
+                                | "release-object-bounds"
+                        )
                     ) {
                         cancellation.store(sequence, Ordering::Relaxed);
                     }
@@ -79,7 +111,7 @@ pub fn serve() -> io::Result<()> {
         }
     });
     sender
-        .send(json!({"type":"ready","protocol":1,"capabilities":["media-v1","web-export-v1","animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","incremental-session-v1","incremental-document-v1","object-selection-v1","defaults"]}))
+        .send(json!({"type":"ready","protocol":1,"capabilities":["media-v1","web-export-v1","animation-v1","bundled-stylesheets-v1","ffmpeg-manager-v1","resources-v2","display-list-v3","display-list-gzip-v3","display-list-updates-v3","incremental-session-v1","incremental-document-v1","object-selection-v1","object-bounds-v1","defaults"]}))
         .unwrap();
     for (input_revision, line) in requests {
         let request: Value = match serde_json::from_str(&line?) {
@@ -90,6 +122,27 @@ pub fn serve() -> io::Result<()> {
             }
         };
         let file = request["file"].as_str().unwrap_or("");
+        if request["type"] == "release-object-bounds" {
+            object_bounds_frames.remove(file);
+            continue;
+        }
+        if request["type"] == "object-bounds" {
+            let bounds = object_bounds_frames
+                .get(file)
+                .filter(|(id, _)| request["display_list_id"].as_str() == Some(id.as_str()))
+                .and_then(|(_, scene)| {
+                    let path = request["object_path"]
+                        .as_array()?
+                        .iter()
+                        .map(Value::as_str)
+                        .collect::<Option<Vec<_>>>()?;
+                    selected_object(scene.nodes.iter().map(Arc::as_ref), &path)
+                })
+                .map(preview_geometry_bounds)
+                .unwrap_or_default();
+            let _ = sender.send(json!({"id":request["id"],"bounds":bounds}));
+            continue;
+        }
         let incremental = request["incremental_session"] == "incremental-session-v1"
             && !matches!(
                 request["type"].as_str(),
@@ -100,6 +153,7 @@ pub fn serve() -> io::Result<()> {
         let mut document_metadata = None;
         let mut document_dependencies = BTreeSet::new();
         let mut object_sources = None;
+        let mut object_bounds_scene = None;
         let result = (|| -> Result<Value, Box<dyn std::error::Error>> {
             if !Path::new(file).is_absolute()
                 || !(file.ends_with(".lay") || file.ends_with(".laydoc"))
@@ -357,6 +411,9 @@ pub fn serve() -> io::Result<()> {
                 std::fs::create_dir_all(directory)?;
                 if protocol == 3 {
                     let object_selection = object_sources.is_some();
+                    if object_selection && request["object_bounds"] == true {
+                        object_bounds_scene = Some(scene.clone());
+                    }
                     drawing_key.push_str(if object_selection {
                         "\nselection"
                     } else {
@@ -501,6 +558,15 @@ pub fn serve() -> io::Result<()> {
             && let Some(sources) = object_sources
         {
             result["objectSources"] = json!(std::mem::take(&mut *sources.borrow_mut()));
+        }
+        if result.get("error").is_none()
+            && let Some(scene) = object_bounds_scene
+        {
+            let id = result["displayListId"]
+                .as_str()
+                .map_or_else(|| format!("{session}-{revision}"), str::to_owned);
+            result["displayListId"] = json!(id);
+            object_bounds_frames.insert(file.to_owned(), (id, scene));
         }
         result["id"] = request["id"].clone();
         if let Some(document) = document_metadata {

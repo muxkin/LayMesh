@@ -17,8 +17,18 @@ button{font:inherit;color:inherit;background:var(--vscode-button-secondaryBackgr
 .object-anchor[data-anchor='start'],.object-anchor[data-anchor='end'],.object-anchor[data-anchor-kind='path-endpoint']{border-radius:1px;transform:translate(-50%,-50%) rotate(45deg)}
 .object-anchor[data-anchor-kind='path-node'],.object-anchor[data-anchor-kind='path-endpoint']{border-radius:1px;border-color:#a8d9ff;background:#172a3a;box-shadow:0 0 0 1px #1d3a54}
 .object-anchor[data-anchor-kind='path-control']{width:7px;height:7px;border-color:#ffd492;background:#3e2b1d;box-shadow:0 0 0 1px #6b492b}
+.object-anchor[data-anchor-kind='path-bounds'],.object-anchor[data-anchor-kind='ink-bounds']{width:6px;height:6px;background:#f6fbff}
+.object-anchor[data-anchor-kind='path-bounds']{border:1.5px solid #7542a0;border-radius:1px;box-shadow:0 0 0 1px #f6fbff}
+.object-anchor[data-anchor-kind='ink-bounds']{border:1.5px solid #af5a3d;box-shadow:0 0 0 1px #f6fbff}
+.object-anchor[data-anchor-kind='chart-box'],.object-anchor[data-anchor-kind='chart-point'],.object-anchor[data-anchor-kind='chart-tick']{border-color:#1e5f55;box-shadow:0 0 0 1px #e8fffa}
+.object-anchor[data-anchor-kind='chart-box']{width:6px;height:6px;border-radius:1px;background:#d5f3e8}
+.object-anchor[data-anchor-kind='chart-point']{border-radius:1px;transform:translate(-50%,-50%) rotate(45deg);background:#53b9a6}
+.object-anchor[data-anchor-kind='chart-tick']{width:5px;height:5px;background:#53b9a6}
 .object-anchor.is-hovered{z-index:2;background:#63b5ff;box-shadow:0 0 0 1px #f6fbff,0 0 0 3px var(--cursor-ink)}
 .object-anchor[data-anchor-kind='path-control'].is-hovered{background:#ffd492;box-shadow:0 0 0 1px #fff5df,0 0 0 3px #a17442}
+.object-anchor[data-anchor-kind='path-bounds'].is-hovered{background:#d9b9f2;box-shadow:0 0 0 1px #f6fbff,0 0 0 3px #7542a0}
+.object-anchor[data-anchor-kind='ink-bounds'].is-hovered{background:#f9cbac;box-shadow:0 0 0 1px #f6fbff,0 0 0 3px #af5a3d}
+.object-anchor[data-anchor-kind^='chart-'].is-hovered{background:#a5e8dc;box-shadow:0 0 0 1px #e8fffa,0 0 0 3px #1e5f55}
 .object-anchor-tooltip{position:absolute;z-index:3;display:flex;flex-wrap:wrap;gap:2px 9px;width:max-content;max-width:min(280px,calc(100% - 8px));padding:4px 7px;border:1px solid var(--cursor-ink);border-radius:4px;background:var(--vscode-editorHoverWidget-background,#252526);color:var(--vscode-editorHoverWidget-foreground,#dedede);box-shadow:0 3px 12px #0004;font:12px/17px var(--vscode-editor-font-family,monospace)}
 .object-anchor-tooltip[hidden]{display:none}.object-anchor-tooltip code{font:inherit;overflow-wrap:anywhere}
 .coordinates{flex:none;min-height:32px;padding:8px;border-top:1px solid var(--vscode-panel-border,#5555);font:11px var(--vscode-editor-font-family,monospace);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;max-height:25vh;overflow:auto}

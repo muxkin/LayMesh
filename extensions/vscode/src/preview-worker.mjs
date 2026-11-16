@@ -26,11 +26,14 @@ function selectionProjectAnchor(name,x,y,transform){
  const [a,b,c,d,e,f]=transform;
  return {name,x:a*x+c*y+e,y:b*x+d*y+f};
 }
-function selectionBoxAnchors(bounds,transform,prefix=''){
+function selectionBoxAnchors(bounds,transform,prefix='',kind){
  const [x0,y0,x1,y1]=bounds;
  const xs=[x0,(x0+x1)/2,x1],ys=[y0,(y0+y1)/2,y1];
- return selectionAnchorNames.map((name,index)=>
-  selectionProjectAnchor(prefix+name,xs[index%3],ys[Math.floor(index/3)],transform));
+ return selectionAnchorNames.map((name,index)=>{
+  const anchor=selectionProjectAnchor(prefix+name,xs[index%3],ys[Math.floor(index/3)],transform);
+  if(kind)anchor.kind=kind;
+  return anchor;
+ });
 }
 function appendSelectionPathAnchors(anchors,geometry,transform){
  for(const [view,routes] of Object.entries(geometry)){
@@ -51,11 +54,24 @@ function appendSelectionPathAnchors(anchors,geometry,transform){
   }
  }
 }
-function selectionAnchors(node,parent){
- const {anchorSize,anchorIntrinsicInverse,anchorEndpoints,anchorPlot,anchorGeometry}=node.hint||{};
+function selectionLayoutTransform(node){
+ const intrinsicInverse=node.hint?.anchorIntrinsicInverse;
+ return intrinsicInverse?selectionTransform(node.transform,intrinsicInverse):node.transform;
+}
+function appendChartAnchors(anchors,chart,layout,parent,toPage){
+ // The DSL measures axis components in the chart's immediate container axes.
+ for(const [prefix,bounds] of chart.boxes||[]){
+  anchors.push(...selectionBoxAnchors(selectionBoundsTransform(bounds,layout),parent,prefix,'chart-box'));
+ }
+ for(const [name,[x,y]] of chart.points||[]){
+  const kind=name.includes('.ticks[')?'chart-tick':'chart-point';
+  anchors.push({...selectionProjectAnchor(name,x,y,toPage),kind});
+ }
+}
+function selectionAnchors(node,parent,layout){
+ const {anchorSize,anchorEndpoints,anchorPlot,anchorGeometry,anchorChart}=node.hint||{};
  if(!anchorSize)return [];
  const [width,height]=anchorSize;
- const layout=anchorIntrinsicInverse?selectionTransform(node.transform,anchorIntrinsicInverse):node.transform;
  // Standard anchors follow the layout bounding box in the immediate container.
  const anchors=selectionBoxAnchors(selectionBoundsTransform([0,0,width,height],layout),parent);
  const toPage=selectionTransform(parent,layout);
@@ -65,6 +81,7 @@ function selectionAnchors(node,parent){
  }
  if(anchorPlot)anchors.push(...selectionBoxAnchors(anchorPlot,toPage,'plot_'));
  if(anchorGeometry)appendSelectionPathAnchors(anchors,anchorGeometry,toPage);
+ if(anchorChart)appendChartAnchors(anchors,anchorChart,layout,parent,toPage);
  return anchors;
 }
 function selectionUnion(a,b){return !a?b:!b?a:[Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[2],b[2]),Math.max(a[3],b[3])];}
@@ -151,7 +168,7 @@ function previewObjectHits(point,scale){
  if(!objectKeys?.length)return [];
  selectableKeys??=new Set(objectKeys);
  if(selectionContext===undefined)selectionContext=typeof OffscreenCanvas==='function'&&typeof Path2D==='function'?new OffscreenCanvas(1,1).getContext('2d'):null;
- const hits=[],tolerance=3/scale;
+ const hits=[],objectPath=[],tolerance=3/scale;
  const [x,y]=point;
  function visit(node,parent,ancestorClip,collect=true){
   const bounds=selectionNodeBounds(node);
@@ -160,6 +177,8 @@ function previewObjectHits(point,scale){
   if(!Number.isFinite(det)||Math.abs(det)<1e-20)return false;
   const px=(d*(x-e)-c*(y-f))/det,py=(a*(y-f)-b*(x-e))/det;
   const kind=node.kind,group=kind.kind==='group'&&!node.hint?.surface3d;
+  const name=node.name,identity=node.hint?._identity;
+  const key=identity?`id:${identity}`:node.hint?.logicalKind&&name?`name:${name}`:null;
   const padding=(group||kind.kind==='path')?tolerance*Math.max(Math.hypot(d,c),Math.hypot(a,b))/Math.abs(det):0;
   if(!selectionContains(bounds,px,py,padding))return false;
   let hit=true,clip=ancestorClip;
@@ -170,16 +189,23 @@ function previewObjectHits(point,scale){
    }
    if(kind.mask&&!visit(kind.mask.node,transform,clip,false))return false;
    hit=false;
+   if(key)objectPath.push(key);
    for(let i=kind.children.length-1;i>=0;i--){
     if(visit(kind.children[i],transform,clip,collect)){hit=true;if(!collect)break;}
    }
+   if(key)objectPath.pop();
   }else if(kind.kind==='path'&&!node.hint?.surface3d)hit=selectionHitsPath(kind,px,py,padding);
-  const name=node.name,identity=node.hint?._identity;
-  if(hit&&collect&&(identity||node.hint?.logicalKind&&name)){
-   const key=identity?`id:${identity}`:`name:${name}`;
-   if(selectableKeys.has(key)){
-    const outline=selectionIntersect(selectionBoundsTransform(bounds,transform),clip);
-    if(outline)hits.push({key,name,kind:node.hint.kind||node.hint.logicalKind,bounds:outline,anchors:selectionAnchors(node,parent)});
+  if(hit&&collect&&key&&selectableKeys.has(key)){
+   const outline=selectionIntersect(selectionBoundsTransform(bounds,transform),clip);
+   if(outline){
+    const layout=selectionLayoutTransform(node);
+    const selected={key,name,kind:node.hint.kind||node.hint.logicalKind,bounds:outline,anchors:selectionAnchors(node,parent,layout)};
+    const {anchorSize,logicalKind,anchorPlot}=node.hint;
+    if(anchorSize&&!anchorPlot&&(logicalKind==='path'||logicalKind==='group')){
+     selected.objectPath=[...objectPath,key];
+     selected.boundsTransform=selectionTransform(parent,[1,0,0,1,layout[4],layout[5]]);
+    }
+    hits.push(selected);
    }
   }
   return hit;

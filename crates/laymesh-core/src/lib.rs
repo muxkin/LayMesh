@@ -27,6 +27,7 @@ mod opentype_math;
 pub mod page_transition;
 pub mod parser;
 pub mod plot;
+pub mod preview_chart_anchors;
 mod query_path;
 pub mod session;
 pub mod style;

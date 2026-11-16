@@ -14,8 +14,15 @@ function retainPreviewFrame(previous,frame,applyDisplayUpdate){
 }
 
 class PreviewWorker {
- constructor(binary,output,resourceRoot=os.tmpdir()){this.binary=binary;this.output=output;this.queue=new Map();this.sequence=0;this.resourceDir=fs.mkdtempSync(path.join(resourceRoot,'laymesh-preview-'));}
- enqueue(job){this.enabled=true;this.queue.set(job.file,job);if(this.active?.file===job.file&&this.capabilities?.includes('incremental-session-v1')&&![this.active.request?.type,job.request?.type].some(t=>['export','animate','defaults'].includes(t)))this.process?.stdin.write(JSON.stringify({type:'cancel',id:this.active.id})+'\n');this.start();this.pump();}
+ constructor(binary,output,resourceRoot=os.tmpdir()){this.binary=binary;this.output=output;this.queue=new Map();this.boundsQueue=new Map();this.sequence=0;this.resourceDir=fs.mkdtempSync(path.join(resourceRoot,'laymesh-preview-'));}
+ enqueue(job){this.enabled=true;this.queue.set(job.file,job);if(this.active?.file===job.file&&this.capabilities?.includes('incremental-session-v1')&&![this.active.request?.type,job.request?.type].some(t=>['export','animate','defaults','object-bounds'].includes(t)))this.process?.stdin.write(JSON.stringify({type:'cancel',id:this.active.id})+'\n');this.start();this.pump();}
+ requestBounds(job){
+  if(!this.ready||!this.capabilities.includes('object-bounds-v1'))return;
+  this.boundsQueue.set(job.file,job);this.pump();
+ }
+ releaseBounds(file){
+  if(this.ready&&this.capabilities.includes('object-bounds-v1'))this.process.stdin.write(JSON.stringify({type:'release-object-bounds',file})+'\n');
+ }
  start(){
   if(this.process)return;
   fs.mkdirSync(this.resourceDir,{recursive:true});
@@ -40,14 +47,20 @@ class PreviewWorker {
   proc.on('exit',code=>{if(this.process===proc)this.fail(messageError(`Preview worker stopped (${code}). Update laymesh.executable if it lacks preview support${stderr?'\n'+stderr:''}`,`预览进程退出（${code}），请检查 laymesh.executable 的版本${stderr?'\n'+stderr:''}`));});
  }
  pump(){
-  if(!this.ready||this.active||!this.queue.size)return;
-  const [key,job]=this.queue.entries().next().value;this.queue.delete(key);
+  if(!this.ready||this.active)return;
+  const queue=this.queue.size?this.queue:this.boundsQueue;
+  if(!queue.size)return;
+  const [key,job]=queue.entries().next().value;queue.delete(key);
   this.active={...job,id:++this.sequence};
   this.renderTimer=setTimeout(()=>{
    const active=this.active;this.stop();
    active.done({error:messageError('Preview timed out; restarting the worker','预览超时，正在重启渲染进程'),dependencies:[]});
    if(this.enabled)this.start();
   },job.timeout);
+  if(job.request?.type==='object-bounds'){
+   this.process.stdin.write(JSON.stringify({...job.request,id:this.active.id,file:job.file})+'\n');
+   return;
+  }
   const request={protocol:3,resource_dir:this.resourceDir,...job.request};if(request.protocol===3&&!this.capabilities.includes('display-list-v3')){clearTimeout(this.renderTimer);this.active=null;job.done({error:{code:'E_PREVIEW_PROTOCOL',message:'Native engine does not support drawing protocol 3'},dependencies:[]});this.pump();return;}
   if(request.type==='plan'&&!this.capabilities.includes('incremental-document-v1'))delete request.type;
   if(request.type==='animate'&&!this.capabilities.includes('animation-v1')){clearTimeout(this.renderTimer);this.active=null;job.done({error:messageError('Update LayMesh to support animation export','请更新 LayMesh 以支持动画导出')});this.pump();return;}
@@ -55,6 +68,7 @@ class PreviewWorker {
   if(request.protocol===3&&this.capabilities.includes('display-list-gzip-v3'))request.compressed_display_list=true;
   if(!request.presentation_revision&&request.protocol===3&&this.capabilities.includes('display-list-updates-v3'))request.display_list_updates=true;
   if(!this.capabilities.includes('object-selection-v1'))delete request.object_selection;
+  if(!this.capabilities.includes('object-bounds-v1'))delete request.object_bounds;
   const payload={...request,id:this.active.id,file:job.file,source:job.source,overlays:job.overlays};
   if(this.capabilities.includes('incremental-session-v1')&&!['export','animate','defaults'].includes(request.type)){
    const files={...job.overlays,[job.file]:job.source},changes={};
@@ -64,14 +78,14 @@ class PreviewWorker {
   }
   this.process.stdin.write(JSON.stringify(payload)+'\n');
  }
- interrupt(error){for(const job of this.queue.values())job.done({error,dependencies:[]});this.queue.clear();if(this.active){if(this.capabilities?.includes('incremental-session-v1')){this.active.interrupted=error;this.process?.stdin.write(JSON.stringify({type:'cancel',id:this.active.id})+'\n');}else this.fail(error);}}
- cancel(file){this.queue.delete(file);}
+ interrupt(error){for(const job of [...this.queue.values(),...this.boundsQueue.values()])job.done({error,dependencies:[]});this.queue.clear();this.boundsQueue.clear();if(this.active){if(this.capabilities?.includes('incremental-session-v1')){this.active.interrupted=error;if(this.active.request?.type!=='object-bounds')this.process?.stdin.write(JSON.stringify({type:'cancel',id:this.active.id})+'\n');}else this.fail(error);}}
+ cancel(file){this.queue.delete(file);this.boundsQueue.delete(file);}
  fail(error){
-  const jobs=[...(this.active?[this.active]:[]),...this.queue.values()];this.queue.clear();this.stop();
+  const jobs=[...(this.active?[this.active]:[]),...this.queue.values(),...this.boundsQueue.values()];this.queue.clear();this.boundsQueue.clear();this.stop();
   for(const job of jobs)job.done({error,dependencies:[]});
  }
  stop(){clearTimeout(this.startTimer);clearTimeout(this.renderTimer);const proc=this.process;this.process=null;this.ready=false;this.active=null;if(proc)proc.kill();}
- dispose(){this.enabled=false;this.queue.clear();this.stop();fs.rmSync(this.resourceDir,{recursive:true,force:true});}
+ dispose(){this.enabled=false;this.queue.clear();this.boundsQueue.clear();this.stop();fs.rmSync(this.resourceDir,{recursive:true,force:true});}
 }
 
 function editorDefaults(uri){
@@ -235,7 +249,7 @@ function activatePreview(context,binary,output){
    if(state.disposed||generation!==state.generation)return;
    const overlays={};for(const doc of vscode.workspace.textDocuments)if(doc.uri.scheme==='file'&&doc.isDirty)overlays[keyOf(doc.uri)]=doc.getText();
    state.dirty=false;state.pending=true;post(state,{type:'status',status:'rendering'});
-   worker.enqueue({file:state.file,source:doc.getText(),overlays,request:{protocol:3,object_selection:true,generation,page_id:state.pageId,resource_dir:worker.resourceDir,known_resources:[...state.resources.keys()],known_display_list:state.history.length?state.displayListId:undefined,...editorDefaults(state.uri)},timeout:config().get('renderTimeoutMs',30000),done:result=>{
+   worker.enqueue({file:state.file,source:doc.getText(),overlays,request:{protocol:3,object_selection:true,object_bounds:true,generation,page_id:state.pageId,resource_dir:worker.resourceDir,known_resources:[...state.resources.keys()],known_display_list:state.history.length?state.displayListId:undefined,...editorDefaults(state.uri)},timeout:config().get('renderTimeoutMs',30000),done:result=>{
     if(state.disposed||generation!==state.generation)return;
     if(result.document)state.documentPages=result.document.pages;watch(state,result.dependencies||[],!!result.error);
     if(result.document?.pageId)state.pageId=result.document.pageId;
@@ -249,23 +263,38 @@ function activatePreview(context,binary,output){
       state.history=[retainPreviewFrame(state.history[0],frame,applyDisplayUpdate)];
       state.lastSuccess=frame;
       state.objectSources=objectSources;
+      state.objectBounds=new Map();
       for(const id of state.resources.keys())if(!Object.hasOwn(state.history[0].displayList.resources,id))state.resources.delete(id);
      }post(state,frame);
     }catch(error){state.pending=false;post(state,{type:'result',error:messageError(error.message)});}
    }});
   }catch(error){if(!state.disposed&&generation===state.generation){state.last={type:'result',error:messageError(error.message)};post(state,state.last);}}
  }
+ function currentObjectFrame(state,frame,generation){
+  return frame&&frame===state.lastSuccess&&frame===state.last&&generation===frame.generation&&generation===state.paintedObjectGeneration&&!state.dirty&&!state.pending&&!state.disposed&&!composing(state);
+ }
+ function requestObjectBounds(state,{generation,queryId,objectPath}){
+  const frame=state.lastSuccess;
+  if(!currentObjectFrame(state,frame,generation)||!frame.displayListId||!Number.isSafeInteger(queryId)||!Array.isArray(objectPath)||!objectPath.every(key=>typeof key==='string'))return;
+  if(!state.objectSources||!Object.hasOwn(state.objectSources,objectPath.at(-1)))return;
+  const key=JSON.stringify(objectPath),cached=state.objectBounds.get(key);
+  if(cached){post(state,{type:'object-bounds',generation,queryId,bounds:cached});return;}
+  worker.requestBounds({file:state.file,request:{type:'object-bounds',display_list_id:frame.displayListId,object_path:objectPath},timeout:config().get('renderTimeoutMs',30000),done:result=>{
+   if(!currentObjectFrame(state,frame,generation)||!result.bounds)return;
+   state.objectBounds.set(key,result.bounds);
+   post(state,{type:'object-bounds',generation,queryId,bounds:result.bounds});
+  }});
+ }
  async function openObjectSource(state,{generation,key}){
   const frame=state.lastSuccess;
   // The webview supplies a key only; file and position come from the painted build.
-  const current=()=>frame&&frame===state.lastSuccess&&frame===state.last&&generation===frame.generation&&generation===state.paintedObjectGeneration&&!state.dirty&&!state.pending&&!state.disposed&&!composing(state);
-  if(!current()||typeof key!=='string'||!state.objectSources||!Object.hasOwn(state.objectSources,key))return;
+  if(!currentObjectFrame(state,frame,generation)||typeof key!=='string'||!state.objectSources||!Object.hasOwn(state.objectSources,key))return;
   const {file,line,column}=state.objectSources[key];
   const uri=vscode.Uri.file(file),source=keyOf(uri);
   if(source!==state.file&&!state.previewDependencies?.has(source))return;
   try{
    const doc=await vscode.workspace.openTextDocument(uri);
-   if(!current())return;
+   if(!currentObjectFrame(state,frame,generation))return;
    const position=doc.validatePosition(new vscode.Position(line-1,column-1));
    await vscode.window.showTextDocument(doc,{viewColumn:vscode.ViewColumn.One,selection:new vscode.Range(position,position)});
   }catch(error){vscode.window.showErrorMessage(error.message);}
@@ -308,6 +337,7 @@ function activatePreview(context,binary,output){
    else if(message?.type==='select-page'&&state.last?.document?.pages.some(page=>page.id===message.pageId)){state.pageId=message.pageId;state.displayListId=undefined;invalidate(state,true);}
    else if(message?.type==='open-page'){const page=state.last?.document?.pages.find(page=>page.id===state.pageId);if(page){const doc=await vscode.workspace.openTextDocument(vscode.Uri.file(page.src));await vscode.window.showTextDocument(doc,{viewColumn:vscode.ViewColumn.One});}}
    else if(message?.type==='open-object-source')await openObjectSource(state,message);
+   else if(message?.type==='object-bounds')requestObjectBounds(state,message);
    else if(message?.type==='export-document'){const destination=await vscode.window.showSaveDialog({defaultUri:vscode.Uri.file(state.file.replace(/\.laydoc$/,'.pdf')),filters:{PDF:['pdf']}});if(destination)await exportFigure(state.uri,{output:destination,documentAll:true});}
    else if(message?.type==='source'&&state.last?.error){const error=state.last.error,file=error.file||state.file;
     if(file!==state.file&&!state.dependencies.has(file))return;
@@ -315,7 +345,7 @@ function activatePreview(context,binary,output){
    }
   });
   panel.onDidChangeViewState(()=>{if(panel.visible&&state.dirty)invalidate(state,true);else if(!panel.visible){state.dirty=state.dirty||state.pending;state.generation++;clearTimeout(state.timer);worker.cancel(file);}});
-  panel.onDidDispose(()=>{state.disposed=true;state.deck?.dispose();state.deckCache?.dispose();clearInterval(state.poll);clearTimeout(state.timer);worker.cancel(file);for(const item of state.watchers)item.dispose();panels.delete(file);syncCompositionHooks();if(!panels.size)worker.dispose();});
+  panel.onDidDispose(()=>{state.disposed=true;state.deck?.dispose();state.deckCache?.dispose();clearInterval(state.poll);clearTimeout(state.timer);worker.cancel(file);worker.releaseBounds(file);for(const item of state.watchers)item.dispose();panels.delete(file);syncCompositionHooks();if(!panels.size)worker.dispose();});
   watch(state,[file],false);
   // Poll exact dependency files as a fallback for absent config directories and
   // operating-system watcher limits, without watching ancestor trees.

@@ -5,7 +5,7 @@ use i_overlay::{
     float::{overlay::FloatOverlay, single::SingleFloatOverlay},
     i_float::adapter::FloatPointAdapter,
 };
-use kurbo::{Affine, BezPath, PathEl, Point, Shape};
+use kurbo::{Affine, BezPath, PathEl, Point, Rect, Shape};
 use serde_json::{Value as Json, json};
 use std::{cell::RefCell, rc::Rc};
 #[path = "geometry_nearest.rs"]
@@ -365,6 +365,31 @@ pub fn node_transform(n: &Json) -> Affine {
 pub fn visible(n: &Json) -> BezPath {
     visible_transformed(n, Affine::IDENTITY)
 }
+fn group_content_frame(n: &Json, transform: Affine) -> Affine {
+    let sx = jnum(n, "width", 1.) / jnum(n, "contentWidth", 1.).max(1e-12);
+    let sy = jnum(n, "height", 1.) / jnum(n, "contentHeight", 1.).max(1e-12);
+    transform * Affine::scale_non_uniform(sx, sy)
+}
+
+/// The bounds of a group union are the union of its children's visible
+/// bounds, without constructing intersections or the combined contour.
+pub(crate) fn visible_bounds_transformed(n: &Json, parent: Affine) -> Option<Rect> {
+    if n["__css_shadow_layer"] == true {
+        return None;
+    }
+    if n["kind"] == "group" && !n["endpointRecipe"].is_object() {
+        let frame = group_content_frame(n, parent * node_transform(n));
+        n["children"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter_map(|child| visible_bounds_transformed(child, frame))
+            .reduce(|bounds, child| bounds.union(child))
+    } else {
+        let path = visible_transformed(n, parent);
+        (!path.elements().is_empty()).then(|| path.bounding_box())
+    }
+}
 pub fn visible_transformed(n: &Json, parent: Affine) -> BezPath {
     if n["__css_shadow_layer"] == true {
         return BezPath::new();
@@ -378,10 +403,9 @@ pub fn visible_transformed(n: &Json, parent: Affine) -> BezPath {
             .fold(p, |p, q| union(&p, &q.path));
     }
     if jstr(n, "kind", "") == "group" {
-        let sx = jnum(n, "width", 1.) / jnum(n, "contentWidth", 1.).max(1e-12);
-        let sy = jnum(n, "height", 1.) / jnum(n, "contentHeight", 1.).max(1e-12);
+        let frame = group_content_frame(n, transform);
         for c in n["children"].as_array().into_iter().flatten() {
-            let q = visible_transformed(c, transform * Affine::scale_non_uniform(sx, sy));
+            let q = visible_transformed(c, frame);
             p = union(&p, &q);
         }
     } else if let Ok(q) = BezPath::from_svg(jstr(n, "d", "")) {

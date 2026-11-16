@@ -441,3 +441,37 @@ fn ink_queries_keep_analytic_infinite_candidates_and_exclude_hidden_children() {
     ));
     close(xy(&d["nodes"][1])[0], 10.);
 }
+
+#[test]
+fn vector_group_ink_box_matches_its_combined_boundary() {
+    let scene = compile(&marker(
+        r##"inside=group()
+inside.add(line(dx=21mm,dy=5mm,line_width=2mm,line_cap="round",line_dash=[4mm,2mm]))
+inside.add(rect(size=(13mm,8mm),fill="#6c7",border_color="#010",border_width=1mm),offset=(5mm,2mm),rotation=17deg)
+outside=group()
+outside.add(inside,size=(35mm,16mm),rotation=-14deg)
+outside.add(ellipse(size=(12mm,10mm),fill="#549"),offset=(14mm,8mm))
+outside.add(rect(size=(4mm,4mm),fill="#000"),offset=(60mm,38mm),opacity=0)
+a=page.add(outside,size=(70mm,30mm),rotation=25deg,offset=(20mm,25mm))
+page.add(dot,target=a.ink.bounds.top_left)
+page.add(dot,target=a.ink.boundary.bounds.top_left)
+page.add(dot,target=a.ink.bounds.bottom_right)
+page.add(dot,target=a.ink.boundary.bounds.bottom_right)
+"##,
+    ));
+    let nodes = scene["nodes"].as_array().unwrap();
+    let [left, top, right, bottom] =
+        laymesh_core::geometry_query::preview_geometry_bounds(&nodes[0])["ink.bounds"];
+    let transform = laymesh_core::geometry::node_transform(&nodes[0]).as_coeffs();
+    for (fast, full, preview) in [
+        (1, 2, [left + transform[4], top + transform[5]]),
+        (3, 4, [right + transform[4], bottom + transform[5]]),
+    ] {
+        let actual = xy(&nodes[fast]);
+        let expected = xy(&nodes[full]);
+        for i in 0..2 {
+            close(actual[i], expected[i]);
+            close(preview[i], expected[i]);
+        }
+    }
+}

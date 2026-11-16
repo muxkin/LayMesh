@@ -8,12 +8,13 @@ const retainedDeck=new RetainedPresentationCache();
 import {PlaybackStats,waitForPresentation} from './playback-stats.mjs';
 import {loadRendererRuntime,loadDrawingResources} from './renderer-resources.mjs';
 import {PreviewPlayer} from './preview-player.mjs';
-import {mmPerUnit,canvasAt,niceStep,preparePlots,plotAt,formatData} from './preview-math.mjs';
+import {mmPerUnit,canvasAt,niceStep,preparePlots,plotAt,formatData,apply} from './preview-math.mjs';
 
 const bridge=typeof acquireVsCodeApi==='function'?acquireVsCodeApi():{getState:()=>null,setState(){},postMessage(){}};
 const saved=bridge.getState()||{};
 let view={mode:'fit',scale:1,pan:{x:0,y:0},rulers:true,...saved},page,plots=[],locale='en',lastPointer=null,drag,space=false,frame=0,diagnostic,initialized=false;
 let selectedObject,objectCycle,objectLayout,objectSelectionEnabled=false,objectGeneration=null,objectEpoch=0,panGesture=false;
+let objectBoundsQuery=0;
 const el=(tag,className,parent,text)=>{const node=document.createElement(tag);if(className)node.className=className;if(text)node.textContent=text;parent?.append(node);return node;};
 const root=el('main','preview',document.body),toolbar=el('div','toolbar',root);
 const buttons={};for(const name of ['refresh','export','fit','actual','out','in','rulers']){const button=el('button','',toolbar);button.type='button';button.dataset.action=name;buttons[name]=button;}
@@ -72,6 +73,8 @@ vertical.hidden=horizontal.hidden=true;
 const objectSelection=el('div','object-selection',viewport),objectOutline=el('div','object-selection-outline',objectSelection),objectName=el('output','object-selection-name',objectSelection);
 const objectAnchors=el('div','object-anchors',objectSelection),anchorTooltip=el('div','object-anchor-tooltip',objectSelection);
 let anchorMarkers=[],hoveredAnchors=[],tooltipAnchor,tooltipLayout;
+const anchorCells=new Map();
+let anchorColumns=0;
 objectSelection.hidden=true;
 objectName.setAttribute('aria-live','polite');
 objectAnchors.setAttribute('aria-hidden','true');
@@ -142,14 +145,20 @@ function objectSelectionReady(){
 }
 function setObjectAnchors(anchors){
  hideAnchorTooltip();
+ anchorMarkers=[];
+ anchorCells.clear();
+ objectAnchors.replaceChildren();
+ appendObjectAnchors(anchors);
+}
+function appendObjectAnchors(anchors){
  const markers=document.createDocumentFragment();
- anchorMarkers=anchors.map(anchor=>{
+ for(const anchor of anchors){
   const marker=el('span','object-anchor',markers);
   marker.dataset.anchor=anchor.name;
   if(anchor.kind)marker.dataset.anchorKind=anchor.kind;
-  return {...anchor,marker};
- });
- objectAnchors.replaceChildren(markers);
+  anchorMarkers.push({...anchor,marker,index:anchorMarkers.length});
+ }
+ objectAnchors.append(markers);
 }
 function labelAnchorTooltip(){
  if(hoveredAnchors.length)anchorTooltip.setAttribute('aria-label',
@@ -163,24 +172,37 @@ function hideAnchorTooltip(){
  hoveredAnchors=[];
  tooltipAnchor=tooltipLayout=null;
 }
-const anchorHoverRadiusSquared=9*9;
+const anchorHoverRadius=9,anchorHoverRadiusSquared=anchorHoverRadius**2,anchorCellSize=anchorHoverRadius*2;
 function anchorDistanceSquared(anchor,x,y){
  const dx=anchor.left-x,dy=anchor.top-y;
  return dx*dx+dy*dy;
+}
+function* anchorsNear(x,y){
+ const firstColumn=Math.max(0,Math.floor((x-anchorHoverRadius)/anchorCellSize));
+ const lastColumn=Math.min(anchorColumns-1,Math.floor((x+anchorHoverRadius)/anchorCellSize));
+ const firstRow=Math.max(0,Math.floor((y-anchorHoverRadius)/anchorCellSize));
+ const lastRow=Math.floor((y+anchorHoverRadius)/anchorCellSize);
+ for(let row=firstRow;row<=lastRow;row++){
+  for(let column=firstColumn;column<=lastColumn;column++){
+   const cell=anchorCells.get(row*anchorColumns+column);
+   if(cell)yield* cell;
+  }
+ }
 }
 function hoverObjectAnchor(x,y){
  if(drag||objectSelection.hidden)return hideAnchorTooltip();
  const [, , ,width,height]=objectLayout;
  if(x<0||x>width||y<0||y>height)return hideAnchorTooltip();
  let nearest,distance=anchorHoverRadiusSquared;
- for(const anchor of anchorMarkers){
-  if(!anchor.inView)continue;
+ for(const anchor of anchorsNear(x,y)){
   const delta=anchorDistanceSquared(anchor,x,y);
   if(delta<distance){nearest=anchor;distance=delta;}
  }
  if(!nearest)return hideAnchorTooltip();
- const matches=anchorMarkers.filter(anchor=>anchor.inView&&
-  anchorDistanceSquared(anchor,nearest.left,nearest.top)<anchorHoverRadiusSquared);
+ if(nearest===tooltipAnchor&&objectLayout===tooltipLayout)return;
+ const matches=[...anchorsNear(nearest.left,nearest.top)]
+  .filter(anchor=>anchorDistanceSquared(anchor,nearest.left,nearest.top)<anchorHoverRadiusSquared)
+  .sort((a,b)=>a.index-b.index);
  const namesChanged=matches.length!==hoveredAnchors.length||matches.some((anchor,i)=>anchor!==hoveredAnchors[i]);
  if(namesChanged){
   for(const anchor of hoveredAnchors)anchor.marker.classList.remove('is-hovered');
@@ -190,7 +212,6 @@ function hoverObjectAnchor(x,y){
   anchorTooltip.hidden=false;
   labelAnchorTooltip();
  }
- if(!namesChanged&&nearest===tooltipAnchor&&objectLayout===tooltipLayout)return;
  tooltipAnchor=nearest;tooltipLayout=objectLayout;
  const gap=12,padding=4;
  const tipWidth=anchorTooltip.offsetWidth,tipHeight=anchorTooltip.offsetHeight;
@@ -214,20 +235,58 @@ function placeObjectSelection(r){
  const left=r.left+x0*scale,top=r.top+y0*scale,right=r.left+x1*scale,bottom=r.top+y1*scale;
  const [, , ,width,height]=layout;
  const outlineInView=right>=0&&bottom>=0&&left<=width&&top<=height;
+ anchorCells.clear();
+ anchorColumns=Math.floor(width/anchorCellSize)+1;
  for(const anchor of anchorMarkers){
   anchor.left=r.left+anchor.x*scale;
   anchor.top=r.top+anchor.y*scale;
-  anchor.inView=anchor.left>=0&&anchor.left<=width&&anchor.top>=0&&anchor.top<=height;
-  anchor.marker.hidden=!anchor.inView;
+  const visible=anchor.left>=0&&anchor.left<=width&&anchor.top>=0&&anchor.top<=height;
+  anchor.marker.hidden=!visible;
+  if(!visible)continue;
   anchor.marker.style.left=`${anchor.left}px`;
   anchor.marker.style.top=`${anchor.top}px`;
+  const cellIndex=Math.floor(anchor.top/anchorCellSize)*anchorColumns+Math.floor(anchor.left/anchorCellSize);
+  const cell=anchorCells.get(cellIndex);
+  if(cell)cell.push(anchor);
+  else anchorCells.set(cellIndex,[anchor]);
  }
- objectSelection.hidden=!outlineInView&&!anchorMarkers.some(anchor=>anchor.inView);
+ objectSelection.hidden=!outlineInView&&!anchorCells.size;
  objectName.hidden=!outlineInView;
  Object.assign(objectOutline.style,{left:`${left}px`,top:`${top}px`,width:`${Math.max(2,right-left)}px`,height:`${Math.max(2,bottom-top)}px`});
  const labelLeft=Math.max(4,Math.min(layout[3]-76,r.left+x*scale+9));
  const labelTop=Math.max(4,Math.min(layout[4]-25,r.top+y*scale-25));
  Object.assign(objectName.style,{left:`${labelLeft}px`,top:`${labelTop}px`,maxWidth:`${Math.max(0,layout[3]-labelLeft-4)}px`});
+}
+function refreshObjectAnchors(){
+ objectLayout=null;
+ placeObjectSelection(rect());
+ if(lastPointer){
+  const box=viewport.getBoundingClientRect();
+  hoverObjectAnchor(lastPointer.x-box.left,lastPointer.y-box.top);
+ }
+}
+const boundAnchorNames=[
+ 'top_left','top_center','top_right','middle_left','center','middle_right',
+ 'bottom_left','bottom_center','bottom_right',
+];
+function showObjectBounds(data){
+ if(!objectSelectionReady()||!selectedObject?.boundsTransform||
+  selectedObject.queryId===undefined||data.generation!==objectGeneration||data.queryId!==selectedObject.queryId)return;
+ delete selectedObject.queryId;
+ const anchors=[];
+ for(const [view,bounds] of Object.entries(data.bounds||{})){
+  if(!Array.isArray(bounds)||bounds.length!==4||!bounds.every(Number.isFinite))continue;
+  const [x0,y0,x1,y1]=bounds;
+  const xs=[x0,(x0+x1)/2,x1],ys=[y0,(y0+y1)/2,y1];
+  const kind=view==='ink.bounds'?'ink-bounds':'path-bounds';
+  for(const [index,name] of boundAnchorNames.entries()){
+   const [x,y]=apply(selectedObject.boundsTransform,xs[index%3],ys[Math.floor(index/3)]);
+   anchors.push({name:`${view}.${name}`,x,y,kind});
+  }
+ }
+ if(!anchors.length)return;
+ appendObjectAnchors(anchors);
+ refreshObjectAnchors();
 }
 function objectPoint(event,r){
  const box=viewport.getBoundingClientRect();
@@ -252,11 +311,10 @@ async function selectObjectAt(event){
   objectSelection.dataset.key=key;
   objectName.textContent=name&&!/^instance-\d+$/.test(name)?name:kind||name;
   setObjectAnchors(selectedObject.anchors||[]);
-  objectLayout=null;
-  placeObjectSelection(rect());
-  if(anchorMarkers.length&&lastPointer){
-   const box=viewport.getBoundingClientRect();
-   hoverObjectAnchor(lastPointer.x-box.left,lastPointer.y-box.top);
+  refreshObjectAnchors();
+  if(selectedObject.objectPath){
+   selectedObject.queryId=++objectBoundsQuery;
+   bridge.postMessage({type:'object-bounds',generation,queryId:selectedObject.queryId,objectPath:selectedObject.objectPath});
   }
  }catch{
   // A canceled selection must not interrupt the preview.
@@ -436,6 +494,7 @@ window.addEventListener('message',({data})=>{
 
  if(data?.type==='initial'){locale=data.locale||'en';if((!initialized&&saved.rulers===undefined)||data.forceRulers)view.rulers=data.showRulers!==false;initialized=true;labels();showDiagnostic();if(root.dataset.state)showStatus(root.dataset.state);schedule();}
  else if(data?.type==='status'){if(data.status!=='success'){renderSequence++;cancelTransition();player.resumeAfterTransition=false;}showStatus(data.status);}
+ else if(data?.type==='object-bounds')showObjectBounds(data);
  else if(data?.type==='result'){
   if(data.document){
    pageSelect.replaceChildren();for(const [i,p] of data.document.pages.entries()){const option=el('option','',pageSelect,`${i+1}. ${p.name||p.id}`);option.value=p.id;}

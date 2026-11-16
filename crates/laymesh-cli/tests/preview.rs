@@ -1,6 +1,7 @@
 use serde_json::{Value, json};
 use std::{
     io::Write,
+    path::Path,
     process::{Command, Stdio},
 };
 
@@ -24,6 +25,89 @@ fn preview(requests: &[Value]) -> Vec<Value> {
         .lines()
         .map(|line| serde_json::from_str(line).unwrap())
         .collect()
+}
+
+#[test]
+fn object_bounds_follow_the_selected_frame_and_immediate_container() {
+    use std::io::{BufRead, BufReader};
+
+    let root = std::env::temp_dir().join(format!("laymesh-preview-bounds-{}", std::process::id()));
+    let first = root.join("first.lay");
+    let second = root.join("second.lay");
+    let mut process = Command::new(env!("CARGO_BIN_EXE_laymesh"))
+        .args(["preview", "--stdio"])
+        .env("LAYMESH_NO_SYSTEM_FONTS", "1")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let mut input = process.stdin.take().unwrap();
+    let mut output = BufReader::new(process.stdout.take().unwrap());
+    let read = |output: &mut BufReader<_>| -> Value {
+        let mut line = String::new();
+        assert!(output.read_line(&mut line).unwrap() > 0);
+        serde_json::from_str(&line).unwrap()
+    };
+    let ready = read(&mut output);
+    assert!(
+        ready["capabilities"]
+            .as_array()
+            .unwrap()
+            .contains(&json!("object-bounds-v1"))
+    );
+    let mut transact = |request: Value| -> Value {
+        writeln!(input, "{request}").unwrap();
+        if request["type"] == "release-object-bounds" {
+            return Value::Null;
+        }
+        let response = read(&mut output);
+        assert_eq!(response["id"], request["id"], "{response}");
+        assert!(response.get("error").is_none(), "{response}");
+        response
+    };
+
+    let source = r#"page=canvas(size=(120mm,90mm))
+g=group()
+leader=g.add(line(dx=20mm,dy=0mm,line_width=4mm,line_cap="round"),offset=(10mm,12mm))
+assembly=page.add(g,size=(50mm,30mm),rotation=25deg,offset=(5mm,8mm))"#;
+    let draw = |id, file: &Path| {
+        json!({"id":id,"protocol":3,"file":file,"source":source,"object_selection":true,
+               "object_bounds":true,"resource_dir":root})
+    };
+    let query = |id, file: &Path, frame: &Value| {
+        json!({"id":id,"type":"object-bounds","file":file,"display_list_id":frame["displayListId"],
+               "object_path":["name:assembly","name:leader"]})
+    };
+    let first_frame = transact(draw(1, &first));
+    let second_frame = transact(draw(2, &second));
+    let response = transact(query(3, &first, &first_frame));
+    let bounds = &response["bounds"];
+    assert_eq!(bounds["path.bounds"], json!([0., 0., 20., 0.]));
+    for (got, expected) in bounds["ink.bounds"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip([-2., -2., 22., 2.])
+    {
+        assert!((got.as_f64().unwrap() - expected).abs() < 0.001, "{bounds}");
+    }
+    assert_eq!(
+        transact(query(4, &second, &first_frame))["bounds"],
+        json!({})
+    );
+    transact(json!({"type":"release-object-bounds","file":first}));
+    assert_eq!(
+        transact(query(5, &first, &first_frame))["bounds"],
+        json!({})
+    );
+    assert_eq!(
+        transact(query(6, &second, &second_frame))["bounds"],
+        *bounds
+    );
+
+    drop(input);
+    assert!(process.wait().unwrap().success());
+    std::fs::remove_dir_all(root).unwrap();
 }
 #[test]
 fn document_preview_selects_stable_ids_uses_unsaved_pages_and_reports_failures() {
@@ -236,6 +320,7 @@ fn object_sources_follow_authored_placements_across_cached_document_updates() {
                 "anchorEndpoints",
                 "anchorPlot",
                 "anchorGeometry",
+                "anchorChart",
             ] {
                 hints.remove(key);
             }
@@ -414,6 +499,18 @@ chart=page.add(template,offset=(50mm,25mm),rotation=23deg)
         json!([[0., 0.], [12., 0.]])
     );
     assert_eq!(hints("chart")["anchorPlot"], json!([9., 8., 36., 26.]));
+    let chart_anchors = &hints("chart")["anchorChart"];
+    assert_eq!(
+        chart_anchors["boxes"][0],
+        json!(["plot_area.bounds.", [9., 8., 36., 26.]])
+    );
+    assert!(
+        chart_anchors["points"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|point| { point[0] == "axes[\"x\"].min" })
+    );
     let chart = nodes.iter().find(|node| node["name"] == "chart").unwrap();
     assert!(!chart.to_string().contains("anchorGeometry"));
     std::fs::remove_dir_all(root).unwrap();

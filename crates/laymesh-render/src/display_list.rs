@@ -1336,6 +1336,9 @@ impl Builder<'_> {
                     (x + jnum(plot, "width", 0.)) * sx,
                     (y + jnum(plot, "height", 0.)) * sy,
                 ]);
+                if let Some(axes) = laymesh_core::preview_chart_anchors::chart_anchors(n) {
+                    result.hint["anchorChart"] = axes;
+                }
             }
         }
         Ok(result)

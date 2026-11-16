@@ -138,7 +138,7 @@ impl Query {
         Self { instance, steps }
     }
 }
-fn geometry_scale(n: &Json) -> Affine {
+pub(crate) fn geometry_scale(n: &Json) -> Affine {
     if n["kind"] == "group" {
         Affine::scale_non_uniform(
             jnum(n, "width", 1.) / jnum(n, "contentWidth", jnum(n, "width", 1.)).max(1e-12),
@@ -170,10 +170,9 @@ fn rectangle_node(b: Rect) -> Json {
     n["y"] = json!(b.y0);
     n
 }
-fn path_routes(
-    n: &Json,
-    tr: Affine,
-) -> std::result::Result<Vec<Route>, (&'static str, &'static str)> {
+type GeometryError = (&'static str, &'static str);
+
+fn path_routes(n: &Json, tr: Affine) -> std::result::Result<Vec<Route>, GeometryError> {
     let recipe = &n["geometryRecipe"];
     let kind = jstr(recipe, "kind", "");
     let mut routes = vec![];
@@ -420,16 +419,17 @@ fn path_routes(
     }
     Ok(routes)
 }
-fn paths(node: &NodeView, e: &Engine, l: Loc) -> Result<Paths> {
-    let tr = node.transform * node_frame(&node.node);
-    let routes =
-        path_routes(&node.node, tr).map_err(|(code, message)| e.error(code, message, l))?;
+fn node_paths(n: &Json, transform: Affine) -> std::result::Result<Paths, GeometryError> {
+    let frame = transform * node_frame(n);
     Ok(Paths {
         identity: String::new(),
-        routes,
-        frame: tr,
+        routes: path_routes(n, frame)?,
+        frame,
         local: false,
     })
+}
+fn paths(node: &NodeView, e: &Engine, l: Loc) -> Result<Paths> {
+    node_paths(&node.node, node.transform).map_err(|(code, message)| e.error(code, message, l))
 }
 fn arrow_centerline(n: &Json, frame: Affine) -> Option<(Route, Affine)> {
     let recipe = &n["geometryRecipe"];
@@ -522,8 +522,7 @@ fn remove_invisible_ink(node: &mut Json) {
 /// Keep analytic boundaries where their fill/stroke region has a known exact
 /// boundary. In particular a circle-center nearest query must remain infinite,
 /// rather than becoming a collection of tessellation vertices.
-fn analytic_ink(node: &NodeView, e: &Engine, l: Loc) -> Result<Option<Paths>> {
-    let n = &node.node;
+fn analytic_ink(n: &Json, transform: Affine) -> std::result::Result<Option<Paths>, GeometryError> {
     let kind = jstr(&n["geometryRecipe"], "kind", "");
     let filled = n["fill"] != "none" && !n["fill"].is_null();
     let width = if n["strokeStyle"]["color"] == "none" {
@@ -532,7 +531,7 @@ fn analytic_ink(node: &NodeView, e: &Engine, l: Loc) -> Result<Option<Paths>> {
         jnum(&n["strokeStyle"], "width", 0.)
     };
     if filled && width == 0. && matches!(kind, "rect" | "ellipse" | "ring" | "sector") {
-        return Ok(Some(paths(node, e, l)?));
+        return Ok(Some(node_paths(n, transform)?));
     }
     if kind == "ellipse"
         && width > 0.
@@ -544,7 +543,7 @@ fn analytic_ink(node: &NodeView, e: &Engine, l: Loc) -> Result<Option<Paths>> {
             .is_none_or(|dash| dash.is_empty())
         && jstr(&n["strokeStyle"], "compound", "single") == "single"
     {
-        let mut geometry = paths(node, e, l)?;
+        let mut geometry = node_paths(n, transform)?;
         let mut outer = geometry.routes[0].clone();
         let Curve::Arc(mut arc) = outer.segments[0].curve else {
             return Ok(None);
@@ -561,6 +560,75 @@ fn analytic_ink(node: &NodeView, e: &Engine, l: Loc) -> Result<Option<Paths>> {
         return Ok(Some(geometry));
     }
     Ok(None)
+}
+fn prepare_ink(n: &Json) -> std::result::Result<Json, GeometryError> {
+    if n["fill"] == "none" && jnum(&n["strokeStyle"], "width", 0.) == 0. || n["opacity"] == 0. {
+        return Err(("E_GEOMETRY", "绘制区域为空"));
+    }
+    let mut node = n.clone();
+    remove_invisible_ink(&mut node);
+    Ok(node)
+}
+fn ink_paths(n: &Json, transform: Affine) -> std::result::Result<Paths, GeometryError> {
+    let node = prepare_ink(n)?;
+    if let Some(paths) = analytic_ink(&node, transform)? {
+        return Ok(paths);
+    }
+    let path = crate::geometry::visible_transformed(&node, transform);
+    if path.elements().is_empty() {
+        return Err(("E_GEOMETRY", "绘制区域为空"));
+    }
+    Ok(Paths {
+        identity: String::new(),
+        routes: qp::from_bez(&path, Affine::IDENTITY),
+        frame: transform * node_frame(&node),
+        local: false,
+    })
+}
+fn ink_bounds(n: &Json, transform: Affine) -> std::result::Result<Rect, GeometryError> {
+    if n["kind"] == "group" && !n["endpointRecipe"].is_object() {
+        let node = prepare_ink(n)?;
+        return crate::geometry::visible_bounds_transformed(&node, transform)
+            .ok_or(("E_GEOMETRY", "绘制区域为空"));
+    }
+    ink_paths(n, transform)?
+        .bounds()
+        .ok_or(("E_PATH", "路径为空"))
+}
+
+/// Evaluate the DSL's axis-aligned vector bounds on demand for a selected
+/// preview object. Rectangles are in the immediate container's axes, relative
+/// to the translation of the object's layout transform.
+pub fn preview_geometry_bounds(node: &Json) -> BTreeMap<&'static str, [f64; 4]> {
+    let mut bounds = BTreeMap::new();
+    if !vector_only(node) {
+        return bounds;
+    }
+    let placement = crate::geometry::node_transform(node).as_coeffs();
+    let [x, y] = [placement[4], placement[5]];
+    let mut add = |name, b: Option<Rect>| {
+        if let Some(b) = b.filter(|b| b.is_finite()) {
+            bounds.insert(name, [b.x0 - x, b.y0 - y, b.x1 - x, b.y1 - y]);
+        }
+    };
+    add(
+        "path.bounds",
+        node_paths(node, Affine::IDENTITY)
+            .ok()
+            .and_then(|p| p.bounds()),
+    );
+    add(
+        "centerline.bounds",
+        arrow_centerline(node, node_frame(node)).and_then(|(route, _)| {
+            route
+                .segments
+                .iter()
+                .map(Segment::bounds)
+                .reduce(|bounds, route| bounds.union(route))
+        }),
+    );
+    add("ink.bounds", ink_bounds(node, Affine::IDENTITY).ok());
+    bounds
 }
 fn arc_point(a: Arc, t: f64) -> Point {
     Segment {
@@ -931,36 +999,14 @@ impl Engine {
                     Err(self.error("E_NAME", "矩形区域提供九点锚点与 width/height", l))
                 }
             }
+            Geometry::Ink(n) if m == "bounds" => {
+                let bounds = ink_bounds(&n.node, n.transform)
+                    .map_err(|(code, message)| self.error(code, message, l))?;
+                Ok(Geometry::Bounds(bounds, Affine::IDENTITY))
+            }
             Geometry::Ink(n) => {
-                let mut node = n.node.clone();
-                if node["fill"] == "none" && jnum(&node["strokeStyle"], "width", 0.) == 0. {
-                    return Err(self.error("E_GEOMETRY", "绘制区域为空", l));
-                }
-                if node["opacity"] == 0. {
-                    return Err(self.error("E_GEOMETRY", "绘制区域为空", l));
-                }
-                remove_invisible_ink(&mut node);
-                let ps = if let Some(paths) = analytic_ink(
-                    &NodeView {
-                        node: node.clone(),
-                        transform: n.transform,
-                    },
-                    self,
-                    l,
-                )? {
-                    paths
-                } else {
-                    let path = crate::geometry::visible_transformed(&node, n.transform);
-                    if path.elements().is_empty() {
-                        return Err(self.error("E_GEOMETRY", "绘制区域为空", l));
-                    }
-                    Paths {
-                        identity: String::new(),
-                        routes: qp::from_bez(&path, Affine::IDENTITY),
-                        frame: n.transform * node_frame(&node),
-                        local: false,
-                    }
-                };
+                let ps = ink_paths(&n.node, n.transform)
+                    .map_err(|(code, message)| self.error(code, message, l))?;
                 let view = Geometry::Path(PathView {
                     paths: Rc::new(ps),
                     route: None,
@@ -968,8 +1014,6 @@ impl Engine {
                 });
                 if m == "boundary" {
                     Ok(view)
-                } else if m == "bounds" {
-                    self.geometry_member(view, "bounds", owner, l)
                 } else {
                     Err(self.error("E_NAME", "ink 提供 bounds/boundary", l))
                 }
@@ -1101,23 +1145,15 @@ impl Engine {
             return Ok(Geometry::Axis(n, name));
         }
         if let Geometry::Decorations(n, prefix) = v {
+            use crate::preview_chart_anchors::{decoration_rect, decorations};
+
             let i = self.integer(i, l)?;
-            let bs = n.node["plotDecorations"]
-                .as_array()
-                .into_iter()
-                .flatten()
+            let part = decorations(&n.node)
                 .filter(|b| jstr(b, "name", "").starts_with(&prefix))
-                .collect::<Vec<_>>();
-            let b = bs
-                .get(i)
+                .nth(i)
                 .ok_or_else(|| self.error("E_INDEX", "刻度标签索引越界", l))?;
             return Ok(Geometry::Node(NodeView {
-                node: rectangle_node(Rect::new(
-                    jnum(b, "left", 0.),
-                    jnum(b, "top", 0.),
-                    jnum(b, "right", 0.),
-                    jnum(b, "bottom", 0.),
-                )),
+                node: rectangle_node(decoration_rect(part)),
                 transform: n.transform * node_frame(&n.node),
             }));
         }
@@ -1614,79 +1650,47 @@ impl Engine {
         owner: usize,
         l: Loc,
     ) -> Result<Geometry> {
+        use crate::preview_chart_anchors::{axis_bounds, axis_spine, decoration_rect, decorations};
+
         let axis = &n.node["plotAxes"][name];
         let area = &n.node["plotBounds"];
-        let side = jstr(axis, "side", "bottom");
-        let horizontal = matches!(side, "bottom" | "top");
-        let offset = jnum(axis, "offset", 0.);
-        let coord = |v: f64| {
-            if horizontal {
-                Point::new(
-                    jnum(area, "x", 0.) + v,
-                    jnum(area, "y", 0.)
-                        + if side == "top" {
-                            -offset
-                        } else {
-                            jnum(area, "height", 0.) + offset
-                        },
-                )
-            } else {
-                Point::new(
-                    jnum(area, "x", 0.)
-                        + if side == "left" {
-                            -offset
-                        } else {
-                            jnum(area, "width", 0.) + offset
-                        },
-                    jnum(area, "y", 0.) + v,
-                )
-            }
-        };
         let tr = n.transform * node_frame(&n.node);
-        let fallback = if horizontal {
-            [0., jnum(area, "width", 0.)]
-        } else {
-            [jnum(area, "height", 0.), 0.]
-        };
-        let segments = axis["segments"].as_array().cloned().unwrap_or_else(|| {
-            vec![json!({"range":if axis["reverse"]==true{[fallback[1],fallback[0]]}else{fallback}})]
-        });
-        let mut routes = vec![];
-        for s in &segments {
-            let p = &s["range"];
-            routes.push(Route {
-                zero_direction: None,
-                segments: vec![Segment {
-                    curve: Curve::Poly(PathSeg::Line(Line::new(
-                        coord(p[0].as_f64().unwrap()),
-                        coord(p[1].as_f64().unwrap()),
-                    ))),
-                    transform: tr,
-                }],
-                closed: false,
-            });
-        }
-        let path = PathView {
-            paths: Rc::new(Paths {
+        let (spine_bounds, spans) = axis_spine(axis, area);
+        if matches!(m, "spine" | "min" | "max") {
+            let routes = spans
+                .into_iter()
+                .map(|line| Route {
+                    zero_direction: None,
+                    segments: vec![Segment {
+                        curve: Curve::Poly(PathSeg::Line(line)),
+                        transform: tr,
+                    }],
+                    closed: false,
+                })
+                .collect::<Vec<_>>();
+            if routes.is_empty() {
+                return Err(self.error("E_PLOT", "坐标轴没有可用路径", l));
+            }
+            let paths = Rc::new(Paths {
                 identity: String::new(),
                 routes,
                 frame: tr,
                 local: false,
-            }),
-            route: None,
-            segment: None,
-        };
-        if m == "spine" {
-            return Ok(Geometry::Path(path));
-        }
-        if m == "min" || m == "max" {
+            });
+            if m == "spine" {
+                return Ok(Geometry::Path(PathView {
+                    paths,
+                    route: None,
+                    segment: None,
+                }));
+            }
             let ri = if m == "min" {
                 0
             } else {
-                path.paths.routes.len() - 1
+                paths.routes.len() - 1
             };
             let pp = PathPoint {
-                paths: path.paths,
+                paths,
                 position: Position {
                     route: ri,
                     segment: 0,
@@ -1700,44 +1704,22 @@ impl Engine {
                 path: Some(pp),
             }));
         }
-        let decorations = n.node["plotDecorations"]
-            .as_array()
-            .into_iter()
-            .flatten()
-            .collect::<Vec<_>>();
         if m == "ticks" {
             return Ok(Geometry::Decorations(n, format!("{name}.tick:")));
         }
-        let mut b = Rect::from_points(coord(fallback[0]), coord(fallback[1]));
         if m == "label" || m == "exponent" {
-            let d = decorations
-                .iter()
-                .find(|d| jstr(d, "name", "") == format!("{name}.{m}"))
+            let expected = format!("{name}.{m}");
+            let part = decorations(&n.node)
+                .find(|part| jstr(part, "name", "") == expected)
                 .ok_or_else(|| self.error("E_PLOT", format!("坐标轴没有 {m}"), l))?;
-            b = Rect::new(
-                jnum(d, "left", 0.),
-                jnum(d, "top", 0.),
-                jnum(d, "right", 0.),
-                jnum(d, "bottom", 0.),
-            );
             return Ok(Geometry::Node(NodeView {
-                node: rectangle_node(b),
+                node: rectangle_node(decoration_rect(part)),
                 transform: tr,
             }));
         }
-        for d in decorations {
-            if jstr(d, "name", "").starts_with(&format!("{name}.")) {
-                b = b.union(Rect::new(
-                    jnum(d, "left", 0.),
-                    jnum(d, "top", 0.),
-                    jnum(d, "right", 0.),
-                    jnum(d, "bottom", 0.),
-                ));
-            }
-        }
         self.geometry_member(
             Geometry::Node(NodeView {
-                node: rectangle_node(b),
+                node: rectangle_node(axis_bounds(&n.node, name, spine_bounds)),
                 transform: tr,
             }),
             m,
