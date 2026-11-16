@@ -11,7 +11,7 @@ from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('native_cdp',ROOT/'scripts/smoke-browser.py')
 native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
-p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--normal-host',action='store_true',help='Use a fixture extension in a normal host so native confirmation dialogs are allowed');p.add_argument('--block-worker-resource-fetch',action='store_true',help='Return HTTP 408 for extension resource requests inside blob workers');p.add_argument('--page-transitions',action='store_true');p.add_argument('--object-effects',action='store_true');p.add_argument('--object-selection',action='store_true',help='Run the overlapping-object selection and source navigation regression');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
+p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--code',default='/usr/share/code/code');p.add_argument('--extension-dir',type=Path,default=ROOT/'extensions/vscode');p.add_argument('--normal-host',action='store_true',help='Use a fixture extension in a normal host so native confirmation dialogs are allowed');p.add_argument('--block-worker-resource-fetch',action='store_true',help='Return HTTP 408 for extension resource requests inside blob workers');p.add_argument('--page-transitions',action='store_true');p.add_argument('--object-effects',action='store_true');p.add_argument('--object-selection',action='store_true',help='Run the overlapping-object selection and source navigation regression');p.add_argument('--chart-anchors',action='store_true',help='Run the axis-specific chart anchor density regression');a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup_errors=True) as temp:
  profile=Path(temp);gate=profile/'gate.json';evidence=profile/'evidence.json'
  extension=a.extension_dir.resolve()
@@ -33,6 +33,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
  env={**os.environ,'LAYMESH_PREVIEW_GATE':str(gate),'LAYMESH_PREVIEW_EVIDENCE':str(evidence),'LAYMESH_PREVIEW_BMP':str(bmp),'LAYMESH_PREVIEW_TRANSPARENT':str(transparent),'LAYMESH_PREVIEW_16BIT':str(high),'LAYMESH_PREVIEW_NORMAL_HOST':'1' if a.normal_host else ''};env.pop('ELECTRON_RUN_AS_NODE',None)
  if a.object_effects:env['LAYMESH_PREVIEW_OBJECT_EFFECTS']='1'
  if a.object_selection:env['LAYMESH_PREVIEW_OBJECT_SELECTION']='1'
+ if a.chart_anchors:env['LAYMESH_PREVIEW_CHART_ANCHORS']='1'
  if a.page_transitions:env['LAYMESH_PREVIEW_TRANSITIONS']='1'
  command=[a.code,'--no-sandbox','--disable-gpu','--disable-updates','--ozone-platform=headless','--force-device-scale-factor=2','--remote-debugging-port='+str(port),'--remote-allow-origins=*','--user-data-dir='+str(profile/'profile'),'--extensions-dir='+str(profile/'extensions'),'--extensionDevelopmentPath='+str(extension),'--extensionTestsPath='+str(ROOT/'scripts/vscode-preview.cjs'),'--skip-welcome','--skip-release-notes','--new-window']
  if a.normal_host:
@@ -82,7 +83,7 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
    geometry['figure']=evaluate("d.querySelector('.figure').getBoundingClientRect().toJSON()")
    stable_frames=stable_frames+1 if geometry==last_layout else 0;last_layout=geometry
    return stable_frames>=5
-  if a.object_selection:
+  if a.object_selection or a.chart_anchors:
    root.call('Page.bringToFront')
    def mouse(kind,point,button='left'):
     buttons={'left':1,'right':2}[button] if kind=='mousePressed' else 0
@@ -100,6 +101,90 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
    def select_at(fx,fy,name):
     click(screen_point(fx,fy))
     return selected(name)
+   def finish_selection(checks):
+    wait_phase('complete')
+    host.wait(timeout=20)
+    assert host.returncode==0
+    result=json.loads(evidence.read_text())
+    result['checks'].extend(checks)
+    (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+    print(json.dumps(result,ensure_ascii=False))
+    raise SystemExit(0)
+   if a.chart_anchors:
+    def chart_point(x,y):return screen_point(x/144,y/104)
+    def move_chart(x,y):root.call('Input.dispatchMouseEvent',{'type':'mouseMoved',**chart_point(x,y)})
+    def chart_state(axis=None):
+     expected=json.dumps(axis)
+     return wait(f"""(()=>{{
+      const selection=d.querySelector('.object-selection');
+      const all=[...selection.querySelectorAll('.object-anchor[data-anchor]')];
+      const visible=all.filter(marker=>marker.getClientRects().length&&getComputedStyle(marker).visibility!=='hidden');
+      const detailAxes=visible.map(marker=>marker.dataset.anchorAxis).filter(Boolean);
+      const expected={expected},active=selection.dataset.activeChartAxis??null;
+      if(active!==expected||detailAxes.some(axis=>axis!==expected)||Boolean(detailAxes.length)!==Boolean(expected))return false;
+      const markers=Object.fromEntries(visible.map(marker=>[marker.dataset.anchor,marker.getBoundingClientRect().toJSON()]));
+      const figure=d.querySelector('.figure').getBoundingClientRect().toJSON();
+      return {{markers,figure,names:all.map(marker=>marker.dataset.anchor)}};
+     }})()""",10)
+    def marker_position(state,name,x,y):
+     marker=state['markers'][name];figure=state['figure']
+     assert abs(marker['x']+marker['width']/2-figure['x']-x*figure['width']/144)<=1.5,(name,marker,figure)
+     assert abs(marker['y']+marker['height']/2-figure['y']-y*figure['height']/104)<=1.5,(name,marker,figure)
+    def hover_chart_marker(state,name):
+     outer=root.evaluate("document.querySelector('iframe').getBoundingClientRect().toJSON()")
+     marker=state['markers'][name]
+     point={'x':outer['x']+marker['x']+marker['width']/2,'y':outer['y']+marker['y']+marker['height']/2}
+     root.call('Input.dispatchMouseEvent',{'type':'mouseMoved',**point})
+     expected=json.dumps(name)
+     wait(f"""(()=>{{
+      const tooltip=d.querySelector('.object-anchor-tooltip');
+      return !tooltip.hidden&&[...tooltip.querySelectorAll('code')].some(code=>code.textContent==={expected});
+     }})()""",10)
+
+    wait_phase('chart-anchors-ready')
+    until(stable_layout,'Stable chart preview layout')
+    wait("d.querySelector('.preview').dataset.painted==='true'")
+    move_chart(102,46.84)
+    key=select_at(102/144,46.84/104,'chart')
+    compact=chart_state()
+    marker_position(compact,'plot_area.bounds.center',78,49)
+    marker_position(compact,'axes["x"].min',122,76)
+    marker_position(compact,'axes["x"].max',34,76)
+    marker_position(compact,'axes["y"].max',34,22)
+    assert len(compact['markers'])<=35 and len(compact['names'])<128,compact
+    assert not any(part in name for name in compact['names'] for part in ('data(','.data.','.samples[','.series[')),compact
+    assert not any(part in name for name in compact['markers'] for part in ('.ticks[','.label.bounds.','.spine.')),compact
+
+    move_chart(78,76)
+    x_axis=chart_state('axes["x"]')
+    marker_position(x_axis,'axes["x"].spine.subpaths[0].end',82,76)
+    marker_position(x_axis,'axes["x"].spine.subpaths[1].start',74,76)
+    hover_chart_marker(x_axis,'axes["x"].ticks[1].bounds.center')
+    assert not any(name.startswith('axes["y"].ticks[') for name in x_axis['markers']),x_axis
+    shot=root.call('Page.captureScreenshot',{'format':'png','captureBeyondViewport':False})
+    (a.output/'chart-axis-anchors.png').write_bytes(base64.b64decode(shot['data']))
+    hover_chart_marker(x_axis,'axes["x"].label.bounds.center')
+
+    move_chart(34,49)
+    y_axis=chart_state('axes["y"]')
+    assert 'axes["y"].ticks[2].bounds.center' in y_axis['markers']
+    assert not any(name.startswith('axes["x"].ticks[') for name in y_axis['markers']),y_axis
+    move_chart(98,49)
+    chart_state()
+    zoom_anchor=chart_point(98,49)
+    width=compact['figure']['width']
+    root.call('Input.dispatchMouseEvent',{'type':'mouseWheel','deltaY':-80,'deltaX':0,'modifiers':2,**zoom_anchor})
+    wait(f"d.querySelector('.figure').getBoundingClientRect().width>{width}+5")
+    assert selected('chart')==key
+    marker_position(chart_state(),'axes["x"].min',122,76)
+
+    move_chart(102,76)
+    hover_chart_marker(chart_state('axes["x"]'),'axes["x"].ticks[1].bounds.center')
+    outer=root.evaluate("document.querySelector('iframe').getBoundingClientRect().toJSON()")
+    root.call('Input.dispatchMouseEvent',{'type':'mouseMoved','x':outer['x']+60,'y':outer['y']+20})
+    chart_state()
+    phase('chart-anchors-verified')
+    finish_selection(['On a nested reversed and broken Cartesian chart with 385 samples, only compact anchors show initially. Actual mouse movement reveals one axis at a time through spine, tick and label regions, hides details on exit and preserves alignment after zoom. No data-sample anchors appear.'])
    def blank():
     wait("d.querySelector('.object-selection').hidden&&d.querySelector('.object-anchor-tooltip').hidden")
    def check_anchors(x0,y0,x1,y1):
@@ -202,16 +287,11 @@ with tempfile.TemporaryDirectory(prefix='laymesh-native-preview-',ignore_cleanup
    blank()
    select_at(*center,'front');select_at(*center,'middle')
    click(screen_point(*center),'right')
-   wait_phase('complete')
-   host.wait(timeout=20)
-   assert host.returncode==0
-   result=json.loads(evidence.read_text())
-   result['checks'].append('Nine source-named anchors agree with rectangular and rotated bounds; hover shows single or coincident anchor names; markers stay aligned after pan and zoom and do not intercept clicks or source navigation')
-   result['checks'].append('The two-cubic arrow exposes its centerline junction and authored Bézier handle at their layout coordinates')
-   result['checks'].append('Clicking a rotated stroked rectangle computes its path and ink bounds at distinct DSL coordinates')
-   (a.output/'evidence.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
-   print(json.dumps(result,ensure_ascii=False))
-   raise SystemExit(0)
+   finish_selection([
+    'Nine source-named anchors agree with rectangular and rotated bounds; hover shows single or coincident anchor names; markers stay aligned after pan and zoom and do not intercept clicks or source navigation',
+    'The two-cubic arrow exposes its centerline junction and authored Bézier handle at their layout coordinates',
+    'Clicking a rotated stroked rectangle computes its path and ink bounds at distinct DSL coordinates',
+   ])
   def toolbar_layout():
    layout=evaluate("(()=>{const r=e=>e.getBoundingClientRect().toJSON(),t=d.querySelector('.toolbar'),g=d.querySelector('.present-group');return {toolbar:r(t),present:r(g),buttons:[...g.querySelectorAll('button,summary')].slice(0,2).map(r),visible:[...t.children].filter(e=>e.getBoundingClientRect().width).map(r)}})()")
    t=layout['toolbar'];assert all(b['top']>=t['top'] and b['bottom']<=t['bottom'] and b['right']<=t['right']+1 for b in layout['visible']),layout

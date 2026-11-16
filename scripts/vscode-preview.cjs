@@ -49,6 +49,43 @@ exports.run=async()=>{
  await vscode.workspace.getConfiguration('workbench').update('colorTheme','VS Code Dark',vscode.ConfigurationTarget.Global);
  await until(()=>vscode.window.activeColorTheme.kind===vscode.ColorThemeKind.Dark,'Dark theme');
  await vscode.commands.executeCommand('workbench.action.closeAuxiliaryBar');
+ if(process.env.LAYMESH_PREVIEW_CHART_ANCHORS){
+  const chartFile=path.join(directory,'chart-anchors.lay');
+  const x=[0,8].flatMap(start=>Array.from({length:192},(_,index)=>start+2*index/191));
+  const y=x.map(value=>Math.round(45+20*Math.sin(value*2)));
+  fs.writeFileSync(chartFile,`
+p=canvas(size=(144mm,104mm),background="#fff")
+signal=plot(size=(112mm,90mm),plot_area=box(offset=(18mm,9mm),size=(88mm,54mm)),
+  style=plot_style(font_family="DejaVu Sans",font_size=9pt),
+  x=axis(label="Time (s)",range=(0,10),reverse=true,ticks=[0,1,2,8,9,10],breaks=[(2,8)],break_gap=8mm,segment_lengths=[40mm,40mm]),
+  y=axis(label="Signal",range=(0,100),ticks=[0,25,50,75,100]))
+signal.scatter(x=${JSON.stringify(x)},y=${JSON.stringify(y)},color="#9ac4c5",marker_size=0.7mm)
+signal.scatter(x=[1],y=[54],color="#087f8c",marker_size=3mm)
+frame=group()
+chart=frame.add(signal)
+p.add(frame,offset=(16mm,13mm))
+`);
+  const chartDoc=await vscode.workspace.openTextDocument(chartFile);
+  await vscode.window.showTextDocument(chartDoc,{viewColumn:vscode.ViewColumn.One});
+  await vscode.commands.executeCommand('laymesh.openPreview',chartDoc.uri);
+  await until(()=>host?.received.some(m=>m.type==='painted'),'Chart anchor fixture painted');
+  const renders=()=>host.messages.filter(m=>m.type==='result'&&m.displayList).length;
+  const before=renders();
+  const tell=phase=>fs.writeFileSync(gate,JSON.stringify({phase}));
+  tell('chart-anchors-ready');
+  await until(()=>{
+   try{return JSON.parse(fs.readFileSync(gate)).phase==='chart-anchors-verified';}
+   catch{return false;}
+  },'Chart anchor UI verified');
+  assert.equal(renders(),before,'Chart selection and mouse gestures must not compile the source');
+  evidence.checks.push('Hovering and navigating the dense chart preview requests no source recompilation');
+  host.panel.dispose();
+  await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+  fs.writeFileSync(process.env.LAYMESH_PREVIEW_EVIDENCE,JSON.stringify(evidence,null,2));
+  tell('complete');
+  fs.rmSync(directory,{recursive:true,force:true});
+  return;
+ }
  if(process.env.LAYMESH_PREVIEW_OBJECT_SELECTION){
   const selectionFile=path.join(directory,'layered.lay');
   const selectionSource=[

@@ -4,23 +4,23 @@ Preview and edit scientific figures in `.lay` and `.lcss`. Get live Canvas previ
 
 支持 `.lay` 与 `.lcss`：实时 Canvas 预览、单位标尺、鼠标画布和绘图坐标、代码补全、参数说明、诊断与选色器，界面支持中文和英文。
 
-Version **0.6.4** shares its version with the Python package and Rust engine. Platform VSIX builds cover **Windows x64**, **Linux x64 / ARM64** and **macOS Intel / Apple Silicon**, including matching remote extension hosts. Preview uses a bundled native Rust program; no Python, Rust toolchain or npm installation is needed by extension users. Windows ARM64 and browser-only VS Code require their own compatible packages. Language analysis is static and never executes figure code; preview rendering is a separate opt-in process in a trusted workspace.
+Version **0.8.2** shares its version with the Python package and Rust engine. Platform VSIX builds cover **Windows x64**, **Linux x64 / ARM64** and **macOS Intel / Apple Silicon**, including matching remote extension hosts. Preview uses a bundled native Rust program; no Python, Rust toolchain or npm installation is needed by extension users. Windows ARM64 and browser-only VS Code require their own compatible packages. Language analysis is static and never executes figure code; preview rendering is a separate opt-in process in a trusted workspace.
 
-Build with Rust 1.93.1, `rustup target add wasm32-unknown-unknown` and `cargo install wasm-bindgen-cli --version 0.2.129 --locked`, then run `python scripts/build-editors.py` from the repository root. The extension bundles CanvasKit 0.42.0 and Rust WASM sampling, receives drawing protocol 3 from the native engine, and draws offline with WebGL2 or Skia software fallback. Create a stable Marketplace package with `python scripts/package-editor.py --target linux-x64 --output release/dist/laymesh-language-0.6.4-linux-x64.vsix`, then audit it with `python scripts/check-editor.py release/dist/laymesh-language-0.6.4-linux-x64.vsix --binary target/release/laymesh --target linux-x64 --marketplace`. No npm packages are needed. To install locally, use VS Code's **Extensions: Install from VSIX** command.
+Build with Rust 1.93.1, `rustup target add wasm32-unknown-unknown` and `cargo install wasm-bindgen-cli --version 0.2.129 --locked`, then run `python scripts/build-editors.py` from the repository root. The extension bundles CanvasKit 0.42.0 and Rust WASM sampling, receives drawing protocol 3 from the native engine, and draws offline with WebGL2 or Skia software fallback. Create a stable Marketplace package with `python scripts/package-editor.py --target linux-x64 --output release/dist/laymesh-language-0.8.2-linux-x64.vsix`, then audit it with `python scripts/check-editor.py release/dist/laymesh-language-0.8.2-linux-x64.vsix --binary target/release/laymesh --target linux-x64 --marketplace`. No npm packages are needed. To install locally, use VS Code's **Extensions: Install from VSIX** command.
 
 Build Windows x64 with the MSVC target on Windows using `cargo build --release --locked -p laymesh-cli`, then stage `target/release/laymesh.exe`. Linux cross builds require the MSVC SDK, LLVM and a compatible static Skia build; MinGW is not supported by this Skia release. Package Windows in a separate directory to preserve the Linux development binary:
 
 ```sh
 python scripts/build-editors.py --binary target/release/laymesh.exe --extension-dir release/staging/vscode-win32-x64
-python scripts/package-editor.py --extension-dir release/staging/vscode-win32-x64 --target win32-x64 --output release/dist/laymesh-language-0.6.4-win32-x64.vsix
-python scripts/check-editor.py release/dist/laymesh-language-0.6.4-win32-x64.vsix --binary target/release/laymesh.exe --target win32-x64 --marketplace
+python scripts/package-editor.py --extension-dir release/staging/vscode-win32-x64 --target win32-x64 --output release/dist/laymesh-language-0.8.2-win32-x64.vsix
+python scripts/check-editor.py release/dist/laymesh-language-0.8.2-win32-x64.vsix --binary target/release/laymesh.exe --target win32-x64 --marketplace
 ```
 
 Run `python scripts/smoke-native-editor.py --binary target/release/laymesh.exe --output release/dist/windows-native-evidence.json` on Windows to verify the preview protocol, resources, units, paths, error recovery and bilingual language service. On Linux, `--wine /path/to/wine` runs the cross-built EXE through Wine. This protocol check is separate from testing the actual Windows VS Code interface.
 
 Stable version tags build and audit five platform VSIX packages in GitHub Actions. After the existing PyPI approval and upload, GitHub Release provides these exact packages and `SHA256SUMS`. Marketplace uploads are manual through the [Hyacine publisher portal](https://marketplace.visualstudio.com/manage/publishers/Hyacine); no Actions Marketplace secret is needed. See the [release procedure](https://github.com/muxkin/LayMesh/blob/main/release/README.en.md) and [platform-specific publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#platform-specific-extensions).
 
-0.6.4 与 Python 包、Rust 引擎使用相同版本，构建 Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon 独立安装包，内置原生语言服务与预览程序。稳定标签触发五平台构建，PyPI 人工审批和上传成功后生成 GitHub Release；从 Release 下载审核包，通过发布者门户手动上传 Marketplace。远程开发时，安装包平台应匹配远程扩展宿主。
+0.8.2 与 Python 包、Rust 引擎使用相同版本，构建 Windows x64、Linux x64 / ARM64 和 macOS Intel / Apple Silicon 独立安装包，内置原生语言服务与预览程序。稳定标签触发五平台构建，PyPI 人工审批和上传成功后生成 GitHub Release；从 Release 下载审核包，通过发布者门户手动上传 Marketplace。远程开发时，安装包平台应匹配远程扩展宿主。
 
 Artistic text supports glyph gradients/outlines, open paths, arc/wave/perspective warps and vector extrusion. Text, shapes, transparent images and groups support inner/outer shadow and glow. See the [effects guide](https://muxkin.github.io/LayMesh/en/docs/topics/art-effects.html).
 
@@ -96,7 +96,7 @@ Preview updates are scheduled 30 ms after the last edit by default, including un
 
 In static preview, click an object to show a highlight box and its name. Click the same spot again to cycle through overlapping objects. Right-click the selected spot to jump to the selected instance's placement in the source. Click blank space to clear the selection.
 
-Hover over an anchor marker on the selected object to see the names used in source, including coincident anchors.
+Hover over an anchor marker on the selected object to see the names used in source, including coincident anchors. A selected chart initially shows its layout, plot area and axis endpoints. Move near an axis to reveal its tick, label and spine anchors.
 
 The top and left rulers and canvas X/Y values follow `canvas(unit=...)`: `mm`, `cm`, `in`/`inch`, `pt`, or `px`. Pixels use `layout_dpi`, independently of raster export DPI. The origin is the canvas top left; X increases right and Y increases down. Explicit units mixed in the source do not change the preview's display unit.
 
@@ -113,6 +113,8 @@ Toolbar: **Refresh**, **Fit**, **100%**, zoom out/in, **Rulers**, and **Export**
 ```
 
 打开已保存的 `.lay`，点击右上角预览按钮或执行“LayMesh: 打开预览”。顶部和左侧标尺跟随画布单位；底部同时显示画布与绘图区数据坐标。Ctrl/⌘＋滚轮缩放，空格＋拖动或中键平移。错误时保留上一张成功图并标记过期，点击错误可跳转源码。未保存的模块、样式和数据优先于磁盘内容；30 秒超时会终止并重启独立渲染进程。
+
+静态预览中，单击选中对象，在同一位置连续单击可逐层切换，右击跳到当前选中对象的源码。悬停锚点可查看它在源码中的名称。选中图表时先显示布局、绘图区和轴端锚点，靠近哪条轴就展开那条轴的刻度、标签和轴线锚点。
 
 ### Native preview protocol
 

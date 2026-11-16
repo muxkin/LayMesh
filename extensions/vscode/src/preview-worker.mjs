@@ -58,19 +58,44 @@ function selectionLayoutTransform(node){
  const intrinsicInverse=node.hint?.anchorIntrinsicInverse;
  return intrinsicInverse?selectionTransform(node.transform,intrinsicInverse):node.transform;
 }
+const chartAxisAnchor=/^(axes\["(?:[^"\\]|\\.)*"\])\.(.+)$/;
+const chartSpineEndpoint=/^(spine(?:\.subpaths\[\d+\])?)\.(start|end)$/;
+function chartAxisRegion([left,top,right,bottom],[a,b,c,d,e,f]){
+ return [[left,top],[right,top],[right,bottom],[left,bottom]].map(([x,y])=>[a*x+c*y+e,b*x+d*y+f]);
+}
 function appendChartAnchors(anchors,chart,layout,parent,toPage){
+ const axes=new Map();
+ const boxes=(chart.boxes||[]).map(([prefix,bounds])=>{
+  const [,key,member]=prefix.match(chartAxisAnchor)||[];
+  if(member==='bounds.')axes.set(key,{key,region:chartAxisRegion(bounds,toPage),spans:new Map()});
+  return {prefix,bounds,key};
+ });
  // The DSL measures axis components in the chart's immediate container axes.
- for(const [prefix,bounds] of chart.boxes||[]){
-  anchors.push(...selectionBoxAnchors(selectionBoundsTransform(bounds,layout),parent,prefix,'chart-box'));
+ for(const {prefix,bounds,key} of boxes){
+  const markers=selectionBoxAnchors(selectionBoundsTransform(bounds,layout),parent,prefix,'chart-box');
+  if(axes.has(key))for(const marker of markers)marker.axis=key;
+  anchors.push(...markers);
  }
  for(const [name,[x,y]] of chart.points||[]){
-  const kind=name.includes('.ticks[')?'chart-tick':'chart-point';
-  anchors.push({...selectionProjectAnchor(name,x,y,toPage),kind});
+  const [,key,member]=name.match(chartAxisAnchor)||[];
+  const axis=axes.get(key);
+  const kind=member?.startsWith('ticks[')?'chart-tick':'chart-point';
+  const marker={...selectionProjectAnchor(name,x,y,toPage),kind};
+  if(axis&&member!=='min'&&member!=='max')marker.axis=key;
+  anchors.push(marker);
+  const endpoint=member?.match(chartSpineEndpoint);
+  if(axis&&endpoint){
+   const [,spine,side]=endpoint;
+   const span=axis.spans.get(spine)||[];
+   span[side==='start'?0:1]=[marker.x,marker.y];
+   axis.spans.set(spine,span);
+  }
  }
+ return [...axes.values()].map(({key,region,spans})=>({key,region,spans:[...spans.values()].filter(([start,end])=>start&&end)}));
 }
 function selectionAnchors(node,parent,layout){
  const {anchorSize,anchorEndpoints,anchorPlot,anchorGeometry,anchorChart}=node.hint||{};
- if(!anchorSize)return [];
+ if(!anchorSize)return {anchors:[]};
  const [width,height]=anchorSize;
  // Standard anchors follow the layout bounding box in the immediate container.
  const anchors=selectionBoxAnchors(selectionBoundsTransform([0,0,width,height],layout),parent);
@@ -81,8 +106,8 @@ function selectionAnchors(node,parent,layout){
  }
  if(anchorPlot)anchors.push(...selectionBoxAnchors(anchorPlot,toPage,'plot_'));
  if(anchorGeometry)appendSelectionPathAnchors(anchors,anchorGeometry,toPage);
- if(anchorChart)appendChartAnchors(anchors,anchorChart,layout,parent,toPage);
- return anchors;
+ const chartAxes=anchorChart?appendChartAnchors(anchors,anchorChart,layout,parent,toPage):[];
+ return chartAxes.length?{anchors,chartAxes}:{anchors};
 }
 function selectionUnion(a,b){return !a?b:!b?a:[Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[2],b[2]),Math.max(a[3],b[3])];}
 function selectionIntersect(a,b){
@@ -199,7 +224,7 @@ function previewObjectHits(point,scale){
    const outline=selectionIntersect(selectionBoundsTransform(bounds,transform),clip);
    if(outline){
     const layout=selectionLayoutTransform(node);
-    const selected={key,name,kind:node.hint.kind||node.hint.logicalKind,bounds:outline,anchors:selectionAnchors(node,parent,layout)};
+    const selected={key,name,kind:node.hint.kind||node.hint.logicalKind,bounds:outline,...selectionAnchors(node,parent,layout)};
     const {anchorSize,logicalKind,anchorPlot}=node.hint;
     if(anchorSize&&!anchorPlot&&(logicalKind==='path'||logicalKind==='group')){
      selected.objectPath=[...objectPath,key];

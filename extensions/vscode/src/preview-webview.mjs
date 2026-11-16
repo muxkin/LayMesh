@@ -72,9 +72,9 @@ const vertical=el('div','crosshair vertical',viewport),horizontal=el('div','cros
 vertical.hidden=horizontal.hidden=true;
 const objectSelection=el('div','object-selection',viewport),objectOutline=el('div','object-selection-outline',objectSelection),objectName=el('output','object-selection-name',objectSelection);
 const objectAnchors=el('div','object-anchors',objectSelection),anchorTooltip=el('div','object-anchor-tooltip',objectSelection);
-let anchorMarkers=[],hoveredAnchors=[],tooltipAnchor,tooltipLayout;
-const anchorCells=new Map();
-let anchorColumns=0;
+let anchorMarkers=[],hoveredAnchors=[],tooltipAnchor,tooltipLayout,activeChartAxis=null;
+const anchorCells=new Map(),chartAxisCells=new Map(),chartAxisGroups=new Map();
+let anchorColumns=0,anchorIndex=0;
 objectSelection.hidden=true;
 objectName.setAttribute('aria-live','polite');
 objectAnchors.setAttribute('aria-hidden','true');
@@ -146,17 +146,34 @@ function objectSelectionReady(){
 function setObjectAnchors(anchors){
  hideAnchorTooltip();
  anchorMarkers=[];
+ anchorIndex=0;
+ activeChartAxis=null;
+ delete objectSelection.dataset.activeChartAxis;
  anchorCells.clear();
+ chartAxisCells.clear();
+ chartAxisGroups.clear();
  objectAnchors.replaceChildren();
  appendObjectAnchors(anchors);
 }
 function appendObjectAnchors(anchors){
  const markers=document.createDocumentFragment();
  for(const anchor of anchors){
-  const marker=el('span','object-anchor',markers);
+  let group=chartAxisGroups.get(anchor.axis);
+  if(anchor.axis&&!group){
+   const element=el('div','object-axis-anchors',markers);
+   element.hidden=true;
+   group={element,markers:[],boxes:[]};
+   chartAxisGroups.set(anchor.axis,group);
+  }
+  const marker=el('span','object-anchor',group?.element||markers);
   marker.dataset.anchor=anchor.name;
   if(anchor.kind)marker.dataset.anchorKind=anchor.kind;
-  anchorMarkers.push({...anchor,marker,index:anchorMarkers.length});
+  const entry={...anchor,marker,index:anchorIndex++};
+  if(group){
+   marker.dataset.anchorAxis=anchor.axis;
+   group.markers.push(entry);
+   if(anchor.kind==='chart-box')group.boxes.push(anchor);
+  }else anchorMarkers.push(entry);
  }
  objectAnchors.append(markers);
 }
@@ -173,6 +190,7 @@ function hideAnchorTooltip(){
  tooltipAnchor=tooltipLayout=null;
 }
 const anchorHoverRadius=9,anchorHoverRadiusSquared=anchorHoverRadius**2,anchorCellSize=anchorHoverRadius*2;
+const chartAxisEnterRadius=12,chartAxisExitRadius=16;
 function anchorDistanceSquared(anchor,x,y){
  const dx=anchor.left-x,dy=anchor.top-y;
  return dx*dx+dy*dy;
@@ -184,15 +202,73 @@ function* anchorsNear(x,y){
  const lastRow=Math.floor((y+anchorHoverRadius)/anchorCellSize);
  for(let row=firstRow;row<=lastRow;row++){
   for(let column=firstColumn;column<=lastColumn;column++){
-   const cell=anchorCells.get(row*anchorColumns+column);
+   const index=row*anchorColumns+column;
+   const cell=anchorCells.get(index);
    if(cell)yield* cell;
+   const axisCell=chartAxisCells.get(index);
+   if(axisCell)yield* axisCell;
   }
  }
 }
+function distanceToSegmentSquared(x,y,start,end){
+ const dx=end[0]-start[0],dy=end[1]-start[1],lengthSquared=dx*dx+dy*dy;
+ const along=lengthSquared?Math.max(0,Math.min(1,((x-start[0])*dx+(y-start[1])*dy)/lengthSquared)):0;
+ return (x-start[0]-along*dx)**2+(y-start[1]-along*dy)**2;
+}
+function distanceToAxisRegionSquared(x,y,region){
+ const [originX,originY]=region[0];
+ let distance=Infinity,area=0,positive=false,negative=false;
+ for(let i=0;i<region.length;i++){
+  const start=region[i],end=region[(i+1)%region.length];
+  const cross=(end[0]-start[0])*(y-start[1])-(end[1]-start[1])*(x-start[0]);
+  positive||=cross>0;
+  negative||=cross<0;
+  area+=(start[0]-originX)*(end[1]-originY)-(start[1]-originY)*(end[0]-originX);
+  distance=Math.min(distance,distanceToSegmentSquared(x,y,start,end));
+ }
+ return area&&!(positive&&negative)?0:distance;
+}
+function nearbyChartAxis(x,y){
+ if(!selectedObject?.chartAxes?.length)return null;
+ const [left,top,scale]=objectLayout;
+ const pageX=(x-left)/scale,pageY=(y-top)/scale,boxRadius=anchorHoverRadius/scale;
+ let closest,current;
+ for(const axis of selectedObject.chartAxes){
+  const group=chartAxisGroups.get(axis.key);
+  if(!group)continue;
+  const distance=Math.sqrt(distanceToAxisRegionSquared(pageX,pageY,axis.region))*scale;
+  const radius=axis.key===activeChartAxis?chartAxisExitRadius:chartAxisEnterRadius;
+  // The layout box markers can lie outside a rotated axis strip.
+  if(distance>radius&&!group.boxes.some(anchor=>(anchor.x-pageX)**2+(anchor.y-pageY)**2<boxRadius**2))continue;
+  let spineDistance=Infinity;
+  for(const [start,end] of axis.spans)spineDistance=Math.min(spineDistance,distanceToSegmentSquared(pageX,pageY,start,end));
+  const candidate={key:axis.key,distance,spine:axis.spans.length?Math.sqrt(spineDistance)*scale:distance};
+  if(axis.key===activeChartAxis)current=candidate;
+  if(!closest||distance<closest.distance||(distance===closest.distance&&candidate.spine<closest.spine))closest=candidate;
+ }
+ if(current&&closest&&current.distance<=closest.distance+2&&current.spine<=closest.spine+3)return current.key;
+ return closest?.key??null;
+}
+function showChartAxis(key){
+ if(activeChartAxis===key)return;
+ if(activeChartAxis)chartAxisGroups.get(activeChartAxis).element.hidden=true;
+ activeChartAxis=key;
+ if(key){
+  const group=chartAxisGroups.get(key);
+  placeAnchors(group.markers,chartAxisCells);
+  group.element.hidden=false;
+  objectSelection.dataset.activeChartAxis=key;
+ }else{
+  chartAxisCells.clear();
+  delete objectSelection.dataset.activeChartAxis;
+ }
+ tooltipAnchor=null;
+}
 function hoverObjectAnchor(x,y){
- if(drag||objectSelection.hidden)return hideAnchorTooltip();
+ if(drag||objectSelection.hidden){showChartAxis(null);return hideAnchorTooltip();}
  const [, , ,width,height]=objectLayout;
- if(x<0||x>width||y<0||y>height)return hideAnchorTooltip();
+ if(x<0||x>width||y<0||y>height){showChartAxis(null);return hideAnchorTooltip();}
+ showChartAxis(nearbyChartAxis(x,y));
  let nearest,distance=anchorHoverRadiusSquared;
  for(const anchor of anchorsNear(x,y)){
   const delta=anchorDistanceSquared(anchor,x,y);
@@ -226,6 +302,23 @@ function hoverObjectAnchor(x,y){
   top<nameTop+objectName.offsetHeight&&top+tipHeight>nameTop;
  objectName.style.visibility=overlapsName?'hidden':'';
 }
+function placeAnchors(anchors,cells){
+ const [left,top,scale,width,height]=objectLayout;
+ cells.clear();
+ for(const anchor of anchors){
+  anchor.left=left+anchor.x*scale;
+  anchor.top=top+anchor.y*scale;
+  const visible=anchor.left>=0&&anchor.left<=width&&anchor.top>=0&&anchor.top<=height;
+  anchor.marker.hidden=!visible;
+  if(!visible)continue;
+  anchor.marker.style.left=`${anchor.left}px`;
+  anchor.marker.style.top=`${anchor.top}px`;
+  const cellIndex=Math.floor(anchor.top/anchorCellSize)*anchorColumns+Math.floor(anchor.left/anchorCellSize);
+  const cell=cells.get(cellIndex);
+  if(cell)cell.push(anchor);
+  else cells.set(cellIndex,[anchor]);
+ }
+}
 function placeObjectSelection(r){
  if(!selectedObject)return;
  const scale=view.scale,layout=[r.left,r.top,scale,viewport.clientWidth,viewport.clientHeight];
@@ -235,22 +328,10 @@ function placeObjectSelection(r){
  const left=r.left+x0*scale,top=r.top+y0*scale,right=r.left+x1*scale,bottom=r.top+y1*scale;
  const [, , ,width,height]=layout;
  const outlineInView=right>=0&&bottom>=0&&left<=width&&top<=height;
- anchorCells.clear();
  anchorColumns=Math.floor(width/anchorCellSize)+1;
- for(const anchor of anchorMarkers){
-  anchor.left=r.left+anchor.x*scale;
-  anchor.top=r.top+anchor.y*scale;
-  const visible=anchor.left>=0&&anchor.left<=width&&anchor.top>=0&&anchor.top<=height;
-  anchor.marker.hidden=!visible;
-  if(!visible)continue;
-  anchor.marker.style.left=`${anchor.left}px`;
-  anchor.marker.style.top=`${anchor.top}px`;
-  const cellIndex=Math.floor(anchor.top/anchorCellSize)*anchorColumns+Math.floor(anchor.left/anchorCellSize);
-  const cell=anchorCells.get(cellIndex);
-  if(cell)cell.push(anchor);
-  else anchorCells.set(cellIndex,[anchor]);
- }
- objectSelection.hidden=!outlineInView&&!anchorCells.size;
+ placeAnchors(anchorMarkers,anchorCells);
+ if(activeChartAxis)placeAnchors(chartAxisGroups.get(activeChartAxis).markers,chartAxisCells);
+ objectSelection.hidden=!outlineInView&&!anchorCells.size&&!chartAxisCells.size;
  objectName.hidden=!outlineInView;
  Object.assign(objectOutline.style,{left:`${left}px`,top:`${top}px`,width:`${Math.max(2,right-left)}px`,height:`${Math.max(2,bottom-top)}px`});
  const labelLeft=Math.max(4,Math.min(layout[3]-76,r.left+x*scale+9));
@@ -294,6 +375,7 @@ function objectPoint(event,r){
 }
 async function selectObjectAt(event){
  if(!objectSelectionReady()||event.button!==0||!event.detail||event.ctrlKey||event.metaKey||panGesture||space||event.target.closest('.media-controls'))return;
+ lastPointer={x:event.clientX,y:event.clientY};
  const r=rect(),point=objectPoint(event,r),scale=view.scale,generation=objectGeneration,epoch=objectEpoch;
  if(point[0]<0||point[1]<0||point[0]>page.width||point[1]>page.height){clearObjectSelection();return;}
  try{
@@ -334,7 +416,7 @@ function drawRuler(canvas,axis,r){
  drawPreviewRuler(canvas,axis,{length:axis==='x'?viewport.clientWidth:viewport.clientHeight,start:axis==='x'?r.left:r.top,scale:view.scale,page,ink:style.getPropertyValue('--ruler-ink').trim(),font:'10px '+style.fontFamily,pointer:p?(axis==='x'?lastPointer.x-bounds.left:lastPointer.y-bounds.top):null});
 }
 function cursor(r){
- if(!lastPointer||!page){hideAnchorTooltip();readout.textContent='';vertical.hidden=horizontal.hidden=true;return;}
+ if(!lastPointer||!page){showChartAxis(null);hideAnchorTooltip();readout.textContent='';vertical.hidden=horizontal.hidden=true;return;}
  const bounds=viewport.getBoundingClientRect(),x=lastPointer.x-bounds.left,y=lastPointer.y-bounds.top,p=canvasAt(page,r,x,y);
  if(anchorMarkers.length)hoverObjectAnchor(x,y);
  if(!p||x<0||y<0||x>viewport.clientWidth||y>viewport.clientHeight){readout.textContent='';vertical.hidden=horizontal.hidden=true;return;}

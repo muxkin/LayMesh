@@ -1,3 +1,8 @@
+# 0.8.2
+
+- Select overlapping objects in VS Code preview, see their names and anchors, and right-click to jump to source.
+- Reveal tick and label anchors for the axis near the pointer while keeping the plot-area anchors and axis endpoints visible.
+
 # 0.8.1
 
 - Place material with top-level `add(...)` and declare a canvas without assigning it.
